@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FreelanceProject</string>
+    <string name="action_settings">Preferencias</string>
+    <string name="nuevocliente">Nuevo cliente</string>
+    <string name="nombre">Nombre</string>
+    <string name="direccion">Dirección</string>
+    <string name="telefono">Teléfono</string>
+    <string name="email">email</string>
+    <string name="contacto">Contacto</string>
+    <string name="guardar">guardar</string>
+    <string name="tipocliente">Tipo cliente</string>
+    <string name="cliente">Cliente</string>
+    <string name="borrar">Borrar</string>
+    <string name="nuevoproyecto">Nuevo proyecto</string>
+    <string name="estado">Estado</string>
+    <string name="descripcion_tipo_cliente">Descripción</string>
+    <string name="projecto">Proyecto</string>
+    <string name="fecha_entrada">Fecha entrada</string>
+    <string name="fecha_acordada">Fecha acordada</string>
+    <string name="sinfecha">Fecha no establecida</string>
+    <string name="fecha_calculada">Fecha cálculada</string>
+    <string name="fecha_final">Fecha final</string>
+    <string name="importe_calculado">Precio calculado</string>
+</resources>

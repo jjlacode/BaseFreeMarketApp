@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".ui.FragmentUDEvento">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Spinner
+            android:id="@+id/sptipoudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imgudevento"
+                card_view:srcCompat="@drawable/ico_calendario_reloj"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_weight="3" />
+
+            <EditText
+                android:id="@+id/etdescudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/descripcion_tipo_cliente"
+                android:inputType="textPersonName" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/etfechainiudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:ems="10"
+                android:hint="@string/fecha_ini_evento"
+                android:textSize="18sp" />
+
+            <ImageButton
+                android:id="@+id/imgbtnfiniudevento"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_weight="3"
+                android:scaleType="fitXY"
+                android:src="@drawable/ico_calendario_reloj" />
+
+            <TextView
+                android:id="@+id/ethorainiudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:ems="10"
+                android:hint="@string/hora_ini_evento"
+                android:textSize="18sp" />
+
+            <ImageButton
+                android:id="@+id/imgbtnhiniudevento"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_weight="3"
+                android:scaleType="fitXY"
+                android:src="@drawable/ico_calendario_reloj" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/etfechafinudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:ems="10"
+                android:hint="@string/fecha_fin_evento"
+                android:textSize="18sp" />
+
+            <ImageButton
+                android:id="@+id/imgbtnffinudevento"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_weight="3"
+                android:scaleType="fitXY"
+                android:src="@drawable/ico_calendario_reloj" />
+
+            <TextView
+                android:id="@+id/ethorafinudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:ems="10"
+                android:hint="@string/hora_fin_evento"
+                android:textSize="18sp" />
+
+            <ImageButton
+                android:id="@+id/imgbtnhfinudevento"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_weight="3"
+                android:scaleType="fitXY"
+                android:src="@drawable/ico_calendario_reloj" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/ettelefonoudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/telefono"
+            android:inputType="phone" />
+
+        <EditText
+            android:id="@+id/etlugarudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/direccion"
+            android:inputType="textPostalAddress" />
+
+        <EditText
+            android:id="@+id/etemailudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress" />
+
+        <CheckBox
+            android:id="@+id/chavisoudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/aviso" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/ltvavisoudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/aviso" />
+
+            <EditText
+                android:id="@+id/etdiasudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/dias"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/ethorasudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/horas"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/etminutosudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/minutos"
+                android:inputType="number" />
+
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/chrptudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/modificar_repeticiones" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/ltvdreptudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                android:text="@string/duracion" />
+
+            <EditText
+                android:id="@+id/etrepdaniosudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                android:ems="10"
+                android:hint="@string/anios"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/etrepdmesesudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                android:ems="10"
+                android:hint="@string/meses"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/etrepddiasudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                android:ems="10"
+                android:hint="@string/dias"
+                android:inputType="number" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/ltvreptudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                android:text="@string/repetir_evento" />
+
+            <EditText
+                android:id="@+id/etrepaniosudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                android:ems="10"
+                android:hint="@string/anios"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/etrepmesesudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                android:ems="10"
+                android:hint="@string/meses"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/etrepdiasudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                android:ems="10"
+                android:hint="@string/dias"
+                android:inputType="number" />
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/chpryudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/relacionar_proyecto" />
+
+        <Spinner
+            android:id="@+id/sppryudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <CheckBox
+            android:id="@+id/chcliudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/relacionar_cliente" />
+
+        <Spinner
+            android:id="@+id/spcliudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/evento_ud_btn_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/guardar" />
+
+        <Button
+            android:id="@+id/evento_ud_btn_del"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/borrar" />
+
+        <Button
+            android:id="@+id/evento_ud_btn_back"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/volver" />
+    </LinearLayout>
+
+    </ScrollView>

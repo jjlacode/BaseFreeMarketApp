@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item
+        android:id="@+id/nav_agenda"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="@string/agendaTarea" />
+    <item
+        android:id="@+id/nav_prospecto"
+        android:icon="@drawable/ico_calendario_reloj"
+        android:title="@string/prospectos" />
+    <item
+        android:id="@+id/nav_clientes"
+        android:icon="@drawable/ic_menu_slideshow"
+        android:title="@string/clientes" />
+    <item
+        android:id="@+id/nav_presup"
+        android:icon="@drawable/ico_calendario_reloj"
+        android:title="@string/presupuestos" />
+    <item
+        android:id="@+id/nav_proyectos"
+        android:icon="@drawable/clientev"
+        android:title="@string/proyectos" />
+    <item
+        android:id="@+id/nav_cobros"
+        android:icon="@android:drawable/ic_menu_today"
+        android:title="@string/cobros" />
+    <item
+        android:id="@+id/nav_historico"
+        android:icon="@drawable/cliente"
+        android:title="@string/historico" />
+    <item
+        android:id="@+id/nav_perfiles"
+        android:icon="@drawable/ic_menu_manage"
+        android:title="@string/perfiles" />
+    <item
+        android:id="@+id/nav_eventos"
+        android:icon="@drawable/ico_calendario_reloj"
+        android:title="@string/eventos" />
+
+</menu>
