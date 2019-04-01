@@ -7,12 +7,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -26,20 +27,23 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import androidx.fragment.app.Fragment;
 
-import jjlacode.com.freelanceproject.adapter.Lista_adaptador;
-import jjlacode.com.freelanceproject.interfaces.ICFragmentos;
+import java.util.ArrayList;
+
+import jjlacode.com.androidutils.DatePickerFragment;
+import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.JavaUtil;
+import jjlacode.com.androidutils.ListaAdaptadorFiltro;
+import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.androidutils.TimePickerFragment;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.model.Modelo;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 import jjlacode.com.freelanceproject.utilities.Common;
-import jjlacode.com.utilidades.Utilidades;
 
 public class FragmentCEvento extends Fragment
-        implements Common.TiposEvento, Contract.Tablas, Utilidades.Constantes, Common.Constantes {
+        implements Common.TiposEvento, Contract.Tablas, JavaUtil.Constantes, Common.Constantes {
 
     private Activity activity;
     private ICFragmentos icFragmentos;
@@ -47,8 +51,8 @@ public class FragmentCEvento extends Fragment
     private String namef;
     ImageView imagen;
     Spinner tiposEvento;
-    Spinner proyRel;
-    Spinner cliRel;
+    AutoCompleteTextView proyRel;
+    AutoCompleteTextView cliRel;
     EditText descipcion;
     EditText lugar;
     EditText telefono;
@@ -87,10 +91,6 @@ public class FragmentCEvento extends Fragment
     Modelo cliente;
     String idCliente;
     String idProyecto;
-    private ArrayList<Modelo> listaObjProyectos;
-    private ArrayList<Modelo> listaobjClientes;
-    private int posproy;
-    private int poscli;
     private long finiEvento;
     private long ffinEvento;
     private long hiniEvento;
@@ -200,9 +200,21 @@ public class FragmentCEvento extends Fragment
         horaIni.setVisibility(View.GONE);
         fechaFin.setVisibility(View.GONE);
         horaFin.setVisibility(View.GONE);
+        btnfini.setVisibility(View.GONE);
+        btnffin.setVisibility(View.GONE);
+        btnhini.setVisibility(View.GONE);
+        btnhfin.setVisibility(View.GONE);
         laviso.setVisibility(View.GONE);
         lrep.setVisibility(View.GONE);
         ldrep.setVisibility(View.GONE);
+        repeticiones.setVisibility(View.GONE);
+        aviso.setVisibility(View.GONE);
+        proyRel.setVisibility(View.GONE);
+        cliRel.setVisibility(View.GONE);
+        imagen.setVisibility(View.GONE);
+        descipcion.setVisibility(View.GONE);
+        relProy.setVisibility(View.GONE);
+        relCli.setVisibility(View.GONE);
 
         final ArrayList<String> listaTiposEvento = new ArrayList<>();
         listaTiposEvento.add("Elija el tipo de evento");
@@ -224,53 +236,61 @@ public class FragmentCEvento extends Fragment
 
                 tipoEvento = null;
 
-                lugar.setVisibility(View.GONE);
-                telefono.setVisibility(View.GONE);
-                email.setVisibility(View.GONE);
-                repAnios.setVisibility(View.GONE);
-                repMeses.setVisibility(View.GONE);
-                repDias.setVisibility(View.GONE);
-                drepAnios.setVisibility(View.GONE);
-                drepMeses.setVisibility(View.GONE);
-                drepDias.setVisibility(View.GONE);
-                avisoDias.setVisibility(View.GONE);
-                avisoHoras.setVisibility(View.GONE);
-                avisoMinutos.setVisibility(View.GONE);
-                fechaIni.setVisibility(View.GONE);
-                horaIni.setVisibility(View.GONE);
-                fechaFin.setVisibility(View.GONE);
-                horaFin.setVisibility(View.GONE);
-                btnfini.setVisibility(View.GONE);
-                btnffin.setVisibility(View.GONE);
-                btnhini.setVisibility(View.GONE);
-                btnhfin.setVisibility(View.GONE);
-                laviso.setVisibility(View.GONE);
-                lrep.setVisibility(View.GONE);
-                ldrep.setVisibility(View.GONE);
-                repeticiones.setVisibility(View.GONE);
-                aviso.setVisibility(View.GONE);
-                proyRel.setVisibility(View.GONE);
-                cliRel.setVisibility(View.GONE);
-
-                if (idCliente!=null){
-
-                    relCli.setVisibility(View.GONE);
-                    cliRel.setVisibility(View.VISIBLE);
-                }
-                if (idProyecto!=null){
-
-                    relProy.setVisibility(View.GONE);
-                    proyRel.setVisibility(View.VISIBLE);
-                }
-
                 if (position>0) {
 
+                    lugar.setVisibility(View.GONE);
+                    telefono.setVisibility(View.GONE);
+                    email.setVisibility(View.GONE);
+                    repAnios.setVisibility(View.GONE);
+                    repMeses.setVisibility(View.GONE);
+                    repDias.setVisibility(View.GONE);
+                    drepAnios.setVisibility(View.GONE);
+                    drepMeses.setVisibility(View.GONE);
+                    drepDias.setVisibility(View.GONE);
+                    avisoDias.setVisibility(View.GONE);
+                    avisoHoras.setVisibility(View.GONE);
+                    avisoMinutos.setVisibility(View.GONE);
+                    fechaIni.setVisibility(View.GONE);
+                    horaIni.setVisibility(View.GONE);
+                    fechaFin.setVisibility(View.GONE);
+                    horaFin.setVisibility(View.GONE);
+                    btnfini.setVisibility(View.GONE);
+                    btnffin.setVisibility(View.GONE);
+                    btnhini.setVisibility(View.GONE);
+                    btnhfin.setVisibility(View.GONE);
+                    laviso.setVisibility(View.GONE);
+                    lrep.setVisibility(View.GONE);
+                    ldrep.setVisibility(View.GONE);
+                    repeticiones.setVisibility(View.GONE);
+                    aviso.setVisibility(View.GONE);
+                    proyRel.setVisibility(View.GONE);
+                    cliRel.setVisibility(View.GONE);
+                    imagen.setVisibility(View.GONE);
+                    descipcion.setVisibility(View.GONE);
+                    relProy.setVisibility(View.GONE);
+                    relCli.setVisibility(View.GONE);
+
                     tipoEvento = listaTiposEvento.get(position);
-                    System.out.println("tipoEvento = " + tipoEvento);
+                    imagen.setVisibility(View.VISIBLE);
+                    descipcion.setVisibility(View.VISIBLE);
+                    if (idCliente!=null){
+
+                        relCli.setVisibility(View.GONE);
+                        cliRel.setVisibility(View.VISIBLE);
+                        lugar.setText(cliente.getString(CLIENTE_DIRECCION));
+                        telefono.setText(cliente.getString(CLIENTE_TELEFONO));
+                        email.setText(cliente.getString(CLIENTE_EMAIL));
+                    }
+                    if (idProyecto!=null){
+
+                        relProy.setVisibility(View.GONE);
+                        proyRel.setVisibility(View.VISIBLE);
+                    }
 
                     switch (tipoEvento){
 
                         case TAREA:
+
                             break;
 
                         case CITA:
@@ -318,6 +338,39 @@ public class FragmentCEvento extends Fragment
 
                     }
 
+                }else{
+
+                    lugar.setVisibility(View.GONE);
+                    telefono.setVisibility(View.GONE);
+                    email.setVisibility(View.GONE);
+                    repAnios.setVisibility(View.GONE);
+                    repMeses.setVisibility(View.GONE);
+                    repDias.setVisibility(View.GONE);
+                    drepAnios.setVisibility(View.GONE);
+                    drepMeses.setVisibility(View.GONE);
+                    drepDias.setVisibility(View.GONE);
+                    avisoDias.setVisibility(View.GONE);
+                    avisoHoras.setVisibility(View.GONE);
+                    avisoMinutos.setVisibility(View.GONE);
+                    fechaIni.setVisibility(View.GONE);
+                    horaIni.setVisibility(View.GONE);
+                    fechaFin.setVisibility(View.GONE);
+                    horaFin.setVisibility(View.GONE);
+                    btnfini.setVisibility(View.GONE);
+                    btnffin.setVisibility(View.GONE);
+                    btnhini.setVisibility(View.GONE);
+                    btnhfin.setVisibility(View.GONE);
+                    laviso.setVisibility(View.GONE);
+                    lrep.setVisibility(View.GONE);
+                    ldrep.setVisibility(View.GONE);
+                    repeticiones.setVisibility(View.GONE);
+                    aviso.setVisibility(View.GONE);
+                    proyRel.setVisibility(View.GONE);
+                    cliRel.setVisibility(View.GONE);
+                    imagen.setVisibility(View.GONE);
+                    descipcion.setVisibility(View.GONE);
+                    relProy.setVisibility(View.GONE);
+                    relCli.setVisibility(View.GONE);
                 }
 
             }
@@ -517,29 +570,11 @@ public class FragmentCEvento extends Fragment
         return vista;
     }
 
-    private void setAdaptadorProyectos(Spinner spinner){
+    private void setAdaptadorProyectos(final AutoCompleteTextView autoCompleteTextView){
 
-        listaObjProyectos =  QueryDB.queryList(CAMPOS_PROYECTO,null,null);
-        listaProyectos = new ArrayList<>();
-        final String elija = "Elija un Presupuesto o Proyecto relacionado con el evento";
-        Modelo proyecto = new Modelo(CAMPOS_PROYECTO);
-        proyecto.setCampos(PROYECTO_DESCRIPCION,elija);
-        listaProyectos = new ArrayList<>();
-        listaProyectos.add(proyecto);
-        listaProyectos.addAll(listaObjProyectos);
-        System.out.println("proyecto.getCampos() = " + Arrays.toString(proyecto.getCampos()));
-        if (idProyecto!=null) {
-            for (int i = 1; i < listaProyectos.size(); i++) {
+        listaProyectos =  QueryDB.queryList(CAMPOS_PROYECTO,null,null);
 
-                if (listaProyectos.get(i).getCampos(Contract.Tablas.PROYECTO_ID_PROYECTO).equals(idProyecto)) {
-
-                    posproy = i;
-                    break;
-                }
-            }
-        }
-
-        spinner.setAdapter(new Lista_adaptador(getContext(),R.layout.item_list_proyecto,listaProyectos) {
+        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),R.layout.item_list_proyecto,listaProyectos,PROYECTO_NOMBRE) {
             @Override
             public void onEntrada(Modelo entrada, View view) {
 
@@ -554,23 +589,6 @@ public class FragmentCEvento extends Fragment
 
                 descripcion.setText(entrada.getCampos(Contract.Tablas.PROYECTO_DESCRIPCION));
 
-                if (descripcion.getText().toString().equals(elija)){
-
-                    imagen.setVisibility(View.GONE);
-                    nombre.setVisibility(View.GONE);
-                    imgcli.setVisibility(View.GONE);
-                    imgest.setVisibility(View.GONE);
-                    nomcli.setVisibility(View.GONE);
-                    estado.setVisibility(View.GONE);
-
-                }else if (entrada.getCampos(Contract.Tablas.PROYECTO_ID_PROYECTO)!=null){
-
-                    imagen.setVisibility(View.VISIBLE);
-                    nombre.setVisibility(View.VISIBLE);
-                    imgcli.setVisibility(View.VISIBLE);
-                    imgest.setVisibility(View.VISIBLE);
-                    nomcli.setVisibility(View.VISIBLE);
-                    estado.setVisibility(View.VISIBLE);
 
                     nombre.setText(entrada.getCampos(Contract.Tablas.PROYECTO_NOMBRE));
                     nomcli.setText(entrada.getCampos(Contract.Tablas.CLIENTE_NOMBRE));
@@ -605,52 +623,31 @@ public class FragmentCEvento extends Fragment
                     } else {
                         imgcli.setImageResource(R.drawable.cliente);
                     }
-                }
 
             }
         });
 
-        if (idProyecto!=null){spinner.setSelection(posproy);}
+        if (idProyecto!=null){autoCompleteTextView.setText(proyecto.getString(PROYECTO_NOMBRE));}
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                nombreProyecto = listaProyectos.get(position).getString(PROYECTO_NOMBRE);
-                idProyecto = listaProyectos.get(position).getString(PROYECTO_ID_PROYECTO);
+                Modelo proyecto = (Modelo) autoCompleteTextView.getAdapter().getItem(position);
+                nombreProyecto = proyecto.getString(PROYECTO_NOMBRE);
+                idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
+                proyRel.setText(nombreProyecto);
             }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
         });
 
     }
 
-    private void setAdaptadorClientes(Spinner spinner) {
+    private void setAdaptadorClientes(final AutoCompleteTextView autoCompleteTextView) {
 
-        listaobjClientes = QueryDB.queryList(CAMPOS_CLIENTE, null, null);
-        listaProyectos = new ArrayList<>();
-        final String elija = "Elija un Cliente o Prospecto relacionado con el evento";
-        Modelo cliente = new Modelo(CAMPOS_CLIENTE);
-        cliente.setCampos(CLIENTE_DIRECCION, elija);
-        listaClientes = new ArrayList<>();
-        listaClientes.add(cliente);
-        listaClientes.addAll(listaobjClientes);
-        System.out.println("idCliente = " + idCliente);
+        listaClientes = QueryDB.queryList(CAMPOS_CLIENTE, null, null);
 
-        if (idCliente != null) {
-            for (int i = 1; i < listaClientes.size(); i++) {
-
-                if (listaClientes.get(i).getCampos(CLIENTE_ID_CLIENTE).equals(idCliente)) {
-
-                    poscli = i;
-                    break;
-                }
-            }
-        }
-        spinner.setAdapter(new Lista_adaptador(getContext(),R.layout.item_list_cliente,listaClientes) {
+        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),R.layout.item_list_cliente,listaClientes,CLIENTE_NOMBRE) {
             @Override
             public void onEntrada(Modelo entrada, View view) {
 
@@ -663,21 +660,6 @@ public class FragmentCEvento extends Fragment
 
                 dirCli.setText(entrada.getString(CLIENTE_DIRECCION));
 
-                if (dirCli.getText().toString().equals(elija)) {
-
-                    imgcli.setVisibility(View.GONE);
-                    nombreCli.setVisibility(View.GONE);
-                    contactoCli.setVisibility(View.GONE);
-                    telefonoCli.setVisibility(View.GONE);
-                    emailCli.setVisibility(View.GONE);
-
-                }else{
-
-                    imgcli.setVisibility(View.VISIBLE);
-                    nombreCli.setVisibility(View.VISIBLE);
-                    contactoCli.setVisibility(View.VISIBLE);
-                    telefonoCli.setVisibility(View.VISIBLE);
-                    emailCli.setVisibility(View.VISIBLE);
 
                     int peso = entrada.getInt
                             (CLIENTE_PESOTIPOCLI);
@@ -696,29 +678,24 @@ public class FragmentCEvento extends Fragment
                     contactoCli.setText(entrada.getString(CLIENTE_CONTACTO));
                     telefonoCli.setText(entrada.getString(CLIENTE_TELEFONO));
                     emailCli.setText(entrada.getString(CLIENTE_EMAIL));
-                }
-
-
 
             }
 
         });
 
-        if (idCliente!=null){spinner.setSelection(poscli);}
+        if (idCliente!=null){autoCompleteTextView.setText(cliente.getString(CLIENTE_NOMBRE));}
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                idCliente = listaClientes.get(position).getString(CLIENTE_ID_CLIENTE);
-                nombreCliente = listaClientes.get(position).getString(CLIENTE_NOMBRE);
+                Modelo cliente = (Modelo) autoCompleteTextView.getAdapter().getItem(position);
+                idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
+                nombreCliente = cliente.getString(CLIENTE_NOMBRE);
+                cliRel.setText(nombreCliente);
 
             }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
         });
     }
 
@@ -847,7 +824,7 @@ public class FragmentCEvento extends Fragment
         long duracionRep = (Long.parseLong(drepAnios.getText().toString()) * ANIOSLONG)+
                 (Long.parseLong(drepMeses.getText().toString()) * MESESLONG)+
                         (Long.parseLong(drepDias.getText().toString()) * DIASLONG);
-        long hoy = Utilidades.hoy();
+        long hoy = JavaUtil.hoy();
         if (finiEvento==0){finiEvento = hoy;}
         long fecharep = finiEvento + offRep;
 
@@ -878,16 +855,16 @@ public class FragmentCEvento extends Fragment
     }
 
     private void showDatePickerDialogInicio() {
-        Common.DatePickerFragment newFragment = Common.DatePickerFragment.newInstance
-                (Utilidades.hoy(), new DatePickerDialog.OnDateSetListener() {
+        DatePickerFragment newFragment = DatePickerFragment.newInstance
+                (JavaUtil.hoy(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         // +1 because january is zero
                         //String selectedDate = Common.twoDigits(day) + " / " +
                         //        Common.twoDigits(month+1) + " / " + year;
-                        finiEvento = Utilidades.fechaALong(year, month, day);
+                        finiEvento = JavaUtil.fechaALong(year, month, day);
                         //String selectedDate = Common.formatDateForUi(year,month,day);
-                        String selectedDate = Utilidades.getDate(finiEvento);
+                        String selectedDate = JavaUtil.getDate(finiEvento);
                         fechaIni.setText(selectedDate);
                         if (!tipoEvento.equals(EVENTO)){
                             fechaFin.setText(selectedDate);
@@ -900,16 +877,16 @@ public class FragmentCEvento extends Fragment
     }
 
     private void showDatePickerDialogFin() {
-        Common.DatePickerFragment newFragment = Common.DatePickerFragment.newInstance
-                (Utilidades.hoy(), new DatePickerDialog.OnDateSetListener() {
+        DatePickerFragment newFragment = DatePickerFragment.newInstance
+                (JavaUtil.hoy(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         // +1 because january is zero
                         //String selectedDate = Common.twoDigits(day) + " / " +
                         //        Common.twoDigits(month+1) + " / " + year;
-                        ffinEvento = Utilidades.fechaALong(year, month, day);
+                        ffinEvento = JavaUtil.fechaALong(year, month, day);
                         //String selectedDate = Common.formatDateForUi(year,month,day);
-                        String selectedDate = Utilidades.getDate(ffinEvento);
+                        String selectedDate = JavaUtil.getDate(ffinEvento);
                         fechaFin.setText(selectedDate);
                     }
                 });
@@ -919,13 +896,13 @@ public class FragmentCEvento extends Fragment
 
     public void showTimePickerDialogini(){
 
-        Common.TimePickerFragment newFragment = Common.TimePickerFragment.newInstance
-                (Utilidades.hoy(), new TimePickerDialog.OnTimeSetListener() {
+        TimePickerFragment newFragment = TimePickerFragment.newInstance
+                (JavaUtil.hoy(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
-                        hiniEvento = Utilidades.horaALong(hourOfDay,minute);
-                        String selectedHour = Utilidades.getTime(hiniEvento);
+                        hiniEvento = JavaUtil.horaALong(hourOfDay,minute);
+                        String selectedHour = JavaUtil.getTime(hiniEvento);
                         horaIni.setText(selectedHour);
 
                     }
@@ -936,13 +913,13 @@ public class FragmentCEvento extends Fragment
 
     public void showTimePickerDialogfin(){
 
-        Common.TimePickerFragment newFragment = Common.TimePickerFragment.newInstance
-                (Utilidades.hoy(), new TimePickerDialog.OnTimeSetListener() {
+        TimePickerFragment newFragment = TimePickerFragment.newInstance
+                (JavaUtil.hoy(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
-                        hfinEvento = Utilidades.horaALong(hourOfDay,minute);
-                        String selectedHour = Utilidades.getTime(hfinEvento);
+                        hfinEvento = JavaUtil.horaALong(hourOfDay,minute);
+                        String selectedHour = JavaUtil.getTime(hfinEvento);
                         horaFin.setText(selectedHour);
 
                     }

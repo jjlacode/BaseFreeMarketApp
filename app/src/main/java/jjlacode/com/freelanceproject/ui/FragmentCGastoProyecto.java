@@ -6,9 +6,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +20,10 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import jjlacode.com.androidutils.AppActivity;
+import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.adapter.AdaptadorProducto;
-import jjlacode.com.freelanceproject.interfaces.ICFragmentos;
-import jjlacode.com.freelanceproject.model.Modelo;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 import jjlacode.com.freelanceproject.utilities.Common;
@@ -43,7 +45,7 @@ public class FragmentCGastoProyecto extends Fragment implements Common.Constante
     View vista;
     ArrayList<Modelo> listaProductos;
     AdaptadorProducto adaptador;
-    Context context = Common.AppActivity.getAppContext();
+    Context context = AppActivity.getAppContext();
     ContentResolver resolver = context.getContentResolver();
     Modelo gasto;
 

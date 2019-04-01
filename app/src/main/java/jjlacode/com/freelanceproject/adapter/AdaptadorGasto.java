@@ -1,7 +1,7 @@
 package jjlacode.com.freelanceproject.adapter;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,10 +10,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import jjlacode.com.androidutils.JavaUtil;
+import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.model.Modelo;
 import jjlacode.com.freelanceproject.sqlite.Contract;
-import jjlacode.com.utilidades.Utilidades;
 
 public class AdaptadorGasto extends RecyclerView.Adapter<AdaptadorGasto.GastoViewHolder>
         implements View.OnClickListener, Contract.Tablas {
@@ -48,7 +48,7 @@ public class AdaptadorGasto extends RecyclerView.Adapter<AdaptadorGasto.GastoVie
 
         gastoViewHolder.descripcion.setText(listaGastos.get(position).getCampos(GASTO_DESCRIPCION));
         double impor = Double.parseDouble(listaGastos.get(position).getCampos(GASTO_IMPORTE));
-        gastoViewHolder.importe.setText(String.format(Locale.getDefault(),"%#.2f %s",impor, Utilidades.monedaLocal()));
+        gastoViewHolder.importe.setText(String.format(Locale.getDefault(),"%#.2f %s",impor, JavaUtil.monedaLocal()));
         gastoViewHolder.cantidad.setText(listaGastos.get(position).getCampos(GASTO_CANTIDAD));
         double benef = Double.parseDouble(listaGastos.get(position).getCampos(GASTO_BENEFICIO));
         gastoViewHolder.beneficio.setText(String.format(Locale.getDefault(),"%#.2f %s",benef,"%"));

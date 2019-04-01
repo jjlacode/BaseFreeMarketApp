@@ -5,8 +5,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,14 +20,14 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import jjlacode.com.freelanceproject.interfaces.ICFragmentos;
+import jjlacode.com.androidutils.AppActivity;
+import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.JavaUtil;
+import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.model.Modelo;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.ui.FragmentUDEvento;
 import jjlacode.com.freelanceproject.utilities.Common;
-import jjlacode.com.freelanceproject.utilities.Common.AppActivity;
-import jjlacode.com.utilidades.Utilidades;
 
 public class AdaptadorEvento extends RecyclerView.Adapter<AdaptadorEvento.EventoViewHolder>
         implements Common.TiposEvento,View.OnClickListener {
@@ -78,13 +78,13 @@ public class AdaptadorEvento extends RecyclerView.Adapter<AdaptadorEvento.Evento
                 (Contract.Tablas.EVENTO_NOMPROYECTOREL));
         eventoViewHolder.nomCliRel.setText(listaEvento.get(position).getCampos
                 (Contract.Tablas.EVENTO_NOMCLIENTEREL));
-        eventoViewHolder.fechaini.setText(Utilidades.getDate(Long.parseLong(listaEvento.get(position).getCampos
+        eventoViewHolder.fechaini.setText(JavaUtil.getDate(Long.parseLong(listaEvento.get(position).getCampos
                 (Contract.Tablas.EVENTO_FECHAINIEVENTO))));
-        eventoViewHolder.fechafin.setText(Utilidades.getDate(Long.parseLong(listaEvento.get(position).getCampos
+        eventoViewHolder.fechafin.setText(JavaUtil.getDate(Long.parseLong(listaEvento.get(position).getCampos
                 (Contract.Tablas.EVENTO_FECHAFINEVENTO))));
-        eventoViewHolder.horaini.setText(Utilidades.getTime(Long.parseLong(listaEvento.get(position).getCampos
+        eventoViewHolder.horaini.setText(JavaUtil.getTime(Long.parseLong(listaEvento.get(position).getCampos
                 (Contract.Tablas.EVENTO_HORAINIEVENTO))));
-        eventoViewHolder.horafin.setText(Utilidades.getTime(Long.parseLong(listaEvento.get(position).getCampos
+        eventoViewHolder.horafin.setText(JavaUtil.getTime(Long.parseLong(listaEvento.get(position).getCampos
                 (Contract.Tablas.EVENTO_HORAFINEVENTO))));
         eventoViewHolder.pbar.setProgress(Integer.parseInt(listaEvento.get(position).getCampos
                 (Contract.Tablas.EVENTO_COMPLETADA)));
@@ -149,8 +149,8 @@ public class AdaptadorEvento extends RecyclerView.Adapter<AdaptadorEvento.Evento
             @Override
             public void onClick(View v) {
 
-                AppActivity.hacerLlamada(AppActivity.getAppContext()
-                ,eventoViewHolder.telefono.getText().toString());
+                AppActivity.hacerLlamada(activity,AppActivity.getAppContext()
+                ,eventoViewHolder.telefono.getText().toString(),Common.permiso);
             }
         });
 
@@ -158,6 +158,7 @@ public class AdaptadorEvento extends RecyclerView.Adapter<AdaptadorEvento.Evento
             @Override
             public void onClick(View v) {
 
+                AppActivity.enviarEmail(context,eventoViewHolder.email.getText().toString());
 
 
             }

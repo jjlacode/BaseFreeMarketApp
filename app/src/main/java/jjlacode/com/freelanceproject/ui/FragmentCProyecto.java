@@ -8,13 +8,15 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -28,15 +30,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import jjlacode.com.freelanceproject.interfaces.ICFragmentos;
-import jjlacode.com.freelanceproject.model.Modelo;
+import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.ImagenUtil;
+import jjlacode.com.androidutils.JavaUtil;
+import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 import jjlacode.com.freelanceproject.utilities.Common;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.utilities.ImagenUtil;
-import jjlacode.com.utilidades.Utilidades;
 
 
 public class FragmentCProyecto extends Fragment implements Common.Constantes, Contract.Tablas, Common.Estados {
@@ -57,7 +59,7 @@ public class FragmentCProyecto extends Fragment implements Common.Constantes, Co
     TextView titulo;
     EditText nombreProyecto;
     EditText descripcionProyecto;
-    Spinner spClienteProyecto;
+    AutoCompleteTextView spClienteProyecto;
     Spinner spEstadoProyecto;
     Button btnguardarProyecto;
     ImageButton imagenTipoClienteProyecto;
@@ -103,11 +105,12 @@ public class FragmentCProyecto extends Fragment implements Common.Constantes, Co
         nombreProyecto = vista.findViewById(R.id.etnombrenpry);
         descripcionProyecto = vista.findViewById(R.id.etdescnpry);
         spClienteProyecto = vista.findViewById(R.id.spclinpry);
+        spClienteProyecto.setThreshold(1);
         spEstadoProyecto = vista.findViewById(R.id.spestnpry);
         btnguardarProyecto = vista.findViewById(R.id.buttonsavenpry);
         imagenTipoClienteProyecto = vista.findViewById(R.id.imgtipoclinpry);
         titulo = vista.findViewById(R.id.tvtitnpry);
-        fecha = Utilidades.hoy();
+        fecha = JavaUtil.hoy();
 
         bundle = getArguments();
 
@@ -150,16 +153,18 @@ public class FragmentCProyecto extends Fragment implements Common.Constantes, Co
 
         listaObjetosClientes();
 
-        ArrayAdapter<CharSequence> adaptadorCliente = new ArrayAdapter
-                (getContext(),android.R.layout.simple_spinner_item,listaClientes);
+        ArrayAdapter<String> adaptadorCliente = new ArrayAdapter<String>
+                (getContext(),android.R.layout.simple_dropdown_item_1line,listaClientes);
 
         spClienteProyecto.setAdapter(adaptadorCliente);
 
-        if (idCliente!=null){spClienteProyecto.setSelection(posCliente);}
+        if (idCliente!=null){spClienteProyecto.setListSelection(posCliente);}
 
-        spClienteProyecto.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spClienteProyecto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                System.out.println("position = " + position);
 
                 if (position>0) {
 
@@ -175,10 +180,10 @@ public class FragmentCProyecto extends Fragment implements Common.Constantes, Co
                 }
             }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            //@Override
+            //public void onNothingSelected(AdapterView<?> parent) {
 
-            }
+            //}
         });
 
         listaObjetosEstados();
@@ -336,7 +341,7 @@ public class FragmentCProyecto extends Fragment implements Common.Constantes, Co
 
     private void obterListaClientes() {
 
-        listaClientes = new ArrayList<String>();
+        listaClientes = new ArrayList<>();
         listaClientes.add("Seleccione Cliente");
 
         for (int i=0;i<objClientes.size();i++){

@@ -3,13 +3,13 @@ package jjlacode.com.freelanceproject.ui;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import jjlacode.com.freelanceproject.sqlite.Contract;
+import androidx.fragment.app.Fragment;
+
 import jjlacode.com.freelanceproject.R;
 
 public class FragmentUDPreferencias extends Fragment {

@@ -1,8 +1,8 @@
 package jjlacode.com.freelanceproject.adapter;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +11,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import jjlacode.com.androidutils.JavaUtil;
 import jjlacode.com.freelanceproject.model.AgendaPresup;
 import jjlacode.com.freelanceproject.utilities.Common;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.utilidades.Utilidades;
 
 
 public class AdaptadorAgendaPresup extends RecyclerView.Adapter<AdaptadorAgendaPresup.AgendaPresupViewHolder> implements View.OnClickListener {
@@ -53,11 +53,11 @@ public class AdaptadorAgendaPresup extends RecyclerView.Adapter<AdaptadorAgendaP
             agendaPresupViewHolder.estado.setText(listaAgendaPresup.get(position).getEstado());
             String tipoEstado = listaAgendaPresup.get(position).getTipoEstado();
             if (Integer.parseInt(tipoEstado) >0 && Integer.parseInt(tipoEstado) <3) {
-                agendaPresupViewHolder.fecha.setText(Utilidades.getDate(Long.parseLong(listaAgendaPresup.get(position).getFechaEntrada())));
+                agendaPresupViewHolder.fecha.setText(JavaUtil.getDate(Long.parseLong(listaAgendaPresup.get(position).getFechaEntrada())));
             }else if (Integer.parseInt(tipoEstado) == 3) {
-                agendaPresupViewHolder.fecha.setText(Utilidades.getDate(Long.parseLong(listaAgendaPresup.get(position).getFechaEntregaPresup())));
+                agendaPresupViewHolder.fecha.setText(JavaUtil.getDate(Long.parseLong(listaAgendaPresup.get(position).getFechaEntregaPresup())));
             }else if (Integer.parseInt(tipoEstado) == 7){
-                agendaPresupViewHolder.fecha.setText(Utilidades.getDate(Long.parseLong(listaAgendaPresup.get(position).getFechaFinal())));
+                agendaPresupViewHolder.fecha.setText(JavaUtil.getDate(Long.parseLong(listaAgendaPresup.get(position).getFechaFinal())));
             }
 
             if (listaAgendaPresup.get(position).getRutaFoto()!=null){

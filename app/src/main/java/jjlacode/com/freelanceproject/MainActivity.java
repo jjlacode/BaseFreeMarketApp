@@ -5,24 +5,26 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.core.view.GravityCompat;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import jjlacode.com.freelanceproject.interfaces.ICFragmentos;
-import jjlacode.com.freelanceproject.model.Modelo;
+import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.JavaUtil;
+import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.ui.FragmentAgenda;
 import jjlacode.com.freelanceproject.ui.FragmentCCliente;
@@ -36,9 +38,10 @@ import jjlacode.com.freelanceproject.ui.FragmentPerfil;
 import jjlacode.com.freelanceproject.ui.FragmentProyecto;
 import jjlacode.com.freelanceproject.ui.FragmentUDPreferencias;
 import jjlacode.com.freelanceproject.utilities.Common;
-import jjlacode.com.utilidades.Utilidades;
 
+import static android.Manifest.permission.CALL_PHONE;
 import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static jjlacode.com.freelanceproject.utilities.Common.TiposEvento.EVENTO;
 
@@ -72,7 +75,7 @@ public class MainActivity extends AppCompatActivity
         //Common.Permisos permisos = new Common.Permisos(context,this,args);
         //permisos.validarPermisos();
 
-        String precioHora= Utilidades.getDecimales(Common.hora);
+        String precioHora= JavaUtil.getDecimales(Common.hora);
 
         if (Common.prioridad>0) {
             toolbar.setSubtitle("Perfil: " + Common.perfila + " - hora= " + precioHora + " € - P");
@@ -320,13 +323,17 @@ public class MainActivity extends AppCompatActivity
             Common.permiso = true;
         }
         else if ((checkSelfPermission(CAMERA)== PackageManager.PERMISSION_GRANTED) &&
+                (checkSelfPermission(CALL_PHONE)== PackageManager.PERMISSION_GRANTED) &&
+                (checkSelfPermission(READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED) &&
                 (checkSelfPermission(WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED)
                 ){
 
             Common.permiso = true;
         }
-        else if (((shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE))||
-                (shouldShowRequestPermissionRationale(CAMERA)))){
+        else if ((shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE))||
+                (shouldShowRequestPermissionRationale(READ_EXTERNAL_STORAGE))||
+                (shouldShowRequestPermissionRationale(CAMERA))||
+                (shouldShowRequestPermissionRationale(CALL_PHONE))){
 
             AlertDialog.Builder dialogo = new AlertDialog.Builder(this);
             dialogo.setTitle("Permisos desactivados");
@@ -336,7 +343,8 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
 
-                    requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE,CAMERA},100);
+                    requestPermissions(new String[]
+                            {READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,CAMERA,CALL_PHONE},100);
                 }
             });
             dialogo.show();
@@ -344,7 +352,8 @@ public class MainActivity extends AppCompatActivity
         }
         else {
 
-            requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE,CAMERA},100);
+            requestPermissions(new String[]
+                    {READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,CAMERA,CALL_PHONE},100);
         }
     }
 
@@ -352,16 +361,17 @@ public class MainActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if(requestCode==100 && grantResults.length==2 && (grantResults[0]==PackageManager.PERMISSION_DENIED ||
-                grantResults[1]==PackageManager.PERMISSION_DENIED )){
-            Toast.makeText(this,"Debe aceptar todos los permisos para " +
-                    "que la app se ejecute correctamente",Toast.LENGTH_LONG).show();
-
-        }else if(requestCode==100 && grantResults.length==2 && (grantResults[0]==PackageManager.PERMISSION_GRANTED ||
-                grantResults[1]==PackageManager.PERMISSION_GRANTED)){
+        if(requestCode==100 && grantResults.length==4 && (grantResults[0]==PackageManager.PERMISSION_GRANTED &&
+                grantResults[1]==PackageManager.PERMISSION_GRANTED &&
+                grantResults[2]==PackageManager.PERMISSION_GRANTED &&
+                grantResults[3]==PackageManager.PERMISSION_GRANTED)){
 
             Common.permiso = true;
 
+        }else{
+
+            Toast.makeText(this,"Debe aceptar todos los permisos para " +
+                    "que la app se ejecute correctamente",Toast.LENGTH_LONG).show();
         }
     }
 

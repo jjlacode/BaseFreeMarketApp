@@ -5,10 +5,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,13 +22,14 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import jjlacode.com.freelanceproject.interfaces.ICFragmentos;
+import jjlacode.com.androidutils.AppActivity;
+import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.JavaUtil;
+import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.model.Modelo;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 import jjlacode.com.freelanceproject.utilities.Common;
-import jjlacode.com.utilidades.Utilidades;
 
 public class FragmentEvento extends Fragment implements Contract.Tablas {
 
@@ -148,13 +149,13 @@ public class FragmentEvento extends Fragment implements Contract.Tablas {
                     (Contract.Tablas.EVENTO_NOMPROYECTOREL));
             eventoViewHolder.nomCliRel.setText(listaEvento.get(position).getCampos
                     (Contract.Tablas.EVENTO_NOMCLIENTEREL));
-            eventoViewHolder.fechaini.setText(Utilidades.getDate(Long.parseLong(listaEvento.get(position).getCampos
+            eventoViewHolder.fechaini.setText(JavaUtil.getDate(Long.parseLong(listaEvento.get(position).getCampos
                     (Contract.Tablas.EVENTO_FECHAINIEVENTO))));
-            eventoViewHolder.fechafin.setText(Utilidades.getDate(Long.parseLong(listaEvento.get(position).getCampos
+            eventoViewHolder.fechafin.setText(JavaUtil.getDate(Long.parseLong(listaEvento.get(position).getCampos
                     (Contract.Tablas.EVENTO_FECHAFINEVENTO))));
-            eventoViewHolder.horaini.setText(Utilidades.getTime(Long.parseLong(listaEvento.get(position).getCampos
+            eventoViewHolder.horaini.setText(JavaUtil.getTime(Long.parseLong(listaEvento.get(position).getCampos
                     (Contract.Tablas.EVENTO_HORAINIEVENTO))));
-            eventoViewHolder.horafin.setText(Utilidades.getTime(Long.parseLong(listaEvento.get(position).getCampos
+            eventoViewHolder.horafin.setText(JavaUtil.getTime(Long.parseLong(listaEvento.get(position).getCampos
                     (Contract.Tablas.EVENTO_HORAFINEVENTO))));
             eventoViewHolder.pbar.setProgress(Integer.parseInt(listaEvento.get(position).getCampos
                     (Contract.Tablas.EVENTO_COMPLETADA)));
@@ -219,7 +220,7 @@ public class FragmentEvento extends Fragment implements Contract.Tablas {
                 @Override
                 public void onClick(View v) {
 
-                    Common.AppActivity.hacerLlamada(Common.AppActivity.getAppContext()
+                    AppActivity.hacerLlamada(AppActivity.getAppContext()
                             ,eventoViewHolder.telefono.getText().toString());
                 }
             });
@@ -250,7 +251,7 @@ public class FragmentEvento extends Fragment implements Contract.Tablas {
 
                     valores.put(Contract.Tablas.EVENTO_COMPLETADA,"100");
 
-                    Common.AppActivity.getAppContext().getContentResolver().update(Contract.crearUriTabla
+                    AppActivity.getAppContext().getContentResolver().update(Contract.crearUriTabla
                                     (listaEvento.get(position).getCampos
                                             (Contract.Tablas.EVENTO_ID_EVENTO),TABLA_EVENTO)
                             ,valores,null,null);

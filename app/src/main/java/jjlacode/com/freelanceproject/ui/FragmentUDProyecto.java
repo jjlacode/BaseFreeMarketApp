@@ -9,8 +9,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,14 +31,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import jjlacode.com.freelanceproject.interfaces.ICFragmentos;
-import jjlacode.com.freelanceproject.model.Modelo;
+import jjlacode.com.androidutils.DatePickerFragment;
+import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.ImagenUtil;
+import jjlacode.com.androidutils.JavaUtil;
+import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 import jjlacode.com.freelanceproject.utilities.Common;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.utilities.ImagenUtil;
-import jjlacode.com.utilidades.Utilidades;
 
 public class FragmentUDProyecto extends Fragment
         implements Common.Constantes, Contract.Tablas, Common.Estados, Common.TiposEstados {
@@ -173,26 +175,26 @@ public class FragmentUDProyecto extends Fragment
         idCliente = proyecto.getString(PROYECTO_ID_CLIENTE);
         idEstado = proyecto.getString(PROYECTO_ID_ESTADO);
         idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
-        fechaEntradaPry.setText(Utilidades.getDate(proyecto.getLong(PROYECTO_FECHAENTRADA)));
+        fechaEntradaPry.setText(JavaUtil.getDate(proyecto.getLong(PROYECTO_FECHAENTRADA)));
         if (proyecto.getLong(PROYECTO_FECHAENTREGAPRESUP) == 0) {
             fechaEntregaPresup.setText
                     (R.string.establecer_fecha_entrega_presup);
         }else if (proyecto.getLong(PROYECTO_FECHAENTREGAPRESUP) > 0) {
-            fechaEntregaPresup.setText(Utilidades.getDate(Long.parseLong(proyecto.getCampos(PROYECTO_FECHAENTREGAPRESUP))));
+            fechaEntregaPresup.setText(JavaUtil.getDate(Long.parseLong(proyecto.getCampos(PROYECTO_FECHAENTREGAPRESUP))));
         }
 
         //calculoTotales();//Calculo de totales de tiempos e importes de partidas y gastos
 
         totalPartidasPry.setText(String.format(Locale.getDefault(),"%#.2f",totPartidas));
 
-        pvpPartidas.setText(String.format(Locale.getDefault(),"%#.2f %s", precioPartidas, Utilidades.monedaLocal()));
+        pvpPartidas.setText(String.format(Locale.getDefault(),"%#.2f %s", precioPartidas, JavaUtil.monedaLocal()));
 
 
 
-        totalGastosPry.setText(Utilidades.formatoMonedaLocal(totGastos));
+        totalGastosPry.setText(JavaUtil.formatoMonedaLocal(totGastos));
 
         impTotalCalculado = precioPartidas + totGastos;
-        importeCalculadoPry.setText(String.format(Locale.getDefault(),"%#.2f %s", impTotalCalculado, Utilidades.monedaLocal()));
+        importeCalculadoPry.setText(String.format(Locale.getDefault(),"%#.2f %s", impTotalCalculado, JavaUtil.monedaLocal()));
 
         if (totPartidas == 0) {
 
@@ -224,7 +226,7 @@ public class FragmentUDProyecto extends Fragment
             } else {
 
                 fechaAcordada = proyecto.getLong(PROYECTO_FECHAENTREGAACORDADA);
-                fechaAcordadaPry.setText(Utilidades.getDate(fechaAcordada));
+                fechaAcordadaPry.setText(JavaUtil.getDate(fechaAcordada));
                 btnActualizar.setVisibility(View.VISIBLE);
                 if (proyecto.getInt(PROYECTO_TIPOESTADO)>3){
 
@@ -237,7 +239,7 @@ public class FragmentUDProyecto extends Fragment
 
 
             fechaCalculada = proyecto.getLong(PROYECTO_FECHAENTREGACALCULADA);
-            fechaCalculadaPry.setText(Utilidades.getDate(fechaCalculada));
+            fechaCalculadaPry.setText(JavaUtil.getDate(fechaCalculada));
 
         }
 
@@ -248,7 +250,7 @@ public class FragmentUDProyecto extends Fragment
         } else {
             fechaFinalPry.setVisibility(View.VISIBLE);
             labelffinal.setVisibility(View.VISIBLE);
-            fechaFinalPry.setText(Utilidades.getDate(proyecto.getLong(PROYECTO_FECHAFINAL)));
+            fechaFinalPry.setText(JavaUtil.getDate(proyecto.getLong(PROYECTO_FECHAFINAL)));
         }
 
         if (proyecto.getLong(PROYECTO_FECHAENTREGAPRESUP) == 0) {
@@ -258,7 +260,7 @@ public class FragmentUDProyecto extends Fragment
             fechaEntregaPresup.setVisibility(View.VISIBLE);
             labelfentregap.setVisibility(View.VISIBLE);
             fechaEntregaP = proyecto.getLong(PROYECTO_FECHAENTREGAPRESUP);
-            fechaEntregaPresup.setText(Utilidades.getDate(fechaEntregaP));
+            fechaEntregaPresup.setText(JavaUtil.getDate(fechaEntregaP));
             btnfechaacord.setVisibility(View.GONE);
         }
 
@@ -268,7 +270,7 @@ public class FragmentUDProyecto extends Fragment
         } else {
             importeCalculadoPry.setVisibility(View.VISIBLE);
             labelimportecalculado.setVisibility(View.VISIBLE);
-            importeCalculadoPry.setText(Utilidades.formatoMonedaLocal
+            importeCalculadoPry.setText(JavaUtil.formatoMonedaLocal
                     (impTotalCalculado));
         }
 
@@ -278,7 +280,7 @@ public class FragmentUDProyecto extends Fragment
         } else {
             importeFinalPry.setVisibility(View.VISIBLE);
             labelimportefinal.setVisibility(View.VISIBLE);
-            importeFinalPry.setText(Utilidades.formatoMonedaLocal
+            importeFinalPry.setText(JavaUtil.formatoMonedaLocal
                     (proyecto.getDouble(PROYECTO_IMPORTEFINAL)));
         }
 
@@ -657,7 +659,7 @@ public class FragmentUDProyecto extends Fragment
                 case TPRESUPACEPTADO:
                     importeFinalPry.setVisibility(View.VISIBLE);
                     labelimportefinal.setVisibility(View.VISIBLE);
-                    importeFinalPry.setText(Utilidades.formatoMonedaLocal
+                    importeFinalPry.setText(JavaUtil.formatoMonedaLocal
                             (proyecto.getDouble(PROYECTO_IMPORTEFINAL)));
                     btnActualizar.setText(String.format("%s %s", convertir, PROYECTEJECUCION));
                     break;
@@ -760,7 +762,7 @@ public class FragmentUDProyecto extends Fragment
             estadoProyecto.setText(PROYECTPENDCOBRO);
             idEstado = idProyPendCobro;
             importeFinal = impTotalCalculado;
-            importeFinalPry.setText(Utilidades.formatoMonedaLocal(importeFinal));
+            importeFinalPry.setText(JavaUtil.formatoMonedaLocal(importeFinal));
 
         } else if (idEstado.equals(idProyPendCobro)) {
 
@@ -927,7 +929,7 @@ public class FragmentUDProyecto extends Fragment
     public void mostrarDialogoOpciones() {
 
         final CharSequence[] opciones = {"Hacer foto desde cámara", "Elegir de la galería", "Cancelar"};
-        final android.support.v7.app.AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        final androidx.appcompat.app.AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Elige una opción");
         builder.setItems(opciones, new DialogInterface.OnClickListener() {
             @Override
@@ -1007,16 +1009,16 @@ public class FragmentUDProyecto extends Fragment
 
 
     private void showDatePickerDialogAcordada() {
-        Common.DatePickerFragment newFragment = Common.DatePickerFragment.newInstance
+        DatePickerFragment newFragment = DatePickerFragment.newInstance
                 (fechaCalculada, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         // +1 because january is zero
                         //String selectedDate = Common.twoDigits(day) + " / " +
                         //        Common.twoDigits(month+1) + " / " + year;
-                        fechaAcordada = Utilidades.fechaALong(year, month, day);
+                        fechaAcordada = JavaUtil.fechaALong(year, month, day);
                         //String selectedDate = Common.formatDateForUi(year,month,day);
-                        String selectedDate = Utilidades.getDate(fechaAcordada);
+                        String selectedDate = JavaUtil.getDate(fechaAcordada);
                         fechaAcordadaPry.setText(selectedDate);
                         btnActualizar.setVisibility(View.VISIBLE);
                         ContentValues valores = new ContentValues();
@@ -1032,16 +1034,16 @@ public class FragmentUDProyecto extends Fragment
     }
 
     private void showDatePickerDialogEntrega() {
-        Common.DatePickerFragment newFragment = Common.DatePickerFragment.newInstance
-                (Utilidades.hoy(), new DatePickerDialog.OnDateSetListener() {
+        DatePickerFragment newFragment = DatePickerFragment.newInstance
+                (JavaUtil.hoy(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         // +1 because january is zero
                         //String selectedDate = Common.twoDigits(day) + " / " +
                         //        Common.twoDigits(month+1) + " / " + year;
-                        fechaEntregaP = Utilidades.fechaALong(year, month, day);
+                        fechaEntregaP = JavaUtil.fechaALong(year, month, day);
                         //String selectedDate = Common.formatDateForUi(year,month,day);
-                        String selectedDate = Utilidades.getDate(fechaEntregaP);
+                        String selectedDate = JavaUtil.getDate(fechaEntregaP);
                         fechaEntregaPresup.setText(selectedDate);
                         ContentValues valores = new ContentValues();
                         QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAENTREGAPRESUP,fechaEntregaP);

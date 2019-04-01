@@ -6,13 +6,13 @@ import android.net.Uri;
 
 import java.util.ArrayList;
 
-import jjlacode.com.freelanceproject.model.Modelo;
-import jjlacode.com.utilidades.Utilidades;
+import jjlacode.com.androidutils.JavaUtil;
+import jjlacode.com.androidutils.Modelo;
 
+import static jjlacode.com.androidutils.AppActivity.getAppContext;
 import static jjlacode.com.freelanceproject.sqlite.Contract.*;
-import static jjlacode.com.freelanceproject.utilities.Common.AppActivity.getAppContext;
 
-public class QueryDB implements Utilidades.Constantes {
+public class QueryDB implements JavaUtil.Constantes {
 
     private static ContentResolver resolver = getAppContext().getContentResolver();
 

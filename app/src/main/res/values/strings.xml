@@ -139,5 +139,7 @@
     <string name="evento_relacionado">Crear evento relacionado</string>
     <string name="fecha_acordada_trabajo">Fecha acordada entrega trabajo</string>
     <string name="establecer_fecha_entrega_presup">Establecer fecha entrega Presup.</string>
+    <string name="seleccione_cliente">Seleccione el cliente</string>
+    <string name="seleccione_proyecto">Seleccione proyecto relacionado</string>
 
 </resources>

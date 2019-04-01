@@ -4,15 +4,16 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import jjlacode.com.freelanceproject.interfaces.ICFragmentos;
+import androidx.fragment.app.Fragment;
+
+import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.model.Modelo;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 
 public class FragmentUDPerfil extends Fragment implements Contract.Tablas {

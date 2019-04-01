@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" tools:context=".ui.FragmentPerfil">
 
-    <android.support.v7.widget.RecyclerView android:id="@+id/rvPerfil"
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvPerfil"
         android:layout_width="match_parent" android:layout_height="match_parent"
         android:layout_marginStart="12dp" android:layout_marginLeft="12dp"
         android:layout_marginTop="12dp" android:layout_marginEnd="12dp"

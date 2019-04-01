@@ -9,8 +9,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,17 +31,19 @@ import android.widget.TimePicker;
 
 import java.util.ArrayList;
 
-import jjlacode.com.freelanceproject.adapter.Lista_adaptador;
-import jjlacode.com.freelanceproject.interfaces.ICFragmentos;
+import jjlacode.com.androidutils.DatePickerFragment;
+import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.JavaUtil;
+import jjlacode.com.androidutils.ListaAdaptador;
+import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.androidutils.TimePickerFragment;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.model.Modelo;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 import jjlacode.com.freelanceproject.utilities.Common;
-import jjlacode.com.utilidades.Utilidades;
 
 public class FragmentUDEvento extends Fragment
-        implements Contract.Tablas, Utilidades.Constantes, Common.Constantes, Common.TiposEvento {
+        implements Contract.Tablas, JavaUtil.Constantes, Common.Constantes, Common.TiposEvento {
 
     private String idEvento;
     private String namef;
@@ -590,9 +593,7 @@ public class FragmentUDEvento extends Fragment
 
                 if (opciones[which].equals("Borrar sólo este evento")) {
 
-                    getActivity().getContentResolver().delete(
-                            Contract.crearUriTabla(idEvento, TABLA_EVENTO), null, null
-                    );
+                    QueryDB.deleteRegistro(TABLA_EVENTO,idEvento);
 
                 } else if (opciones[which].equals("Borrar este y repeticiones")) {
 
@@ -719,7 +720,7 @@ public class FragmentUDEvento extends Fragment
         long duracionRep = (Long.parseLong(drepAnios.getText().toString()) * ANIOSLONG)+
                 (Long.parseLong(drepMeses.getText().toString()) * MESESLONG)+
                         (Long.parseLong(drepDias.getText().toString()) * DIASLONG);
-        long hoy = Utilidades.hoy();
+        long hoy = JavaUtil.hoy();
         if (finiEvento==0){finiEvento = hoy;}
         long fecharep = finiEvento + offRep;
 
@@ -756,7 +757,7 @@ public class FragmentUDEvento extends Fragment
             }
         }
 
-        spinner.setAdapter(new Lista_adaptador(getContext(),R.layout.item_list_proyecto,listaProyectos) {
+        spinner.setAdapter(new ListaAdaptador(getContext(),R.layout.item_list_proyecto,listaProyectos) {
             @Override
             public void onEntrada(Modelo entrada, View view) {
 
@@ -865,7 +866,7 @@ public class FragmentUDEvento extends Fragment
                 }
             }
         }
-        spinner.setAdapter(new Lista_adaptador(getContext(),R.layout.item_list_cliente,listaClientes) {
+        spinner.setAdapter(new ListaAdaptador(getContext(),R.layout.item_list_cliente,listaClientes) {
                @Override
                public void onEntrada(Modelo entrada, View view) {
 
@@ -930,16 +931,16 @@ public class FragmentUDEvento extends Fragment
     }
 
     private void showDatePickerDialogInicio() {
-        Common.DatePickerFragment newFragment = Common.DatePickerFragment.newInstance
-                (Utilidades.hoy(), new DatePickerDialog.OnDateSetListener() {
+        DatePickerFragment newFragment = DatePickerFragment.newInstance
+                (JavaUtil.hoy(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         // +1 because january is zero
                         //String selectedDate = Common.twoDigits(day) + " / " +
                         //        Common.twoDigits(month+1) + " / " + year;
-                        finiEvento = Utilidades.fechaALong(year, month, day);
+                        finiEvento = JavaUtil.fechaALong(year, month, day);
                         //String selectedDate = Common.formatDateForUi(year,month,day);
-                        String selectedDate = Utilidades.getDate(finiEvento);
+                        String selectedDate = JavaUtil.getDate(finiEvento);
                         fechaIni.setText(selectedDate);
                         if (!tipoEvento.equals(EVENTO)){
                             fechaFin.setText(selectedDate);
@@ -952,16 +953,16 @@ public class FragmentUDEvento extends Fragment
     }
 
     private void showDatePickerDialogFin() {
-        Common.DatePickerFragment newFragment = Common.DatePickerFragment.newInstance
-                (Utilidades.hoy(), new DatePickerDialog.OnDateSetListener() {
+        DatePickerFragment newFragment = DatePickerFragment.newInstance
+                (JavaUtil.hoy(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         // +1 because january is zero
                         //String selectedDate = Common.twoDigits(day) + " / " +
                         //        Common.twoDigits(month+1) + " / " + year;
-                        ffinEvento = Utilidades.fechaALong(year, month, day);
+                        ffinEvento = JavaUtil.fechaALong(year, month, day);
                         //String selectedDate = Common.formatDateForUi(year,month,day);
-                        String selectedDate = Utilidades.getDate(ffinEvento);
+                        String selectedDate = JavaUtil.getDate(ffinEvento);
                         fechaFin.setText(selectedDate);
                     }
                 });
@@ -971,13 +972,13 @@ public class FragmentUDEvento extends Fragment
 
     public void showTimePickerDialogini(){
 
-        Common.TimePickerFragment newFragment = Common.TimePickerFragment.newInstance
-                (Utilidades.hoy(), new TimePickerDialog.OnTimeSetListener() {
+        TimePickerFragment newFragment = TimePickerFragment.newInstance
+                (JavaUtil.hoy(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
-                        hiniEvento = Utilidades.horaALong(hourOfDay,minute);
-                        String selectedHour = Utilidades.getTime(hiniEvento);
+                        hiniEvento = JavaUtil.horaALong(hourOfDay,minute);
+                        String selectedHour = JavaUtil.getTime(hiniEvento);
                         horaIni.setText(selectedHour);
 
                     }
@@ -988,13 +989,13 @@ public class FragmentUDEvento extends Fragment
 
     public void showTimePickerDialogfin(){
 
-        Common.TimePickerFragment newFragment = Common.TimePickerFragment.newInstance
-                (Utilidades.hoy(), new TimePickerDialog.OnTimeSetListener() {
+        TimePickerFragment newFragment = TimePickerFragment.newInstance
+                (JavaUtil.hoy(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
-                        hfinEvento = Utilidades.horaALong(hourOfDay,minute);
-                        String selectedHour = Utilidades.getTime(hfinEvento);
+                        hfinEvento = JavaUtil.horaALong(hourOfDay,minute);
+                        String selectedHour = JavaUtil.getTime(hfinEvento);
                         horaFin.setText(selectedHour);
 
                     }

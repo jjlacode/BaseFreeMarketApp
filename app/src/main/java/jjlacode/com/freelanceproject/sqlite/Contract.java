@@ -5,9 +5,10 @@ import android.net.Uri;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import jjlacode.com.utilidades.Utilidades;
+import jjlacode.com.androidutils.JavaUtil;
 
-public class Contract implements Utilidades.Constantes {
+
+public class Contract implements JavaUtil.Constantes {
 
     public static final String AUTORIDAD_CONTENIDO =
             "jjlacode.com.freelanceproject";

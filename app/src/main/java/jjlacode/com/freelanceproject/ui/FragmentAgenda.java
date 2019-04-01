@@ -3,12 +3,14 @@ package jjlacode.com.freelanceproject.ui;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,21 +22,27 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import com.google.android.gms.maps.model.LatLng;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import jjlacode.com.androidutils.AppActivity;
+import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.JavaUtil;
+import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.adapter.AdaptadorAgendaPresup;
 import jjlacode.com.freelanceproject.adapter.AdaptadorAgendaTareas;
-import jjlacode.com.freelanceproject.interfaces.ICFragmentos;
 import jjlacode.com.freelanceproject.model.AgendaPresup;
 import jjlacode.com.freelanceproject.model.AgendaTarea;
-import jjlacode.com.freelanceproject.model.Modelo;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 import jjlacode.com.freelanceproject.utilities.Common;
-import jjlacode.com.utilidades.Utilidades;
 
-import static jjlacode.com.utilidades.Utilidades.Constantes.DIASLONG;
+import static jjlacode.com.androidutils.JavaUtil.Constantes.DIASLONG;
+
 
 public class FragmentAgenda extends Fragment implements Common.TiposEvento, Contract.Tablas {
 
@@ -394,7 +402,7 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
 
         int diasAgenda = 90; //TODO poner esto en preferencias
 
-        long diasEventos = Utilidades.hoy() + (diasAgenda * DIASLONG);
+        long diasEventos = JavaUtil.hoy() + (diasAgenda * DIASLONG);
 
         ArrayList<Modelo> listaEventos = new ArrayList<>();
         ArrayList<Modelo> lista = QueryDB.queryList(CAMPOS_EVENTO, null, null);
@@ -464,13 +472,13 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
                     (EVENTO_NOMPROYECTOREL));
             eventoViewHolder.nomCliRel.setText(listaEvento.get(position).getCampos
                     (EVENTO_NOMCLIENTEREL));
-            eventoViewHolder.fechaini.setText(Utilidades.getDate(Long.parseLong(listaEvento.get(position).getCampos
+            eventoViewHolder.fechaini.setText(JavaUtil.getDate(Long.parseLong(listaEvento.get(position).getCampos
                     (EVENTO_FECHAINIEVENTO))));
-            eventoViewHolder.fechafin.setText(Utilidades.getDate(Long.parseLong(listaEvento.get(position).getCampos
+            eventoViewHolder.fechafin.setText(JavaUtil.getDate(Long.parseLong(listaEvento.get(position).getCampos
                     (EVENTO_FECHAFINEVENTO))));
-            eventoViewHolder.horaini.setText(Utilidades.getTime(Long.parseLong(listaEvento.get(position).getCampos
+            eventoViewHolder.horaini.setText(JavaUtil.getTime(Long.parseLong(listaEvento.get(position).getCampos
                     (EVENTO_HORAINIEVENTO))));
-            eventoViewHolder.horafin.setText(Utilidades.getTime(Long.parseLong(listaEvento.get(position).getCampos
+            eventoViewHolder.horafin.setText(JavaUtil.getTime(Long.parseLong(listaEvento.get(position).getCampos
                     (EVENTO_HORAFINEVENTO))));
             eventoViewHolder.pbar.setProgress(Integer.parseInt(listaEvento.get(position).getCampos
                     (EVENTO_COMPLETADA)));
@@ -554,7 +562,7 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
                 @Override
                 public void onClick(View v) {
 
-                    Common.AppActivity.hacerLlamada(Common.AppActivity.getAppContext()
+                    AppActivity.hacerLlamada(AppActivity.getAppContext()
                             ,eventoViewHolder.telefono.getText().toString());
                 }
             });
@@ -572,6 +580,16 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
                 @Override
                 public void onClick(View v) {
 
+                    Geocoder geo = new Geocoder(getContext());
+                    int maxResultados = 1;
+                    List<Address> adress = null;
+                    try {
+                        adress = geo.getFromLocationName("nombreLugarQueQuieroBuscar", maxResultados);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    LatLng latLng = new LatLng(adress.get(0).getLatitude(), adress.get(0).getLongitude());
+
 
 
                 }
@@ -585,7 +603,7 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
 
                     valores.put(Contract.Tablas.EVENTO_COMPLETADA,"100");
 
-                    Common.AppActivity.getAppContext().getContentResolver().update(Contract.crearUriTabla
+                    AppActivity.getAppContext().getContentResolver().update(Contract.crearUriTabla
                                     (listaEvento.get(position).getCampos
                                             (Contract.Tablas.EVENTO_ID_EVENTO),TABLA_EVENTO)
                             ,valores,null,null);

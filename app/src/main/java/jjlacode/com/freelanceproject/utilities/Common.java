@@ -1,43 +1,28 @@
 package jjlacode.com.freelanceproject.utilities;
 
-import android.app.Application;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.text.TextUtils;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+import jjlacode.com.androidutils.JavaUtil;
+import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.BuildConfig;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.model.Modelo;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
-import jjlacode.com.utilidades.Utilidades;
 
-import static jjlacode.com.freelanceproject.utilities.Common.AppActivity.getAppContext;
+import static jjlacode.com.androidutils.AppActivity.getAppContext;
 
 
-public class Common implements Utilidades.Constantes, Contract.Tablas {
+public class Common implements JavaUtil.Constantes, Contract.Tablas {
 
 
         public static String perfila = null;//Perfil activo para calculos y preferencias
@@ -167,66 +152,7 @@ public class Common implements Utilidades.Constantes, Contract.Tablas {
     }
 
 
-    public static class AppActivity extends Application {
 
-        private static Context context;
-
-        public void onCreate() {
-            super.onCreate();
-            AppActivity.context = getApplicationContext();
-        }
-
-        public static Context getAppContext() {
-            return AppActivity.context;
-        }
-
-        public static void hacerLlamada(Context context, String phoneNo){
-
-            if(!TextUtils.isEmpty(phoneNo)) {
-                String dial = "tel:" + phoneNo;
-                context.startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse(dial)));
-            }else {
-                Toast.makeText(context, "El numero no es valido", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-
-
-
-    }
-
-
-    public static class AppFragments extends Fragment {
-
-        private static Context context;
-
-
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            AppFragments.context = getContext();
-
-            if (getArguments() != null) {
-            }
-        }
-
-        public static Context getAppContext() {
-            return AppFragments.context;
-        }
-
-        public static void cambiarFragment(Fragment myFragment, int layout){
-
-            Fragment fragment = new Fragment();
-
-            FragmentManager fragmentManager = fragment.getFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(layout,myFragment);
-            transaction.commit();
-
-        }
-    }
 
     public static class Calculos implements  Constantes{
 
@@ -238,7 +164,7 @@ public class Common implements Utilidades.Constantes, Contract.Tablas {
 
             ArrayList<Modelo> listaGastosFijos = QueryDB.queryList(CAMPOS_GASTOFIJO);
 
-            long hoy = Utilidades.hoy();
+            long hoy = JavaUtil.hoy();
             double precioHoraAmortizaciones = 0;
 
             for (Modelo amortizacion : listaAmortizaciones) {
@@ -283,7 +209,7 @@ public class Common implements Utilidades.Constantes, Contract.Tablas {
                     perfil.getDouble(PERFIL_HORASSABADO) +
                     perfil.getDouble(PERFIL_HORASDOMINGO);
 
-            int semanas = Utilidades.semanasAnio();
+            int semanas = JavaUtil.semanasAnio();
             double horasTrabajadasAnyo = semanas * totHoras;
             double horasVacacionesARestar = Math.round(perfil.getDouble(PERFIL_VACACIONES) / 7) * totHoras;
             double base = totalAmortizacionesYGastos / (horasTrabajadasAnyo - horasVacacionesARestar);
@@ -315,7 +241,7 @@ public class Common implements Utilidades.Constantes, Contract.Tablas {
                         if (proyecto.getLong(PROYECTO_FECHAFINAL) == 0) {
 
                             ContentValues valores = new ContentValues();
-                            valores.put(PROYECTO_FECHAFINAL, Utilidades.hoy());
+                            valores.put(PROYECTO_FECHAFINAL, JavaUtil.hoy());
 
                             resolver.update(Contract.crearUriTabla(proyecto.getString(PROYECTO_ID_PROYECTO), TABLA_PROYECTO),
                                     valores, null, null);
@@ -559,85 +485,7 @@ public class Common implements Utilidades.Constantes, Contract.Tablas {
             }
         }
 
-
-
     }
 
-    public static class DatePickerFragment extends DialogFragment {
 
-        private DatePickerDialog.OnDateSetListener listener;
-
-        private long fecha;
-
-        public static DatePickerFragment newInstance(long fechac, DatePickerDialog.OnDateSetListener listener) {
-            DatePickerFragment fragment = new DatePickerFragment();
-            fragment.setListener(listener);
-            fragment.setFecha(fechac);
-            return fragment;
-        }
-
-        public void setListener(DatePickerDialog.OnDateSetListener listener) {
-            this.listener = listener;
-        }
-
-        public void setFecha(long fecha) {
-
-            this.fecha = fecha;
-
-        }
-
-        @Override
-        @NonNull
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the current date as the default date in the picker
-            TimeZone timezone = TimeZone.getDefault();
-            Calendar c = new GregorianCalendar(timezone);
-            c.setTimeInMillis(fecha);
-            //final Calendar c = Calendar.getInstance();
-            int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH);
-            int day = c.get(Calendar.DAY_OF_MONTH);
-
-            // Create a new instance of DatePickerDialog and return it
-            return new DatePickerDialog(getActivity(), listener, year, month, day);
-        }
-
-    }
-
-    public static class TimePickerFragment extends DialogFragment{
-
-        private TimePickerDialog.OnTimeSetListener listener;
-
-        private long hora;
-
-        public static TimePickerFragment newInstance(long horac, TimePickerDialog.OnTimeSetListener listener){
-            TimePickerFragment fragment = new TimePickerFragment();
-            fragment.setListener(listener);
-            fragment.setHora(horac);
-            return fragment;
-        }
-
-        public void setListener(TimePickerDialog.OnTimeSetListener listener){
-
-            this.listener = listener;
-        }
-
-        public void setHora(long hora){
-
-            this.hora = hora;
-
-        }
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-
-            TimeZone timezone = TimeZone.getDefault();
-            Calendar c = new GregorianCalendar(timezone);
-            c.setTimeInMillis(hora);
-            int hour = c.get(Calendar.HOUR_OF_DAY);
-            int minute = c.get(Calendar.MINUTE);
-            return new TimePickerDialog(getActivity(),listener,hour,minute,true);
-
-        }
-    }
 }
