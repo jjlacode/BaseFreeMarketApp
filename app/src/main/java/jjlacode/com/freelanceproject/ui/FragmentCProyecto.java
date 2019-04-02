@@ -8,9 +8,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +22,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,11 +35,10 @@ import jjlacode.com.androidutils.ICFragmentos;
 import jjlacode.com.androidutils.ImagenUtil;
 import jjlacode.com.androidutils.JavaUtil;
 import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.Contract;
-
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 import jjlacode.com.freelanceproject.utilities.Common;
-import jjlacode.com.freelanceproject.R;
 
 
 public class FragmentCProyecto extends Fragment implements Common.Constantes, Contract.Tablas, Common.Estados {
@@ -74,11 +74,11 @@ public class FragmentCProyecto extends Fragment implements Common.Constantes, Co
     int tipoEstado;
     int posEstado;
     ICFragmentos icFragments;
-    Activity activity;
+    AppCompatActivity activity;
     Bundle bundle;
     long fecha;
     Modelo proyecto;
-    private ImagenUtil imagen;
+    private ImagenUtil imagenUtil;
 
 
     public FragmentCProyecto() {
@@ -360,20 +360,20 @@ public class FragmentCProyecto extends Fragment implements Common.Constantes, Co
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                imagen = new ImagenUtil(getContext());
+                imagenUtil = new ImagenUtil(getContext());
 
                 if (opciones[which].equals("Hacer foto desde cámara")) {
 
                     try {
-                        startActivityForResult(imagen.takePhotoIntent(), COD_FOTO);
+                        startActivityForResult(imagenUtil.takePhotoIntent(), COD_FOTO);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    imagen.addToGallery();
+                    imagenUtil.addToGallery();
 
                 } else if (opciones[which].equals("Elegir de la galería")) {
 
-                    startActivityForResult(imagen.openGalleryIntent(), COD_SELECCIONA);
+                    startActivityForResult(imagenUtil.openGalleryIntent(), COD_SELECCIONA);
 
                 } else {
                     dialog.dismiss();
@@ -393,8 +393,8 @@ public class FragmentCProyecto extends Fragment implements Common.Constantes, Co
         switch (requestCode) {
 
             case COD_SELECCIONA:
-                imagen.setPhotoUri(data.getData());
-                photoPath = imagen.getPath();
+                imagenUtil.setPhotoUri(data.getData());
+                photoPath = imagenUtil.getPath();
                 try {
                     Bitmap bitmap = ImagenUtil.ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
                     imagenProyecto.setImageBitmap(bitmap);
@@ -404,7 +404,7 @@ public class FragmentCProyecto extends Fragment implements Common.Constantes, Co
                 }
                 break;
             case COD_FOTO:
-                photoPath = imagen.getPhotoPath();
+                photoPath = imagenUtil.getPhotoPath();
                 try {
                     Bitmap bitmap = ImagenUtil.ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
                     imagenProyecto.setImageBitmap(bitmap); //imageView is your ImageView
@@ -464,7 +464,7 @@ public class FragmentCProyecto extends Fragment implements Common.Constantes, Co
         super.onAttach(context);
 
         if (context instanceof Activity){
-            this.activity = (Activity) context;
+            this.activity = (AppCompatActivity) context;
             icFragments = (ICFragmentos) this.activity;
         }
 

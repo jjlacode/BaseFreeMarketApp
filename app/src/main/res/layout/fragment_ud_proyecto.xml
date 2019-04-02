@@ -23,7 +23,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
                     android:layout_weight="3"
-                    android:src="@drawable/ico_calendario_reloj" />
+                    app:srcCompat="@drawable/ico_calendario_reloj" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -64,7 +64,7 @@
                     android:layout_height="30dp"
                     android:layout_weight="10"
                     android:scaleType="fitXY"
-                    android:src="@drawable/cliente" />
+                    app:srcCompat="@drawable/cliente" />
 
                 <Spinner
                     android:id="@+id/sptipocliudpry"
@@ -84,7 +84,7 @@
                     android:layout_height="30dp"
                     android:layout_weight="10"
                     android:scaleType="fitXY"
-                    android:src="@drawable/ic_launcher_background" />
+                    app:srcCompat="@drawable/ic_launcher_background" />
 
                 <TextView
                     android:id="@+id/tvestudproy"
@@ -205,7 +205,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="4"
                             android:scaleType="fitXY"
-                            android:src="@drawable/ico_calendario_reloj" />
+                            app:srcCompat="@drawable/ico_calendario_reloj" />
                     </LinearLayout>
 
                     <View
@@ -245,7 +245,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="4"
                             android:scaleType="fitXY"
-                            android:src="@drawable/ico_calendario_reloj" />
+                            app:srcCompat="@drawable/ico_calendario_reloj" />
                     </LinearLayout>
                 </LinearLayout>
 

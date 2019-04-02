@@ -78,10 +78,8 @@ public abstract class ListaAdaptadorFiltro extends ArrayAdapter<Modelo> {
                 entradasfiltro.clear();;
 
                 if (results != null && results.count > 0) {
-                    for (Object object : (List<?>) results.values) {
-                        if (object instanceof Modelo) {
-                            entradasfiltro.add((Modelo) object);
-                        }
+                    for (Modelo item : (List<Modelo>) results.values) {
+                            entradasfiltro.add(item);
                     }
                     notifyDataSetChanged();
                 } else if (constraint == null) {

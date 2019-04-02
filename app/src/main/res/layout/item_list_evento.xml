@@ -3,216 +3,221 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
     android:layout_height="wrap_content" android:orientation="vertical">
 
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="vertical">
 
-        <androidx.cardview.widget.CardView android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:layout_marginLeft="5dp"
-            android:layout_marginTop="5dp" android:layout_marginRight="5dp"
-            card_view:cardBackgroundColor="#ECE6E6">
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardlevento"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:minHeight="@dimen/min_hight_card_event"
+        card_view:cardBackgroundColor="#ECE6E6">
 
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:minHeight="@dimen/min_hight_card_event"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="match_parent"
+                android:baselineAligned="false"
+                android:minHeight="@dimen/min_hight_card_event"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2.5"
+                    android:minHeight="@dimen/min_hight_card_event"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/imglevento"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:adjustViewBounds="true"
+                        card_view:srcCompat="@drawable/ico_calendario_reloj" />
+
+
+                    <CheckBox
+                        android:id="@+id/cBoxcompletlevento"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="3"
+                        android:text="@string/completa" />
+
+                    <TextView
+                        android:id="@+id/tvcompporcevento"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="3"
+                        android:text="@string/completada"
+                        android:textSize="18sp" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvtipolevento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/tipo_evento"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/tvdesclevento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="50dp"
+                        android:text="@string/descripcion_tipo_cliente" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="2.5"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:id="@+id/imglevento"
-                            android:layout_width="match_parent"
-                            android:layout_height="80dp"
-                            android:layout_weight="3"
-                            card_view:srcCompat="@drawable/ico_calendario_reloj" />
-
-                        <ImageView
-                            android:id="@+id/imgretrasoevento"
-                            android:layout_width="match_parent"
-                            android:layout_height="10dp"
-                            android:layout_weight="2"
-                            android:scaleType="fitXY"
-                            card_view:srcCompat="@drawable/alert_box_v" />
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/tvcompporcevento"
+                            android:id="@+id/tvfinilevento"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/fecha_inicio" />
+
+                        <TextView
+                            android:id="@+id/tvhinilevento"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/hora_inicio" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvffinlevento"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/fecha_fin" />
+
+                        <TextView
+                            android:id="@+id/tvhfinlevento"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/hora_fin" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+                            android:id="@+id/imgbtnllamadaevento"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="3"
-                            android:text="@string/completada"
+                            card_view:srcCompat="@android:drawable/sym_action_call" />
+
+                        <TextView
+                            android:id="@+id/tvtelefonoevento"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:text="@string/telefono"
+                            android:textSize="24sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+                            android:id="@+id/imgbtnmapaevento"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            card_view:srcCompat="@android:drawable/ic_dialog_map" />
+
+                        <TextView
+                            android:id="@+id/tvlugarevento"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="fill_vertical"
+                            android:layout_weight="1"
+                            android:text="@string/lugar_cita" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+
+                        <ImageButton
+                            android:id="@+id/imgbtnemaillevento"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            card_view:srcCompat="@android:drawable/ic_dialog_email" />
+
+                        <TextView
+                            android:id="@+id/tvemaillevento"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:text="@string/email"
                             android:textSize="18sp" />
 
-                        <CheckBox
-                            android:id="@+id/cBoxcompletlevento"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="2"
-                            android:text="@string/completa" />
                     </LinearLayout>
 
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/tvnomclirelevento"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:layout_height="wrap_content"
+                        android:text="@string/cliente_relacionado" />
 
+                    <TextView
+                        android:id="@+id/tvnompryrellevento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/proyecto_relacionado" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/tvfinilevento"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/fecha_inicio" />
-
-                            <TextView
-                                android:id="@+id/tvhinilevento"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/hora_inicio" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/tvffinlevento"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/fecha_fin" />
-
-                            <TextView
-                                android:id="@+id/tvhfinlevento"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/hora_fin" />
-                        </LinearLayout>
-
-                        <TextView
-                            android:id="@+id/tvdesclevento"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/descripcion_tipo_cliente" />
-
-                        <TextView
-                            android:id="@+id/tvnomclirelevento"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/cliente_relacionado" />
-
-                        <TextView
-                            android:id="@+id/tvnompryrellevento"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/proyecto_relacionado" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/tvtelefonoevento"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/telefono"
-                                android:textSize="24sp" />
-
-                            <ImageButton
-                                android:id="@+id/imgbtnllamadaevento"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="3"
-                                card_view:srcCompat="@android:drawable/sym_action_call" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/tvlugarevento"
-                                android:layout_width="match_parent"
-                                android:layout_height="40dp"
-                                android:layout_weight="1"
-                                android:text="@string/lugar_cita" />
-
-                            <ImageButton
-                                android:id="@+id/imgbtnmapaevento"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="3"
-                                card_view:srcCompat="@android:drawable/ic_dialog_map" />
-                        </LinearLayout>
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="horizontal">
-
-
-                            <TextView
-                                android:id="@+id/tvemaillevento"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/email" />
-
-                            <ImageButton
-                                android:id="@+id/imgbtnemaillevento"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="3"
-                                card_view:srcCompat="@android:drawable/ic_dialog_email" />
-
-                        </LinearLayout>
-
-
-                    </LinearLayout>
 
                 </LinearLayout>
 
-                <ProgressBar
-                    android:id="@+id/pbarevento"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <Button
-                    android:id="@+id/btneditevento"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/editar_evento" />
             </LinearLayout>
 
-        </androidx.cardview.widget.CardView>
-    </LinearLayout>
+            <ProgressBar
+                android:id="@+id/pbarevento"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-</RelativeLayout>
+            <Button
+                android:id="@+id/btneditevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/editar_evento" />
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+    </RelativeLayout>
+

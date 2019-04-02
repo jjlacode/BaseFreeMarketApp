@@ -4,28 +4,34 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 import jjlacode.com.androidutils.AppActivity;
 import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.ListaAdaptadorFiltro;
 import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.adapter.AdaptadorTareas;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 import jjlacode.com.freelanceproject.utilities.Common;
-import jjlacode.com.freelanceproject.R;
 
 
 public class FragmentCPartidaProyecto extends Fragment implements Common.Constantes, Contract.Tablas {
@@ -35,7 +41,7 @@ public class FragmentCPartidaProyecto extends Fragment implements Common.Constan
 
     View vista;
     int secuencia;
-    EditText descripcionPartida;
+    AutoCompleteTextView descripcionPartida;
     EditText tiempoPartida;
     EditText cantidadPartida;
     Button btnSavePartida;
@@ -51,7 +57,7 @@ public class FragmentCPartidaProyecto extends Fragment implements Common.Constan
     private TextView nombreProyecto;
     private Bundle bundle;
     private Modelo proyecto;
-    private Activity activity;
+    private AppCompatActivity activity;
     private ICFragmentos icFragments;
 
 
@@ -114,6 +120,8 @@ public class FragmentCPartidaProyecto extends Fragment implements Common.Constan
         adapter = new AdaptadorTareas(listaTareas);
 
         rvTareas.setAdapter(adapter);
+
+        setAdaptadorAuto(descripcionPartida);
 
         adapter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -204,10 +212,42 @@ public class FragmentCPartidaProyecto extends Fragment implements Common.Constan
             }
         });
 
+        descripcionPartida.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Modelo tarea = (Modelo) descripcionPartida.getAdapter().getItem(position);
+                descripcionPartida.setText(tarea.getString(TAREA_DESCRIPCION));
+                tiempoPartida.setText(tarea.getString(TAREA_TIEMPO));
+
+            }
+
+        });
+
         return vista;
     }
 
-    private  void recargaRv(){
+    private void setAdaptadorAuto(AutoCompleteTextView autoCompleteTextView) {
+
+
+        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
+                R.layout.item_list_tarea, listaTareas, TAREA_DESCRIPCION) {
+            @Override
+            public void onEntrada(Modelo entrada, View view) {
+
+                TextView descripcion = view.findViewById(R.id.tvdescripcionltareas);
+                TextView tiempo = view.findViewById(R.id.tvtiempoltareas);
+
+                descripcion.setText(entrada.getString(TAREA_DESCRIPCION));
+                tiempo.setText(entrada.getString(TAREA_TIEMPO));
+
+            }
+
+        });
+    }
+
+
+        private  void recargaRv(){
 
             listaTareas = QueryDB.queryList(CAMPOS_TAREA,null,null);
 
@@ -269,7 +309,7 @@ public class FragmentCPartidaProyecto extends Fragment implements Common.Constan
         super.onAttach(context);
 
         if (context instanceof Activity){
-            this.activity = (Activity) context;
+            this.activity = (AppCompatActivity) context;
             icFragments = (ICFragmentos) this.activity;
         }
 

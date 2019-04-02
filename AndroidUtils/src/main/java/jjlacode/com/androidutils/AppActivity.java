@@ -1,16 +1,23 @@
 package jjlacode.com.androidutils;
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.maps.model.LatLng;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -39,7 +46,7 @@ public class AppActivity extends Application {
         }
     }
 
-    public static void hacerLlamada(Activity activity, Context context, String phoneNo, boolean permiso) {
+    public static void hacerLlamada(AppCompatActivity activity, Context context, String phoneNo, boolean permiso) {
 
         if (permiso) {
 
@@ -85,6 +92,49 @@ public class AppActivity extends Application {
         }else {
             Toast.makeText(context, "La dirección de email no es valida", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public static Intent viewOnMapA(String address) {
+
+        address = address.replace(" ","+");
+        String address2 = address.replace(",","%2C");
+        String baseUrl = "https://www.google.com/maps/search/?api=1&query=";
+        String urlMap = String.format("%s%s",baseUrl,address2);
+
+        System.out.println("address = " + address);
+
+        try {
+
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(String.format("geo:0,0?q=%s",
+                            URLEncoder.encode(address, "UTF-8"))));
+            PackageManager packageManager = context.getPackageManager();
+            List activities = packageManager.queryIntentActivities(intent,
+                    PackageManager.MATCH_DEFAULT_ONLY);
+            boolean isIntentSafe = activities.size() > 0;
+            if (isIntentSafe){return intent;}else{
+                System.out.println("urlMap = " + urlMap);
+                return new Intent(Intent.ACTION_VIEW,Uri.parse(String.format("%s",
+                        URLEncoder.encode(urlMap, "UTF-8"))));
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            System.out.println("error maps = " + e);
+        }
+        return null;
+    }
+
+    public static LatLng obtenerCoordenadas(Context context, String direccion){
+
+        Geocoder geo = new Geocoder(context);
+        int maxResultados = 1;
+        List<Address> adress = null;
+        try {
+            adress = geo.getFromLocationName(direccion, maxResultados);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new LatLng(adress.get(0).getLatitude(), adress.get(0).getLongitude());
     }
 
 }

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import jjlacode.com.androidutils.ICFragmentos;
@@ -29,7 +30,7 @@ public class FragmentUDPerfil extends Fragment implements Contract.Tablas {
     private Button btndelete;
     private Button btnback;
 
-    private Activity activity;
+    private AppCompatActivity activity;
     private ICFragmentos icFragmentos;
     private Bundle bundle;
     private Modelo perfil;
@@ -137,7 +138,7 @@ public class FragmentUDPerfil extends Fragment implements Contract.Tablas {
         super.onAttach(context);
 
         if (context instanceof Activity) {
-            this.activity = (Activity) context;
+            this.activity = (AppCompatActivity) context;
             icFragmentos = (ICFragmentos) this.activity;
         }
     }

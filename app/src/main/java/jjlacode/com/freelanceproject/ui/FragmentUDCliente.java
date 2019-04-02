@@ -12,16 +12,17 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
 import jjlacode.com.androidutils.ICFragmentos;
 import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 import jjlacode.com.freelanceproject.utilities.Common;
-import jjlacode.com.freelanceproject.R;
 
 
 public class FragmentUDCliente extends Fragment implements Common.Constantes, Contract.Tablas {
@@ -42,7 +43,7 @@ public class FragmentUDCliente extends Fragment implements Common.Constantes, Co
     ArrayList <Modelo> objTiposCli;
     String idTipoCliente = null;
     int peso;
-    private Activity activity;
+    private AppCompatActivity activity;
     private ICFragmentos icFragmentos;
     private Modelo proyecto;
     private Bundle bundle;
@@ -221,7 +222,7 @@ public class FragmentUDCliente extends Fragment implements Common.Constantes, Co
         super.onAttach(context);
 
         if (context instanceof Activity){
-            this.activity = (Activity) context;
+            this.activity = (AppCompatActivity) context;
             icFragmentos = (ICFragmentos) this.activity;
         }
     }

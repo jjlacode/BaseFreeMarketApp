@@ -3,23 +3,24 @@ package jjlacode.com.freelanceproject.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 import jjlacode.com.androidutils.ICFragmentos;
 import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.adapter.AdaptadorPerfil;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 import jjlacode.com.freelanceproject.utilities.Common;
-import jjlacode.com.freelanceproject.R;
 
 public class FragmentPerfil extends Fragment implements Common.Constantes, Contract.Tablas {
 
@@ -28,7 +29,7 @@ public class FragmentPerfil extends Fragment implements Common.Constantes, Contr
 
     View vista;
     RecyclerView rvPerfil;
-    Activity activity;
+    AppCompatActivity activity;
     ICFragmentos icFragmentos;
     ArrayList<Modelo> lista;
     Bundle bundle;
@@ -90,7 +91,7 @@ public class FragmentPerfil extends Fragment implements Common.Constantes, Contr
         super.onAttach(context);
 
         if (context instanceof Activity) {
-            this.activity = (Activity) context;
+            this.activity = (AppCompatActivity) context;
             icFragmentos = (ICFragmentos) this.activity;
         }
     }

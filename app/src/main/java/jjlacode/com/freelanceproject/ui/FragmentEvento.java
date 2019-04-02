@@ -3,12 +3,9 @@ package jjlacode.com.freelanceproject.ui;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +16,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
@@ -40,7 +44,7 @@ public class FragmentEvento extends Fragment implements Contract.Tablas {
     private Bundle bundle;
     private String namef;
     private ICFragmentos icFragmentos;
-    private Activity activity;
+    private AppCompatActivity activity;
 
     public FragmentEvento() {
         // Required empty public constructor
@@ -94,7 +98,7 @@ public class FragmentEvento extends Fragment implements Contract.Tablas {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof Activity) {
-            this.activity = (Activity) context;
+            this.activity = (AppCompatActivity) context;
             icFragmentos = (ICFragmentos) this.activity;
         }
     }
@@ -137,6 +141,7 @@ public class FragmentEvento extends Fragment implements Contract.Tablas {
         @Override
         public void onBindViewHolder(@NonNull final FragmentEvento.AdaptadorEventoInt.EventoViewHolder eventoViewHolder, final int position) {
 
+            eventoViewHolder.tipo.setText(listaEvento.get(position).getString(EVENTO_TIPOEVENTO).toUpperCase());
             eventoViewHolder.descripcion.setText(listaEvento.get(position).getCampos
                     (Contract.Tablas.EVENTO_DESCRIPCION));
             eventoViewHolder.telefono.setText(listaEvento.get(position).getCampos
@@ -216,6 +221,13 @@ public class FragmentEvento extends Fragment implements Contract.Tablas {
                         (Contract.Tablas.EVENTO_RUTAFOTO)));
             }
 
+            long retraso = JavaUtil.hoy()-listaEvento.get(position).getLong(EVENTO_FECHAINIEVENTO);
+            if (retraso > 3 * Common.DIASLONG){eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));}
+            else if (retraso > Common.DIASLONG){eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));}
+            else {eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));}//imgret.setImageResource(R.drawable.alert_box_v);}
+            if(tipoEvento.equals(TAREA))
+            {eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_tarea));}
+
             eventoViewHolder.btnllamada.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -229,7 +241,7 @@ public class FragmentEvento extends Fragment implements Contract.Tablas {
                 @Override
                 public void onClick(View v) {
 
-
+                    AppActivity.enviarEmail(getContext(),eventoViewHolder.email.getText().toString());
 
                 }
             });
@@ -238,10 +250,18 @@ public class FragmentEvento extends Fragment implements Contract.Tablas {
                 @Override
                 public void onClick(View v) {
 
+                    if (!eventoViewHolder.lugar.getText().toString().equals("")){
+
+                        Intent i= AppActivity.viewOnMapA(eventoViewHolder.lugar.getText().toString());
+                        startActivity(i);
+                    }
+
+
 
 
                 }
             });
+
 
             eventoViewHolder.completa.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -298,12 +318,13 @@ public class FragmentEvento extends Fragment implements Contract.Tablas {
         class EventoViewHolder extends RecyclerView.ViewHolder {
 
             TextView descripcion,fechaini,telefono,lugar,nomPryRel,nomCliRel,
-                    fechafin, horaini,horafin,porccompleta,email;
+                    fechafin, horaini,horafin,porccompleta,email,tipo;
             ImageButton btnllamada, btnmapa, btnemail;
             ProgressBar pbar;
             ImageView foto,imgret;
             CheckBox completa;
             Button btneditar;
+            CardView card;
 
             public EventoViewHolder(@NonNull View itemView) {
                 super(itemView);
@@ -323,10 +344,11 @@ public class FragmentEvento extends Fragment implements Contract.Tablas {
                 btnmapa = itemView.findViewById(R.id.imgbtnmapaevento);
                 btnemail = itemView.findViewById(R.id.imgbtnemaillevento);
                 pbar = itemView.findViewById(R.id.pbarevento);
-                foto = itemView.findViewById(R.id.imgnevento);
-                imgret = itemView.findViewById(R.id.imgretrasoevento);
+                foto = itemView.findViewById(R.id.imglevento);
                 completa = itemView.findViewById(R.id.cBoxcompletlevento);
                 btneditar = itemView.findViewById(R.id.btneditevento);
+                tipo = itemView.findViewById(R.id.tvtipolevento);
+                card = itemView.findViewById(R.id.cardlevento);
 
             }
         }

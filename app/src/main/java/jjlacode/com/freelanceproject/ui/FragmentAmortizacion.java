@@ -3,20 +3,21 @@ package jjlacode.com.freelanceproject.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 import jjlacode.com.androidutils.ICFragmentos;
 import jjlacode.com.androidutils.Modelo;
-import jjlacode.com.freelanceproject.adapter.AdaptadorAmortizacion;
 import jjlacode.com.freelanceproject.R;
+import jjlacode.com.freelanceproject.adapter.AdaptadorAmortizacion;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 
@@ -26,7 +27,7 @@ public class FragmentAmortizacion extends Fragment implements Contract.Tablas {
     private String namef;
 
     private RecyclerView rvAmortizacion;
-    private Activity activity;
+    private AppCompatActivity activity;
     private ICFragmentos icFragmentos;
     private ArrayList<Modelo> lista;
     private Bundle bundle;
@@ -88,7 +89,7 @@ public class FragmentAmortizacion extends Fragment implements Contract.Tablas {
         super.onAttach(context);
 
         if (context instanceof Activity) {
-            this.activity = (Activity) context;
+            this.activity = (AppCompatActivity) context;
             icFragmentos = (ICFragmentos) this.activity;
         }
     }

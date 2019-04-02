@@ -377,21 +377,24 @@ public class ImagenUtil {
 
         public Bitmap getBitmap() throws FileNotFoundException {
 
-            File file = new File(filePath);
-            if(!file.exists()){
-                throw new FileNotFoundException();
+            if (filePath!=null) {
+                File file = new File(filePath);
+                if (!file.exists()) {
+                    throw new FileNotFoundException();
+                }
+
+                final BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+
+                BitmapFactory.decodeFile(filePath, options);
+
+                options.inSampleSize = calculateInSampleSize(options, width, height);
+
+                options.inJustDecodeBounds = false;
+                Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
+                return bitmap;
             }
-
-            final BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-
-            BitmapFactory.decodeFile(filePath, options);
-
-            options.inSampleSize = calculateInSampleSize(options, width, height);
-
-            options.inJustDecodeBounds = false;
-            Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
-            return bitmap;
+            return null;
         }
 
         public Drawable getImageDrawable() throws FileNotFoundException{
@@ -430,31 +433,39 @@ public class ImagenUtil {
     }
 
     /*
-    public void mostrarDialogoOpciones() {
+    public void mostrarDialogoOpcionesImagen() {
 
-        final CharSequence[] opciones = {"Hacer foto desde cámara", "Elegir de la galería", "Cancelar"};
-        final android.support.v7.app.AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        final CharSequence[] opciones = {"Imagen del proyecto relacionado","Hacer foto desde cámara",
+                "Elegir de la galería", "Cancelar"};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Elige una opción");
         builder.setItems(opciones, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                imagen = new ImagenUtil(getContext());
+                imagenUtil = new ImagenUtil(getContext());
 
                 if (opciones[which].equals("Hacer foto desde cámara")) {
 
-                            try {
-                                startActivityForResult(imagen.takePhotoIntent(), COD_FOTO);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            imagen.addToGallery();
+                    try {
+                        startActivityForResult(imagenUtil.takePhotoIntent(), COD_FOTO);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    imagenUtil.addToGallery();
 
                 } else if (opciones[which].equals("Elegir de la galería")) {
 
-                startActivityForResult(imagen.openGalleryIntent(), COD_SELECCIONA);
+                    startActivityForResult(imagenUtil.openGalleryIntent(), COD_SELECCIONA);
 
-                } else {
+                }else if (opciones[which].equals("Imagen del proyecto relacionado")) {
+
+                    if (proyecto!=null && proyecto.getString(PROYECTO_RUTAFOTO)!=null) {
+                        path = proyecto.getString(PROYECTO_RUTAFOTO);
+                        imagen.setImageURI(Uri.parse(path));
+                    }
+
+                }else {
                     dialog.dismiss();
                 }
             }
@@ -472,28 +483,30 @@ public class ImagenUtil {
         switch (requestCode) {
 
             case COD_SELECCIONA:
-                imagen.setPhotoUri(data.getData());
-                photoPath = imagen.getPath();
+                imagenUtil.setPhotoUri(data.getData());
+                photoPath = imagenUtil.getPath();
                 try {
                     Bitmap bitmap = ImagenUtil.ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
-                    imgPry.setImageBitmap(bitmap);
+                    imagen.setImageBitmap(bitmap);
                     path = photoPath;
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
                 break;
             case COD_FOTO:
-                photoPath = imagen.getPhotoPath();
+                photoPath = imagenUtil.getPhotoPath();
                 try {
                     Bitmap bitmap = ImagenUtil.ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
-                    imgPry.setImageBitmap(bitmap); //imageView is your ImageView
+                    imagen.setImageBitmap(bitmap); //imageView is your ImageView
                     path = photoPath;
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
                 break;
+
         }
     }
+
 
      */
 }

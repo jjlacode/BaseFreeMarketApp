@@ -3,14 +3,8 @@ package jjlacode.com.freelanceproject.ui;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
-import android.location.Address;
-import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,22 +16,25 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.LatLng;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import jjlacode.com.androidutils.AppActivity;
 import jjlacode.com.androidutils.ICFragmentos;
 import jjlacode.com.androidutils.JavaUtil;
 import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.adapter.AdaptadorAgendaPresup;
 import jjlacode.com.freelanceproject.adapter.AdaptadorAgendaTareas;
 import jjlacode.com.freelanceproject.model.AgendaPresup;
 import jjlacode.com.freelanceproject.model.AgendaTarea;
 import jjlacode.com.freelanceproject.sqlite.Contract;
-import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 import jjlacode.com.freelanceproject.utilities.Common;
 
@@ -61,7 +58,7 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
     ArrayList<AgendaTarea> listaAgendaTarea = new ArrayList<>();
     ArrayList<AgendaPresup> listaAgendaPresup = new ArrayList<>();
     ICFragmentos icFragments;
-    Activity activity;
+    AppCompatActivity activity;
     Bundle bundle;
 
 
@@ -388,7 +385,7 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof Activity){
-            this.activity = (Activity) context;
+            this.activity = (AppCompatActivity) context;
             icFragments = (ICFragmentos) this.activity;
         }
     }
@@ -460,10 +457,9 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
         @Override
         public void onBindViewHolder(@NonNull final EventoViewHolder eventoViewHolder, final int position) {
 
-            eventoViewHolder.descripcion.setText(listaEvento.get(position).getCampos
-                    (EVENTO_DESCRIPCION));
-            eventoViewHolder.telefono.setText(listaEvento.get(position).getCampos
-                    (EVENTO_TELEFONO));
+            eventoViewHolder.tipo.setText(listaEvento.get(position).getString(EVENTO_TIPOEVENTO).toUpperCase());
+            eventoViewHolder.descripcion.setText(listaEvento.get(position).getString(EVENTO_DESCRIPCION));
+            eventoViewHolder.telefono.setText(listaEvento.get(position).getString(EVENTO_TELEFONO));
             eventoViewHolder.lugar.setText(listaEvento.get(position).getCampos
                     (EVENTO_LUGAR));
             eventoViewHolder.email.setText(listaEvento.get(position).getCampos
@@ -484,6 +480,10 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
                     (EVENTO_COMPLETADA)));
             eventoViewHolder.porccompleta.setText(String.format("%s %s",listaEvento.get(position).getCampos
                     (EVENTO_COMPLETADA),"%"));
+            if (listaEvento.get(position).getString(EVENTO_RUTAFOTO)!=null){
+
+                eventoViewHolder.foto.setImageURI(Uri.parse(listaEvento.get(position).getString(EVENTO_RUTAFOTO)));
+            }
 
             String tipoEvento = listaEvento.get(position).getCampos
                     (Contract.Tablas.EVENTO_TIPOEVENTO);
@@ -552,11 +552,13 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
                     break;
 
             }
-            if (listaEvento.get(position).getCampos
-                    (Contract.Tablas.EVENTO_RUTAFOTO)!=null) {
-                eventoViewHolder.foto.setImageURI(Uri.parse(listaEvento.get(position).getCampos
-                        (Contract.Tablas.EVENTO_RUTAFOTO)));
-            }
+
+            long retraso = JavaUtil.hoy()-listaEvento.get(position).getLong(EVENTO_FECHAINIEVENTO);
+            if (retraso > 3 * Common.DIASLONG){eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));}
+            else if (retraso > Common.DIASLONG){eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));}
+            else {eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));}//imgret.setImageResource(R.drawable.alert_box_v);}
+            if(tipoEvento.equals(TAREA))
+            {eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_tarea));}
 
             eventoViewHolder.btnllamada.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -571,7 +573,7 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
                 @Override
                 public void onClick(View v) {
 
-
+                    AppActivity.enviarEmail(getContext(),eventoViewHolder.email.getText().toString());
 
                 }
             });
@@ -580,15 +582,11 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
                 @Override
                 public void onClick(View v) {
 
-                    Geocoder geo = new Geocoder(getContext());
-                    int maxResultados = 1;
-                    List<Address> adress = null;
-                    try {
-                        adress = geo.getFromLocationName("nombreLugarQueQuieroBuscar", maxResultados);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    if (eventoViewHolder.lugar.getText().toString()!=null){
+
+                        AppActivity.viewOnMapA(eventoViewHolder.lugar.getText().toString());
                     }
-                    LatLng latLng = new LatLng(adress.get(0).getLatitude(), adress.get(0).getLongitude());
+
 
 
 
@@ -650,12 +648,13 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
         class EventoViewHolder extends RecyclerView.ViewHolder {
 
             TextView descripcion,fechaini,telefono,lugar,nomPryRel,nomCliRel,
-                    fechafin, horaini,horafin,porccompleta,email;
+                    fechafin, horaini,horafin,porccompleta,email,tipo;
             ImageButton btnllamada, btnmapa, btnemail;
             ProgressBar pbar;
             ImageView foto,imgret;
             CheckBox completa;
             Button btneditar;
+            CardView card;
 
             public EventoViewHolder(@NonNull View itemView) {
                 super(itemView);
@@ -675,10 +674,11 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
                 btnmapa = itemView.findViewById(R.id.imgbtnmapaevento);
                 btnemail = itemView.findViewById(R.id.imgbtnemaillevento);
                 pbar = itemView.findViewById(R.id.pbarevento);
-                foto = itemView.findViewById(R.id.imgnevento);
-                imgret = itemView.findViewById(R.id.imgretrasoevento);
+                foto = itemView.findViewById(R.id.imglevento);
                 completa = itemView.findViewById(R.id.cBoxcompletlevento);
                 btneditar = itemView.findViewById(R.id.btneditevento);
+                tipo = itemView.findViewById(R.id.tvtipolevento);
+                card = itemView.findViewById(R.id.cardlevento);
 
             }
         }

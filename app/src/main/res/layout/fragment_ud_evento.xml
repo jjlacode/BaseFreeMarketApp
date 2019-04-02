@@ -13,10 +13,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <Spinner
+        <TextView
             android:id="@+id/sptipoudevento"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:gravity="center"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -33,11 +35,11 @@
             <EditText
                 android:id="@+id/etdescudevento"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="@string/descripcion_tipo_cliente"
-                android:inputType="textPersonName" />
+                android:inputType="textMultiLine|text" />
         </LinearLayout>
 
         <LinearLayout
@@ -52,6 +54,7 @@
                 android:layout_weight="2"
                 android:ems="10"
                 android:hint="@string/fecha_ini_evento"
+                android:inputType="date"
                 android:textSize="18sp" />
 
             <ImageButton
@@ -60,7 +63,7 @@
                 android:layout_height="30dp"
                 android:layout_weight="3"
                 android:scaleType="fitXY"
-                android:src="@drawable/ico_calendario_reloj" />
+                app:srcCompat="@drawable/ico_calendario_reloj" />
 
             <TextView
                 android:id="@+id/ethorainiudevento"
@@ -69,6 +72,7 @@
                 android:layout_weight="2"
                 android:ems="10"
                 android:hint="@string/hora_ini_evento"
+                android:inputType="time"
                 android:textSize="18sp" />
 
             <ImageButton
@@ -77,7 +81,7 @@
                 android:layout_height="30dp"
                 android:layout_weight="3"
                 android:scaleType="fitXY"
-                android:src="@drawable/ico_calendario_reloj" />
+                app:srcCompat="@drawable/ico_calendario_reloj" />
         </LinearLayout>
 
         <LinearLayout
@@ -92,6 +96,7 @@
                 android:layout_weight="2"
                 android:ems="10"
                 android:hint="@string/fecha_fin_evento"
+                android:inputType="date"
                 android:textSize="18sp" />
 
             <ImageButton
@@ -100,7 +105,7 @@
                 android:layout_height="30dp"
                 android:layout_weight="3"
                 android:scaleType="fitXY"
-                android:src="@drawable/ico_calendario_reloj" />
+                app:srcCompat="@drawable/ico_calendario_reloj" />
 
             <TextView
                 android:id="@+id/ethorafinudevento"
@@ -109,6 +114,7 @@
                 android:layout_weight="2"
                 android:ems="10"
                 android:hint="@string/hora_fin_evento"
+                android:inputType="time"
                 android:textSize="18sp" />
 
             <ImageButton
@@ -117,7 +123,7 @@
                 android:layout_height="30dp"
                 android:layout_weight="3"
                 android:scaleType="fitXY"
-                android:src="@drawable/ico_calendario_reloj" />
+                app:srcCompat="@drawable/ico_calendario_reloj" />
         </LinearLayout>
 
         <EditText
@@ -285,10 +291,11 @@
             android:layout_height="wrap_content"
             android:text="@string/relacionar_proyecto" />
 
-        <Spinner
+        <AutoCompleteTextView
             android:id="@+id/sppryudevento"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="@string/seleccione_proyecto" />
 
         <CheckBox
             android:id="@+id/chcliudevento"
@@ -296,10 +303,30 @@
             android:layout_height="wrap_content"
             android:text="@string/relacionar_cliente" />
 
-        <Spinner
+        <AutoCompleteTextView
             android:id="@+id/spcliudevento"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="@string/seleccione_cliente" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/ltvcompletadaudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/completada" />
+        <EditText
+            android:id="@+id/etcompletadaudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="@string/completada"
+            android:inputType="number" />
+    </LinearLayout>
 
         <Button
             android:id="@+id/evento_ud_btn_save"

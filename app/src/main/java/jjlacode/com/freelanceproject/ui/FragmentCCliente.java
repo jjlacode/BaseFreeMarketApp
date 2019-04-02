@@ -11,16 +11,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
 import jjlacode.com.androidutils.ICFragmentos;
 import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 import jjlacode.com.freelanceproject.utilities.Common;
-import jjlacode.com.freelanceproject.R;
 
 public class FragmentCCliente extends Fragment implements Common.Constantes, Contract.Tablas {
 
@@ -34,7 +35,7 @@ public class FragmentCCliente extends Fragment implements Common.Constantes, Con
 
     private String namef;
 
-    private Activity activity;
+    private AppCompatActivity activity;
     private ICFragmentos icFragmentos;
     private String namefsub;
     private Bundle bundle;
@@ -196,7 +197,7 @@ public class FragmentCCliente extends Fragment implements Common.Constantes, Con
         super.onAttach(context);
 
         if (context instanceof Activity){
-            this.activity = (Activity) context;
+            this.activity = (AppCompatActivity) context;
             icFragmentos = (ICFragmentos) this.activity;
         }
 

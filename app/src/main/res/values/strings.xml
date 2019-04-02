@@ -141,5 +141,6 @@
     <string name="establecer_fecha_entrega_presup">Establecer fecha entrega Presup.</string>
     <string name="seleccione_cliente">Seleccione el cliente</string>
     <string name="seleccione_proyecto">Seleccione proyecto relacionado</string>
+    <string name="tipo_evento">Tipo evento</string>
 
 </resources>

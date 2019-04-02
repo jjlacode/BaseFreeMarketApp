@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import jjlacode.com.androidutils.ICFragmentos;
@@ -23,7 +24,7 @@ public class FragmentCPerfil extends Fragment implements Contract.Tablas {
     //TextView titulo;
     private Button btnsave;
     private String namef;
-    private Activity activity;
+    private AppCompatActivity activity;
     private ICFragmentos icFragmentos;
     private String namefsub;
     private Bundle bundle;
@@ -103,7 +104,7 @@ public class FragmentCPerfil extends Fragment implements Contract.Tablas {
         super.onAttach(context);
 
         if (context instanceof Activity) {
-            this.activity = (Activity) context;
+            this.activity = (AppCompatActivity) context;
             icFragmentos = (ICFragmentos) this.activity;
         }
 

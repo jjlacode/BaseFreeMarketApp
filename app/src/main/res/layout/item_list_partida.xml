@@ -43,7 +43,7 @@
                             android:layout_height="80dp"
                             android:layout_gravity="center"
                             android:adjustViewBounds="false"
-                            android:src="@mipmap/ic_launcher" />
+                            card_view:srcCompat="@mipmap/ic_launcher" />
 
                     </LinearLayout>
 

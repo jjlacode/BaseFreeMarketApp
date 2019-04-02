@@ -1,4 +1,4 @@
-package jjlacode.com.androidutils.fragment;
+package jjlacode.com.androidutils;
 
 import android.content.Context;
 import android.os.Bundle;

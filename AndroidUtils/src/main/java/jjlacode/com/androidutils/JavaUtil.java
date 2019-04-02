@@ -1,5 +1,8 @@
 package jjlacode.com.androidutils;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -206,7 +209,35 @@ public class JavaUtil {
         //return nf.format(importe);
     }
 
+    public static boolean isValidURL(String url) {
 
+        URL u = null;
+
+        try {
+            u = new URL(url);
+        } catch (MalformedURLException e) {
+            return false;
+        }
+        try {
+            u.toURI();
+        } catch (URISyntaxException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static long[] longAddhhmm(long flong){
+
+        long lfechaaviso = flong;
+        long lavisodias = lfechaaviso / Constantes.DIASLONG;
+        long lavisohoras = (lfechaaviso - (lavisodias*Constantes.DIASLONG)) / Constantes.HORASLONG;
+        long lavisominutos = (lfechaaviso - (lavisohoras*Constantes.HORASLONG) -
+                (lavisodias*Constantes.DIASLONG)) / Constantes.MINUTOSLONG;
+        long[] res = {lavisodias,lavisohoras,lavisominutos};
+
+        return res;
+    }
 
 
 }

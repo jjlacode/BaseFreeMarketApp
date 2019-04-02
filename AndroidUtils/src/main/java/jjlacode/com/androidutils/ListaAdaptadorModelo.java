@@ -6,19 +6,19 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 
 /** Adaptador de ListView universal, para www.jarroba.com
  * @author Ramon Invarato Menéndez
  */
-public abstract class ListaAdaptador extends BaseAdapter {
+public abstract class ListaAdaptadorModelo extends ArrayAdapter<Modelo> {
 
-    private ArrayList<?> entradas;
+    private ArrayList<Modelo> entradas;
     private int R_layout_IdView;
     private Context contexto;
 
-    public ListaAdaptador(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas) {
-        super();
+    public ListaAdaptadorModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas) {
+        super(contexto,R_layout_IdView,entradas);
         this.contexto = contexto;
         this.entradas = entradas;
         this.R_layout_IdView = R_layout_IdView;
@@ -40,7 +40,7 @@ public abstract class ListaAdaptador extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int posicion) {
+    public Modelo getItem(int posicion) {
         return entradas.get(posicion);
     }
 
@@ -53,6 +53,6 @@ public abstract class ListaAdaptador extends BaseAdapter {
      * @param entrada La entrada que será la asociada a la view. La entrada es del tipo del paquete/handler
      * @param view View particular que contendrá los datos del paquete/handler
      */
-    public abstract void onEntrada (Object entrada, View view);
+    public abstract void onEntrada (Modelo entrada, View view);
 
 }

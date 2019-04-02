@@ -6,10 +6,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,16 +14,21 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 
 import jjlacode.com.androidutils.AppActivity;
 import jjlacode.com.androidutils.ICFragmentos;
 import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.adapter.AdaptadorProducto;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 import jjlacode.com.freelanceproject.utilities.Common;
-import jjlacode.com.freelanceproject.R;
 
 
 public class FragmentCGastoProyecto extends Fragment implements Common.Constantes, Contract.Tablas {
@@ -53,7 +54,7 @@ public class FragmentCGastoProyecto extends Fragment implements Common.Constante
     private String idProyecto;
     private Bundle bundle;
     private Modelo proyecto;
-    private Activity activity;
+    private AppCompatActivity activity;
     private ICFragmentos icFragments;
     private TextView titulo;
 
@@ -283,7 +284,7 @@ public class FragmentCGastoProyecto extends Fragment implements Common.Constante
         super.onAttach(context);
 
         if (context instanceof Activity){
-            this.activity = (Activity) context;
+            this.activity = (AppCompatActivity) context;
             icFragments = (ICFragmentos) this.activity;
         }
     }

@@ -9,14 +9,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -29,18 +27,25 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
 import java.util.ArrayList;
 
 import jjlacode.com.androidutils.DatePickerFragment;
 import jjlacode.com.androidutils.ICFragmentos;
 import jjlacode.com.androidutils.JavaUtil;
-import jjlacode.com.androidutils.ListaAdaptador;
+import jjlacode.com.androidutils.ListaAdaptadorFiltro;
 import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.androidutils.TimePickerFragment;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 import jjlacode.com.freelanceproject.utilities.Common;
+
+import static jjlacode.com.androidutils.JavaUtil.getDate;
+import static jjlacode.com.androidutils.JavaUtil.getTime;
 
 public class FragmentUDEvento extends Fragment
         implements Contract.Tablas, JavaUtil.Constantes, Common.Constantes, Common.TiposEvento {
@@ -52,15 +57,14 @@ public class FragmentUDEvento extends Fragment
     private Button btndelete;
     private Button btnback;
 
-    private Activity activity;
+    private AppCompatActivity activity;
     private ICFragmentos icFragmentos;
     private Bundle bundle;
     private Modelo evento;
 
     ImageView imagen;
-    Spinner tiposEvento;
-    Spinner proyRel;
-    Spinner cliRel;
+    AutoCompleteTextView proyRel;
+    AutoCompleteTextView cliRel;
     EditText descipcion;
     EditText lugar;
     EditText telefono;
@@ -89,18 +93,15 @@ public class FragmentUDEvento extends Fragment
     ImageButton btnffin;
     ImageButton btnhini;
     ImageButton btnhfin;
+    TextView tipoEvento;
 
-    String tipoEvento;
     ArrayList<Modelo> listaClientes;
     ArrayList<Modelo> listaProyectos;
-    Modelo proyecto;
-    Modelo cliente;
     String idCliente;
     String idProyecto;
-    private ArrayList<Modelo> listaObjProyectos;
-    private ArrayList<Modelo> listaobjClientes;
-    private int posproy;
-    private int poscli;
+    String nombreProyecto;
+    String nombreCliente;
+    String tevento;
     private long finiEvento;
     private long ffinEvento;
     private long hiniEvento;
@@ -108,6 +109,7 @@ public class FragmentUDEvento extends Fragment
 
 
     private String idMulti;
+    private EditText completa;
 
 
     public FragmentUDEvento() {
@@ -129,39 +131,20 @@ public class FragmentUDEvento extends Fragment
         btnback = (Button) vista.findViewById(R.id.evento_ud_btn_back);
 
         bundle = getArguments();
-        evento = (Modelo) bundle.getSerializable(TABLA_EVENTO);
-
-        namef = bundle.getString("namef");
-        bundle = null;
-
-        bundle = getArguments();
         if (bundle != null) {
 
-            proyecto = (Modelo) bundle.getSerializable(TABLA_PROYECTO);
-            cliente = (Modelo) bundle.getSerializable(TABLA_CLIENTE);
             evento = (Modelo) bundle.getSerializable(TABLA_EVENTO);
+            idEvento = evento.getString(EVENTO_ID_EVENTO);
+            idMulti = evento.getString(EVENTO_IDMULTI);
             namef = bundle.getString("namef");
             bundle = null;
-            if (cliente != null) {
 
-                idCliente = cliente.getCampos(Contract.Tablas.CLIENTE_ID_CLIENTE);
-
-            }
-            if (proyecto!=null) {
-
-                idProyecto = proyecto.getCampos(Contract.Tablas.PROYECTO_ID_PROYECTO);
-
-            }
-            if (evento!=null){
-
-                idProyecto = evento.getCampos(Contract.Tablas.EVENTO_PROYECTOREL);
-            }
 
         }
 
         imagen = vista.findViewById(R.id.imgudevento);
-        if (proyecto!=null){imagen.setImageURI(Uri.parse(proyecto.getCampos(Contract.Tablas.PROYECTO_RUTAFOTO)));}
-        tiposEvento = vista.findViewById(R.id.sptipoudevento);
+        if (evento.getCampos(EVENTO_RUTAFOTO)!=null){imagen.setImageURI(Uri.parse(evento.getCampos(EVENTO_RUTAFOTO)));}
+        tipoEvento = vista.findViewById(R.id.sptipoudevento);
         proyRel = vista.findViewById(R.id.sppryudevento);
         cliRel = vista.findViewById(R.id.spcliudevento);
         descipcion = vista.findViewById(R.id.etdescudevento);
@@ -192,15 +175,33 @@ public class FragmentUDEvento extends Fragment
         btnffin = vista.findViewById(R.id.imgbtnffinudevento);
         btnhini = vista.findViewById(R.id.imgbtnhiniudevento);
         btnhfin = vista.findViewById(R.id.imgbtnhfinudevento);
+        completa = vista.findViewById(R.id.etcompletadaudevento);
 
-        /*
-        avisoDias.setText("0");
-        avisoHoras.setText("0");
-        avisoMinutos.setText("0");
-        repAnios.setText("0");
-        repMeses.setText("0");
-        repDias.setText("0");
-        */
+        setAdaptadorClientes(cliRel);
+
+        setAdaptadorProyectos(proyRel);
+
+        completa.setText(evento.getString(EVENTO_COMPLETADA));
+
+
+        if (evento.getString(EVENTO_PROYECTOREL)!=null){
+
+            idProyecto = evento.getString(EVENTO_PROYECTOREL);
+            nombreProyecto = evento.getString(EVENTO_NOMPROYECTOREL);
+            proyRel.setText(nombreProyecto);
+            relProy.setChecked(true);
+            idCliente = evento.getString(EVENTO_CLIENTEREL);
+            nombreCliente = evento.getString(EVENTO_NOMCLIENTEREL);
+            cliRel.setText(nombreCliente);
+            relCli.setChecked(true);
+
+        }else if (evento.getString(EVENTO_CLIENTEREL)!=null){
+
+            idCliente = evento.getString(EVENTO_CLIENTEREL);
+            nombreCliente = evento.getString(EVENTO_NOMCLIENTEREL);
+            cliRel.setText(nombreCliente);
+            relCli.setChecked(true);
+        }
 
         lugar.setVisibility(View.GONE);
         telefono.setVisibility(View.GONE);
@@ -211,103 +212,57 @@ public class FragmentUDEvento extends Fragment
         drepAnios.setVisibility(View.GONE);
         drepMeses.setVisibility(View.GONE);
         drepDias.setVisibility(View.GONE);
-        avisoDias.setVisibility(View.GONE);
-        avisoHoras.setVisibility(View.GONE);
-        avisoMinutos.setVisibility(View.GONE);
         fechaIni.setVisibility(View.GONE);
         horaIni.setVisibility(View.GONE);
         fechaFin.setVisibility(View.GONE);
         horaFin.setVisibility(View.GONE);
+        btnfini.setVisibility(View.GONE);
+        btnffin.setVisibility(View.GONE);
+        btnhini.setVisibility(View.GONE);
+        btnhfin.setVisibility(View.GONE);
         laviso.setVisibility(View.GONE);
         lrep.setVisibility(View.GONE);
         ldrep.setVisibility(View.GONE);
-        proyRel.setVisibility(View.GONE);
-        cliRel.setVisibility(View.GONE);
+        repeticiones.setVisibility(View.GONE);
+
 
         if (namef.equals(AGENDA)){
 
-            //evento = QueryDB.queryObject(Contract.Columnas.EVENTO, idEvento);
-            tipoEvento = evento.getCampos(Contract.Tablas.EVENTO_TIPOEVENTO);
-            System.out.println("tipoEvento = " + tipoEvento);
-        }
-
-        final ArrayList<String> listaTiposEvento = new ArrayList<>();
-        listaTiposEvento.add("Elija el tipo de evento");
-        listaTiposEvento.add(TAREA);
-        listaTiposEvento.add(CITA);
-        listaTiposEvento.add(EMAIL);
-        listaTiposEvento.add(LLAMADA);
-        listaTiposEvento.add(EVENTO);
-
-        ArrayAdapter<CharSequence> adapterTiposEvento = new ArrayAdapter
-                (getContext(),android.R.layout.simple_spinner_item,listaTiposEvento);
-
-        tiposEvento.setAdapter(adapterTiposEvento);
-
-        if (tipoEvento!=null) {
-
-            switch (tipoEvento) {
-
-                case TAREA:
-                    tiposEvento.setSelection(1);
-                    break;
-                case CITA:
-                    tiposEvento.setSelection(2);
-                    break;
-                case EMAIL:
-                    tiposEvento.setSelection(3);
-                    break;
-                case LLAMADA:
-                    tiposEvento.setSelection(4);
-                    break;
-                case EVENTO:
-                    tiposEvento.setSelection(5);
-                    break;
+            tipoEvento.setText(evento.getString(EVENTO_TIPOEVENTO).toUpperCase());
+            tevento = evento.getString(EVENTO_TIPOEVENTO);
+            if (evento.getString(EVENTO_RUTAFOTO)!=null){
+                imagen.setImageURI(Uri.parse(evento.getString(EVENTO_RUTAFOTO)));
             }
+            descipcion.setText(evento.getString(EVENTO_DESCRIPCION));
+
         }
 
-        tiposEvento.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        if (evento.getLong(EVENTO_AVISO)>0) {
 
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            long[] res = JavaUtil.longAddhhmm(evento.getLong(EVENTO_AVISO));
 
-                tipoEvento = null;
+            avisoDias.setText(String.valueOf(res[0]));
+            avisoHoras.setText(String.valueOf(res[1]));
+            avisoMinutos.setText(String.valueOf(res[2]));
+            aviso.setChecked(true);
+            avisoDias.setVisibility(View.VISIBLE);
+            avisoHoras.setVisibility(View.VISIBLE);
+            avisoMinutos.setVisibility(View.VISIBLE);
+            laviso.setVisibility(View.VISIBLE);
+        }else{
+            avisoDias.setVisibility(View.GONE);
+            avisoHoras.setVisibility(View.GONE);
+            avisoMinutos.setVisibility(View.GONE);
+            laviso.setVisibility(View.GONE);
+        }
 
-                lugar.setVisibility(View.GONE);
-                telefono.setVisibility(View.GONE);
-                email.setVisibility(View.GONE);
-                repAnios.setVisibility(View.GONE);
-                repMeses.setVisibility(View.GONE);
-                repDias.setVisibility(View.GONE);
-                drepAnios.setVisibility(View.GONE);
-                drepMeses.setVisibility(View.GONE);
-                drepDias.setVisibility(View.GONE);
-                avisoDias.setVisibility(View.GONE);
-                avisoHoras.setVisibility(View.GONE);
-                avisoMinutos.setVisibility(View.GONE);
-                fechaIni.setVisibility(View.GONE);
-                horaIni.setVisibility(View.GONE);
-                fechaFin.setVisibility(View.GONE);
-                horaFin.setVisibility(View.GONE);
-                btnfini.setVisibility(View.GONE);
-                btnffin.setVisibility(View.GONE);
-                btnhini.setVisibility(View.GONE);
-                btnhfin.setVisibility(View.GONE);
-                laviso.setVisibility(View.GONE);
-                lrep.setVisibility(View.GONE);
-                ldrep.setVisibility(View.GONE);
-                repeticiones.setVisibility(View.GONE);
-                aviso.setVisibility(View.GONE);
 
-                if (position>0) {
 
-                    tipoEvento = listaTiposEvento.get(position);
-                    System.out.println("tipoEvento = " + tipoEvento);
-                    descipcion.setText(evento.getCampos(Contract.Tablas.EVENTO_DESCRIPCION));
 
-                    switch (tipoEvento){
+                    switch (tevento){
 
                         case TAREA:
+
                             break;
 
                         case CITA:
@@ -318,6 +273,11 @@ public class FragmentUDEvento extends Fragment
                             btnhini.setVisibility(View.VISIBLE);
                             repeticiones.setVisibility(View.VISIBLE);
                             aviso.setVisibility(View.VISIBLE);
+                            lugar.setText(evento.getString(EVENTO_LUGAR));
+                            finiEvento = evento.getLong(EVENTO_FECHAINIEVENTO);
+                            fechaIni.setText(getDate(finiEvento));
+                            hiniEvento = evento.getLong(EVENTO_HORAINIEVENTO);
+                            horaIni.setText(getTime(hiniEvento));
                             break;
 
                         case EMAIL:
@@ -328,6 +288,11 @@ public class FragmentUDEvento extends Fragment
                             btnhini.setVisibility(View.VISIBLE);
                             repeticiones.setVisibility(View.VISIBLE);
                             aviso.setVisibility(View.VISIBLE);
+                            email.setText(evento.getString(EVENTO_EMAIL));
+                            finiEvento = evento.getLong(EVENTO_FECHAINIEVENTO);
+                            fechaIni.setText(getDate(finiEvento));
+                            hiniEvento = evento.getLong(EVENTO_HORAINIEVENTO);
+                            horaIni.setText(getTime(hiniEvento));
                             break;
 
                         case LLAMADA:
@@ -338,6 +303,11 @@ public class FragmentUDEvento extends Fragment
                             btnhini.setVisibility(View.VISIBLE);
                             repeticiones.setVisibility(View.VISIBLE);
                             aviso.setVisibility(View.VISIBLE);
+                            telefono.setText(evento.getString(EVENTO_TELEFONO));
+                            finiEvento = evento.getLong(EVENTO_FECHAINIEVENTO);
+                            fechaIni.setText(getDate(finiEvento));
+                            hiniEvento = evento.getLong(EVENTO_HORAINIEVENTO);
+                            horaIni.setText(getTime(hiniEvento));
                             break;
 
                         case EVENTO:
@@ -351,19 +321,20 @@ public class FragmentUDEvento extends Fragment
                             btnhfin.setVisibility(View.VISIBLE);
                             repeticiones.setVisibility(View.VISIBLE);
                             aviso.setVisibility(View.VISIBLE);
+                            finiEvento = evento.getLong(EVENTO_FECHAINIEVENTO);
+                            fechaIni.setText(getDate(finiEvento));
+                            hiniEvento = evento.getLong(EVENTO_HORAINIEVENTO);
+                            horaIni.setText(getTime(hiniEvento));
+                            ffinEvento = evento.getLong(EVENTO_FECHAFINEVENTO);
+                            fechaFin.setText(getDate(ffinEvento));
+                            hfinEvento = evento.getLong(EVENTO_HORAFINEVENTO);
+                            horaFin.setText(getTime(hfinEvento));
                             break;
 
                     }
 
-                }
 
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
 
         btnfini.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -395,11 +366,7 @@ public class FragmentUDEvento extends Fragment
         });
 
 
-        setAdaptadorClientes(cliRel);
-        if (idCliente!=null){cliRel.setSelection(poscli);}
 
-        setAdaptadorProyectos(proyRel);
-        if (idProyecto!=null){proyRel.setSelection(posproy);}
 
         aviso.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -476,6 +443,9 @@ public class FragmentUDEvento extends Fragment
                 }else{
 
                     proyRel.setVisibility(View.GONE);
+                    idProyecto = null;
+                    nombreProyecto = null;
+                    proyRel.setText(null);
 
                 }
             }
@@ -492,6 +462,9 @@ public class FragmentUDEvento extends Fragment
                 }else{
 
                     cliRel.setVisibility(View.GONE);
+                    idCliente = null;
+                    nombreCliente = null;
+                    cliRel.setText(null);
 
                 }
             }
@@ -571,6 +544,35 @@ public class FragmentUDEvento extends Fragment
                 }
             }
         });
+        proyRel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Modelo proyecto = (Modelo) proyRel.getAdapter().getItem(position);
+                idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
+                nombreProyecto = proyecto.getString(PROYECTO_NOMBRE);
+                proyRel.setText(nombreProyecto);
+                cliRel.setText(proyecto.getString(PROYECTO_CLIENTE_NOMBRE));
+
+            }
+
+        });
+
+        cliRel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Modelo cliente = (Modelo) cliRel.getAdapter().getItem(position);
+                idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
+                nombreCliente = cliente.getString(CLIENTE_NOMBRE);
+                cliRel.setText(nombreCliente);
+                telefono.setText(cliente.getString(CLIENTE_TELEFONO));
+                lugar.setText(cliente.getString(CLIENTE_DIRECCION));
+                email.setText(cliente.getString(CLIENTE_EMAIL));
+
+            }
+
+        });
 
         return vista;
     }
@@ -625,52 +627,63 @@ public class FragmentUDEvento extends Fragment
 
         ContentValues valores = new ContentValues();
 
-        switch (tipoEvento){
+        if (idProyecto!=null){
+
+            QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMPROYECTOREL,nombreProyecto);
+            QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_PROYECTOREL,idProyecto);
+
+        }
+        if (idCliente!=null){
+
+            QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMCLIENTEREL,nombreCliente);
+            QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_CLIENTEREL,idCliente);
+        }
+
+        switch (tevento){
 
             case TAREA:
-                valores.put(Contract.Tablas.EVENTO_FECHAINIEVENTO, "0");
-                valores.put(Contract.Tablas.EVENTO_HORAINIEVENTO, "0");
-                valores.put(Contract.Tablas.EVENTO_FECHAFINEVENTO, "0");
-                valores.put(Contract.Tablas.EVENTO_HORAFINEVENTO, "0");
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,"0");
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTO,"0");
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,"0");
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTO,"0");
                 break;
 
             case CITA:
-                valores.put(Contract.Tablas.EVENTO_FECHAINIEVENTO, String.valueOf(finiEvento));
-                valores.put(Contract.Tablas.EVENTO_HORAINIEVENTO, String.valueOf(hiniEvento));
-                valores.put(Contract.Tablas.EVENTO_FECHAFINEVENTO, "0");
-                valores.put(Contract.Tablas.EVENTO_HORAFINEVENTO, "0");
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTO,"0");
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTO,"0");
                 valores.put(Contract.Tablas.EVENTO_LUGAR,lugar.getText().toString());
                 break;
 
             case EMAIL:
-                valores.put(Contract.Tablas.EVENTO_FECHAINIEVENTO, String.valueOf(finiEvento));
-                valores.put(Contract.Tablas.EVENTO_HORAINIEVENTO, String.valueOf(hiniEvento));
-                valores.put(Contract.Tablas.EVENTO_FECHAFINEVENTO, "0");
-                valores.put(Contract.Tablas.EVENTO_HORAFINEVENTO, "0");
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTO,"0");
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTO,"0");
                 valores.put(Contract.Tablas.EVENTO_EMAIL,email.getText().toString());
                 break;
 
             case LLAMADA:
-                valores.put(Contract.Tablas.EVENTO_FECHAINIEVENTO, String.valueOf(finiEvento));
-                valores.put(Contract.Tablas.EVENTO_HORAINIEVENTO, String.valueOf(hiniEvento));
-                valores.put(Contract.Tablas.EVENTO_FECHAFINEVENTO, "0");
-                valores.put(Contract.Tablas.EVENTO_HORAFINEVENTO, "0");
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTO,"0");
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTO,"0");
                 valores.put(Contract.Tablas.EVENTO_TELEFONO,telefono.getText().toString());
                 break;
 
             case EVENTO:
-                valores.put(Contract.Tablas.EVENTO_FECHAINIEVENTO, String.valueOf(finiEvento));
-                valores.put(Contract.Tablas.EVENTO_HORAINIEVENTO, String.valueOf(hiniEvento));
-                valores.put(Contract.Tablas.EVENTO_FECHAFINEVENTO, String.valueOf(ffinEvento));
-                valores.put(Contract.Tablas.EVENTO_HORAFINEVENTO, String.valueOf(hfinEvento));
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTO,ffinEvento);
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTO,hfinEvento);
                 break;
 
         }
 
-        valores.put(Contract.Tablas.EVENTO_DESCRIPCION,descipcion.getText().toString());
-        valores.put(Contract.Tablas.EVENTO_TIPOEVENTO,tipoEvento);
-        valores.put(Contract.Tablas.EVENTO_COMPLETADA,"0");
-        valores.put(Contract.Tablas.EVENTO_PROYECTOREL,idProyecto);
+        QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_DESCRIPCION,descipcion.getText().toString());
+        QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_TIPOEVENTO,tevento);
+        QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_COMPLETADA,completa.getText().toString());
 
         if (aviso.isChecked()){
 
@@ -681,28 +694,30 @@ public class FragmentUDEvento extends Fragment
             long fechaaviso = (Long.parseLong(avisoMinutos.getText().toString()) * MINUTOSLONG) +
                     (Long.parseLong(avisoHoras.getText().toString()) * HORASLONG) +
                     (Long.parseLong(avisoDias.getText().toString()) * DIASLONG);
-            valores.put(Contract.Tablas.EVENTO_AVISO,String.valueOf(fechaaviso));
+            QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_AVISO,String.valueOf(fechaaviso));
 
+        }else{
+
+            QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_AVISO,evento.getLong(EVENTO_AVISO));
         }
 
-        String seleccion = Contract.Tablas.EVENTO_ID_EVENTO+" = '"+idEvento+"'";
-
-        resolver.update(Contract.obtenerUriContenido(TABLA_EVENTO),valores,seleccion,null);
+        QueryDB.updateRegistro(TABLA_EVENTO,idEvento,valores);
 
         if (repeticiones.isChecked()) {
 
             generarRepeticiones(valores);
+            System.out.println("repeticiones is checked");
 
         }
     }
     private void generarRepeticiones(ContentValues valores){
 
-        ContentResolver resolver = getActivity().getContentResolver();
 
         idMulti = idEvento;
         String seleccion = Contract.Tablas.EVENTO_IDMULTI+" = '"+idMulti+ "' AND "+ Contract.Tablas.EVENTO_ID_EVENTO+
                 " <> '"+idEvento+"'";
-        resolver.delete(Contract.obtenerUriContenido(TABLA_EVENTO),seleccion,null);
+        int res = QueryDB.deteteRegistros(TABLA_EVENTO,seleccion);
+        System.out.println("registros rep borrados = " + res);
 
         long diffecha = ffinEvento-finiEvento;
 
@@ -723,41 +738,25 @@ public class FragmentUDEvento extends Fragment
         long hoy = JavaUtil.hoy();
         if (finiEvento==0){finiEvento = hoy;}
         long fecharep = finiEvento + offRep;
+        System.out.println("duracion mayor k = "+ (duracionRep+hoy > fecharep));
 
         while (duracionRep+hoy > fecharep){
 
-            valores.put(Contract.Tablas.EVENTO_FECHAINIEVENTO,String.valueOf(fecharep));
+            QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,fecharep);
             if (tipoEvento.equals(EVENTO)) {
-                valores.put(Contract.Tablas.EVENTO_FECHAFINEVENTO, String.valueOf(fecharep + diffecha));
-            }            resolver.insert(Contract.obtenerUriContenido(TABLA_EVENTO),valores);
+                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTO,(fecharep+diffecha));
+            }
+            QueryDB.insertRegistro(TABLA_EVENTO,valores);
+            System.out.println("valores = " + valores);
             fecharep += offRep;
         }
     }
 
-    private void setAdaptadorProyectos(Spinner spinner){
+    private void setAdaptadorProyectos(final AutoCompleteTextView autoCompleteTextView){
 
-        listaObjProyectos =  QueryDB.queryList(CAMPOS_PROYECTO,null,null);
-        listaProyectos = new ArrayList<>();
-        final String elija = "Elija un Presupuesto o Proyecto relacionado con el evento";
-        Modelo proyecto = new Modelo(CAMPOS_PROYECTO);
-        proyecto.setCampos(Contract.Tablas.PROYECTO_DESCRIPCION,elija);
-        listaProyectos = new ArrayList<>();
-        listaProyectos.add(proyecto);
-        listaProyectos.addAll(listaObjProyectos);
-        System.out.println("idProyecto = " + idProyecto);
+        listaProyectos =  QueryDB.queryList(CAMPOS_PROYECTO,null,null);
 
-        if (idProyecto!=null) {
-            for (int i = 0; i < listaProyectos.size(); i++) {
-
-                if (listaProyectos.get(i).getCampos(Contract.Tablas.PROYECTO_ID_PROYECTO).equals(idProyecto)) {
-
-                    posproy = i;
-                    break;
-                }
-            }
-        }
-
-        spinner.setAdapter(new ListaAdaptador(getContext(),R.layout.item_list_proyecto,listaProyectos) {
+        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),R.layout.item_list_proyecto,listaProyectos,PROYECTO_NOMBRE) {
             @Override
             public void onEntrada(Modelo entrada, View view) {
 
@@ -771,24 +770,6 @@ public class FragmentUDEvento extends Fragment
                 ProgressBar bar = view.findViewById(R.id.progressBarlistaproyectos);
 
                 descripcion.setText(entrada.getCampos(Contract.Tablas.PROYECTO_DESCRIPCION));
-
-                if (descripcion.getText().toString().equals(elija)){
-
-                    imagen.setVisibility(View.GONE);
-                    nombre.setVisibility(View.GONE);
-                    imgcli.setVisibility(View.GONE);
-                    imgest.setVisibility(View.GONE);
-                    nomcli.setVisibility(View.GONE);
-                    estado.setVisibility(View.GONE);
-
-                }else if (entrada.getCampos(Contract.Tablas.PROYECTO_ID_PROYECTO)!=null){
-
-                    imagen.setVisibility(View.VISIBLE);
-                    nombre.setVisibility(View.VISIBLE);
-                    imgcli.setVisibility(View.VISIBLE);
-                    imgest.setVisibility(View.VISIBLE);
-                    nomcli.setVisibility(View.VISIBLE);
-                    estado.setVisibility(View.VISIBLE);
 
                     nombre.setText(entrada.getCampos(Contract.Tablas.PROYECTO_NOMBRE));
                     nomcli.setText(entrada.getCampos(Contract.Tablas.CLIENTE_NOMBRE));
@@ -823,50 +804,33 @@ public class FragmentUDEvento extends Fragment
                     } else {
                         imgcli.setImageResource(R.drawable.cliente);
                     }
-                }
 
             }
         });
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        /*
+        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                idProyecto = listaProyectos.get(position).getCampos(Contract.Tablas.PROYECTO_ID_PROYECTO);
+                Modelo proyecto = (Modelo) autoCompleteTextView.getAdapter().getItem(position);
+                idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
+                nombreProyecto = proyecto.getString(PROYECTO_NOMBRE);
+                autoCompleteTextView.setText(nombreProyecto);
 
             }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
         });
+
+         */
 
     }
 
-    private void setAdaptadorClientes(Spinner spinner) {
+    private void setAdaptadorClientes(final AutoCompleteTextView autoCompleteTextView) {
 
-        listaobjClientes = QueryDB.queryList(CAMPOS_CLIENTE, null, null);
-        listaProyectos = new ArrayList<>();
-        final String elija = "Elija un Cliente o Prospecto relacionado con el evento";
-        Modelo cliente = new Modelo(CAMPOS_CLIENTE);
-        cliente.setCampos(Contract.Tablas.CLIENTE_DIRECCION, elija);
-        listaClientes = new ArrayList<>();
-        listaClientes.add(cliente);
-        listaClientes.addAll(listaobjClientes);
-        System.out.println("idCliente = " + idCliente);
+        listaClientes = QueryDB.queryList(CAMPOS_CLIENTE, null, null);
 
-        if (idCliente != null) {
-            for (int i = 0; i < listaClientes.size(); i++) {
-
-                if (listaClientes.get(i).getCampos(Contract.Tablas.CLIENTE_ID_CLIENTE).equals(idCliente)) {
-
-                    poscli = i;
-                    break;
-                }
-            }
-        }
-        spinner.setAdapter(new ListaAdaptador(getContext(),R.layout.item_list_cliente,listaClientes) {
+        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),R.layout.item_list_cliente,listaClientes,CLIENTE_NOMBRE) {
                @Override
                public void onEntrada(Modelo entrada, View view) {
 
@@ -877,8 +841,7 @@ public class FragmentUDEvento extends Fragment
                    TextView emailCli = view.findViewById(R.id.tvemailclilcliente);
                    TextView dirCli = view.findViewById(R.id.tvdirclilcliente);
 
-                   int peso = Integer.parseInt(entrada.getCampos
-                           (Contract.Tablas.CLIENTE_PESOTIPOCLI));
+                   int peso = entrada.getInt((CLIENTE_PESOTIPOCLI));
 
                    if (peso > 6) {
                        imgcli.setImageResource(R.drawable.clientev);
@@ -901,26 +864,28 @@ public class FragmentUDEvento extends Fragment
 
            });
 
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        /*
+        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                    idCliente = listaClientes.get(position).getCampos(Contract.Tablas.CLIENTE_ID_CLIENTE);
+                    Modelo cliente = (Modelo) autoCompleteTextView.getAdapter().getItem(position);
+                    idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
+                    nombreCliente = cliente.getString(CLIENTE_NOMBRE);
+                    autoCompleteTextView.setText(nombreCliente);
 
                 }
 
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
             });
+
+         */
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof Activity) {
-            this.activity = (Activity) context;
+            this.activity = (AppCompatActivity) context;
             icFragmentos = (ICFragmentos) this.activity;
         }
     }
@@ -940,7 +905,7 @@ public class FragmentUDEvento extends Fragment
                         //        Common.twoDigits(month+1) + " / " + year;
                         finiEvento = JavaUtil.fechaALong(year, month, day);
                         //String selectedDate = Common.formatDateForUi(year,month,day);
-                        String selectedDate = JavaUtil.getDate(finiEvento);
+                        String selectedDate = getDate(finiEvento);
                         fechaIni.setText(selectedDate);
                         if (!tipoEvento.equals(EVENTO)){
                             fechaFin.setText(selectedDate);
@@ -962,7 +927,7 @@ public class FragmentUDEvento extends Fragment
                         //        Common.twoDigits(month+1) + " / " + year;
                         ffinEvento = JavaUtil.fechaALong(year, month, day);
                         //String selectedDate = Common.formatDateForUi(year,month,day);
-                        String selectedDate = JavaUtil.getDate(ffinEvento);
+                        String selectedDate = getDate(ffinEvento);
                         fechaFin.setText(selectedDate);
                     }
                 });

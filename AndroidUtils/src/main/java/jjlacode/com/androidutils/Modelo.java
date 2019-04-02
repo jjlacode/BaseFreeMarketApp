@@ -1,5 +1,7 @@
 package jjlacode.com.androidutils;
 
+import android.net.Uri;
+
 import java.io.Serializable;
 
 public class Modelo implements Serializable {
@@ -67,6 +69,19 @@ public class Modelo implements Serializable {
 
             if (campos[i].equals(campo)){
                 return valores[i];
+            }
+        }
+        return null;
+    }
+
+    public Uri getUri(String campo) {
+
+        for (int i = 0; i < numcampos; i++) {
+
+            if (campos[i].equals(campo)){
+                if (valores[i]!=null) {
+                    return Uri.parse(valores[i]);
+                }
             }
         }
         return null;

@@ -9,9 +9,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +23,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,10 +37,10 @@ import jjlacode.com.androidutils.ICFragmentos;
 import jjlacode.com.androidutils.ImagenUtil;
 import jjlacode.com.androidutils.JavaUtil;
 import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 import jjlacode.com.freelanceproject.utilities.Common;
-import jjlacode.com.freelanceproject.R;
 
 public class FragmentUDProyecto extends Fragment
         implements Common.Constantes, Contract.Tablas, Common.Estados, Common.TiposEstados {
@@ -102,7 +103,7 @@ public class FragmentUDProyecto extends Fragment
     Bundle bundle = null;
     Modelo proyecto = null;
 
-    private Activity activity;
+    private AppCompatActivity activity;
     private ICFragmentos icFragmentos;
     ImagenUtil imagen;
 
@@ -812,7 +813,7 @@ public class FragmentUDProyecto extends Fragment
         QueryDB.updateRegistrosDetalle(TABLA_PARTIDA,idProyecto,TABLA_PROYECTO,valores,null);
     }
     /*
-    private void mostrarDialogoOpciones() {
+    private void mostrarDialogoOpcionesImagen() {
 
         final CharSequence[] opciones = {"Hacer foto desde cámara", "Elegir de la galería", "Cancelar"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -996,7 +997,7 @@ public class FragmentUDProyecto extends Fragment
         super.onAttach(context);
 
         if (context instanceof Activity) {
-            this.activity = (Activity) context;
+            this.activity = (AppCompatActivity) context;
             icFragmentos = (ICFragmentos) this.activity;
         }
 

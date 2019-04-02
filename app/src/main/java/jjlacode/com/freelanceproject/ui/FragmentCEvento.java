@@ -5,9 +5,11 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,12 +29,17 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import jjlacode.com.androidutils.DatePickerFragment;
 import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.ImagenUtil;
 import jjlacode.com.androidutils.JavaUtil;
 import jjlacode.com.androidutils.ListaAdaptadorFiltro;
 import jjlacode.com.androidutils.Modelo;
@@ -42,10 +49,12 @@ import jjlacode.com.freelanceproject.sqlite.Contract;
 import jjlacode.com.freelanceproject.sqlite.QueryDB;
 import jjlacode.com.freelanceproject.utilities.Common;
 
+import static jjlacode.com.freelanceproject.utilities.Common.permiso;
+
 public class FragmentCEvento extends Fragment
         implements Common.TiposEvento, Contract.Tablas, JavaUtil.Constantes, Common.Constantes {
 
-    private Activity activity;
+    private AppCompatActivity activity;
     private ICFragmentos icFragmentos;
     private Bundle bundle;
     private String namef;
@@ -100,6 +109,8 @@ public class FragmentCEvento extends Fragment
 
 
     private String idMulti;
+    private ImagenUtil imagenUtil;
+    private String path;
 
     public FragmentCEvento() {
         // Required empty public constructor
@@ -124,23 +135,15 @@ public class FragmentCEvento extends Fragment
             cliente = (Modelo) bundle.getSerializable(TABLA_CLIENTE);
             namef = bundle.getString("namef");
             bundle = null;
-            if (cliente != null) {
 
-                idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
-
-            }
-            if (proyecto!=null) {
-
-                idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
-
-            }
 
         }
 
         imagen = vista.findViewById(R.id.imgnevento);
-        //if (proyecto!=null && proyecto.getString(PROYECTO_RUTAFOTO)!=null){
-        //    imagen.setImageURI(Uri.parse(proyecto.getString(PROYECTO_RUTAFOTO)));
-       // }
+        if (proyecto!=null && proyecto.getString(PROYECTO_RUTAFOTO)!=null){
+            path = proyecto.getString(PROYECTO_RUTAFOTO);
+            imagen.setImageURI(Uri.parse(path));
+        }
         tiposEvento = vista.findViewById(R.id.sptiponevento);
         proyRel = vista.findViewById(R.id.spprynevento);
         cliRel = vista.findViewById(R.id.spclinevento);
@@ -175,14 +178,18 @@ public class FragmentCEvento extends Fragment
         btnhini = vista.findViewById(R.id.imgbtnhininevento);
         btnhfin = vista.findViewById(R.id.imgbtnhfinnevento);
 
-        /*
-        avisoDias.setText("0");
-        avisoHoras.setText("0");
-        avisoMinutos.setText("0");
-        repAnios.setText("0");
-        repMeses.setText("0");
-        repDias.setText("0");
-        */
+        if (cliente != null) {
+
+            idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
+            relCli.setChecked(true);
+
+        }
+        if (proyecto!=null) {
+
+            idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
+            relProy.setChecked(true);
+
+        }
 
         lugar.setVisibility(View.GONE);
         telefono.setVisibility(View.GONE);
@@ -263,29 +270,41 @@ public class FragmentCEvento extends Fragment
                     ldrep.setVisibility(View.GONE);
                     repeticiones.setVisibility(View.GONE);
                     aviso.setVisibility(View.GONE);
-                    proyRel.setVisibility(View.GONE);
-                    cliRel.setVisibility(View.GONE);
                     imagen.setVisibility(View.GONE);
                     descipcion.setVisibility(View.GONE);
-                    relProy.setVisibility(View.GONE);
-                    relCli.setVisibility(View.GONE);
+                    relProy.setVisibility(View.VISIBLE);
+                    relCli.setVisibility(View.VISIBLE);
+                    cliRel.setVisibility(View.VISIBLE);
+                    proyRel.setVisibility(View.VISIBLE);
 
                     tipoEvento = listaTiposEvento.get(position);
                     imagen.setVisibility(View.VISIBLE);
                     descipcion.setVisibility(View.VISIBLE);
-                    if (idCliente!=null){
 
-                        relCli.setVisibility(View.GONE);
+                    if (idProyecto!=null){
+
+                        //relProy.setVisibility(View.GONE);
+                        proyRel.setVisibility(View.VISIBLE);
+                        nombreProyecto = proyecto.getString(PROYECTO_NOMBRE);
+                        proyRel.setText(nombreProyecto);
                         cliRel.setVisibility(View.VISIBLE);
                         lugar.setText(cliente.getString(CLIENTE_DIRECCION));
                         telefono.setText(cliente.getString(CLIENTE_TELEFONO));
                         email.setText(cliente.getString(CLIENTE_EMAIL));
-                    }
-                    if (idProyecto!=null){
+                        nombreCliente = cliente.getString(CLIENTE_NOMBRE);
+                        cliRel.setText(nombreCliente);
 
-                        relProy.setVisibility(View.GONE);
-                        proyRel.setVisibility(View.VISIBLE);
+                    }else if (idCliente!=null){
+
+                        //relCli.setVisibility(View.GONE);
+                        cliRel.setVisibility(View.VISIBLE);
+                        lugar.setText(cliente.getString(CLIENTE_DIRECCION));
+                        telefono.setText(cliente.getString(CLIENTE_TELEFONO));
+                        email.setText(cliente.getString(CLIENTE_EMAIL));
+                        nombreCliente = cliente.getString(CLIENTE_NOMBRE);
+                        cliRel.setText(nombreCliente);
                     }
+
 
                     switch (tipoEvento){
 
@@ -489,6 +508,9 @@ public class FragmentCEvento extends Fragment
                 }else{
 
                     proyRel.setVisibility(View.GONE);
+                    idProyecto = null;
+                    nombreProyecto = null;
+
 
                 }
             }
@@ -505,6 +527,8 @@ public class FragmentCEvento extends Fragment
                 }else{
 
                     cliRel.setVisibility(View.GONE);
+                    idCliente = null;
+                    nombreCliente = null;
 
                 }
             }
@@ -541,7 +565,17 @@ public class FragmentCEvento extends Fragment
                         bundle = null;
                     }
 
+                }else if (namef.equals(CLIENTE)||namef.equals(PROSPECTO)){
+                if (tipoEvento != null) {
+                    guardarEvento();
+                    bundle = new Bundle();
+                    bundle.putSerializable(TABLA_CLIENTE,cliente);
+                    bundle.putString("namef", namef);
+                    icFragmentos.enviarBundleAFragment(bundle, new FragmentUDCliente());
+                    bundle = null;
                 }
+
+            }
             }
         });
 
@@ -567,10 +601,56 @@ public class FragmentCEvento extends Fragment
 
             }
         });
+
+        if (idProyecto!=null){proyRel.setText(proyecto.getString(PROYECTO_NOMBRE));}
+
+        proyRel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Modelo proyecto = (Modelo) proyRel.getAdapter().getItem(position);
+                nombreProyecto = proyecto.getString(PROYECTO_NOMBRE);
+                idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
+                proyRel.setText(nombreProyecto);
+                cliRel.setText(proyecto.getString(PROYECTO_CLIENTE_NOMBRE));
+
+            }
+
+        });
+
+        if (idCliente!=null){cliRel.setText(cliente.getString(CLIENTE_NOMBRE));}
+
+        cliRel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Modelo cliente = (Modelo) cliRel.getAdapter().getItem(position);
+                idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
+                nombreCliente = cliente.getString(CLIENTE_NOMBRE);
+                cliRel.setText(nombreCliente);
+                telefono.setText(cliente.getString(CLIENTE_TELEFONO));
+                lugar.setText(cliente.getString(CLIENTE_DIRECCION));
+                email.setText(cliente.getString(CLIENTE_EMAIL));
+
+            }
+
+        });
+
+        imagen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (permiso) {
+                    mostrarDialogoOpcionesImagen();
+                }
+
+            }
+        });
+
         return vista;
     }
 
-    private void setAdaptadorProyectos(final AutoCompleteTextView autoCompleteTextView){
+    private void setAdaptadorProyectos(AutoCompleteTextView autoCompleteTextView){
 
         listaProyectos =  QueryDB.queryList(CAMPOS_PROYECTO,null,null);
 
@@ -587,12 +667,12 @@ public class FragmentCEvento extends Fragment
                 TextView estado = view.findViewById(R.id.tvestadolistaproyectos);
                 ProgressBar bar = view.findViewById(R.id.progressBarlistaproyectos);
 
-                descripcion.setText(entrada.getCampos(Contract.Tablas.PROYECTO_DESCRIPCION));
+                descripcion.setText(entrada.getString(PROYECTO_DESCRIPCION));
 
 
-                    nombre.setText(entrada.getCampos(Contract.Tablas.PROYECTO_NOMBRE));
-                    nomcli.setText(entrada.getCampos(Contract.Tablas.CLIENTE_NOMBRE));
-                    estado.setText(entrada.getCampos(Contract.Tablas.ESTADO_DESCRIPCION));
+                    nombre.setText(entrada.getString(PROYECTO_NOMBRE));
+                    nomcli.setText(entrada.getString(CLIENTE_NOMBRE));
+                    estado.setText(entrada.getString(ESTADO_DESCRIPCION));
 
                         bar.setProgress(Integer.parseInt(entrada.getCampos
                                 (Contract.Tablas.PROYECTO_TOTCOMPLETADO)));
@@ -607,12 +687,10 @@ public class FragmentCEvento extends Fragment
                             imgest.setImageResource(R.drawable.alert_box_v);
                         }
 
-                    if (entrada.getCampos(Contract.Tablas.PROYECTO_RUTAFOTO) != null) {
-                        imagen.setImageURI(Uri.parse(entrada.getCampos
-                                (Contract.Tablas.PROYECTO_RUTAFOTO)));
+                    if (entrada.getString(PROYECTO_RUTAFOTO) != null) {
+                        imagen.setImageURI(Uri.parse(entrada.getString(PROYECTO_RUTAFOTO)));
                     }
-                    int peso = Integer.parseInt(entrada.getCampos
-                            (Contract.Tablas.CLIENTE_PESOTIPOCLI));
+                    int peso = Integer.parseInt(entrada.getString(CLIENTE_PESOTIPOCLI));
 
                     if (peso > 6) {
                         imgcli.setImageResource(R.drawable.clientev);
@@ -627,6 +705,7 @@ public class FragmentCEvento extends Fragment
             }
         });
 
+        /*
         if (idProyecto!=null){autoCompleteTextView.setText(proyecto.getString(PROYECTO_NOMBRE));}
 
         autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -640,6 +719,8 @@ public class FragmentCEvento extends Fragment
             }
 
         });
+
+         */
 
     }
 
@@ -683,6 +764,7 @@ public class FragmentCEvento extends Fragment
 
         });
 
+        /*
         if (idCliente!=null){autoCompleteTextView.setText(cliente.getString(CLIENTE_NOMBRE));}
 
         autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -697,6 +779,8 @@ public class FragmentCEvento extends Fragment
             }
 
         });
+
+         */
     }
 
     private boolean guardarEvento() {
@@ -706,11 +790,18 @@ public class FragmentCEvento extends Fragment
         if (idProyecto!=null){
 
             QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMPROYECTOREL,nombreProyecto);
+            QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_PROYECTOREL,idProyecto);
 
         }
         if (idCliente!=null){
 
             QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMCLIENTEREL,nombreCliente);
+            QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_CLIENTEREL,idCliente);
+        }
+
+        if (path!=null){
+
+            QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_RUTAFOTO,path);
         }
 
         switch (tipoEvento){
@@ -844,7 +935,7 @@ public class FragmentCEvento extends Fragment
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof Activity) {
-            this.activity = (Activity) context;
+            this.activity = (AppCompatActivity) context;
             icFragmentos = (ICFragmentos) this.activity;
         }
    }
@@ -929,6 +1020,79 @@ public class FragmentCEvento extends Fragment
 
     }
 
+    public void mostrarDialogoOpcionesImagen() {
 
+        final CharSequence[] opciones = {"Imagen del proyecto relacionado","Hacer foto desde cámara",
+                "Elegir de la galería", "Cancelar"};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Elige una opción");
+        builder.setItems(opciones, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                imagenUtil = new ImagenUtil(getContext());
+
+                if (opciones[which].equals("Hacer foto desde cámara")) {
+
+                    try {
+                        startActivityForResult(imagenUtil.takePhotoIntent(), COD_FOTO);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    imagenUtil.addToGallery();
+
+                } else if (opciones[which].equals("Elegir de la galería")) {
+
+                    startActivityForResult(imagenUtil.openGalleryIntent(), COD_SELECCIONA);
+
+                }else if (opciones[which].equals("Imagen del proyecto relacionado")) {
+
+                    if (proyecto!=null && proyecto.getString(PROYECTO_RUTAFOTO)!=null) {
+                        path = proyecto.getString(PROYECTO_RUTAFOTO);
+                        imagen.setImageURI(Uri.parse(path));
+                    }
+
+                }else {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        String photoPath;
+
+        switch (requestCode) {
+
+            case COD_SELECCIONA:
+                imagenUtil.setPhotoUri(data.getData());
+                photoPath = imagenUtil.getPath();
+                try {
+                    Bitmap bitmap = ImagenUtil.ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
+                    imagen.setImageBitmap(bitmap);
+                    path = photoPath;
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case COD_FOTO:
+                photoPath = imagenUtil.getPhotoPath();
+                try {
+                    Bitmap bitmap = ImagenUtil.ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
+                    imagen.setImageBitmap(bitmap); //imageView is your ImageView
+                    path = photoPath;
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                break;
+
+        }
+        System.out.println("photoPath = " + path);
+    }
 
 }

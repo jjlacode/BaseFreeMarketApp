@@ -71,7 +71,7 @@ public class AdaptadorProyecto extends RecyclerView.Adapter<AdaptadorProyecto.Pr
             proyectoViewHolder.imagenEstado.setVisibility(View.GONE);
 
         }
-
+        System.out.println("ruta foto pry = " + listaProyecto.get(position).getCampos(PROYECTO_RUTAFOTO));
         if (listaProyecto.get(position).getCampos(PROYECTO_RUTAFOTO)!=null) {
             proyectoViewHolder.imagenProyecto.setImageURI(Uri.parse(listaProyecto.get(position).getCampos(PROYECTO_RUTAFOTO)));
         }
