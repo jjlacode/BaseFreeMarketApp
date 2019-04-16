@@ -1,8 +1,7 @@
 package jjlacode.com.freelanceproject.ui;
 
-import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,44 +10,32 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
 import java.util.ArrayList;
 
-import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.AppActivity;
+import jjlacode.com.androidutils.FragmentC;
 import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.sqlite.Contract;
-import jjlacode.com.freelanceproject.sqlite.QueryDB;
-import jjlacode.com.freelanceproject.utilities.Common;
+import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
+import jjlacode.com.freelanceproject.utilities.CommonPry;
 
-public class FragmentCCliente extends Fragment implements Common.Constantes, Contract.Tablas {
+public class FragmentCCliente extends FragmentC implements CommonPry.Constantes, ContratoPry.Tablas {
 
     View vista;
     EditText nombreCliente,direccionCliente,telefonoCliente,emailCliente,contactoCliente;
     TextView titulo;
-    Button btnsave;
     ArrayList <Modelo> objTiposCli;
     String idTipoCliente = null;
     int peso;
 
-    private String namef;
-
-    private AppCompatActivity activity;
-    private ICFragmentos icFragmentos;
     private String namefsub;
-    private Bundle bundle;
     private Modelo proyecto;
+
+    private ConsultaBD consulta = new ConsultaBD();
 
     public FragmentCCliente() {
         // Required empty public constructor
-    }
-
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -144,7 +131,7 @@ public class FragmentCCliente extends Fragment implements Common.Constantes, Con
             @Override
             public void onClick(View v) {
 
-                registrarCliente();
+                registrar();
 
             }
         });
@@ -154,22 +141,23 @@ public class FragmentCCliente extends Fragment implements Common.Constantes, Con
 
     private void listaObjetosTipo(){
 
-            objTiposCli = QueryDB.queryList(CAMPOS_TIPOCLIENTE,null,null);
+            objTiposCli = consulta.queryList(CAMPOS_TIPOCLIENTE,null,null);
 
     }
 
-    public void registrarCliente(){
+    @Override
+    public boolean registrar(){
 
         ContentValues valores=new ContentValues();
-        QueryDB.putDato(valores,CAMPOS_CLIENTE,CLIENTE_NOMBRE,nombreCliente.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_CLIENTE,CLIENTE_DIRECCION,direccionCliente.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_CLIENTE,CLIENTE_TELEFONO,telefonoCliente.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_CLIENTE,CLIENTE_EMAIL,emailCliente.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_CLIENTE,CLIENTE_CONTACTO,contactoCliente.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_CLIENTE,CLIENTE_ID_TIPOCLIENTE,idTipoCliente);
-        QueryDB.putDato(valores,CAMPOS_CLIENTE,CLIENTE_PESOTIPOCLI,peso);
+        consulta.putDato(valores,CAMPOS_CLIENTE,CLIENTE_NOMBRE,nombreCliente.getText().toString());
+        consulta.putDato(valores,CAMPOS_CLIENTE,CLIENTE_DIRECCION,direccionCliente.getText().toString());
+        consulta.putDato(valores,CAMPOS_CLIENTE,CLIENTE_TELEFONO,telefonoCliente.getText().toString());
+        consulta.putDato(valores,CAMPOS_CLIENTE,CLIENTE_EMAIL,emailCliente.getText().toString());
+        consulta.putDato(valores,CAMPOS_CLIENTE,CLIENTE_CONTACTO,contactoCliente.getText().toString());
+        consulta.putDato(valores,CAMPOS_CLIENTE,CLIENTE_ID_TIPOCLIENTE,idTipoCliente);
+        consulta.putDato(valores,CAMPOS_CLIENTE,CLIENTE_PESOTIPOCLI,peso);
 
-        String idCliente = QueryDB.idInsertRegistro(TABLA_CLIENTE,valores);
+        String idCliente = consulta.idInsertRegistro(TABLA_CLIENTE,valores);
 
             if ((namef.equals(CLIENTE))||(namef.equals(PROSPECTO))) {
 
@@ -186,25 +174,12 @@ public class FragmentCCliente extends Fragment implements Common.Constantes, Con
                 bundle.putSerializable(TABLA_PROYECTO,proyecto);
                 bundle.putString("namefsub",namefsub);
                 bundle.putString("namef",namef);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCProyecto());
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentUDProyecto());
                 bundle = null;
 
             }
+            return true;
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
 
-        if (context instanceof Activity){
-            this.activity = (AppCompatActivity) context;
-            icFragmentos = (ICFragmentos) this.activity;
-        }
-
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
 }

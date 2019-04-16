@@ -8,6 +8,10 @@
         android:icon="@android:drawable/ic_menu_agenda"
         android:title="@string/agendaTarea" />
     <item
+        android:id="@+id/nav_eventos"
+        android:icon="@drawable/ico_calendario_reloj"
+        android:title="@string/eventos" />
+    <item
         android:id="@+id/nav_prospecto"
         android:icon="@drawable/ico_calendario_reloj"
         android:title="@string/prospectos" />
@@ -36,8 +40,16 @@
         android:icon="@drawable/ic_menu_manage"
         android:title="@string/perfiles" />
     <item
-        android:id="@+id/nav_eventos"
+        android:id="@+id/nav_amortizacion"
         android:icon="@drawable/ico_calendario_reloj"
-        android:title="@string/eventos" />
+        android:title="@string/amortizacion" />
+    <item
+        android:id="@+id/nav_gastosfijos"
+        android:icon="@drawable/ico_calendario_reloj"
+        android:title="@string/gastos" />
+    <item
+        android:id="@+id/nav_partidabase"
+        android:title="@string/partida_base" />
+
 
 </menu>

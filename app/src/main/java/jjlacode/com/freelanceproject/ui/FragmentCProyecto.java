@@ -1,11 +1,8 @@
 package jjlacode.com.freelanceproject.ui;
 
-import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -23,93 +19,61 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 
-import jjlacode.com.androidutils.ICFragmentos;
-import jjlacode.com.androidutils.ImagenUtil;
+import jjlacode.com.androidutils.AppActivity;
+import jjlacode.com.androidutils.FragmentC;
 import jjlacode.com.androidutils.JavaUtil;
+import jjlacode.com.androidutils.ListaAdaptadorFiltro;
 import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.sqlite.Contract;
-import jjlacode.com.freelanceproject.sqlite.QueryDB;
-import jjlacode.com.freelanceproject.utilities.Common;
+import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
+import jjlacode.com.freelanceproject.utilities.CommonPry;
 
 
-public class FragmentCProyecto extends Fragment implements Common.Constantes, Contract.Tablas, Common.Estados {
+public class FragmentCProyecto extends FragmentC implements CommonPry.Constantes, ContratoPry.Tablas, CommonPry.Estados {
 
-    private String namef;
-
-    private static final int COD_SELECCIONA = 10;
-    private static final int COD_FOTO = 20;
-    private static final String CARPETA_PRINCIPAL = "misImagenesAPP/";
-    private static final String CARPETA_IMAGEN = "freelanceProyect";
-    private static final String DIRECTORIO_IMAGEN = CARPETA_PRINCIPAL+CARPETA_IMAGEN;
-    private String path;
-
-    File fileImagen;
-    Bitmap bitmap;
-    View vista;
-    ImageView imagenProyecto;
-    TextView titulo;
-    EditText nombreProyecto;
-    EditText descripcionProyecto;
-    AutoCompleteTextView spClienteProyecto;
-    Spinner spEstadoProyecto;
-    Button btnguardarProyecto;
-    ImageButton imagenTipoClienteProyecto;
-    ArrayList<String> listaClientes;
-    ArrayList<String> listaEstados;
-    ArrayList<Modelo> objClientes;
-    ArrayList<Modelo> objEstados;
-    String idCliente;
-    int peso;
-    int posCliente;
-    String idEstado;
-    int tipoEstado;
-    int posEstado;
-    ICFragmentos icFragments;
-    AppCompatActivity activity;
-    Bundle bundle;
-    long fecha;
+    private TextView titulo;
+    private EditText nombreProyecto;
+    private EditText descripcionProyecto;
+    private AutoCompleteTextView spClienteProyecto;
+    private Spinner spEstadoProyecto;
+    private ImageButton imagenTipoClienteProyecto;
+    private ArrayList<Modelo> listaClientes;
+    private ArrayList<String> listaEstados;
+    private ArrayList<Modelo> objEstados;
+    private String idCliente;
+    private int peso;
+    private String idEstado;
+    private int tipoEstado;
+    private int posEstado;
+    private long fecha;
     Modelo proyecto;
-    private ImagenUtil imagenUtil;
+    private String nombreCliente;
 
+    private static ConsultaBD consulta = new ConsultaBD();
 
     public FragmentCProyecto() {
         // Required empty public constructor
-    }
-
-    public static FragmentCProyecto newInstance() {
-        FragmentCProyecto fragment = new FragmentCProyecto();
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        vista = inflater.inflate(R.layout.fragment_c_proyecto, container, false);
+        View view = inflater.inflate(R.layout.fragment_c_proyecto, container, false);
         // Inflate the layout for this fragment
-        imagenProyecto = vista.findViewById(R.id.imgnpry);
-        nombreProyecto = vista.findViewById(R.id.etnombrenpry);
-        descripcionProyecto = vista.findViewById(R.id.etdescnpry);
-        spClienteProyecto = vista.findViewById(R.id.spclinpry);
+        imagen = view.findViewById(R.id.imgnpry);
+        nombreProyecto = view.findViewById(R.id.etnombrenpry);
+        descripcionProyecto = view.findViewById(R.id.etdescnpry);
+        spClienteProyecto = view.findViewById(R.id.spclinpry);
         spClienteProyecto.setThreshold(1);
-        spEstadoProyecto = vista.findViewById(R.id.spestnpry);
-        btnguardarProyecto = vista.findViewById(R.id.buttonsavenpry);
-        imagenTipoClienteProyecto = vista.findViewById(R.id.imgtipoclinpry);
-        titulo = vista.findViewById(R.id.tvtitnpry);
+        spEstadoProyecto = view.findViewById(R.id.spestnpry);
+        btnsave = view.findViewById(R.id.buttonsavenpry);
+        imagenTipoClienteProyecto = view.findViewById(R.id.imgtipoclinpry);
+        titulo = view.findViewById(R.id.tvtitnpry);
         fecha = JavaUtil.hoy();
 
         bundle = getArguments();
@@ -141,54 +105,22 @@ public class FragmentCProyecto extends Fragment implements Common.Constantes, Co
         }
 
 
-        if (Common.permiso) {
-            imagenProyecto.setOnClickListener(new View.OnClickListener() {
+        if (CommonPry.permiso) {
+            imagen.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                    mostrarDialogoOpciones();
+                    mostrarDialogoOpcionesImagen();
                 }
             });
         }
 
-        listaObjetosClientes();
+        setAdaptadorClientes(spClienteProyecto);
 
-        ArrayAdapter<String> adaptadorCliente = new ArrayAdapter<String>
-                (getContext(),android.R.layout.simple_dropdown_item_1line,listaClientes);
-
-        spClienteProyecto.setAdapter(adaptadorCliente);
-
-        if (idCliente!=null){spClienteProyecto.setListSelection(posCliente);}
-
-        spClienteProyecto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                System.out.println("position = " + position);
-
-                if (position>0) {
-
-                    idCliente = objClientes.get(position-1).getString(CLIENTE_ID_CLIENTE);
-                    peso = objClientes.get(position - 1).getInt(CLIENTE_PESOTIPOCLI);
-                    posCliente = position;
-                    if (peso>6){imagenTipoClienteProyecto.setImageResource(R.drawable.clientev);}
-                    else if (peso>3){imagenTipoClienteProyecto.setImageResource(R.drawable.clientea);}
-                    else if (peso>0){imagenTipoClienteProyecto.setImageResource(R.drawable.clienter);}
-                    else {imagenTipoClienteProyecto.setImageResource(R.drawable.cliente);}
-
-
-                }
-            }
-
-            //@Override
-            //public void onNothingSelected(AdapterView<?> parent) {
-
-            //}
-        });
 
         listaObjetosEstados();
 
-        ArrayAdapter<CharSequence> adaptadorEstado = new ArrayAdapter
+        ArrayAdapter<String> adaptadorEstado = new ArrayAdapter<>
                 (getContext(),android.R.layout.simple_spinner_item,listaEstados);
 
         spEstadoProyecto.setAdapter(adaptadorEstado);
@@ -216,11 +148,11 @@ public class FragmentCProyecto extends Fragment implements Common.Constantes, Co
             }
         });
 
-        btnguardarProyecto.setOnClickListener(new View.OnClickListener() {
+        btnsave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                registrarProyecto();
+                registrar();
             }
         });
         imagenTipoClienteProyecto.setOnClickListener(new View.OnClickListener() {
@@ -231,51 +163,70 @@ public class FragmentCProyecto extends Fragment implements Common.Constantes, Co
             }
         });
 
-        return vista;
+        if (idCliente!=null){
+        Modelo cliente = consulta.queryObject(CAMPOS_CLIENTE,idCliente);
+        nombreCliente = cliente.getString(CLIENTE_NOMBRE);
+        spClienteProyecto.setText(cliente.getString(CLIENTE_NOMBRE));
+        }
+
+        spClienteProyecto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Modelo cliente = (Modelo) spClienteProyecto.getAdapter().getItem(position);
+                idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
+                nombreCliente = cliente.getString(CLIENTE_NOMBRE);
+                spClienteProyecto.setText(nombreCliente);
+                peso = cliente.getInt(CLIENTE_PESOTIPOCLI);
+                if (peso>6){imagenTipoClienteProyecto.setImageResource(R.drawable.clientev);}
+                else if (peso>3){imagenTipoClienteProyecto.setImageResource(R.drawable.clientea);}
+                else if (peso>0){imagenTipoClienteProyecto.setImageResource(R.drawable.clienter);}
+                else {imagenTipoClienteProyecto.setImageResource(R.drawable.cliente);}
+
+            }
+
+        });
+
+
+        return view;
     }
 
-    private void registrarProyecto() {
+    @Override
+    protected boolean registrar() {
+
 
         ContentValues valores = new ContentValues();
-        QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_NOMBRE,nombreProyecto.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_DESCRIPCION,descripcionProyecto.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_ID_CLIENTE,idCliente);
-        QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_ID_ESTADO,idEstado);
-        QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAENTRADA,fecha);
-        QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_RUTAFOTO,path);
+        consulta.putDato(valores, CAMPOS_PROYECTO, PROYECTO_NOMBRE, nombreProyecto.getText().toString());
+        consulta.putDato(valores, CAMPOS_PROYECTO, PROYECTO_DESCRIPCION, descripcionProyecto.getText().toString());
+        consulta.putDato(valores, CAMPOS_PROYECTO, PROYECTO_ID_CLIENTE, idCliente);
+        consulta.putDato(valores, CAMPOS_PROYECTO, PROYECTO_ID_ESTADO, idEstado);
+        consulta.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAENTRADA, fecha);
+        consulta.putDato(valores, CAMPOS_PROYECTO, PROYECTO_RUTAFOTO, path);
 
-        //valores.put(Contract.Columnas.PROYECTO_FECHAENTREGAACORDADA, "0");
-        //valores.put(Contract.Columnas.PROYECTO_FECHAENTREGACALCULADA, "0");
-        //valores.put(Contract.Columnas.PROYECTO_FECHAENTREGAPRESUP, "0");
-        //valores.put(Contract.Columnas.PROYECTO_FECHAFINAL, "0");
-        //valores.put(Contract.Columnas.PROYECTO_IMPORTEPRESUPUESTO, "0");
-        //valores.put(Contract.Columnas.PROYECTO_IMPORTEFINAL, "0");
-        //valores.put(Contract.Columnas.PROYECTO_TOTCOMPLETADO, "0");
+        if (idCliente != null) {
 
-
-        if (posCliente > 0) {
-
-            if (posEstado > 0) {
+            if (idEstado != null) {
 
                 System.out.println("valores = " + valores);
-                Uri uri = QueryDB.insertRegistro(TABLA_PROYECTO,valores);
+                String idProyecto = consulta.idInsertRegistro(TABLA_PROYECTO, valores);
 
-                Modelo proyecto = QueryDB.queryObject(CAMPOS_PROYECTO,uri);
+                Modelo proyecto = consulta.queryObject(CAMPOS_PROYECTO, idProyecto);
 
-                new Common.Calculos.Tareafechas().execute();
+                new CommonPry.Calculos.Tareafechas().execute();
                 bundle = new Bundle();
-                bundle.putSerializable(TABLA_PROYECTO,proyecto);
-                bundle.putString("namef",namef);
-                icFragments.enviarBundleAFragment(bundle,new FragmentUDProyecto());
+                bundle.putSerializable(TABLA_PROYECTO, proyecto);
+                bundle.putString("namef", namef);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentUDProyecto());
                 bundle = null;
 
             } else {
                 Toast.makeText(getContext(), "Debe elegir un estado", Toast.LENGTH_LONG).show();
             }
-        }else {
-                Toast.makeText(getContext(),"Debe elegir un cliente",Toast.LENGTH_LONG).show();
-            }
-
+        } else {
+            //Toast.makeText(getContext(), "Debe elegir un cliente", Toast.LENGTH_LONG).show();
+            mostrarDialogoTipoCliente();
+        }
+        return true;
     }
 
     private void listaObjetosEstados() {
@@ -292,7 +243,7 @@ public class FragmentCProyecto extends Fragment implements Common.Constantes, Co
             seleccion = ESTADO_TIPOESTADO + " == 8";
         }
 
-        objEstados = QueryDB.queryList(CAMPOS_ESTADO,seleccion,null);
+        objEstados = consulta.queryList(CAMPOS_ESTADO,seleccion,null);
 
         obtenerListaEstados();
     }
@@ -308,113 +259,6 @@ public class FragmentCProyecto extends Fragment implements Common.Constantes, Co
         }
     }
 
-    private void listaObjetosClientes() {
-
-        objClientes = new ArrayList<>();
-
-        if (namef.equals(PRESUPUESTO)) {
-
-                objClientes = QueryDB.queryList(CAMPOS_CLIENTE,null, null);
-
-        }else{
-
-
-            ArrayList<Modelo> lista = QueryDB.queryList(CAMPOS_CLIENTE,null,  null);
-
-            objClientes = new ArrayList<>();
-
-            for (int i=0;i< lista.size();i++) {
-
-                Modelo cliente = new Modelo(CAMPOS_CLIENTE);
-
-                if (cliente.getInt(CLIENTE_PESOTIPOCLI) >0){
-
-                    objClientes.add(cliente);
-                }
-            }
-
-        }
-
-        obterListaClientes();
-
-    }
-
-    private void obterListaClientes() {
-
-        listaClientes = new ArrayList<>();
-        listaClientes.add("Seleccione Cliente");
-
-        for (int i=0;i<objClientes.size();i++){
-
-            listaClientes.add(objClientes.get(i).getString(CLIENTE_NOMBRE));
-            if (idCliente!=null && objClientes.get(i).getString(CLIENTE_ID_CLIENTE).equals(idCliente)){posCliente=i+1;}
-        }
-    }
-
-    public void mostrarDialogoOpciones() {
-
-        final CharSequence[] opciones = {"Hacer foto desde cámara", "Elegir de la galería", "Cancelar"};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Elige una opción");
-        builder.setItems(opciones, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                imagenUtil = new ImagenUtil(getContext());
-
-                if (opciones[which].equals("Hacer foto desde cámara")) {
-
-                    try {
-                        startActivityForResult(imagenUtil.takePhotoIntent(), COD_FOTO);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    imagenUtil.addToGallery();
-
-                } else if (opciones[which].equals("Elegir de la galería")) {
-
-                    startActivityForResult(imagenUtil.openGalleryIntent(), COD_SELECCIONA);
-
-                } else {
-                    dialog.dismiss();
-                }
-            }
-        });
-        builder.show();
-    }
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        String photoPath;
-
-        switch (requestCode) {
-
-            case COD_SELECCIONA:
-                imagenUtil.setPhotoUri(data.getData());
-                photoPath = imagenUtil.getPath();
-                try {
-                    Bitmap bitmap = ImagenUtil.ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
-                    imagenProyecto.setImageBitmap(bitmap);
-                    path = photoPath;
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case COD_FOTO:
-                photoPath = imagenUtil.getPhotoPath();
-                try {
-                    Bitmap bitmap = ImagenUtil.ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
-                    imagenProyecto.setImageBitmap(bitmap); //imageView is your ImageView
-                    path = photoPath;
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                break;
-        }
-    }
 
     private void mostrarDialogoTipoCliente() {
 
@@ -448,31 +292,58 @@ public class FragmentCProyecto extends Fragment implements Common.Constantes, Co
         proyecto.setCampos(PROYECTO_NOMBRE,nombreProyecto.getText().toString());
         proyecto.setCampos(PROYECTO_DESCRIPCION,descripcionProyecto.getText().toString());
         proyecto.setCampos(PROYECTO_ID_CLIENTE,idCliente);
-        proyecto.setCampos(PROYECTO_FECHAENTRADA,String.valueOf(fecha));
+        proyecto.setCampos(PROYECTO_FECHAENTRADA,fecha);
+        proyecto.setCampos(PROYECTO_RUTAFOTO,path);
 
         bundle = new Bundle();
         bundle.putSerializable(TABLA_PROYECTO, proyecto);
         bundle.putString("namef", namef);
         bundle.putString("namefsub", namefsub);
 
-        icFragments.enviarBundleAFragment(bundle, myfragment);
+        icFragmentos.enviarBundleAFragment(bundle, myfragment);
         bundle = null;
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    private void setAdaptadorClientes(final AutoCompleteTextView autoCompleteTextView) {
 
-        if (context instanceof Activity){
-            this.activity = (AppCompatActivity) context;
-            icFragments = (ICFragmentos) this.activity;
-        }
+        listaClientes = consulta.queryList(CAMPOS_CLIENTE, null, null);
 
-    }
+        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),R.layout.item_list_cliente,listaClientes,CLIENTE_NOMBRE) {
+            @Override
+            public void onEntrada(Modelo entrada, View view) {
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
+                ImageView imgcli = view.findViewById(R.id.imgclilcliente);
+                TextView nombreCli = view.findViewById(R.id.tvnomclilcliente);
+                TextView contactoCli = view.findViewById(R.id.tvcontacclilcliente);
+                TextView telefonoCli = view.findViewById(R.id.tvtelclilcliente);
+                TextView emailCli = view.findViewById(R.id.tvemailclilcliente);
+                TextView dirCli = view.findViewById(R.id.tvdirclilcliente);
+
+                dirCli.setText(entrada.getString(CLIENTE_DIRECCION));
+
+
+                int peso = entrada.getInt
+                        (CLIENTE_PESOTIPOCLI);
+
+                if (peso > 6) {
+                    imgcli.setImageResource(R.drawable.clientev);
+                } else if (peso > 3) {
+                    imgcli.setImageResource(R.drawable.clientea);
+                } else if (peso > 0) {
+                    imgcli.setImageResource(R.drawable.clienter);
+                } else {
+                    imgcli.setImageResource(R.drawable.cliente);
+                }
+
+                nombreCli.setText(entrada.getString(CLIENTE_NOMBRE));
+                contactoCli.setText(entrada.getString(CLIENTE_CONTACTO));
+                telefonoCli.setText(entrada.getString(CLIENTE_TELEFONO));
+                emailCli.setText(entrada.getString(CLIENTE_EMAIL));
+
+            }
+
+        });
+
     }
 
 }

@@ -1,13 +1,8 @@
 package jjlacode.com.freelanceproject.ui;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
@@ -28,37 +22,24 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import jjlacode.com.androidutils.DatePickerFragment;
-import jjlacode.com.androidutils.ICFragmentos;
-import jjlacode.com.androidutils.ImagenUtil;
+import jjlacode.com.androidutils.FragmentC;
 import jjlacode.com.androidutils.JavaUtil;
 import jjlacode.com.androidutils.ListaAdaptadorFiltro;
 import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.androidutils.TimePickerFragment;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.sqlite.Contract;
-import jjlacode.com.freelanceproject.sqlite.QueryDB;
-import jjlacode.com.freelanceproject.utilities.Common;
+import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
+import jjlacode.com.freelanceproject.utilities.CommonPry;
 
-import static jjlacode.com.freelanceproject.utilities.Common.permiso;
+import static jjlacode.com.freelanceproject.utilities.CommonPry.permiso;
 
-public class FragmentCEvento extends Fragment
-        implements Common.TiposEvento, Contract.Tablas, JavaUtil.Constantes, Common.Constantes {
+public class FragmentCEvento extends FragmentC
+        implements CommonPry.TiposEvento, ContratoPry.Tablas, CommonPry.Constantes {
 
-    private AppCompatActivity activity;
-    private ICFragmentos icFragmentos;
-    private Bundle bundle;
-    private String namef;
-    ImageView imagen;
     Spinner tiposEvento;
     AutoCompleteTextView proyRel;
     AutoCompleteTextView cliRel;
@@ -83,8 +64,6 @@ public class FragmentCEvento extends Fragment
     CheckBox repeticiones;
     CheckBox relProy;
     CheckBox relCli;
-    Button btnsave;
-    Button btnvolver;
     TextView laviso;
     TextView lrep;
     TextView ldrep;
@@ -109,17 +88,11 @@ public class FragmentCEvento extends Fragment
 
 
     private String idMulti;
-    private ImagenUtil imagenUtil;
-    private String path;
+
+    private static ConsultaBD consulta = new ConsultaBD();
 
     public FragmentCEvento() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -169,7 +142,7 @@ public class FragmentCEvento extends Fragment
         relProy = vista.findViewById(R.id.chprynevento);
         relCli = vista.findViewById(R.id.chclinevento);
         btnsave = vista.findViewById(R.id.btnsavenevento);
-        btnvolver = vista.findViewById(R.id.btnvolvernevento);
+        btnback = vista.findViewById(R.id.btnvolvernevento);
         laviso = vista.findViewById(R.id.ltvavisonevento);
         lrep = vista.findViewById(R.id.ltvreptnevento);
         ldrep = vista.findViewById(R.id.ltvdreptnevento);
@@ -231,8 +204,8 @@ public class FragmentCEvento extends Fragment
         listaTiposEvento.add(LLAMADA);
         listaTiposEvento.add(EVENTO);
 
-        ArrayAdapter<CharSequence> adapterTiposEvento = new ArrayAdapter
-                (getContext(),android.R.layout.simple_spinner_item,listaTiposEvento);
+        ArrayAdapter<String> adapterTiposEvento = new ArrayAdapter<>
+                (getContext(),R.layout.spinner_item_tipo_evento,listaTiposEvento);
 
         tiposEvento.setAdapter(adapterTiposEvento);
 
@@ -274,8 +247,8 @@ public class FragmentCEvento extends Fragment
                     descipcion.setVisibility(View.GONE);
                     relProy.setVisibility(View.VISIBLE);
                     relCli.setVisibility(View.VISIBLE);
-                    cliRel.setVisibility(View.VISIBLE);
-                    proyRel.setVisibility(View.VISIBLE);
+                    cliRel.setVisibility(View.GONE);
+                    proyRel.setVisibility(View.GONE);
 
                     tipoEvento = listaTiposEvento.get(position);
                     imagen.setVisibility(View.VISIBLE);
@@ -283,7 +256,6 @@ public class FragmentCEvento extends Fragment
 
                     if (idProyecto!=null){
 
-                        //relProy.setVisibility(View.GONE);
                         proyRel.setVisibility(View.VISIBLE);
                         nombreProyecto = proyecto.getString(PROYECTO_NOMBRE);
                         proyRel.setText(nombreProyecto);
@@ -443,9 +415,6 @@ public class FragmentCEvento extends Fragment
                     avisoHoras.setVisibility(View.VISIBLE);
                     avisoMinutos.setVisibility(View.VISIBLE);
                     laviso.setVisibility(View.VISIBLE);
-                    //avisoDias.setText("0");
-                    //avisoHoras.setText("0");
-                    //avisoMinutos.setText("0");
 
                 }else{
 
@@ -540,7 +509,7 @@ public class FragmentCEvento extends Fragment
 
                 if (namef.equals(AGENDA)) {
                     if (tipoEvento != null) {
-                        guardarEvento();
+                        registrar();
                         bundle = new Bundle();
                         bundle.putString("namef", namef);
                         icFragmentos.enviarBundleAFragment(bundle, new FragmentAgenda());
@@ -548,7 +517,7 @@ public class FragmentCEvento extends Fragment
                     }
                 }else if (namef.equals(EVENTO)){
                     if (tipoEvento != null) {
-                        guardarEvento();
+                        registrar();
                         bundle = new Bundle();
                         bundle.putString("namef", namef);
                         icFragmentos.enviarBundleAFragment(bundle, new FragmentEvento());
@@ -557,7 +526,7 @@ public class FragmentCEvento extends Fragment
 
                 }else if (namef.equals(PRESUPUESTO)||namef.equals(PROYECTO)){
                     if (tipoEvento != null) {
-                        guardarEvento();
+                        registrar();
                         bundle = new Bundle();
                         bundle.putSerializable(TABLA_PROYECTO,proyecto);
                         bundle.putString("namef", namef);
@@ -567,7 +536,7 @@ public class FragmentCEvento extends Fragment
 
                 }else if (namef.equals(CLIENTE)||namef.equals(PROSPECTO)){
                 if (tipoEvento != null) {
-                    guardarEvento();
+                    registrar();
                     bundle = new Bundle();
                     bundle.putSerializable(TABLA_CLIENTE,cliente);
                     bundle.putString("namef", namef);
@@ -579,7 +548,7 @@ public class FragmentCEvento extends Fragment
             }
         });
 
-        btnvolver.setOnClickListener(new View.OnClickListener() {
+        btnback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -652,7 +621,7 @@ public class FragmentCEvento extends Fragment
 
     private void setAdaptadorProyectos(AutoCompleteTextView autoCompleteTextView){
 
-        listaProyectos =  QueryDB.queryList(CAMPOS_PROYECTO,null,null);
+        listaProyectos =  consulta.queryList(CAMPOS_PROYECTO,null,null);
 
         autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),R.layout.item_list_proyecto,listaProyectos,PROYECTO_NOMBRE) {
             @Override
@@ -675,13 +644,13 @@ public class FragmentCEvento extends Fragment
                     estado.setText(entrada.getString(ESTADO_DESCRIPCION));
 
                         bar.setProgress(Integer.parseInt(entrada.getCampos
-                                (Contract.Tablas.PROYECTO_TOTCOMPLETADO)));
+                                (ContratoPry.Tablas.PROYECTO_TOTCOMPLETADO)));
 
                         long retraso = Long.parseLong(entrada.getCampos
-                                (Contract.Tablas.PROYECTO_RETRASO));
-                        if (retraso > 3 * Common.DIASLONG) {
+                                (ContratoPry.Tablas.PROYECTO_RETRASO));
+                        if (retraso > 3 * CommonPry.DIASLONG) {
                             imgest.setImageResource(R.drawable.alert_box_r);
-                        } else if (retraso > Common.DIASLONG) {
+                        } else if (retraso > CommonPry.DIASLONG) {
                             imgest.setImageResource(R.drawable.alert_box_a);
                         } else {
                             imgest.setImageResource(R.drawable.alert_box_v);
@@ -705,28 +674,11 @@ public class FragmentCEvento extends Fragment
             }
         });
 
-        /*
-        if (idProyecto!=null){autoCompleteTextView.setText(proyecto.getString(PROYECTO_NOMBRE));}
-
-        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Modelo proyecto = (Modelo) autoCompleteTextView.getAdapter().getItem(position);
-                nombreProyecto = proyecto.getString(PROYECTO_NOMBRE);
-                idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
-                proyRel.setText(nombreProyecto);
-            }
-
-        });
-
-         */
-
     }
 
-    private void setAdaptadorClientes(final AutoCompleteTextView autoCompleteTextView) {
+    private void setAdaptadorClientes(AutoCompleteTextView autoCompleteTextView) {
 
-        listaClientes = QueryDB.queryList(CAMPOS_CLIENTE, null, null);
+        listaClientes = consulta.queryList(CAMPOS_CLIENTE, null, null);
 
         autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),R.layout.item_list_cliente,listaClientes,CLIENTE_NOMBRE) {
             @Override
@@ -764,61 +716,38 @@ public class FragmentCEvento extends Fragment
 
         });
 
-        /*
-        if (idCliente!=null){autoCompleteTextView.setText(cliente.getString(CLIENTE_NOMBRE));}
-
-        autoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Modelo cliente = (Modelo) autoCompleteTextView.getAdapter().getItem(position);
-                idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
-                nombreCliente = cliente.getString(CLIENTE_NOMBRE);
-                cliRel.setText(nombreCliente);
-
-            }
-
-        });
-
-         */
     }
 
-    private boolean guardarEvento() {
+    protected boolean registrar() {
 
         ContentValues valores = new ContentValues();
 
         if (idProyecto!=null){
 
-            QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMPROYECTOREL,nombreProyecto);
-            QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_PROYECTOREL,idProyecto);
+            consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMPROYECTOREL,nombreProyecto);
+            consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_PROYECTOREL,idProyecto);
 
         }
         if (idCliente!=null){
 
-            QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMCLIENTEREL,nombreCliente);
-            QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_CLIENTEREL,idCliente);
+            consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMCLIENTEREL,nombreCliente);
+            consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_CLIENTEREL,idCliente);
         }
 
         if (path!=null){
 
-            QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_RUTAFOTO,path);
+            consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_RUTAFOTO,path);
         }
 
         switch (tipoEvento){
 
             case TAREA:
-                //QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,0);
-                //valores.put(Contract.Tablas.EVENTO_HORAINIEVENTO, "0");
-                //valores.put(Contract.Tablas.EVENTO_FECHAFINEVENTO, "0");
-                //valores.put(Contract.Tablas.EVENTO_HORAFINEVENTO, "0");
                 break;
 
             case CITA:
-                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
-                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
-                //valores.put(Contract.Tablas.EVENTO_FECHAFINEVENTO, "0");
-                //valores.put(Contract.Tablas.EVENTO_HORAFINEVENTO, "0");
-                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_LUGAR,lugar.getText().toString());
+                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
+                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
+                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_LUGAR,lugar.getText().toString());
 
                 if (lugar==null || lugar.getText().toString().equals("")){
                     Toast.makeText(getContext(), "Debe introducir una direccion para la cita",
@@ -828,11 +757,9 @@ public class FragmentCEvento extends Fragment
                 break;
 
             case EMAIL:
-                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
-                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
-                //valores.put(Contract.Tablas.EVENTO_FECHAFINEVENTO, "0");
-                //valores.put(Contract.Tablas.EVENTO_HORAFINEVENTO, "0");
-                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_EMAIL,email.getText().toString());
+                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
+                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
+                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_EMAIL,email.getText().toString());
                 if (email==null || email.getText().toString().equals("")) {
                     Toast.makeText(getContext(), "Debe introducir una direccion de email",
                             Toast.LENGTH_SHORT).show();
@@ -841,11 +768,9 @@ public class FragmentCEvento extends Fragment
                 break;
 
             case LLAMADA:
-                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
-                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
-                //valores.put(Contract.Tablas.EVENTO_FECHAFINEVENTO, "0");
-                //valores.put(Contract.Tablas.EVENTO_HORAFINEVENTO, "0");
-                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_TELEFONO,telefono.getText().toString());
+                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
+                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
+                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_TELEFONO,telefono.getText().toString());
 
                 if (telefono==null || telefono.getText().toString().equals("")) {
                     Toast.makeText(getContext(), "Debe introducir un numero de telefono",
@@ -855,94 +780,67 @@ public class FragmentCEvento extends Fragment
                 break;
 
             case EVENTO:
-                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
-                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
-                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTO,ffinEvento);
-                QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTO,hfinEvento);
+                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
+                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
+                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTO,ffinEvento);
+                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTO,hfinEvento);
                 break;
 
         }
-        QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_DESCRIPCION,descipcion.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_TIPOEVENTO,tipoEvento);
-        //valores.put(Contract.Tablas.EVENTO_COMPLETADA,"0");
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_DESCRIPCION,descipcion.getText().toString());
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_TIPOEVENTO,tipoEvento);
 
         if (aviso.isChecked() && !tipoEvento.equals(TAREA)){
 
-            if (avisoDias.getText().toString().equals("")){avisoDias.setText("0");}
-            if (avisoHoras.getText().toString().equals("")){avisoHoras.setText("0");}
-            if (avisoMinutos.getText().toString().equals("")){avisoMinutos.setText("0");}
-
-            long fechaaviso = (Long.parseLong(avisoMinutos.getText().toString()) * MINUTOSLONG) +
-                    (Long.parseLong(avisoHoras.getText().toString()) * HORASLONG) +
-                    (Long.parseLong(avisoDias.getText().toString()) * DIASLONG);
-            QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_AVISO,fechaaviso);
+            long fechaaviso = (JavaUtil.comprobarLong(avisoMinutos.getText().toString()) * MINUTOSLONG) +
+                    (JavaUtil.comprobarLong(avisoHoras.getText().toString()) * HORASLONG) +
+                    (JavaUtil.comprobarLong(avisoDias.getText().toString()) * DIASLONG);
+            consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_AVISO,fechaaviso);
 
 
         }
 
         System.out.println("valores = " + valores);
 
-        Uri uri = QueryDB.insertRegistro(TABLA_EVENTO,valores);
+        idMulti = consulta.idInsertRegistro(TABLA_EVENTO,valores);
 
         if (repeticiones.isChecked() && !tipoEvento.equals(TAREA)) {
 
-            generarRepeticiones(uri,valores);
+            generarRepeticiones(valores);
 
         }
         return true;
     }
 
-    private void generarRepeticiones(Uri uri,ContentValues valores){
+    private void generarRepeticiones(ContentValues valores){
 
-        idMulti = Contract.obtenerIdTabla(uri);
-        QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_IDMULTI,idMulti);
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_IDMULTI,idMulti);
 
-        QueryDB.updateRegistro(uri, valores);
+        consulta.updateRegistro(TABLA_EVENTO,idMulti, valores);
 
         long diffecha = ffinEvento-finiEvento;
 
-        if (repAnios.getText().toString().equals("")){repAnios.setText("0");}
-        if (repMeses.getText().toString().equals("")){repMeses.setText("0");}
-        if (repDias.getText().toString().equals("")){repDias.setText("0");}
-        if (drepAnios.getText().toString().equals("")){drepAnios.setText("0");}
-        if (drepMeses.getText().toString().equals("")){drepMeses.setText("0");}
-        if (drepDias.getText().toString().equals("")){drepDias.setText("0");}
+        long offRep = (JavaUtil.comprobarLong(repAnios.getText().toString()) * ANIOSLONG)+
+                (JavaUtil.comprobarLong(repMeses.getText().toString()) * MESESLONG)+
+                        (JavaUtil.comprobarLong(repDias.getText().toString()) * DIASLONG);
 
-        long offRep = (Long.parseLong(repAnios.getText().toString()) * ANIOSLONG)+
-                (Long.parseLong(repMeses.getText().toString()) * MESESLONG)+
-                        (Long.parseLong(repDias.getText().toString()) * DIASLONG);
-
-        long duracionRep = (Long.parseLong(drepAnios.getText().toString()) * ANIOSLONG)+
-                (Long.parseLong(drepMeses.getText().toString()) * MESESLONG)+
-                        (Long.parseLong(drepDias.getText().toString()) * DIASLONG);
+        long duracionRep = (JavaUtil.comprobarLong(drepAnios.getText().toString()) * ANIOSLONG)+
+                (JavaUtil.comprobarLong(drepMeses.getText().toString()) * MESESLONG)+
+                        (JavaUtil.comprobarLong(drepDias.getText().toString()) * DIASLONG);
         long hoy = JavaUtil.hoy();
         if (finiEvento==0){finiEvento = hoy;}
         long fecharep = finiEvento + offRep;
-
+        System.out.println("duracion mayor k = "+ (duracionRep+hoy > fecharep));
         while (duracionRep+hoy > fecharep){
 
-            QueryDB.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,fecharep);
+            consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,fecharep);
 
             if (tipoEvento.equals(EVENTO)) {
-                valores.put(Contract.Tablas.EVENTO_FECHAFINEVENTO, String.valueOf(fecharep + diffecha));
+                valores.put(ContratoPry.Tablas.EVENTO_FECHAFINEVENTO, String.valueOf(fecharep + diffecha));
             }
-            QueryDB.insertRegistro(TABLA_EVENTO,valores);
+            consulta.insertRegistro(TABLA_EVENTO,valores);
             fecharep += offRep;
         }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof Activity) {
-            this.activity = (AppCompatActivity) context;
-            icFragmentos = (ICFragmentos) this.activity;
-        }
-   }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
     }
 
     private void showDatePickerDialogInicio() {
@@ -951,10 +849,10 @@ public class FragmentCEvento extends Fragment
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         // +1 because january is zero
-                        //String selectedDate = Common.twoDigits(day) + " / " +
-                        //        Common.twoDigits(month+1) + " / " + year;
+                        //String selectedDate = CommonPry.twoDigits(day) + " / " +
+                        //        CommonPry.twoDigits(month+1) + " / " + year;
                         finiEvento = JavaUtil.fechaALong(year, month, day);
-                        //String selectedDate = Common.formatDateForUi(year,month,day);
+                        //String selectedDate = CommonPry.formatDateForUi(year,month,day);
                         String selectedDate = JavaUtil.getDate(finiEvento);
                         fechaIni.setText(selectedDate);
                         if (!tipoEvento.equals(EVENTO)){
@@ -973,10 +871,10 @@ public class FragmentCEvento extends Fragment
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         // +1 because january is zero
-                        //String selectedDate = Common.twoDigits(day) + " / " +
-                        //        Common.twoDigits(month+1) + " / " + year;
+                        //String selectedDate = CommonPry.twoDigits(day) + " / " +
+                        //        CommonPry.twoDigits(month+1) + " / " + year;
                         ffinEvento = JavaUtil.fechaALong(year, month, day);
-                        //String selectedDate = Common.formatDateForUi(year,month,day);
+                        //String selectedDate = CommonPry.formatDateForUi(year,month,day);
                         String selectedDate = JavaUtil.getDate(ffinEvento);
                         fechaFin.setText(selectedDate);
                     }
@@ -985,7 +883,7 @@ public class FragmentCEvento extends Fragment
         newFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
     }
 
-    public void showTimePickerDialogini(){
+    private void showTimePickerDialogini(){
 
         TimePickerFragment newFragment = TimePickerFragment.newInstance
                 (JavaUtil.hoy(), new TimePickerDialog.OnTimeSetListener() {
@@ -1002,7 +900,7 @@ public class FragmentCEvento extends Fragment
 
     }
 
-    public void showTimePickerDialogfin(){
+    private void showTimePickerDialogfin(){
 
         TimePickerFragment newFragment = TimePickerFragment.newInstance
                 (JavaUtil.hoy(), new TimePickerDialog.OnTimeSetListener() {
@@ -1020,79 +918,5 @@ public class FragmentCEvento extends Fragment
 
     }
 
-    public void mostrarDialogoOpcionesImagen() {
-
-        final CharSequence[] opciones = {"Imagen del proyecto relacionado","Hacer foto desde cámara",
-                "Elegir de la galería", "Cancelar"};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Elige una opción");
-        builder.setItems(opciones, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                imagenUtil = new ImagenUtil(getContext());
-
-                if (opciones[which].equals("Hacer foto desde cámara")) {
-
-                    try {
-                        startActivityForResult(imagenUtil.takePhotoIntent(), COD_FOTO);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    imagenUtil.addToGallery();
-
-                } else if (opciones[which].equals("Elegir de la galería")) {
-
-                    startActivityForResult(imagenUtil.openGalleryIntent(), COD_SELECCIONA);
-
-                }else if (opciones[which].equals("Imagen del proyecto relacionado")) {
-
-                    if (proyecto!=null && proyecto.getString(PROYECTO_RUTAFOTO)!=null) {
-                        path = proyecto.getString(PROYECTO_RUTAFOTO);
-                        imagen.setImageURI(Uri.parse(path));
-                    }
-
-                }else {
-                    dialog.dismiss();
-                }
-            }
-        });
-        builder.show();
-    }
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        String photoPath;
-
-        switch (requestCode) {
-
-            case COD_SELECCIONA:
-                imagenUtil.setPhotoUri(data.getData());
-                photoPath = imagenUtil.getPath();
-                try {
-                    Bitmap bitmap = ImagenUtil.ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
-                    imagen.setImageBitmap(bitmap);
-                    path = photoPath;
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case COD_FOTO:
-                photoPath = imagenUtil.getPhotoPath();
-                try {
-                    Bitmap bitmap = ImagenUtil.ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
-                    imagen.setImageBitmap(bitmap); //imageView is your ImageView
-                    path = photoPath;
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                break;
-
-        }
-        System.out.println("photoPath = " + path);
-    }
 
 }

@@ -7,17 +7,20 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.appcompat.app.AlertDialog;
+
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-import jjlacode.com.freelanceproject.sqlite.Contract;
-import jjlacode.com.freelanceproject.sqlite.QueryDB;
-import jjlacode.com.freelanceproject.utilities.Common;
+import jjlacode.com.androidutils.JavaUtil;
+import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
+import jjlacode.com.freelanceproject.utilities.CommonPry;
 
-public class SplashActivity extends AppCompatActivity implements Contract.Tablas {
 
+public class SplashActivity extends AppCompatActivity implements ContratoPry.Tablas, CommonPry.Constantes {
+
+    private static ConsultaBD consulta = new ConsultaBD();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,64 +32,59 @@ public class SplashActivity extends AppCompatActivity implements Contract.Tablas
 
                 if (!comprobarInicio()){
 
-                    SharedPreferences preferences=getSharedPreferences("preferencias", Context.MODE_PRIVATE);
+                    SharedPreferences preferences=getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor=preferences.edit();
 
-                    try {
+                    //try {
                         ContentValues valoresPer = new ContentValues();
 
-                        QueryDB.putDato(valoresPer,CAMPOS_PERFIL,PERFIL_NOMBRE,"Defecto");
-                        QueryDB.putDato(valoresPer,CAMPOS_PERFIL,PERFIL_BENEFICIO,10);
-                        System.out.println("Contract.Tablas.obtenerUriContenido(Contract.Tabla.PERFIL) = "
-                                + Contract.obtenerUriContenido(TABLA_PERFIL));
-                        Uri reg = QueryDB.insertRegistro(TABLA_PERFIL,valoresPer);
+                        consulta.putDato(valoresPer,CAMPOS_PERFIL,PERFIL_NOMBRE,"Defecto");
+                        consulta.putDato(valoresPer,CAMPOS_PERFIL,PERFIL_DESCRIPCION,
+                                "Perfil por defecto, jornada normal de 8 horas diarias" +
+                                        " de lunes a viernes y 30 dias de vacaciones al año, " +
+                                        " y un sueldo anual de "+ JavaUtil.formatoMonedaLocal(20000));
+                        Uri reg = consulta.insertRegistro(TABLA_PERFIL,valoresPer);
                         System.out.println(reg);
-
-                        ContentValues valoresgstfijo = new ContentValues();
-
-                        QueryDB.putDato(valoresgstfijo,CAMPOS_GASTOFIJO,GASTOFIJO_DESCRIPCION, "Sueldo");
-                        QueryDB.putDato(valoresgstfijo,CAMPOS_GASTOFIJO,GASTOFIJO_IMPORTE, 30000);
-                        QueryDB.putDato(valoresgstfijo,CAMPOS_GASTOFIJO,GASTOFIJO_CANTIDAD, 1.0);
-                        QueryDB.putDato(valoresgstfijo,CAMPOS_GASTOFIJO,GASTOFIJO_ANYOS, 1);
-
-                        QueryDB.insertRegistro(TABLA_GASTOFIJO,valoresgstfijo);
-
+/*
                     }catch (Exception e){
 
                         Toast.makeText(getApplicationContext(),"Error al crear base de datos",Toast.LENGTH_LONG).show();
                         System.out.println("error al crear base");
-                        getApplicationContext().deleteDatabase("freelanceproject.db");
-                        if (preferences.contains("perfil_activo")) {
+                        getApplicationContext().deleteDatabase(BASEDATOS);
+                        if (preferences.contains(PERFILACTIVO)) {
 
-                            editor.remove("perfil_activo");
+                            editor.remove(PERFILACTIVO);
                             editor.apply();
                         }
                         finish();
                     }
-
+*/
                     try{
 
-                        editor.putString("perfil_activo", "Defecto");
-                        editor.putInt("prioridad", 1);
+                        editor.putString(PERFILACTIVO, "Defecto");
+                        editor.putBoolean(PRIORIDAD, true);
+                        editor.putInt(DIASPASADOS,20);
+                        editor.putInt(DIASFUTUROS,90);
                         editor.apply();
 
                     }catch (Exception e){
 
-                        if (preferences.contains("perfil_activo")) {
+                        if (preferences.contains(PERFILACTIVO)) {
 
-                            editor.remove("perfil_activo");
+                            editor.remove(PERFILACTIVO);
                             editor.apply();
 
                         }
-                        getApplicationContext().deleteDatabase("freelanceproject.db");
+                        getApplicationContext().deleteDatabase(BASEDATOS);
                         System.out.println("error al crear base");
                         finish();
 
                     }
-                    Common.prioridad=1;
-                    Common.perfila="Defecto";
-                    Common.hora = Common.Calculos.calculoPrecioHora();
-                    Common.beneficio = 10;
+                    CommonPry.prioridad = true;
+                    CommonPry.perfila = "Defecto";
+                    CommonPry.diasfuturos = 90;
+                    CommonPry.diaspasados = 20;
+                    CommonPry.hora = CommonPry.Calculos.calculoPrecioHora();
                 }
 
 
@@ -100,13 +98,15 @@ public class SplashActivity extends AppCompatActivity implements Contract.Tablas
 
     private Boolean comprobarInicio() {
 
-        SharedPreferences preferences=getSharedPreferences("preferencias", Context.MODE_PRIVATE);
+        SharedPreferences preferences=getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
 
-        if (getDatabasePath("freelanceproject.db")!=null && preferences.contains("perfil_activo")){
+        if (getDatabasePath(BASEDATOS)!=null && preferences.contains(PERFILACTIVO)){
 
-            Common.perfila = preferences.getString("perfil_activo","Defecto");
-            Common.prioridad = preferences.getInt("prioridad",1);
-            Common.hora = Common.Calculos.calculoPrecioHora();
+            CommonPry.perfila = preferences.getString(PERFILACTIVO,"Defecto");
+            CommonPry.prioridad = preferences.getBoolean(PRIORIDAD,true);
+            CommonPry.diaspasados = preferences.getInt(DIASPASADOS,20);
+            CommonPry.diasfuturos = preferences.getInt(DIASFUTUROS,90);
+            CommonPry.hora = CommonPry.Calculos.calculoPrecioHora();
 
             Log.d("inicio", "Inicio correcto");
 
@@ -114,19 +114,19 @@ public class SplashActivity extends AppCompatActivity implements Contract.Tablas
             return true;
         }
 
-        if (preferences.contains("perfil_activo")){
+        if (preferences.contains(PERFILACTIVO)){
 
             SharedPreferences.Editor editor=preferences.edit();
-            editor.remove("perfil_activo");
+            editor.remove(PERFILACTIVO);
             editor.apply();
 
             Log.d("inicio", "borrado perfil activo de preferencias");
         }
-        if (getDatabasePath("freelanceproject.db")!=null){
+        if (getDatabasePath(BASEDATOS)!=null){
 
-            deleteDatabase("freelanceproject.db");
+            deleteDatabase(BASEDATOS);
 
-            Log.d("inicio", "borrada freelanceproject.db");
+            Log.d("inicio", "borrada" + BASEDATOS);
         }
 
         return false;

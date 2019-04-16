@@ -6,12 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.fragment.app.Fragment;
-
+import jjlacode.com.androidutils.FragmentBase;
 import jjlacode.com.freelanceproject.R;
 
 
-public class FragmentInformes extends Fragment {
+public class FragmentInformes extends FragmentBase {
 
     public FragmentInformes() {
         // Required empty public constructor

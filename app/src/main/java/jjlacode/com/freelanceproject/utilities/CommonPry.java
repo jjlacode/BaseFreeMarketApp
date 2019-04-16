@@ -16,17 +16,19 @@ import jjlacode.com.androidutils.JavaUtil;
 import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.BuildConfig;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.sqlite.Contract;
-import jjlacode.com.freelanceproject.sqlite.QueryDB;
+import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 
 import static jjlacode.com.androidutils.AppActivity.getAppContext;
 
 
-public class Common implements JavaUtil.Constantes, Contract.Tablas {
+public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
 
 
         public static String perfila = null;//Perfil activo para calculos y preferencias
-        public static int prioridad;
+        public static boolean prioridad;
+        public static int diaspasados;
+        public static int diasfuturos;
         public static double hora;
         public static double beneficio;
         public static boolean permiso;
@@ -34,9 +36,18 @@ public class Common implements JavaUtil.Constantes, Contract.Tablas {
         public static String idProyecto;
         public static String agendaTemp;
 
+    private static ConsultaBD consulta = new ConsultaBD();
+
 
     public interface  Constantes {
 
+        String PRIORIDAD = "prioridad";
+        String PREFERENCIAS = "preferencias";
+        String DIASPASADOS = "diaspasados";
+        String DIASFUTUROS = "diasfuturos";
+        String BASEDATOS = "freelanceproject.db";
+        String PERFILACTIVO = "perfil activo";
+        String PARTIDABASE = "partidabase";
         String NUEVOPRESUPUESTO = getAppContext().getString(R.string.nuevo_presupuesto);
         String NUEVOPROYECTO = getAppContext().getString(R.string.nuevo_proyecto);
         String CLIENTE = getAppContext().getString(R.string.cliente);
@@ -51,7 +62,8 @@ public class Common implements JavaUtil.Constantes, Contract.Tablas {
         String HISTORICO = "historico";
         String AGENDA = "agenda";
         String PERFIL = "perfil";
-        String PREFERENCIAS = "preferencias";
+        String AMORTIZACION = "amortizacion";
+        String GASTOSFIJOS = "gastos fijos";
         String PARTIDA = getAppContext().getString(R.string.partida);
         String PARTIDAS = getAppContext().getString(R.string.partidas);
         String GASTO = getAppContext().getString(R.string.gasto);
@@ -60,8 +72,6 @@ public class Common implements JavaUtil.Constantes, Contract.Tablas {
         String NUEVO = getAppContext().getString(R.string.nuevo);
         String OCASIONAL = getAppContext().getString(R.string.ocasional);
         String PRINCIPAL = getAppContext().getString(R.string.principal);
-        String PRODUCTOPERSONALIZADO = getAppContext().getString(R.string.producto_personalizado);
-        String TAREAPERSONALIZADA = getAppContext().getString(R.string.tarea_personalizada);
         int COD_SELECCIONA = 10;
         int COD_FOTO = 20;
         String CARPETA_PRINCIPAL = "freelanceproyect/";
@@ -99,11 +109,19 @@ public class Common implements JavaUtil.Constantes, Contract.Tablas {
 
     public  interface TiposEvento {
 
-        String TAREA = "tarea";
-        String CITA = "cita";
-        String LLAMADA = "llamada";
-        String EMAIL = "email";
-        String EVENTO = "evento";
+        String TAREA = "Tarea";
+        String CITA = "Cita";
+        String LLAMADA = "Llamada";
+        String EMAIL = "Email";
+        String EVENTO = "Evento";
+    }
+
+    public interface TiposDetPartida{
+
+        String TIPOTAREA = "tarea";
+        String TIPOPRODUCTO = "producto";
+        String TIPOPRODUCTOPROV = "productoprov";
+        String TIPOPARTIDA = "partida";
     }
 
 
@@ -156,27 +174,26 @@ public class Common implements JavaUtil.Constantes, Contract.Tablas {
 
     public static class Calculos implements  Constantes{
 
-        static ContentResolver resolver = getAppContext().getContentResolver();
 
         public static double calculoPrecioHora() {
 
-            ArrayList<Modelo> listaAmortizaciones = QueryDB.queryList(CAMPOS_AMORTIZACION);
+            ArrayList<Modelo> listaAmortizaciones = consulta.queryList(CAMPOS_AMORTIZACION);
 
-            ArrayList<Modelo> listaGastosFijos = QueryDB.queryList(CAMPOS_GASTOFIJO);
+            ArrayList<Modelo> listaGastosFijos = consulta.queryList(CAMPOS_GASTOFIJO);
 
             long hoy = JavaUtil.hoy();
             double precioHoraAmortizaciones = 0;
 
             for (Modelo amortizacion : listaAmortizaciones) {
 
-                Long fecha = amortizacion.getLong(AMORTIZACION_FECHACOMPRA);
+                long fecha = amortizacion.getLong(AMORTIZACION_FECHACOMPRA);
 
                 long horas = (amortizacion.getInt(AMORTIZACION_ANYOS) * 365 * 24) +
                         (amortizacion.getInt(AMORTIZACION_MESES) * 30 * 24) +
                         (amortizacion.getInt(AMORTIZACION_DIAS) * 24);
                 if (fecha + (horas * 60 * 60 * 1000) > hoy) {
 
-                    precioHoraAmortizaciones += amortizacion.getDouble(AMORTIZACION_IMPORTE) / horas;
+                    precioHoraAmortizaciones += amortizacion.getDouble(AMORTIZACION_IMPORTE) / (double) horas;
 
                 }
             }
@@ -185,20 +202,17 @@ public class Common implements JavaUtil.Constantes, Contract.Tablas {
 
             for (Modelo gastoFijo : listaGastosFijos) {
 
-                int horas = (gastoFijo.getInt(GASTOFIJO_ANYOS) * 365 * 24) +
+                long horas = (gastoFijo.getInt(GASTOFIJO_ANYOS) * 365 * 24) +
                         (gastoFijo.getInt(GASTOFIJO_MESES) * 30 * 24) +
                         (gastoFijo.getInt(GASTOFIJO_DIAS) * 24);
 
-                precioHoraGastosFijos += gastoFijo.getDouble(GASTOFIJO_IMPORTE) / horas;
+                precioHoraGastosFijos += gastoFijo.getDouble(GASTOFIJO_IMPORTE) / (double) horas;
             }
 
             double totalAmortizacionesYGastos = (precioHoraAmortizaciones + precioHoraGastosFijos) * 24 * 365;
 
-            String seleccion = PERFIL_NOMBRE + " = '" + perfila + "'";
+            Modelo perfil = consulta.queryObject(CAMPOS_PERFIL,PERFIL_NOMBRE,perfila,null,IGUAL,null);
 
-            ArrayList<Modelo> listaPerfiles = QueryDB.queryList(CAMPOS_PERFIL,seleccion, null);
-
-            Modelo perfil = listaPerfiles.get(0);
 
             double beneficio = perfil.getDouble(PERFIL_BENEFICIO);
             double totHoras = perfil.getDouble(PERFIL_HORASLUNES) +
@@ -209,6 +223,8 @@ public class Common implements JavaUtil.Constantes, Contract.Tablas {
                     perfil.getDouble(PERFIL_HORASSABADO) +
                     perfil.getDouble(PERFIL_HORASDOMINGO);
 
+            totalAmortizacionesYGastos+= perfil.getDouble(PERFIL_SUELDO);
+
             int semanas = JavaUtil.semanasAnio();
             double horasTrabajadasAnyo = semanas * totHoras;
             double horasVacacionesARestar = Math.round(perfil.getDouble(PERFIL_VACACIONES) / 7) * totHoras;
@@ -218,15 +234,11 @@ public class Common implements JavaUtil.Constantes, Contract.Tablas {
 
         public static void recalcularFechas() {
 
-            String seleccionPerfil = PERFIL_NOMBRE + " = '"+perfila+"'";
-
-            ArrayList<Modelo> listaPerfiles = QueryDB.queryList(CAMPOS_PERFIL,seleccionPerfil, null);
-
-            Modelo perfilActivo = listaPerfiles.get(0);
+            Modelo perfilActivo = consulta.queryObject(CAMPOS_PERFIL,PERFIL_NOMBRE,perfila,null,IGUAL,null);
 
             String ordenProyectosFecha = PROYECTO_FECHAENTRADA + " ASC";
 
-            ArrayList<Modelo> listaProyectos = QueryDB.queryList(CAMPOS_PROYECTO,null, ordenProyectosFecha);
+            ArrayList<Modelo> listaProyectos = consulta.queryList(CAMPOS_PROYECTO,null, ordenProyectosFecha);
 
             for (int i = 0; i < listaProyectos.size(); i++) {
 
@@ -241,10 +253,8 @@ public class Common implements JavaUtil.Constantes, Contract.Tablas {
                         if (proyecto.getLong(PROYECTO_FECHAFINAL) == 0) {
 
                             ContentValues valores = new ContentValues();
-                            valores.put(PROYECTO_FECHAFINAL, JavaUtil.hoy());
-
-                            resolver.update(Contract.crearUriTabla(proyecto.getString(PROYECTO_ID_PROYECTO), TABLA_PROYECTO),
-                                    valores, null, null);
+                            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAFINAL,JavaUtil.hoy());
+                            consulta.updateRegistro(TABLA_PROYECTO,proyecto.getString(PROYECTO_ID_PROYECTO),valores);
 
                         }
 
@@ -255,51 +265,16 @@ public class Common implements JavaUtil.Constantes, Contract.Tablas {
                             Modelo proyecto2 = listaProyectos.get(x);
 
                             if ((proyecto2.getInt(PROYECTO_CLIENTE_PESOTIPOCLI) >=
-                                    proyecto.getInt(PROYECTO_CLIENTE_PESOTIPOCLI))|| (prioridad == 0)) {
-
-                                if (proyecto.getInt(PROYECTO_TIPOESTADO) < 4) {
+                                    proyecto.getInt(PROYECTO_CLIENTE_PESOTIPOCLI))|| (!prioridad)) {
 
 
-                                    ArrayList<Modelo> listaPartidas = QueryDB.queryListDetalle
-                                            (CAMPOS_PARTIDA,proyecto2.getString(PARTIDA_ID_PROYECTO), TABLA_PROYECTO);
+                                    double horasrealizadas =
+                                            (proyecto2.getDouble(PROYECTO_TIEMPO)/ 100)
+                                                    * proyecto2.getInt(PROYECTO_TOTCOMPLETADO);
 
-                                    for (int y = 0; y < listaPartidas.size(); y++) {
+                                    horasTrabajoPendientes += proyecto2.getDouble(PROYECTO_TIEMPO)
+                                             - horasrealizadas;
 
-                                        Modelo partida = listaPartidas.get(y);
-
-
-                                        double horasrealizadas =
-                                                ((partida.getDouble(PARTIDA_TIEMPO)
-                                                        * partida.getDouble(PARTIDA_CANTIDAD)) / 100)
-                                                        * partida.getInt(PARTIDA_COMPLETADA);
-
-                                        horasTrabajoPendientes += (partida.getDouble(PARTIDA_TIEMPO)
-                                                * partida.getDouble(PARTIDA_CANTIDAD)) - horasrealizadas;
-
-
-                                    }
-                                } else if (proyecto.getInt(PROYECTO_TIPOESTADO) > 3) {
-
-                                    if (proyecto2.getInt(PROYECTO_TIPOESTADO) > 3) {
-
-                                        ArrayList<Modelo> listaPartidas = QueryDB.queryListDetalle
-                                                (CAMPOS_PARTIDA,proyecto2.getString(PROYECTO_ID_PROYECTO),TABLA_PROYECTO);
-
-                                        for (int y = 0; y < listaPartidas.size(); y++) {
-
-                                            Modelo partida = listaPartidas.get(y);
-
-                                            double horasrealizadas = ((partida.getDouble(PARTIDA_TIEMPO) *
-                                                    partida.getDouble(PARTIDA_CANTIDAD)) / 100)
-                                                    * partida.getInt(PARTIDA_COMPLETADA);
-
-                                            horasTrabajoPendientes += (partida.getDouble(PARTIDA_TIEMPO)
-                                                    * partida.getDouble(PARTIDA_CANTIDAD)) - horasrealizadas;
-
-
-                                        }
-                                    }
-                                }
 
                             }
                         }
@@ -314,11 +289,8 @@ public class Common implements JavaUtil.Constantes, Contract.Tablas {
                                 perfilActivo.getDouble(PERFIL_HORASDOMINGO));
 
                         ContentValues valores = new ContentValues();
-                        valores.put(PROYECTO_FECHAENTREGACALCULADA, fecha);
-
-                        resolver.update(Contract.crearUriTabla(proyecto.getString(PROYECTO_ID_PROYECTO), TABLA_PROYECTO),
-                                valores, null, null);
-
+                        consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAENTREGACALCULADA,fecha);
+                        consulta.updateRegistro(TABLA_PROYECTO,proyecto.getString(PROYECTO_ID_PROYECTO),valores);
                     }
 
                 }
@@ -339,7 +311,7 @@ public class Common implements JavaUtil.Constantes, Contract.Tablas {
             int pesoNuevo = 0;
             int pesoProspecto = 0;
 
-            ArrayList<Modelo> listaTipoCliente = QueryDB.queryList
+            ArrayList<Modelo> listaTipoCliente = consulta.queryList
                     (CAMPOS_TIPOCLIENTE,null, null);
 
             for (Modelo tipoCliente : listaTipoCliente) {
@@ -372,10 +344,10 @@ public class Common implements JavaUtil.Constantes, Contract.Tablas {
                 }
             }
 
-            ArrayList<Modelo> listaProyectos = QueryDB.queryList
+            ArrayList<Modelo> listaProyectos = consulta.queryList
                     (CAMPOS_PROYECTO,null, null);
 
-            ArrayList<Modelo> lista = QueryDB.queryList
+            ArrayList<Modelo> lista = consulta.queryList
                     (CAMPOS_CLIENTE,null,null);
 
             Modelo cliente= null;
@@ -437,12 +409,157 @@ public class Common implements JavaUtil.Constantes, Contract.Tablas {
 
             if (modificado && cliente.getString(CLIENTE_ID_TIPOCLIENTE) != null) {
                 ContentValues valores = new ContentValues();
-                valores.put(CLIENTE_ID_TIPOCLIENTE, cliente.getString(CLIENTE_ID_TIPOCLIENTE));
-                valores.put(CLIENTE_PESOTIPOCLI, cliente.getInt(CLIENTE_PESOTIPOCLI));
+                consulta.putDato(valores,CAMPOS_CLIENTE,CLIENTE_ID_TIPOCLIENTE,cliente.getString(CLIENTE_ID_TIPOCLIENTE));
+                consulta.putDato(valores,CAMPOS_CLIENTE,CLIENTE_PESOTIPOCLI,cliente.getInt(CLIENTE_PESOTIPOCLI));
+                consulta.updateRegistro(TABLA_CLIENTE,cliente.getString(CLIENTE_ID_CLIENTE),valores);
+            }
 
-                resolver.update(Contract.crearUriTabla
-                        (cliente.getString(CLIENTE_ID_CLIENTE), TABLA_CLIENTE),
-                        valores, null, null);
+        }
+
+        public static void actualizarPartidaProyecto(String idPartida){
+
+            double tiempoPartida= 0;
+            double importeProductosPartida= 0;
+            double importeTiempoPartida= 0;
+            double totalPartida= 0;
+            ArrayList<Modelo> listaDetPartida;
+            listaDetPartida = consulta.queryListDetalle(CAMPOS_DETPARTIDA,idPartida,TABLA_PARTIDA);
+            for (Modelo detPartida : listaDetPartida) {
+
+                if (detPartida.getDouble(DETPARTIDA_TIEMPO)>0) {
+                    tiempoPartida += detPartida.getDouble(DETPARTIDA_TIEMPO)*detPartida.getDouble(DETPARTIDA_CANTIDAD);
+                }else {
+                    double importedet = detPartida.getDouble(DETPARTIDA_PRECIO)*detPartida.getDouble(DETPARTIDA_CANTIDAD);
+                    importeProductosPartida += importedet + ((importedet/100)*detPartida.getDouble(DETPARTIDA_DESCUENTOPROV));
+                }
+            }
+            importeTiempoPartida = tiempoPartida * CommonPry.hora;
+            totalPartida = importeProductosPartida +importeTiempoPartida;
+
+            ContentValues valores = new ContentValues();
+            consulta.putDato(valores,CAMPOS_PARTIDA,PARTIDA_TIEMPO,tiempoPartida);
+            consulta.putDato(valores,CAMPOS_PARTIDA,PARTIDA_PRECIO,totalPartida);
+            consulta.putDato(valores,CAMPOS_PARTIDA,PARTIDA_PRECIOHORA,CommonPry.hora);
+
+            Modelo partida = consulta.queryObject(CAMPOS_PARTIDA,PARTIDA_ID_PARTIDA,idPartida,null,
+                    JavaUtil.Constantes.IGUAL,null);
+            String idProyecto_Partida = partida.getString(PARTIDA_ID_PROYECTO);
+            int secuenciaPartida = partida.getInt(PARTIDA_SECUENCIA);
+            int i =consulta.updateRegistroDetalle(TABLA_PARTIDA,idProyecto_Partida,secuenciaPartida,valores);
+            System.out.println("Partidas actualizadas = " + i);
+
+        }
+
+        public static void actualizarPartidaBase(String idPartidabase){
+
+            double tiempoPartida= 0;
+            double importeProductosPartida= 0;
+            double importeTiempoPartida= 0;
+            double totalPartida= 0;
+            ArrayList<Modelo> listaDetPartida;
+            listaDetPartida = consulta.queryListDetalle(CAMPOS_DETPARTIDABASE,idPartidabase,TABLA_PARTIDABASE);
+            for (Modelo detPartida : listaDetPartida) {
+
+                if (detPartida.getDouble(DETPARTIDABASE_TIEMPO)>0) {
+                    tiempoPartida += detPartida.getDouble(DETPARTIDABASE_TIEMPO)*detPartida.getDouble(DETPARTIDABASE_CANTIDAD);
+                }else {
+                    double importedet = detPartida.getDouble(DETPARTIDABASE_PRECIO)*detPartida.getDouble(DETPARTIDABASE_CANTIDAD);
+                    importeProductosPartida += importedet + ((importedet/100)*detPartida.getDouble(DETPARTIDABASE_DESCUENTOPROV));
+                }
+            }
+            importeTiempoPartida = tiempoPartida * CommonPry.hora;
+            totalPartida = importeProductosPartida +importeTiempoPartida;
+
+            ContentValues valores = new ContentValues();
+            consulta.putDato(valores,CAMPOS_PARTIDABASE,PARTIDABASE_TIEMPO,tiempoPartida);
+            consulta.putDato(valores,CAMPOS_PARTIDABASE,PARTIDABASE_PRECIO,totalPartida);
+
+            Modelo partida = consulta.queryObject(CAMPOS_PARTIDABASE,idPartidabase);
+            consulta.updateRegistro(TABLA_PARTIDABASE,idPartidabase,valores);
+
+        }
+
+        public static void actualizarPresupuesto(Modelo partida){
+
+            ArrayList<Modelo> listaPartidas = consulta.queryListDetalle(CAMPOS_PARTIDA,partida.getString(PARTIDA_ID_PROYECTO),TABLA_PROYECTO);
+
+            double totalTiempo= 0;
+            double totalPrecio= 0;
+            int totcompletada= 0;
+
+            for (Modelo itemPartida : listaPartidas) {
+                actualizarPartidaProyecto(itemPartida.getString(PARTIDA_ID_PARTIDA));
+                double cantidad = itemPartida.getDouble(PARTIDA_CANTIDAD);
+                totalTiempo+=itemPartida.getDouble(PARTIDA_TIEMPO)*cantidad;
+                totalPrecio+=itemPartida.getDouble(PARTIDA_PRECIO)*cantidad;
+                totcompletada+= itemPartida.getInt(PARTIDA_COMPLETADA);
+            }
+
+            totcompletada = (int) (Math.round(((double) totcompletada) / listaPartidas.size()));
+            ContentValues valores = new ContentValues();
+            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_TIEMPO,totalTiempo);
+            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_IMPORTEPRESUPUESTO,totalPrecio);
+            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_TOTCOMPLETADO,totcompletada);
+
+            consulta.updateRegistro(TABLA_PROYECTO,partida.getString(PARTIDA_ID_PROYECTO),valores);
+
+        }
+
+        public static void actualizarPresupuesto(String idProyecto){
+
+            ArrayList<Modelo> listaPartidas = consulta.queryListDetalle(CAMPOS_PARTIDA,idProyecto,TABLA_PROYECTO);
+
+            double totalTiempo= 0;
+            double totalPrecio= 0;
+            int totcompletada= 0;
+
+            for (Modelo itemPartida : listaPartidas) {
+                actualizarPartidaProyecto(itemPartida.getString(PARTIDA_ID_PARTIDA));
+                double cantidad = itemPartida.getDouble(PARTIDA_CANTIDAD);
+                totalTiempo+=itemPartida.getDouble(PARTIDA_TIEMPO)*cantidad;
+                totalPrecio+=itemPartida.getDouble(PARTIDA_PRECIO)*cantidad;
+                totcompletada+= itemPartida.getInt(PARTIDA_COMPLETADA);
+            }
+
+            totcompletada = (int) (Math.round(((double) totcompletada) / listaPartidas.size()));
+            ContentValues valores = new ContentValues();
+            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_TIEMPO,totalTiempo);
+            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_IMPORTEPRESUPUESTO,totalPrecio);
+            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_TOTCOMPLETADO,totcompletada);
+
+            consulta.updateRegistro(TABLA_PROYECTO,idProyecto,valores);
+
+        }
+
+        public static void actualizarPresupuesto(){
+
+            ArrayList<Modelo> listaProy = consulta.queryList(CAMPOS_PROYECTO);
+
+            for (Modelo proy : listaProy) {
+                String idProyecto = proy.getString(PROYECTO_ID_PROYECTO);
+
+                ArrayList<Modelo> listaPartidas = consulta.queryListDetalle(CAMPOS_PARTIDA, idProyecto, TABLA_PROYECTO);
+
+                double totalTiempo = 0;
+                double totalPrecio = 0;
+                int totcompletada = 0;
+
+                for (Modelo itemPartida : listaPartidas) {
+                    actualizarPartidaProyecto(itemPartida.getString(PARTIDA_ID_PARTIDA));
+                    double cantidad = itemPartida.getDouble(PARTIDA_CANTIDAD);
+                    totalTiempo += itemPartida.getDouble(PARTIDA_TIEMPO) * cantidad;
+                    totalPrecio += itemPartida.getDouble(PARTIDA_PRECIO) * cantidad;
+                    totcompletada += itemPartida.getInt(PARTIDA_COMPLETADA);
+                }
+
+                totcompletada = (int) (Math.round(((double) totcompletada) / listaPartidas.size()));
+                ContentValues valores = new ContentValues();
+                consulta.putDato(valores, CAMPOS_PROYECTO, PROYECTO_TIEMPO, totalTiempo);
+                consulta.putDato(valores, CAMPOS_PROYECTO, PROYECTO_IMPORTEPRESUPUESTO, totalPrecio);
+                consulta.putDato(valores, CAMPOS_PROYECTO, PROYECTO_TOTCOMPLETADO, totcompletada);
+
+                int i = consulta.updateRegistro(TABLA_PROYECTO, idProyecto, valores);
+                System.out.println("Proys actualizados = " + i);
             }
 
         }
@@ -466,12 +583,50 @@ public class Common implements JavaUtil.Constantes, Contract.Tablas {
             }
         }
 
+        public static class TareaActualizarProys extends AsyncTask<Void, Float, Integer> {
+
+            @Override
+            protected Integer doInBackground(Void... voids) {
+
+                actualizarPresupuesto();
+                return null;
+            }
+
+            protected void onPreExecute() {
+            }
+
+            protected void onProgressUpdate(Float... valores) {
+            }
+
+            protected void onPostExecute(Integer bytes) {
+            }
+        }
+
         public static class TareaTipoCliente extends AsyncTask<String, Float, Integer> {
 
             @Override
             protected Integer doInBackground(String... strings) {
 
                 calcularTipoCliente(strings[0]);
+                return null;
+            }
+
+            protected void onPreExecute() {
+            }
+
+            protected void onProgressUpdate(Float... valores) {
+            }
+
+            protected void onPostExecute(Integer bytes) {
+            }
+        }
+
+        public static class TareaActualizaProy extends AsyncTask<String, Float, Integer> {
+
+            @Override
+            protected Integer doInBackground(String... strings) {
+
+                actualizarPresupuesto(strings[0]);
                 return null;
             }
 

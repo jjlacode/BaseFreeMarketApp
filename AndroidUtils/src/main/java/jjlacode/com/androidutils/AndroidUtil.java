@@ -1,6 +1,7 @@
 package jjlacode.com.androidutils;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -19,6 +20,8 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class AndroidUtil extends AppCompatActivity {
+
+
 
     public static boolean validateEmail(CharSequence emailAddress) {
         return !TextUtils.isEmpty(emailAddress) && android.util.Patterns.EMAIL_ADDRESS.matcher(

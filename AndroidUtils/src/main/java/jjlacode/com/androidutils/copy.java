@@ -202,7 +202,7 @@ public class copy {
 
     }
 
-    public class ProyectoViewHolder extends RecyclerView.ViewHolder {
+    public class ProyectoViewHolder extends RecyclerView.ViewHolderAdapter {
 
         ImageView imagenProyecto, imagenEstado, imagenCliente;
         TextView nombreProyecto,descripcionProyecto,clienteProyecto, estadoProyecto;

@@ -10,10 +10,12 @@ import android.provider.BaseColumns;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.UUID;
-import jjlacode.com.freelanceproject.utilities.Common;
+import jjlacode.com.freelanceproject.utilities.CommonPry;
+
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.*;
 
 public class DataBase extends SQLiteOpenHelper
-        implements Common.Constantes, Contract.Tablas, Common.Estados, Common.TiposEstados {
+        implements CommonPry.Constantes, Tablas, CommonPry.Estados, CommonPry.TiposEstados {
 
     private static final String NOMBRE_BASE_DATOS = "freelanceproject.db";
 
@@ -95,8 +97,6 @@ public class DataBase extends SQLiteOpenHelper
 
         cargarDatosTipoCliente(db);
         cargarDatosEstados(db);
-        cargarDatosProductos(db);
-        cargarDatosTareas(db);
 
 
     }
@@ -251,31 +251,10 @@ public class DataBase extends SQLiteOpenHelper
 
     }
 
-    private void cargarDatosProductos(SQLiteDatabase db) {
-
-        ContentValues valores = new ContentValues();
-        valores.put(PRODUCTO_DESCRIPCION, PRODUCTOPERSONALIZADO);
-        valores.put(PRODUCTO_ID_PRODUCTO, TABLA_PRODUCTO + UUID.randomUUID().toString());
-        long i = db.insertOrThrow(TABLA_PRODUCTO, null, valores);
-        if (i > 0) {
-            Log.d("datos_iniciales", "Insertados datos defecto Producto");
-        }
-    }
-
-    private void cargarDatosTareas(SQLiteDatabase db) {
-
-        ContentValues valores = new ContentValues();
-        valores.put(TAREA_DESCRIPCION, TAREAPERSONALIZADA);
-        valores.put(TAREA_ID_TAREA, TABLA_TAREA + UUID.randomUUID().toString());
-        long i = db.insertOrThrow(TABLA_TAREA, null, valores);
-        if (i > 0) {
-            Log.d("datos_iniciales", "Insertados datos defecto Tarea");
-        }
-    }
 
     private void cargarDatosTabla(SQLiteDatabase db) {
 
-        ArrayList<String[]> listaCampos = Contract.obtenerListaCampos();
+        ArrayList<String[]> listaCampos = obtenerListaCampos();
 
         for (String[] campos : listaCampos) {
 

@@ -1,8 +1,6 @@
 package jjlacode.com.freelanceproject.ui;
 
-import android.app.Activity;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,48 +16,35 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.ArrayList;
-
 import jjlacode.com.androidutils.AppActivity;
-import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.FragmentBase;
 import jjlacode.com.androidutils.JavaUtil;
 import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.sqlite.Contract;
-import jjlacode.com.freelanceproject.sqlite.QueryDB;
-import jjlacode.com.freelanceproject.utilities.Common;
+import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
+import jjlacode.com.freelanceproject.utilities.CommonPry;
 
-public class FragmentEvento extends Fragment implements Contract.Tablas {
+public class FragmentEvento extends FragmentBase implements ContratoPry.Tablas {
 
+    private static ConsultaBD consulta = new ConsultaBD();
+    private RecyclerView rvEvento;
+    private ArrayList<Modelo> listaEventos;
 
-    View vista;
-    RecyclerView rvEvento;
-    ArrayList<Modelo> objListaEvento;
-    private Bundle bundle;
-    private String namef;
-    private ICFragmentos icFragmentos;
-    private AppCompatActivity activity;
 
     public FragmentEvento() {
         // Required empty public constructor
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        vista = inflater.inflate(R.layout.fragment_evento, container, false);
+        View view = inflater.inflate(R.layout.fragment_evento, container, false);
 
         bundle = getArguments();
 
@@ -69,47 +54,19 @@ public class FragmentEvento extends Fragment implements Contract.Tablas {
             bundle = null;
         }
 
-        rvEvento = vista.findViewById(R.id.rvEvento);
+        rvEvento = view.findViewById(R.id.rvEvento);
         rvEvento.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        ArrayList<Modelo> listaEventos = QueryDB.queryList(CAMPOS_EVENTO, null, null);
+        listaEventos = consulta.queryList(CAMPOS_EVENTO);
 
         AdaptadorEventoInt adaptadorEvento = new AdaptadorEventoInt(listaEventos,namef);
         rvEvento.setAdapter(adaptadorEvento);
 
-        rvEvento.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                String idEvento = objListaEvento.get
-                        (rvEvento.getChildAdapterPosition(v)).getCampos(Contract.Tablas.EVENTO_ID_EVENTO);
-
-                Modelo evento = QueryDB.queryObject(CAMPOS_EVENTO,idEvento);
-
-                bundle =new Bundle();
-                bundle.putSerializable(TABLA_EVENTO,evento);
-            }
-        });
-        return vista;
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof Activity) {
-            this.activity = (AppCompatActivity) context;
-            icFragmentos = (ICFragmentos) this.activity;
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
+        return view;
     }
 
     class AdaptadorEventoInt extends RecyclerView.Adapter<FragmentEvento.AdaptadorEventoInt.EventoViewHolder>
-            implements Common.TiposEvento,View.OnClickListener {
+            implements CommonPry.TiposEvento,View.OnClickListener {
 
         ArrayList<Modelo> listaEvento;
         private View.OnClickListener listener;
@@ -143,32 +100,32 @@ public class FragmentEvento extends Fragment implements Contract.Tablas {
 
             eventoViewHolder.tipo.setText(listaEvento.get(position).getString(EVENTO_TIPOEVENTO).toUpperCase());
             eventoViewHolder.descripcion.setText(listaEvento.get(position).getCampos
-                    (Contract.Tablas.EVENTO_DESCRIPCION));
+                    (ContratoPry.Tablas.EVENTO_DESCRIPCION));
             eventoViewHolder.telefono.setText(listaEvento.get(position).getCampos
-                    (Contract.Tablas.EVENTO_TELEFONO));
+                    (ContratoPry.Tablas.EVENTO_TELEFONO));
             eventoViewHolder.lugar.setText(listaEvento.get(position).getCampos
-                    (Contract.Tablas.EVENTO_LUGAR));
+                    (ContratoPry.Tablas.EVENTO_LUGAR));
             eventoViewHolder.email.setText(listaEvento.get(position).getCampos
-                    (Contract.Tablas.EVENTO_EMAIL));
+                    (ContratoPry.Tablas.EVENTO_EMAIL));
             eventoViewHolder.nomPryRel.setText(listaEvento.get(position).getCampos
-                    (Contract.Tablas.EVENTO_NOMPROYECTOREL));
+                    (ContratoPry.Tablas.EVENTO_NOMPROYECTOREL));
             eventoViewHolder.nomCliRel.setText(listaEvento.get(position).getCampos
-                    (Contract.Tablas.EVENTO_NOMCLIENTEREL));
+                    (ContratoPry.Tablas.EVENTO_NOMCLIENTEREL));
             eventoViewHolder.fechaini.setText(JavaUtil.getDate(Long.parseLong(listaEvento.get(position).getCampos
-                    (Contract.Tablas.EVENTO_FECHAINIEVENTO))));
+                    (ContratoPry.Tablas.EVENTO_FECHAINIEVENTO))));
             eventoViewHolder.fechafin.setText(JavaUtil.getDate(Long.parseLong(listaEvento.get(position).getCampos
-                    (Contract.Tablas.EVENTO_FECHAFINEVENTO))));
+                    (ContratoPry.Tablas.EVENTO_FECHAFINEVENTO))));
             eventoViewHolder.horaini.setText(JavaUtil.getTime(Long.parseLong(listaEvento.get(position).getCampos
-                    (Contract.Tablas.EVENTO_HORAINIEVENTO))));
+                    (ContratoPry.Tablas.EVENTO_HORAINIEVENTO))));
             eventoViewHolder.horafin.setText(JavaUtil.getTime(Long.parseLong(listaEvento.get(position).getCampos
-                    (Contract.Tablas.EVENTO_HORAFINEVENTO))));
+                    (ContratoPry.Tablas.EVENTO_HORAFINEVENTO))));
             eventoViewHolder.pbar.setProgress(Integer.parseInt(listaEvento.get(position).getCampos
-                    (Contract.Tablas.EVENTO_COMPLETADA)));
+                    (ContratoPry.Tablas.EVENTO_COMPLETADA)));
             eventoViewHolder.porccompleta.setText(listaEvento.get(position).getCampos
-                    (Contract.Tablas.EVENTO_COMPLETADA));
+                    (ContratoPry.Tablas.EVENTO_COMPLETADA));
 
             String tipoEvento = listaEvento.get(position).getCampos
-                    (Contract.Tablas.EVENTO_TIPOEVENTO);
+                    (ContratoPry.Tablas.EVENTO_TIPOEVENTO);
 
             eventoViewHolder.fechaini.setVisibility(View.GONE);
             eventoViewHolder.fechafin.setVisibility(View.GONE);
@@ -216,14 +173,14 @@ public class FragmentEvento extends Fragment implements Contract.Tablas {
 
             }
             if (listaEvento.get(position).getCampos
-                    (Contract.Tablas.EVENTO_RUTAFOTO)!=null) {
+                    (ContratoPry.Tablas.EVENTO_RUTAFOTO)!=null) {
                 eventoViewHolder.foto.setImageURI(Uri.parse(listaEvento.get(position).getCampos
-                        (Contract.Tablas.EVENTO_RUTAFOTO)));
+                        (ContratoPry.Tablas.EVENTO_RUTAFOTO)));
             }
 
             long retraso = JavaUtil.hoy()-listaEvento.get(position).getLong(EVENTO_FECHAINIEVENTO);
-            if (retraso > 3 * Common.DIASLONG){eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));}
-            else if (retraso > Common.DIASLONG){eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));}
+            if (retraso > 3 * CommonPry.DIASLONG){eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));}
+            else if (retraso > CommonPry.DIASLONG){eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));}
             else {eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));}//imgret.setImageResource(R.drawable.alert_box_v);}
             if(tipoEvento.equals(TAREA))
             {eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_tarea));}
@@ -269,12 +226,9 @@ public class FragmentEvento extends Fragment implements Contract.Tablas {
 
                     ContentValues valores = new ContentValues();
 
-                    valores.put(Contract.Tablas.EVENTO_COMPLETADA,"100");
-
-                    AppActivity.getAppContext().getContentResolver().update(Contract.crearUriTabla
-                                    (listaEvento.get(position).getCampos
-                                            (Contract.Tablas.EVENTO_ID_EVENTO),TABLA_EVENTO)
-                            ,valores,null,null);
+                    consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_COMPLETADA,"100");
+                    consulta.updateRegistro(TABLA_EVENTO,listaEvento.get(position).getString
+                            (EVENTO_ID_EVENTO),valores);
 
                 }
             });
@@ -284,9 +238,9 @@ public class FragmentEvento extends Fragment implements Contract.Tablas {
                 public void onClick(View v) {
 
                     String idEvento = listaEvento.get(position).getCampos
-                            (Contract.Tablas.EVENTO_ID_EVENTO);
+                            (ContratoPry.Tablas.EVENTO_ID_EVENTO);
 
-                    Modelo evento = QueryDB.queryObject(CAMPOS_EVENTO,idEvento);
+                    Modelo evento = consulta.queryObject(CAMPOS_EVENTO,idEvento);
 
                     bundle = new Bundle();
                     bundle.putSerializable(TABLA_EVENTO,evento);

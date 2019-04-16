@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.multidex.MultiDex;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -135,6 +136,12 @@ public class AppActivity extends Application {
             e.printStackTrace();
         }
         return new LatLng(adress.get(0).getLatitude(), adress.get(0).getLongitude());
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
 }

@@ -1,85 +1,61 @@
 package jjlacode.com.freelanceproject.ui;
 
-import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
-import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.AppActivity;
+import jjlacode.com.androidutils.FragmentUD;
 import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.sqlite.Contract;
-import jjlacode.com.freelanceproject.sqlite.QueryDB;
-import jjlacode.com.freelanceproject.utilities.Common;
+import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
+import jjlacode.com.freelanceproject.utilities.CommonPry;
 
 
-public class FragmentUDCliente extends Fragment implements Common.Constantes, Contract.Tablas {
+public class FragmentUDCliente extends FragmentUD implements CommonPry.Constantes, ContratoPry.Tablas {
 
     private String idCliente;
-    private String namef;
-    private String idProyecto;
 
-    View vista;
     EditText nombreCliente,direccionCliente,telefonoCliente,emailCliente,contactoCliente;
     TextView tipoCliente;
-    Button btnsave;
-    Button btndelete;
-    Button btnback;
     Button btnevento;
-    ImageView imagen = null;
-    ArrayList<String> listaTipos;
-    ArrayList <Modelo> objTiposCli;
     String idTipoCliente = null;
     int peso;
-    private AppCompatActivity activity;
-    private ICFragmentos icFragmentos;
     private Modelo proyecto;
-    private Bundle bundle;
     private Modelo cliente;
+
+    private ConsultaBD consulta = new ConsultaBD();
 
     public FragmentUDCliente() {
         // Required empty public constructor
     }
 
-
-    public static FragmentUDCliente newInstance() {
-        FragmentUDCliente fragment = new FragmentUDCliente();
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        vista=inflater.inflate(R.layout.fragment_ud_cliente, container, false);
+        View view=inflater.inflate(R.layout.fragment_ud_cliente, container, false);
 
-        nombreCliente = vista.findViewById(R.id.etnombreudcliente);
-        direccionCliente = vista.findViewById(R.id.etdirudcliente);
-        telefonoCliente = vista.findViewById(R.id.etteludcliente);
-        emailCliente = vista.findViewById(R.id.etemailudcliente);
-        contactoCliente = vista.findViewById(R.id.etcontudcliente);
-        btnsave = vista.findViewById(R.id.btnsaveudcliente);
-        btnback = vista.findViewById(R.id.btnbackudcliente);
-        btnevento = vista.findViewById(R.id.btneventoudcliente);
-        btndelete = vista.findViewById(R.id.btndleudcliente);
-        tipoCliente = vista.findViewById(R.id.tvtipoudcliente);
-        imagen = vista.findViewById(R.id.imgudcliente);
+        nombreCliente = view.findViewById(R.id.etnombreudcliente);
+        direccionCliente = view.findViewById(R.id.etdirudcliente);
+        telefonoCliente = view.findViewById(R.id.etteludcliente);
+        emailCliente = view.findViewById(R.id.etemailudcliente);
+        contactoCliente = view.findViewById(R.id.etcontudcliente);
+        btnsave = view.findViewById(R.id.btnsaveudcliente);
+        btnback = view.findViewById(R.id.btnbackudcliente);
+        btnevento = view.findViewById(R.id.btneventoudcliente);
+        btndelete = view.findViewById(R.id.btndleudcliente);
+        tipoCliente = view.findViewById(R.id.tvtipoudcliente);
+        imagen = view.findViewById(R.id.imgudcliente);
 
         bundle = getArguments();
         cliente = (Modelo) bundle.getSerializable(TABLA_CLIENTE);
@@ -108,17 +84,17 @@ public class FragmentUDCliente extends Fragment implements Common.Constantes, Co
 
         }
 
-                    if (peso>6){imagen.setImageResource(R.drawable.clientev);}
-                    else if (peso>3){imagen.setImageResource(R.drawable.clientea);}
-                    else if (peso>0){imagen.setImageResource(R.drawable.clienter);}
-                    else {imagen.setImageResource(R.drawable.cliente);}
+        if (peso>6){imagen.setImageResource(R.drawable.clientev);}
+        else if (peso>3){imagen.setImageResource(R.drawable.clientea);}
+        else if (peso>0){imagen.setImageResource(R.drawable.clienter);}
+        else {imagen.setImageResource(R.drawable.cliente);}
 
         btnsave.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
 
-                updateCliente();
+                update();
 
                 if (namef.equals(PROYECTO) || namef.equals(PRESUPUESTO)
                         || namef.equals(AGENDA)){
@@ -177,59 +153,38 @@ public class FragmentUDCliente extends Fragment implements Common.Constantes, Co
                 @Override
                 public void onClick(View v) {
 
-                    borraCliente();
+                    delete();
 
             }
             });
 
-        return vista;
+        return view;
     }
 
-
-    public void updateCliente(){
+    @Override
+    protected void update(){
 
         ContentValues valores=new ContentValues();
-        QueryDB.putDato(valores,CAMPOS_CLIENTE,CLIENTE_NOMBRE,nombreCliente.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_CLIENTE,CLIENTE_DIRECCION,direccionCliente.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_CLIENTE,CLIENTE_TELEFONO,telefonoCliente.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_CLIENTE,CLIENTE_EMAIL,emailCliente.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_CLIENTE,CLIENTE_CONTACTO,contactoCliente.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_CLIENTE,CLIENTE_ID_TIPOCLIENTE,idTipoCliente);
-        QueryDB.putDato(valores,CAMPOS_CLIENTE,CLIENTE_PESOTIPOCLI,peso);
+        consulta.putDato(valores,CAMPOS_CLIENTE,CLIENTE_NOMBRE,nombreCliente.getText().toString());
+        consulta.putDato(valores,CAMPOS_CLIENTE,CLIENTE_DIRECCION,direccionCliente.getText().toString());
+        consulta.putDato(valores,CAMPOS_CLIENTE,CLIENTE_TELEFONO,telefonoCliente.getText().toString());
+        consulta.putDato(valores,CAMPOS_CLIENTE,CLIENTE_EMAIL,emailCliente.getText().toString());
+        consulta.putDato(valores,CAMPOS_CLIENTE,CLIENTE_CONTACTO,contactoCliente.getText().toString());
+        consulta.putDato(valores,CAMPOS_CLIENTE,CLIENTE_ID_TIPOCLIENTE,idTipoCliente);
+        consulta.putDato(valores,CAMPOS_CLIENTE,CLIENTE_PESOTIPOCLI,peso);
 
-        getActivity().getContentResolver().update(
-                Contract.crearUriTabla(idCliente, TABLA_CLIENTE),
-                valores,null,null
-        );
+        consulta.updateRegistro(TABLA_CLIENTE,idCliente,valores);
 
     }
 
-    public void borraCliente(){
+    protected void delete(){
 
+        consulta.deleteRegistro(TABLA_CLIENTE,idCliente);
 
-
-        getActivity().getContentResolver().delete(
-                Contract.crearUriTabla(idCliente, TABLA_CLIENTE),
-                null,null
-        );
         bundle = new Bundle();
         bundle.putString("namef",namef);
         icFragmentos.enviarBundleAFragment(bundle,new FragmentCliente());
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof Activity){
-            this.activity = (AppCompatActivity) context;
-            icFragmentos = (ICFragmentos) this.activity;
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
 
 }

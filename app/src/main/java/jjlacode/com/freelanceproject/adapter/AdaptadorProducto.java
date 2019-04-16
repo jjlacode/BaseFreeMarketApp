@@ -5,16 +5,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.sqlite.Contract;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 
 public class AdaptadorProducto extends RecyclerView.Adapter<AdaptadorProducto.ProductoViewHolder>
-        implements View.OnClickListener, Contract.Tablas {
+        implements View.OnClickListener, ContratoPry.Tablas {
 
     ArrayList<Modelo> listaProductos;
     View.OnClickListener listener;
@@ -42,8 +43,14 @@ public class AdaptadorProducto extends RecyclerView.Adapter<AdaptadorProducto.Pr
     @Override
     public void onBindViewHolder(@NonNull ProductoViewHolder productoViewHolder, int position) {
 
-        productoViewHolder.descripcion.setText(listaProductos.get(position).getCampos(PRODUCTO_DESCRIPCION));
-        productoViewHolder.importe.setText(listaProductos.get(position).getCampos(PRODUCTO_IMPORTE));
+        productoViewHolder.descripcion.setText(listaProductos.get(position).getString(PRODUCTO_DESCRIPCION));
+        productoViewHolder.importe.setText(listaProductos.get(position).getString(PRODUCTO_IMPORTE));
+        productoViewHolder.nombre.setText(listaProductos.get(position).getString(PRODUCTO_NOMBRE));
+
+        if (listaProductos.get(position).getString(PRODUCTO_RUTAFOTO)!=null){
+
+            productoViewHolder.imagen.setImageURI(listaProductos.get(position).getUri(PRODUCTO_RUTAFOTO));
+        }
 
     }
 
@@ -64,12 +71,15 @@ public class AdaptadorProducto extends RecyclerView.Adapter<AdaptadorProducto.Pr
 
     public class ProductoViewHolder extends RecyclerView.ViewHolder {
 
-        TextView descripcion,importe;
+        TextView descripcion,importe,nombre;
+        ImageView imagen;
         public ProductoViewHolder(@NonNull View itemView) {
             super(itemView);
 
             descripcion = itemView.findViewById(R.id.tvdescripcionlproductos);
-            importe = itemView.findViewById(R.id.tvimportelproductos);
+            importe = itemView.findViewById(R.id.tvimportelproductos_detpartida);
+            nombre = itemView.findViewById(R.id.tvnombrelproductos_detpartida);
+            imagen = itemView.findViewById(R.id.imglproductos_detpartida);
         }
     }
 }

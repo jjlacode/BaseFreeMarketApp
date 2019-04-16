@@ -2,6 +2,7 @@ package jjlacode.com.freelanceproject.ui;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,8 +13,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsSpinner;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -32,129 +35,127 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import jjlacode.com.androidutils.AppActivity;
 import jjlacode.com.androidutils.DatePickerFragment;
+import jjlacode.com.androidutils.FragmentC;
+import jjlacode.com.androidutils.FragmentCUD;
+import jjlacode.com.androidutils.FragmentUD;
 import jjlacode.com.androidutils.ICFragmentos;
 import jjlacode.com.androidutils.ImagenUtil;
 import jjlacode.com.androidutils.JavaUtil;
+import jjlacode.com.androidutils.ListaAdaptadorFiltro;
 import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.sqlite.Contract;
-import jjlacode.com.freelanceproject.sqlite.QueryDB;
-import jjlacode.com.freelanceproject.utilities.Common;
+import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
+import jjlacode.com.freelanceproject.utilities.CommonPry;
 
-public class FragmentUDProyecto extends Fragment
-        implements Common.Constantes, Contract.Tablas, Common.Estados, Common.TiposEstados {
+public class FragmentUDProyecto extends FragmentCUD
+        implements CommonPry.Constantes, ContratoPry.Tablas, CommonPry.Estados, CommonPry.TiposEstados {
 
     private String idProyecto;
-    private String namef;
 
-    private String path;
-    Bitmap bitmap;
+    private ImageButton imagenTipoClienteProyecto;
+    private ImageButton btnfechaentrega;
+    private EditText nombrePry;
+    private EditText descripcionPry;
+    private TextView estadoProyecto;
+    private TextView fechaEntregaPresup;
+    private TextView fechaAcordadaPry;
+    private EditText importeFinalPry;
+    private TextView labelfentregap;
+    private TextView labelimportefinal;
+    private Button btnActualizar;
+    private Button btnActualizar2;
+    private ArrayList<Modelo> objClientes;
+    private String idCliente;
+    private int peso = 0;
+    private int posCliente = 0;
+    private long fechaCalculada = 0;
+    private long fechaAcordada = 0;
+    private long fechaEntregaP = 0;
+    private String idEstado;
+    private int totcompletada = 0;
+    private double totPartidas = 0.0;
+    private double precioPartidas = 0.0;
+    //private double impTotalCalculado = 0.0;
+    private Modelo proyecto = null;
 
-    View vista;
-    ImageView imgPry;
-    ImageButton imagenTipoClienteProyecto;
-    ImageButton btnimgEstadoPry;
-    ImageButton btnfechaacord;
-    ImageButton btnfechaentrega;
-    EditText nombrePry;
-    EditText descripcionPry;
-    Spinner spClienteProyecto;
-    TextView estadoProyecto;
-    TextView fechaEntradaPry;
-    TextView fechaEntregaPresup;
-    TextView fechaAcordadaPry;
-    TextView fechaCalculadaPry;
-    TextView fechaFinalPry;
-    TextView totalPartidasPry;
-    TextView pvpPartidas;
-    TextView totalGastosPry;
-    TextView importeCalculadoPry;
-    EditText importeFinalPry;
-    TextView labelfcalc;
-    TextView labelfacor;
-    TextView labelffinal;
-    TextView labelfentregap;
-    TextView labelimportecalculado;
-    TextView labelimportefinal;
-    Button btnSavePry;
-    Button btnDelPry;
-    Button btnbackpry;
-    Button btnEvento;
-    Button btnPartidasPry;
-    Button btnGastosPry;
-    Button btnActualizar;
-    Button btnActualizar2;
-    ArrayList<String> listaClientes;
-    ArrayList<Modelo> objClientes;
-    String idCliente;
-    int peso = 0;
-    int posCliente = 0;
-    long fechaCalculada = 0;
-    long fechaAcordada = 0;
-    long fechaEntregaP = 0;
-    String idEstado;
-    int totcompletada = 0;
-    double totPartidas = 0.0;
-    double precioPartidas = 0.0;
-    double totGastos = 0.0;
-    double impTotalCalculado = 0.0;
-    double importeFinal = 0.0;
-    Bundle bundle = null;
-    Modelo proyecto = null;
-
-    private AppCompatActivity activity;
-    private ICFragmentos icFragmentos;
-    ImagenUtil imagen;
+    private static ConsultaBD consulta = new ConsultaBD();
+    private AutoCompleteTextView spClienteProyecto;
+    private String nombreCliente;
+    private ArrayList<Modelo> listaClientes;
+    private ArrayList<Modelo> objEstados;
+    private ImageButton btnimgEstadoPry;
+    private TextView fechaEntradaPry;
+    private TextView fechaCalculadaPry;
+    private TextView fechaFinalPry;
+    private TextView totalPartidasPry;
+    private TextView pvpPartidas;
+    private TextView importeCalculadoPry;
+    private TextView labelfcalc;
+    private TextView labelfacor;
+    private TextView labelffinal;
+    private TextView labelimportecalculado;
+    private ImageButton btnfechaacord;
+    private ArrayList<String> listaEstados;
+    private Spinner spEstadoProyecto;
+    private Button btnEvento;
+    private Button btnPartidasPry;
+    private double preciototal;
 
     public FragmentUDProyecto() {
         // Required empty public constructor
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onResume() {
+
+        if (idProyecto!=null) {
+            new CommonPry.Calculos.TareaActualizaProy().execute(idProyecto);
+            cargarDatos();
+        }
+        super.onResume();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        vista = inflater.inflate(R.layout.fragment_ud_proyecto, container, false);
+        View view = inflater.inflate(R.layout.fragment_ud_proyecto, container, false);
 
-        imgPry = vista.findViewById(R.id.imudpry);
-        imagenTipoClienteProyecto = vista.findViewById(R.id.imgbtntipocliudpry);
-        btnimgEstadoPry = vista.findViewById(R.id.imgbtnestudpry);
-        nombrePry = vista.findViewById(R.id.etnomudpry);
-        descripcionPry = vista.findViewById(R.id.etdescudpry);
-        spClienteProyecto = vista.findViewById(R.id.sptipocliudpry);
-        estadoProyecto = vista.findViewById(R.id.tvestudproy);
-        fechaEntradaPry = vista.findViewById(R.id.proyecto_ud_tv_fecha_entrada);
-        fechaEntregaPresup = vista.findViewById(R.id.tvfentpresuppry);
-        fechaCalculadaPry = vista.findViewById(R.id.tvfcalcudpry);
-        fechaAcordadaPry = vista.findViewById(R.id.tvfacorudpry);
-        fechaFinalPry = vista.findViewById(R.id.tvffinudpry);
-        totalPartidasPry = vista.findViewById(R.id.tvtotpartudpry);
-        pvpPartidas = vista.findViewById(R.id.tvpreciopartidasudpry);
-        totalGastosPry = vista.findViewById(R.id.tvtotgastudpry);
-        importeCalculadoPry = vista.findViewById(R.id.tvimpcaludpry);
-        importeFinalPry = vista.findViewById(R.id.etimpfinudpry);
-        btnSavePry = vista.findViewById(R.id.btnsaveudpry);
-        btnDelPry = vista.findViewById(R.id.btndeludpry);
-        btnbackpry = vista.findViewById(R.id.btnbackudpry);
-        btnEvento = vista.findViewById(R.id.btneventoudpry);
-        btnPartidasPry = vista.findViewById(R.id.btnpartudpry);
-        btnGastosPry = vista.findViewById(R.id.btngasudpry);
-        btnActualizar = vista.findViewById(R.id.btnactualizar);
-        btnActualizar2 = vista.findViewById(R.id.btnactualizar2);
-        btnfechaacord = vista.findViewById(R.id.btnfechaacord);
-        btnfechaentrega = vista.findViewById(R.id.btnfechaentrega);
-        labelfcalc = vista.findViewById(R.id.lfcalcudpry);
-        labelfacor = vista.findViewById(R.id.lfacorudpry);
-        labelffinal = vista.findViewById(R.id.lffinudpry);
-        labelfentregap = vista.findViewById(R.id.lfentpresupudpry);
-        labelimportecalculado = vista.findViewById(R.id.limpcaludpry);
-        labelimportefinal = vista.findViewById(R.id.limpfinudpry);
+        imagen = view.findViewById(R.id.imudpry);
+        imagenTipoClienteProyecto = view.findViewById(R.id.imgbtntipocliudpry);
+        btnimgEstadoPry = view.findViewById(R.id.imgbtnestudpry);
+        nombrePry = view.findViewById(R.id.etnomudpry);
+        descripcionPry = view.findViewById(R.id.etdescudpry);
+        spClienteProyecto = view.findViewById(R.id.sptipocliudpry);
+        spEstadoProyecto = view.findViewById(R.id.spestudpry);
+        estadoProyecto = view.findViewById(R.id.tvestudproy);
+        fechaEntradaPry = view.findViewById(R.id.proyecto_ud_tv_fecha_entrada);
+        fechaEntregaPresup = view.findViewById(R.id.tvfentpresuppry);
+        fechaCalculadaPry = view.findViewById(R.id.tvfcalcudpry);
+        fechaAcordadaPry = view.findViewById(R.id.tvfacorudpry);
+        fechaFinalPry = view.findViewById(R.id.tvffinudpry);
+        totalPartidasPry = view.findViewById(R.id.tvtotpartudpry);
+        pvpPartidas = view.findViewById(R.id.tvpreciopartidasudpry);
+        importeCalculadoPry = view.findViewById(R.id.tvimpcaludpry);
+        importeFinalPry = view.findViewById(R.id.etimpfinudpry);
+        btnsave = view.findViewById(R.id.btnsaveudpry);
+        btndelete = view.findViewById(R.id.btndeludpry);
+        btnback = view.findViewById(R.id.btnbackudpry);
+        btnEvento = view.findViewById(R.id.btneventoudpry);
+        btnPartidasPry = view.findViewById(R.id.btnpartudpry);
+        btnActualizar = view.findViewById(R.id.btnactualizar);
+        btnActualizar2 = view.findViewById(R.id.btnactualizar2);
+        btnfechaacord = view.findViewById(R.id.btnfechaacord);
+        btnfechaentrega = view.findViewById(R.id.btnfechaentrega);
+        labelfcalc = view.findViewById(R.id.lfcalcudpry);
+        labelfacor = view.findViewById(R.id.lfacorudpry);
+        labelffinal = view.findViewById(R.id.lffinudpry);
+        labelfentregap = view.findViewById(R.id.lfentpresupudpry);
+        labelimportecalculado = view.findViewById(R.id.limpcaludpry);
+        labelimportefinal = view.findViewById(R.id.limpfinudpry);
 
         bundle = getArguments();
 
@@ -166,39 +167,29 @@ public class FragmentUDProyecto extends Fragment
             bundle.putSerializable(TABLA_PROYECTO,proyecto);
             icFragmentos.enviarBundleAActivity(bundle);
             bundle = null;
-            idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
-            proyecto = QueryDB.queryObject(CAMPOS_PROYECTO,idProyecto);
-            calculoTotales();
+            if (proyecto!=null) {
+                idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
+                //proyecto = consulta.queryObject(CAMPOS_PROYECTO, idProyecto);
+                if (idProyecto!=null) {
+                    new CommonPry.Calculos.TareaActualizaProy().execute(idProyecto);
+                    calculoTotales();
+                }
+            }
         }
 
-        nombrePry.setText(proyecto.getString(PROYECTO_NOMBRE));
-        descripcionPry.setText(proyecto.getString(PROYECTO_DESCRIPCION));
-        idCliente = proyecto.getString(PROYECTO_ID_CLIENTE);
-        idEstado = proyecto.getString(PROYECTO_ID_ESTADO);
-        idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
-        fechaEntradaPry.setText(JavaUtil.getDate(proyecto.getLong(PROYECTO_FECHAENTRADA)));
-        if (proyecto.getLong(PROYECTO_FECHAENTREGAPRESUP) == 0) {
-            fechaEntregaPresup.setText
-                    (R.string.establecer_fecha_entrega_presup);
-        }else if (proyecto.getLong(PROYECTO_FECHAENTREGAPRESUP) > 0) {
-            fechaEntregaPresup.setText(JavaUtil.getDate(Long.parseLong(proyecto.getCampos(PROYECTO_FECHAENTREGAPRESUP))));
-        }
+        if (idProyecto!=null) {
 
-        //calculoTotales();//Calculo de totales de tiempos e importes de partidas y gastos
-
-        totalPartidasPry.setText(String.format(Locale.getDefault(),"%#.2f",totPartidas));
-
-        pvpPartidas.setText(String.format(Locale.getDefault(),"%#.2f %s", precioPartidas, JavaUtil.monedaLocal()));
+           spEstadoProyecto.setVisibility(View.GONE);
 
 
+           cargarDatos();
 
-        totalGastosPry.setText(JavaUtil.formatoMonedaLocal(totGastos));
+        }else{
 
-        impTotalCalculado = precioPartidas + totGastos;
-        importeCalculadoPry.setText(String.format(Locale.getDefault(),"%#.2f %s", impTotalCalculado, JavaUtil.monedaLocal()));
-
-        if (totPartidas == 0) {
-
+            btndelete.setVisibility(View.GONE);
+            btnEvento.setVisibility(View.GONE);
+            btnPartidasPry.setVisibility(View.GONE);
+            estadoProyecto.setVisibility(View.GONE);
             fechaAcordadaPry.setVisibility(View.GONE);
             fechaCalculadaPry.setVisibility(View.GONE);
             btnfechaacord.setVisibility(View.GONE);
@@ -206,117 +197,57 @@ public class FragmentUDProyecto extends Fragment
             labelfacor.setVisibility(View.GONE);
             labelfcalc.setVisibility(View.GONE);
             btnActualizar.setVisibility(View.GONE);
+            btnActualizar2.setVisibility(View.GONE);
             pvpPartidas.setVisibility(View.GONE);
-
-        } else {
-
-            fechaAcordadaPry.setVisibility(View.VISIBLE);
-            fechaCalculadaPry.setVisibility(View.VISIBLE);
-            btnfechaacord.setVisibility(View.VISIBLE);
-            labelfacor.setVisibility(View.VISIBLE);
-            labelfcalc.setVisibility(View.VISIBLE);
-            btnActualizar.setVisibility(View.VISIBLE);
-            pvpPartidas.setVisibility(View.VISIBLE);
-
-            if (proyecto.getLong(PROYECTO_FECHAENTREGAACORDADA) == 0) {
-
-                fechaAcordadaPry.setText("No asignada");
-                btnActualizar.setVisibility(View.GONE);
-                btnfechaentrega.setVisibility(View.GONE);
-
-            } else {
-
-                fechaAcordada = proyecto.getLong(PROYECTO_FECHAENTREGAACORDADA);
-                fechaAcordadaPry.setText(JavaUtil.getDate(fechaAcordada));
-                btnActualizar.setVisibility(View.VISIBLE);
-                if (proyecto.getInt(PROYECTO_TIPOESTADO)>3){
-
-                    btnfechaentrega.setVisibility(View.VISIBLE);
-                    fechaEntregaPresup.setVisibility(View.VISIBLE);
-                    labelfentregap.setVisibility(View.VISIBLE);
-                }
-
-            }
-
-
-            fechaCalculada = proyecto.getLong(PROYECTO_FECHAENTREGACALCULADA);
-            fechaCalculadaPry.setText(JavaUtil.getDate(fechaCalculada));
-
-        }
-
-
-        if (proyecto.getLong(PROYECTO_FECHAFINAL) == 0) {
-            fechaFinalPry.setVisibility(View.GONE);
-            labelffinal.setVisibility(View.GONE);
-        } else {
-            fechaFinalPry.setVisibility(View.VISIBLE);
-            labelffinal.setVisibility(View.VISIBLE);
-            fechaFinalPry.setText(JavaUtil.getDate(proyecto.getLong(PROYECTO_FECHAFINAL)));
-        }
-
-        if (proyecto.getLong(PROYECTO_FECHAENTREGAPRESUP) == 0) {
             fechaEntregaPresup.setVisibility(View.GONE);
             labelfentregap.setVisibility(View.GONE);
-        } else {
-            fechaEntregaPresup.setVisibility(View.VISIBLE);
-            labelfentregap.setVisibility(View.VISIBLE);
-            fechaEntregaP = proyecto.getLong(PROYECTO_FECHAENTREGAPRESUP);
-            fechaEntregaPresup.setText(JavaUtil.getDate(fechaEntregaP));
-            btnfechaacord.setVisibility(View.GONE);
-        }
-
-        if (impTotalCalculado == 0) {
-            importeCalculadoPry.setVisibility(View.GONE);
+            fechaFinalPry.setVisibility(View.GONE);
+            labelfentregap.setVisibility(View.GONE);
+            labelffinal.setVisibility(View.GONE);
+            totalPartidasPry.setVisibility(View.GONE);
             labelimportecalculado.setVisibility(View.GONE);
-        } else {
-            importeCalculadoPry.setVisibility(View.VISIBLE);
-            labelimportecalculado.setVisibility(View.VISIBLE);
-            importeCalculadoPry.setText(JavaUtil.formatoMonedaLocal
-                    (impTotalCalculado));
-        }
-
-        if (proyecto.getInt(PROYECTO_TIPOESTADO)<4) {
-            importeFinalPry.setVisibility(View.GONE);
             labelimportefinal.setVisibility(View.GONE);
-        } else {
-            importeFinalPry.setVisibility(View.VISIBLE);
-            labelimportefinal.setVisibility(View.VISIBLE);
-            importeFinalPry.setText(JavaUtil.formatoMonedaLocal
-                    (proyecto.getDouble(PROYECTO_IMPORTEFINAL)));
-        }
+            importeFinalPry.setVisibility(View.GONE);
+            importeCalculadoPry.setVisibility(View.GONE);
+            btnimgEstadoPry.setVisibility(View.GONE);
+            fechaEntradaPry.setVisibility(View.GONE);
 
-        if (proyecto.getCampos(PROYECTO_RUTAFOTO) != null) {
-            bitmap = BitmapFactory.decodeFile(proyecto.getString(PROYECTO_RUTAFOTO));
-            imgPry.setImageBitmap(bitmap);
-        }
-        estadoProyecto.setText(proyecto.getString(PROYECTO_DESCRIPCION_ESTADO));
+            listaObjetosEstados();
 
-        switch (namef) {
+            ArrayAdapter<String> adaptadorEstado = new ArrayAdapter<>
+                    (getContext(),android.R.layout.simple_spinner_item,listaEstados);
 
-            case PRESUPUESTO:
-                btnimgEstadoPry.setVisibility(View.GONE);
-                break;
-            default:
-                long retraso = Long.parseLong(proyecto.getCampos(PROYECTO_RETRASO));
-                if (retraso > 3 * Common.DIASLONG) {
-                    btnimgEstadoPry.setImageResource(R.drawable.alert_box_r);
-                } else if (retraso > Common.DIASLONG) {
-                    btnimgEstadoPry.setImageResource(R.drawable.alert_box_a);
-                } else {
-                    btnimgEstadoPry.setImageResource(R.drawable.alert_box_v);
+            spEstadoProyecto.setAdapter(adaptadorEstado);
+
+            if (namef.equals(PRESUPUESTO)){
+
+                spEstadoProyecto.setSelection(1);
+            }
+
+            spEstadoProyecto.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                    if (position>0){
+
+                        idEstado = objEstados.get(position-1).getString(ESTADO_ID_ESTADO);
+                    }
                 }
 
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+
         }
 
-        comprobarEstado();
-
-
-        if (Common.permiso) {
-            imgPry.setOnClickListener(new View.OnClickListener() {
+        if (CommonPry.permiso) {
+            imagen.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                    mostrarDialogoOpciones();
+                    mostrarDialogoOpcionesImagen();
 
 
                 }
@@ -325,58 +256,38 @@ public class FragmentUDProyecto extends Fragment
         }
 
 
-            objClientes = QueryDB.queryList(CAMPOS_CLIENTE,null, null);
+        setAdaptadorClientes(spClienteProyecto);
 
-        listaClientes = new ArrayList<String>();
-
-        for (int i = 0; i < objClientes.size(); i++) {
-
-            listaClientes.add(objClientes.get(i).getString(CLIENTE_NOMBRE));
-            if (objClientes.get(i).getString(CLIENTE_ID_CLIENTE).equals(idCliente)) {
-                posCliente = i;
-            }
+        if (idCliente!=null) {
+            Modelo cliente = consulta.queryObject(CAMPOS_CLIENTE, idCliente);
+            nombreCliente = cliente.getString(CLIENTE_NOMBRE);
+            spClienteProyecto.setText(nombreCliente);
         }
 
-        ArrayAdapter<CharSequence> adaptadorCliente = new ArrayAdapter
-                (getContext(), android.R.layout.simple_spinner_item, listaClientes);
-
-        spClienteProyecto.setAdapter(adaptadorCliente);
-        spClienteProyecto.setSelection(posCliente);
-
-        spClienteProyecto.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spClienteProyecto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-
-                idCliente = objClientes.get(position).getString(CLIENTE_ID_CLIENTE);
-                peso = objClientes.get(position).getInt(CLIENTE_PESOTIPOCLI);
-                posCliente = position;
-                if (peso > 6) {
-                    imagenTipoClienteProyecto.setImageResource(R.drawable.clientev);
-                } else if (peso > 3) {
-                    imagenTipoClienteProyecto.setImageResource(R.drawable.clientea);
-                } else if (peso > 0) {
-                    imagenTipoClienteProyecto.setImageResource(R.drawable.clienter);
-                } else {
-                    imagenTipoClienteProyecto.setImageResource(R.drawable.cliente);
-                }
+                Modelo cliente = (Modelo) spClienteProyecto.getAdapter().getItem(position);
+                idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
+                nombreCliente = cliente.getString(CLIENTE_NOMBRE);
+                spClienteProyecto.setText(nombreCliente);
+                peso = cliente.getInt(CLIENTE_PESOTIPOCLI);
+                if (peso>6){imagenTipoClienteProyecto.setImageResource(R.drawable.clientev);}
+                else if (peso>3){imagenTipoClienteProyecto.setImageResource(R.drawable.clientea);}
+                else if (peso>0){imagenTipoClienteProyecto.setImageResource(R.drawable.clienter);}
+                else {imagenTipoClienteProyecto.setImageResource(R.drawable.cliente);}
 
             }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
         });
-        btnDelPry.setOnClickListener(new View.OnClickListener() {
+        btndelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                int res = QueryDB.deleteRegistro(TABLA_PROYECTO,idProyecto);
+                delete();
 
-                if (res > 0) {
-
-                    new Common.Calculos.Tareafechas().execute();
+                    new CommonPry.Calculos.Tareafechas().execute();
                     bundle = new Bundle();
 
                     if (namef.equals(AGENDA)) {
@@ -391,38 +302,29 @@ public class FragmentUDProyecto extends Fragment
                         icFragmentos.enviarBundleAFragment(bundle, new FragmentProyecto());
                         bundle = null;
                     }
-                }
 
             }
         });
-        btnSavePry.setOnClickListener(new View.OnClickListener() {
+        btnsave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                int res = modificarProyecto();
+                if (idProyecto!=null) {
 
-                if (res > 0) {
+                    update();
+                    cambiarFragment();
 
-
-                    bundle = new Bundle();
-
-                    if (namef.equals(AGENDA)) {
-
-                        bundle.putString("namef", namef);
-                        icFragmentos.enviarBundleAFragment(bundle, new FragmentAgenda());
-                        bundle = null;
-
-                    } else {
-
-                        bundle.putString("namef", namef);
-                        icFragmentos.enviarBundleAFragment(bundle, new FragmentProyecto());
-                        bundle = null;
-                    }
+                }else{
+                    registrar();
+                    cargarDatos();
                 }
+
+
+
             }
         });
 
-        btnbackpry.setOnClickListener(new View.OnClickListener() {
+        btnback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -447,8 +349,8 @@ public class FragmentUDProyecto extends Fragment
             @Override
             public void onClick(View v) {
 
-                modificarProyecto();
-                Modelo cliente = QueryDB.queryObject(CAMPOS_CLIENTE,idCliente);
+                update();
+                Modelo cliente = consulta.queryObject(CAMPOS_CLIENTE,idCliente);
 
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_CLIENTE,cliente);
@@ -462,26 +364,18 @@ public class FragmentUDProyecto extends Fragment
             @Override
             public void onClick(View v) {
 
-                modificarProyecto();
+                update();
                 enviarProyectoTemporal(namef, PARTIDA, new FragmentPartidasProyecto());
 
             }
         });
-        btnGastosPry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                modificarProyecto();
-                enviarProyectoTemporal(namef, GASTO, new FragmentGastoProyecto());
-
-            }
-        });
         btnActualizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 modificarEstado();
-                modificarProyecto();
+                update();
 
                 if (peso > 6) {
                     imagenTipoClienteProyecto.setImageResource(R.drawable.clientev);
@@ -500,15 +394,16 @@ public class FragmentUDProyecto extends Fragment
             public void onClick(View v) {
 
                 modificarEstadoNoAceptado();
-                modificarProyecto();
+                update();
             }
         });
         imagenTipoClienteProyecto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                modificarProyecto();
-                Modelo cliente = QueryDB.queryObject(CAMPOS_CLIENTE,idCliente);
+                if (idProyecto!=null){
+                update();
+                Modelo cliente = consulta.queryObject(CAMPOS_CLIENTE,idCliente);
 
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_CLIENTE,cliente);
@@ -516,6 +411,9 @@ public class FragmentUDProyecto extends Fragment
                 bundle.putString("namef", namef);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentUDCliente());
                 bundle = null;
+                }else{
+                    mostrarDialogoTipoCliente();
+                }
             }
         });
 
@@ -538,44 +436,189 @@ public class FragmentUDProyecto extends Fragment
         });
 
 
-        return vista;
+        return view;
+    }
+
+    private void cargarDatos() {
+
+        btndelete.setVisibility(View.VISIBLE);
+        btnEvento.setVisibility(View.VISIBLE);
+        btnPartidasPry.setVisibility(View.VISIBLE);
+        estadoProyecto.setVisibility(View.VISIBLE);
+        fechaAcordadaPry.setVisibility(View.VISIBLE);
+        fechaCalculadaPry.setVisibility(View.VISIBLE);
+        btnfechaacord.setVisibility(View.VISIBLE);
+        btnfechaentrega.setVisibility(View.VISIBLE);
+        labelfacor.setVisibility(View.VISIBLE);
+        labelfcalc.setVisibility(View.VISIBLE);
+        btnActualizar.setVisibility(View.VISIBLE);
+        btnActualizar2.setVisibility(View.VISIBLE);
+        pvpPartidas.setVisibility(View.VISIBLE);
+        fechaEntregaPresup.setVisibility(View.VISIBLE);
+        labelfentregap.setVisibility(View.VISIBLE);
+        fechaFinalPry.setVisibility(View.VISIBLE);
+        labelfentregap.setVisibility(View.VISIBLE);
+        labelffinal.setVisibility(View.VISIBLE);
+        totalPartidasPry.setVisibility(View.VISIBLE);
+        labelimportecalculado.setVisibility(View.VISIBLE);
+        labelimportefinal.setVisibility(View.VISIBLE);
+        importeFinalPry.setVisibility(View.VISIBLE);
+        importeCalculadoPry.setVisibility(View.VISIBLE);
+        btnimgEstadoPry.setVisibility(View.VISIBLE);
+        fechaEntradaPry.setVisibility(View.VISIBLE);
+
+        nombrePry.setText(proyecto.getString(PROYECTO_NOMBRE));
+        descripcionPry.setText(proyecto.getString(PROYECTO_DESCRIPCION));
+        idCliente = proyecto.getString(PROYECTO_ID_CLIENTE);
+        idEstado = proyecto.getString(PROYECTO_ID_ESTADO);
+        idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
+        fechaEntradaPry.setText(JavaUtil.getDateTime(proyecto.getLong(PROYECTO_FECHAENTRADA)));
+        if (proyecto.getLong(PROYECTO_FECHAENTREGAPRESUP) == 0) {
+            fechaEntregaPresup.setText
+                    (R.string.establecer_fecha_entrega_presup);
+        } else if (proyecto.getLong(PROYECTO_FECHAENTREGAPRESUP) > 0) {
+            fechaEntregaPresup.setText(JavaUtil.getDate(proyecto.getLong(PROYECTO_FECHAENTREGAPRESUP)));
+        }
+
+        totalPartidasPry.setText(JavaUtil.getDecimales(totPartidas));
+
+        pvpPartidas.setText(JavaUtil.formatoMonedaLocal(precioPartidas));
+
+        importeCalculadoPry.setText(JavaUtil.formatoMonedaLocal(preciototal));
+
+        if (totPartidas == 0) {
+
+            fechaAcordadaPry.setVisibility(View.GONE);
+            fechaCalculadaPry.setVisibility(View.GONE);
+            btnfechaacord.setVisibility(View.GONE);
+            btnfechaentrega.setVisibility(View.GONE);
+            labelfacor.setVisibility(View.GONE);
+            labelfcalc.setVisibility(View.GONE);
+            btnActualizar.setVisibility(View.GONE);
+            pvpPartidas.setVisibility(View.GONE);
+            fechaEntregaPresup.setVisibility(View.GONE);
+            labelfentregap.setVisibility(View.GONE);
+
+        } else {
+
+            fechaAcordadaPry.setVisibility(View.VISIBLE);
+            fechaCalculadaPry.setVisibility(View.VISIBLE);
+            btnfechaacord.setVisibility(View.VISIBLE);
+            labelfacor.setVisibility(View.VISIBLE);
+            labelfcalc.setVisibility(View.VISIBLE);
+            btnActualizar.setVisibility(View.VISIBLE);
+            pvpPartidas.setVisibility(View.VISIBLE);
+            btnfechaentrega.setVisibility(View.GONE);
+            fechaEntregaPresup.setVisibility(View.GONE);
+            labelfentregap.setVisibility(View.GONE);
+
+            if (proyecto.getLong(PROYECTO_FECHAENTREGAACORDADA) == 0) {
+
+                fechaAcordadaPry.setText("No asignada");
+                btnActualizar.setVisibility(View.GONE);
+
+
+            } else {
+
+                fechaAcordada = proyecto.getLong(PROYECTO_FECHAENTREGAACORDADA);
+                fechaAcordadaPry.setText(JavaUtil.getDate(fechaAcordada));
+                btnActualizar.setVisibility(View.VISIBLE);
+                if (proyecto.getInt(PROYECTO_TIPOESTADO) > 2) {
+
+                    btnfechaentrega.setVisibility(View.VISIBLE);
+                    fechaEntregaPresup.setVisibility(View.VISIBLE);
+                    labelfentregap.setVisibility(View.VISIBLE);
+                }
+
+            }
+
+
+            fechaCalculada = proyecto.getLong(PROYECTO_FECHAENTREGACALCULADA);
+            fechaCalculadaPry.setText(JavaUtil.getDate(fechaCalculada));
+
+        }
+
+
+        if (proyecto.getLong(PROYECTO_FECHAFINAL) == 0) {
+            fechaFinalPry.setVisibility(View.GONE);
+            labelffinal.setVisibility(View.GONE);
+        } else {
+            fechaFinalPry.setVisibility(View.VISIBLE);
+            labelffinal.setVisibility(View.VISIBLE);
+            fechaFinalPry.setText(JavaUtil.getDate(proyecto.getLong(PROYECTO_FECHAFINAL)));
+        }
+
+
+        if (precioPartidas == 0) {
+            importeCalculadoPry.setVisibility(View.GONE);
+            labelimportecalculado.setVisibility(View.GONE);
+        } else {
+            importeCalculadoPry.setVisibility(View.VISIBLE);
+            labelimportecalculado.setVisibility(View.VISIBLE);
+            importeCalculadoPry.setText(JavaUtil.formatoMonedaLocal
+                    (preciototal));
+        }
+
+        if (proyecto.getInt(PROYECTO_TIPOESTADO) < 4) {
+            importeFinalPry.setVisibility(View.GONE);
+            labelimportefinal.setVisibility(View.GONE);
+        } else {
+            importeFinalPry.setVisibility(View.VISIBLE);
+            labelimportefinal.setVisibility(View.VISIBLE);
+            importeFinalPry.setText(JavaUtil.formatoMonedaLocal(proyecto.getDouble(PROYECTO_IMPORTEFINAL)));
+        }
+
+        if (proyecto.getString(PROYECTO_RUTAFOTO) != null) {
+            imagen.setImageURI(proyecto.getUri(PROYECTO_RUTAFOTO));
+        }
+        estadoProyecto.setText(proyecto.getString(PROYECTO_DESCRIPCION_ESTADO));
+
+        if (PRESUPUESTO.equals(namef)) {
+            btnimgEstadoPry.setVisibility(View.GONE);
+        } else {
+            long retraso = proyecto.getLong(PROYECTO_RETRASO);
+            if (retraso > 3 * CommonPry.DIASLONG) {
+                btnimgEstadoPry.setImageResource(R.drawable.alert_box_r);
+            } else if (retraso > CommonPry.DIASLONG) {
+                btnimgEstadoPry.setImageResource(R.drawable.alert_box_a);
+            } else {
+                btnimgEstadoPry.setImageResource(R.drawable.alert_box_v);
+            }
+        }
+
+        comprobarEstado();
     }
 
     private void calculoTotales() {
 
-        ArrayList<Modelo> listaPartidas = QueryDB.queryListDetalle(CAMPOS_PARTIDA,idProyecto,TABLA_PROYECTO);
+        ArrayList<Modelo> listaPartidas = consulta.queryListDetalle(CAMPOS_PARTIDA,idProyecto,TABLA_PROYECTO);
 
         int x = 0;
         for (int i = 0; i < listaPartidas.size(); i++) {
 
-            double tiempo = listaPartidas.get(i).getDouble(PARTIDA_TIEMPO);
-            double cantidad = listaPartidas.get(i).getDouble(PARTIDA_CANTIDAD);
             int completada = listaPartidas.get(i).getInt(PARTIDA_COMPLETADA);
-            totPartidas += (tiempo * cantidad);
-            precioPartidas += totPartidas * Common.hora;
+
             totcompletada += completada;
 
-            x = i;
+            x = i+1;
         }
-        totcompletada = (int) (Math.round(((double) totcompletada) / x));
+        totcompletada = (int) (Math.round(((double) totcompletada) / (double) x));
 
-        ArrayList<Modelo> listaGastos = QueryDB.queryListDetalle
-                (CAMPOS_GASTO,idProyecto,TABLA_PROYECTO);
+        totPartidas = proyecto.getDouble(PROYECTO_TIEMPO);
+        precioPartidas = totPartidas * CommonPry.hora;
+        preciototal = proyecto.getDouble(PROYECTO_IMPORTEPRESUPUESTO);
 
-        for (int i = 0; i < listaGastos.size(); i++) {
-
-            double  importe = listaGastos.get(i).getDouble(GASTO_IMPORTE);
-            double cantidad = listaGastos.get(i).getDouble(GASTO_CANTIDAD);
-            double beneficio = listaGastos.get(i).getDouble(GASTO_BENEFICIO);
-            totGastos += (importe * cantidad)+(((importe * cantidad)/100)*beneficio);
-        }
     }
+
 
     private void enviarProyectoTemporal(String namef, String namefsub, Fragment myfragment) {
 
-        new Common.Calculos.Tareafechas().execute();
-        Modelo pry = QueryDB.queryObject(CAMPOS_PROYECTO,idProyecto);
-        fechaCalculada = pry.getLong(PROYECTO_FECHAENTREGACALCULADA);
+        if (idProyecto!=null) {
+            new CommonPry.Calculos.Tareafechas().execute();
+            Modelo pry = consulta.queryObject(CAMPOS_PROYECTO, idProyecto);
+            fechaCalculada = pry.getLong(PROYECTO_FECHAENTREGACALCULADA);
+            calculoTotales();
+        }
 
         Modelo proyectotmp = new Modelo(CAMPOS_PROYECTO);
         proyectotmp.setCampos(PROYECTO_ID_PROYECTO,idProyecto);
@@ -584,16 +627,20 @@ public class FragmentUDProyecto extends Fragment
         proyectotmp.setCampos(PROYECTO_DESCRIPCION,descripcionPry.getText().toString());
         proyectotmp.setCampos(PROYECTO_ID_CLIENTE,idCliente);
         proyectotmp.setCampos(PROYECTO_FECHAENTREGAACORDADA,fechaAcordada);
-        proyectotmp.setCampos(PROYECTO_FECHAENTREGAPRESUP,fechaEntregaP);
+        //proyectotmp.setCampos(PROYECTO_FECHAENTREGAPRESUP,fechaEntregaP);
         proyectotmp.setCampos(PROYECTO_FECHAENTREGACALCULADA,fechaCalculada);
         if (fechaCalculada<=fechaAcordada){proyectotmp.setCampos(PROYECTO_RETRASO,0);
         }else {
             proyectotmp.setCampos(PROYECTO_RETRASO,fechaCalculada - fechaAcordada);
         }
-        proyectotmp.setCampos(PROYECTO_IMPORTEPRESUPUESTO,impTotalCalculado);
-        proyectotmp.setCampos(PROYECTO_IMPORTEFINAL,importeFinal);
-        proyectotmp.setCampos(PROYECTO_FECHAENTRADA,proyecto.getLong(PROYECTO_FECHAENTRADA));
-        proyectotmp.setCampos(PROYECTO_FECHAFINAL,proyecto.getLong(PROYECTO_FECHAFINAL));
+        proyectotmp.setCampos(PROYECTO_IMPORTEPRESUPUESTO,preciototal);
+        proyectotmp.setCampos(PROYECTO_IMPORTEFINAL,JavaUtil.sinFormato(importeFinalPry.getText().toString()));
+        if (proyecto!=null) {
+            proyectotmp.setCampos(PROYECTO_FECHAENTRADA, proyecto.getLong(PROYECTO_FECHAENTRADA));
+            proyectotmp.setCampos(PROYECTO_FECHAFINAL, proyecto.getLong(PROYECTO_FECHAFINAL));
+        }
+        proyectotmp.setCampos(PROYECTO_RUTAFOTO,path);
+        proyectotmp.setCampos(PROYECTO_TOTCOMPLETADO,totcompletada);
 
         bundle = new Bundle();
         bundle.putSerializable(TABLA_PROYECTO, proyectotmp);
@@ -603,38 +650,27 @@ public class FragmentUDProyecto extends Fragment
         bundle = null;
     }
 
-    private int modificarProyecto() {
+    protected void update() {
 
-        new Common.Calculos.Tareafechas().execute();
-        //Modelo pry = QueryDB.queryObject(CAMPOS_PROYECTO,idProyecto);
+        new CommonPry.Calculos.Tareafechas().execute();
+        //Modelo pry = ConsultaBD.queryObject(CAMPOS_PROYECTO,idProyecto);
         fechaCalculada = proyecto.getLong(PROYECTO_FECHAENTREGACALCULADA);
+        calculoTotales();
 
-        ContentValues valores = new ContentValues();
-        QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_NOMBRE,nombrePry.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_DESCRIPCION,descripcionPry.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_ID_CLIENTE,idCliente);
-        QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAENTREGAACORDADA,fechaAcordada);
-        QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAENTREGAPRESUP,fechaEntregaP);
+       contenedor();
 
-        if (fechaCalculada<=fechaAcordada){QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_RETRASO,0);
-        }else {
-            QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_RETRASO,(fechaCalculada - fechaAcordada));
-        }
-        QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_IMPORTEPRESUPUESTO,impTotalCalculado);
-        QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_IMPORTEFINAL,importeFinal);
-        if (path != null) {
-            QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_RUTAFOTO,path);
-        }
-        QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_TOTCOMPLETADO,totcompletada);
-
-        return QueryDB.updateRegistro(TABLA_PROYECTO,idProyecto,valores);
+        consulta.updateRegistro(TABLA_PROYECTO,idProyecto,valores);
 
     }
 
+    protected void delete(){
+
+        consulta.deleteRegistro(TABLA_PROYECTO,idProyecto);
+    }
 
     private void comprobarEstado() {
 
-        Modelo proyecto = QueryDB.queryObject(CAMPOS_PROYECTO, idProyecto);
+        Modelo proyecto = consulta.queryObject(CAMPOS_PROYECTO, idProyecto);
 
 
         if (proyecto!=null && proyecto.getInt(PROYECTO_TIPOESTADO) > 0) {
@@ -691,7 +727,7 @@ public class FragmentUDProyecto extends Fragment
         String idProyPendCobro = null;
         String idProyCobrado = null;
 
-        ArrayList<Modelo> listaEstados = QueryDB.queryList(CAMPOS_ESTADO,null, null);
+        ArrayList<Modelo> listaEstados = consulta.queryList(CAMPOS_ESTADO,null, null);
 
         for (Modelo estado : listaEstados) {
 
@@ -762,8 +798,9 @@ public class FragmentUDProyecto extends Fragment
 
             estadoProyecto.setText(PROYECTPENDCOBRO);
             idEstado = idProyPendCobro;
-            importeFinal = impTotalCalculado;
-            importeFinalPry.setText(JavaUtil.formatoMonedaLocal(importeFinal));
+            if (Double.parseDouble(JavaUtil.sinFormato(importeFinalPry.getText().toString()))==0) {
+                importeFinalPry.setText(JavaUtil.formatoMonedaLocal(precioPartidas));
+            }
 
         } else if (idEstado.equals(idProyPendCobro)) {
 
@@ -773,21 +810,21 @@ public class FragmentUDProyecto extends Fragment
         }
 
         ContentValues valores = new ContentValues();
-        QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_ID_ESTADO,idEstado);
-        QueryDB.updateRegistro(TABLA_PROYECTO,idProyecto,valores);
+        consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_ID_ESTADO,idEstado);
+        consulta.updateRegistro(TABLA_PROYECTO,idProyecto,valores);
 
         modificarEstadoPartidas(idProyecto,idEstado);
 
         comprobarEstado();
 
-        new Common.Calculos.TareaTipoCliente().execute(idCliente);
+        new CommonPry.Calculos.TareaTipoCliente().execute(idCliente);
     }
 
     private void modificarEstadoNoAceptado() {
 
         String idPresupNoAceptado;
 
-        ArrayList<Modelo> listaEstados = QueryDB.queryList(CAMPOS_ESTADO,null, null);
+        ArrayList<Modelo> listaEstados = consulta.queryList(CAMPOS_ESTADO,null, null);
 
         for (Modelo estado : listaEstados) {
 
@@ -795,8 +832,8 @@ public class FragmentUDProyecto extends Fragment
 
                 idPresupNoAceptado = estado.getString(ESTADO_ID_ESTADO);
                 ContentValues valores = new ContentValues();
-                QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_ID_ESTADO,idPresupNoAceptado);
-                QueryDB.updateRegistro(TABLA_PROYECTO,idProyecto,valores);
+                consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_ID_ESTADO,idPresupNoAceptado);
+                consulta.updateRegistro(TABLA_PROYECTO,idProyecto,valores);
 
                 comprobarEstado();
                 break;
@@ -809,203 +846,183 @@ public class FragmentUDProyecto extends Fragment
     private void modificarEstadoPartidas(String idProyecto, String idEstado){
 
         ContentValues valores = new ContentValues();
-        QueryDB.putDato(valores,CAMPOS_PARTIDA,PARTIDA_ID_ESTADO,idEstado);
-        QueryDB.updateRegistrosDetalle(TABLA_PARTIDA,idProyecto,TABLA_PROYECTO,valores,null);
+        consulta.putDato(valores,CAMPOS_PARTIDA, PARTIDA_ID_ESTADO,idEstado);
+        consulta.updateRegistrosDetalle(TABLA_PARTIDA,idProyecto,TABLA_PROYECTO,valores,null);
     }
-    /*
-    private void mostrarDialogoOpcionesImagen() {
 
-        final CharSequence[] opciones = {"Hacer foto desde cámara", "Elegir de la galería", "Cancelar"};
+    @Override
+    protected boolean registrar() {
+
+
+        contenedor();
+
+        if (idCliente != null) {
+
+            Modelo cliente = consulta.queryObject(CAMPOS_CLIENTE,idCliente);
+
+            if (cliente.getString(CLIENTE_NOMBRE).equals(spClienteProyecto.getText().toString())) {
+
+                System.out.println("valores = " + valores);
+                idProyecto = consulta.idInsertRegistro(TABLA_PROYECTO, valores);
+                proyecto = consulta.queryObject(CAMPOS_PROYECTO,idProyecto);
+                System.out.println("idProyecto = " + idProyecto);
+
+            } else {
+                mostrarDialogoTipoCliente();
+            }
+        } else {
+            //Toast.makeText(getContext(), "Debe elegir un cliente", Toast.LENGTH_LONG).show();
+            mostrarDialogoTipoCliente();
+        }
+        return true;
+    }
+
+    @Override
+    protected boolean contenedor() {
+
+        valores = new ContentValues();
+
+        consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_NOMBRE,nombrePry.getText().toString());
+        consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_DESCRIPCION,descripcionPry.getText().toString());
+        consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_ID_CLIENTE,idCliente);
+        consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_ID_ESTADO,idEstado);
+        consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAENTREGAACORDADA,fechaAcordada);
+        //consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAENTREGAPRESUP,fechaEntregaP);
+
+        if (fechaCalculada<=fechaAcordada){
+            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_RETRASO,0);
+        }else {
+            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_RETRASO,(fechaCalculada - fechaAcordada));
+        }
+        consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_IMPORTEPRESUPUESTO,preciototal);
+        consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_IMPORTEFINAL,
+                JavaUtil.comprobarDouble(importeFinalPry.getText().toString()));
+        if (path != null) {
+            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_RUTAFOTO,path);
+        }
+        consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_TOTCOMPLETADO,totcompletada);
+        if (idProyecto==null){
+
+            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAENTRADA,JavaUtil.hoy());
+        }
+        return true;
+    }
+
+    @Override
+    protected void cambiarFragment() {
+
+        bundle = new Bundle();
+
+        if (namef.equals(AGENDA)) {
+
+            bundle.putString("namef", namef);
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentAgenda());
+            bundle = null;
+
+        } else {
+
+            bundle.putString("namef", namef);
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentProyecto());
+            bundle = null;
+        }
+
+    }
+
+    private void listaObjetosEstados() {
+
+        objEstados = new ArrayList<>();
+        String seleccion = null;
+        if (namef.equals(PROYECTO)){
+            seleccion = ESTADO_TIPOESTADO + " >3";
+        }else if (namef.equals(PRESUPUESTO)){
+            seleccion = ESTADO_TIPOESTADO + " <4";
+        }else if (namef.equals(COBROS)){
+            seleccion = ESTADO_TIPOESTADO + " >6";
+        }else if (namef.equals(HISTORICO)){
+            seleccion = ESTADO_TIPOESTADO + " == 8";
+        }
+
+        objEstados = consulta.queryList(CAMPOS_ESTADO,seleccion,null);
+
+        obtenerListaEstados();
+    }
+
+    private void obtenerListaEstados() {
+
+        listaEstados = new ArrayList<String>();
+        listaEstados.add("Seleccione Estado");
+
+        for (int i=0;i<objEstados.size();i++){
+
+            listaEstados.add(objEstados.get(i).getString(ESTADO_DESCRIPCION));
+        }
+    }
+
+
+    private void setAdaptadorClientes(final AutoCompleteTextView autoCompleteTextView) {
+
+        listaClientes = consulta.queryList(CAMPOS_CLIENTE, null, null);
+
+        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),R.layout.item_list_cliente,listaClientes,CLIENTE_NOMBRE) {
+            @Override
+            public void onEntrada(Modelo entrada, View view) {
+
+                ImageView imgcli = view.findViewById(R.id.imgclilcliente);
+                TextView nombreCli = view.findViewById(R.id.tvnomclilcliente);
+                TextView contactoCli = view.findViewById(R.id.tvcontacclilcliente);
+                TextView telefonoCli = view.findViewById(R.id.tvtelclilcliente);
+                TextView emailCli = view.findViewById(R.id.tvemailclilcliente);
+                TextView dirCli = view.findViewById(R.id.tvdirclilcliente);
+
+                dirCli.setText(entrada.getString(CLIENTE_DIRECCION));
+
+                int peso = entrada.getInt
+                        (CLIENTE_PESOTIPOCLI);
+
+                if (peso > 6) {
+                    imgcli.setImageResource(R.drawable.clientev);
+                } else if (peso > 3) {
+                    imgcli.setImageResource(R.drawable.clientea);
+                } else if (peso > 0) {
+                    imgcli.setImageResource(R.drawable.clienter);
+                } else {
+                    imgcli.setImageResource(R.drawable.cliente);
+                }
+
+                nombreCli.setText(entrada.getString(CLIENTE_NOMBRE));
+                contactoCli.setText(entrada.getString(CLIENTE_CONTACTO));
+                telefonoCli.setText(entrada.getString(CLIENTE_TELEFONO));
+                emailCli.setText(entrada.getString(CLIENTE_EMAIL));
+
+            }
+
+        });
+
+    }
+
+    private void mostrarDialogoTipoCliente() {
+
+        final CharSequence[] opciones = {"Nuevo cliente","Nuevo prospecto","Cancelar"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Elige una opción");
         builder.setItems(opciones, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                if (opciones[which].equals("Hacer foto desde cámara")) {
+                if (opciones[which].equals("Nuevo cliente")){
 
-                    abrirCamara();
+                    enviarProyectoTemporal(namef, CLIENTE,new FragmentCCliente());
 
-                } else if (opciones[which].equals("Elegir de la galería")) {
+                }else if (opciones[which].equals("Nuevo prospecto")){
 
-                    abrirGaleria();
+                    enviarProyectoTemporal(namef, PROSPECTO,new FragmentCCliente());
 
-                } else {
+                }else {
                     dialog.dismiss();
                 }
             }
         });
         builder.show();
-    }
-
-    private void abrirGaleria(){
-
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT,
-                MediaStore.ImagenUtil.Media.EXTERNAL_CONTENT_URI);
-        intent.setType("image/");
-        startActivityForResult
-                (intent.createChooser(intent, "Seleccione"), COD_SELECCIONA);
-    }
-
-    private void abrirCamara() {
-
-        File dir = null;
-        File dir_path = null;
-        boolean iscreada = false;
-
-        dir_path = Environment.getExternalStorageDirectory();
-        dir = new File(dir_path.getAbsolutePath(),DIRECTORIO_IMAGEN);
-        iscreada = dir.isDirectory();
-
-        if (!iscreada) {
-
-            iscreada = dir.mkdirs();
-
-        }
-
-        Long consecutivo = System.currentTimeMillis() / 100;
-        String nombre = consecutivo.toString() + ".jpg";
-
-        String path = nombre;
-
-        File fileImagen = new File(dir.getAbsolutePath(),path);
-            //fileImagen = new File(path);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-                Uri uri = FileProvider.getUriForFile(getContext(),
-                        BuildConfig.APPLICATION_ID + ".providerFreelanceProject", fileImagen);
-
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-                if (iscreada) {
-                    startActivityForResult(intent, COD_FOTO);
-                }
-
-            } else {
-
-
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileImagen));
-
-                if (iscreada) {
-                    startActivityForResult(intent, COD_FOTO);
-                }
-            }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        ContentResolver resolver = getActivity().getContentResolver();
-
-        switch (requestCode) {
-
-            case COD_SELECCIONA:
-                Uri mipath = data.getData();
-                imgPry.setImageURI(mipath);
-                File imageFile = new File(Common.getRealPathFromURI(mipath, resolver));
-                path = imageFile.getPath();
-                break;
-            case COD_FOTO:
-                MediaScannerConnection.scanFile(getContext(), new String[]{path}, null,
-                        new MediaScannerConnection.OnScanCompletedListener() {
-                            @Override
-                            public void onScanCompleted(String path, Uri uri) {
-
-                                Log.i("Path", "" + path);
-                            }
-                        });
-                bitmap = BitmapFactory.decodeFile(path);
-                imgPry.setImageBitmap(bitmap);
-
-                break;
-        }
-    }
-
-    */
-    public void mostrarDialogoOpciones() {
-
-        final CharSequence[] opciones = {"Hacer foto desde cámara", "Elegir de la galería", "Cancelar"};
-        final androidx.appcompat.app.AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Elige una opción");
-        builder.setItems(opciones, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                imagen = new ImagenUtil(getContext());
-
-                if (opciones[which].equals("Hacer foto desde cámara")) {
-
-                            try {
-                                startActivityForResult(imagen.takePhotoIntent(), COD_FOTO);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            imagen.addToGallery();
-
-                } else if (opciones[which].equals("Elegir de la galería")) {
-
-                startActivityForResult(imagen.openGalleryIntent(), COD_SELECCIONA);
-
-                } else {
-                    dialog.dismiss();
-                }
-            }
-        });
-        builder.show();
-    }
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        String photoPath;
-
-        switch (requestCode) {
-
-            case COD_SELECCIONA:
-                imagen.setPhotoUri(data.getData());
-                photoPath = imagen.getPath();
-                try {
-                    Bitmap bitmap = ImagenUtil.ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
-                    imgPry.setImageBitmap(bitmap);
-                    path = photoPath;
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case COD_FOTO:
-                photoPath = imagen.getPhotoPath();
-                try {
-                    Bitmap bitmap = ImagenUtil.ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
-                    imgPry.setImageBitmap(bitmap); //imageView is your ImageView
-                    path = photoPath;
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                break;
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof Activity) {
-            this.activity = (AppCompatActivity) context;
-            icFragmentos = (ICFragmentos) this.activity;
-        }
-
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
     }
 
 
@@ -1015,20 +1032,24 @@ public class FragmentUDProyecto extends Fragment
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         // +1 because january is zero
-                        //String selectedDate = Common.twoDigits(day) + " / " +
-                        //        Common.twoDigits(month+1) + " / " + year;
+                        //String selectedDate = CommonPry.twoDigits(day) + " / " +
+                        //        CommonPry.twoDigits(month+1) + " / " + year;
                         fechaAcordada = JavaUtil.fechaALong(year, month, day);
-                        //String selectedDate = Common.formatDateForUi(year,month,day);
+                        if (fechaAcordada>0){
+                            fechaEntregaPresup.setVisibility(View.VISIBLE);
+                            btnfechaentrega.setVisibility(View.VISIBLE);
+                            labelfentregap.setVisibility(View.VISIBLE);
+                        }
+                        //String selectedDate = CommonPry.formatDateForUi(year,month,day);
                         String selectedDate = JavaUtil.getDate(fechaAcordada);
                         fechaAcordadaPry.setText(selectedDate);
                         btnActualizar.setVisibility(View.VISIBLE);
                         ContentValues valores = new ContentValues();
-                        QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAENTREGAACORDADA,fechaAcordada);
-                        int res = QueryDB.updateRegistro(TABLA_PROYECTO,idProyecto,valores);
-                        if (res > 0) {
+                        consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAENTREGAACORDADA,fechaAcordada);
+                        consulta.updateRegistro(TABLA_PROYECTO,idProyecto,valores);
 
-                            new Common.Calculos.Tareafechas().execute();
-                        }
+                            new CommonPry.Calculos.Tareafechas().execute();
+
                     }
                 });
         newFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
@@ -1040,19 +1061,19 @@ public class FragmentUDProyecto extends Fragment
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         // +1 because january is zero
-                        //String selectedDate = Common.twoDigits(day) + " / " +
-                        //        Common.twoDigits(month+1) + " / " + year;
+                        //String selectedDate = CommonPry.twoDigits(day) + " / " +
+                        //        CommonPry.twoDigits(month+1) + " / " + year;
                         fechaEntregaP = JavaUtil.fechaALong(year, month, day);
-                        //String selectedDate = Common.formatDateForUi(year,month,day);
+                        //String selectedDate = CommonPry.formatDateForUi(year,month,day);
                         String selectedDate = JavaUtil.getDate(fechaEntregaP);
                         fechaEntregaPresup.setText(selectedDate);
                         ContentValues valores = new ContentValues();
-                        QueryDB.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAENTREGAPRESUP,fechaEntregaP);
-                        int res = QueryDB.updateRegistro(TABLA_PROYECTO,idProyecto,valores);
-                        if (res > 0) {
+                        consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAENTREGAPRESUP,fechaEntregaP);
+                        consulta.updateRegistro(TABLA_PROYECTO,idProyecto,valores);
 
-                            new Common.Calculos.Tareafechas().execute();
-                        }
+
+                            new CommonPry.Calculos.Tareafechas().execute();
+
                     }
                 });
 

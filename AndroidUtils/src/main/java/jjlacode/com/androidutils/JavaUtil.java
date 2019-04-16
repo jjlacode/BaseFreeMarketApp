@@ -53,6 +53,82 @@ public class JavaUtil {
         return df.format(value);
     }
 
+    public static int comprobarInteger(String dato){
+
+        try {
+            dato = sinFormato(dato);
+            int res = Integer.parseInt(dato)/Integer.parseInt(dato);
+            if (res==1)return Integer.parseInt(dato);
+
+        }catch (Exception e){
+        }
+        return  0;
+    }
+
+    public static long comprobarLong(String dato){
+
+        try {
+            dato = sinFormato(dato);
+            long res = Long.parseLong(dato)/Long.parseLong(dato);
+            if (res==1)return Long.parseLong(dato);
+
+        }catch (Exception e){
+        }
+        return  0;
+    }
+
+    public static double comprobarDouble(String dato){
+
+        try {
+            dato = sinFormato(dato);
+            double res = Double.parseDouble(dato)/Double.parseDouble(dato);
+            if (res==1)return Double.parseDouble(dato);
+
+        }catch (Exception e){
+        }
+        return  0;
+    }
+
+    public static Float comprobarFloat(String dato){
+
+        try {
+            dato = sinFormato(dato);
+            float res = Float.parseFloat(dato)/Float.parseFloat(dato);
+            if (res==1)return Float.parseFloat(dato);
+
+        }catch (Exception e){
+        }
+        return  0f;
+    }
+
+    public static short comprobarShort(String dato){
+
+        try {
+            dato = sinFormato(dato);
+            short res = (short) (Short.parseShort(dato)/Short.parseShort(dato));
+            if (res==1)return Short.parseShort(dato);
+
+        }catch (Exception e){
+        }
+        return  0;
+    }
+
+    public static String sinFormato(String dato){
+        char espacio = ' ';
+        for (int i=0;i<dato.length();i++){
+            char caracter = dato.charAt(i);
+            int ascii = dato.codePointAt(i);
+            System.out.println("ascii = " + ascii);
+            if (ascii>58){
+                dato = dato.replace(caracter,espacio);
+            }
+            if (ascii==44){
+                dato = dato.replace(caracter,'.');
+            }
+        }
+        return dato.trim();
+    }
+
     public static String getDecimales(double value, String patron){
         DecimalFormat df = new DecimalFormat(patron);
         return df.format(value);
@@ -227,14 +303,26 @@ public class JavaUtil {
         return true;
     }
 
-    public static long[] longAddhhmm(long flong){
+    public static long[] longA_ddhhmm(long flong){
 
         long lfechaaviso = flong;
-        long lavisodias = lfechaaviso / Constantes.DIASLONG;
-        long lavisohoras = (lfechaaviso - (lavisodias*Constantes.DIASLONG)) / Constantes.HORASLONG;
-        long lavisominutos = (lfechaaviso - (lavisohoras*Constantes.HORASLONG) -
-                (lavisodias*Constantes.DIASLONG)) / Constantes.MINUTOSLONG;
-        long[] res = {lavisodias,lavisohoras,lavisominutos};
+        long ldias = lfechaaviso / Constantes.DIASLONG;
+        long lhoras = (lfechaaviso - (ldias*Constantes.DIASLONG)) / Constantes.HORASLONG;
+        long lminutos = (lfechaaviso - (lhoras*Constantes.HORASLONG) -
+                (ldias*Constantes.DIASLONG)) / Constantes.MINUTOSLONG;
+        long[] res = {ldias,lhoras,lminutos};
+
+        return res;
+    }
+
+    public static long[] longA_AAMMdd(long flong){
+
+        long lfecha = flong;
+        long lanios = lfecha / Constantes.ANIOSLONG;
+        long lmeses = (lfecha - (lanios*Constantes.ANIOSLONG)) / Constantes.MESESLONG;
+        long ldias = (lfecha - (lmeses*Constantes.MESESLONG) -
+                (lanios*Constantes.ANIOSLONG)) / Constantes.DIASLONG;
+        long[] res = {lanios,lmeses,ldias};
 
         return res;
     }

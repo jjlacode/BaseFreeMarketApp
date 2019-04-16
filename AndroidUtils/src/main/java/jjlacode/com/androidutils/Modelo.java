@@ -1,5 +1,6 @@
 package jjlacode.com.androidutils;
 
+import android.content.ContentValues;
 import android.net.Uri;
 
 import java.io.Serializable;
@@ -8,17 +9,23 @@ public class Modelo implements Serializable {
 
     private String[] campos;
 
+    private String[] estructura;
+
     private String[] valores;
 
     private String nombreTabla;
 
     private int numcampos;
 
+    private int campostabla;
+
 
     public Modelo(String[] campos) {
 
+        estructura = campos;
         numcampos = (campos.length/3);
         nombreTabla = campos[1];
+        campostabla = (Integer.parseInt(campos[0])-2)/3;
         this.campos = new String[numcampos];
         valores = new String[numcampos];
 
@@ -33,8 +40,10 @@ public class Modelo implements Serializable {
 
     public Modelo(String[] campos, String[] valores) {
 
+        estructura = campos;
         numcampos = (campos.length/3);
         nombreTabla = campos[1];
+        campostabla = (Integer.parseInt(campos[0])-2)/3;
         this.campos = new String[numcampos];
         this.valores = new String[numcampos];
 
@@ -49,6 +58,51 @@ public class Modelo implements Serializable {
 
         }
 
+
+    }
+
+    public Modelo(String[] campos, String[] valores, boolean ref) {
+
+        estructura = campos;
+        numcampos = (campos.length/3);
+        nombreTabla = campos[1];
+        campostabla = (Integer.parseInt(campos[0])-2)/3;
+        if (ref){numcampos = campostabla;}
+        this.campos = new String[numcampos];
+        this.valores = new String[numcampos];
+
+        for (int i = 0,x = 2; i < numcampos ;i++,x+=3) {
+
+            if (campos[x]!=null) {
+                this.campos[i] = campos[x];
+            }
+            if (valores[i]!=null) {
+                this.valores[i] = valores[i];
+            }
+
+        }
+
+
+    }
+
+    public Modelo clonar(boolean ref){
+
+        return new Modelo(estructura,valores,ref);
+
+    }
+
+    public ContentValues contenido(){
+
+        ContentValues values = new ContentValues();
+
+        int size = campostabla;
+
+        for (int i = 0; i < size; i++) {
+
+            values.put(campos[i],valores[i]);
+        }
+
+        return values;
 
     }
 
@@ -244,4 +298,11 @@ public class Modelo implements Serializable {
         return numcampos;
     }
 
+    public int getCampostabla() {
+        return campostabla;
+    }
+
+    public void setCampostabla(int campostabla) {
+        this.campostabla = campostabla;
+    }
 }

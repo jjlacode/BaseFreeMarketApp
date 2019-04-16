@@ -25,43 +25,51 @@ import android.widget.Toast;
 import jjlacode.com.androidutils.ICFragmentos;
 import jjlacode.com.androidutils.JavaUtil;
 import jjlacode.com.androidutils.Modelo;
-import jjlacode.com.freelanceproject.sqlite.Contract;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.ui.FragmentAgenda;
+import jjlacode.com.freelanceproject.ui.FragmentAmortizacion;
 import jjlacode.com.freelanceproject.ui.FragmentCCliente;
 import jjlacode.com.freelanceproject.ui.FragmentCEvento;
-import jjlacode.com.freelanceproject.ui.FragmentCGastoProyecto;
 import jjlacode.com.freelanceproject.ui.FragmentCPartidaProyecto;
 import jjlacode.com.freelanceproject.ui.FragmentCProyecto;
+import jjlacode.com.freelanceproject.ui.FragmentCUDAmortizacion;
+import jjlacode.com.freelanceproject.ui.FragmentCUDGastoFijo;
+import jjlacode.com.freelanceproject.ui.FragmentCUDPerfil;
 import jjlacode.com.freelanceproject.ui.FragmentCliente;
 import jjlacode.com.freelanceproject.ui.FragmentEvento;
+import jjlacode.com.freelanceproject.ui.FragmentGastoFijo;
+import jjlacode.com.freelanceproject.ui.FragmentPartidaBase;
 import jjlacode.com.freelanceproject.ui.FragmentPerfil;
 import jjlacode.com.freelanceproject.ui.FragmentProyecto;
 import jjlacode.com.freelanceproject.ui.FragmentUDPreferencias;
-import jjlacode.com.freelanceproject.utilities.Common;
+import jjlacode.com.freelanceproject.ui.FragmentUDProyecto;
+import jjlacode.com.freelanceproject.utilities.CommonPry;
 
 import static android.Manifest.permission.CALL_PHONE;
 import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static jjlacode.com.freelanceproject.utilities.Common.TiposEvento.EVENTO;
+import static jjlacode.com.freelanceproject.utilities.CommonPry.TiposEvento.EVENTO;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ICFragmentos,
-        Common.Constantes, Contract.Tablas {
+        CommonPry.Constantes, ContratoPry.Tablas {
 
     TextView tituloCabecera ;
     String namef ;
     String nameftemp ;
     Bundle bundle;
+    Toolbar toolbar;
 
-    public static Context context;
     private String namefsub;
+    private String precioHora;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         namef = AGENDA;
@@ -72,20 +80,20 @@ public class MainActivity extends AppCompatActivity
 
         validarPermisos();
         //String [] args = {CAMERA,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE};
-        //Common.Permisos permisos = new Common.Permisos(context,this,args);
+        //CommonPry.Permisos permisos = new CommonPry.Permisos(context,this,args);
         //permisos.validarPermisos();
 
-        String precioHora= JavaUtil.getDecimales(Common.hora);
+        precioHora= JavaUtil.formatoMonedaLocal(CommonPry.hora);
 
-        if (Common.prioridad>0) {
-            toolbar.setSubtitle("Perfil: " + Common.perfila + " - hora= " + precioHora + " € - P");
+        if (CommonPry.prioridad) {
+            toolbar.setSubtitle("Perfil: " + CommonPry.perfila + " - hora= " + precioHora + " - P");
         }else{
 
-            toolbar.setSubtitle("Perfil: " + Common.perfila + " - hora= " + precioHora + " €");
+            toolbar.setSubtitle("Perfil: " + CommonPry.perfila + " - hora= " + precioHora );
         }
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab =  findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,21 +128,11 @@ public class MainActivity extends AppCompatActivity
                                 bundle = null;
                                 Snackbar.make(view, "Nueva Partida", Snackbar.LENGTH_LONG)
                                         .setAction("Action", null).show();
-                            } else if (namefsub.equals(GASTO)) {
-
-                                bundle = new Bundle();
-                                bundle.putString("namef", namef);
-                                bundle.putString("namefsub", GASTO);
-                                bundle.putSerializable(TABLA_PROYECTO, proyecto);
-                                enviarBundleAFragment(bundle, new FragmentCGastoProyecto());
-                                bundle = null;
-                                Snackbar.make(view, "Nuevo Gasto", Snackbar.LENGTH_LONG)
-                                        .setAction("Action", null).show();
                             }
                         }else {
                             bundle = new Bundle();
                             bundle.putString("namef", namef);
-                            enviarBundleAFragment(bundle, new FragmentCProyecto());
+                            enviarBundleAFragment(bundle, new FragmentUDProyecto());
                             bundle = null;
                             Snackbar.make(view, "Nuevo Proyecto", Snackbar.LENGTH_LONG)
                                     .setAction("Action", null).show();
@@ -148,12 +146,44 @@ public class MainActivity extends AppCompatActivity
                         bundle = null;
                         Snackbar.make(view, "Nuevo Evento", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
+                    }else if (namef.equals(PERFIL)) {
+
+                        bundle = new Bundle();
+                        bundle.putString("namef", namef);
+                        enviarBundleAFragment(bundle, new FragmentCUDPerfil());
+                        bundle = null;
+                        Snackbar.make(view, "Nuevo Perfil", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }else if (namef.equals(AMORTIZACION)) {
+
+                        bundle = new Bundle();
+                        bundle.putString("namef", namef);
+                        enviarBundleAFragment(bundle, new FragmentCUDAmortizacion());
+                        bundle = null;
+                        Snackbar.make(view, "Nueva Amortización", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }else if (namef.equals(GASTOSFIJOS)) {
+
+                        bundle = new Bundle();
+                        bundle.putString("namef", namef);
+                        enviarBundleAFragment(bundle, new FragmentCUDGastoFijo());
+                        bundle = null;
+                        Snackbar.make(view, "Nuevo Gasto fijo", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }else if (namef.equals(PARTIDABASE)) {
+
+                        bundle = new Bundle();
+                        bundle.putString("namef", namef);
+                        enviarBundleAFragment(bundle, new FragmentCPartidaProyecto());
+                        bundle = null;
+                        Snackbar.make(view, "Nueva Partida Base", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
                     }
                 //}
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -163,14 +193,14 @@ public class MainActivity extends AppCompatActivity
         bundle.putString("namef",namef);
         enviarBundleAFragment(bundle, new FragmentAgenda());
         bundle = null;
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -205,7 +235,6 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -285,6 +314,30 @@ public class MainActivity extends AppCompatActivity
             enviarBundleAFragment(bundle, new FragmentEvento());
             bundle = null;
 
+        }else if (id == R.id.nav_amortizacion) {
+
+            namef = AMORTIZACION;
+            tituloCabecera.setText(namef.toUpperCase());
+            bundle.putString("namef",namef);
+            enviarBundleAFragment(bundle, new FragmentAmortizacion());
+            bundle = null;
+
+        }else if (id == R.id.nav_gastosfijos) {
+
+            namef = GASTOSFIJOS;
+            tituloCabecera.setText(namef.toUpperCase());
+            bundle.putString("namef",namef);
+            enviarBundleAFragment(bundle, new FragmentGastoFijo());
+            bundle = null;
+
+        }else if (id == R.id.nav_partidabase) {
+
+            namef = PARTIDABASE;
+            tituloCabecera.setText(namef.toUpperCase());
+            bundle.putString("namef",namef);
+            enviarBundleAFragment(bundle, new FragmentPartidaBase());
+            bundle = null;
+
         }
 
         tituloCabecera.setText(namef.toUpperCase());
@@ -311,8 +364,22 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public static Context getMainContext() {
-        return context;
+    @Override
+    public void ejecutarEnActivity() {
+
+        precioHora= JavaUtil.formatoMonedaLocal(CommonPry.hora);
+
+        if (CommonPry.prioridad) {
+            toolbar.setSubtitle("Perfil: " + CommonPry.perfila + " - " +
+                    "hora= " + precioHora + " - P");
+        }else{
+
+            toolbar.setSubtitle("Perfil: " + CommonPry.perfila + " - " +
+                    "hora= " + precioHora);
+        }
+
+        System.out.println("precioHora = " + precioHora);
+
     }
 
     private void validarPermisos() {
@@ -320,18 +387,20 @@ public class MainActivity extends AppCompatActivity
 
         if (Build.VERSION.SDK_INT<Build.VERSION_CODES.M ){
 
-            Common.permiso = true;
+            CommonPry.permiso = true;
         }
         else if ((checkSelfPermission(CAMERA)== PackageManager.PERMISSION_GRANTED) &&
                 (checkSelfPermission(CALL_PHONE)== PackageManager.PERMISSION_GRANTED) &&
+                (checkSelfPermission(INTERNET)== PackageManager.PERMISSION_GRANTED) &&
                 (checkSelfPermission(READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED) &&
                 (checkSelfPermission(WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED)
                 ){
 
-            Common.permiso = true;
+            CommonPry.permiso = true;
         }
         else if ((shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE))||
                 (shouldShowRequestPermissionRationale(READ_EXTERNAL_STORAGE))||
+                (shouldShowRequestPermissionRationale(INTERNET))||
                 (shouldShowRequestPermissionRationale(CAMERA))||
                 (shouldShowRequestPermissionRationale(CALL_PHONE))){
 
@@ -344,7 +413,7 @@ public class MainActivity extends AppCompatActivity
                 public void onClick(DialogInterface dialog, int which) {
 
                     requestPermissions(new String[]
-                            {READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,CAMERA,CALL_PHONE},100);
+                            {READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,CAMERA,CALL_PHONE,INTERNET},100);
                 }
             });
             dialogo.show();
@@ -353,7 +422,7 @@ public class MainActivity extends AppCompatActivity
         else {
 
             requestPermissions(new String[]
-                    {READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,CAMERA,CALL_PHONE},100);
+                    {READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,CAMERA,CALL_PHONE,INTERNET},100);
         }
     }
 
@@ -361,12 +430,13 @@ public class MainActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if(requestCode==100 && grantResults.length==4 && (grantResults[0]==PackageManager.PERMISSION_GRANTED &&
+        if(requestCode==100 && grantResults.length==5 && (grantResults[0]==PackageManager.PERMISSION_GRANTED &&
                 grantResults[1]==PackageManager.PERMISSION_GRANTED &&
                 grantResults[2]==PackageManager.PERMISSION_GRANTED &&
-                grantResults[3]==PackageManager.PERMISSION_GRANTED)){
+                grantResults[3]==PackageManager.PERMISSION_GRANTED &&
+                grantResults[4]==PackageManager.PERMISSION_GRANTED)){
 
-            Common.permiso = true;
+            CommonPry.permiso = true;
 
         }else{
 

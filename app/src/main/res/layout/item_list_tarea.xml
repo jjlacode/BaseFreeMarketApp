@@ -16,32 +16,64 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tvdescripcionltareas"
+
+                <ImageView
+                    android:id="@+id/imgltarea"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="2.5"
+                    android:adjustViewBounds="true"
+                    card_view:srcCompat="@drawable/ico_calendario_reloj" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="top"
-                android:text="@string/descripcion_tipo_cliente"
-                android:textSize="18sp" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvtiempoltareas"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:gravity="right"
-                android:text="@string/tiempo"
-                android:textSize="18sp" />
+                <TextView
+                    android:id="@+id/tvnomltarea"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:text="@string/nombre" />
 
-            <TextView
-                android:id="@+id/ltiempoltareas"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:gravity="center"
-                android:text="@string/horas"
-                android:textSize="18sp" />
+                <TextView
+                    android:id="@+id/tvdescripcionltareas"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="@string/descripcion_tipo_cliente"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvtiempoltareas"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:gravity="right"
+                        android:text="@string/tiempo"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/ltiempoltareas"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:gravity="center"
+                        android:text="@string/horas"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+            </LinearLayout>
 
 
         </LinearLayout>

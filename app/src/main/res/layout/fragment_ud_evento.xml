@@ -210,6 +210,48 @@
             android:weightSum="100">
 
             <TextView
+                android:id="@+id/ltvreptudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                android:text="@string/repetir_evento" />
+
+            <EditText
+                android:id="@+id/etrepaniosudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                android:ems="10"
+                android:hint="@string/anios"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/etrepmesesudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                android:ems="10"
+                android:hint="@string/meses"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/etrepdiasudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                android:ems="10"
+                android:hint="@string/dias"
+                android:inputType="number" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
                 android:id="@+id/ltvdreptudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -244,47 +286,6 @@
                 android:inputType="number" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:weightSum="100">
-
-            <TextView
-                android:id="@+id/ltvreptudevento"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="25"
-                android:text="@string/repetir_evento" />
-
-            <EditText
-                android:id="@+id/etrepaniosudevento"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="25"
-                android:ems="10"
-                android:hint="@string/anios"
-                android:inputType="number" />
-
-            <EditText
-                android:id="@+id/etrepmesesudevento"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="25"
-                android:ems="10"
-                android:hint="@string/meses"
-                android:inputType="number" />
-
-            <EditText
-                android:id="@+id/etrepdiasudevento"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="25"
-                android:ems="10"
-                android:hint="@string/dias"
-                android:inputType="number" />
-        </LinearLayout>
-
         <CheckBox
             android:id="@+id/chpryudevento"
             android:layout_width="match_parent"
@@ -295,7 +296,7 @@
             android:id="@+id/sppryudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/seleccione_proyecto" />
+            android:hint="@string/seleccione_proyecto" />
 
         <CheckBox
             android:id="@+id/chcliudevento"
@@ -307,7 +308,7 @@
             android:id="@+id/spcliudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/seleccione_cliente" />
+            android:hint="@string/seleccione_cliente" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

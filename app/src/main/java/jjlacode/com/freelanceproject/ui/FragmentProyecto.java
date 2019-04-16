@@ -1,51 +1,38 @@
 package jjlacode.com.freelanceproject.ui;
 
-import android.app.Activity;
-import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.FragmentBase;
+import jjlacode.com.androidutils.JavaUtil;
 import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.adapter.AdaptadorProyecto;
-import jjlacode.com.freelanceproject.sqlite.Contract;
-import jjlacode.com.freelanceproject.sqlite.QueryDB;
-import jjlacode.com.freelanceproject.utilities.Common;
+import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
+import jjlacode.com.freelanceproject.utilities.CommonPry;
 
-public class FragmentProyecto extends Fragment implements Common.Constantes, Contract.Tablas {
+public class FragmentProyecto extends FragmentBase implements CommonPry.Constantes, ContratoPry.Tablas {
 
     private String idProyecto;
-    private String namef;
+    private RecyclerView rvproyectos;
+    private ArrayList<Modelo> listaProyectos;
 
-    View vista;
-    RecyclerView rvproyectos;
-    AppCompatActivity activity;
-    ICFragmentos icFragmentos;
-    ArrayList<Modelo> listaProyectos;
-    Bundle bundle;
+    private ConsultaBD consulta = new ConsultaBD();
 
     public FragmentProyecto() {
         // Required empty public constructor
-    }
-
-    public static FragmentProyecto newInstance() {
-        FragmentProyecto fragment = new FragmentProyecto();
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -53,7 +40,7 @@ public class FragmentProyecto extends Fragment implements Common.Constantes, Con
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        vista = inflater.inflate(R.layout.fragment_proyecto, container, false);
+        View view = inflater.inflate(R.layout.fragment_proyecto, container, false);
 
         bundle = getArguments();
         if (bundle!=null) {
@@ -67,7 +54,10 @@ public class FragmentProyecto extends Fragment implements Common.Constantes, Con
 
         }
 
-        ArrayList<Modelo> lista = QueryDB.queryList(CAMPOS_PROYECTO,null, null);
+        new CommonPry.Calculos.TareaActualizarProys().execute();
+
+        ArrayList<Modelo> lista = consulta.queryList
+                (CAMPOS_PROYECTO,PROYECTO_ID_PROYECTO,PARTIDABASE,null, DIFERENTE,null);
 
         if (lista!=null && lista.size()>0) {
 
@@ -119,7 +109,7 @@ public class FragmentProyecto extends Fragment implements Common.Constantes, Con
 
         }
 
-        rvproyectos = vista.findViewById(R.id.rvproyectos);
+        rvproyectos = view.findViewById(R.id.rvproyectos);
         rvproyectos.setLayoutManager(new LinearLayoutManager(getContext()));
 
         AdaptadorProyecto adapter = new AdaptadorProyecto(listaProyectos, namef);
@@ -131,7 +121,7 @@ public class FragmentProyecto extends Fragment implements Common.Constantes, Con
 
                 idProyecto = listaProyectos.get(rvproyectos.getChildAdapterPosition(v)).getString(PROYECTO_ID_PROYECTO);
 
-                Modelo proyecto = QueryDB.queryObject(CAMPOS_PROYECTO,idProyecto);
+                Modelo proyecto = consulta.queryObject(CAMPOS_PROYECTO,idProyecto);
 
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PROYECTO,proyecto);
@@ -141,22 +131,120 @@ public class FragmentProyecto extends Fragment implements Common.Constantes, Con
             }
         });
 
-        return vista;
+        return view;
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public static class AdaptadorProyecto extends RecyclerView.Adapter<AdaptadorProyecto.ProyectoViewHolder>
+            implements View.OnClickListener, ContratoPry.Tablas {
 
-        if (context instanceof Activity){
-            this.activity = (AppCompatActivity) context;
-            icFragmentos = (ICFragmentos) this.activity;
+
+        private ArrayList<Modelo> listaProyecto;
+        private String namef;
+
+        private View.OnClickListener listener;
+
+        public AdaptadorProyecto(ArrayList<Modelo> listaProyecto, String namef) {
+            this.listaProyecto = listaProyecto;
+            this.namef = namef;
+        }
+
+        @NonNull
+        @Override
+        public ProyectoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
+
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_proyecto,null,false);
+
+            view.setOnClickListener(this);
+
+            return new ProyectoViewHolder(view);
+        }
+
+        public void setOnClickListener(View.OnClickListener listener) {
+
+            this.listener = listener;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ProyectoViewHolder proyectoViewHolder, int position) {
+
+
+            proyectoViewHolder.nombreProyecto.setText(listaProyecto.get(position).getCampos(PROYECTO_NOMBRE));
+            proyectoViewHolder.descripcionProyecto.setText(listaProyecto.get(position).getCampos(PROYECTO_DESCRIPCION));
+            proyectoViewHolder.clienteProyecto.setText(listaProyecto.get(position).getCampos(PROYECTO_CLIENTE_NOMBRE));
+            proyectoViewHolder.estadoProyecto.setText(listaProyecto.get(position).getCampos(PROYECTO_DESCRIPCION_ESTADO));
+            proyectoViewHolder.importe.setText(JavaUtil.formatoMonedaLocal(listaProyecto.get(position).getDouble(PROYECTO_IMPORTEPRESUPUESTO)));
+
+            if (namef.equals(PROYECTO)){
+
+                proyectoViewHolder.progressBarProyecto.setProgress(listaProyecto.get(position).getInt(PROYECTO_TOTCOMPLETADO));
+
+                long retraso = listaProyecto.get(position).getLong(PROYECTO_RETRASO);
+                if (retraso > 3 * DIASLONG){proyectoViewHolder.imagenEstado.setImageResource(R.drawable.alert_box_r);}
+                else if (retraso > DIASLONG){proyectoViewHolder.imagenEstado.setImageResource(R.drawable.alert_box_a);}
+                else {proyectoViewHolder.imagenEstado.setImageResource(R.drawable.alert_box_v);}
+
+            }else{
+
+                proyectoViewHolder.progressBarProyecto.setVisibility(View.GONE);
+                proyectoViewHolder.imagenEstado.setVisibility(View.GONE);
+
+            }
+            System.out.println("ruta foto pry = " + listaProyecto.get(position).getCampos(PROYECTO_RUTAFOTO));
+            if (listaProyecto.get(position).getCampos(PROYECTO_RUTAFOTO)!=null) {
+                proyectoViewHolder.imagenProyecto.setImageURI(Uri.parse(listaProyecto.get(position).getCampos(PROYECTO_RUTAFOTO)));
+            }
+            int peso = Integer.parseInt(listaProyecto.get(position).getCampos(PROYECTO_CLIENTE_PESOTIPOCLI));
+
+            if (peso>6){proyectoViewHolder.imagenCliente.setImageResource(R.drawable.clientev);}
+            else if (peso>3){proyectoViewHolder.imagenCliente.setImageResource(R.drawable.clientea);}
+            else if (peso>0){proyectoViewHolder.imagenCliente.setImageResource(R.drawable.clienter);}
+            else {proyectoViewHolder.imagenCliente.setImageResource(R.drawable.cliente);}
+
+
+
+        }
+
+        @Override
+        public int getItemCount() {
+            if (listaProyecto==null){
+                return 0;
+            }
+            return listaProyecto.size();
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            if (listener!= null){
+
+                listener.onClick(v);
+
+
+            }
+
+        }
+
+        public class ProyectoViewHolder extends RecyclerView.ViewHolder {
+
+            ImageView imagenProyecto, imagenEstado, imagenCliente;
+            TextView nombreProyecto,descripcionProyecto,clienteProyecto, estadoProyecto,
+                    importe;
+            ProgressBar progressBarProyecto;
+
+            public ProyectoViewHolder(@NonNull View itemView) {
+                super(itemView);
+
+                imagenProyecto = itemView.findViewById(R.id.imglistaproyectos);
+                imagenCliente = itemView.findViewById(R.id.imgclientelistaproyectos);
+                imagenEstado = itemView.findViewById(R.id.imgestadolistaproyectos);
+                nombreProyecto = itemView.findViewById(R.id.tvnombrelistaproyectos);
+                descripcionProyecto = itemView.findViewById(R.id.tvdesclistaproyectos);
+                clienteProyecto = itemView.findViewById(R.id.tvnombreclientelistaproyectos);
+                estadoProyecto = itemView.findViewById(R.id.tvestadolistaproyectos);
+                progressBarProyecto = itemView.findViewById(R.id.progressBarlistaproyectos);
+                importe = itemView.findViewById(R.id.tvimptotlproyectos);
+
+            }
         }
     }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
 }

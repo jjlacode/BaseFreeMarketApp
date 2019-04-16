@@ -72,10 +72,11 @@ public abstract class ListaAdaptadorFiltro extends ArrayAdapter<Modelo> {
                 return results;
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
 
-                entradasfiltro.clear();;
+                entradasfiltro.clear();
 
                 if (results != null && results.count > 0) {
                     for (Modelo item : (List<Modelo>) results.values) {

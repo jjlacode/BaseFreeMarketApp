@@ -79,13 +79,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:minHeight="30dp"
                         android:orientation="horizontal">
 
                         <ImageView
                             android:id="@+id/imgestadolistaproyectos"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_weight="5"
+                            android:layout_weight="4"
                             android:scaleType="fitStart"
                             card_view:srcCompat="@drawable/ico_calendario_reloj" />
 
@@ -93,8 +94,17 @@
                             android:id="@+id/tvestadolistaproyectos"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
+                            android:layout_gravity="center"
+                            android:layout_weight="2"
                             android:text="@string/estado" />
+
+                        <TextView
+                            android:id="@+id/tvimptotlproyectos"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="3"
+                            android:text="@string/importe_calculado"
+                            android:textSize="18sp" />
                     </LinearLayout>
 
                 </LinearLayout>

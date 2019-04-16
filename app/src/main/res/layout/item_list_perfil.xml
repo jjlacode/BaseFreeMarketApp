@@ -4,6 +4,7 @@
     android:layout_height="wrap_content" android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardlperfil"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
@@ -15,9 +16,26 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvnomlperfil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="@string/nombre"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tvdesclperfil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="30dp"
+                android:text="@string/descripcion_tipo_cliente" />
 
         </LinearLayout>
+
     </androidx.cardview.widget.CardView>
 
 </RelativeLayout>

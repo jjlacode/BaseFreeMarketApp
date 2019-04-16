@@ -1,6 +1,5 @@
 package jjlacode.com.freelanceproject.ui;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
@@ -12,95 +11,208 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
 import jjlacode.com.androidutils.AppActivity;
-import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.FragmentUD;
+import jjlacode.com.androidutils.JavaUtil;
 import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.freelanceproject.GlideApp;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.adapter.AdaptadorTareas;
-import jjlacode.com.freelanceproject.sqlite.Contract;
-import jjlacode.com.freelanceproject.sqlite.QueryDB;
-import jjlacode.com.freelanceproject.utilities.Common;
+import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
+import jjlacode.com.freelanceproject.utilities.CommonPry;
 
-public class FragmentUDPartidaProyecto extends Fragment implements Common.Constantes, Contract.Tablas {
+import static jjlacode.com.freelanceproject.utilities.CommonPry.permiso;
 
-    private String namef;
+public class FragmentUDPartidaProyecto extends FragmentUD implements CommonPry.Constantes,
+        ContratoPry.Tablas, CommonPry.TiposDetPartida {
 
-    View vista;
-    Long retraso;
-    EditText descripcionPartida;
-    EditText tiempoPartida;
-    EditText cantidadPartida;
-    EditText completadaPartida;
-    Button btnSavePartida;
-    Button btnDelPartida;
-    Button btnVolverPartida;
-    Button btnNuevaTarea;
-    RecyclerView rvTareas;
-    ProgressBar progressBarPartida;
-    ImageView imagenPartida;
-    TextView labelCompletada;
-    ArrayList<Modelo> listaTareas;
-    String idTarea;
-    Context context = AppActivity.getAppContext();
-    AdaptadorTareas adapter;
+    private Long retraso;
+    private EditText nombrePartida;
+    private EditText descripcionPartida;
+    private EditText tiempoPartida;
+    private EditText importePartida;
+    private EditText cantidadPartida;
+    private EditText completadaPartida;
+    private Button btnNuevaTarea;
+    private Button btnNuevoProd;
+    private Button btnNuevoProdProv;
+    private ImageView imagenret;
 
-    //ContentResolver resolver = context.getContentResolver();
-    private Bundle bundle;
+    private RecyclerView rvdetalles;
+    private ProgressBar progressBarPartida;
+    private TextView labelCompletada;
+    private ArrayList<Modelo> listaDetpartidas;
+
     private Modelo proyecto;
-    private ICFragmentos icFragments;
     private Modelo partida;
-    private AppCompatActivity activity;
+    private String idDetPartida;
+
+    private static ConsultaBD consulta = new ConsultaBD();
+    private String idPartida;
+    private int secuencia;
 
     public FragmentUDPartidaProyecto() {
         // Required empty public constructor
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        vista = inflater.inflate(R.layout.fragment_ud_partida_proyecto, container, false);
+        View view = inflater.inflate(R.layout.fragment_ud_partida_proyecto, container, false);
 
-        descripcionPartida = vista.findViewById(R.id.etdescripcionUDpartida);
-        tiempoPartida = vista.findViewById(R.id.ettiempoUDpartida);
-        cantidadPartida = vista.findViewById(R.id.etcantidadUDpartida);
-        completadaPartida = vista.findViewById(R.id.etcompletadaUDpartida);
-        btnSavePartida = vista.findViewById(R.id.btnsaveUDpartida);
-        btnDelPartida = vista.findViewById(R.id.btndelUDpartida);
-        btnVolverPartida = vista.findViewById(R.id.btnvolverUDpartida);
-        btnNuevaTarea = vista.findViewById(R.id.btnnuevatareaUDpartida);
-        progressBarPartida = vista.findViewById(R.id.progressBarUDpartida);
-        imagenPartida = vista.findViewById(R.id.imgUDpartida);
-        labelCompletada = vista.findViewById(R.id.lcompletadaUDpartida);
-        rvTareas = vista.findViewById(R.id.rvtareasUDpartida);
+        nombrePartida = view.findViewById(R.id.etnomudpartida);
+        descripcionPartida = view.findViewById(R.id.etdescripcionUDpartida);
+        tiempoPartida = view.findViewById(R.id.ettiempoUDpartida);
+        importePartida = view.findViewById(R.id.etprecioUDpartida);
+        cantidadPartida = view.findViewById(R.id.etcantidadUDpartida);
+        completadaPartida = view.findViewById(R.id.etcompletadaUDpartida);
+        btnsave = view.findViewById(R.id.btnsaveUDpartida);
+        btndelete = view.findViewById(R.id.btndelUDpartida);
+        btnback = view.findViewById(R.id.btnvolverUDpartida);
+        btnNuevaTarea = view.findViewById(R.id.btntareaudpartida);
+        btnNuevoProd = view.findViewById(R.id.btnprodudpartida);
+        btnNuevoProdProv = view.findViewById(R.id.btnprovudpartida);
+        progressBarPartida = view.findViewById(R.id.progressBarUDpartida);
+        imagen = view.findViewById(R.id.imgudpartida);
+        imagenret = view.findViewById(R.id.imgretudpartida);
+        labelCompletada = view.findViewById(R.id.lcompletadaUDpartida);
+        rvdetalles = view.findViewById(R.id.rvdetalleUDpartida);
 
         bundle = getArguments();
 
         if (bundle!=null) {
             proyecto = (Modelo) bundle.getSerializable(TABLA_PROYECTO);
             partida = (Modelo) bundle.getSerializable(TABLA_PARTIDA);
+            idPartida = partida.getString(PARTIDA_ID_PROYECTO);
+            secuencia = partida.getInt(PARTIDA_SECUENCIA);
+            idDetPartida = partida.getString(PARTIDA_ID_PARTIDA);
             namef = bundle.getString("namef");
             bundle = null;
             bundle = new Bundle();
             bundle.putSerializable(TABLA_PROYECTO,proyecto);
             bundle.putString("namefsub", TABLA_PARTIDA);
-            icFragments.enviarBundleAActivity(bundle);
+            icFragmentos.enviarBundleAActivity(bundle);
             bundle = null;
         }
+
+
+        cargarDatos();
+
+        if (permiso) {
+            imagen.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    mostrarDialogoOpcionesImagen();
+                }
+            });
+        }
+
+
+        btnsave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                update();
+
+                cambiarFragment();
+
+            }
+        });
+
+        btndelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                delete();
+
+                cambiarFragment();
+
+            }
+        });
+
+        btnback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                cambiarFragment();
+
+            }
+        });
+
+        btnNuevaTarea.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                update();
+                partida = consulta.queryObjectDetalle(CAMPOS_PARTIDA,idPartida, secuencia);
+                bundle = new Bundle();
+                bundle.putSerializable(TABLA_PROYECTO,proyecto);
+                bundle.putSerializable(TABLA_PARTIDA,partida);
+                bundle.putString("namef",namef);
+                bundle.putString("tipo", TIPOTAREA);
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentCUDDetpartida());
+
+            }
+
+        });
+
+        btnNuevoProd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                update();
+                partida = consulta.queryObjectDetalle(CAMPOS_PARTIDA,idPartida, secuencia);
+                bundle = new Bundle();
+                bundle.putSerializable(TABLA_PROYECTO,proyecto);
+                bundle.putSerializable(TABLA_PARTIDA,partida);
+                bundle.putString("namef",namef);
+                bundle.putString("tipo", TIPOPRODUCTO);
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentCUDDetpartida());
+
+            }
+
+        });
+
+        btnNuevoProdProv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                update();
+                partida = consulta.queryObjectDetalle(CAMPOS_PARTIDA,idPartida, secuencia);
+                bundle = new Bundle();
+                bundle.putSerializable(TABLA_PROYECTO,proyecto);
+                bundle.putSerializable(TABLA_PARTIDA,partida);
+                bundle.putString("namef",namef);
+                bundle.putString("tipo", TIPOPRODUCTOPROV);
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentCUDDetpartida());
+
+            }
+
+        });
+
+
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        cargarDatos();
+        super.onResume();
+    }
+
+    private void cargarDatos() {
 
         if (namef.equals(PRESUPUESTO)){
 
@@ -114,114 +226,63 @@ public class FragmentUDPartidaProyecto extends Fragment implements Common.Consta
             labelCompletada.setVisibility(View.VISIBLE);
         }
 
-            descripcionPartida.setText(partida.getString(PARTIDA_DESCRIPCION));
-            tiempoPartida.setText(partida.getString(PARTIDA_TIEMPO));
-            cantidadPartida.setText(partida.getString(PARTIDA_CANTIDAD));
-            completadaPartida.setText(partida.getString(PARTIDA_COMPLETADA));
-            progressBarPartida.setProgress(partida.getInt(PARTIDA_COMPLETADA));
-            retraso = partida.getLong(PARTIDA_PROYECTO_RETRASO);
-            if (retraso<1){imagenPartida.setImageResource(R.drawable.alert_box_v);}
-            else if (retraso>=1 && retraso<3){imagenPartida.setImageResource(R.drawable.alert_box_a);}
-            else {imagenPartida.setImageResource(R.drawable.alert_box_r);}
+        nombrePartida.setText(partida.getString(PARTIDA_NOMBRE));
+        descripcionPartida.setText(partida.getString(PARTIDA_DESCRIPCION));
+        tiempoPartida.setText(partida.getString(PARTIDA_TIEMPO));
+        importePartida.setText(JavaUtil.formatoMonedaLocal(partida.getDouble(PARTIDA_PRECIO)));
+        cantidadPartida.setText(partida.getString(PARTIDA_CANTIDAD));
+        completadaPartida.setText(partida.getString(PARTIDA_COMPLETADA));
+        progressBarPartida.setProgress(partida.getInt(PARTIDA_COMPLETADA));
 
-        rvTareas.setLayoutManager(new LinearLayoutManager(getContext()));
+        if (partida.getString(PARTIDA_RUTAFOTO)!=null){
 
-            listaTareas = QueryDB.queryList(CAMPOS_TAREA,null,null);
+            imagen.setImageURI(partida.getUri(PARTIDA_RUTAFOTO));
+            path = partida.getString(PARTIDA_RUTAFOTO);
+        }
 
-        idTarea = listaTareas.get(0).getString(TAREA_ID_TAREA);
+        retraso = partida.getLong(PARTIDA_PROYECTO_RETRASO);
+        if (retraso<1){
+            imagenret.setImageResource(R.drawable.alert_box_r);}
+        else if (retraso<3){
+            imagenret.setImageResource(R.drawable.alert_box_a);}
+        else {
+            imagenret.setImageResource(R.drawable.alert_box_v);}
 
-        adapter = new AdaptadorTareas(listaTareas);
+        listaDetpartidas = consulta.queryListDetalle(CAMPOS_DETPARTIDA,idDetPartida,TABLA_PARTIDA);
 
-        rvTareas.setAdapter(adapter);
+        if (listaDetpartidas!=null && listaDetpartidas.size()>0) {
 
-        adapter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            rvdetalles.setLayoutManager(new LinearLayoutManager(getContext()));
 
+            AdaptadorDetpartida adapter = new AdaptadorDetpartida(listaDetpartidas, namef);
 
+            rvdetalles.setAdapter(adapter);
 
-                if (rvTareas.getChildAdapterPosition(v) > 0) {
+            adapter.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
+                    idDetPartida = (listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v)).
+                            getString(DETPARTIDA_ID_PARTIDA));
+                    String secuenciadetpartida = (listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v)).
+                            getString(DETPARTIDA_SECUENCIA));
+                    String tipo = (listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v)).
+                            getString(DETPARTIDA_TIPO));
+                    Modelo detpartida = consulta.queryObjectDetalle(CAMPOS_DETPARTIDA, idDetPartida, secuenciadetpartida);
+                    bundle = new Bundle();
+                    bundle.putSerializable(TABLA_PROYECTO, proyecto);
+                    bundle.putSerializable(TABLA_PARTIDA, partida);
+                    bundle.putSerializable(TABLA_DETPARTIDA, detpartida);
+                    bundle.putString("namef", namef);
+                    bundle.putString("tipo", tipo);
+                    icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
 
-                    descripcionPartida.setText(listaTareas.get(rvTareas.getChildAdapterPosition(v)).getString(TAREA_DESCRIPCION));
-                    tiempoPartida.setText(listaTareas.get(rvTareas.getChildAdapterPosition(v)).getString(TAREA_TIEMPO));
-                    idTarea = (listaTareas.get(rvTareas.getChildAdapterPosition(v)).getString(TAREA_ID_TAREA));
-
-                }else if (rvTareas.getChildAdapterPosition(v) == 0) {
-
-                    descripcionPartida.setText(null);
-                    tiempoPartida.setText(null);
-                    idTarea = listaTareas.get(0).getString(TAREA_ID_TAREA);
                 }
+            });
+        }else{
 
-            }
-        });
-
-        btnSavePartida.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                actualizarPartida();
-
-                cambiarFragment();
-
-            }
-        });
-
-        btnDelPartida.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                BorrarPartida();
-
-                cambiarFragment();
-
-            }
-        });
-
-        btnVolverPartida.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                cambiarFragment();
-
-            }
-        });
-
-        btnNuevaTarea.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (descripcionPartida.getText()!=null && tiempoPartida.getText()!=null) {
-                    int cont = 0;
-                    for (Modelo tarea : listaTareas) {
-                        if (tarea.getString(TAREA_DESCRIPCION).equals(descripcionPartida.getText().toString())) {
-                            Toast.makeText(context, "La tarea ya existe", Toast.LENGTH_SHORT).show();
-                            cont++;
-                        }
-                    }
-                    if (cont == 0) {
-
-                        try {
-                            ContentValues valores = new ContentValues();
-                            QueryDB.putDato(valores,CAMPOS_TAREA,TAREA_DESCRIPCION,descripcionPartida.getText().toString());
-                            QueryDB.putDato(valores,CAMPOS_TAREA,TAREA_TIEMPO,tiempoPartida.getText().toString());
-
-                            idTarea = QueryDB.idInsertRegistro(TABLA_TAREA,valores);
-
-                            recargaRv();
-
-                            Toast.makeText(getContext(), "Nueva tarea guardada", Toast.LENGTH_SHORT).show();
-
-                        } catch (Exception e) {
-                            Toast.makeText(getContext(), "Error al guardar tarea", Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-                }
-            }
-        });
-        return vista;
+            rvdetalles.setVisibility(View.GONE);
+        }
     }
 
     private void cambiarFragment() {
@@ -230,7 +291,7 @@ public class FragmentUDPartidaProyecto extends Fragment implements Common.Consta
 
             bundle = new Bundle();
             bundle.putString("namef",namef);
-            icFragments.enviarBundleAFragment(bundle,new FragmentAgenda());
+            icFragmentos.enviarBundleAFragment(bundle,new FragmentAgenda());
             bundle = null;
 
         }else {
@@ -238,83 +299,150 @@ public class FragmentUDPartidaProyecto extends Fragment implements Common.Consta
             bundle = new Bundle();
             bundle.putSerializable(TABLA_PROYECTO,proyecto);
             bundle.putString("namef",namef);
-            icFragments.enviarBundleAFragment(bundle,new FragmentPartidasProyecto());
+            icFragmentos.enviarBundleAFragment(bundle,new FragmentPartidasProyecto());
         }
     }
 
-    private  void recargaRv(){
 
-            listaTareas = QueryDB.queryList(CAMPOS_TAREA,null,null);
-
-        adapter = new AdaptadorTareas(listaTareas);
-        rvTareas.setAdapter(adapter);
-
-        adapter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    @Override
+    protected void delete() {
 
 
-
-                if (rvTareas.getChildAdapterPosition(v) > 0) {
-
-
-                    descripcionPartida.setText(listaTareas.get(rvTareas.getChildAdapterPosition(v)).getString(TAREA_DESCRIPCION));
-                    tiempoPartida.setText(listaTareas.get(rvTareas.getChildAdapterPosition(v)).getString(TAREA_TIEMPO));
-                    idTarea = (listaTareas.get(rvTareas.getChildAdapterPosition(v)).getString(TAREA_ID_TAREA));
-
-                }else if (rvTareas.getChildAdapterPosition(v) == 0) {
-
-                    descripcionPartida.setText(null);
-                    tiempoPartida.setText(null);
-                    idTarea = listaTareas.get(0).getString(TAREA_ID_TAREA);
-                }
-
-            }
-        });
-
-
-    }
-
-    private void BorrarPartida() {
-
-
-        QueryDB.deleteRegistroDetalle
+        consulta.deleteRegistroDetalle
                 (TABLA_PARTIDA,partida.getString(PARTIDA_ID_PROYECTO),partida.getString(PARTIDA_SECUENCIA));
 
-        new Common.Calculos.Tareafechas().execute();
+        new CommonPry.Calculos.Tareafechas().execute();
+        new CommonPry.Calculos.TareaActualizaProy().execute(proyecto.getString(PROYECTO_ID_PROYECTO));
     }
 
-    private void actualizarPartida() {
+    @Override
+    protected void update() {
+
 
         ContentValues valores = new ContentValues();
 
-        QueryDB.putDato(valores,CAMPOS_PARTIDA,PARTIDA_DESCRIPCION,descripcionPartida.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_PARTIDA,PARTIDA_TIEMPO,tiempoPartida.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_PARTIDA,PARTIDA_CANTIDAD,cantidadPartida.getText().toString());
-        QueryDB.putDato(valores,CAMPOS_PARTIDA,PARTIDA_COMPLETADA,completadaPartida.getText().toString());
+        consulta.putDato(valores,CAMPOS_PARTIDA,PARTIDA_NOMBRE,nombrePartida.getText().toString());
+        consulta.putDato(valores,CAMPOS_PARTIDA,PARTIDA_DESCRIPCION,descripcionPartida.getText().toString());
+        consulta.putDato(valores,CAMPOS_PARTIDA,PARTIDA_TIEMPO,JavaUtil.comprobarDouble(tiempoPartida.getText().toString()));
+        consulta.putDato(valores,CAMPOS_PARTIDA,PARTIDA_PRECIO,JavaUtil.comprobarDouble(importePartida.getText().toString()));
+        consulta.putDato(valores,CAMPOS_PARTIDA,PARTIDA_CANTIDAD,JavaUtil.comprobarDouble(cantidadPartida.getText().toString()));
+        consulta.putDato(valores,CAMPOS_PARTIDA,PARTIDA_COMPLETADA,JavaUtil.comprobarInteger(completadaPartida.getText().toString()));
+        consulta.putDato(valores,CAMPOS_PARTIDA,PARTIDA_RUTAFOTO,path);
 
-        QueryDB.updateRegistroDetalle
+        consulta.updateRegistroDetalle
                 (TABLA_PARTIDA,partida.getString(PARTIDA_ID_PROYECTO),partida.getInt(PARTIDA_SECUENCIA),valores);
 
-
-        new Common.Calculos.Tareafechas().execute();
+        new CommonPry.Calculos.Tareafechas().execute();
+        new CommonPry.Calculos.TareaActualizaProy().execute(proyecto.getString(PROYECTO_ID_PROYECTO));
 
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
 
-        if (context instanceof Activity){
-            this.activity = (AppCompatActivity) context;
-            icFragments = (ICFragmentos) this.activity;
+    public static class AdaptadorDetpartida extends RecyclerView.Adapter<AdaptadorDetpartida.DetpartidaViewHolder>
+            implements View.OnClickListener, ContratoPry.Tablas, CommonPry.TiposDetPartida {
+
+        private ArrayList<Modelo> listDetpartida;
+        private View.OnClickListener listener;
+        private String namef;
+        private Context context = AppActivity.getAppContext();
+
+        public AdaptadorDetpartida(ArrayList<Modelo> listDetpartida, String namef) {
+
+            this.listDetpartida = listDetpartida;
+            this.namef = namef;
         }
 
-    }
+        @NonNull
+        @Override
+        public DetpartidaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_detpartida, null, false);
+
+            view.setOnClickListener(this);
+
+
+            return new DetpartidaViewHolder(view);
+        }
+
+        public void setOnClickListener(View.OnClickListener listener) {
+
+            this.listener = listener;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull DetpartidaViewHolder detpartidaViewHolder, int position) {
+
+            String tipodetpartida = listDetpartida.get(position).getString(DETPARTIDA_TIPO);
+            detpartidaViewHolder.tipo.setText(tipodetpartida.toUpperCase());
+            detpartidaViewHolder.nombre.setText(listDetpartida.get(position).getString(DETPARTIDA_NOMBRE));
+            detpartidaViewHolder.tiempo.setText(listDetpartida.get(position).getString(DETPARTIDA_TIEMPO));
+            detpartidaViewHolder.cantidad.setText(listDetpartida.get(position).getString(DETPARTIDA_CANTIDAD));
+            if (listDetpartida.get(position).getString(DETPARTIDA_TIPO).equals(CommonPry.TiposDetPartida.TIPOTAREA)) {
+                detpartidaViewHolder.importe.setText(JavaUtil.formatoMonedaLocal(
+                        (listDetpartida.get(position).getDouble(DETPARTIDA_TIEMPO)*CommonPry.hora*
+                                listDetpartida.get(position).getDouble(DETPARTIDA_CANTIDAD))));
+            }else{
+                detpartidaViewHolder.importe.setText(listDetpartida.get(position).getString(DETPARTIDA_PRECIO));
+            }
+            if (listDetpartida.get(position).getString(DETPARTIDA_RUTAFOTO)!=null) {
+                if (tipodetpartida.equals(TIPOPRODUCTOPROV)){
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference storageRef = storage.getReference();
+                    StorageReference spaceRef = storageRef.child(listDetpartida.get(position).getString(DETPARTIDA_RUTAFOTO));
+                    GlideApp.with(context)
+                            .load(spaceRef)
+                            .into(detpartidaViewHolder.imagen);
+                }
+                detpartidaViewHolder.imagen.setImageURI(listDetpartida.get(position).getUri(DETPARTIDA_RUTAFOTO));
+            }
+
+            if (!tipodetpartida.equals(TIPOTAREA)){
+
+                detpartidaViewHolder.ltiempo.setVisibility(View.GONE);
+                detpartidaViewHolder.tiempo.setVisibility(View.GONE);
+            }
+
+        }
+
+        @Override
+        public int getItemCount() {
+
+            return listDetpartida.size();
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            if (listener != null) {
+
+                listener.onClick(v);
+
+
+            }
+
+        }
+
+        class DetpartidaViewHolder extends RecyclerView.ViewHolder {
+
+            TextView tipo,nombre,ltiempo,lcantidad,limporte,tiempo,cantidad,importe;
+            ImageView imagen;
+
+            DetpartidaViewHolder(@NonNull View itemView) {
+                super(itemView);
+
+                tipo = itemView.findViewById(R.id.tvtipoldetpaetida);
+                nombre = itemView.findViewById(R.id.tvnomldetpartida);
+                ltiempo = itemView.findViewById(R.id.ltiempoldetpartida);
+                lcantidad = itemView.findViewById(R.id.lcantldetpartida);
+                limporte = itemView.findViewById(R.id.limpldetpartida);
+                tiempo = itemView.findViewById(R.id.tvtiempoldetpartida);
+                cantidad = itemView.findViewById(R.id.tvcantldetpartida);
+                importe = itemView.findViewById(R.id.tvimpldetpartida);
+                imagen = itemView.findViewById(R.id.imgldetpartida);
+
+
+            }
+        }
     }
 
 }

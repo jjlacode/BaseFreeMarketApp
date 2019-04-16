@@ -17,77 +17,145 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/ldescipcionUDpartida"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2.5"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/imgudpartida"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/ico_calendario_reloj" />
+
+                    <ImageView
+                        android:id="@+id/imgretudpartida"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_weight="3"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/alert_box_v" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/descripcion_tipo_cliente" />
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                <EditText
-                    android:id="@+id/etdescripcionUDpartida"
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:ems="10"
-                    android:hint="@string/descripcion_tipo_cliente"
-                    android:inputType="textMultiLine" />
+                    <EditText
+                        android:id="@+id/etnomudpartida"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/nombre"
+                        android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/etdescripcionUDpartida"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:hint="@string/descripcion_tipo_cliente"
+                        android:inputType="textMultiLine"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/ltiempoUDpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/tiempo" />
-
-                <EditText
-                    android:id="@+id/ettiempoUDpartida"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="@string/tiempo"
-                    android:inputType="numberDecimal" />
+                    android:layout_weight="1"
+                    android:text="@string/horas" />
 
                 <TextView
                     android:id="@+id/lcantidadUDpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="@string/cantidad" />
+
+                <TextView
+                    android:id="@+id/lprecioUDpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/importe" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/ettiempoUDpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="@string/tiempo"
+                    android:inputType="numberDecimal" />
 
                 <EditText
                     android:id="@+id/etcantidadUDpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:ems="10"
                     android:hint="@string/cantidad"
                     android:inputType="numberDecimal" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                <EditText
+                    android:id="@+id/etprecioUDpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="@string/importe"
+                    android:inputType="numberDecimal" />
+            </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/lcompletadaUDpartida"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/completada" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-                    <EditText
-                        android:id="@+id/etcompletadaUDpartida"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/completada"
-                        android:inputType="number" />
+                <EditText
+                    android:id="@+id/etcompletadaUDpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:gravity="right"
+                    android:hint="@string/completada"
+                    android:inputType="number" />
 
-                    <ImageView
-                        android:id="@+id/imgUDpartida"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        app:srcCompat="@drawable/cliente" />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/lcompletadaUDpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="center"
+                    android:text="@string/completada" />
+
+            </LinearLayout>
 
                 <ProgressBar
                     android:id="@+id/progressBarUDpartida"
@@ -95,36 +163,66 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
                 <Button
                     android:id="@+id/btnsaveUDpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="@string/guardar" />
 
                 <Button
                     android:id="@+id/btndelUDpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="@string/borrar" />
 
                 <Button
                     android:id="@+id/btnvolverUDpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="@string/volver" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/btnnuevatareaUDpartida"
+                    android:id="@+id/btntareaudpartida"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/guardar_nueva_tarea" />
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/nueva_tarea" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvtareasUDpartida"
+                <Button
+                    android:id="@+id/btnprodudpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/nuevo_producto" />
+
+                <Button
+                    android:id="@+id/btnprovudpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/nuevo_producto_proveedor" />
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvdetalleUDpartida"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
-            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

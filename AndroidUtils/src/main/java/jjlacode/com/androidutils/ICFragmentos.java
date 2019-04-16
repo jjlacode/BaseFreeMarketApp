@@ -8,4 +8,5 @@ public interface ICFragmentos {
 
     void enviarBundleAFragment(Bundle bundle, Fragment myFragment);
     void enviarBundleAActivity(Bundle bundle);
+    void ejecutarEnActivity();
 }

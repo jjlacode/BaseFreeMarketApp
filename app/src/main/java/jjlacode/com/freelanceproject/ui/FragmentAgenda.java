@@ -1,10 +1,10 @@
 package jjlacode.com.freelanceproject.ui;
 
-import android.app.Activity;
 import android.content.ContentValues;
-import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,34 +17,27 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 import jjlacode.com.androidutils.AppActivity;
-import jjlacode.com.androidutils.ICFragmentos;
+import jjlacode.com.androidutils.FragmentBase;
 import jjlacode.com.androidutils.JavaUtil;
 import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.adapter.AdaptadorAgendaPresup;
-import jjlacode.com.freelanceproject.adapter.AdaptadorAgendaTareas;
 import jjlacode.com.freelanceproject.model.AgendaPresup;
 import jjlacode.com.freelanceproject.model.AgendaTarea;
-import jjlacode.com.freelanceproject.sqlite.Contract;
-import jjlacode.com.freelanceproject.sqlite.QueryDB;
-import jjlacode.com.freelanceproject.utilities.Common;
-
-import static jjlacode.com.androidutils.JavaUtil.Constantes.DIASLONG;
+import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
+import jjlacode.com.freelanceproject.utilities.CommonPry;
 
 
-public class FragmentAgenda extends Fragment implements Common.TiposEvento, Contract.Tablas {
+public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvento, ContratoPry.Tablas {
 
     private String idProyecto;
-    private String namef;
     private String secuenciaPartida;
 
     View vista;
@@ -57,25 +50,13 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
     TextView tituloTab;
     ArrayList<AgendaTarea> listaAgendaTarea = new ArrayList<>();
     ArrayList<AgendaPresup> listaAgendaPresup = new ArrayList<>();
-    ICFragmentos icFragments;
-    AppCompatActivity activity;
-    Bundle bundle;
 
+    private final String LOG_TAG = "test";
+
+    private static ConsultaBD consulta = new ConsultaBD();
 
     public FragmentAgenda() {
         // Required empty public constructor
-    }
-
-
-    public static FragmentAgenda newInstance() {
-        FragmentAgenda fragment = new FragmentAgenda();
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -98,9 +79,9 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
         namef = bundle.getString("namef");
         bundle = null;
 
-        tituloTab.setText(R.string.proximos_eventos);
+        //tituloTab.setText(R.string.proximos_eventos);
 
-        obtenerEventos();
+        //obtenerEventos();
 
         btnEventos.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,60 +97,149 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
             @Override
             public void onClick(View v) {
 
-                listaAgendaPresup = new ArrayList<>();
-                listaAgendaTarea = new ArrayList<>();
+               obtenerTareas();
+            }
+        });
 
-                tituloTab.setText(R.string.tareas_pendientes);
+        btnPresup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                obtenerPresupPendienteEntrega();
+            }
+        });
+
+        btnEspera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                obtenerPresupEspera();
+            }
+        });
+
+        btnCobros.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                obtenerPresupPendienteCobro();
+            }
+        });
+
+        return vista;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        tituloTab.setText(R.string.proximos_eventos);
+        obtenerEventos();
+        Log.v(LOG_TAG, "onResume");
+    }
+    @Override
+    public void onActivityCreated (Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Log.v(LOG_TAG, "onActivityCreated");
+    }
+
+    @Override
+    public void onViewStateRestored (Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        Log.v(LOG_TAG, "onViewStateRestored");
+    }
+
+    @Override
+    public void onStart () {
+        super.onStart();
+        Log.v(LOG_TAG, "onStart");
+    }
+
+    @Override
+    public void onPause () {
+        super.onPause();
+        Log.v(LOG_TAG, "onPause");
+    }
+
+    @Override
+    public void onStop () {
+        super.onStop();
+        Log.v(LOG_TAG, "onStop");
+    }
+
+    @Override
+    public void onDestroyView () {
+        super.onDestroyView();
+        Log.v(LOG_TAG, "onDestroyView");
+    }
+
+    @Override
+    public void onDestroy () {
+        super.onDestroy();
+        Log.v(LOG_TAG, "onDestroy");
+    }
+
+    @Override
+    public void onDetach () {
+        super.onDetach();
+        Log.v(LOG_TAG, "onDetach");
+    }
+
+    private void obtenerTareas(){
+
+        listaAgendaPresup = new ArrayList<>();
+        listaAgendaTarea = new ArrayList<>();
+
+        tituloTab.setText(R.string.tareas_pendientes);
 
         ArrayList<Modelo> lista ;
         ArrayList<Modelo> listaPartidasSinCompletar = new ArrayList<>();
 
-            lista = QueryDB.queryList(CAMPOS_PARTIDA);
+        lista = consulta.queryList(CAMPOS_PARTIDA);
 
-                for (Modelo item : lista) {
+        for (Modelo item : lista) {
 
-                    if (item.getInt(PARTIDA_COMPLETADA) < 100 &&
-                            item.getInt(PARTIDA_TIPO_ESTADO) >= 4){
+            if (item.getInt(PARTIDA_COMPLETADA) < 100 &&
+                    item.getInt(PARTIDA_TIPO_ESTADO) >= 4){
 
-                        listaPartidasSinCompletar.add(item);
-                    }
-                }
+                listaPartidasSinCompletar.add(item);
+            }
+        }
 
-                for (Modelo partida : listaPartidasSinCompletar) {
+        for (Modelo partida : listaPartidasSinCompletar) {
 
-                    AgendaTarea agendaTarea = new AgendaTarea();
+            AgendaTarea agendaTarea = new AgendaTarea();
 
-                    agendaTarea.setIdProyecto(partida.getString(PARTIDA_ID_PROYECTO));
-                    agendaTarea.setSecuencia(partida.getString(PARTIDA_SECUENCIA));
-                    agendaTarea.setDescripcion(partida.getCampos(PARTIDA_DESCRIPCION));
-                    agendaTarea.setCantidad(partida.getCampos(PARTIDA_CANTIDAD));
-                    agendaTarea.setTiempo(partida.getCampos(PARTIDA_TIEMPO));
-                    agendaTarea.setCompletada(partida.getCampos(PARTIDA_COMPLETADA));
-                    agendaTarea.setIdEstado(partida.getCampos(PARTIDA_ID_ESTADO));
-                    agendaTarea.setTipoEstado(partida.getCampos(PARTIDA_TIPO_ESTADO));
-                    agendaTarea.setRetraso(partida.getCampos(PARTIDA_PROYECTO_RETRASO));
+            agendaTarea.setIdProyecto(partida.getString(PARTIDA_ID_PROYECTO));
+            agendaTarea.setSecuencia(partida.getString(PARTIDA_SECUENCIA));
+            agendaTarea.setDescripcion(partida.getCampos(PARTIDA_DESCRIPCION));
+            agendaTarea.setCantidad(partida.getCampos(PARTIDA_CANTIDAD));
+            agendaTarea.setTiempo(partida.getCampos(PARTIDA_PRECIO));
+            agendaTarea.setCompletada(partida.getCampos(PARTIDA_COMPLETADA));
+            agendaTarea.setIdEstado(partida.getCampos(PARTIDA_ID_ESTADO));
+            agendaTarea.setTipoEstado(partida.getCampos(PARTIDA_TIPO_ESTADO));
+            agendaTarea.setRetraso(partida.getCampos(PARTIDA_PROYECTO_RETRASO));
 
-                    Modelo proyecto = QueryDB.queryObject
-                            (CAMPOS_PROYECTO,partida.getCampos(PARTIDA_ID_PROYECTO));
+            Modelo proyecto = consulta.queryObject
+                    (CAMPOS_PROYECTO,partida.getCampos(PARTIDA_ID_PROYECTO));
 
-                        agendaTarea.setPeso(proyecto.getCampos(PROYECTO_CLIENTE_PESOTIPOCLI));
-                        agendaTarea.setNombreProyecto(proyecto.getCampos(PROYECTO_NOMBRE));
-                        agendaTarea.setNombreCliente(proyecto.getCampos(PROYECTO_CLIENTE_NOMBRE));
-                        agendaTarea.setRutaFoto(proyecto.getCampos(PROYECTO_RUTAFOTO));
-                        agendaTarea.setFechaEntrada(proyecto.getCampos(PROYECTO_FECHAENTRADA));
-                        agendaTarea.setFechaEntregaPresup(proyecto.getCampos(PROYECTO_FECHAENTREGAPRESUP));
-                        agendaTarea.setFechaAcordada(proyecto.getCampos(PROYECTO_FECHAENTREGAACORDADA));
-                        agendaTarea.setFechaCalculada(proyecto.getCampos(PROYECTO_FECHAENTREGACALCULADA));
-                        agendaTarea.setFechaFinal(proyecto.getCampos(PROYECTO_FECHAFINAL));
+            agendaTarea.setPeso(proyecto.getCampos(PROYECTO_CLIENTE_PESOTIPOCLI));
+            agendaTarea.setNombreProyecto(proyecto.getCampos(PROYECTO_NOMBRE));
+            agendaTarea.setNombreCliente(proyecto.getCampos(PROYECTO_CLIENTE_NOMBRE));
+            agendaTarea.setRutaFoto(proyecto.getCampos(PROYECTO_RUTAFOTO));
+            agendaTarea.setFechaEntrada(proyecto.getCampos(PROYECTO_FECHAENTRADA));
+            agendaTarea.setFechaEntregaPresup(proyecto.getCampos(PROYECTO_FECHAENTREGAPRESUP));
+            agendaTarea.setFechaAcordada(proyecto.getCampos(PROYECTO_FECHAENTREGAACORDADA));
+            agendaTarea.setFechaCalculada(proyecto.getCampos(PROYECTO_FECHAENTREGACALCULADA));
+            agendaTarea.setFechaFinal(proyecto.getCampos(PROYECTO_FECHAFINAL));
 
-                         Modelo cliente = QueryDB.queryObject
-                                 (CAMPOS_CLIENTE,proyecto.getString(PROYECTO_ID_CLIENTE));
+            Modelo cliente = consulta.queryObject
+                    (CAMPOS_CLIENTE,proyecto.getString(PROYECTO_ID_CLIENTE));
 
-                        agendaTarea.setTipoCliente(cliente.getString(CLIENTE_DESCRIPCIONTIPOCLI));
+            agendaTarea.setTipoCliente(cliente.getString(CLIENTE_DESCRIPCIONTIPOCLI));
 
 
-                    listaAgendaTarea.add(agendaTarea);
-                }
+            listaAgendaTarea.add(agendaTarea);
+        }
 
 
         AdaptadorAgendaTareas adaptadorAgenda = new AdaptadorAgendaTareas(listaAgendaTarea);
@@ -185,235 +255,207 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
                 System.out.println("idProyecto = " + idProyecto);
                 System.out.println("secuenciaPartida = " + secuenciaPartida);
 
-                Modelo partida = QueryDB.queryObjectDetalle(CAMPOS_PARTIDA,idProyecto,secuenciaPartida);
+                Modelo partida = consulta.queryObjectDetalle(CAMPOS_PARTIDA,idProyecto,secuenciaPartida);
 
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PARTIDA,partida);
                 bundle.putString("namef",namef);
-                icFragments.enviarBundleAFragment(bundle,new FragmentUDPartidaProyecto());
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentUDPartidaProyecto());
                 bundle = null;
             }
         });
-            }
-        });
-
-        btnPresup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                listaAgendaPresup = new ArrayList<>();
-                listaAgendaTarea = new ArrayList<>();
-
-                tituloTab.setText(R.string.presupuestos_pendientes);
-
-                String seleccion = ESTADO_TIPOESTADO + " = 1 OR "+
-                       ESTADO_TIPOESTADO + " = 2";
-                String orden = "'"+ PROYECTO_FECHAENTRADA+"' ASC";
-
-                ArrayList<Modelo> lista = null;
-
-                    lista = QueryDB.queryList(CAMPOS_PROYECTO,seleccion,orden);
-
-                for (Modelo proyecto : lista) {
-
-                    AgendaPresup agendaPresup = new AgendaPresup();
-                    agendaPresup.setId_presupuesto(proyecto.getCampos(Contract.Tablas.PROYECTO_ID_PROYECTO));
-                    agendaPresup.setPresupuesto(proyecto.getCampos(Contract.Tablas.PROYECTO_NOMBRE));
-                    agendaPresup.setDescripcion(proyecto.getCampos(Contract.Tablas.PROYECTO_DESCRIPCION));
-                    agendaPresup.setCliente(proyecto.getCampos(Contract.Tablas.PROYECTO_CLIENTE_NOMBRE));
-                    agendaPresup.setEstado(proyecto.getCampos(Contract.Tablas.PROYECTO_DESCRIPCION_ESTADO));
-                    agendaPresup.setFechaEntrada(proyecto.getCampos(Contract.Tablas.PROYECTO_FECHAENTRADA));
-                    agendaPresup.setFechaEntregaPresup(proyecto.getCampos(Contract.Tablas.PROYECTO_FECHAENTREGAPRESUP));
-                    agendaPresup.setFechaAcordada(proyecto.getCampos(Contract.Tablas.PROYECTO_FECHAENTREGAACORDADA));
-                    agendaPresup.setFechaCalculada(proyecto.getCampos(Contract.Tablas.PROYECTO_FECHAENTREGACALCULADA));
-                    agendaPresup.setFechaFinal(proyecto.getCampos(Contract.Tablas.PROYECTO_FECHAFINAL));
-                    agendaPresup.setPeso(proyecto.getCampos(Contract.Tablas.PROYECTO_CLIENTE_PESOTIPOCLI));
-                    agendaPresup.setRetraso(proyecto.getCampos(Contract.Tablas.PROYECTO_RETRASO));
-                    agendaPresup.setRutaFoto(proyecto.getCampos(Contract.Tablas.PROYECTO_RUTAFOTO));
-                    agendaPresup.setTipoEstado(proyecto.getCampos(Contract.Tablas.PROYECTO_TIPOESTADO));
-
-                    listaAgendaPresup.add(agendaPresup);
-                }
-
-                AdaptadorAgendaPresup adaptadorAgendaPresup = new AdaptadorAgendaPresup(listaAgendaPresup);
-
-                rvAgenda.setAdapter(adaptadorAgendaPresup);
-
-                adaptadorAgendaPresup.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        idProyecto = listaAgendaPresup.get(rvAgenda.getChildAdapterPosition(v)).getId_presupuesto();
-
-                        Modelo proyecto =  QueryDB.queryObject(CAMPOS_PROYECTO,idProyecto);
-
-                        bundle = new Bundle();
-                        bundle.putSerializable(TABLA_PROYECTO,proyecto);
-                        bundle.putString("namef",namef);
-                        icFragments.enviarBundleAFragment(bundle,new FragmentUDProyecto());
-                        bundle = null;
-
-                    }
-                });
-            }
-        });
-
-        btnEspera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                listaAgendaPresup = new ArrayList<>();
-                listaAgendaTarea = new ArrayList<>();
-
-                tituloTab.setText(R.string.presupuestos_en_espera);
-
-                String seleccion = ESTADO_TIPOESTADO + " = 3";
-                String orden = "'"+ PROYECTO_FECHAENTREGAPRESUP+"' ASC";
-
-                ArrayList<Modelo> lista = null;
-
-                lista = QueryDB.queryList(CAMPOS_PROYECTO,seleccion,orden);
-
-                for (Modelo proyecto : lista) {
-
-                    AgendaPresup agendaPresup = new AgendaPresup();
-                    agendaPresup.setId_presupuesto(proyecto.getCampos(Contract.Tablas.PROYECTO_ID_PROYECTO));
-                    agendaPresup.setPresupuesto(proyecto.getCampos(Contract.Tablas.PROYECTO_NOMBRE));
-                    agendaPresup.setDescripcion(proyecto.getCampos(Contract.Tablas.PROYECTO_DESCRIPCION));
-                    agendaPresup.setCliente(proyecto.getCampos(Contract.Tablas.PROYECTO_CLIENTE_NOMBRE));
-                    agendaPresup.setEstado(proyecto.getCampos(Contract.Tablas.PROYECTO_DESCRIPCION_ESTADO));
-                    agendaPresup.setFechaEntrada(proyecto.getCampos(Contract.Tablas.PROYECTO_FECHAENTRADA));
-                    agendaPresup.setFechaEntregaPresup(proyecto.getCampos(Contract.Tablas.PROYECTO_FECHAENTREGAPRESUP));
-                    agendaPresup.setFechaAcordada(proyecto.getCampos(Contract.Tablas.PROYECTO_FECHAENTREGAACORDADA));
-                    agendaPresup.setFechaCalculada(proyecto.getCampos(Contract.Tablas.PROYECTO_FECHAENTREGACALCULADA));
-                    agendaPresup.setFechaFinal(proyecto.getCampos(Contract.Tablas.PROYECTO_FECHAFINAL));
-                    agendaPresup.setPeso(proyecto.getCampos(Contract.Tablas.PROYECTO_CLIENTE_PESOTIPOCLI));
-                    agendaPresup.setRetraso(proyecto.getCampos(Contract.Tablas.PROYECTO_RETRASO));
-                    agendaPresup.setRutaFoto(proyecto.getCampos(Contract.Tablas.PROYECTO_RUTAFOTO));
-                    agendaPresup.setTipoEstado(proyecto.getCampos(Contract.Tablas.PROYECTO_TIPOESTADO));
-
-                    listaAgendaPresup.add(agendaPresup);
-                }
-
-                AdaptadorAgendaPresup adaptadorAgendaPresup = new AdaptadorAgendaPresup(listaAgendaPresup);
-
-                rvAgenda.setAdapter(adaptadorAgendaPresup);
-
-                adaptadorAgendaPresup.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        idProyecto = listaAgendaPresup.get(rvAgenda.getChildAdapterPosition(v)).getId_presupuesto();
-
-                        Modelo proyecto =  QueryDB.queryObject(CAMPOS_PROYECTO,idProyecto);
-
-                        bundle = new Bundle();
-                        bundle.putSerializable(TABLA_PROYECTO,proyecto);
-                        bundle.putString("namef",namef);
-                        icFragments.enviarBundleAFragment(bundle,new FragmentUDProyecto());
-                        bundle = null;
-
-                    }
-                });
-            }
-        });
-
-        btnCobros.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                listaAgendaPresup = new ArrayList<>();
-                listaAgendaTarea = new ArrayList<>();
-
-                tituloTab.setText(R.string.pendiente_cobro);
-
-                String seleccion = ESTADO_TIPOESTADO + " = 7";
-                String orden = "'"+ PROYECTO_FECHAFINAL+"' ASC";
-
-                ArrayList<Modelo> lista = null;
-
-                lista = QueryDB.queryList(CAMPOS_PROYECTO,seleccion,orden);
-
-                for (Modelo proyecto : lista) {
-
-                    AgendaPresup agendaPresup = new AgendaPresup();
-                    agendaPresup.setId_presupuesto(proyecto.getCampos(Contract.Tablas.PROYECTO_ID_PROYECTO));
-                    agendaPresup.setPresupuesto(proyecto.getCampos(Contract.Tablas.PROYECTO_NOMBRE));
-                    agendaPresup.setDescripcion(proyecto.getCampos(Contract.Tablas.PROYECTO_DESCRIPCION));
-                    agendaPresup.setCliente(proyecto.getCampos(Contract.Tablas.PROYECTO_CLIENTE_NOMBRE));
-                    agendaPresup.setEstado(proyecto.getCampos(Contract.Tablas.PROYECTO_DESCRIPCION_ESTADO));
-                    agendaPresup.setFechaEntrada(proyecto.getCampos(Contract.Tablas.PROYECTO_FECHAENTRADA));
-                    agendaPresup.setFechaEntregaPresup(proyecto.getCampos(Contract.Tablas.PROYECTO_FECHAENTREGAPRESUP));
-                    agendaPresup.setFechaAcordada(proyecto.getCampos(Contract.Tablas.PROYECTO_FECHAENTREGAACORDADA));
-                    agendaPresup.setFechaCalculada(proyecto.getCampos(Contract.Tablas.PROYECTO_FECHAENTREGACALCULADA));
-                    agendaPresup.setFechaFinal(proyecto.getCampos(Contract.Tablas.PROYECTO_FECHAFINAL));
-                    agendaPresup.setPeso(proyecto.getCampos(Contract.Tablas.PROYECTO_CLIENTE_PESOTIPOCLI));
-                    agendaPresup.setRetraso(proyecto.getCampos(Contract.Tablas.PROYECTO_RETRASO));
-                    agendaPresup.setRutaFoto(proyecto.getCampos(Contract.Tablas.PROYECTO_RUTAFOTO));
-                    agendaPresup.setTipoEstado(proyecto.getCampos(Contract.Tablas.PROYECTO_TIPOESTADO));
-
-                    listaAgendaPresup.add(agendaPresup);
-                }
-
-                AdaptadorAgendaPresup adaptadorAgendaPresup = new AdaptadorAgendaPresup(listaAgendaPresup);
-
-                rvAgenda.setAdapter(adaptadorAgendaPresup);
-
-                adaptadorAgendaPresup.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        idProyecto = listaAgendaPresup.get(rvAgenda.getChildAdapterPosition(v)).getId_presupuesto();
-
-                        Modelo proyecto =  QueryDB.queryObject(CAMPOS_PROYECTO,idProyecto);
-
-                        bundle = new Bundle();
-                        bundle.putSerializable(TABLA_PROYECTO,proyecto);
-                        bundle.putString("namef",namef);
-                        icFragments.enviarBundleAFragment(bundle,new FragmentUDProyecto());
-                        bundle = null;
-
-                    }
-                });
-            }
-        });
-
-        return vista;
     }
+    private void obtenerPresupPendienteEntrega(){
+        listaAgendaPresup = new ArrayList<>();
+        listaAgendaTarea = new ArrayList<>();
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof Activity){
-            this.activity = (AppCompatActivity) context;
-            icFragments = (ICFragmentos) this.activity;
+        tituloTab.setText(R.string.presupuestos_pendientes);
+
+        String seleccion = ESTADO_TIPOESTADO + " = 1 OR "+
+                ESTADO_TIPOESTADO + " = 2";
+        String orden = "'"+ PROYECTO_FECHAENTRADA+"' ASC";
+
+        ArrayList<Modelo> lista = null;
+
+        lista = consulta.queryList(CAMPOS_PROYECTO,seleccion,orden);
+
+        for (Modelo proyecto : lista) {
+
+            AgendaPresup agendaPresup = new AgendaPresup();
+            agendaPresup.setId_presupuesto(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_ID_PROYECTO));
+            agendaPresup.setPresupuesto(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_NOMBRE));
+            agendaPresup.setDescripcion(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_DESCRIPCION));
+            agendaPresup.setCliente(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_CLIENTE_NOMBRE));
+            agendaPresup.setEstado(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_DESCRIPCION_ESTADO));
+            agendaPresup.setFechaEntrada(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_FECHAENTRADA));
+            agendaPresup.setFechaEntregaPresup(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_FECHAENTREGAPRESUP));
+            agendaPresup.setFechaAcordada(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_FECHAENTREGAACORDADA));
+            agendaPresup.setFechaCalculada(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_FECHAENTREGACALCULADA));
+            agendaPresup.setFechaFinal(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_FECHAFINAL));
+            agendaPresup.setPeso(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_CLIENTE_PESOTIPOCLI));
+            agendaPresup.setRetraso(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_RETRASO));
+            agendaPresup.setRutaFoto(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_RUTAFOTO));
+            agendaPresup.setTipoEstado(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_TIPOESTADO));
+
+            listaAgendaPresup.add(agendaPresup);
         }
+
+        AdaptadorAgendaPresup adaptadorAgendaPresup = new AdaptadorAgendaPresup(listaAgendaPresup);
+
+        rvAgenda.setAdapter(adaptadorAgendaPresup);
+
+        adaptadorAgendaPresup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                idProyecto = listaAgendaPresup.get(rvAgenda.getChildAdapterPosition(v)).getId_presupuesto();
+
+                Modelo proyecto =  consulta.queryObject(CAMPOS_PROYECTO,idProyecto);
+
+                bundle = new Bundle();
+                bundle.putSerializable(TABLA_PROYECTO,proyecto);
+                bundle.putString("namef",namef);
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentUDProyecto());
+                bundle = null;
+
+            }
+        });
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
+    private void obtenerPresupPendienteCobro(){
+
+        listaAgendaPresup = new ArrayList<>();
+        listaAgendaTarea = new ArrayList<>();
+
+        tituloTab.setText(R.string.pendiente_cobro);
+
+        String seleccion = ESTADO_TIPOESTADO + " = 7";
+        String orden = "'"+ PROYECTO_FECHAFINAL+"' ASC";
+
+        ArrayList<Modelo> lista = null;
+
+        lista = consulta.queryList(CAMPOS_PROYECTO,seleccion,orden);
+
+        for (Modelo proyecto : lista) {
+
+            AgendaPresup agendaPresup = new AgendaPresup();
+            agendaPresup.setId_presupuesto(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_ID_PROYECTO));
+            agendaPresup.setPresupuesto(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_NOMBRE));
+            agendaPresup.setDescripcion(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_DESCRIPCION));
+            agendaPresup.setCliente(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_CLIENTE_NOMBRE));
+            agendaPresup.setEstado(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_DESCRIPCION_ESTADO));
+            agendaPresup.setFechaEntrada(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_FECHAENTRADA));
+            agendaPresup.setFechaEntregaPresup(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_FECHAENTREGAPRESUP));
+            agendaPresup.setFechaAcordada(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_FECHAENTREGAACORDADA));
+            agendaPresup.setFechaCalculada(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_FECHAENTREGACALCULADA));
+            agendaPresup.setFechaFinal(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_FECHAFINAL));
+            agendaPresup.setPeso(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_CLIENTE_PESOTIPOCLI));
+            agendaPresup.setRetraso(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_RETRASO));
+            agendaPresup.setRutaFoto(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_RUTAFOTO));
+            agendaPresup.setTipoEstado(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_TIPOESTADO));
+
+            listaAgendaPresup.add(agendaPresup);
+        }
+
+        AdaptadorAgendaPresup adaptadorAgendaPresup = new AdaptadorAgendaPresup(listaAgendaPresup);
+
+        rvAgenda.setAdapter(adaptadorAgendaPresup);
+
+        adaptadorAgendaPresup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                idProyecto = listaAgendaPresup.get(rvAgenda.getChildAdapterPosition(v)).getId_presupuesto();
+
+                Modelo proyecto =  consulta.queryObject(CAMPOS_PROYECTO,idProyecto);
+
+                bundle = new Bundle();
+                bundle.putSerializable(TABLA_PROYECTO,proyecto);
+                bundle.putString("namef",namef);
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentUDProyecto());
+                bundle = null;
+
+            }
+        });
+    }
+
+    private void obtenerPresupEspera(){
+
+        listaAgendaPresup = new ArrayList<>();
+        listaAgendaTarea = new ArrayList<>();
+
+        tituloTab.setText(R.string.presupuestos_en_espera);
+
+        String seleccion = ESTADO_TIPOESTADO + " = 3";
+        String orden = "'"+ PROYECTO_FECHAENTREGAPRESUP+"' ASC";
+
+        ArrayList<Modelo> lista = null;
+
+        lista = consulta.queryList(CAMPOS_PROYECTO,seleccion,orden);
+
+        for (Modelo proyecto : lista) {
+
+            AgendaPresup agendaPresup = new AgendaPresup();
+            agendaPresup.setId_presupuesto(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_ID_PROYECTO));
+            agendaPresup.setPresupuesto(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_NOMBRE));
+            agendaPresup.setDescripcion(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_DESCRIPCION));
+            agendaPresup.setCliente(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_CLIENTE_NOMBRE));
+            agendaPresup.setEstado(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_DESCRIPCION_ESTADO));
+            agendaPresup.setFechaEntrada(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_FECHAENTRADA));
+            agendaPresup.setFechaEntregaPresup(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_FECHAENTREGAPRESUP));
+            agendaPresup.setFechaAcordada(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_FECHAENTREGAACORDADA));
+            agendaPresup.setFechaCalculada(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_FECHAENTREGACALCULADA));
+            agendaPresup.setFechaFinal(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_FECHAFINAL));
+            agendaPresup.setPeso(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_CLIENTE_PESOTIPOCLI));
+            agendaPresup.setRetraso(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_RETRASO));
+            agendaPresup.setRutaFoto(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_RUTAFOTO));
+            agendaPresup.setTipoEstado(proyecto.getCampos(ContratoPry.Tablas.PROYECTO_TIPOESTADO));
+
+            listaAgendaPresup.add(agendaPresup);
+        }
+
+        AdaptadorAgendaPresup adaptadorAgendaPresup = new AdaptadorAgendaPresup(listaAgendaPresup);
+
+        rvAgenda.setAdapter(adaptadorAgendaPresup);
+
+        adaptadorAgendaPresup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                idProyecto = listaAgendaPresup.get(rvAgenda.getChildAdapterPosition(v)).getId_presupuesto();
+
+                Modelo proyecto =  consulta.queryObject(CAMPOS_PROYECTO,idProyecto);
+
+                bundle = new Bundle();
+                bundle.putSerializable(TABLA_PROYECTO,proyecto);
+                bundle.putString("namef",namef);
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentUDProyecto());
+                bundle = null;
+
+            }
+        });
     }
 
     private void obtenerEventos() {
 
-        int diasAgenda = 90; //TODO poner esto en preferencias
-
-        long diasEventos = JavaUtil.hoy() + (diasAgenda * DIASLONG);
+        long diasfuturosEventos = JavaUtil.hoy() + (CommonPry.diasfuturos * DIASLONG);
+        long diaspasadosEventos = JavaUtil.hoy() - (CommonPry.diaspasados * DIASLONG);
 
         ArrayList<Modelo> listaEventos = new ArrayList<>();
-        ArrayList<Modelo> lista = QueryDB.queryList(CAMPOS_EVENTO, null, null);
+        ArrayList<Modelo> lista = consulta.queryList(CAMPOS_EVENTO, null, null);
         int i = 0;
         for (Modelo item : lista) {
 
             System.out.println("lista.get(i).getTipoevento() = " + lista.get(i).getCampos
-                    (Contract.Tablas.EVENTO_TIPOEVENTO));
+                    (ContratoPry.Tablas.EVENTO_TIPOEVENTO));
 
-            if (((lista.get(i).getCampos(Contract.Tablas.EVENTO_TIPOEVENTO) != null &&
-                    lista.get(i).getCampos(Contract.Tablas.EVENTO_TIPOEVENTO).equals(TAREA))
-                    || (item.getCampos(Contract.Tablas.EVENTO_FECHAINIEVENTO) != null &&
-                    Long.parseLong(item.getCampos(Contract.Tablas.EVENTO_FECHAINIEVENTO)) < diasEventos)) &&
-                    Double.parseDouble(lista.get(i).getCampos(Contract.Tablas.EVENTO_COMPLETADA)) < 100) {
+            if ((lista.get(i).getCampos(ContratoPry.Tablas.EVENTO_TIPOEVENTO) != null &&
+                    lista.get(i).getCampos(ContratoPry.Tablas.EVENTO_TIPOEVENTO).equals(TAREA) &&
+                    Double.parseDouble(lista.get(i).getCampos(ContratoPry.Tablas.EVENTO_COMPLETADA)) < 100)
+                    || (item.getCampos(ContratoPry.Tablas.EVENTO_FECHAINIEVENTO) != null &&
+                    Long.parseLong(item.getCampos(ContratoPry.Tablas.EVENTO_FECHAINIEVENTO)) > diaspasadosEventos &&
+                    Long.parseLong(item.getCampos(ContratoPry.Tablas.EVENTO_FECHAINIEVENTO)) < diasfuturosEventos &&
+                    Double.parseDouble(lista.get(i).getCampos(ContratoPry.Tablas.EVENTO_COMPLETADA)) < 100)) {
 
                 listaEventos.add(item);
             }
@@ -425,13 +467,13 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
     }
 
     class AdaptadorEventoInt extends RecyclerView.Adapter<AdaptadorEventoInt.EventoViewHolder>
-            implements Common.TiposEvento,View.OnClickListener {
+            implements CommonPry.TiposEvento,View.OnClickListener {
 
         ArrayList<Modelo> listaEvento;
         private View.OnClickListener listener;
         private String namef;
 
-        public AdaptadorEventoInt(ArrayList<Modelo> listaEvento, String namef) {
+        AdaptadorEventoInt(ArrayList<Modelo> listaEvento, String namef) {
 
             this.listaEvento = listaEvento;
             this.namef = namef;
@@ -486,7 +528,7 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
             }
 
             String tipoEvento = listaEvento.get(position).getCampos
-                    (Contract.Tablas.EVENTO_TIPOEVENTO);
+                    (ContratoPry.Tablas.EVENTO_TIPOEVENTO);
 
             eventoViewHolder.fechaini.setVisibility(View.GONE);
             eventoViewHolder.fechafin.setVisibility(View.GONE);
@@ -554,8 +596,8 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
             }
 
             long retraso = JavaUtil.hoy()-listaEvento.get(position).getLong(EVENTO_FECHAINIEVENTO);
-            if (retraso > 3 * Common.DIASLONG){eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));}
-            else if (retraso > Common.DIASLONG){eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));}
+            if (retraso > 3 * CommonPry.DIASLONG){eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));}
+            else if (retraso > CommonPry.DIASLONG){eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));}
             else {eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));}//imgret.setImageResource(R.drawable.alert_box_v);}
             if(tipoEvento.equals(TAREA))
             {eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_tarea));}
@@ -582,9 +624,10 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
                 @Override
                 public void onClick(View v) {
 
-                    if (eventoViewHolder.lugar.getText().toString()!=null){
+                    if (!eventoViewHolder.lugar.getText().toString().equals("")){
 
-                        AppActivity.viewOnMapA(eventoViewHolder.lugar.getText().toString());
+                        Intent i= AppActivity.viewOnMapA(eventoViewHolder.lugar.getText().toString());
+                        startActivity(i);
                     }
 
 
@@ -599,12 +642,9 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
 
                     ContentValues valores = new ContentValues();
 
-                    valores.put(Contract.Tablas.EVENTO_COMPLETADA,"100");
-
-                    AppActivity.getAppContext().getContentResolver().update(Contract.crearUriTabla
-                                    (listaEvento.get(position).getCampos
-                                            (Contract.Tablas.EVENTO_ID_EVENTO),TABLA_EVENTO)
-                            ,valores,null,null);
+                    consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_COMPLETADA,"100");
+                    consulta.updateRegistro(TABLA_EVENTO,listaEvento.get(position).getCampos
+                            (ContratoPry.Tablas.EVENTO_ID_EVENTO),valores);
 
                 }
             });
@@ -614,14 +654,14 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
                 public void onClick(View v) {
 
                     String idEvento = listaEvento.get(position).getCampos
-                            (Contract.Tablas.EVENTO_ID_EVENTO);
+                            (ContratoPry.Tablas.EVENTO_ID_EVENTO);
 
-                    Modelo evento = QueryDB.queryObject(CAMPOS_EVENTO,idEvento);
+                    Modelo evento = consulta.queryObject(CAMPOS_EVENTO,idEvento);
 
                     bundle = new Bundle();
                     bundle.putSerializable(TABLA_EVENTO,evento);
                     bundle.putString("namef",namef);
-                    icFragments.enviarBundleAFragment(bundle, new FragmentUDEvento());
+                    icFragmentos.enviarBundleAFragment(bundle, new FragmentUDEvento());
                     bundle = null;
                 }
             });
@@ -687,4 +727,220 @@ public class FragmentAgenda extends Fragment implements Common.TiposEvento, Cont
 
     }
 
+    public static class AdaptadorAgendaPresup extends RecyclerView.Adapter<AdaptadorAgendaPresup.AgendaPresupViewHolder> implements View.OnClickListener {
+
+        ArrayList<AgendaPresup> listaAgendaPresup;
+        private View.OnClickListener listener;
+
+        public AdaptadorAgendaPresup(ArrayList<AgendaPresup> listaAgendaPresup) {
+
+            this.listaAgendaPresup = listaAgendaPresup;
+        }
+
+        @NonNull
+        @Override
+        public AgendaPresupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
+
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_agenda_presup, null, false);
+
+            view.setOnClickListener(this);
+
+
+            return new AgendaPresupViewHolder(view);
+        }
+
+        public void setOnClickListener(View.OnClickListener listener) {
+
+            this.listener = listener;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull AgendaPresupViewHolder agendaPresupViewHolder, int position) {
+
+                agendaPresupViewHolder.descripcion.setText(listaAgendaPresup.get(position).getDescripcion());
+                agendaPresupViewHolder.presupuesto.setText(listaAgendaPresup.get(position).getPresupuesto());
+                agendaPresupViewHolder.cliente.setText(listaAgendaPresup.get(position).getCliente());
+                agendaPresupViewHolder.estado.setText(listaAgendaPresup.get(position).getEstado());
+                String tipoEstado = listaAgendaPresup.get(position).getTipoEstado();
+                if (Integer.parseInt(tipoEstado) >0 && Integer.parseInt(tipoEstado) <3) {
+                    agendaPresupViewHolder.fecha.setText(JavaUtil.getDate(Long.parseLong(listaAgendaPresup.get(position).getFechaEntrada())));
+                }else if (Integer.parseInt(tipoEstado) == 3) {
+                    agendaPresupViewHolder.fecha.setText(JavaUtil.getDate(Long.parseLong(listaAgendaPresup.get(position).getFechaEntregaPresup())));
+                }else if (Integer.parseInt(tipoEstado) == 7){
+                    agendaPresupViewHolder.fecha.setText(JavaUtil.getDate(Long.parseLong(listaAgendaPresup.get(position).getFechaFinal())));
+                }
+
+                if (listaAgendaPresup.get(position).getRutaFoto()!=null){
+
+                    agendaPresupViewHolder.imagenPresup.setImageURI(Uri.parse(listaAgendaPresup.get(position).getRutaFoto()));
+
+                }
+            String retraso = listaAgendaPresup.get(position).getRetraso();
+            if (Long.parseLong(retraso) > 3 * DIASLONG) {
+                agendaPresupViewHolder.imagenEstado.setImageResource(R.drawable.alert_box_r);
+            } else if (Long.parseLong(retraso) > DIASLONG) {
+                agendaPresupViewHolder.imagenEstado.setImageResource(R.drawable.alert_box_a);
+            } else {
+                agendaPresupViewHolder.imagenEstado.setImageResource(R.drawable.alert_box_v);
+            }
+
+            String peso = listaAgendaPresup.get(position).getPeso();
+            if (Integer.parseInt(peso) >6) {
+                agendaPresupViewHolder.imagenCliente.setImageResource(R.drawable.clientev);
+            } else if (Integer.parseInt(peso) > 3) {
+                agendaPresupViewHolder.imagenCliente.setImageResource(R.drawable.clientea);
+            } else if (Integer.parseInt(peso) > 0) {
+                agendaPresupViewHolder.imagenCliente.setImageResource(R.drawable.clienter);
+            } else {
+                agendaPresupViewHolder.imagenCliente.setImageResource(R.drawable.cliente);
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+
+            return listaAgendaPresup.size();
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            if (listener != null) {
+
+                listener.onClick(v);
+
+
+            }
+
+        }
+
+        public class AgendaPresupViewHolder extends RecyclerView.ViewHolder {
+
+                ImageView imagenPresup, imagenCliente, imagenEstado;
+                TextView presupuesto, descripcion,cliente,estado,fecha;
+
+            public AgendaPresupViewHolder(@NonNull View itemView) {
+                super(itemView);
+
+                descripcion = itemView.findViewById(R.id.tvdescagendapresup);
+                presupuesto = itemView.findViewById(R.id.tvpresupagendapresup);
+                cliente = itemView.findViewById(R.id.tvclienteagendapresup);
+                estado = itemView.findViewById(R.id.tvestadoagendapresup);
+                fecha = itemView.findViewById(R.id.tvfechaentagendapresup);
+                imagenPresup = itemView.findViewById(R.id.imgrvagendapresup);
+                imagenCliente = itemView.findViewById(R.id.imgcliagendapresup);
+                imagenEstado = itemView.findViewById(R.id.imgestadoagendapresup);
+
+            }
+        }
+    }
+
+    public static class AdaptadorAgendaTareas extends RecyclerView.Adapter<AdaptadorAgendaTareas.AgendaViewHolder> implements View.OnClickListener{
+
+        ArrayList<AgendaTarea> listaPartidas;
+        private View.OnClickListener listener;
+
+        public AdaptadorAgendaTareas(ArrayList<AgendaTarea> listaPartidas) {
+
+            this.listaPartidas = listaPartidas;
+        }
+
+        @NonNull
+        @Override
+        public AgendaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
+
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_agenda_tareas,null,false);
+
+            view.setOnClickListener(this);
+
+
+            return new AgendaViewHolder(view);
+        }
+
+        public void setOnClickListener(View.OnClickListener listener) {
+
+            this.listener = listener;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull AgendaViewHolder agendaViewHolder, int position) {
+
+            agendaViewHolder.descripcionPartida.setText(listaPartidas.get(position).getDescripcion());
+            agendaViewHolder.tiempoPartida.setText(listaPartidas.get(position).getTiempo());
+            agendaViewHolder.cantidadPartida.setText(listaPartidas.get(position).getCantidad());
+            agendaViewHolder.completadaPartida.setText(listaPartidas.get(position).getCompletada());
+            agendaViewHolder.proyectoPartida.setText(listaPartidas.get(position).getNombreProyecto());
+            agendaViewHolder.progressBarPartida.setProgress(Integer.parseInt(listaPartidas.get(position).getCompletada()));
+            agendaViewHolder.nombreCliente.setText(listaPartidas.get(position).getNombreCliente());
+            agendaViewHolder.tipoCliente.setText(listaPartidas.get(position).getTipoCliente());
+
+            if (listaPartidas.get(position).getRutaFoto()!=null) {
+                agendaViewHolder.imagenProyecto.setImageURI(Uri.parse(listaPartidas.get(position).getRutaFoto()));
+            }
+            long retraso = Long.parseLong(listaPartidas.get(position).getRetraso());
+            if (retraso > 3 * DIASLONG) {
+                agendaViewHolder.imagenPartida.setImageResource(R.drawable.alert_box_r);
+            } else if (retraso > DIASLONG) {
+                agendaViewHolder.imagenPartida.setImageResource(R.drawable.alert_box_a);
+            } else {
+                agendaViewHolder.imagenPartida.setImageResource(R.drawable.alert_box_v);
+            }
+
+            String peso = listaPartidas.get(position).getPeso();
+            if (Integer.parseInt(peso) >6) {
+                agendaViewHolder.imagenCliente.setImageResource(R.drawable.clientev);
+            } else if (Integer.parseInt(peso) > 3) {
+                agendaViewHolder.imagenCliente.setImageResource(R.drawable.clientea);
+            } else if (Integer.parseInt(peso) > 0) {
+            agendaViewHolder.imagenCliente.setImageResource(R.drawable.clienter);
+            } else {
+                agendaViewHolder.imagenCliente.setImageResource(R.drawable.cliente);
+            }
+
+
+        }
+
+        @Override
+        public int getItemCount() {
+
+            return listaPartidas.size();
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            if (listener!= null){
+
+                listener.onClick(v);
+
+
+            }
+
+        }
+
+        public class AgendaViewHolder extends RecyclerView.ViewHolder {
+
+            ImageView imagenPartida, imagenProyecto, imagenCliente;
+            TextView descripcionPartida,tiempoPartida,cantidadPartida,completadaPartida,
+                    nombreCliente,tipoCliente,proyectoPartida;
+            ProgressBar progressBarPartida;
+
+            public AgendaViewHolder(@NonNull View itemView) {
+                super(itemView);
+
+                imagenPartida = itemView.findViewById(R.id.imgparagenda);
+                imagenProyecto = itemView.findViewById(R.id.imgpryagenda);
+                imagenCliente = itemView.findViewById(R.id.imgtipocliagenda);
+                tipoCliente = itemView.findViewById(R.id.tvtipocliagenda);
+                nombreCliente = itemView.findViewById(R.id.tvclienteagenda);
+                proyectoPartida = itemView.findViewById(R.id.tvnomproyagenda);
+                descripcionPartida = itemView.findViewById(R.id.tvdescripcioncpartidaagenda);
+                tiempoPartida = itemView.findViewById(R.id.tvtiempopartidaagenda);
+                cantidadPartida = itemView.findViewById(R.id.tvcantidadpartidaagenda);
+                completadaPartida = itemView.findViewById(R.id.tvcompletadapartidaagenda);
+                progressBarPartida = itemView.findViewById(R.id.progressBarpartidaagenda);
+
+            }
+        }
+    }
 }

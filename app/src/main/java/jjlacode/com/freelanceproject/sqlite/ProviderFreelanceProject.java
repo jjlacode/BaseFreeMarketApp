@@ -8,15 +8,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.text.TextUtils;
 
-//import static jjlacode.com.freelanceproject.sqlite.Contract.Tabla;
-//import static jjlacode.com.freelanceproject.sqlite.Contract.Tablas;
-//import static jjlacode.com.freelanceproject.sqlite.Contract.generarMime;
-//import static jjlacode.com.freelanceproject.sqlite.Contract.generarMimeItem;
-import static jjlacode.com.freelanceproject.sqlite.Contract.*;
+import jjlacode.com.freelanceproject.utilities.CommonPry;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.*;
 
-public class ProviderFreelanceProject extends ContentProvider implements Tablas{
+public class ProviderFreelanceProject extends ContentProvider
+        implements Tablas, CommonPry.TiposEstados {
 
     private DataBase bd;
 
@@ -28,13 +25,10 @@ public class ProviderFreelanceProject extends ContentProvider implements Tablas{
     public static final int PROYECTO = 101;
     public static final int PROYECTO_ID = 102;
     public static final int PROYECTO_ID_PARTIDA = 103;
-    public static final int PROYECTO_ID_GASTO = 104;
 
     public static final int PARTIDA = 105;
     public static final int PARTIDA_ID = 106;
-
-    public static final int GASTO = 107;
-    public static final int GASTO_ID = 108;
+    public static final int PARTIDA_ID_DETPARTIDA = 129;
 
     public static final int CLIENTE = 109;
     public static final int CLIENTE_ID = 110;
@@ -63,7 +57,17 @@ public class ProviderFreelanceProject extends ContentProvider implements Tablas{
     public static final int EVENTO = 127;
     public static final int EVENTO_ID = 128;
 
-    public static final String AUTORIDAD = "jjlacode.com.freelanceproject";
+    public static final int DETPARTIDA = 130;
+    public static final int DETPARTIDA_ID = 131;
+
+    public static final int PARTIDABASE = 132;
+    public static final int PARTIDABASE_ID = 133;
+    public static final int PARTIDABASE_ID_DETPARTIDA = 134;
+
+    public static final int DETPARTIDABASE = 135;
+    public static final int DETPARTIDABASE_ID = 136;
+
+    public static final String AUTORIDAD = AUTORIDAD_CONTENIDO;//"jjlacode.com.freelanceproject";
 
     static {
 
@@ -72,13 +76,20 @@ public class ProviderFreelanceProject extends ContentProvider implements Tablas{
         uriMatcher.addURI(AUTORIDAD, TABLA_PROYECTO, PROYECTO);
         uriMatcher.addURI(AUTORIDAD, TABLA_PROYECTO+"/*", PROYECTO_ID);
         uriMatcher.addURI(AUTORIDAD, TABLA_PROYECTO+"/*/"+TABLA_PARTIDA, PROYECTO_ID_PARTIDA);
-        uriMatcher.addURI(AUTORIDAD, TABLA_PROYECTO+"/*/"+TABLA_GASTO, PROYECTO_ID_GASTO);
 
         uriMatcher.addURI(AUTORIDAD, TABLA_PARTIDA, PARTIDA);
         uriMatcher.addURI(AUTORIDAD, TABLA_PARTIDA+"/*", PARTIDA_ID);
+        uriMatcher.addURI(AUTORIDAD, TABLA_PARTIDA+"/*/"+TABLA_DETPARTIDA, PARTIDA_ID_DETPARTIDA);
 
-        uriMatcher.addURI(AUTORIDAD, TABLA_GASTO, GASTO);
-        uriMatcher.addURI(AUTORIDAD, TABLA_GASTO+"/*", GASTO_ID);
+        uriMatcher.addURI(AUTORIDAD, TABLA_DETPARTIDA, DETPARTIDA);
+        uriMatcher.addURI(AUTORIDAD, TABLA_DETPARTIDA+"/*", DETPARTIDA_ID);
+
+        uriMatcher.addURI(AUTORIDAD, TABLA_PARTIDABASE, PARTIDABASE);
+        uriMatcher.addURI(AUTORIDAD, TABLA_PARTIDABASE+"/*", PARTIDABASE_ID);
+        uriMatcher.addURI(AUTORIDAD, TABLA_PARTIDABASE+"/*/"+TABLA_DETPARTIDABASE, PARTIDABASE_ID_DETPARTIDA);
+
+        uriMatcher.addURI(AUTORIDAD, TABLA_DETPARTIDABASE, DETPARTIDABASE);
+        uriMatcher.addURI(AUTORIDAD, TABLA_DETPARTIDABASE+"/*", DETPARTIDABASE_ID);
 
         uriMatcher.addURI(AUTORIDAD, TABLA_CLIENTE, CLIENTE);
         uriMatcher.addURI(AUTORIDAD, TABLA_CLIENTE+"/*", CLIENTE_ID);
@@ -108,11 +119,16 @@ public class ProviderFreelanceProject extends ContentProvider implements Tablas{
         uriMatcher.addURI(AUTORIDAD, TABLA_EVENTO+"/*", EVENTO_ID);
     }
 
-    private static final String PROYECTO_JOIN_CLIENTE_Y_ESTADO= "proyecto " +
-            "INNER JOIN cliente " +
-            "ON proyecto.id_cliente = cliente.id_cliente " +
-            "INNER JOIN estado " +
-            "ON proyecto.id_estado = estado.id_estado";
+    private static final String PROYECTO_JOIN_CLIENTE_Y_ESTADO=
+            String.format("%s " +
+                            "INNER JOIN %s " +
+                            "ON %s.%s = %s.%s " +
+                            "INNER JOIN %s " +
+                            "ON %s.%s = %s.%s",TABLA_PROYECTO,
+                            TABLA_CLIENTE,TABLA_PROYECTO,PROYECTO_ID_CLIENTE,
+                            TABLA_CLIENTE,CLIENTE_ID_CLIENTE,
+                            TABLA_ESTADO,TABLA_PROYECTO,PROYECTO_ID_ESTADO,
+                            TABLA_ESTADO,ESTADO_ID_ESTADO);
 
     private final String proyProyecto = String.format("%s.*,%s,%s,%s,%s",
 
@@ -122,9 +138,12 @@ public class ProviderFreelanceProject extends ContentProvider implements Tablas{
             ESTADO_DESCRIPCION,
             ESTADO_TIPOESTADO);
 
-    private static final String CLIENTE_JOIN_TIPOSCLIENTE= "cliente " +
-            "INNER JOIN tipocliente " +
-            "ON cliente.id_tipocliente = tipocliente.id_tipocliente";
+    private static final String CLIENTE_JOIN_TIPOSCLIENTE=
+            String.format("%s " +
+            "INNER JOIN %s " +
+            "ON %s.%s = %s.%s",TABLA_CLIENTE,
+                    TABLA_TIPOCLIENTE,TABLA_CLIENTE,CLIENTE_ID_TIPOCLIENTE,
+                    TABLA_TIPOCLIENTE,TIPOCLIENTE_ID_TIPOCLIENTE);
 
     private final String proyCliente = String.format("%s.*,%s,%s",
 
@@ -132,11 +151,16 @@ public class ProviderFreelanceProject extends ContentProvider implements Tablas{
             TIPOCLIENTE_DESCRIPCION,
             TIPOCLIENTE_PESO);
 
-    private static final String PARTIDAS_JOIN_ESTADO_JOIN_PROYECTO = "partida " +
-            "INNER JOIN estado " +
-            "ON partida.id_estado = estado.id_estado " +
-            "INNER JOIN proyecto " +
-            "ON partida.id_proyecto = proyecto.id_proyecto" ;
+    private static final String PARTIDAS_JOIN_ESTADO_JOIN_PROYECTO =
+            String.format("%s " +
+                    "INNER JOIN %s " +
+                    "ON %s.%s = %s.%s " +
+                    "INNER JOIN %s " +
+                    "ON %s.%s = %s.%s",TABLA_PARTIDA,
+                    TABLA_ESTADO,TABLA_PARTIDA,PARTIDA_ID_ESTADO,
+                    TABLA_ESTADO,ESTADO_ID_ESTADO,
+                    TABLA_PROYECTO,TABLA_PARTIDA,PARTIDA_ID_PROYECTO,
+                    TABLA_PROYECTO,PROYECTO_ID_PROYECTO);
 
     private static final String proyPartida = String.format("%s.*,%s,%s",
 
@@ -144,15 +168,20 @@ public class ProviderFreelanceProject extends ContentProvider implements Tablas{
             PROYECTO_RETRASO,
             ESTADO_TIPOESTADO);
 
+
+
+
+
+
     public ProviderFreelanceProject() {
 
     }
 
-
-
     @Override
     public boolean onCreate() {
         bd = new DataBase(getContext());
+
+
         resolver = getContext().getContentResolver();
         return true;
     }
@@ -169,10 +198,18 @@ public class ProviderFreelanceProject extends ContentProvider implements Tablas{
                 return generarMime(TABLA_PARTIDA);
             case PARTIDA_ID:
                 return generarMimeItem(TABLA_PARTIDA);
-            case GASTO:
-                return generarMime(TABLA_GASTO);
-            case GASTO_ID:
-                return generarMimeItem(TABLA_GASTO);
+            case DETPARTIDA:
+                return generarMime(TABLA_DETPARTIDA);
+            case DETPARTIDA_ID:
+                return generarMimeItem(TABLA_DETPARTIDA);
+            case PARTIDABASE:
+                return generarMime(TABLA_PARTIDABASE);
+            case PARTIDABASE_ID:
+                return generarMimeItem(TABLA_PARTIDABASE);
+            case DETPARTIDABASE:
+                return generarMime(TABLA_DETPARTIDABASE);
+            case DETPARTIDABASE_ID:
+                return generarMimeItem(TABLA_DETPARTIDABASE);
             case CLIENTE:
                 return generarMime(TABLA_CLIENTE);
             case CLIENTE_ID:
@@ -256,26 +293,15 @@ public class ProviderFreelanceProject extends ContentProvider implements Tablas{
 
                 break;
 
-            case PROYECTO_ID_GASTO:
-
-                tabla = TABLA_GASTO;
-                setTablas = tabla;
-                proyeccion = tabla+".*";
-                idTabla = GASTO_ID_PROYECTO;
-                esId = false;
-                esDetalle = true;
-
-                break;
-
             case PARTIDA:
                 tabla = TABLA_PARTIDA;
                 setTablas = PARTIDAS_JOIN_ESTADO_JOIN_PROYECTO;
                 proyeccion = proyPartida;
                 idTabla = PARTIDA_ID_PROYECTO;
-                esId = false;
                 esDetalle = false;
-
+                esId = false;
                 break;
+
             case PARTIDA_ID:
 
                 tabla = TABLA_PARTIDA;
@@ -286,25 +312,81 @@ public class ProviderFreelanceProject extends ContentProvider implements Tablas{
                 esId = true;
                 break;
 
-            case GASTO:
+            case PARTIDA_ID_DETPARTIDA:
 
-                tabla = TABLA_GASTO;
+                tabla = TABLA_DETPARTIDA;
                 setTablas = tabla;
                 proyeccion = tabla+".*";
-                idTabla = GASTO_ID_PROYECTO;
+                idTabla = DETPARTIDA_ID_PARTIDA;
+                esDetalle = true;
+                esId = false;
+                break;
+
+            case DETPARTIDA:
+                tabla = TABLA_DETPARTIDA;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = DETPARTIDA_ID_PARTIDA;
                 esId = false;
                 esDetalle = false;
-                break;
-            case GASTO_ID:
 
-                tabla = TABLA_GASTO;
+                break;
+            case DETPARTIDA_ID:
+
+                tabla = TABLA_DETPARTIDA;
                 setTablas = tabla;
-                proyeccion = tabla+".*";;
-                idTabla = GASTO_ID_PROYECTO;
+                proyeccion = tabla+".*";
+                idTabla = DETPARTIDA_ID_PARTIDA;
                 esDetalle = true;
                 esId = true;
                 break;
+            case PARTIDABASE:
+                tabla = TABLA_PARTIDABASE;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = PARTIDABASE_ID_PARTIDA;
+                esDetalle = false;
+                esId = false;
+                break;
 
+            case PARTIDABASE_ID:
+
+                tabla = TABLA_PARTIDABASE;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = PARTIDABASE_ID_PARTIDA;
+                esDetalle = false;
+                esId = true;
+                break;
+
+            case PARTIDABASE_ID_DETPARTIDA:
+
+                tabla = TABLA_DETPARTIDABASE;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = DETPARTIDABASE_ID_PARTIDA;
+                esDetalle = true;
+                esId = false;
+                break;
+
+            case DETPARTIDABASE:
+                tabla = TABLA_DETPARTIDABASE;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = DETPARTIDABASE_ID_PARTIDA;
+                esId = false;
+                esDetalle = false;
+
+                break;
+            case DETPARTIDABASE_ID:
+
+                tabla = TABLA_DETPARTIDABASE;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = DETPARTIDABASE_ID_PARTIDA;
+                esDetalle = true;
+                esId = true;
+                break;
 
             case CLIENTE:
                 // Generar Pk
@@ -502,6 +584,7 @@ public class ProviderFreelanceProject extends ContentProvider implements Tablas{
 
         SQLiteDatabase db = bd.getWritableDatabase();
 
+
         ContentValues valores = matcherUri(uri);
 
         String secuencia= values.getAsString("secuencia");
@@ -513,12 +596,13 @@ public class ProviderFreelanceProject extends ContentProvider implements Tablas{
 
 
                 if (tabla!=null){
-                        if (secuencia == null) {
+                        if (secuencia == null || Integer.parseInt(secuencia)==0) {
                             values.put(idTabla, id);
                         }
+                    System.out.println("values = " + values);
                     db.insertOrThrow(tabla, null, values);
                     notificarCambio(uri);
-                    if (secuencia != null) {
+                    if (secuencia != null && Integer.parseInt(secuencia)>0) {
                         id= values.getAsString(idTabla);
                         return crearUriTablaDetalle(id, secuencia, tabla);
                     }else {
@@ -560,15 +644,18 @@ public class ProviderFreelanceProject extends ContentProvider implements Tablas{
                 String secuencia = ids[1];
                 selection = tabla + "." +idTabla + " = '" + id + "' AND " +
                         "secuencia = '" + secuencia + "'";
+                System.out.println("secuencia = " + secuencia);
+                System.out.println("id = " + id);
+                System.out.println("selection = " + selection);
 
             } else if (esDetalle) {
 
-                String id = Contract.obtenerIdTablaDetalleId(uri);
+                String id = obtenerIdTablaDetalleId(uri);
                 selection = tabla + "." + idTabla + " = '" + id + "'";
 
             } else if (esId) {
 
-                String id = Contract.obtenerIdTabla(uri);
+                String id = obtenerIdTabla(uri);
                 selection = idTabla + " = '" + id + "'";
 
             }

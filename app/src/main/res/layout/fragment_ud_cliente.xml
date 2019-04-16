@@ -26,29 +26,17 @@
                     android:layout_height="100dp"
                     app:srcCompat="@drawable/cliente" />
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tvtipoudcliente"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvtitudcliente"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center|center_horizontal|center_vertical"
-                        android:text="@string/cliente"
-                        android:textSize="36sp" />
-
-                    <TextView
-                        android:id="@+id/tvtipoudcliente"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginRight="5dp"
-                        android:text="@string/tipocliente"
-                        android:textSize="18sp" />
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="5dp"
+                    android:gravity="center"
+                    android:text="@string/tipocliente"
+                    android:textSize="36sp" />
 
             </LinearLayout>
 

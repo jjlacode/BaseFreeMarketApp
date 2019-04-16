@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,10 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -40,30 +37,25 @@
                         android:text="TextView" />
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/ldescipcionNpartida"
+                <ImageView
+                    android:id="@+id/imgNpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/descripcion_tipo_cliente" />
+                    android:src="@drawable/ico_calendario_reloj" />
 
                 <AutoCompleteTextView
-                    android:id="@+id/etdescripcionNpartida"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:id="@+id/ltiempoNpartida"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/tiempo" />
-
-                <EditText
-                    android:id="@+id/ettiempoNpartida"
+                    android:id="@+id/etnomNpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="@string/tiempo"
-                    android:inputType="numberDecimal" />
+                    android:hint="@string/nombre"/>
+
+                <EditText
+                    android:id="@+id/etdescripcionNpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/descripcion" />
 
                 <TextView
                     android:id="@+id/lcantidadNpartida"
@@ -91,25 +83,8 @@
                     android:layout_height="wrap_content"
                     android:text="@string/volver" />
 
-                <Button
-                    android:id="@+id/btnnuevatareanpartida"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/guardar_nueva_tarea" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvtareasnpartida"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                </RelativeLayout>
 
             </LinearLayout>
-        </LinearLayout>
     </ScrollView>
 
 </FrameLayout>

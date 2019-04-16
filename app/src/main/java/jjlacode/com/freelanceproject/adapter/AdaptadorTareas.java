@@ -5,16 +5,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import jjlacode.com.androidutils.Modelo;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.sqlite.Contract;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 
 public class AdaptadorTareas extends RecyclerView.Adapter<AdaptadorTareas.TareaViewHolder>
-        implements View.OnClickListener, Contract.Tablas {
+        implements View.OnClickListener, ContratoPry.Tablas {
 
     ArrayList<Modelo> listaTareas;
     private View.OnClickListener listener;
@@ -44,6 +45,11 @@ public class AdaptadorTareas extends RecyclerView.Adapter<AdaptadorTareas.TareaV
 
         tareaViewHolder.descripcion.setText(listaTareas.get(position).getCampos(TAREA_DESCRIPCION));
         tareaViewHolder.tiempo.setText(listaTareas.get(position).getCampos(TAREA_TIEMPO));
+        tareaViewHolder.nombre.setText(listaTareas.get(position).getString(TAREA_NOMBRE));
+        if (listaTareas.get(position).getString(TAREA_RUTAFOTO)!=null){
+
+            tareaViewHolder.imagen.setImageURI(listaTareas.get(position).getUri(TAREA_RUTAFOTO));
+        }
 
     }
 
@@ -64,12 +70,16 @@ public class AdaptadorTareas extends RecyclerView.Adapter<AdaptadorTareas.TareaV
 
     public class TareaViewHolder extends RecyclerView.ViewHolder {
 
-        TextView descripcion, tiempo;
+        TextView descripcion, tiempo, nombre;
+        ImageView imagen;
+
         public TareaViewHolder(@NonNull View itemView) {
             super(itemView);
 
             descripcion = itemView.findViewById(R.id.tvdescripcionltareas);
-            tiempo = itemView.findViewById(R.id.tvtiempoltareas);
+            tiempo = itemView.findViewById(R.id.tvtiempoltareas_detpartida);
+            imagen = itemView.findViewById(R.id.imgltarea_detpartida);
+            nombre = itemView.findViewById(R.id.tvnomltarea_detpartida);
         }
     }
 }
