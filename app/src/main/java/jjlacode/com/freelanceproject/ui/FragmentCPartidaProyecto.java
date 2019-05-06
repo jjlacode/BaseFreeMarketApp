@@ -22,16 +22,16 @@ import androidx.appcompat.app.AlertDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import jjlacode.com.androidutils.AndroidUtil;
-import jjlacode.com.androidutils.FragmentC;
-import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.freelanceproject.util.FragmentC;
+import jjlacode.com.freelanceproject.util.Modelo;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.utilities.CommonPry;
+import jjlacode.com.freelanceproject.util.CommonPry;
 
-import static jjlacode.com.freelanceproject.utilities.CommonPry.permiso;
+import static jjlacode.com.freelanceproject.util.CommonPry.permiso;
 
 
 public class FragmentCPartidaProyecto extends FragmentC implements CommonPry.Constantes, ContratoPry.Tablas {
@@ -59,6 +59,47 @@ public class FragmentCPartidaProyecto extends FragmentC implements CommonPry.Con
     }
 
     @Override
+    protected void setTabla() {
+
+    }
+
+    @Override
+    protected void setTablaCab() {
+
+    }
+
+    @Override
+    protected void setContext() {
+
+    }
+
+    @Override
+    protected void setCampos() {
+
+    }
+
+    @Override
+    protected void setCampoID() {
+
+    }
+
+    @Override
+    protected void setBundle() {
+
+    }
+
+    @Override
+    protected void setDatos() {
+
+    }
+
+    @Override
+    protected void setAcciones() {
+
+    }
+
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -79,21 +120,25 @@ public class FragmentCPartidaProyecto extends FragmentC implements CommonPry.Con
 
             namef = bundle.getString("namef");
 
-            if (namef.equals(PROYECTO)){
+            if (namef!=null && namef.equals(PROYECTO)){
 
                 titulo.setText(getString(R.string.partida_proyecto));
                 nombreProyecto.setText(proyecto.getString(PROYECTO_NOMBRE));
                 proyecto = (Modelo) bundle.getSerializable(TABLA_PROYECTO);
-                idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
+                if (proyecto!=null) {
+                    idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
+                }
 
-            }else if (namef.equals(PRESUPUESTO)){
+            }else if (namef!=null && namef.equals(PRESUPUESTO)){
 
                 titulo.setText(getString(R.string.partida_presupuesto));
                 proyecto = (Modelo) bundle.getSerializable(TABLA_PROYECTO);
-                nombreProyecto.setText(proyecto.getString(PROYECTO_NOMBRE));
-                idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
+                if (proyecto!=null) {
+                    nombreProyecto.setText(proyecto.getString(PROYECTO_NOMBRE));
+                    idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
+                }
 
-            }else if (namef.equals(PARTIDABASE)){
+            }else if (namef!=null && namef.equals(PARTIDABASE)){
 
                 titulo.setText(getString(R.string.partida_base));
                 nombreProyecto.setVisibility(View.GONE);
@@ -139,7 +184,7 @@ public class FragmentCPartidaProyecto extends FragmentC implements CommonPry.Con
                         }
                         bundle.putSerializable(TABLA_PARTIDA, partida);
                         bundle.putString("namef", namef);
-                        icFragmentos.enviarBundleAFragment(bundle, new FragmentUDPartidaProyecto());
+                        icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDPartidaProyecto());
                         bundle = null;
                     }
 
@@ -196,10 +241,20 @@ public class FragmentCPartidaProyecto extends FragmentC implements CommonPry.Con
         return view;
     }
 
+    @Override
+    protected void setLayout() {
+
+    }
+
+    @Override
+    protected void setInicio() {
+
+    }
+
     private void mostrarDialogoClonarPartida(final Modelo modelo) {
 
         final CharSequence[] opciones = {"Clonar partida","Cancelar"};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
         builder.setTitle("Elige una opción");
         builder.setItems(opciones, new DialogInterface.OnClickListener() {
 
@@ -220,7 +275,7 @@ public class FragmentCPartidaProyecto extends FragmentC implements CommonPry.Con
                     }else if (modelo.getNombreTabla().equals(TABLA_PARTIDABASE)){
 
                         valores = new ContentValues();
-                        idPartida = modelo.getString(PARTIDABASE_ID_PARTIDA);
+                        idPartida = modelo.getString(PARTIDABASE_ID_PARTIDABASE);
                         valores.put(PARTIDA_CANTIDAD, 0);
                         valores.put(PARTIDA_DESCRIPCION, modelo.getString(PARTIDABASE_DESCRIPCION));
                         valores.put(PARTIDA_NOMBRE, modelo.getString(PARTIDABASE_NOMBRE));
@@ -250,7 +305,7 @@ public class FragmentCPartidaProyecto extends FragmentC implements CommonPry.Con
                     if (modelo.getNombreTabla().equals(TABLA_PARTIDABASE)) {
 
                         ArrayList<Modelo> listaclon = consulta.queryListDetalle
-                                (CAMPOS_DETPARTIDABASE,modelo.getString(PARTIDABASE_ID_PARTIDA),TABLA_PARTIDABASE);
+                                (CAMPOS_DETPARTIDABASE,modelo.getString(PARTIDABASE_ID_PARTIDABASE),TABLA_PARTIDABASE);
 
                         for (Modelo clonpart : listaclon) {
 
@@ -262,7 +317,7 @@ public class FragmentCPartidaProyecto extends FragmentC implements CommonPry.Con
                             valores.put(DETPARTIDA_CANTIDAD,clonpart.getString(DETPARTIDABASE_CANTIDAD));
                             valores.put(DETPARTIDA_DESCUENTOPROV,clonpart.getString(DETPARTIDABASE_DESCUENTOPROV));
                             valores.put(DETPARTIDA_PRECIO,clonpart.getString(DETPARTIDABASE_PRECIO));
-                            valores.put(DETPARTIDA_ID_DETPARTIDA,clonpart.getString(DETPARTIDABASE_ID_DETPARTIDA));
+                            valores.put(DETPARTIDA_ID_DETPARTIDA,clonpart.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
                             valores.put(DETPARTIDA_REFPROV,clonpart.getString(DETPARTIDABASE_REFPROV));
                             valores.put(DETPARTIDA_TIEMPO,clonpart.getString(DETPARTIDABASE_TIEMPO));
                             valores.put(DETPARTIDA_RUTAFOTO,clonpart.getString(DETPARTIDABASE_RUTAFOTO));
@@ -302,7 +357,7 @@ public class FragmentCPartidaProyecto extends FragmentC implements CommonPry.Con
     private void mostrarDialogoClonarPartidabase(final Modelo clon) {
 
         final CharSequence[] opciones = {"Clonar partida base","Cancelar"};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
         builder.setTitle("Elige una opción");
         builder.setItems(opciones, new DialogInterface.OnClickListener() {
 
@@ -323,14 +378,14 @@ public class FragmentCPartidaProyecto extends FragmentC implements CommonPry.Con
 
                     }else if (clon.getNombreTabla().equals(TABLA_PARTIDABASE)){
 
-                        idPartida = clon.getString(PARTIDABASE_ID_PARTIDA);
+                        idPartida = clon.getString(PARTIDABASE_ID_PARTIDABASE);
                         valores = clon.contenido();
-                        valores.remove(PARTIDABASE_ID_PARTIDA);
+                        valores.remove(PARTIDABASE_ID_PARTIDABASE);
                     }
 
                     uri = consulta.insertRegistro(TABLA_PARTIDABASE,valores);
                     partidabase = consulta.queryObject(CAMPOS_PARTIDABASE,uri);
-                    idPartidabase = partidabase.getString(PARTIDABASE_ID_PARTIDA);
+                    idPartidabase = partidabase.getString(PARTIDABASE_ID_PARTIDABASE);
 
                     nombrePartida.setText(partidabase.getString(PARTIDABASE_NOMBRE));
                     descripcionPartida.setText(partidabase.getString(PARTIDABASE_DESCRIPCION));
@@ -347,14 +402,14 @@ public class FragmentCPartidaProyecto extends FragmentC implements CommonPry.Con
                         for (Modelo clonpart : listaclon) {
 
                             valores = new ContentValues();
-                            valores.put(DETPARTIDABASE_ID_PARTIDA,idPartidabase);
+                            valores.put(DETPARTIDABASE_ID_PARTIDABASE,idPartidabase);
                             valores.put(DETPARTIDABASE_NOMBRE,clonpart.getString(DETPARTIDA_NOMBRE));
                             valores.put(DETPARTIDABASE_DESCRIPCION,clonpart.getString(DETPARTIDA_DESCRIPCION));
                             valores.put(DETPARTIDABASE_BENEFICIO,clonpart.getString(DETPARTIDA_BENEFICIO));
                             valores.put(DETPARTIDABASE_CANTIDAD,clonpart.getString(DETPARTIDA_CANTIDAD));
                             valores.put(DETPARTIDABASE_DESCUENTOPROV,clonpart.getString(DETPARTIDA_DESCUENTOPROV));
                             valores.put(DETPARTIDABASE_PRECIO,clonpart.getString(DETPARTIDA_PRECIO));
-                            valores.put(DETPARTIDABASE_ID_DETPARTIDA,clonpart.getString(DETPARTIDA_ID_DETPARTIDA));
+                            valores.put(DETPARTIDABASE_ID_DETPARTIDABASE,clonpart.getString(DETPARTIDA_ID_DETPARTIDA));
                             valores.put(DETPARTIDABASE_REFPROV,clonpart.getString(DETPARTIDA_REFPROV));
                             valores.put(DETPARTIDABASE_TIEMPO,clonpart.getString(DETPARTIDA_TIEMPO));
                             valores.put(DETPARTIDABASE_RUTAFOTO,clonpart.getString(DETPARTIDA_RUTAFOTO));
@@ -368,12 +423,12 @@ public class FragmentCPartidaProyecto extends FragmentC implements CommonPry.Con
                     }else if (clon.getNombreTabla().equals(TABLA_PARTIDABASE)){
 
                         ArrayList<Modelo> listaclon = consulta.queryListDetalle
-                                (CAMPOS_DETPARTIDABASE,clon.getString(PARTIDABASE_ID_PARTIDA),TABLA_PARTIDABASE);
+                                (CAMPOS_DETPARTIDABASE,clon.getString(PARTIDABASE_ID_PARTIDABASE),TABLA_PARTIDABASE);
 
                         for (Modelo clonpart : listaclon) {
 
                             valores = clonpart.contenido();//AndroidUtil.clonarSinRef(clonpart);
-                            valores.put(DETPARTIDABASE_ID_PARTIDA,idPartidabase);
+                            valores.put(DETPARTIDABASE_ID_PARTIDABASE,idPartidabase);
                             valores.remove(DETPARTIDABASE_SECUENCIA);
 
                             consulta.insertRegistroDetalle(CAMPOS_DETPARTIDABASE,idPartidabase
@@ -528,8 +583,9 @@ public class FragmentCPartidaProyecto extends FragmentC implements CommonPry.Con
             this.R_layout_IdView = R_layout_IdView;
         }
 
+        @NonNull
         @Override
-        public View getView(int posicion, View view, ViewGroup pariente) {
+        public View getView(int posicion, View view, @NonNull ViewGroup pariente) {
             if (view == null) {
                 LayoutInflater vi = (LayoutInflater) contexto.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 view = vi.inflate(R_layout_IdView, null);

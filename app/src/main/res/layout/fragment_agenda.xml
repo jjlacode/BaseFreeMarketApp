@@ -68,21 +68,15 @@
                 android:textSize="10sp" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvtitagenda"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            android:gravity="center"
-            android:text="@string/agendaTarea"
-            android:textAllCaps="true"
-            android:textColor="@color/Color_texto_titulos"
-            android:textSize="18sp" />
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvagenda"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:paddingTop="5dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"/>
     </LinearLayout>
 
 </FrameLayout>

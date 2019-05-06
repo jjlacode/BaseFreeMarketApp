@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "600841627329",
+    "firebase_url": "https://freelanceproject-c4c9d.firebaseio.com",
+    "project_id": "freelanceproject-c4c9d",
+    "storage_bucket": "freelanceproject-c4c9d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:600841627329:android:fc164510766b3051",
+        "android_client_info": {
+          "package_name": "jjlacode.com.freelanceproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "600841627329-0b8807p8c90lqq8a3ldhcn1r3617mkqp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "jjlacode.com.freelanceproject",
+            "certificate_hash": "a8e843c9b23f26e93e229fd1e0424c1dcf2f9acd"
+          }
+        },
+        {
+          "client_id": "600841627329-9pphtd962948aa7893hj6ol37f8h9uqq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpu-UzM1poaj2bImbZ8XzWacHgbgNJvMk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "600841627329-9pphtd962948aa7893hj6ol37f8h9uqq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

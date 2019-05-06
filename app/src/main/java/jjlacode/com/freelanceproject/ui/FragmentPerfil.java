@@ -12,16 +12,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
-import jjlacode.com.androidutils.AppActivity;
-import jjlacode.com.androidutils.FragmentBase;
-import jjlacode.com.androidutils.JavaUtil;
-import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.freelanceproject.util.AppActivity;
+import jjlacode.com.freelanceproject.util.FragmentBaseCRUD;
+import jjlacode.com.freelanceproject.util.FragmentRV;
+import jjlacode.com.freelanceproject.util.Modelo;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.utilities.CommonPry;
+import jjlacode.com.freelanceproject.util.CommonPry;
 
-public class FragmentPerfil extends FragmentBase implements CommonPry.Constantes, ContratoPry.Tablas {
+public class FragmentPerfil extends FragmentRV implements CommonPry.Constantes, ContratoPry.Tablas {
 
     RecyclerView rvPerfil;
     ArrayList<Modelo> lista;
@@ -33,29 +33,39 @@ public class FragmentPerfil extends FragmentBase implements CommonPry.Constantes
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    protected void setTabla() {
 
-        View view = inflater.inflate(R.layout.fragment_perfil, container, false);
+        tabla = TABLA_PERFIL;
 
-        bundle = getArguments();
-        if (bundle != null) {
+    }
 
-            namef = bundle.getString("namef");
-            bundle = null;
-            bundle = new Bundle();
-            bundle.putString("namef",namef);
-            icFragmentos.enviarBundleAActivity(bundle);
-            bundle = null;
+    @Override
+    protected void setTablaCab() {
 
-        }
+        tablaCab = null;
+    }
 
-            lista = consulta.queryList(CAMPOS_PERFIL,null, null);
+    @Override
+    protected void setContext() {
 
-        rvPerfil = view.findViewById(R.id.rvPerfil);
-        rvPerfil.setLayoutManager(new LinearLayoutManager(getContext()));
+        contexto = getContext();
+    }
 
+    @Override
+    protected void setCampos() {
+
+        campos = CAMPOS_PERFIL;
+    }
+
+    @Override
+    protected void setBundle() {
+
+    }
+
+    @Override
+    protected void setDatos() {
+
+        lista = consulta.queryList(campos,null, null);
         AdaptadorPerfil adapter = new AdaptadorPerfil(lista, namef);
         rvPerfil.setAdapter(adapter);
 
@@ -63,18 +73,47 @@ public class FragmentPerfil extends FragmentBase implements CommonPry.Constantes
             @Override
             public void onClick(View v) {
 
-                Modelo perfil = lista.get(rvPerfil.getChildAdapterPosition(v));
+                modelo = lista.get(rvPerfil.getChildAdapterPosition(v));
+                id = modelo.getString(PERFIL_ID_PERFIL);
 
-                bundle = new Bundle();
-                bundle.putSerializable(TABLA_PERFIL, perfil);
-                bundle.putString("namef", namef);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDPerfil());
+
 
             }
         });
 
-        return view;
     }
+
+    @Override
+    protected void setAcciones() {
+
+    }
+
+    @Override
+    protected void setLayout() {
+
+        layout = R.layout.fragment_perfil;
+    }
+
+    @Override
+    protected void setInicio() {
+
+        rvPerfil = view.findViewById(R.id.rvPerfil);
+        rvPerfil.setLayoutManager(new LinearLayoutManager(getContext()));
+
+    }
+
+    @Override
+    protected void setEnviarBundle() {
+
+        icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDPerfil());
+
+    }
+
+    @Override
+    protected void setCampoID() {
+
+    }
+
 
     public static class AdaptadorPerfil extends RecyclerView.Adapter<AdaptadorPerfil.ViewHolder>
             implements View.OnClickListener, ContratoPry.Tablas {

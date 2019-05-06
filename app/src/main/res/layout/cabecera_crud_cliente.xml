@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+        <Button
+            android:id="@+id/btnclientes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="?attr/buttonBarButtonStyle"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/Color_texto_titulos"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:text="@string/clientes"/>
+
+        <Button
+            android:id="@+id/btnprospectos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="?attr/buttonBarButtonStyle"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/Color_texto_titulos"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:text="@string/prospectos"/>
+
+
+
+</LinearLayout>

@@ -20,6 +20,12 @@ public class JavaUtil {
 
     public interface Constantes {
 
+        String NAMEF = "namef";
+        String NAMESUB = "namesub";
+        String SECUENCIA = "secuencia";
+        String MODELO = "modelo";
+
+
         long SEGUNDOSLONG = (1000);
         long MINUTOSLONG = (60 * SEGUNDOSLONG);
         long HORASLONG = (60 * MINUTOSLONG);
@@ -35,6 +41,7 @@ public class JavaUtil {
         String FLOAT = "float";
         String SHORT = "short";
         String NULL = "null";
+        String NONNULL = "nonnull";
 
         int IGUAL = 0;
         int DIFERENTE = 1;
@@ -55,6 +62,8 @@ public class JavaUtil {
 
     public static int comprobarInteger(String dato){
 
+        if (null==dato){return 0;}
+
         try {
             dato = sinFormato(dato);
             int res = Integer.parseInt(dato)/Integer.parseInt(dato);
@@ -66,6 +75,8 @@ public class JavaUtil {
     }
 
     public static long comprobarLong(String dato){
+
+        if (null==dato){return 0;}
 
         try {
             dato = sinFormato(dato);
@@ -79,6 +90,8 @@ public class JavaUtil {
 
     public static double comprobarDouble(String dato){
 
+        if (null==dato){return 0;}
+
         try {
             dato = sinFormato(dato);
             double res = Double.parseDouble(dato)/Double.parseDouble(dato);
@@ -91,6 +104,9 @@ public class JavaUtil {
 
     public static Float comprobarFloat(String dato){
 
+        if (null==dato){return 0f;}
+
+
         try {
             dato = sinFormato(dato);
             float res = Float.parseFloat(dato)/Float.parseFloat(dato);
@@ -102,6 +118,8 @@ public class JavaUtil {
     }
 
     public static short comprobarShort(String dato){
+
+        if (null==dato){return 0;}
 
         try {
             dato = sinFormato(dato);
@@ -118,8 +136,8 @@ public class JavaUtil {
         for (int i=0;i<dato.length();i++){
             char caracter = dato.charAt(i);
             int ascii = dato.codePointAt(i);
-            System.out.println("ascii = " + ascii);
-            if (ascii>58){
+            //System.out.println("ascii = " + ascii);
+            if ((ascii>57 || ascii<48) && ascii!=44 && ascii!=46){
                 dato = dato.replace(caracter,espacio);
             }
             if (ascii==44){
@@ -127,6 +145,13 @@ public class JavaUtil {
             }
         }
         return dato.trim();
+    }
+
+    public static String noNuloString(String dato){
+
+        if (dato!=null){return dato;}
+
+        return "";
     }
 
     public static String getDecimales(double value, String patron){
@@ -195,15 +220,15 @@ public class JavaUtil {
         return 52;
     }
 
-    public static String getDate(long time) {
-        Date date = new Date(time);
+    public static String getDate(long date) {
+        Date fecha = new Date(date);
         SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM yyyy ", Locale.getDefault());
 
-        return sdf.format(date);
+        return sdf.format(fecha);
     }
 
-    public static String getDateTime(long time) {
-        Date date = new Date(time);
+    public static String getDateTime(long datetime) {
+        Date date = new Date(datetime);
         SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM yyyy HH:mm", Locale.getDefault());
 
         return sdf.format(date);

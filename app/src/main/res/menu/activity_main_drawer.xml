@@ -5,50 +5,35 @@
 
     <item
         android:id="@+id/nav_agenda"
-        android:icon="@android:drawable/ic_menu_agenda"
+        android:icon="@drawable/ic_event_note_black_24dp"
         android:title="@string/agendaTarea" />
     <item
         android:id="@+id/nav_eventos"
-        android:icon="@drawable/ico_calendario_reloj"
+        android:icon="@drawable/ic_event_note_black_24dp"
         android:title="@string/eventos" />
     <item
-        android:id="@+id/nav_prospecto"
-        android:icon="@drawable/ico_calendario_reloj"
-        android:title="@string/prospectos" />
-    <item
         android:id="@+id/nav_clientes"
-        android:icon="@drawable/ic_menu_slideshow"
+        android:icon="@drawable/ic_people_black_24dp"
         android:title="@string/clientes" />
     <item
-        android:id="@+id/nav_presup"
-        android:icon="@drawable/ico_calendario_reloj"
-        android:title="@string/presupuestos" />
-    <item
         android:id="@+id/nav_proyectos"
-        android:icon="@drawable/clientev"
+        android:icon="@drawable/ic_business_center_black_24dp"
         android:title="@string/proyectos" />
-    <item
-        android:id="@+id/nav_cobros"
-        android:icon="@android:drawable/ic_menu_today"
-        android:title="@string/cobros" />
-    <item
-        android:id="@+id/nav_historico"
-        android:icon="@drawable/cliente"
-        android:title="@string/historico" />
     <item
         android:id="@+id/nav_perfiles"
         android:icon="@drawable/ic_menu_manage"
         android:title="@string/perfiles" />
     <item
         android:id="@+id/nav_amortizacion"
-        android:icon="@drawable/ico_calendario_reloj"
+        android:icon="@drawable/ic_attach_money_black_24dp"
         android:title="@string/amortizacion" />
     <item
         android:id="@+id/nav_gastosfijos"
-        android:icon="@drawable/ico_calendario_reloj"
+        android:icon="@drawable/ic_attach_money_black_24dp"
         android:title="@string/gastos" />
     <item
         android:id="@+id/nav_partidabase"
+        android:icon="@drawable/ic_format_list_numbered_black_24dp"
         android:title="@string/partida_base" />
 
 

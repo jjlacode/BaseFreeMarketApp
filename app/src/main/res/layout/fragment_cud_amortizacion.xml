@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="wrap_content" android:orientation="vertical"
-    tools:context=".ui.FragmentCUDAmortizacion">
+    android:layout_height="match_parent" android:orientation="vertical"
+    tools:context=".ui.FragmentCRUDAmortizacion">
+
+
+    <LinearLayout
+        android:id="@+id/framortcud"
+        android:layout_weight="60"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -14,20 +25,16 @@
                 android:layout_weight="2.5"
                 android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2.5"
-                    android:orientation="vertical">
 
                     <ImageView
                         android:id="@+id/imgcudamort"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="2.5"
                         android:layout_gravity="center"
                         android:adjustViewBounds="true"
                         android:src="@drawable/ico_calendario_reloj" />
-                </LinearLayout>
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -51,6 +58,13 @@
                         android:ems="10"
                         android:hint="@string/descripcion"
                         android:inputType="textMultiLine" />
+                </LinearLayout>
+            </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -194,9 +208,6 @@
                             android:text="0" />
                     </LinearLayout>
 
-
-                </LinearLayout>
-
             </LinearLayout>
 
             <ProgressBar
@@ -206,18 +217,12 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2.5" />
 
-            <Button
-                android:id="@+id/amortizacion_ud_btn_save"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/guardar" />
-
-            <Button android:id="@+id/amortizacion_ud_btn_del" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:text="@string/borrar" />
-
-            <Button android:id="@+id/amortizacion_ud_btn_back" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:text="@string/volver" />
 
         </LinearLayout>
 
-</ScrollView>
+        </ScrollView>
+    </LinearLayout>
+
+
+
+</LinearLayout>

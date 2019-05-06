@@ -8,10 +8,9 @@
         android:id="@+id/cardlevento"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="5dp"
         android:layout_marginTop="5dp"
-        android:layout_marginRight="5dp"
         android:minHeight="@dimen/min_hight_card_event"
+        card_view:cardCornerRadius="10dp"
         card_view:cardBackgroundColor="#ECE6E6">
 
 
@@ -126,13 +125,6 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <ImageButton
-                            android:id="@+id/imgbtnllamadaevento"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="3"
-                            card_view:srcCompat="@android:drawable/sym_action_call" />
-
                         <TextView
                             android:id="@+id/tvtelefonoevento"
                             android:layout_width="match_parent"
@@ -141,19 +133,19 @@
                             android:layout_weight="1"
                             android:text="@string/telefono"
                             android:textSize="24sp" />
+
+                        <ImageButton
+                            android:id="@+id/imgbtnllamadaevento"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            card_view:srcCompat="@drawable/ic_phone_in_talk_black_24dp" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
-
-                        <ImageButton
-                            android:id="@+id/imgbtnmapaevento"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="3"
-                            card_view:srcCompat="@android:drawable/ic_dialog_map" />
 
                         <TextView
                             android:id="@+id/tvlugarevento"
@@ -162,6 +154,13 @@
                             android:layout_gravity="fill_vertical"
                             android:layout_weight="1"
                             android:text="@string/lugar_cita" />
+
+                        <ImageButton
+                            android:id="@+id/imgbtnmapaevento"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            card_view:srcCompat="@drawable/ic_place_black_24dp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -169,13 +168,6 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-
-                        <ImageButton
-                            android:id="@+id/imgbtnemaillevento"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="3"
-                            card_view:srcCompat="@android:drawable/ic_dialog_email" />
 
                         <TextView
                             android:id="@+id/tvemaillevento"
@@ -185,6 +177,13 @@
                             android:layout_weight="1"
                             android:text="@string/email"
                             android:textSize="18sp" />
+
+                        <ImageButton
+                            android:id="@+id/imgbtnemaillevento"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            card_view:srcCompat="@drawable/ic_mail_outline_black_24dp" />
 
                     </LinearLayout>
 
@@ -215,6 +214,8 @@
                 android:id="@+id/btneditevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/boton_redondo_verde"
+                android:textColor="@color/Color_texto_titulos"
                 android:text="@string/editar_evento" />
         </LinearLayout>
 

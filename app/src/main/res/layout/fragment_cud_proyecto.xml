@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.FragmentCUDProyecto">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imudpry"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:minHeight="80dp"
+                    app:srcCompat="@drawable/ico_calendario_reloj" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/etnomudpry"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/nombre"
+                        android:inputType="textPersonName"
+                        android:minHeight="25dp" />
+
+                    <EditText
+                        android:id="@+id/etdescudpry"
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:ems="10"
+                        android:gravity="top"
+                        android:hint="@string/descripcion_tipo_cliente"
+                        android:inputType="textMultiLine" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/imgbtntipocliudpry"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_weight="10"
+                    android:scaleType="fitXY"
+                    app:srcCompat="@drawable/cliente" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/sptipocliudpry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.2"
+                    android:hint="@string/asignar_cliente" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/imgbtnestudpry"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_weight="10"
+                    android:scaleType="fitXY"
+                    app:srcCompat="@drawable/ic_launcher_background" />
+
+                <TextView
+                    android:id="@+id/tvestudproy"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:textSize="18sp" />
+
+                <Spinner
+                    android:id="@+id/spestudpry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/separador" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/lfentudpry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="@string/fecha_entrada" />
+
+                <TextView
+                    android:id="@+id/proyecto_ud_tv_fecha_entrada"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="@string/fecha_entrada"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/view3"
+                android:layout_width="fill_parent"
+                android:layout_height="2dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="3"
+                android:background="@drawable/separador" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/lfcalcudpry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="@string/fecha_calculada" />
+
+                <TextView
+                    android:id="@+id/tvfcalcudpry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="@string/fecha_calculada"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/view4"
+                android:layout_width="fill_parent"
+                android:layout_height="2dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="3"
+                android:background="@drawable/separador" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/lfacorudpry"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            android:text="@string/fecha_acordada_trabajo" />
+
+                        <TextView
+                            android:id="@+id/tvfacorudpry"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:gravity="right"
+                            android:text="@string/sinfecha"
+                            android:textSize="18sp" />
+
+                        <ImageButton
+                            android:id="@+id/btnfechaacord"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="4"
+                            android:scaleType="fitXY"
+                            app:srcCompat="@drawable/ico_calendario_reloj" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/view5"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/separador" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/lfentpresupudpry"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            android:text="@string/fecha_entrega_presup" />
+
+                        <TextView
+                            android:id="@+id/tvfentpresuppry"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom"
+                            android:layout_weight="2"
+                            android:gravity="right"
+                            android:text="@string/sinfecha"
+                            android:textSize="18sp" />
+
+                        <ImageButton
+                            android:id="@+id/btnfechaentrega"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="4"
+                            android:scaleType="fitXY"
+                            app:srcCompat="@drawable/ico_calendario_reloj" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <View
+                android:id="@+id/view6"
+                android:layout_width="fill_parent"
+                android:layout_height="2dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="3"
+                android:background="@drawable/separador" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/lffinudpry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:text="@string/fecha_final" />
+
+                <TextView
+                    android:id="@+id/tvffinudpry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/sinfecha"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/separador" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/limpcaludpry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|fill_vertical"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="@string/importe_calculado" />
+
+                <TextView
+                    android:id="@+id/tvimpcaludpry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:text="@string/sinprecio"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/limpfinudpry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:text="@string/importe_final" />
+
+                <EditText
+                    android:id="@+id/etimpfinudpry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="fill_vertical"
+                    android:layout_weight="1"
+                    android:inputType="numberDecimal"
+                    android:text="@string/sinprecio"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="fill_parent"
+                android:layout_height="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/separador" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:weightSum="4">
+
+                    <TextView
+                        android:id="@+id/ltotpartudpry"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/total_partidas" />
+
+                    <TextView
+                        android:id="@+id/tvtotpartudpry"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/sinpartidas"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/lpreciopartidasudpry"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:text="@string/horas" />
+
+                    <TextView
+                        android:id="@+id/tvpreciopartidasudpry"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:text="TextView" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnpartudpry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:background="@drawable/boton_redondo_verde"
+                    android:textColor="@color/Color_texto_titulos"
+                    android:text="@string/partidas_proyecto" />
+            </LinearLayout>
+
+
+            <Button
+                android:id="@+id/btnactualizar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/boton_redondo_verde"
+                android:textColor="@color/Color_texto_titulos"
+                android:text="Button"/>
+
+            <Button
+                android:id="@+id/btnactualizar2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/boton_redondo_verde"
+                android:textColor="@color/Color_texto_titulos"
+                android:text="Button" />
+
+            <Button
+                android:id="@+id/btneventoudpry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/boton_redondo_verde"
+                android:textColor="@color/Color_texto_titulos"
+                android:text="@string/evento_relacionado" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnverpdfudpry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/boton_redondo_verde"
+            android:text="@string/ver_pdf"
+            android:textColor="@color/Color_texto_titulos" />
+
+        <Button
+            android:id="@+id/btnenviarpdfudpry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/boton_redondo_verde"
+            android:text="@string/enviar_pdf"
+            android:textColor="@color/Color_texto_titulos" />
+
+        <Button
+            android:id="@+id/btncompartirpdfudpry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/boton_redondo_verde"
+            android:text="@string/compartir_presup"
+            android:textColor="@color/Color_texto_titulos" />
+
+    </LinearLayout>
+
+
+
+
+        </LinearLayout>
+
+
+    </ScrollView>

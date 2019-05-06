@@ -146,7 +146,7 @@ public class Modelo implements Serializable {
         for (int i = 0; i < numcampos; i++) {
 
             if (campos[i].equals(campo)){
-                return Integer.parseInt(valores[i]);
+                return JavaUtil.comprobarInteger(valores[i]);
             }
         }
         return 0;
@@ -157,7 +157,7 @@ public class Modelo implements Serializable {
         for (int i = 0; i < numcampos; i++) {
 
             if (campos[i].equals(campo)){
-                return Double.parseDouble(valores[i]);
+                return JavaUtil.comprobarDouble(valores[i]);
             }
         }
         return 0.0;
@@ -168,7 +168,7 @@ public class Modelo implements Serializable {
         for (int i = 0; i < numcampos; i++) {
 
             if (campos[i].equals(campo)){
-                return Long.parseLong(valores[i]);
+                return JavaUtil.comprobarLong(valores[i]);
             }
         }
         return 0;
@@ -179,7 +179,7 @@ public class Modelo implements Serializable {
         for (int i = 0; i < numcampos; i++) {
 
             if (campos[i].equals(campo)){
-                return Float.parseFloat(valores[i]);
+                return JavaUtil.comprobarFloat(valores[i]);
             }
         }
         return 0.0F;
@@ -190,7 +190,7 @@ public class Modelo implements Serializable {
         for (int i = 0; i < numcampos; i++) {
 
             if (campos[i].equals(campo)){
-                return Short.parseShort(valores[i]);
+                return JavaUtil.comprobarShort(valores[i]);
             }
         }
         return 0;

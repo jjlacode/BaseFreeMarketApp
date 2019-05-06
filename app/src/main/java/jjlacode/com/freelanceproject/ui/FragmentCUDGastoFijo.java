@@ -1,24 +1,16 @@
 package jjlacode.com.freelanceproject.ui;
 
-import android.content.ContentValues;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 
-import jjlacode.com.androidutils.FragmentCUD;
-import jjlacode.com.androidutils.JavaUtil;
-import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.freelanceproject.util.FragmentCUD;
+import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 
 public class FragmentCUDGastoFijo extends FragmentCUD implements ContratoPry.Tablas {
 
-    private String idGastoFijo;
-
-    private Modelo gastoFijo;
     private EditText nombre;
     private EditText descripcion;
     private EditText cantidad;
@@ -27,27 +19,91 @@ public class FragmentCUDGastoFijo extends FragmentCUD implements ContratoPry.Tab
     private EditText meses;
     private EditText dias;
 
-    private static ConsultaBD consulta = new ConsultaBD();
 
     public FragmentCUDGastoFijo() {
         // Required empty public constructor
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_cud_gastofijo, container, false);
+    protected void setAcciones() {
 
-        bundle = getArguments();
+    }
+
+
+    @Override
+    protected void setNuevo() {
+
+        btndelete.setVisibility(View.GONE);
+
+    }
+
+
+    @Override
+    protected void setTabla() {
+
+        tabla = TABLA_GASTOFIJO;
+    }
+
+    @Override
+    protected void setTablaCab() {
+
+        tablaCab = null;
+    }
+
+    @Override
+    protected void setContext() {
+
+        contexto = getContext();
+    }
+
+    @Override
+    protected void setCampos() {
+
+        campos = CAMPOS_GASTOFIJO;
+    }
+
+    @Override
+    protected void setCampoID() {
+        campoID = GASTOFIJO_ID_GASTOFIJO;
+    }
+
+    @Override
+    protected void setBundle() {
+
         if (bundle != null) {
 
-            gastoFijo = (Modelo) bundle.getSerializable(TABLA_GASTOFIJO);
-            if (gastoFijo!=null) {
-                idGastoFijo = gastoFijo.getString(GASTOFIJO_ID_GASTOFIJO);
+            if (modelo !=null) {
+                id = modelo.getString(GASTOFIJO_ID_GASTOFIJO);
             }
-            namef = bundle.getString("namef");
-            bundle = null;
+
         }
+
+    }
+
+    @Override
+    protected void setDatos() {
+
+        btndelete.setVisibility(View.VISIBLE);
+        nombre.setText(modelo.getString(GASTOFIJO_NOMBRE));
+        descripcion.setText(modelo.getString(GASTOFIJO_DESCRIPCION));
+        cantidad.setText(modelo.getString(GASTOFIJO_CANTIDAD));
+        importe.setText(modelo.getString(GASTOFIJO_IMPORTE));
+        anios.setText(modelo.getString(GASTOFIJO_ANYOS));
+        meses.setText(modelo.getString(GASTOFIJO_MESES));
+        dias.setText(modelo.getString(GASTOFIJO_DIAS));
+
+    }
+
+
+    @Override
+    protected void setLayout() {
+
+        layout = R.layout.fragment_cud_gastofijo;
+
+    }
+
+    @Override
+    protected void setInicio() {
 
         btnsave = view.findViewById(R.id.gastoFijo_ud_btn_save);
         btndelete = view.findViewById(R.id.gastoFijo_ud_btn_del);
@@ -60,109 +116,25 @@ public class FragmentCUDGastoFijo extends FragmentCUD implements ContratoPry.Tab
         meses = view.findViewById(R.id.etmesescudgasto);
         dias = view.findViewById(R.id.etdiascudgasto);
 
-
-        btndelete.setVisibility(View.GONE);
-
-        if (idGastoFijo != null) {
-
-
-            btndelete.setVisibility(View.VISIBLE);
-            nombre.setText(gastoFijo.getString(GASTOFIJO_NOMBRE));
-            descripcion.setText(gastoFijo.getString(GASTOFIJO_DESCRIPCION));
-            cantidad.setText(gastoFijo.getString(GASTOFIJO_CANTIDAD));
-            importe.setText(gastoFijo.getString(GASTOFIJO_IMPORTE));
-            anios.setText(gastoFijo.getString(GASTOFIJO_ANYOS));
-            meses.setText(gastoFijo.getString(GASTOFIJO_MESES));
-            dias.setText(gastoFijo.getString(GASTOFIJO_DIAS));
-        }
-
-        btnsave.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                update();
-
-                cambiarFragment();
-
-            }
-        });
-
-        btndelete.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                delete();
-
-                cambiarFragment();
-
-            }
-        });
-
-        btnback.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                cambiarFragment();
-
-            }
-        });
-
-        return view;
     }
 
-
     @Override
-    protected void update() {
+    protected void setContenedor() {
 
-        contenedor();
+        consulta.putDato(valores,campos,GASTOFIJO_NOMBRE,nombre.getText().toString());
+        consulta.putDato(valores,campos,GASTOFIJO_DESCRIPCION,descripcion.getText().toString());
+        consulta.putDato(valores,campos,GASTOFIJO_CANTIDAD,JavaUtil.comprobarDouble(cantidad.getText().toString()));
+        consulta.putDato(valores,campos,GASTOFIJO_IMPORTE,JavaUtil.comprobarDouble(importe.getText().toString()));
+        consulta.putDato(valores,campos,GASTOFIJO_ANYOS, JavaUtil.comprobarInteger(anios.getText().toString()));
+        consulta.putDato(valores,campos,GASTOFIJO_MESES,JavaUtil.comprobarInteger(meses.getText().toString()));
+        consulta.putDato(valores,campos,GASTOFIJO_DIAS,JavaUtil.comprobarInteger(dias.getText().toString()));
 
-        if (idGastoFijo != null) {
-            consulta.updateRegistro(TABLA_GASTOFIJO, idGastoFijo, valores);
-            icFragmentos.ejecutarEnActivity();
-        } else {
-
-            registrar();
-        }
 
     }
 
     @Override
-    protected void delete() {
+    protected void setcambioFragment() {
 
-        consulta.deleteRegistro(TABLA_GASTOFIJO, idGastoFijo);
-
-    }
-
-    @Override
-    protected boolean registrar() {
-
-        consulta.insertRegistro(TABLA_GASTOFIJO, valores);
-        icFragmentos.ejecutarEnActivity();
-        return true;
-    }
-
-    protected boolean contenedor() {
-
-        valores = new ContentValues();
-
-        consulta.putDato(valores,CAMPOS_GASTOFIJO,GASTOFIJO_NOMBRE,nombre.getText().toString());
-        consulta.putDato(valores,CAMPOS_GASTOFIJO,GASTOFIJO_DESCRIPCION,descripcion.getText().toString());
-        consulta.putDato(valores,CAMPOS_GASTOFIJO,GASTOFIJO_CANTIDAD,JavaUtil.comprobarDouble(cantidad.getText().toString()));
-        consulta.putDato(valores,CAMPOS_GASTOFIJO,GASTOFIJO_IMPORTE,JavaUtil.comprobarDouble(importe.getText().toString()));
-        consulta.putDato(valores,CAMPOS_GASTOFIJO,GASTOFIJO_ANYOS, JavaUtil.comprobarInteger(anios.getText().toString()));
-        consulta.putDato(valores,CAMPOS_GASTOFIJO,GASTOFIJO_MESES,JavaUtil.comprobarInteger(meses.getText().toString()));
-        consulta.putDato(valores,CAMPOS_GASTOFIJO,GASTOFIJO_DIAS,JavaUtil.comprobarInteger(dias.getText().toString()));
-
-        return true;
-    }
-
-    protected void cambiarFragment() {
-
-        bundle = new Bundle();
-        bundle.putString("namef", namef);
         icFragmentos.enviarBundleAFragment(bundle, new FragmentGastoFijo());
 
     }

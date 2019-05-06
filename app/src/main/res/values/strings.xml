@@ -2,8 +2,8 @@
     <string name="app_name">FreelanceProject</string>
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
-    <string name="nav_header_title" translatable="false">Android Studio</string>
-    <string name="nav_header_subtitle" translatable="false">android.studio@android.com</string>
+    <string name="nav_header_title" translatable="false">FreelanceProject</string>
+    <string name="nav_header_subtitle" translatable="false">freelanceproject@jjlacode.com</string>
     <string name="nav_header_desc" translatable="false">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="nombre">Name</string>
@@ -114,7 +114,6 @@
     <string name="partida_presupuesto">Partida presupuesto</string>
     <string name="title_activity_main2">Main2Activity</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="repetir_evento">Repetir cada:</string>
     <string name="anios">Años</string>
     <string name="meses">Meses</string>
@@ -178,5 +177,34 @@
     <string name="dias_pasados_agenda">Ver dias pasados en agenda</string>
     <string name="dias_futuros_agenda">Ver dias futuros en agenda</string>
     <string name="partida_base">Partida base</string>
+    <string name="nueva_partida">Nueva partida</string>
+    <string name="action_help">Help</string>
+    <string name="action_info">Info</string>
+    <string name="genera_pdf">Genera PDF</string>
+    <string name="ver_pdf">Ver PDF</string>
+    <string name="asunto">Asunto</string>
+    <string name="texto_mensaje">Texto mensaje</string>
+    <string name="compartir_presup">Compartir presupuesto</string>
+    <string name="activo">ACTIVO</string>
+    <string name="enviar_pdf">Enviar archivo por email</string>
+    <string name="compartir_pdf">Compartir pdf</string>
+    <string name="clonarpartida">Buscar partida a clonar</string>
+    <string name="buscar_cliente">Buscar cliente</string>
+    <string name="nuevo_cliente">Nuevo Cliente</string>
+    <string name="nuevo_prospecto">Nuevo Prospecto</string>
+    <string name="nuevo_evento">Nuevo Evento</string>
+    <string name="nuevo_gasto">Nuevo Gasto</string>
+    <string name="nueva_partida_proy">Nueva Partida</string>
+    <string name="nuevo_perfil">Nuevo Perfil</string>
+    <string name="nueva_amortizacion">Nueva Amortización</string>
+    <string name="nueva_partidabase">Nueva Partida Base</string>
+    <string name="proyectos_cobros">Proyectos cobros</string>
+    <string name="proyectos_historico">Proyectos historico</string>
+    <string name="t_presupuesto">Presupuesto</string>
+    <string name="t_proyecto">Proyecto</string>
+    <string name="t_cliente">Cliente</string>
+    <string name="t_prospecto">Prospecto</string>
+    <string name="volver_a_proyecto">Volver a proyecto</string>
+
 
 </resources>

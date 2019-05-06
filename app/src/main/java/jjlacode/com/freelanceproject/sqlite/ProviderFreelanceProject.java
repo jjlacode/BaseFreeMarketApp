@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
-import jjlacode.com.freelanceproject.utilities.CommonPry;
+import jjlacode.com.freelanceproject.util.CommonPry;
 import static jjlacode.com.freelanceproject.sqlite.ContratoPry.*;
 
 public class ProviderFreelanceProject extends ContentProvider
@@ -67,7 +67,7 @@ public class ProviderFreelanceProject extends ContentProvider
     public static final int DETPARTIDABASE = 135;
     public static final int DETPARTIDABASE_ID = 136;
 
-    public static final String AUTORIDAD = AUTORIDAD_CONTENIDO;//"jjlacode.com.freelanceproject";
+    public static final String AUTORIDAD = AUTORIDAD_CONTENIDO;//"jjlacode.com.freelanceproject2";
 
     static {
 
@@ -344,7 +344,7 @@ public class ProviderFreelanceProject extends ContentProvider
                 tabla = TABLA_PARTIDABASE;
                 setTablas = tabla;
                 proyeccion = tabla+".*";
-                idTabla = PARTIDABASE_ID_PARTIDA;
+                idTabla = PARTIDABASE_ID_PARTIDABASE;
                 esDetalle = false;
                 esId = false;
                 break;
@@ -354,7 +354,7 @@ public class ProviderFreelanceProject extends ContentProvider
                 tabla = TABLA_PARTIDABASE;
                 setTablas = tabla;
                 proyeccion = tabla+".*";
-                idTabla = PARTIDABASE_ID_PARTIDA;
+                idTabla = PARTIDABASE_ID_PARTIDABASE;
                 esDetalle = false;
                 esId = true;
                 break;
@@ -364,7 +364,7 @@ public class ProviderFreelanceProject extends ContentProvider
                 tabla = TABLA_DETPARTIDABASE;
                 setTablas = tabla;
                 proyeccion = tabla+".*";
-                idTabla = DETPARTIDABASE_ID_PARTIDA;
+                idTabla = DETPARTIDABASE_ID_PARTIDABASE;
                 esDetalle = true;
                 esId = false;
                 break;
@@ -373,7 +373,7 @@ public class ProviderFreelanceProject extends ContentProvider
                 tabla = TABLA_DETPARTIDABASE;
                 setTablas = tabla;
                 proyeccion = tabla+".*";
-                idTabla = DETPARTIDABASE_ID_PARTIDA;
+                idTabla = DETPARTIDABASE_ID_PARTIDABASE;
                 esId = false;
                 esDetalle = false;
 
@@ -383,7 +383,7 @@ public class ProviderFreelanceProject extends ContentProvider
                 tabla = TABLA_DETPARTIDABASE;
                 setTablas = tabla;
                 proyeccion = tabla+".*";
-                idTabla = DETPARTIDABASE_ID_PARTIDA;
+                idTabla = DETPARTIDABASE_ID_PARTIDABASE;
                 esDetalle = true;
                 esId = true;
                 break;

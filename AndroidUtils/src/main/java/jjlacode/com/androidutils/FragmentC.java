@@ -12,7 +12,7 @@ import androidx.appcompat.app.AlertDialog;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public abstract  class FragmentC extends FragmentBase {
+public abstract  class FragmentC extends FragmentBaseCRUD {
 
 
     protected Button btnsave;
@@ -71,30 +71,33 @@ public abstract  class FragmentC extends FragmentBase {
 
         String photoPath;
 
-        switch (requestCode) {
+        if (requestCode>0) {
 
-            case COD_SELECCIONA:
-                imagenUtil.setPhotoUri(data.getData());
-                photoPath = imagenUtil.getPath();
-                try {
-                    Bitmap bitmap = ImagenUtil.ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
-                    imagen.setImageBitmap(bitmap);
-                    path = photoPath;
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case COD_FOTO:
-                photoPath = imagenUtil.getPhotoPath();
-                try {
-                    Bitmap bitmap = ImagenUtil.ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
-                    imagen.setImageBitmap(bitmap); //imageView is your ImageView
-                    path = photoPath;
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                break;
+            switch (requestCode) {
 
+                case COD_SELECCIONA:
+                    imagenUtil.setPhotoUri(data.getData());
+                    photoPath = imagenUtil.getPath();
+                    try {
+                        Bitmap bitmap = ImagenUtil.ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
+                        imagen.setImageBitmap(bitmap);
+                        path = photoPath;
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case COD_FOTO:
+                    photoPath = imagenUtil.getPath();
+                    try {
+                        Bitmap bitmap = ImagenUtil.ImageLoader.init().from(photoPath).requestSize(512, 512).getBitmap();
+                        imagen.setImageBitmap(bitmap); //imageView is your ImageView
+                        path = photoPath;
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+
+            }
         }
     }
 

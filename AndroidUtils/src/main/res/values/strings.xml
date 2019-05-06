@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">AndroidUtils</string>
+    <string name="email">Email</string>
+    <string name="asunto">Asunto</string>
+    <string name="texto_mensaje">Texto del mensaje</string>
+    <string name="enviar_pdf">Enviar archivo por email</string>
+    <string name="compartir_pdf">Compartir pdf</string>
 </resources>

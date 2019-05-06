@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" android:id="@+id/contenedor">
+
+    <LinearLayout
+        android:id="@+id/layout_cabecera"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_cuerpo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/layout_cabecera"
+        android:paddingBottom="@dimen/altobtn"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/layout_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="50"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_detalle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="50"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_pie"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+
+
+    </LinearLayout>
+
+</RelativeLayout>

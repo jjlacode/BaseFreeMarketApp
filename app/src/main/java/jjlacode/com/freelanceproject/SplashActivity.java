@@ -10,12 +10,11 @@ import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
-import jjlacode.com.androidutils.JavaUtil;
+import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.utilities.CommonPry;
+import jjlacode.com.freelanceproject.util.CommonPry;
 
 
 public class SplashActivity extends AppCompatActivity implements ContratoPry.Tablas, CommonPry.Constantes {
@@ -85,6 +84,7 @@ public class SplashActivity extends AppCompatActivity implements ContratoPry.Tab
                     CommonPry.diasfuturos = 90;
                     CommonPry.diaspasados = 20;
                     CommonPry.hora = CommonPry.Calculos.calculoPrecioHora();
+                    CommonPry.setNamefdef();
                 }
 
 
@@ -93,7 +93,7 @@ public class SplashActivity extends AppCompatActivity implements ContratoPry.Tab
                 startActivity(intent);
                 finish();
             }
-        },2000);
+        },500);
     }
 
     private Boolean comprobarInicio() {
@@ -107,6 +107,7 @@ public class SplashActivity extends AppCompatActivity implements ContratoPry.Tab
             CommonPry.diaspasados = preferences.getInt(DIASPASADOS,20);
             CommonPry.diasfuturos = preferences.getInt(DIASFUTUROS,90);
             CommonPry.hora = CommonPry.Calculos.calculoPrecioHora();
+            CommonPry.setNamefdef();
 
             Log.d("inicio", "Inicio correcto");
 

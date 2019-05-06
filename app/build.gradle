@@ -5,22 +5,21 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId 'jjlacode.com.freelanceproject'
-        minSdkVersion 16
+        minSdkVersion 22
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    dataBinding {
-        enabled = true
-    }
+
 }
 
 dependencies {
@@ -35,15 +34,15 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-database:4.3.2'
     implementation 'com.firebaseui:firebase-ui-firestore:4.3.2'
     testImplementation 'junit:junit:4.13-beta-2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1-alpha03'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0-alpha03'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1-alpha04'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0-alpha04'
     implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha04'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.android.databinding:adapters:3.3.2'
-    implementation 'com.android.databinding:library:3.3.2'
+    implementation 'com.github.barteksc:android-pdf-viewer:2.8.1'
+    implementation 'com.itextpdf:itextg:5.5.10'
     implementation 'com.github.bumptech.glide:glide:4.0.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0'
-    implementation project(path: ':AndroidUtils')
+
 
 
 }

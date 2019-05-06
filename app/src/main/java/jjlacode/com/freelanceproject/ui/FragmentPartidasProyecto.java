@@ -15,17 +15,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import jjlacode.com.androidutils.FragmentBase;
-import jjlacode.com.androidutils.JavaUtil;
-import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.freelanceproject.util.FragmentBaseCRUD;
+import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.Modelo;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.utilities.CommonPry;
+import jjlacode.com.freelanceproject.util.CommonPry;
 
-import static jjlacode.com.freelanceproject.utilities.CommonPry.Constantes.PARTIDA;
+import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.PARTIDA;
 
-public class FragmentPartidasProyecto extends FragmentBase implements ContratoPry.Tablas {
+public class FragmentPartidasProyecto extends FragmentBaseCRUD implements ContratoPry.Tablas {
 
     RecyclerView rvPartidas;
     ArrayList<Modelo> objListaPartidas;
@@ -39,37 +39,59 @@ public class FragmentPartidasProyecto extends FragmentBase implements ContratoPr
         // Required empty public constructor
     }
 
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    protected void setTabla() {
 
-        View view = inflater.inflate(R.layout.fragment_partidas_proyecto, container, false);
-        // Inflate the layout for this fragment
-        nombreProyecto = view.findViewById(R.id.tvtitproyectopartida);
-        titulo = view.findViewById(R.id.tvtitpartidas);
-        btnback = view.findViewById(R.id.btnvolverpartidas);
-        rvPartidas = view.findViewById(R.id.rvpartidas);
-        rvPartidas.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
 
-        bundle = getArguments();
+    @Override
+    protected void setTablaCab() {
+
+    }
+
+    @Override
+    protected void setContext() {
+
+    }
+
+    @Override
+    protected void setCampos() {
+
+    }
+
+    @Override
+    protected void setCampoID() {
+
+    }
+
+    @Override
+    protected void setBundle() {
 
         if (bundle!=null) {
             proyecto = (Modelo) bundle.getSerializable(TABLA_PROYECTO);
-            namef = bundle.getString("namef");
+            namef = bundle.getString(NAMEF);
             bundle = null;
             bundle = new Bundle();
             bundle.putSerializable(TABLA_PROYECTO,proyecto);
-            bundle.putString("namefsub", PARTIDA);
+            bundle.putString(NAMEF,namef);
+            bundle.putString(NAMESUB, PARTIDA);
             icFragmentos.enviarBundleAActivity(bundle);
+
         }
 
-            nombreProyecto.setText(proyecto.getString(PROYECTO_NOMBRE));
+    }
 
-            //objListaPartidas = consulta.queryListDetalle
-            //        (CAMPOS_PARTIDA,proyecto.getString(PROYECTO_ID_PROYECTO),TABLA_PROYECTO);
+    @Override
+    protected void setDatos() {
 
-            objListaPartidas = consulta.queryList(CAMPOS_PARTIDA,PARTIDA_ID_PROYECTO,
-                    proyecto.getString(PROYECTO_ID_PROYECTO),null,IGUAL,null);
+        nombreProyecto.setText(proyecto.getString(PROYECTO_NOMBRE));
+
+        //objListaPartidas = consulta.queryListDetalle
+        //        (CAMPOS_PARTIDA,proyecto.getString(PROYECTO_ID_PROYECTO),TABLA_PROYECTO);
+
+        objListaPartidas = consulta.queryList(CAMPOS_PARTIDA,PARTIDA_ID_PROYECTO,
+                proyecto.getString(PROYECTO_ID_PROYECTO),null,IGUAL,null);
 
         AdaptadorPartida adaptadorPartida = new AdaptadorPartida(objListaPartidas,namef);
 
@@ -84,11 +106,31 @@ public class FragmentPartidasProyecto extends FragmentBase implements ContratoPr
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PROYECTO,proyecto);
                 bundle.putSerializable(TABLA_PARTIDA,partida);
-                bundle.putString("namef",namef);
-                icFragmentos.enviarBundleAFragment(bundle,new FragmentUDPartidaProyecto());
+                bundle.putString(NAMEF,namef);
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentCUDPartidaProyecto());
 
             }
         });
+
+    }
+
+    @Override
+    protected void setAcciones() {
+
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_partidas_proyecto, container, false);
+        // Inflate the layout for this fragment
+        nombreProyecto = view.findViewById(R.id.tvtitproyectopartida);
+        titulo = view.findViewById(R.id.tvtitpartidas);
+        btnback = view.findViewById(R.id.btnvolverpartidas);
+        rvPartidas = view.findViewById(R.id.rvpartidas);
+        rvPartidas.setLayoutManager(new LinearLayoutManager(getContext()));
 
         btnback.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,13 +138,23 @@ public class FragmentPartidasProyecto extends FragmentBase implements ContratoPr
 
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PROYECTO,proyecto);
-                bundle.putString("namef",namef);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentUDProyecto());
+                bundle.putString(NAMEF,namef);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDProyecto());
 
             }
         });
 
         return view;
+    }
+
+    @Override
+    protected void setLayout() {
+
+    }
+
+    @Override
+    protected void setInicio() {
+
     }
 
     public static class AdaptadorPartida extends RecyclerView.Adapter<AdaptadorPartida.PartidaViewHolder>

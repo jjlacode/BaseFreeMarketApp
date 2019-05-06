@@ -17,7 +17,7 @@ public abstract class ListaAdaptador extends BaseAdapter {
     private int R_layout_IdView;
     private Context contexto;
 
-    public ListaAdaptador(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas) {
+    public ListaAdaptador(Context contexto, int R_layout_IdView, ArrayList<?> entradas) {
         super();
         this.contexto = contexto;
         this.entradas = entradas;

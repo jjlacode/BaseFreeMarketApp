@@ -1,26 +1,28 @@
 package jjlacode.com.androidutils;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.net.Uri;
+import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.multidex.MultiDex;
+import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.maps.model.LatLng;
-
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+import static androidx.core.app.ActivityCompat.requestPermissions;
+import static androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale;
 
 public class AppActivity extends Application {
 
@@ -34,6 +36,7 @@ public class AppActivity extends Application {
     public static Context getAppContext() {
         return AppActivity.context;
     }
+
 
     public static void hacerLlamada(Context context, String phoneNo){
 
@@ -67,7 +70,7 @@ public class AppActivity extends Application {
 
     public static void enviarEmail(Context context, String[] direcciones, String subject, CharSequence texto){
 
-        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setData(Uri.parse("mailto:"));
         intent.putExtra(Intent.EXTRA_EMAIL, direcciones);
         intent.putExtra(Intent.EXTRA_SUBJECT,subject);
@@ -79,12 +82,13 @@ public class AppActivity extends Application {
         }
     }
 
-    public static void enviarEmail(Context context, String direccion){
+    public static void enviarEmail(Context context, String direccion, String subject, CharSequence texto){
 
-        Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.parse("mailto:"));
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setData(Uri.parse("mailto:"+direccion));
         if (!TextUtils.isEmpty(direccion)) {
-            intent.putExtra(Intent.EXTRA_EMAIL, direccion);
+            intent.putExtra(Intent.EXTRA_SUBJECT,subject);
+            intent.putExtra(Intent.EXTRA_TEXT,texto);
             if (intent.resolveActivity(context.getPackageManager()) != null) {
                 context.startActivity(intent);
             } else {
@@ -94,6 +98,87 @@ public class AppActivity extends Application {
             Toast.makeText(context, "La dirección de email no es valida", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public static void enviarEmail(Context context, String direccion){
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setData(Uri.parse("mailto:"+direccion));
+        if (!TextUtils.isEmpty(direccion)) {
+            if (intent.resolveActivity(context.getPackageManager()) != null) {
+                context.startActivity(intent);
+            } else {
+                Toast.makeText(context, "No hay disponible ninguna app de email", Toast.LENGTH_SHORT).show();
+            }
+        }else {
+            Toast.makeText(context, "La dirección de email no es valida", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static void enviarEmail(String direccion, String subject, String texto, Uri uriPdf){
+
+
+        String[]dir = {direccion};
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:"));
+        if (!TextUtils.isEmpty(direccion)) {
+            intent.putExtra(Intent.EXTRA_EMAIL,dir);
+            intent.putExtra(Intent.EXTRA_SUBJECT,subject);
+            intent.putExtra(Intent.EXTRA_TEXT,texto);
+            intent.setType("application/pdf");
+            intent.putExtra(Intent.EXTRA_STREAM, uriPdf);
+            try {
+                context.startActivity(Intent.createChooser(intent, "Send mail..."));
+                Log.e("Test email:", "Fin envio email");
+
+            } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(context, "No hay disponible ninguna app de email", Toast.LENGTH_SHORT).show();
+            }
+        }else {
+            Toast.makeText(context, "La dirección de email no es valida", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static void enviarEmail(String[] direccion, String subject, String texto, Uri uriPdf){
+
+
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:"));
+        if (!TextUtils.isEmpty(direccion[0])) {
+            intent.putExtra(Intent.EXTRA_EMAIL,direccion);
+            intent.putExtra(Intent.EXTRA_SUBJECT,subject);
+            intent.putExtra(Intent.EXTRA_TEXT,texto);
+            intent.setType("application/pdf");
+            intent.putExtra(Intent.EXTRA_STREAM, uriPdf);
+            try {
+                context.startActivity(Intent.createChooser(intent, "Send mail..."));
+                Log.e("Test email:", "Fin envio email");
+
+            } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(context, "No hay disponible ninguna app de email", Toast.LENGTH_SHORT).show();
+            }
+        }else {
+            Toast.makeText(context, "La dirección de email no es valida", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static void compartirPdf(Uri uriPdf){
+
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        if (!TextUtils.isEmpty(String.valueOf(uriPdf))) {
+            intent.setType("application/pdf");
+            intent.putExtra(Intent.EXTRA_STREAM, uriPdf);
+            try {
+                context.startActivity(Intent.createChooser(intent, "Compartiendo..."));
+
+            } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(context, "No hay disponible ninguna app", Toast.LENGTH_SHORT).show();
+            }
+        }else {
+            Toast.makeText(context, "No hay pdf para compartir", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     public static Intent viewOnMapA(String address) {
 
@@ -125,23 +210,6 @@ public class AppActivity extends Application {
         return null;
     }
 
-    public static LatLng obtenerCoordenadas(Context context, String direccion){
 
-        Geocoder geo = new Geocoder(context);
-        int maxResultados = 1;
-        List<Address> adress = null;
-        try {
-            adress = geo.getFromLocationName(direccion, maxResultados);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new LatLng(adress.get(0).getLatitude(), adress.get(0).getLongitude());
-    }
-
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-        MultiDex.install(this);
-    }
 
 }

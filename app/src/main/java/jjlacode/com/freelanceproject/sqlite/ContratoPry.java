@@ -5,7 +5,7 @@ import android.net.Uri;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import jjlacode.com.androidutils.JavaUtil;
+import jjlacode.com.freelanceproject.util.JavaUtil;
 
 
 public class ContratoPry implements JavaUtil.Constantes {
@@ -42,6 +42,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         String TABLA_DETPARTIDA = "detpartida";
         String TABLA_PARTIDABASE = "partidabase";
         String TABLA_DETPARTIDABASE = "detpartidabase";
+        String TABLA_PEDIDOSPROV = "pedidosprov";
 
         //COLUMNAS--------------------------------------------------------
 
@@ -58,6 +59,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         String PROYECTO_RETRASO = "retraso_proyecto";
         String PROYECTO_IMPORTEPRESUPUESTO = "importepresupuesto";
         String PROYECTO_IMPORTEFINAL = "importefinal";
+        String PROYECTO_COSTE = "coste_proyecto";
         String PROYECTO_TIEMPO = "tiempo_proyecto";
         String PROYECTO_RUTAFOTO = "rutafoto_proyecto";
         String PROYECTO_TOTCOMPLETADO = "totcomplet_proyecto";
@@ -97,6 +99,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         String PARTIDA_TIEMPO = "tiempo_partida";
         String PARTIDA_PRECIOHORA = "preciohora_partida";
         String PARTIDA_PRECIO = "precio_partida";
+        String PARTIDA_COSTE = "coste_partida";
         String PARTIDA_COMPLETADA = "completada_partida";
         String PARTIDA_RUTAFOTO = "rutafoto_partida";
         //REFERENCIAS
@@ -118,17 +121,18 @@ public class ContratoPry implements JavaUtil.Constantes {
         String DETPARTIDA_REFPROV = "ref_prov_detpartida";
         String DETPARTIDA_TIPO = "tipo_detpartida";
 
-        String PARTIDABASE_ID_PARTIDA = "id_partidabase";
+        String PARTIDABASE_ID_PARTIDABASE = "id_partidabase";
         String PARTIDABASE_DESCRIPCION = "descripcion_partidabase";
         String PARTIDABASE_NOMBRE = "nombre_partidabase";
         String PARTIDABASE_TIEMPO = "tiempo_partidabase";
         String PARTIDABASE_PRECIO = "precio_partidabase";
+        String PARTIDABASE_COSTE = "coste_partidabase";
         String PARTIDABASE_RUTAFOTO = "rutafoto_partidabase";
 
 
-        String DETPARTIDABASE_ID_PARTIDA = "id_detpartidabase_partidabase";
+        String DETPARTIDABASE_ID_PARTIDABASE = "id_detpartidabase_partidabase";
         String DETPARTIDABASE_SECUENCIA = "secuencia";
-        String DETPARTIDABASE_ID_DETPARTIDA = "id_detpartidabase";
+        String DETPARTIDABASE_ID_DETPARTIDABASE = "id_detpartidabase";
         String DETPARTIDABASE_DESCRIPCION = "descripcion_detpartidabase";
         String DETPARTIDABASE_NOMBRE = "nombre_detpartidabase";
         String DETPARTIDABASE_CANTIDAD = "cantidad_detpartidabase";
@@ -205,6 +209,10 @@ public class ContratoPry implements JavaUtil.Constantes {
         String EVENTO_RUTAFOTO = "rutafoto_evento";
         String EVENTO_COMPLETADA = "completada_evento";
 
+        String PEDIDOPROV_ID_PEDIDOPROV = "id_pedidoprov";
+        String PEDIDOPROV_DESCRIPCION = "descripcion_pedidoprov";
+        String PEDIDOPROV_FECHA = "fecha_pedidoprov";
+
         String TABLAS_ID_TABLA = "id_tabla";
         String TABLAS_TABLA = "tabla";
         String TABLAS_CAMPO = "campo";
@@ -235,11 +243,11 @@ public class ContratoPry implements JavaUtil.Constantes {
                 TABLA_PARTIDA, PARTIDA_ID_PARTIDA);
 
         String ID_PARTIDABASE = String.format("REFERENCES %s(%s) ON DELETE CASCADE",
-                TABLA_PARTIDABASE, PARTIDABASE_ID_PARTIDA);
+                TABLA_PARTIDABASE, PARTIDABASE_ID_PARTIDABASE);
 
         //CAMPOS----------------------------------------------------------------
 
-        String[] CAMPOS_PROYECTO = {"50", TABLA_PROYECTO,
+        String[] CAMPOS_PROYECTO = {"53", TABLA_PROYECTO,
                 PROYECTO_ID_PROYECTO, "TEXT NON NULL UNIQUE",STRING,
                 PROYECTO_ID_CLIENTE, String.format("TEXT NON NULL %s", ID_CLIENTE),STRING,
                 PROYECTO_ID_ESTADO, String.format("TEXT NON NULL %s", ID_ESTADO),STRING,
@@ -253,6 +261,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PROYECTO_RETRASO, "INTEGER NON NULL DEFAULT 0",LONG,
                 PROYECTO_IMPORTEPRESUPUESTO, "REAL NON NULL DEFAULT 0",DOUBLE,
                 PROYECTO_IMPORTEFINAL, "REAL NON NULL DEFAULT 0",DOUBLE,
+                PROYECTO_COSTE, "REAL NON NULL DEFAULT 0",DOUBLE,
                 PROYECTO_TIEMPO, "REAL NON NULL DEFAULT 0",DOUBLE,
                 PROYECTO_RUTAFOTO, "TEXT ",STRING,
                 PROYECTO_TOTCOMPLETADO, "INTEGER NON NULL DEFAULT 0",INT,
@@ -289,7 +298,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 ESTADO_TIPOESTADO, "INTEGER NON NULL",INT
         };
 
-        String[] CAMPOS_PARTIDA = {"38", TABLA_PARTIDA,
+        String[] CAMPOS_PARTIDA = {"41", TABLA_PARTIDA,
                 PARTIDA_ID_PROYECTO, String.format("TEXT NON NULL %s", ID_PROYECTO),STRING,
                 PARTIDA_ID_PARTIDA, "TEXT NON NULL UNIQUE",STRING,
                 PARTIDA_SECUENCIA, "INTEGER NON NULL",INT,
@@ -300,6 +309,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PARTIDA_TIEMPO, "REAL NON NULL DEFAULT 0",DOUBLE,
                 PARTIDA_PRECIOHORA, "REAL NON NULL DEFAULT 0",DOUBLE,
                 PARTIDA_PRECIO, "REAL NON NULL DEFAULT 0",DOUBLE,
+                PARTIDA_COSTE, "REAL NON NULL DEFAULT 0",DOUBLE,
                 PARTIDA_COMPLETADA, "INTEGER NON NULL DEFAULT 0",INT,
                 PARTIDA_RUTAFOTO, "TEXT",STRING,
                 //Campos referencias
@@ -324,19 +334,20 @@ public class ContratoPry implements JavaUtil.Constantes {
 
         };
 
-        String[] CAMPOS_PARTIDABASE = {"20", TABLA_PARTIDABASE,
-                PARTIDABASE_ID_PARTIDA, "TEXT NON NULL UNIQUE",STRING,
+        String[] CAMPOS_PARTIDABASE = {"23", TABLA_PARTIDABASE,
+                PARTIDABASE_ID_PARTIDABASE, "TEXT NON NULL UNIQUE",STRING,
                 PARTIDABASE_DESCRIPCION, "TEXT NON NULL",STRING,
                 PARTIDABASE_NOMBRE, "TEXT NON NULL",STRING,
                 PARTIDABASE_TIEMPO, "REAL NON NULL DEFAULT 0",DOUBLE,
                 PARTIDABASE_PRECIO, "REAL NON NULL DEFAULT 0",DOUBLE,
+                PARTIDABASE_COSTE, "REAL NON NULL DEFAULT 0",DOUBLE,
                 PARTIDABASE_RUTAFOTO, "TEXT",STRING
         };
 
         String[] CAMPOS_DETPARTIDABASE = {"41", TABLA_DETPARTIDABASE,
-                DETPARTIDABASE_ID_PARTIDA, String.format("TEXT NON NULL %s", ID_PARTIDABASE),STRING,
+                DETPARTIDABASE_ID_PARTIDABASE, String.format("TEXT NON NULL %s", ID_PARTIDABASE),STRING,
                 DETPARTIDABASE_SECUENCIA, "INTEGER NON NULL",INT,
-                DETPARTIDABASE_ID_DETPARTIDA,"TEXT",STRING,
+                DETPARTIDABASE_ID_DETPARTIDABASE,"TEXT",STRING,
                 DETPARTIDABASE_NOMBRE,"TEXT NON NULL",STRING,
                 DETPARTIDABASE_DESCRIPCION,"TEXT NON NULL",STRING,
                 DETPARTIDABASE_CANTIDAD, "REAL NON NULL DEFAULT 0",DOUBLE,
@@ -428,6 +439,12 @@ public class ContratoPry implements JavaUtil.Constantes {
                 EVENTO_COMPLETADA, "INTEGER NON NULL DEFAULT 0",INT
         };
 
+        String[] CAMPOS_PEDIDOPROV = {"11",TABLA_PEDIDOSPROV,
+                PEDIDOPROV_ID_PEDIDOPROV,"TEXT NON NULL UNIQUE",STRING,
+                PEDIDOPROV_DESCRIPCION,"TEXT NON NULL",STRING,
+                PEDIDOPROV_FECHA,"INTEGER NON NULL DEFAULT 0",LONG
+        };
+
     }
 
     public static final String PARAMETRO_FILTRO = "filtro";
@@ -454,6 +471,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         listaCampos.add(Tablas.CAMPOS_DETPARTIDA);
         listaCampos.add(Tablas.CAMPOS_PARTIDABASE);
         listaCampos.add(Tablas.CAMPOS_DETPARTIDABASE);
+        listaCampos.add(Tablas.CAMPOS_PEDIDOPROV);
 
         return listaCampos;
     }

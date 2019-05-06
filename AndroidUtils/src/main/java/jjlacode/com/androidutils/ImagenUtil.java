@@ -3,6 +3,7 @@ package jjlacode.com.androidutils;
 import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,8 +16,14 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.widget.ImageView;
 
 import androidx.loader.content.CursorLoader;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -40,11 +47,20 @@ public class ImagenUtil {
     private ClipData clipData;
     private Uri uri;
 
+    private int ancho = 128;
+
+    private int alto = 128;
+
     public ImagenUtil(Context context){
 
         this.context = context;
     }
 
+    public void setDims(int alto, int ancho){
+
+        this.alto = alto;
+        this.ancho = ancho;
+    }
     public String getPhotoPath() {
         return photoPath;
     }
@@ -57,23 +73,80 @@ public class ImagenUtil {
         Intent in = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (in.resolveActivity(context.getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = createImageFile();
 
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                in.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+
+
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.TITLE, "Imagen");
+                values.put(MediaStore.Images.Media.DESCRIPTION, System.currentTimeMillis());
+                photoUri = context.getContentResolver().insert(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                in.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
             }
+
         }
         return in;
     }
 
+    public Uri getPhotoUri(){
+
+        return photoUri;
+    }
+    public Bitmap getBitmap(){
+
+        Bitmap bitmap=null;
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(),photoUri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return bitmap;
+    }
+
+    public void setImageFireStore(String rutafoto, ImageView imagen){
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference spaceRef = storageRef.child(rutafoto);
+        System.out.println("spaceRef = " + spaceRef);
+        GlideApp.with(context)
+                .load(spaceRef)
+                .into(imagen);
+
+    }
+
+    public void setImageWeb(String url, ImageView imagen, int drawable){
+
+        RequestOptions options = new RequestOptions()
+                .placeholder(drawable)
+                .error(drawable);
+
+        Glide.with(context).load(url).apply(options).into(imagen);
+    }
+
+    public void setImageUri(String uri, ImageView imagen, int drawable){
+
+        RequestOptions options = new RequestOptions()
+                .placeholder(drawable)
+                .error(drawable);
+
+        Glide.with(context).load(uri).apply(options).into(imagen);
+    }
+
+
     private File createImageFile() throws IOException {
-        // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
+        File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
@@ -87,9 +160,7 @@ public class ImagenUtil {
 
     public void addToGallery() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(photoPath);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
+        mediaScanIntent.setData(photoUri);
         context.sendBroadcast(mediaScanIntent);
     }
 
@@ -369,8 +440,8 @@ public class ImagenUtil {
         }
 
         public ImageLoader requestSize(int width, int height) {
-            this.height = width;
-            this.width = height;
+            this.height = height;
+            this.width = width;
             return instance;
         }
 

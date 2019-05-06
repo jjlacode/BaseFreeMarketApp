@@ -12,14 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import jjlacode.com.androidutils.FragmentBase;
-import jjlacode.com.androidutils.JavaUtil;
-import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.freelanceproject.util.FragmentBaseCRUD;
+import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.Modelo;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 
-public class FragmentGastoFijo extends FragmentBase implements ContratoPry.Tablas {
+public class FragmentGastoFijo extends FragmentBaseCRUD implements ContratoPry.Tablas {
 
     private RecyclerView rvGastoFijo;
     private ArrayList<Modelo> list;
@@ -29,6 +29,47 @@ public class FragmentGastoFijo extends FragmentBase implements ContratoPry.Tabla
     public FragmentGastoFijo() {
         // Required empty public constructor
     }
+
+    @Override
+    protected void setTabla() {
+
+    }
+
+    @Override
+    protected void setTablaCab() {
+
+    }
+
+    @Override
+    protected void setContext() {
+
+    }
+
+    @Override
+    protected void setCampos() {
+
+    }
+
+    @Override
+    protected void setCampoID() {
+
+    }
+
+    @Override
+    protected void setBundle() {
+
+    }
+
+    @Override
+    protected void setDatos() {
+
+    }
+
+    @Override
+    protected void setAcciones() {
+
+    }
+
 
 
     @Override
@@ -70,6 +111,15 @@ public class FragmentGastoFijo extends FragmentBase implements ContratoPry.Tabla
         return view;
     }
 
+    @Override
+    protected void setLayout() {
+
+    }
+
+    @Override
+    protected void setInicio() {
+
+    }
 
     public static class AdaptadorGastoFijo extends RecyclerView.Adapter<AdaptadorGastoFijo.ViewHolder>
             implements View.OnClickListener, ContratoPry.Tablas {

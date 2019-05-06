@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.FragmentPreferencias">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:paddingBottom="@dimen/altobtn">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- TODO: layout preferencias -->
+
+            <CheckBox
+                android:id="@+id/chprioridadudpref"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/usar_prioridad_clientes" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/ldiasantesagengaudpref"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/dias_pasados_agenda" />
+
+                <EditText
+                    android:id="@+id/etdiaspasadosagendaudpref"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:hint="@string/dias"
+                    android:inputType="number" />
+
+                <TextView
+                    android:id="@+id/ldiaspasudpref"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@string/dias" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/ldiasdespagengaudpref"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/dias_futuros_agenda" />
+
+                <EditText
+                    android:id="@+id/etdiasdespagendaudpref"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:hint="@string/dias"
+                    android:inputType="number" />
+
+                <TextView
+                    android:id="@+id/ldiasdespudpref"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@string/dias" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+
+    </ScrollView>
+    <Button
+        android:id="@+id/btnsaveudpref"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/altobtn"
+        android:background="@drawable/boton_redondo_verde"
+        android:textColor="@color/Color_texto_titulos"
+        android:text="@string/guardar"
+        android:layout_alignParentBottom="true"/>
+
+
+</RelativeLayout>

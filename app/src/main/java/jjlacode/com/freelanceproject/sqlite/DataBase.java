@@ -10,7 +10,7 @@ import android.provider.BaseColumns;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.UUID;
-import jjlacode.com.freelanceproject.utilities.CommonPry;
+import jjlacode.com.freelanceproject.util.CommonPry;
 
 import static jjlacode.com.freelanceproject.sqlite.ContratoPry.*;
 

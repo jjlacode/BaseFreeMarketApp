@@ -1,6 +1,7 @@
 package jjlacode.com.freelanceproject.ui;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,15 +16,26 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.util.ArrayList;
 
-import jjlacode.com.androidutils.FragmentUD;
-import jjlacode.com.androidutils.JavaUtil;
-import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.freelanceproject.util.AppActivity;
+import jjlacode.com.freelanceproject.util.FragmentUD;
+import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.Modelo;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.utilities.CommonPry;
+import jjlacode.com.freelanceproject.util.CommonPry;
+
+import static jjlacode.com.freelanceproject.util.CommonPry.permiso;
 
 public class FragmentUDPartidaBase extends FragmentUD implements CommonPry.Constantes,
         ContratoPry.Tablas, CommonPry.TiposDetPartida {
@@ -37,6 +49,7 @@ public class FragmentUDPartidaBase extends FragmentUD implements CommonPry.Const
     private Button btnNuevaTarea;
     private Button btnNuevoProd;
     private Button btnNuevoProdProv;
+    private Button btnpart;
     private ImageView imagenret;
 
     private RecyclerView rvdetalles;
@@ -47,7 +60,6 @@ public class FragmentUDPartidaBase extends FragmentUD implements CommonPry.Const
     private Modelo partidabase;
 
     private static ConsultaBD consulta = new ConsultaBD();
-    private String idPartidabase;
 
     public FragmentUDPartidaBase() {
         // Required empty public constructor
@@ -57,40 +69,37 @@ public class FragmentUDPartidaBase extends FragmentUD implements CommonPry.Const
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_ud_partida_proyecto, container, false);
+        View view = inflater.inflate(R.layout.fragment_ud_partidabase, container, false);
 
-        nombrePartida = view.findViewById(R.id.etnomudpartida);
-        descripcionPartida = view.findViewById(R.id.etdescripcionUDpartida);
-        tiempoPartida = view.findViewById(R.id.ettiempoUDpartida);
-        importePartida = view.findViewById(R.id.etprecioUDpartida);
-        cantidadPartida = view.findViewById(R.id.etcantidadUDpartida);
-        completadaPartida = view.findViewById(R.id.etcompletadaUDpartida);
-        btnsave = view.findViewById(R.id.btnsaveUDpartida);
-        btndelete = view.findViewById(R.id.btndelUDpartida);
-        btnback = view.findViewById(R.id.btnvolverUDpartida);
-        btnNuevaTarea = view.findViewById(R.id.btntareaudpartida);
-        btnNuevoProd = view.findViewById(R.id.btnprodudpartida);
-        btnNuevoProdProv = view.findViewById(R.id.btnprovudpartida);
-        progressBarPartida = view.findViewById(R.id.progressBarUDpartida);
-        imagen = view.findViewById(R.id.imgudpartida);
-        imagenret = view.findViewById(R.id.imgretudpartida);
-        labelCompletada = view.findViewById(R.id.lcompletadaUDpartida);
-        rvdetalles = view.findViewById(R.id.rvdetalleUDpartida);
+        nombrePartida = view.findViewById(R.id.etnomudpartidabase);
+        descripcionPartida = view.findViewById(R.id.etdescripcionUDpartidabase);
+        tiempoPartida = view.findViewById(R.id.ettiempoUDpartidabase);
+        importePartida = view.findViewById(R.id.etprecioUDpartidabase);
+        cantidadPartida = view.findViewById(R.id.etcantidadUDpartidabase);
+        completadaPartida = view.findViewById(R.id.etcompletadaUDpartidabase);
+        btnsave = view.findViewById(R.id.btnsaveUDpartidabase);
+        btndelete = view.findViewById(R.id.btndelUDpartidabase);
+        btnback = view.findViewById(R.id.btnvolverUDpartidabase);
+        btnNuevaTarea = view.findViewById(R.id.btntareaudpartidabase);
+        btnNuevoProd = view.findViewById(R.id.btnprodudpartidabase);
+        btnNuevoProdProv = view.findViewById(R.id.btnprovudpartidabase);
+        btnpart = view.findViewById(R.id.btnpartudpartidabase);
+        progressBarPartida = view.findViewById(R.id.progressBarUDpartidabase);
+        imagen = view.findViewById(R.id.imgudpartidabase);
+        imagenret = view.findViewById(R.id.imgretudpartidabase);
+        labelCompletada = view.findViewById(R.id.lcompletadaUDpartidabase);
+        rvdetalles = view.findViewById(R.id.rvdetalleUDpartidabase);
 
-        bundle = getArguments();
+        if (permiso) {
+            imagen.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-        if (bundle!=null) {
-            partidabase = (Modelo) bundle.getSerializable(TABLA_PARTIDABASE);
-            idPartidabase = partidabase.getString(PARTIDABASE_ID_PARTIDA);
-            namef = bundle.getString("namef");
-            bundle = null;
-            bundle = new Bundle();
-            bundle.putString("namefsub", TABLA_PARTIDABASE);
-            icFragmentos.enviarBundleAActivity(bundle);
-            bundle = null;
+                    mostrarDialogoOpcionesImagen();
+                    System.out.println("path = " + path);
+                }
+            });
         }
-
-        cargarDatos();
 
         btnsave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,7 +137,7 @@ public class FragmentUDPartidaBase extends FragmentUD implements CommonPry.Const
             public void onClick(View v) {
 
                 update();
-                partidabase = consulta.queryObject(CAMPOS_PARTIDABASE, idPartidabase);
+                partidabase = consulta.queryObject(CAMPOS_PARTIDABASE, id);
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PARTIDABASE, partidabase);
                 bundle.putString("namef",namef);
@@ -144,11 +153,27 @@ public class FragmentUDPartidaBase extends FragmentUD implements CommonPry.Const
             public void onClick(View v) {
 
                 update();
-                partidabase = consulta.queryObject(CAMPOS_PARTIDABASE, idPartidabase);
+                partidabase = consulta.queryObject(CAMPOS_PARTIDABASE, id);
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PARTIDABASE, partidabase);
                 bundle.putString("namef",namef);
                 bundle.putString("tipo", TIPOPRODUCTO);
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentCUDDetpartidaBase());
+
+            }
+
+        });
+
+        btnpart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                update();
+                partidabase = consulta.queryObject(CAMPOS_PARTIDABASE, id);
+                bundle = new Bundle();
+                bundle.putSerializable(TABLA_PARTIDABASE, partidabase);
+                bundle.putString("namef",namef);
+                bundle.putString("tipo", TIPOPARTIDA);
                 icFragmentos.enviarBundleAFragment(bundle,new FragmentCUDDetpartidaBase());
 
             }
@@ -160,7 +185,7 @@ public class FragmentUDPartidaBase extends FragmentUD implements CommonPry.Const
             public void onClick(View v) {
 
                 update();
-                partidabase = consulta.queryObject(CAMPOS_PARTIDABASE, idPartidabase);
+                partidabase = consulta.queryObject(CAMPOS_PARTIDABASE, id);
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PARTIDABASE, partidabase);
                 bundle.putString("namef",namef);
@@ -171,17 +196,91 @@ public class FragmentUDPartidaBase extends FragmentUD implements CommonPry.Const
 
         });
 
+        DatabaseReference dbProveedor =
+                FirebaseDatabase.getInstance().getReference()
+                        .child("productos");
+
+        ValueEventListener eventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                CommonPry.Calculos.sincronizarPartidaBase(id);
+                setDatos();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        dbProveedor.addValueEventListener(eventListener);
+
 
         return view;
     }
 
     @Override
-    public void onResume() {
-        cargarDatos();
-        super.onResume();
+    protected void setLayout() {
+
     }
 
-    private void cargarDatos() {
+    @Override
+    protected void setInicio() {
+
+    }
+
+
+
+
+
+
+    @Override
+    protected void setTabla() {
+
+    }
+
+    @Override
+    protected void setTablaCab() {
+
+    }
+
+    @Override
+    protected void setContext() {
+
+    }
+
+    @Override
+    protected void setCampos() {
+
+    }
+
+    @Override
+    protected void setCampoID() {
+
+    }
+
+    @Override
+    protected void setBundle() {
+
+        if (bundle!=null) {
+            partidabase = (Modelo) bundle.getSerializable(TABLA_PARTIDABASE);
+            if(partidabase!=null) {
+                id = partidabase.getString(PARTIDABASE_ID_PARTIDABASE);
+            }
+            bundle = null;
+            bundle = new Bundle();
+            bundle.putString(NAMESUB, TABLA_PARTIDABASE);
+            icFragmentos.enviarBundleAActivity(bundle);
+            bundle = null;
+
+        }
+
+    }
+
+    @Override
+    protected void setDatos() {
 
         progressBarPartida.setVisibility(View.GONE);
         completadaPartida.setVisibility(View.GONE);
@@ -197,18 +296,19 @@ public class FragmentUDPartidaBase extends FragmentUD implements CommonPry.Const
         if (partidabase.getString(PARTIDABASE_RUTAFOTO)!=null){
 
             imagen.setImageURI(partidabase.getUri(PARTIDABASE_RUTAFOTO));
+            path = partidabase.getString(PARTIDABASE_RUTAFOTO);
         }
 
         imagenret.setVisibility(View.GONE);
 
 
-        listaDetpartidas = consulta.queryListDetalle(CAMPOS_DETPARTIDABASE, idPartidabase,TABLA_PARTIDABASE);
+        listaDetpartidas = consulta.queryListDetalle(CAMPOS_DETPARTIDABASE, id,TABLA_PARTIDABASE);
 
         if (listaDetpartidas!=null && listaDetpartidas.size()>0) {
 
             rvdetalles.setLayoutManager(new LinearLayoutManager(getContext()));
 
-            AdaptadorDetpartida adapter = new AdaptadorDetpartida(listaDetpartidas, namef);
+            AdaptadorDetpartida adapter = new AdaptadorDetpartida(listaDetpartidas);
 
             rvdetalles.setAdapter(adapter);
 
@@ -233,7 +333,15 @@ public class FragmentUDPartidaBase extends FragmentUD implements CommonPry.Const
 
             rvdetalles.setVisibility(View.GONE);
         }
+
+
     }
+
+    @Override
+    protected void setAcciones() {
+
+    }
+
 
     private void cambiarFragment() {
 
@@ -249,7 +357,7 @@ public class FragmentUDPartidaBase extends FragmentUD implements CommonPry.Const
     protected void delete() {
 
 
-        consulta.deleteRegistro(TABLA_PARTIDABASE, idPartidabase);
+        consulta.deleteRegistro(TABLA_PARTIDABASE, id);
 
     }
 
@@ -259,11 +367,12 @@ public class FragmentUDPartidaBase extends FragmentUD implements CommonPry.Const
         valores = new ContentValues();
 
         consulta.putDato(valores,CAMPOS_PARTIDABASE,PARTIDABASE_NOMBRE,nombrePartida.getText().toString());
+        consulta.putDato(valores,CAMPOS_PARTIDABASE,PARTIDABASE_RUTAFOTO,path);
         consulta.putDato(valores,CAMPOS_PARTIDABASE,PARTIDABASE_DESCRIPCION,descripcionPartida.getText().toString());
         consulta.putDato(valores,CAMPOS_PARTIDABASE,PARTIDABASE_TIEMPO,JavaUtil.comprobarDouble(tiempoPartida.getText().toString()));
         consulta.putDato(valores,CAMPOS_PARTIDABASE,PARTIDABASE_PRECIO,JavaUtil.comprobarDouble(importePartida.getText().toString()));
 
-        consulta.updateRegistro(TABLA_PARTIDABASE, idPartidabase,valores);
+        consulta.updateRegistro(TABLA_PARTIDABASE, id,valores);
 
     }
 
@@ -273,12 +382,11 @@ public class FragmentUDPartidaBase extends FragmentUD implements CommonPry.Const
 
         private ArrayList<Modelo> listDetpartida;
         private View.OnClickListener listener;
-        private String namef;
+        private Context context = AppActivity.getAppContext();
 
-        public AdaptadorDetpartida(ArrayList<Modelo> listDetpartida, String namef) {
+        AdaptadorDetpartida(ArrayList<Modelo> listDetpartida) {
 
             this.listDetpartida = listDetpartida;
-            this.namef = namef;
         }
 
         @NonNull
@@ -314,7 +422,16 @@ public class FragmentUDPartidaBase extends FragmentUD implements CommonPry.Const
                 detpartidaViewHolder.importe.setText(listDetpartida.get(position).getString(DETPARTIDABASE_PRECIO));
             }
             if (listDetpartida.get(position).getString(DETPARTIDABASE_RUTAFOTO)!=null) {
-                detpartidaViewHolder.imagen.setImageURI(listDetpartida.get(position).getUri(DETPARTIDABASE_RUTAFOTO));
+                if (tipodetpartida.equals(TIPOPRODUCTOPROV)) {
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference storageRef = storage.getReference();
+                    StorageReference spaceRef = storageRef.child(listDetpartida.get(position).getString(DETPARTIDABASE_RUTAFOTO));
+                    //GlideApp.with(context)
+                    //        .load(spaceRef)
+                    //        .into(detpartidaViewHolder.imagen);
+                } else {
+                    detpartidaViewHolder.imagen.setImageURI(listDetpartida.get(position).getUri(DETPARTIDABASE_RUTAFOTO));
+                }
             }
 
             if (!tipodetpartida.equals(TIPOTAREA)){

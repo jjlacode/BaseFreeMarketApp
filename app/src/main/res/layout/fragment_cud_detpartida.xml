@@ -115,6 +115,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:background="@drawable/boton_redondo_verde"
+                    android:textColor="@color/Color_texto_titulos"
                     android:text="@string/guardar" />
 
                 <Button
@@ -122,6 +124,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:background="@drawable/boton_redondo_verde"
+                    android:textColor="@color/Color_texto_titulos"
                     android:text="@string/borrar" />
 
                 <Button
@@ -129,6 +133,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:background="@drawable/boton_redondo_verde"
+                    android:textColor="@color/Color_texto_titulos"
                     android:text="@string/volver" />
             </LinearLayout>
 
@@ -136,12 +142,16 @@
                 android:id="@+id/btnntareacdetpartida"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/boton_redondo_verde"
+                android:textColor="@color/Color_texto_titulos"
                 android:text="@string/guardar_nueva_tarea" />
 
             <Button
                 android:id="@+id/btnnprodcdetpartida"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/boton_redondo_verde"
+                android:textColor="@color/Color_texto_titulos"
                 android:text="@string/guardar_nuevo_producto" />
 
             <RelativeLayout

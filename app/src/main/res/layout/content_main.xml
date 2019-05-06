@@ -19,12 +19,14 @@
         android:gravity="center"
         android:text="TextView"
         android:textColor="@color/Color_texto_titulos"
+        android:visibility="gone"
         android:textSize="24sp" />
 
     <FrameLayout
         android:id="@+id/content_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
 
     </FrameLayout>
 </LinearLayout>

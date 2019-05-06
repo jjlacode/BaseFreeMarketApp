@@ -7,11 +7,15 @@ import android.net.Uri;
 
 import java.util.ArrayList;
 
-import jjlacode.com.androidutils.JavaUtil;
-import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.Modelo;
 
-import static jjlacode.com.androidutils.AppActivity.getAppContext;
-import static jjlacode.com.freelanceproject.sqlite.ContratoPry.*;
+import static jjlacode.com.freelanceproject.util.AppActivity.getAppContext;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.crearUriTabla;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.crearUriTablaDetalle;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.crearUriTablaDetalleId;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.obtenerIdTabla;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.obtenerUriContenido;
 
 public class ConsultaBD implements JavaUtil.Constantes {
 
@@ -1713,7 +1717,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
         return list;
     }
 
-    public void putDato(ContentValues valores,String[] campos, String campo, String valor){
+    public void putDato(ContentValues valores, String[] campos, String campo, String valor){
 
         for (int i = 0; i < campos.length; i++) {
 
@@ -1912,6 +1916,15 @@ public class ConsultaBD implements JavaUtil.Constantes {
     }
 
     public int updateRegistro(String tabla,String id,ContentValues valores){
+
+        if (id==null){
+            if (insertRegistro(tabla,valores)!=null){
+                return 1;
+            }else {
+                return 0;
+            }
+
+        }
 
         return resolver.update(crearUriTabla(id, tabla)
                 , valores, null, null);
@@ -2190,7 +2203,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
 
     }
 
-    public int deteteRegistros(String tabla,String seleccion){
+    public int deleteRegistros(String tabla,String seleccion){
 
         return resolver.delete(obtenerUriContenido(tabla)
                 ,  seleccion, null);
@@ -2277,9 +2290,11 @@ public class ConsultaBD implements JavaUtil.Constantes {
         }
         System.out.println("secuencia = " + secuencia);
 
-        putDato(valores,campos,"secuencia",secuencia);
+        putDato(valores,campos,SECUENCIA,secuencia);
 
-        resolver.insert(crearUriTablaDetalle(id,secuencia,campos[1]), valores);
+        Uri uri = resolver.insert(crearUriTablaDetalle(id,secuencia,campos[1]), valores);
+
+        if (uri==null){return 0;}
 
         return  secuencia;
 

@@ -18,21 +18,28 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import jjlacode.com.androidutils.AppActivity;
-import jjlacode.com.androidutils.FragmentBase;
-import jjlacode.com.androidutils.JavaUtil;
-import jjlacode.com.androidutils.Modelo;
+import jjlacode.com.freelanceproject.util.AppActivity;
+import jjlacode.com.freelanceproject.util.FragmentBase;
+import jjlacode.com.freelanceproject.util.ImagenUtil;
+import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.Modelo;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.model.AgendaPresup;
 import jjlacode.com.freelanceproject.model.AgendaTarea;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.utilities.CommonPry;
+import jjlacode.com.freelanceproject.util.CommonPry;
+
+import static jjlacode.com.freelanceproject.util.AppActivity.viewOnMapA;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.DIASLONG;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NAMEF;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NAMESUB;
 
 
 public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvento, ContratoPry.Tablas {
@@ -40,55 +47,74 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
     private String idProyecto;
     private String secuenciaPartida;
 
-    View vista;
     RecyclerView rvAgenda;
     Button btnTareas;
     Button btnPresup;
     Button btnEspera;
     Button btnCobros;
     Button btnEventos;
-    TextView tituloTab;
+    String namef;
     ArrayList<AgendaTarea> listaAgendaTarea = new ArrayList<>();
     ArrayList<AgendaPresup> listaAgendaPresup = new ArrayList<>();
 
-    private final String LOG_TAG = "test";
-
     private static ConsultaBD consulta = new ConsultaBD();
+    private String namesub;
 
     public FragmentAgenda() {
         // Required empty public constructor
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        vista = inflater.inflate(R.layout.fragment_agenda, container, false);
+    protected void setLayout() {
 
-        rvAgenda = vista.findViewById(R.id.rvagenda);
-        rvAgenda.setLayoutManager(new LinearLayoutManager(getContext()));
-        btnEventos = vista.findViewById(R.id.btneventosagenda);
-        btnTareas = vista.findViewById(R.id.btntareaagenda);
-        btnPresup = vista.findViewById(R.id.btnpresupagenda);
-        btnEspera = vista.findViewById(R.id.btnenesperaagenda);
-        btnCobros = vista.findViewById(R.id.btnpendcobroagenda);
-        tituloTab = vista.findViewById(R.id.tvtitagenda);
+        layout = R.layout.fragment_agenda;
+
+    }
+
+    protected void enviarAct(){
+
+        enviarBundle();
+        icFragmentos.enviarBundleAActivity(bundle);
+        System.out.println("bundle enviado a activity");
+    }
+
+    protected void enviarBundle(){
+
+        bundle = new Bundle();
+        bundle.putString(NAMEF,namef);
+        bundle.putString(NAMESUB,namesub);
+
+    }
+
+    @Override
+    protected void setInicio() {
 
         bundle = getArguments();
+        if (bundle!=null){
 
-        namef = bundle.getString("namef");
-        bundle = null;
+            namef = bundle.getString(NAMEF);
+            namesub = getString(R.string.proximos_eventos);
+            bundle=null;
+        }
 
-        //tituloTab.setText(R.string.proximos_eventos);
-
-        //obtenerEventos();
+        rvAgenda = view.findViewById(R.id.rvagenda);
+        if (!tablet) {
+            rvAgenda.setLayoutManager(new LinearLayoutManager(getContext()));
+        }else{
+            rvAgenda.setLayoutManager(new GridLayoutManager(getContext(),3));
+        }
+        btnEventos = view.findViewById(R.id.btneventosagenda);
+        btnTareas = view.findViewById(R.id.btntareaagenda);
+        btnPresup = view.findViewById(R.id.btnpresupagenda);
+        btnEspera = view.findViewById(R.id.btnenesperaagenda);
+        btnCobros = view.findViewById(R.id.btnpendcobroagenda);
 
         btnEventos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                tituloTab.setText(R.string.proximos_eventos);
-
+                namesub = getString(R.string.proximos_eventos);
+                enviarAct();
                 obtenerEventos();
             }
         });
@@ -97,7 +123,9 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
             @Override
             public void onClick(View v) {
 
-               obtenerTareas();
+                namesub = getString(R.string.tareas_pendientes);
+                enviarAct();
+                obtenerTareas();
             }
         });
 
@@ -105,6 +133,8 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
             @Override
             public void onClick(View v) {
 
+                namesub = getString(R.string.presupuestos_pendientes);
+                enviarAct();
                 obtenerPresupPendienteEntrega();
             }
         });
@@ -113,6 +143,8 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
             @Override
             public void onClick(View v) {
 
+                namesub = getString(R.string.presupuestos_en_espera);
+                enviarAct();
                 obtenerPresupEspera();
             }
         });
@@ -121,75 +153,25 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
             @Override
             public void onClick(View v) {
 
+                namesub = getString(R.string.pendiente_cobro);
+                enviarAct();
                 obtenerPresupPendienteCobro();
             }
         });
 
-        return vista;
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        tituloTab.setText(R.string.proximos_eventos);
         obtenerEventos();
-        Log.v(LOG_TAG, "onResume");
-    }
-    @Override
-    public void onActivityCreated (Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        Log.v(LOG_TAG, "onActivityCreated");
-    }
-
-    @Override
-    public void onViewStateRestored (Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        Log.v(LOG_TAG, "onViewStateRestored");
-    }
-
-    @Override
-    public void onStart () {
-        super.onStart();
-        Log.v(LOG_TAG, "onStart");
-    }
-
-    @Override
-    public void onPause () {
-        super.onPause();
-        Log.v(LOG_TAG, "onPause");
-    }
-
-    @Override
-    public void onStop () {
-        super.onStop();
-        Log.v(LOG_TAG, "onStop");
-    }
-
-    @Override
-    public void onDestroyView () {
-        super.onDestroyView();
-        Log.v(LOG_TAG, "onDestroyView");
-    }
-
-    @Override
-    public void onDestroy () {
-        super.onDestroy();
-        Log.v(LOG_TAG, "onDestroy");
-    }
-
-    @Override
-    public void onDetach () {
-        super.onDetach();
-        Log.v(LOG_TAG, "onDetach");
     }
 
     private void obtenerTareas(){
 
         listaAgendaPresup = new ArrayList<>();
         listaAgendaTarea = new ArrayList<>();
-
-        tituloTab.setText(R.string.tareas_pendientes);
 
         ArrayList<Modelo> lista ;
         ArrayList<Modelo> listaPartidasSinCompletar = new ArrayList<>();
@@ -259,8 +241,8 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PARTIDA,partida);
-                bundle.putString("namef",namef);
-                icFragmentos.enviarBundleAFragment(bundle,new FragmentUDPartidaProyecto());
+                bundle.putString(NAMEF,namef);
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentCUDPartidaProyecto());
                 bundle = null;
             }
         });
@@ -268,8 +250,6 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
     private void obtenerPresupPendienteEntrega(){
         listaAgendaPresup = new ArrayList<>();
         listaAgendaTarea = new ArrayList<>();
-
-        tituloTab.setText(R.string.presupuestos_pendientes);
 
         String seleccion = ESTADO_TIPOESTADO + " = 1 OR "+
                 ESTADO_TIPOESTADO + " = 2";
@@ -314,8 +294,8 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PROYECTO,proyecto);
-                bundle.putString("namef",namef);
-                icFragmentos.enviarBundleAFragment(bundle,new FragmentUDProyecto());
+                bundle.putString(NAMEF,namef);
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentCUDProyecto());
                 bundle = null;
 
             }
@@ -326,8 +306,6 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
         listaAgendaPresup = new ArrayList<>();
         listaAgendaTarea = new ArrayList<>();
-
-        tituloTab.setText(R.string.pendiente_cobro);
 
         String seleccion = ESTADO_TIPOESTADO + " = 7";
         String orden = "'"+ PROYECTO_FECHAFINAL+"' ASC";
@@ -371,8 +349,8 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PROYECTO,proyecto);
-                bundle.putString("namef",namef);
-                icFragmentos.enviarBundleAFragment(bundle,new FragmentUDProyecto());
+                bundle.putString(NAMEF,namef);
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentCUDProyecto());
                 bundle = null;
 
             }
@@ -383,8 +361,6 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
         listaAgendaPresup = new ArrayList<>();
         listaAgendaTarea = new ArrayList<>();
-
-        tituloTab.setText(R.string.presupuestos_en_espera);
 
         String seleccion = ESTADO_TIPOESTADO + " = 3";
         String orden = "'"+ PROYECTO_FECHAENTREGAPRESUP+"' ASC";
@@ -428,8 +404,8 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PROYECTO,proyecto);
-                bundle.putString("namef",namef);
-                icFragmentos.enviarBundleAFragment(bundle,new FragmentUDProyecto());
+                bundle.putString(NAMEF,namef);
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentCUDProyecto());
                 bundle = null;
 
             }
@@ -518,13 +494,26 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
                     (EVENTO_HORAINIEVENTO))));
             eventoViewHolder.horafin.setText(JavaUtil.getTime(Long.parseLong(listaEvento.get(position).getCampos
                     (EVENTO_HORAFINEVENTO))));
-            eventoViewHolder.pbar.setProgress(Integer.parseInt(listaEvento.get(position).getCampos
-                    (EVENTO_COMPLETADA)));
-            eventoViewHolder.porccompleta.setText(String.format("%s %s",listaEvento.get(position).getCampos
-                    (EVENTO_COMPLETADA),"%"));
-            if (listaEvento.get(position).getString(EVENTO_RUTAFOTO)!=null){
-
-                eventoViewHolder.foto.setImageURI(Uri.parse(listaEvento.get(position).getString(EVENTO_RUTAFOTO)));
+            if (Integer.parseInt(listaEvento.get(position).getCampos
+                    (ContratoPry.Tablas.EVENTO_COMPLETADA))==0){
+                eventoViewHolder.pbar.setVisibility(View.GONE);
+                eventoViewHolder.porccompleta.setVisibility(View.GONE);
+            }else if (Integer.parseInt(listaEvento.get(position).getCampos
+                    (ContratoPry.Tablas.EVENTO_COMPLETADA))>99) {
+                eventoViewHolder.completa.setChecked(true);
+            }else{
+                eventoViewHolder.pbar.setProgress(Integer.parseInt(listaEvento.get(position).getCampos
+                        (ContratoPry.Tablas.EVENTO_COMPLETADA)));
+                eventoViewHolder.porccompleta.setText(String.format("%s %s",listaEvento.get(position).getCampos
+                        (EVENTO_COMPLETADA),"%"));
+            }
+            ImagenUtil imagenUtil = new ImagenUtil(getContext());
+            if (listaEvento.get(position).getCampos
+                    (ContratoPry.Tablas.EVENTO_RUTAFOTO)!=null) {
+                imagenUtil.setImageUriCircle(listaEvento.get(position).getCampos
+                        (ContratoPry.Tablas.EVENTO_RUTAFOTO),eventoViewHolder.foto);
+                //eventoViewHolder.foto.setImageURI(Uri.parse(list.get(position).getCampos
+                //        (ContratoPry.Tablas.EVENTO_RUTAFOTO)));
             }
 
             String tipoEvento = listaEvento.get(position).getCampos
@@ -596,8 +585,8 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
             }
 
             long retraso = JavaUtil.hoy()-listaEvento.get(position).getLong(EVENTO_FECHAINIEVENTO);
-            if (retraso > 3 * CommonPry.DIASLONG){eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));}
-            else if (retraso > CommonPry.DIASLONG){eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));}
+            if (retraso > 3 * DIASLONG){eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));}
+            else if (retraso > DIASLONG){eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));}
             else {eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));}//imgret.setImageResource(R.drawable.alert_box_v);}
             if(tipoEvento.equals(TAREA))
             {eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_tarea));}
@@ -626,8 +615,8 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
                     if (!eventoViewHolder.lugar.getText().toString().equals("")){
 
-                        Intent i= AppActivity.viewOnMapA(eventoViewHolder.lugar.getText().toString());
-                        startActivity(i);
+                        viewOnMapA(getContext(),eventoViewHolder.lugar.getText().toString());
+
                     }
 
 
@@ -660,8 +649,8 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
                     bundle = new Bundle();
                     bundle.putSerializable(TABLA_EVENTO,evento);
-                    bundle.putString("namef",namef);
-                    icFragmentos.enviarBundleAFragment(bundle, new FragmentUDEvento());
+                    bundle.putString(NAMEF,namef);
+                    icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
                     bundle = null;
                 }
             });
