@@ -18,14 +18,14 @@ public abstract class ListaAdaptadorFiltro extends ArrayAdapter<Modelo> {
     private ArrayList<Modelo> entradasfiltro;
     private int R_layout_IdView;
     private Context contexto;
-    private String campo;
+    private String[] campos;
 
-    public ListaAdaptadorFiltro(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String campo) {
+    public ListaAdaptadorFiltro(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
         super(contexto,R_layout_IdView,entradas);
         this.contexto = contexto;
         this.entradas = new ArrayList<>(entradas);
         this.entradasfiltro = new ArrayList<>(entradas);
-        this.campo = campo;
+        this.campos = campos;
         this.R_layout_IdView = R_layout_IdView;
     }
 
@@ -58,9 +58,15 @@ public abstract class ListaAdaptadorFiltro extends ArrayAdapter<Modelo> {
 
                     for (Modelo item :entradas) {
 
-                        if(item.getCampos(campo).toLowerCase().contains(constraint.toString().toLowerCase())){
+                        for (int i = 0; i < campos.length; i++) {
 
-                            suggestion.add(item);
+                            String valor = item.getString(campos[i]);
+
+                            if (valor!=null && valor.toLowerCase().contains(constraint.toString().toLowerCase())) {
+
+                                suggestion.add(item);
+                                break;
+                            }
                         }
 
                     }
@@ -92,6 +98,7 @@ public abstract class ListaAdaptadorFiltro extends ArrayAdapter<Modelo> {
         };
         return filter;
     }
+
 
     @Override
     public Modelo getItem(int posicion) {

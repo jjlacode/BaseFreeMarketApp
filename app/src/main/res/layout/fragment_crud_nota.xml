@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Spinner
+        android:id="@+id/sptiponota"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:spinnerMode="dialog"/>
+
+    <TextView
+        android:id="@+id/tvtiponota"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="@string/tipo_nota" />
+
+    <EditText
+        android:id="@+id/etdesc_nota"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/descripcion"
+        android:inputType="textMultiLine" />
+    <TextView
+        android:id="@+id/tvfechanota"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+    <Button
+        android:id="@+id/btn_grabar_audio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/grabar_audio"
+        android:background="@drawable/boton_redondo_verde"
+        android:textColor="@color/Color_texto_titulos"
+        android:layout_weight="1"/>
+
+    <Button
+        android:id="@+id/btn_play_audio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/play_audio"
+        android:background="@drawable/boton_redondo_verde"
+        android:textColor="@color/Color_texto_titulos"
+        android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/btn_grabar_video"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/grabar_video"
+            android:background="@drawable/boton_redondo_verde"
+            android:textColor="@color/Color_texto_titulos"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/btn_play_video"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/play_video"
+            android:background="@drawable/boton_redondo_verde"
+            android:textColor="@color/Color_texto_titulos"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imagen_nota"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

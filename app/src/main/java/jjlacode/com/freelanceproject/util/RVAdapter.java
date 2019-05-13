@@ -9,44 +9,44 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ViewHolder>
+public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
         implements View.OnClickListener{
 
     protected ArrayList<Modelo> list;
     private View.OnClickListener listener;
     private String namef;
     private int layout;
+    private TipoViewHolder tipoViewHolder;
 
-
-    public RVAdapter(ArrayList<Modelo> list, int layout, String namef) {
+    public RVAdapter(TipoViewHolder tipoViewHolder,ArrayList<Modelo> list, int layout, String namef) {
 
         this.list = list;
         this.namef = namef;
         this.layout = layout;
+        this.tipoViewHolder = tipoViewHolder;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
+    public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
 
         final View view = LayoutInflater.from(parent.getContext()).inflate(layout, null, false);
 
         view.setOnClickListener(this);
 
+        return tipoViewHolder.holder(view);
 
-        return new ViewHolder(view);
+    }
 
+    @Override
+    public void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
+
+        holder.bind(list.get(position));
     }
 
     public void setOnClickListener(View.OnClickListener listener) {
 
         this.listener = listener;
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
-
-
     }
 
     @Override
@@ -66,17 +66,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ViewHolder>
 
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
 
-
-
-        protected ViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-
-
-        }
-
-    }
 
 }

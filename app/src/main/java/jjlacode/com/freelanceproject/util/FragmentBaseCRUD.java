@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import java.util.ArrayList;
+
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 
 import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.PERSISTENCIA;
@@ -29,6 +31,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     protected boolean nuevo;
     protected ConsultaBD consulta = new ConsultaBD();
     protected ContentValues valores;
+    protected ListaModelo lista;
 
 
     public FragmentBaseCRUD() {
@@ -62,6 +65,8 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
             namesub = bundle.getString(NAMESUB);
             nameftemp = bundle.getString(NAMEFTEMP);
             namesubtemp = bundle.getString(NAMESUBTEMP);
+            lista = (ListaModelo) bundle.getSerializable(LISTA);
+
             if (tablaCab==null) {
                 modelo = (Modelo) bundle.getSerializable(MODELO);
             }
@@ -72,20 +77,33 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
                 if(secuencia>0){
                     modelo = consulta.queryObjectDetalle(campos,id,secuencia);
                 }else if(tablaCab==null){
+                    System.out.println("id recibido de bundle= " + id);
+                    System.out.println("tabla = " + tabla);
                     modelo = consulta.queryObject(campos,id);
                 }
             }
             if (nuevo){
                 if (tablaCab==null){
                     id=null;
+                    modelo = null;
                 }else{
                     secuencia=0;
+                    modelo = null;
+                }
+            }
+            if (lista==null){
+
+                if (tablaCab==null){
+                    setListaModelo();
+                }else if (id!=null){
+                    setListaModeloDetalle();
                 }
             }
 
         }
         setBundle();
     }
+
 
 
     protected abstract void setTabla();
@@ -115,7 +133,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
 
         enviarBundle();
         icFragmentos.enviarBundleAActivity(bundle);
-        System.out.println("bundle enviado a activity");
+        System.out.println("bundle enviado a activity "+namef);
     }
 
     protected void enviarBundle(){
@@ -165,6 +183,34 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
         setContext();
 
         super.onCreate(savedInstanceState);
+    }
+
+    protected void setListaModelo(){
+        lista = new ListaModelo(campos);
+    }
+
+    protected void setListaModeloDetalle(){
+        lista = new ListaModelo(campos,id,tablaCab,null,null);
+    }
+
+    protected void setListaModelo(String seleccion){
+        lista = new ListaModelo(campos,seleccion,null);
+    }
+
+    protected void setListaModeloDetalle(String seleccion){
+        lista = new ListaModelo(campos,id,tablaCab,seleccion,null);
+    }
+
+    protected void setListaModelo(String seleccion, String orden){
+        lista = new ListaModelo(campos,seleccion,orden);
+    }
+
+    protected void setListaModeloDetalle(String seleccion, String orden){
+        lista = new ListaModelo(campos,id,tablaCab,seleccion,orden);
+    }
+
+    protected void setListaModelo(String campo, String valor, int flag){
+        lista = new ListaModelo(campos,campo,valor,null,flag,null);
     }
 
 

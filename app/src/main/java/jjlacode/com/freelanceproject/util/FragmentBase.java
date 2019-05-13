@@ -139,6 +139,7 @@ public abstract class FragmentBase extends Fragment {
         return view.findViewById(recurso);
     }
 
+
     /**
      * Asigna el recurso al control tipo Spinner en la vista actual
      * @param recurso Recurso del la vista actual que se asigna al TextView

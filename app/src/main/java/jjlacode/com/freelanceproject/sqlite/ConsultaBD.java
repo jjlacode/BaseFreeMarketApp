@@ -81,6 +81,150 @@ public class ConsultaBD implements JavaUtil.Constantes {
         return list;
     }
 
+    public boolean checkQueryList(String[] campos, String seleccion, String orden) {
+
+
+        ArrayList<Modelo> list = new ArrayList<>();
+
+        Cursor reg = resolver.query(obtenerUriContenido(
+                campos[1]), null, seleccion, null, orden);
+
+
+        if (reg != null) {
+
+            while (reg.moveToNext()) {
+
+                String[] insert = new String[reg.getColumnCount()-1];
+
+                for (int i = 0, x = 2,y = 4; i < reg.getColumnCount()-1; i++,x+=3,y+=3) {
+
+                    switch (campos[y]){
+
+                        case STRING:
+                            insert[i] = reg.getString(reg.getColumnIndex(campos[x]));
+                            break;
+                        case INT:
+                            insert[i] = String.valueOf(reg.getInt(reg.getColumnIndex(campos[x])));
+                            break;
+                        case LONG:
+                            insert[i] = String.valueOf(reg.getLong(reg.getColumnIndex(campos[x])));
+                            break;
+                        case DOUBLE:
+                            insert[i] = String.valueOf(reg.getDouble(reg.getColumnIndex(campos[x])));
+                            break;
+                        case FLOAT:
+                            insert[i] = String.valueOf(reg.getFloat(reg.getColumnIndex(campos[x])));
+                            break;
+                        case SHORT:
+                            insert[i] = String.valueOf(reg.getShort(reg.getColumnIndex(campos[x])));
+                            break;
+                        default:
+
+                            insert[i] = reg.getString(reg.getColumnIndex(campos[x]));
+
+                    }
+
+                }
+                System.out.println("insert = " + insert[0]);
+
+
+                if (insert[0]!=null) {
+                    Modelo modelo = new Modelo(campos, insert);
+                    list.add(modelo);
+                }
+            }
+        }
+        reg.close();
+
+        return list.size()>0;
+    }
+
+    public boolean checkQueryList
+            (String[] campos, String campo, String valor, String valor2, int flag, String orden) {
+
+
+        ArrayList<Modelo> list = new ArrayList<>();
+
+        String seleccion = null;
+
+        switch (flag){
+
+            case IGUAL:
+                seleccion = campo+" = '"+valor+"'";
+                break;
+            case DIFERENTE:
+                seleccion = campo+" <> '"+valor+"'";
+                break;
+            case ENTRE:
+                seleccion = campo+" BETWEEN '"+valor+"' AND '"+valor2+"'";
+                break;
+            case MAYOR:
+                seleccion = campo+" > '"+valor+"'";
+                break;
+            case MAYORIGUAL:
+                seleccion = campo+" >= '"+valor+"'";
+                break;
+            case MENOR:
+                seleccion = campo+" < '"+valor+"'";
+                break;
+            case MENORIGUAL:
+                seleccion = campo+" <= '"+valor+"'";
+
+        }
+
+        Cursor reg = resolver.query(obtenerUriContenido(
+                campos[1]), null, seleccion, null, orden);
+
+
+        if (reg != null) {
+
+            while (reg.moveToNext()) {
+
+                String[] insert = new String[reg.getColumnCount()-1];
+
+                for (int i = 0, x = 2,y = 4; i < reg.getColumnCount()-1; i++,x+=3,y+=3) {
+
+                    switch (campos[y]){
+
+                        case STRING:
+                            insert[i] = reg.getString(reg.getColumnIndex(campos[x]));
+                            break;
+                        case INT:
+                            insert[i] = String.valueOf(reg.getInt(reg.getColumnIndex(campos[x])));
+                            break;
+                        case LONG:
+                            insert[i] = String.valueOf(reg.getLong(reg.getColumnIndex(campos[x])));
+                            break;
+                        case DOUBLE:
+                            insert[i] = String.valueOf(reg.getDouble(reg.getColumnIndex(campos[x])));
+                            break;
+                        case FLOAT:
+                            insert[i] = String.valueOf(reg.getFloat(reg.getColumnIndex(campos[x])));
+                            break;
+                        case SHORT:
+                            insert[i] = String.valueOf(reg.getShort(reg.getColumnIndex(campos[x])));
+                            break;
+                        default:
+
+                            insert[i] = reg.getString(reg.getColumnIndex(campos[x]));
+
+                    }
+
+                }
+                System.out.println("insert = " + insert[0]);
+                System.out.println("regcolumn = " + reg.getColumnCount());
+
+                if (insert[0]!=null) {
+                    Modelo modelo = new Modelo(campos, insert);
+                    list.add(modelo);
+                }
+            }
+        }
+        reg.close();
+
+        return list.size()>0;
+    }
+
     public ArrayList<Modelo> queryList(String[] campos) {
 
 
@@ -1917,14 +2061,6 @@ public class ConsultaBD implements JavaUtil.Constantes {
 
     public int updateRegistro(String tabla,String id,ContentValues valores){
 
-        if (id==null){
-            if (insertRegistro(tabla,valores)!=null){
-                return 1;
-            }else {
-                return 0;
-            }
-
-        }
 
         return resolver.update(crearUriTabla(id, tabla)
                 , valores, null, null);

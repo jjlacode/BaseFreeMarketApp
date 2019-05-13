@@ -155,14 +155,31 @@
                 android:hint="@string/contacto"
                 android:inputType="textPersonName"/>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
             <Button
                 android:id="@+id/btneventoudcliente"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:background="@drawable/boton_redondo_verde"
                 android:textColor="@color/Color_texto_titulos"
                 android:text="@string/evento_relacionado"
                 android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/btnvereventoudcliente"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/boton_redondo_verde"
+                android:textColor="@color/Color_texto_titulos"
+                android:text="@string/ver_eventos_relacionados"
+                android:textSize="18sp" />
+
+            </LinearLayout>
 
 
 

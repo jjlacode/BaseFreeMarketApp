@@ -2,8 +2,6 @@ package jjlacode.com.freelanceproject.ui;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.net.Uri;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +36,6 @@ import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltro;
 import jjlacode.com.freelanceproject.util.Modelo;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.model.ProdProv;
-import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.CommonPry;
 
@@ -59,11 +56,12 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
     private String tipo;
     private Modelo partidabase;
     private ArrayList<Modelo> lista;
-    private String idDetPartida;
 
-    private static ConsultaBD consulta = new ConsultaBD();
     private ArrayList<ProdProv> listaProdProv;
     private AdaptadorProdProv mAdapter;
+    private AutoCompleteTextView autoCat;
+    private AutoCompleteTextView autoProv;
+    private String iddet;
 
     public FragmentCUDDetpartidaBase() {
         // Required empty public constructor
@@ -79,6 +77,8 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
         btnNuevaTarea.setVisibility(View.GONE);
         btnNuevoProd.setVisibility(View.GONE);
         btndelete.setVisibility(View.GONE);
+        autoCat.setVisibility(View.GONE);
+        autoProv.setVisibility(View.GONE);
 
     }
 
@@ -119,13 +119,11 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
         if (bundle != null) {
             partidabase = (Modelo) bundle.getSerializable(TABLA_PARTIDABASE);
-            if (bundle.containsKey(TABLA_DETPARTIDABASE)) {
-                modelo = (Modelo) bundle.getSerializable(TABLA_DETPARTIDABASE);
-                secuencia = modelo.getInt(DETPARTIDABASE_SECUENCIA);
-                idDetPartida = modelo.getString(DETPARTIDA_ID_DETPARTIDA);
+            if (modelo!=null){
+            secuencia = modelo.getInt(DETPARTIDABASE_SECUENCIA);
+            id = modelo.getString(DETPARTIDABASE_ID_PARTIDABASE);
             }
-            id = partidabase.getString(PARTIDABASE_ID_PARTIDABASE);
-            tipo = bundle.getString("tipo");
+            tipo = bundle.getString(TIPO);
             bundle = null;
         }
 
@@ -147,9 +145,10 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
             refprov.setText(modelo.getString(DETPARTIDABASE_REFPROV));
             if (modelo.getString(DETPARTIDABASE_RUTAFOTO)!=null){
                 path = modelo.getString(DETPARTIDABASE_RUTAFOTO);
-                setImagenUri(path);
-
+                setImagenUri(contexto,path);
             }
+            autoCat.setVisibility(View.GONE);
+            autoProv.setVisibility(View.GONE);
 
         }
 
@@ -260,13 +259,13 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                     case TIPOTAREA:
 
                         Modelo tarea = (Modelo) nombre.getAdapter().getItem(position);
-                        idDetPartida = tarea.getString(TAREA_ID_TAREA);
-                        System.out.println("idDetPartida = " + idDetPartida);
+                        iddet = tarea.getString(TAREA_ID_TAREA);
+                        System.out.println("id = " + iddet);
                         nombre.setText(tarea.getString(TAREA_NOMBRE));
                         descripcion.setText(tarea.getString(TAREA_DESCRIPCION));
                         tiempo.setText(tarea.getString(TAREA_TIEMPO));
                         if (tarea.getString(TAREA_RUTAFOTO) != null) {
-                            setImagenUri(tarea.getString(TAREA_RUTAFOTO));
+                            setImagenUri(contexto,tarea.getString(TAREA_RUTAFOTO));
                         }
 
                         break;
@@ -274,13 +273,13 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                     case TIPOPRODUCTO:
 
                         Modelo producto = (Modelo) nombre.getAdapter().getItem(position);
-                        idDetPartida = producto.getString(PRODUCTO_ID_PRODUCTO);
-                        System.out.println("idDetPartida = " + idDetPartida);
+                        iddet = producto.getString(PRODUCTO_ID_PRODUCTO);
+                        System.out.println("id = " + iddet);
                         nombre.setText(producto.getString(PRODUCTO_NOMBRE));
                         descripcion.setText(producto.getString(PRODUCTO_DESCRIPCION));
                         precio.setText(producto.getString(PRODUCTO_IMPORTE));
                         if (producto.getString(PRODUCTO_RUTAFOTO) != null) {
-                            setImagenUri(producto.getString(PRODUCTO_RUTAFOTO));
+                            setImagenUri(contexto,producto.getString(PRODUCTO_RUTAFOTO));
                         }
 
                         break;
@@ -288,14 +287,14 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                     case TIPOPRODUCTOPROV:
 
                         ProdProv prodprov = (ProdProv) nombre.getAdapter().getItem(position);
-                        idDetPartida = prodprov.getId();
-                        System.out.println("idDetPartida = " + idDetPartida);
+                        iddet = prodprov.getId();
+                        System.out.println("id = " + iddet);
                         nombre.setText(prodprov.getNombre());
                         descripcion.setText(prodprov.getDescripcion());
                         precio.setText(String.valueOf(prodprov.getPrecio()));
                         refprov.setText(prodprov.getRefprov());
                         if (prodprov.getRutafoto() != null) {
-                            setImagenFireStoreCircle(prodprov.getRutafoto(),imagen);
+                            setImagenFireStoreCircle(contexto,prodprov.getRutafoto(),imagen);
 
                         }
 
@@ -304,14 +303,14 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                     case TIPOPARTIDA:
 
                         Modelo partida = (Modelo) nombre.getAdapter().getItem(position);
-                        idDetPartida = partida.getString(PARTIDABASE_ID_PARTIDABASE);
-                        System.out.println("idDetPartida = " + idDetPartida);
+                        iddet = partida.getString(PARTIDABASE_ID_PARTIDABASE);
+                        System.out.println("id = " + iddet);
                         nombre.setText(partida.getString(PARTIDABASE_NOMBRE));
                         descripcion.setText(partida.getString(PARTIDABASE_DESCRIPCION));
                         precio.setText(partida.getString(PARTIDABASE_PRECIO));
                         tiempo.setText(partida.getString(PARTIDABASE_TIEMPO));
                         if (partida.getString(PARTIDABASE_RUTAFOTO) != null) {
-                            setImagenUri(partida.getString(PARTIDABASE_RUTAFOTO));
+                            setImagenUri(contexto,partida.getString(PARTIDABASE_RUTAFOTO));
                         }
 
 
@@ -349,6 +348,8 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
         refprov = view.findViewById(R.id.tvrefprovcdetpartida);
         descProv = view.findViewById(R.id.etdescprovcdetpartida);
         tipoDetPartida = view.findViewById(R.id.tvtipocdetpartida);
+        autoCat = view.findViewById(R.id.autocat);
+        autoProv = view.findViewById(R.id.autoprov);
 
     }
 
@@ -368,17 +369,17 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                 adaptadorTareas.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        idDetPartida = lista.get(rvDetpartida.getChildAdapterPosition(v))
+                        iddet = lista.get(rvDetpartida.getChildAdapterPosition(v))
                                 .getString(TAREA_ID_TAREA);
-                        System.out.println("idDetPartida = " + idDetPartida);
-                        Modelo tarea = consulta.queryObject(CAMPOS_TAREA, idDetPartida);
+                        System.out.println("id = " + iddet);
+                        Modelo tarea = consulta.queryObject(CAMPOS_TAREA, iddet);
                         nombre.setText(tarea.getString(TAREA_NOMBRE));
                         descripcion.setText(tarea.getString(TAREA_DESCRIPCION));
                         tiempo.setText(tarea.getString(TAREA_TIEMPO));
 
                         if (tarea.getString(TAREA_RUTAFOTO) != null) {
                             path = tarea.getString(TAREA_RUTAFOTO);
-                            setImagenUri(path);
+                            setImagenUri(contexto,path);
 
                         }
                     }
@@ -395,17 +396,17 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                 adaptadorProducto.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        idDetPartida = lista.get(rvDetpartida.getChildAdapterPosition(v))
+                        iddet = lista.get(rvDetpartida.getChildAdapterPosition(v))
                                 .getString(PRODUCTO_ID_PRODUCTO);
-                        System.out.println("idDetPartida = " + idDetPartida);
-                        Modelo producto = consulta.queryObject(CAMPOS_PRODUCTO, idDetPartida);
+                        System.out.println("id = " + iddet);
+                        Modelo producto = consulta.queryObject(CAMPOS_PRODUCTO, iddet);
                         nombre.setText(producto.getString(PRODUCTO_NOMBRE));
                         descripcion.setText(producto.getString(PRODUCTO_DESCRIPCION));
                         precio.setText(producto.getString(PRODUCTO_IMPORTE));
 
                         if (producto.getString(PRODUCTO_RUTAFOTO) != null) {
                             path = producto.getString(PRODUCTO_RUTAFOTO);
-                            setImagenUri(path);
+                            setImagenUri(contexto,path);
 
                         }
 
@@ -424,18 +425,18 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                 adaptadorPartidaBase.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        idDetPartida = lista.get(rvDetpartida.getChildAdapterPosition(v))
+                        iddet = lista.get(rvDetpartida.getChildAdapterPosition(v))
                                 .getString(PARTIDABASE_ID_PARTIDABASE);
-                        System.out.println("idDetPartida = " + idDetPartida);
-                        Modelo partidabase = lista.get(rvDetpartida.getChildAdapterPosition(v));
-                        nombre.setText(partidabase.getString(PARTIDABASE_NOMBRE));
-                        descripcion.setText(partidabase.getString(PARTIDABASE_DESCRIPCION));
-                        precio.setText(partidabase.getString(PARTIDABASE_PRECIO));
-                        tiempo.setText(partidabase.getString(PARTIDABASE_TIEMPO));
+                        System.out.println("id = " + iddet);
+                        Modelo partida = lista.get(rvDetpartida.getChildAdapterPosition(v));
+                        nombre.setText(partida.getString(PARTIDABASE_NOMBRE));
+                        descripcion.setText(partida.getString(PARTIDABASE_DESCRIPCION));
+                        precio.setText(partida.getString(PARTIDABASE_PRECIO));
+                        tiempo.setText(partida.getString(PARTIDABASE_TIEMPO));
 
-                        if (partidabase.getString(PARTIDABASE_RUTAFOTO) != null) {
-                            path = partidabase.getString(PARTIDABASE_RUTAFOTO);
-                            setImagenUri(path);
+                        if (partida.getString(PARTIDABASE_RUTAFOTO) != null) {
+                            path = partida.getString(PARTIDABASE_RUTAFOTO);
+                            setImagenUri(contexto,path);
 
                         }
 
@@ -449,6 +450,8 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                 precio.setVisibility(View.VISIBLE);
                 refprov.setVisibility(View.VISIBLE);
                 descProv.setVisibility(View.VISIBLE);
+                autoCat.setVisibility(View.VISIBLE);
+                autoProv.setVisibility(View.VISIBLE);
 
                 listaProdProv = new ArrayList<>();
 
@@ -495,8 +498,8 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                         int i = rvDetpartida.getChildViewHolder(v).getAdapterPosition();
                         ProdProv prodProv = holder.getItem();
 
-                        idDetPartida = listaProdProv.get(i).getId();
-                        System.out.println("idDetPartida = " + idDetPartida);
+                        iddet = listaProdProv.get(i).getId();
+                        System.out.println("id = " + iddet);
                         refprov.setText(prodProv.getRefprov());
                         nombre.setText(prodProv.getNombre());
                         descripcion.setText(prodProv.getDescripcion());
@@ -504,7 +507,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
                         path = prodProv.getRutafoto();
 
-                        setImagenFireStoreCircle(path,imagen);
+                        setImagenFireStoreCircle(contexto,path,imagen);
                     }
                 });
 
@@ -551,7 +554,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
         consulta.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_DESCRIPCION, descripcion.getText().toString());
         consulta.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_CANTIDAD, cantidad.getText().toString());
         consulta.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_RUTAFOTO, path);
-        consulta.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_DETPARTIDABASE, idDetPartida);
+        consulta.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_DETPARTIDABASE, iddet);
         consulta.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_PARTIDABASE, id);
         consulta.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_TIPO, tipo);
 
@@ -589,10 +592,11 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
     @Override
     protected boolean update() {
 
+        super.update();
+
         CommonPry.Calculos.actualizarPartidaBase(id);
         partidabase = consulta.queryObject(CAMPOS_PARTIDABASE,id);
 
-        super.update();
 
         return true;
     }
@@ -600,9 +604,10 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
     @Override
     protected void setcambioFragment() {
 
-        bundle.putSerializable(TABLA_PARTIDABASE, partidabase);
-        bundle.putString("tipo", tipo);
-        icFragmentos.enviarBundleAFragment(bundle, new FragmentUDPartidaBase());
+        enviarBundle();
+        bundle.putSerializable(MODELO, partidabase);
+        bundle.putString(TIPO, tipo);
+        icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDPartidaBase());
 
     }
 
@@ -612,7 +617,8 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
             case TIPOTAREA:
                 autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
-                        R.layout.item_list_tarea, lista, TAREA_NOMBRE) {
+                        R.layout.item_list_tarea, lista, CAMPOS_TAREA) {
+
                     @Override
                     public void onEntrada(Modelo entrada, View view) {
 
@@ -627,7 +633,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                         tiempoTarea.setText(entrada.getString(TAREA_TIEMPO));
 
                         if (entrada.getString(TAREA_RUTAFOTO) != null) {
-                            setImagenUri(entrada.getString(TAREA_RUTAFOTO),imagenTarea);
+                            setImagenUri(contexto,entrada.getString(TAREA_RUTAFOTO),imagenTarea);
                         }
 
                     }
@@ -638,7 +644,8 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
             case TIPOPRODUCTO:
 
                 autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
-                        R.layout.item_list_producto, lista, PRODUCTO_NOMBRE) {
+                        R.layout.item_list_producto, lista, CAMPOS_PRODUCTO) {
+
                     @Override
                     public void onEntrada(Modelo entrada, View view) {
 
@@ -653,7 +660,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                         importe.setText(entrada.getString(PRODUCTO_IMPORTE));
 
                         if (entrada.getString(PRODUCTO_RUTAFOTO) != null) {
-                            setImagenUri(entrada.getString(PRODUCTO_RUTAFOTO));
+                            setImagenUri(contexto,entrada.getString(PRODUCTO_RUTAFOTO));
                         }
 
                     }
@@ -664,7 +671,8 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
             case TIPOPARTIDA:
 
                 autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
-                        R.layout.item_list_partidabase, lista, PARTIDABASE_NOMBRE) {
+                        R.layout.item_list_partidabase, lista, CAMPOS_PARTIDABASE) {
+
                     @Override
                     public void onEntrada(Modelo entrada, View view) {
 
@@ -678,7 +686,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                         importe.setText(entrada.getString(PARTIDABASE_PRECIO));
 
                         if (entrada.getString(PARTIDABASE_RUTAFOTO) != null) {
-                            setImagenUri(entrada.getString(PARTIDABASE_RUTAFOTO));
+                            setImagenUri(contexto,entrada.getString(PARTIDABASE_RUTAFOTO));
                         }
 
                     }
@@ -690,7 +698,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
             case TIPOPRODUCTOPROV:
 
                 autoCompleteTextView.setAdapter(new ListaAdaptadorFiltroProdProv(getContext(),
-                        R.layout.item_list_proveedor, listaProdProv) {
+                        R.layout.item_list_prodprov, listaProdProv) {
                     @Override
                     public void onEntrada(ProdProv entrada, View view) {
 
@@ -705,10 +713,10 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                         importe.setText(String.valueOf(entrada.getPrecio()));
                         refProv.setText(entrada.getRefprov());
                         String rutafoto = entrada.getRutafoto();
-                        idDetPartida = entrada.getId();
+                        id = entrada.getId();
 
                         if (entrada.getRutafoto() != null) {
-                            setImagenFireStoreCircle(rutafoto,imagen);
+                            setImagenFireStoreCircle(contexto,rutafoto,imagen);
                         }
 
                     }
@@ -958,7 +966,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
         public ProdProvHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_list_proveedor, parent, false);
+                    .inflate(R.layout.item_list_prodprov, parent, false);
 
             view.setOnClickListener(this);
             return new ProdProvHolder(view);
@@ -1042,7 +1050,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
             public void setRutafoto(String rutafoto) {
                 imagen = mView.findViewById(R.id.imagenprov);
                 path = rutafoto;
-                setImagenFireStoreCircle(path,imagen);
+                setImagenFireStoreCircle(contexto,path,imagen);
             }
         }
     }

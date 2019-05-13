@@ -59,12 +59,15 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         String PERFILACTIVO = "perfil activo";
         String VISORPDF = "visor pdf";
         String VISORPDFMAIL = "visor pdf - email";
+        String TODAS = "Todas";
+        String TODOS = "Todos";
         String PARTIDABASE = "partidabase";
         String NUEVOPRESUPUESTO = getAppContext().getString(R.string.nuevo_presupuesto);
         String NUEVOPROYECTO = getAppContext().getString(R.string.nuevo_proyecto);
         String NUEVOCLIENTE = getAppContext().getString(R.string.nuevo_cliente);
         String NUEVOPROSPECTO = getAppContext().getString(R.string.nuevo_prospecto);
         String NUEVOEVENTO = getAppContext().getString(R.string.nuevo_evento);
+        String NUEVANOTA = getAppContext().getString(R.string.nueva_nota);
         String NUEVOGASTOFIJO = getAppContext().getString(R.string.nuevo_gasto);
         String NUEVAPARTIDA = getAppContext().getString(R.string.nueva_partida_proy);
         String NUEVOPERFIL = getAppContext().getString(R.string.nuevo_perfil);
@@ -87,6 +90,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         String HISTORICO = "Proyectos historico";
         String PROYHISTORICO = getAppContext().getString(R.string.proyectos_historico);
         String AGENDA = "agenda";
+        String EVENTO = "evento";
         String PERFIL = "perfil";
         String AMORTIZACION = "amortizacion";
         String GASTOSFIJOS = "gastos fijos";
@@ -150,18 +154,34 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         String TIPOPARTIDA = "partida";
     }
 
+    public interface TiposNota{
+
+        String NOTATEXTO = "Nota de Texto";
+        String NOTAAUDIO = "Nota de Audio";
+        String NOTAVIDEO = "Nota de Video";
+        String NOTAIMAGEN = "Nota de Imagen";
+    }
+
+
     public static String setNamefdef(){
 
         hora = Calculos.calculoPrecioHora();
+        int longitud = perfila.length();
+        String perfil = null;
+        if (longitud>10) {
+            perfil = perfila.substring(0, 10);
+        }else{
+            perfil = perfila;
+        }
 
         if (prioridad){
 
-            namesubdef = "Perfil: " + perfila + " hora: " +  JavaUtil.formatoMonedaLocal(hora) + " - P";
+            namesubdef = "Perfil: " + perfil + " hora: " +  JavaUtil.formatoMonedaLocal(hora) + " - P";
 
 
         }else{
 
-            namesubdef = "Perfil: " + perfila + " hora: " + JavaUtil.formatoMonedaLocal(hora);
+            namesubdef = "Perfil: " + perfil + " hora: " + JavaUtil.formatoMonedaLocal(hora);
 
         }
 

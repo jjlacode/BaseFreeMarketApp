@@ -82,7 +82,6 @@
     <string name="tarea_personalizada">Tarea personalizada</string>
     <string name="producto_personalizado">Producto personalizado</string>
     <string name="perfiles">perfiles</string>
-    <string name="nueva_tarea">Nueva tarea</string>
     <string name="guardar_nueva_tarea">Guardar como nueva tarea</string>
     <string name="guardar_nuevo_producto">Guardar nuevo producto</string>
     <string name="tareas">Tareas</string>
@@ -194,5 +193,19 @@
     <string name="t_cliente">Cliente</string>
     <string name="t_prospecto">Prospecto</string>
     <string name="volver_a_proyecto">Volver a proyecto</string>
+    <string name="ver_notas">Ver notas</string>
+    <string name="grabar_audio">Grabar audio</string>
+    <string name="play_audio">Reproducir audio</string>
+    <string name="grabar_video">Grabar video</string>
+    <string name="play_video">Reproducir video</string>
+    <string name="notas">Notas</string>
+    <string name="nueva_nota">Nueva Nota</string>
+    <string name="categoria">Categoria</string>
+    <string name="proveedor">Proveedor</string>
+    <string name="tipo_nota">Tipo nota</string>
+    <string name="ver_eventos_relacionados">Ver eventos relacionados</string>
+    <string name="nuevo_prodprov">Nuevo producto prov</string>
+    <string name="nueva_tarea">Nueva tarea</string>
+    <string name="nueva_tarea_base">Nueva tarea</string>
 
 </resources>

@@ -5,6 +5,10 @@ import android.net.Uri;
 
 import java.io.Serializable;
 
+import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.SECUENCIA;
+
 public class Modelo implements Serializable {
 
     private String[] campos;
@@ -36,6 +40,42 @@ public class Modelo implements Serializable {
             }
 
         }
+    }
+
+    public Modelo (String[] campos, String id){
+
+        ConsultaBD consultaBD = new ConsultaBD();
+        Modelo modelo = consultaBD.queryObject(campos,id);
+        this.campos = campos;
+        this.valores = modelo.getValores();
+        estructura = campos;
+        numcampos = (campos.length/3);
+        nombreTabla = campos[1];
+        campostabla = (Integer.parseInt(campos[0])-2)/3;
+    }
+
+    public Modelo (String[] campos, String id, int secuencia){
+
+        ConsultaBD consultaBD = new ConsultaBD();
+        Modelo modelo = consultaBD.queryObjectDetalle(campos,id,secuencia);
+        this.campos = campos;
+        this.valores = modelo.getValores();
+        estructura = campos;
+        numcampos = (campos.length/3);
+        nombreTabla = campos[1];
+        campostabla = (Integer.parseInt(campos[0])-2)/3;
+    }
+
+    public Modelo (String[] campos, String id, String secuencia){
+
+        ConsultaBD consultaBD = new ConsultaBD();
+        Modelo modelo = consultaBD.queryObjectDetalle(campos,id,secuencia);
+        this.campos = campos;
+        this.valores = modelo.getValores();
+        estructura = campos;
+        numcampos = (campos.length/3);
+        nombreTabla = campos[1];
+        campostabla = (Integer.parseInt(campos[0])-2)/3;
     }
 
     public Modelo(String[] campos, String[] valores) {
@@ -89,6 +129,17 @@ public class Modelo implements Serializable {
 
         return new Modelo(estructura,valores,ref);
 
+    }
+
+    public boolean esDetalle(){
+
+        for (int i = 0; i<numcampos;i++){
+            if (campos[i].equals(SECUENCIA)){
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public ContentValues contenido(){

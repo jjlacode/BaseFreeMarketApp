@@ -212,9 +212,9 @@ public class ImagenUtil {
     public void setImageFireStoreCircle(String rutafoto, ImageView imagen){
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ico_calendario_reloj)
+                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
                 .circleCrop()
-                .error(R.drawable.ico_calendario_reloj);
+                .error(R.drawable.ic_add_a_photo_black_24dp);
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
@@ -230,9 +230,9 @@ public class ImagenUtil {
     public void setImageWebCircle(String url, ImageView imagen){
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ico_calendario_reloj)
+                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
                 .circleCrop()
-                .error(R.drawable.ico_calendario_reloj);
+                .error(R.drawable.ic_add_a_photo_black_24dp);
 
         Glide.with(context).load(url).apply(options).into(imagen);
     }
@@ -240,9 +240,9 @@ public class ImagenUtil {
     public void setImageUriCircle(String uri, ImageView imagen){
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ico_calendario_reloj)
+                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
                 .circleCrop()
-                .error(R.drawable.ico_calendario_reloj);
+                .error(R.drawable.ic_add_a_photo_black_24dp);
 
         Glide.with(context).load(uri).apply(options).into(imagen);
     }

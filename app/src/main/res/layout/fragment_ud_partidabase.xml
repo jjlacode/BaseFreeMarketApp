@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.FragmentUDPartidaBase">
+    tools:context=".ui.FragmentCRUDPartidaBase">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -33,7 +33,7 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:adjustViewBounds="true"
-                        android:src="@drawable/ico_calendario_reloj" />
+                        android:src="@drawable/ic_add_a_photo_black_24dp" />
 
                     <ImageView
                         android:id="@+id/imgretudpartidabase"
@@ -42,7 +42,7 @@
                         android:layout_gravity="center"
                         android:layout_weight="3"
                         android:adjustViewBounds="true"
-                        android:scaleType="fitXY"
+                        android:scaleType="center"
                         android:src="@drawable/alert_box_v" />
                 </LinearLayout>
 
@@ -52,6 +52,11 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
 
+                    <AutoCompleteTextView
+                        android:id="@+id/autonompartidabase"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/nombre"/>
                     <EditText
                         android:id="@+id/etnomudpartidabase"
                         android:layout_width="match_parent"
@@ -64,7 +69,6 @@
                         android:id="@+id/etdescripcionUDpartidabase"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:ems="10"
                         android:hint="@string/descripcion_tipo_cliente"
                         android:inputType="textMultiLine"
@@ -86,13 +90,6 @@
                     android:text="@string/horas" />
 
                 <TextView
-                    android:id="@+id/lcantidadUDpartidabase"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/cantidad" />
-
-                <TextView
                     android:id="@+id/lprecioUDpartidabase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -105,96 +102,22 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <EditText
+                <TextView
                     android:id="@+id/ettiempoUDpartidabase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:hint="@string/tiempo"
-                    android:inputType="numberDecimal" />
+                    android:hint="@string/tiempo" />
 
-                <EditText
-                    android:id="@+id/etcantidadUDpartidabase"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:hint="@string/cantidad"
-                    android:inputType="numberDecimal" />
 
-                <EditText
+                <TextView
                     android:id="@+id/etprecioUDpartidabase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:hint="@string/importe"
-                    android:inputType="numberDecimal" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/etcompletadaUDpartidabase"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:gravity="right"
-                    android:hint="@string/completada"
-                    android:inputType="number" />
-
-                <TextView
-                    android:id="@+id/lcompletadaUDpartidabase"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:gravity="center"
-                    android:text="@string/completada" />
-
-            </LinearLayout>
-
-                <ProgressBar
-                    android:id="@+id/progressBarUDpartidabase"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btnsaveUDpartidabase"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/boton_redondo_verde"
-                    android:textColor="@color/Color_texto_titulos"
-                    android:text="@string/guardar" />
-
-                <Button
-                    android:id="@+id/btndelUDpartidabase"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/boton_redondo_verde"
-                    android:textColor="@color/Color_texto_titulos"
-                    android:text="@string/borrar" />
-
-                <Button
-                    android:id="@+id/btnvolverUDpartidabase"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/boton_redondo_verde"
-                    android:textColor="@color/Color_texto_titulos"
-                    android:text="@string/volver" />
+                    android:hint="@string/importe"/>
             </LinearLayout>
 
             <LinearLayout
@@ -209,7 +132,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/boton_redondo_verde"
                     android:textColor="@color/Color_texto_titulos"
-                    android:text="@string/nueva_tarea" />
+                    android:text="@string/nueva_tarea_base" />
 
                 <Button
                     android:id="@+id/btnprodudpartidabase"
@@ -236,7 +159,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/boton_redondo_verde"
                     android:textColor="@color/Color_texto_titulos"
-                    android:text="@string/nuevo_producto_proveedor" />
+                    android:text="@string/nueva_partidabase" />
 
             </LinearLayout>
 

@@ -24,8 +24,10 @@ public class JavaUtil {
         String NAMESUB = "namesub";
         String NAMEFTEMP = "nameftemp";
         String NAMESUBTEMP = "namesubtemp";
+        String LISTA = "lista";
         String TIPO = "tipo";
         String ID = "id";
+        String IDREL = "idrel";
         String SECUENCIA = "secuencia";
         String MODELO = "modelo";
         String NUEVOREGISTRO = "nuevoreg";
@@ -57,6 +59,10 @@ public class JavaUtil {
         int MENORIGUAL = 6;
         int ASCENDENTE = 7;
         int DESCENDENTE = 8;
+
+        int AUDIORECORD = 1;
+        int VIDEORECORD = 2;
+
 
     }
 

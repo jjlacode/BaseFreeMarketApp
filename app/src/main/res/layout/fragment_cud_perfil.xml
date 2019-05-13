@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.FragmentCUDPerfil">
+    tools:context=".ui.FragmentCRUDPerfil">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -247,38 +247,6 @@
                     android:hint="@string/sueldo" />
             </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/perfil_ud_btn_save"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/boton_redondo_verde"
-                android:textColor="@color/Color_texto_titulos"
-                android:layout_weight="1"
-                android:text="@string/guardar" />
-
-            <Button
-                android:id="@+id/perfil_ud_btn_del"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/boton_redondo_verde"
-                android:textColor="@color/Color_texto_titulos"
-                android:layout_weight="1"
-                android:text="@string/borrar" />
-
-            <Button
-                android:id="@+id/perfil_ud_btn_back"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/boton_redondo_verde"
-                android:textColor="@color/Color_texto_titulos"
-                android:layout_weight="1"
-                android:text="@string/volver" />
-        </LinearLayout>
 
             <Button
                 android:id="@+id/btnperfilactudperfil"

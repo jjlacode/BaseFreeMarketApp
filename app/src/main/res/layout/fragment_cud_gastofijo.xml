@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:orientation="vertical"
-    tools:context=".ui.FragmentCUDGastoFijo">
+    tools:context=".ui.FragmentCRUDGastoFijo">
 
 
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -130,26 +130,6 @@
                 android:inputType="number" />
         </LinearLayout>
 
-        <Button android:id="@+id/gastoFijo_ud_btn_save"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/boton_redondo_verde"
-            android:textColor="@color/Color_texto_titulos"
-            android:text="@string/guardar" />
-
-        <Button android:id="@+id/gastoFijo_ud_btn_del"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/boton_redondo_verde"
-            android:textColor="@color/Color_texto_titulos"
-            android:text="@string/borrar" />
-
-        <Button android:id="@+id/gastoFijo_ud_btn_back"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/boton_redondo_verde"
-            android:textColor="@color/Color_texto_titulos"
-            android:text="@string/volver" />
 
     </LinearLayout>
 

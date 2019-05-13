@@ -4,6 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,7 +18,6 @@ import androidx.appcompat.app.AlertDialog;
 import java.io.IOException;
 
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 
 import static jjlacode.com.freelanceproject.util.CommonPry.permiso;
 
@@ -27,7 +29,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
     protected ImageView imagen;
 
     protected String path;
-    protected ImagenUtil imagenUtil;
+    protected ImagenUtil imagenUtil = new ImagenUtil(contexto);
     protected ContentValues valores;
     final protected int COD_FOTO = 10;
     final protected int COD_SELECCIONA = 20;
@@ -73,24 +75,50 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
         return false;
     }
 
+    protected boolean onDelete(){
+
+        if (delete()){
+            if (tablaCab==null) {
+                id = null;
+                modelo=null;
+            }else{
+                secuencia = 0;
+                modelo=null;
+            }
+            cambiarFragment();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    protected boolean onBack(){
+
+        if (nuevo) {
+            nuevo = false;
+            namesubclass = namesubtemp;
+        }
+        if (tablaCab==null) {
+            id = null;
+            modelo=null;
+
+        }else{
+            secuencia = 0;
+            modelo=null;
+        }
+        cambiarFragment();
+
+        return true;
+    }
+
     protected void acciones(){
 
         btnback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if (nuevo) {
-                    nuevo = false;
-                    namesubclass = namesubtemp;
-                }
-                if (tablaCab==null) {
-                    id = null;
-                    modelo=null;
-                }else{
-                    secuencia = 0;
-                    modelo=null;
-                }
-                cambiarFragment();
+               onBack();
 
             }
         });
@@ -99,16 +127,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
             @Override
             public void onClick(View v) {
 
-                if (delete()){
-                    if (tablaCab==null) {
-                        id = null;
-                        modelo=null;
-                    }else{
-                        secuencia = 0;
-                        modelo=null;
-                    }
-                    cambiarFragment();
-                }
+                onDelete();
             }
         });
 
@@ -122,14 +141,16 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
         });
 
         if (permiso) {
-            imagen.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            if (imagen!=null) {
+                imagen.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
-                    onUpdate();
-                    mostrarDialogoOpcionesImagen(contexto);
-                }
-            });
+                        onUpdate();
+                        mostrarDialogoOpcionesImagen(contexto);
+                    }
+                });
+            }
         }
 
         setAcciones();
@@ -160,41 +181,36 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
         return false;
     }
 
-    protected boolean registrar(){
+    protected boolean registrar() {
 
         valores = new ContentValues();
 
         setContenedor();
 
-        if (tablaCab!=null && secuencia==0 && modelo==null){
+        if (tablaCab != null && secuencia == 0 && modelo == null) {
 
-            if ((secuencia = consulta.secInsertRegistroDetalle(campos,id,tablaCab,valores))>0){
+            secuencia = consulta.secInsertRegistroDetalle(campos, id, tablaCab, valores);
 
-                modelo = consulta.queryObjectDetalle(campos,id,secuencia);
+            modelo = consulta.queryObjectDetalle(campos, id, secuencia);
 
-                Toast.makeText(getContext(), "Registro detalle creado", Toast.LENGTH_SHORT).show();
-                namesubclass = namesubtemp;
-                return true;
+            Toast.makeText(getContext(), "Registro detalle creado", Toast.LENGTH_SHORT).show();
+            namesubclass = namesubtemp;
+            return true;
 
-            }
+        } else if (id == null && modelo == null) {
 
-        }else if ( id==null && modelo==null && (id=consulta.idInsertRegistro(tabla,valores))!=null) {
-
-            modelo = consulta.queryObject(campos,id);
+            id = consulta.idInsertRegistro(tabla, valores);
+            modelo = consulta.queryObject(campos, id);
+            System.out.println("idcliente registro = " + id);
 
             Toast.makeText(getContext(), "Registro creado", Toast.LENGTH_SHORT).show();
             return true;
 
-        }else {
-
-            Toast.makeText(getContext(), "Error al crear registro", Toast.LENGTH_SHORT).show();
-            return false;
         }
 
+        Toast.makeText(getContext(), "Error al crear registro", Toast.LENGTH_SHORT).show();
         return false;
-
     }
-
 
     protected abstract void setContenedor();
 
@@ -297,115 +313,208 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
                     imagenUtil.setPhotoUri(data.getData());
                     path = imagenUtil.getPath();
                     onUpdate();
-                    setImagenUriCircle(path);
+                    setImagenUriCircle(imagenUtil,path);
                     break;
 
                 case COD_FOTO:
                     path = imagenUtil.getPath();
                     onUpdate();
-                    setImagenUriCircle(path);
+                    setImagenUriCircle(imagenUtil,path);
+                    break;
+
+                case AUDIORECORD:
+
+                case VIDEORECORD:
+
+                        path = String.valueOf(data.getData());
+                        onUpdate();
 
             }
         }
     }
 
-    protected void setImagenUri(String rutaFoto){
+    protected void setImagenUri(Context contexto, String rutaFoto){
 
-        ImagenUtil imagenUtil = new ImagenUtil(getContext());
-        imagenUtil.setImageUri(rutaFoto,imagen, R.drawable.ico_calendario_reloj);
+        ImagenUtil imagenUtil = new ImagenUtil(contexto);
+        imagenUtil.setImageUri(rutaFoto,imagen, R.drawable.ic_add_a_photo_black_24dp);
 
     }
 
-    protected void setImagenUri(String rutaFoto, int drawable){
+    protected void setImagenUri(ImagenUtil imagenUtil, String rutaFoto){
 
-        ImagenUtil imagenUtil = new ImagenUtil(getContext());
+        imagenUtil.setImageUri(rutaFoto,imagen, R.drawable.ic_add_a_photo_black_24dp);
+
+    }
+
+    protected void setImagenUri(Context contexto, String rutaFoto, int drawable){
+
+        ImagenUtil imagenUtil = new ImagenUtil(contexto);
         imagenUtil.setImageUri(rutaFoto,imagen,drawable);
 
     }
 
-    protected void setImagenUri(String rutaFoto, ImageView imagen, int drawable){
+    protected void setImagenUri(ImagenUtil imagenUtil, String rutaFoto, int drawable){
 
-        ImagenUtil imagenUtil = new ImagenUtil(getContext());
         imagenUtil.setImageUri(rutaFoto,imagen,drawable);
 
     }
 
-    protected void setImagenUri(String rutaFoto, ImageView imagen){
+    protected void setImagenUri(Context contexto, String rutaFoto, ImageView imagen, int drawable){
 
-        ImagenUtil imagenUtil = new ImagenUtil(getContext());
-        imagenUtil.setImageUri(rutaFoto,imagen, R.drawable.ico_calendario_reloj);
+        ImagenUtil imagenUtil = new ImagenUtil(contexto);
+        imagenUtil.setImageUri(rutaFoto,imagen,drawable);
 
     }
 
-    protected void setImagenFireStore(String rutaFoto, int drawable){
+    protected void setImagenUri(ImagenUtil imagenUtil, String rutaFoto, ImageView imagen, int drawable){
 
-        ImagenUtil imagenUtil = new ImagenUtil(getContext());
+        imagenUtil.setImageUri(rutaFoto,imagen,drawable);
+
+    }
+
+    protected void setImagenUri(Context contexto, String rutaFoto, ImageView imagen){
+
+        ImagenUtil imagenUtil = new ImagenUtil(contexto);
+        imagenUtil.setImageUri(rutaFoto,imagen, R.drawable.ic_add_a_photo_black_24dp);
+
+    }
+
+    protected void setImagenUri(ImagenUtil imagenUtil, String rutaFoto, ImageView imagen){
+
+        imagenUtil.setImageUri(rutaFoto,imagen, R.drawable.ic_add_a_photo_black_24dp);
+
+    }
+
+    protected void setImagenFireStore(Context contexto, String rutaFoto, int drawable){
+
+        ImagenUtil imagenUtil = new ImagenUtil(contexto);
         imagenUtil.setImageFireStore(rutaFoto,imagen,drawable);
 
     }
 
-    protected void setImagenFireStore(String rutaFoto, ImageView imagen,int drawable){
+    protected void setImagenFireStore(ImagenUtil imagenUtil, String rutaFoto, int drawable){
 
-        ImagenUtil imagenUtil = new ImagenUtil(getContext());
         imagenUtil.setImageFireStore(rutaFoto,imagen,drawable);
 
     }
 
-    protected void setImagenFireStore(String rutaFoto, ImageView imagen){
+    protected void setImagenFireStore(Context contexto, String rutaFoto, ImageView imagen,int drawable){
 
-        ImagenUtil imagenUtil = new ImagenUtil(getContext());
-        imagenUtil.setImageFireStore(rutaFoto,imagen,R.drawable.ico_calendario_reloj);
-
-    }
-
-    protected void setImagenUriCircle(String rutaFoto){
-
-        ImagenUtil imagenUtil = new ImagenUtil(getContext());
-        imagenUtil.setImageUriCircle(rutaFoto,imagen, R.drawable.ico_calendario_reloj);
+        ImagenUtil imagenUtil = new ImagenUtil(contexto);
+        imagenUtil.setImageFireStore(rutaFoto,imagen,drawable);
 
     }
 
-    protected void setImagenUriCircle(String rutaFoto, int drawable){
+    protected void setImagenFireStore(ImagenUtil imagenUtil, String rutaFoto, ImageView imagen,int drawable){
 
-        ImagenUtil imagenUtil = new ImagenUtil(getContext());
+        imagenUtil.setImageFireStore(rutaFoto,imagen,drawable);
+
+    }
+
+    protected void setImagenFireStore(Context contexto, String rutaFoto, ImageView imagen){
+
+        ImagenUtil imagenUtil = new ImagenUtil(contexto);
+        imagenUtil.setImageFireStore(rutaFoto,imagen,R.drawable.ic_add_a_photo_black_24dp);
+
+    }
+
+    protected void setImagenFireStore(ImagenUtil imagenUtil, String rutaFoto, ImageView imagen){
+
+        imagenUtil.setImageFireStore(rutaFoto,imagen,R.drawable.ic_add_a_photo_black_24dp);
+
+    }
+
+    protected void setImagenUriCircle(Context contexto, String rutaFoto){
+
+        ImagenUtil imagenUtil = new ImagenUtil(contexto);
+        imagenUtil.setImageUriCircle(rutaFoto,imagen, R.drawable.ic_add_a_photo_black_24dp);
+
+    }
+
+    protected void setImagenUriCircle(ImagenUtil imagenUtil, String rutaFoto){
+
+        imagenUtil.setImageUriCircle(rutaFoto,imagen, R.drawable.ic_add_a_photo_black_24dp);
+
+    }
+
+    protected void setImagenUriCircle(Context contexto, String rutaFoto, int drawable){
+
+        ImagenUtil imagenUtil = new ImagenUtil(contexto);
         imagenUtil.setImageUriCircle(rutaFoto,imagen,drawable);
 
     }
 
-    protected void setImagenUriCircle(String rutaFoto, ImageView imagen, int drawable){
+    protected void setImagenUriCircle(ImagenUtil imagenUtil, String rutaFoto, int drawable){
 
-        ImagenUtil imagenUtil = new ImagenUtil(getContext());
         imagenUtil.setImageUriCircle(rutaFoto,imagen,drawable);
 
     }
 
-    protected void setImagenUriCircle(String rutaFoto, ImageView imagen){
+    protected void setImagenUriCircle(Context contexto, String rutaFoto, ImageView imagen, int drawable){
 
-        ImagenUtil imagenUtil = new ImagenUtil(getContext());
-        imagenUtil.setImageUriCircle(rutaFoto,imagen, R.drawable.ico_calendario_reloj);
+        ImagenUtil imagenUtil = new ImagenUtil(contexto);
+        imagenUtil.setImageUriCircle(rutaFoto,imagen,drawable);
 
     }
 
-    protected void setImagenFireStoreCircle(String rutaFoto, int drawable){
+    protected void setImagenUriCircle(ImagenUtil imagenUtil, String rutaFoto, ImageView imagen, int drawable){
 
-        ImagenUtil imagenUtil = new ImagenUtil(getContext());
+        imagenUtil.setImageUriCircle(rutaFoto,imagen,drawable);
+
+    }
+
+    protected void setImagenUriCircle(Context contexto, String rutaFoto, ImageView imagen){
+
+        ImagenUtil imagenUtil = new ImagenUtil(contexto);
+        imagenUtil.setImageUriCircle(rutaFoto,imagen, R.drawable.ic_add_a_photo_black_24dp);
+
+    }
+
+    protected void setImagenUriCircle(ImagenUtil imagenUtil, String rutaFoto, ImageView imagen){
+
+        imagenUtil.setImageUriCircle(rutaFoto,imagen, R.drawable.ic_add_a_photo_black_24dp);
+
+    }
+
+    protected void setImagenFireStoreCircle(Context contexto, String rutaFoto, int drawable){
+
+        ImagenUtil imagenUtil = new ImagenUtil(contexto);
         imagenUtil.setImageFireStoreCircle(rutaFoto,imagen,drawable);
 
     }
 
-    protected void setImagenFireStoreCircle(String rutaFoto, ImageView imagen,int drawable){
+    protected void setImagenFireStoreCircle(ImagenUtil imagenUtil, String rutaFoto, int drawable){
 
-        ImagenUtil imagenUtil = new ImagenUtil(getContext());
         imagenUtil.setImageFireStoreCircle(rutaFoto,imagen,drawable);
 
     }
 
-    protected void setImagenFireStoreCircle(String rutaFoto, ImageView imagen){
+    protected void setImagenFireStoreCircle(Context contexto, String rutaFoto, ImageView imagen,int drawable){
 
-        ImagenUtil imagenUtil = new ImagenUtil(getContext());
-        imagenUtil.setImageFireStoreCircle(rutaFoto,imagen,R.drawable.ico_calendario_reloj);
+        ImagenUtil imagenUtil = new ImagenUtil(contexto);
+        imagenUtil.setImageFireStoreCircle(rutaFoto,imagen,drawable);
 
     }
+
+    protected void setImagenFireStoreCircle(ImagenUtil imagenUtil, String rutaFoto, ImageView imagen,int drawable){
+
+        imagenUtil.setImageFireStoreCircle(rutaFoto,imagen,drawable);
+
+    }
+
+    protected void setImagenFireStoreCircle(Context contexto, String rutaFoto, ImageView imagen){
+
+        ImagenUtil imagenUtil = new ImagenUtil(contexto);
+        imagenUtil.setImageFireStoreCircle(rutaFoto,imagen,R.drawable.ic_add_a_photo_black_24dp);
+
+    }
+
+    protected void setImagenFireStoreCircle(ImagenUtil imagenUtil, String rutaFoto, ImageView imagen){
+
+        imagenUtil.setImageFireStoreCircle(rutaFoto,imagen,R.drawable.ic_add_a_photo_black_24dp);
+
+    }
+
     protected void setDato(String campo, String valor){
 
         consulta.putDato(valores,campos,campo,valor);

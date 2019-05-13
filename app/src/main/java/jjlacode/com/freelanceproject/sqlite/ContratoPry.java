@@ -43,6 +43,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         String TABLA_PARTIDABASE = "partidabase";
         String TABLA_DETPARTIDABASE = "detpartidabase";
         String TABLA_PEDIDOSPROV = "pedidosprov";
+        String TABLA_NOTA = "nota";
 
         //COLUMNAS--------------------------------------------------------
 
@@ -212,6 +213,13 @@ public class ContratoPry implements JavaUtil.Constantes {
         String PEDIDOPROV_ID_PEDIDOPROV = "id_pedidoprov";
         String PEDIDOPROV_DESCRIPCION = "descripcion_pedidoprov";
         String PEDIDOPROV_FECHA = "fecha_pedidoprov";
+
+        String NOTA_ID_NOTA = "id_nota";
+        String NOTA_ID_RELACIONADO = "id_relacionado";
+        String NOTA_DESCRIPCION = "descripcion_nota";
+        String NOTA_RUTA = "rutanota";
+        String NOTA_TIPO = "tiponota";
+        String NOTA_FECHA = "fecha_nota";
 
         String TABLAS_ID_TABLA = "id_tabla";
         String TABLAS_TABLA = "tabla";
@@ -445,6 +453,15 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PEDIDOPROV_FECHA,"INTEGER NON NULL DEFAULT 0",LONG
         };
 
+        String[] CAMPOS_NOTA = {"20",TABLA_NOTA,
+                NOTA_ID_NOTA,"TEXT NON NULL UNIQUE",STRING,
+                NOTA_ID_RELACIONADO,"TEXT",STRING,
+                NOTA_DESCRIPCION,"TEXT",STRING,
+                NOTA_RUTA,"TEXT",STRING,
+                NOTA_FECHA,"INTEGER",LONG,
+                NOTA_TIPO,"TEXT",STRING
+        };
+
     }
 
     public static final String PARAMETRO_FILTRO = "filtro";
@@ -472,6 +489,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         listaCampos.add(Tablas.CAMPOS_PARTIDABASE);
         listaCampos.add(Tablas.CAMPOS_DETPARTIDABASE);
         listaCampos.add(Tablas.CAMPOS_PEDIDOPROV);
+        listaCampos.add(Tablas.CAMPOS_NOTA);
 
         return listaCampos;
     }

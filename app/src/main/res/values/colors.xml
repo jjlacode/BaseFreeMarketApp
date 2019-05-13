@@ -9,4 +9,5 @@
     <color name="Color_card_acept">#7BFFFF00</color>
     <color name="Color_card_notok">#6CFC0000</color>
     <color name="Color_card_tarea">#4E909090</color>
+    <color name="Color_card_defecto">#C2D8A8</color>
 </resources>

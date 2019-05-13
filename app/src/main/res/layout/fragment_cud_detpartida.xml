@@ -37,6 +37,20 @@
                     android:orientation="vertical">
 
                     <AutoCompleteTextView
+                        android:id="@+id/autocat"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:hint="@string/categoria"/>
+
+                    <AutoCompleteTextView
+                        android:id="@+id/autoprov"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:hint="@string/proveedor"/>
+
+                    <AutoCompleteTextView
                         android:id="@+id/etnomcdetpartida"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"

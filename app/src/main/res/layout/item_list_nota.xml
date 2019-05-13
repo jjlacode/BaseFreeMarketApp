@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        card_view:cardCornerRadius="10dp"
+        card_view:cardBackgroundColor="#ECE6E6">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvtipo_lnota"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tipo_nota"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tvdesc_lnota"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/descripcion"
+                android:textStyle="italic"
+                android:textSize="18sp" />
+            <TextView
+                android:id="@+id/tvfechalnota"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/btn_play_audiol"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/play_audio"
+                android:background="@drawable/boton_redondo_verde"
+                android:textColor="@color/Color_texto_titulos"/>
+
+            <Button
+                android:id="@+id/btn_play_videol"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/play_video"
+                android:background="@drawable/boton_redondo_verde"
+                android:textColor="@color/Color_texto_titulos"/>
+
+
+            <ImageView
+                android:id="@+id/imagen_lnota"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>

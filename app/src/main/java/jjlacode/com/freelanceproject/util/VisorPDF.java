@@ -9,9 +9,8 @@ import com.github.barteksc.pdfviewer.PDFView;
 import java.io.File;
 
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.ui.FragmentCUDProyecto;
+import jjlacode.com.freelanceproject.ui.FragmentCRUDProyecto;
 
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.PROYECTO;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NAMEF;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NAMESUB;
 
@@ -77,7 +76,7 @@ public class VisorPDF extends FragmentBase {
 
                 bundle.putString(NAMEF, bundle.getString(NAMESUB));
                 bundle.putString(NAMESUB,CommonPry.setNamefdef());
-                icFragmentos.enviarBundleAFragment(bundle,new FragmentCUDProyecto());
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDProyecto());
             }
         });
 

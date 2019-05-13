@@ -32,8 +32,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2.5"
                         android:layout_gravity="center"
-                        android:adjustViewBounds="true"
-                        android:src="@drawable/ico_calendario_reloj" />
+                        android:src="@drawable/ic_add_a_photo_black_24dp"
+                        android:adjustViewBounds="true"/>
 
 
                 <LinearLayout

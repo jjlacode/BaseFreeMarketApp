@@ -111,6 +111,10 @@ public class SplashActivity extends AppCompatActivity implements ContratoPry.Tab
 
             Log.d("inicio", "Inicio correcto");
 
+            SharedPreferences persistencia=getSharedPreferences(PERSISTENCIA, MODE_PRIVATE);
+            SharedPreferences.Editor editor=persistencia.edit();
+            editor.clear();
+            editor.apply();
 
             return true;
         }

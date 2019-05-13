@@ -1,27 +1,37 @@
 package jjlacode.com.freelanceproject.ui;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+
+import jjlacode.com.freelanceproject.util.AppActivity;
+import jjlacode.com.freelanceproject.util.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.FragmentCRUD;
 import jjlacode.com.freelanceproject.util.FragmentCUD;
 import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltroRV;
 import jjlacode.com.freelanceproject.util.Modelo;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.CommonPry;
+import jjlacode.com.freelanceproject.util.TipoViewHolder;
 
-public class FragmentCUDPerfil extends FragmentCUD implements ContratoPry.Tablas {
+public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tablas {
 
 
-    private Modelo perfil;
     private EditText nombre;
     private EditText descripcion;
     private EditText lunes;
@@ -39,69 +49,103 @@ public class FragmentCUDPerfil extends FragmentCUD implements ContratoPry.Tablas
 
     private static ConsultaBD consulta = new ConsultaBD();
 
-    public FragmentCUDPerfil() {
+    public FragmentCRUDPerfil() {
         // Required empty public constructor
+    }
+
+    @Override
+    protected TipoViewHolder setViewHolder(View view){
+
+        return new ViewHolderRV(view);
+    }
+
+    @Override
+    protected ListaAdaptadorFiltroRV setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+        return new AdaptadorFiltroRV(context,layoutItem,lista,campos);
+    }
+
+    @Override
+    protected void setLista() {
+
+    }
+
+    @Override
+    protected void setMaestroDetallePort() { maestroDetalleSeparados = true;
+
+    }
+
+    @Override
+    protected void setMaestroDetalleLand() { maestroDetalleSeparados = false;
+
+    }
+
+    @Override
+    protected void setMaestroDetalleTabletLand() { maestroDetalleSeparados = false;
+
+    }
+
+    @Override
+    protected void setMaestroDetalleTabletPort() { maestroDetalleSeparados = false;
+
     }
 
 
     @Override
     protected void setTabla() {
 
+        tabla = TABLA_PERFIL;
+
     }
 
     @Override
     protected void setTablaCab() {
+
+        tablaCab = null;
 
     }
 
     @Override
     protected void setContext() {
 
+        contexto = getContext();
     }
 
     @Override
     protected void setCampos() {
 
+        campos = CAMPOS_PERFIL;
     }
 
     @Override
     protected void setCampoID() {
 
+        campoID = PERFIL_ID_PERFIL;
     }
 
     @Override
     protected void setBundle() {
 
-        if (bundle!=null) {
-
-            perfil = (Modelo) bundle.getSerializable(TABLA_PERFIL);
-            if (perfil!=null) {
-                id = perfil.getString(PERFIL_ID_PERFIL);
-                System.out.println("id = " + id);
-            }
-            enviarAct();
-        }
 
     }
 
     @Override
     protected void setDatos() {
 
-        nombre.setText(perfil.getString(PERFIL_NOMBRE));
-        descripcion.setText(perfil.getString(PERFIL_DESCRIPCION));
-        lunes.setText(perfil.getString(PERFIL_HORASLUNES));
-        martes.setText(perfil.getString(PERFIL_HORASMARTES));
-        miercoles.setText(perfil.getString(PERFIL_HORASMIERCOLES));
-        jueves.setText(perfil.getString(PERFIL_HORASJUEVES));
-        viernes.setText(perfil.getString(PERFIL_HORASVIERNES));
-        sabado.setText(perfil.getString(PERFIL_HORASSABADO));
-        domingo.setText(perfil.getString(PERFIL_HORASDOMINGO));
-        vacaciones.setText(perfil.getString(PERFIL_VACACIONES));
-        sueldo.setText(JavaUtil.formatoMonedaLocal(perfil.getDouble(PERFIL_SUELDO)));
+        nombre.setText(modelo.getString(PERFIL_NOMBRE));
+        descripcion.setText(modelo.getString(PERFIL_DESCRIPCION));
+        lunes.setText(modelo.getString(PERFIL_HORASLUNES));
+        martes.setText(modelo.getString(PERFIL_HORASMARTES));
+        miercoles.setText(modelo.getString(PERFIL_HORASMIERCOLES));
+        jueves.setText(modelo.getString(PERFIL_HORASJUEVES));
+        viernes.setText(modelo.getString(PERFIL_HORASVIERNES));
+        sabado.setText(modelo.getString(PERFIL_HORASSABADO));
+        domingo.setText(modelo.getString(PERFIL_HORASDOMINGO));
+        vacaciones.setText(modelo.getString(PERFIL_VACACIONES));
+        sueldo.setText(JavaUtil.formatoMonedaLocal(modelo.getDouble(PERFIL_SUELDO)));
         btndelete.setVisibility(View.VISIBLE);
         btnperfilact.setVisibility(View.VISIBLE);
 
-        if (perfil.getString(PERFIL_NOMBRE).equals(CommonPry.perfila)){
+        if (modelo.getString(PERFIL_NOMBRE).equals(CommonPry.perfila)){
 
             activo.setVisibility(View.VISIBLE);
             btnperfilact.setVisibility(View.GONE);
@@ -132,7 +176,8 @@ public class FragmentCUDPerfil extends FragmentCUD implements ContratoPry.Tablas
 
                 new CommonPry.Calculos.Tareafechas().execute();
 
-                CommonPry.setNamefdef();
+                namesubclass = CommonPry.setNamefdef();
+                enviarAct();
             }
         });
 
@@ -143,16 +188,14 @@ public class FragmentCUDPerfil extends FragmentCUD implements ContratoPry.Tablas
     @Override
     protected void setLayout() {
 
-        layout = R.layout.fragment_cud_perfil;
+        layoutCuerpo = R.layout.fragment_cud_perfil;
+        layoutitem = R.layout.item_list_perfil;
 
     }
 
     @Override
     protected void setInicio() {
 
-        btnsave = view.findViewById(R.id.perfil_ud_btn_save);
-        btndelete = view.findViewById(R.id.perfil_ud_btn_del);
-        btnback = view.findViewById(R.id.perfil_ud_btn_back);
         nombre = view.findViewById(R.id.etnomudperfil);
         descripcion = view.findViewById(R.id.etdescudperfil);
         lunes = view.findViewById(R.id.ethlunesudperfil);
@@ -206,27 +249,17 @@ public class FragmentCUDPerfil extends FragmentCUD implements ContratoPry.Tablas
 
 
 
-        if (!perfil.getString(PERFIL_NOMBRE).equals(CommonPry.perfila)) {
+        if (!modelo.getString(PERFIL_NOMBRE).equals(CommonPry.perfila)) {
             super.delete();
             consulta.deleteRegistro(tabla, id);
         }else{
-            Toast.makeText(getContext(),"No se puede borrar el perfil activo", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(),"No se puede borrar el modelo activo", Toast.LENGTH_SHORT).show();
         }
 
         return true;
 
     }
 
-    @Override
-    protected boolean registrar() {
-
-        super.registrar();
-
-        consulta.insertRegistro(tabla,valores);
-
-        return true;
-
-    }
 
     @Override
     protected void setContenedor() {
@@ -246,7 +279,6 @@ public class FragmentCUDPerfil extends FragmentCUD implements ContratoPry.Tablas
 
     }
 
-
     protected void cambiarFragment(){
 
         super.cambiarFragment();
@@ -260,4 +292,68 @@ public class FragmentCUDPerfil extends FragmentCUD implements ContratoPry.Tablas
 
     }
 
-}
+    public class AdaptadorFiltroRV extends ListaAdaptadorFiltroRV{
+
+
+        public AdaptadorFiltroRV(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+            super(contexto, R_layout_IdView, entradas, campos);
+        }
+
+        @Override
+        protected void setEntradas(int posicion, View itemView, ArrayList<Modelo> entrada) {
+
+            TextView nombre,descripcion;
+            CardView card;
+
+            nombre = itemView.findViewById(R.id.tvnomlperfil);
+            descripcion = itemView.findViewById(R.id.tvdesclperfil);
+            card = itemView.findViewById(R.id.cardlperfil);
+
+            nombre.setText(entrada.get(posicion).getString(PERFIL_NOMBRE));
+            descripcion.setText(entrada.get(posicion).getString(PERFIL_DESCRIPCION));
+
+            if (entrada.get(posicion).getString(PERFIL_NOMBRE).equals(CommonPry.perfila)){
+
+                card.setCardBackgroundColor(
+                        AppActivity.getAppContext().getResources().getColor(R.color.Color_card_ok));
+            }
+
+            super.setEntradas(posicion, view, entrada);
+        }
+    }
+
+    public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
+
+        TextView nombre,descripcion;
+        CardView card;
+
+        public ViewHolderRV(View itemView) {
+            super(itemView);
+
+            nombre = itemView.findViewById(R.id.tvnomlperfil);
+            descripcion = itemView.findViewById(R.id.tvdesclperfil);
+            card = itemView.findViewById(R.id.cardlperfil);
+        }
+
+        @Override
+        public void bind(Modelo modelo) {
+
+            nombre.setText(modelo.getString(PERFIL_NOMBRE));
+            descripcion.setText(modelo.getString(PERFIL_DESCRIPCION));
+
+            if (modelo.getString(PERFIL_NOMBRE).equals(CommonPry.perfila)){
+
+                card.setCardBackgroundColor(
+                        AppActivity.getAppContext().getResources().getColor(R.color.Color_card_ok));
+            }
+            super.bind(modelo);
+        }
+
+        @Override
+        public BaseViewHolder holder(View view) {
+            return new ViewHolderRV(view);
+        }
+    }
+
+
+    }

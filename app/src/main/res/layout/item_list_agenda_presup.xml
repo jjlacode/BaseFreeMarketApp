@@ -9,8 +9,8 @@
         <androidx.cardview.widget.CardView android:layout_width="match_parent"
             android:layout_height="wrap_content" android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp" android:layout_marginRight="5dp"
-            card_view:cardCornerRadius="10dp"
-            card_view:cardBackgroundColor="#ECE6E6">
+            card_view:cardCornerRadius="10dp" android:padding="5dp"
+            card_view:cardBackgroundColor="@color/Color_card_defecto">
 
 
             <LinearLayout
@@ -21,7 +21,9 @@
                 <ImageView
                     android:id="@+id/imgrvagendapresup"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_height="wrap_content"
+                    android:scaleType="center"
+                    android:padding="5dp"
                     android:layout_weight="2"
                     card_view:srcCompat="@drawable/ico_calendario_reloj" />
 

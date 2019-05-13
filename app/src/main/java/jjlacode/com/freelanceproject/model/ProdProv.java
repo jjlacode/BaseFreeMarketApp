@@ -16,6 +16,10 @@ public class ProdProv implements Serializable {
 
     private String rutafoto;
 
+    private String proveedor;
+
+    private String categoria;
+
 
     public ProdProv() {
     }
@@ -66,6 +70,22 @@ public class ProdProv implements Serializable {
 
     public void setRutafoto(String rutafoto) {
         this.rutafoto = rutafoto;
+    }
+
+    public String getProveedor() {
+        return proveedor;
+    }
+
+    public void setProveedor(String proveedor) {
+        this.proveedor = proveedor;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
     }
 }
 

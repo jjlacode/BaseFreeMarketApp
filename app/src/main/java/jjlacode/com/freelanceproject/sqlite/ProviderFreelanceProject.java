@@ -67,6 +67,9 @@ public class ProviderFreelanceProject extends ContentProvider
     public static final int DETPARTIDABASE = 135;
     public static final int DETPARTIDABASE_ID = 136;
 
+    public static final int NOTA = 137;
+    public static final int NOTA_ID = 138;
+
     public static final String AUTORIDAD = AUTORIDAD_CONTENIDO;//"jjlacode.com.freelanceproject2";
 
     static {
@@ -117,6 +120,9 @@ public class ProviderFreelanceProject extends ContentProvider
 
         uriMatcher.addURI(AUTORIDAD, TABLA_EVENTO, EVENTO);
         uriMatcher.addURI(AUTORIDAD, TABLA_EVENTO+"/*", EVENTO_ID);
+
+        uriMatcher.addURI(AUTORIDAD, TABLA_NOTA, NOTA);
+        uriMatcher.addURI(AUTORIDAD, TABLA_NOTA+"/*", NOTA_ID);
     }
 
     private static final String PROYECTO_JOIN_CLIENTE_Y_ESTADO=
@@ -246,6 +252,10 @@ public class ProviderFreelanceProject extends ContentProvider
                 return generarMime(TABLA_EVENTO);
             case EVENTO_ID:
                 return generarMimeItem(TABLA_EVENTO);
+            case NOTA:
+                return generarMime(TABLA_NOTA);
+            case NOTA_ID:
+                return generarMimeItem(TABLA_NOTA);
             default:
                 throw new UnsupportedOperationException("Uri desconocida =>" + uri);
         }
@@ -562,6 +572,26 @@ public class ProviderFreelanceProject extends ContentProvider
 
                 tabla = TABLA_EVENTO;
                 idTabla = EVENTO_ID_EVENTO;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                esId = true;
+                esDetalle = false;
+                break;
+
+            case NOTA:
+                // Generar Pk
+                tabla = TABLA_NOTA;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = NOTA_ID_NOTA;
+                esId = false;
+                esDetalle = false;
+                break;
+
+            case NOTA_ID:
+
+                tabla = TABLA_NOTA;
+                idTabla = NOTA_ID_NOTA;
                 setTablas = tabla;
                 proyeccion = tabla+".*";
                 esId = true;

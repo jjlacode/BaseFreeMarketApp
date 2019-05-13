@@ -19,7 +19,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,21 +28,17 @@ import android.widget.Toast;
 
 import jjlacode.com.freelanceproject.ui.FragmentAgenda;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDEvento;
-import jjlacode.com.freelanceproject.ui.FragmentCUDPartidaProyecto;
-import jjlacode.com.freelanceproject.ui.FragmentPartidasProyecto;
+import jjlacode.com.freelanceproject.ui.FragmentCRUDNota;
+import jjlacode.com.freelanceproject.ui.FragmentCRUDPartidaProyecto;
+import jjlacode.com.freelanceproject.ui.FragmentCRUDPartidaBase;
 import jjlacode.com.freelanceproject.util.ICFragmentos;
 import jjlacode.com.freelanceproject.util.Modelo;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.ui.FragmentCPartidaProyecto;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDAmortizacion;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDCliente;
-import jjlacode.com.freelanceproject.ui.FragmentCUDGastoFijo;
-import jjlacode.com.freelanceproject.ui.FragmentCUDPerfil;
-import jjlacode.com.freelanceproject.ui.FragmentGastoFijo;
-import jjlacode.com.freelanceproject.ui.FragmentPartidaBase;
-import jjlacode.com.freelanceproject.ui.FragmentPerfil;
-import jjlacode.com.freelanceproject.ui.FragmentPreferencias;
-import jjlacode.com.freelanceproject.ui.FragmentCUDProyecto;
+import jjlacode.com.freelanceproject.ui.FragmentCRUDGastoFijo;
+import jjlacode.com.freelanceproject.ui.FragmentCRUDPerfil;
+import jjlacode.com.freelanceproject.ui.FragmentCRUDProyecto;
 import jjlacode.com.freelanceproject.util.CommonPry;
 import jjlacode.com.freelanceproject.util.VisorPDF;
 import jjlacode.com.freelanceproject.util.VisorPDFEmail;
@@ -52,6 +47,7 @@ import static android.Manifest.permission.CALL_PHONE;
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static jjlacode.com.freelanceproject.util.CommonPry.namesubdef;
 import static jjlacode.com.freelanceproject.util.CommonPry.setNamefdef;
@@ -60,7 +56,6 @@ import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.MODELO;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NAMEF;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NAMEFTEMP;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NAMESUB;
-import static jjlacode.com.freelanceproject.util.CommonPry.TiposEvento.EVENTO;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NAMESUBTEMP;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NUEVOREGISTRO;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.SECUENCIA;
@@ -90,19 +85,11 @@ public class MainActivity extends AppCompatActivity
         if (!inicio){
             persitencia();
         }else {
+
             inicio = false;
         }
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)
-    {
-        if ((keyCode == KeyEvent.KEYCODE_BACK))
-        {
-
-        }
-        return super.onKeyDown(keyCode, event);
-    }
 
     protected void persitencia(){
 
@@ -118,11 +105,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,24 +169,29 @@ public class MainActivity extends AppCompatActivity
 
                         secuencia=0;
                         namesub = NUEVAPARTIDA;
-                        recargarFragment(new FragmentCUDPartidaProyecto(),true);
+                        recargarFragment(new FragmentCRUDPartidaProyecto(),true);
 
                     }else if (namef.equals(PROYECTO)){
 
                         namesub = NUEVOPROYECTO;
                         id=null;
-                        recargarFragment(new FragmentCUDProyecto(),false);
+                        recargarFragment(new FragmentCRUDProyecto(),false);
 
                     }else if (namef.equals(PRESUPUESTO)){
 
                         namesub = NUEVOPRESUPUESTO;
                         id=null;
-                        recargarFragment(new FragmentCUDProyecto(),false);
+                        recargarFragment(new FragmentCRUDProyecto(),false);
 
-                    }else if (namef.equals(AGENDA)) {
+                    }else if (namef.equals(AGENDA) && namesub.equals(getString(R.string.proximos_eventos))) {
 
                         namesub = NUEVOEVENTO;
                         recargarFragment(new FragmentCRUDEvento(),false);
+
+                    }else if (namef.equals(AGENDA) && namesub.equals(getString(R.string.notas))) {
+
+                        namesub = NUEVANOTA;
+                        recargarFragment(new FragmentCRUDNota(),false);
 
                     }else if (namef.equals(EVENTO)) {
 
@@ -214,7 +201,7 @@ public class MainActivity extends AppCompatActivity
                     }else if (namef.equals(PERFIL)) {
 
                         namesub = NUEVOPERFIL;
-                        recargarFragment(new FragmentCUDPerfil(),false);
+                        recargarFragment(new FragmentCRUDPerfil(),false);
 
                     }else if (namef.equals(AMORTIZACION)) {
 
@@ -224,12 +211,12 @@ public class MainActivity extends AppCompatActivity
                     }else if (namef.equals(GASTOSFIJOS)) {
 
                         namesub = NUEVOGASTOFIJO;
-                        recargarFragment(new FragmentCUDGastoFijo(),false);
+                        recargarFragment(new FragmentCRUDGastoFijo(),false);
 
                     }else if (namef.equals(PARTIDABASE)) {
 
                         namesub = NUEVAPARTIDABASE;
-                        recargarFragment(new FragmentCPartidaProyecto(),false);
+                        recargarFragment(new FragmentCRUDPartidaBase(),false);
 
                     }
 
@@ -472,7 +459,7 @@ public class MainActivity extends AppCompatActivity
                 public void onClick(DialogInterface dialog, int which) {
 
                     requestPermissions(new String[]
-                            {READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,CAMERA,CALL_PHONE,INTERNET},100);
+                            {READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,CAMERA,RECORD_AUDIO,INTERNET},100);
                 }
             });
             dialogo.show();
@@ -481,7 +468,7 @@ public class MainActivity extends AppCompatActivity
         else {
 
             requestPermissions(new String[]
-                    {READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,CAMERA,CALL_PHONE,INTERNET},100);
+                    {READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,CAMERA,RECORD_AUDIO,INTERNET},100);
         }
     }
 
@@ -571,14 +558,14 @@ public class MainActivity extends AppCompatActivity
 
             case PRESUPUESTO:
 
-                enviarBundleAFragment(bundle, new FragmentCUDProyecto());
+                enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
                 break;
 
             case PARTIDA:
 
                 //namesub = namesubtemp;
                 //bundle.putString(NAMESUB,namesub);
-                enviarBundleAFragment(bundle, new FragmentCUDPartidaProyecto());
+                enviarBundleAFragment(bundle, new FragmentCRUDPartidaProyecto());
                 break;
 
             case PROSPECTO:
@@ -606,7 +593,7 @@ public class MainActivity extends AppCompatActivity
 
             case GASTOSFIJOS:
 
-                enviarBundleAFragment(bundle, new FragmentGastoFijo());
+                enviarBundleAFragment(bundle, new FragmentCRUDGastoFijo());
                 break;
 
             case EVENTO:
@@ -614,7 +601,7 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case PARTIDABASE:
-                enviarBundleAFragment(bundle, new FragmentPartidaBase());
+                enviarBundleAFragment(bundle, new FragmentCRUDPartidaBase());
                 break;
 
             case PREFERENCIAS:

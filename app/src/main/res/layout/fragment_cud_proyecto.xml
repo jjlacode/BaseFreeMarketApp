@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.FragmentCUDProyecto">
+    tools:context=".ui.FragmentCRUDProyecto">
 
 
         <LinearLayout
@@ -420,17 +420,34 @@
                 android:textColor="@color/Color_texto_titulos"
                 android:text="Button" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
             <Button
                 android:id="@+id/btneventoudpry"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/boton_redondo_verde"
                 android:textColor="@color/Color_texto_titulos"
+                android:layout_weight="1"
                 android:text="@string/evento_relacionado" />
+
+            <Button
+                android:id="@+id/btnvereventosudpry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/boton_redondo_verde"
+                android:textColor="@color/Color_texto_titulos"
+                android:layout_weight="1"
+                android:text="@string/ver_eventos_relacionados" />
+
+            </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <Button

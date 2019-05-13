@@ -1,10 +1,10 @@
 package jjlacode.com.freelanceproject.ui;
 
 import android.content.ContentValues;
-import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +13,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -36,8 +37,19 @@ import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.CommonPry;
 
+import static jjlacode.com.freelanceproject.util.AppActivity.getAppContext;
 import static jjlacode.com.freelanceproject.util.AppActivity.viewOnMapA;
+import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.PARTIDA;
+import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.PRESUPUESTO;
+import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.PROYECTO;
+import static jjlacode.com.freelanceproject.util.CommonPry.TiposNota.NOTAAUDIO;
+import static jjlacode.com.freelanceproject.util.CommonPry.TiposNota.NOTAIMAGEN;
+import static jjlacode.com.freelanceproject.util.CommonPry.TiposNota.NOTATEXTO;
+import static jjlacode.com.freelanceproject.util.CommonPry.TiposNota.NOTAVIDEO;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.DIASLONG;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ID;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.IGUAL;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.MODELO;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NAMEF;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NAMESUB;
 
@@ -53,7 +65,9 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
     Button btnEspera;
     Button btnCobros;
     Button btnEventos;
+    Button btnNotas;
     String namef;
+    boolean[] expandido = new boolean[50];
     ArrayList<AgendaTarea> listaAgendaTarea = new ArrayList<>();
     ArrayList<AgendaPresup> listaAgendaPresup = new ArrayList<>();
 
@@ -93,7 +107,7 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
         if (bundle!=null){
 
             namef = bundle.getString(NAMEF);
-            namesub = getString(R.string.proximos_eventos);
+            namesub = bundle.getString(NAMESUB);
             bundle=null;
         }
 
@@ -103,19 +117,35 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
         }else{
             rvAgenda.setLayoutManager(new GridLayoutManager(getContext(),3));
         }
+
         btnEventos = view.findViewById(R.id.btneventosagenda);
         btnTareas = view.findViewById(R.id.btntareaagenda);
         btnPresup = view.findViewById(R.id.btnpresupagenda);
         btnEspera = view.findViewById(R.id.btnenesperaagenda);
         btnCobros = view.findViewById(R.id.btnpendcobroagenda);
+        btnNotas = view.findViewById(R.id.btnnotasagenda);
+
+        if (namesub.equals(getString(R.string.proximos_eventos))) {
+            clickEventos();
+        }else if (namesub.equals(getString(R.string.notas))) {
+            clickNotas();
+        }else{
+            clickEventos();
+        }
 
         btnEventos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                namesub = getString(R.string.proximos_eventos);
-                enviarAct();
-                obtenerEventos();
+                clickEventos();
+            }
+        });
+
+        btnNotas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                clickNotas();
             }
         });
 
@@ -123,9 +153,7 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
             @Override
             public void onClick(View v) {
 
-                namesub = getString(R.string.tareas_pendientes);
-                enviarAct();
-                obtenerTareas();
+                clickTareas();
             }
         });
 
@@ -133,9 +161,7 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
             @Override
             public void onClick(View v) {
 
-                namesub = getString(R.string.presupuestos_pendientes);
-                enviarAct();
-                obtenerPresupPendienteEntrega();
+                clickPresup();
             }
         });
 
@@ -143,9 +169,7 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
             @Override
             public void onClick(View v) {
 
-                namesub = getString(R.string.presupuestos_en_espera);
-                enviarAct();
-                obtenerPresupEspera();
+                clickEspera();
             }
         });
 
@@ -153,19 +177,143 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
             @Override
             public void onClick(View v) {
 
-                namesub = getString(R.string.pendiente_cobro);
-                enviarAct();
-                obtenerPresupPendienteCobro();
+                clickCobros();
             }
         });
 
     }
 
+    private void clickCobros() {
+
+        btnEspera.setVisibility(View.VISIBLE);
+        btnCobros.setBackgroundResource(0);
+        btnEspera.setText("");
+        btnEspera.setBackgroundResource(R.drawable.ic_fast_rewind_white_24dp);
+        btnPresup.setVisibility(View.GONE);
+        btnTareas.setVisibility(View.GONE);
+        btnEventos.setVisibility(View.GONE);
+        btnNotas.setVisibility(View.GONE);
+        btnCobros.setText(getString(R.string.pendiente_cobro));
+        namesub = getString(R.string.pendiente_cobro);
+        enviarAct();
+        obtenerPresupPendienteCobro();
+    }
+
+    private void clickEspera() {
+
+        btnPresup.setVisibility(View.VISIBLE);
+        btnCobros.setVisibility(View.VISIBLE);
+        btnEspera.setBackgroundResource(0);
+        btnPresup.setText("");
+        btnPresup.setBackgroundResource(R.drawable.ic_fast_rewind_white_24dp);
+        btnCobros.setText("");
+        btnCobros.setBackgroundResource(R.drawable.ic_fast_forward_white_24dp);
+        btnEventos.setVisibility(View.GONE);
+        btnTareas.setVisibility(View.GONE);
+        btnNotas.setVisibility(View.GONE);
+        btnEspera.setText( getString(R.string.presupuestos_en_espera));
+        namesub = getString(R.string.presupuestos_en_espera);
+        enviarAct();
+        obtenerPresupEspera();
+    }
+
+    private void clickPresup() {
+
+        btnEspera.setVisibility(View.VISIBLE);
+        btnTareas.setVisibility(View.VISIBLE);
+        btnPresup.setBackgroundResource(0);
+        btnTareas.setText("");
+        btnTareas.setBackgroundResource(R.drawable.ic_fast_rewind_white_24dp);
+        btnEspera.setText("");
+        btnEspera.setBackgroundResource(R.drawable.ic_fast_forward_white_24dp);
+        btnEventos.setVisibility(View.GONE);
+        btnCobros.setVisibility(View.GONE);
+        btnNotas.setVisibility(View.GONE);
+        btnPresup.setText(getString(R.string.presupuestos_pendientes));
+        namesub = getString(R.string.presupuestos_pendientes);
+        enviarAct();
+        obtenerPresupPendienteEntrega();
+    }
+
+    private void clickTareas() {
+
+        btnPresup.setVisibility(View.VISIBLE);
+        btnNotas.setVisibility(View.VISIBLE);
+        btnTareas.setText(getString(R.string.tareas_pendientes));
+        btnTareas.setBackgroundResource(0);
+        btnNotas.setText("");
+        btnNotas.setBackgroundResource(R.drawable.ic_fast_rewind_white_24dp);
+        btnPresup.setText("");
+        btnPresup.setBackgroundResource(R.drawable.ic_fast_forward_white_24dp);
+        btnEspera.setVisibility(View.GONE);
+        btnCobros.setVisibility(View.GONE);
+        btnEventos.setVisibility(View.GONE);
+        namesub = getString(R.string.tareas_pendientes);
+        enviarAct();
+        obtenerTareas();
+    }
+
+    private void clickNotas() {
+
+        btnEventos.setVisibility(View.VISIBLE);
+        btnTareas.setVisibility(View.VISIBLE);
+        btnNotas.setText(getString(R.string.notas));
+        btnNotas.setBackgroundResource(0);
+        btnEventos.setText("");
+        btnEventos.setBackgroundResource(R.drawable.ic_fast_rewind_white_24dp);
+        btnTareas.setText("");
+        btnTareas.setBackgroundResource(R.drawable.ic_fast_forward_white_24dp);
+        btnPresup.setVisibility(View.GONE);
+        btnEspera.setVisibility(View.GONE);
+        btnCobros.setVisibility(View.GONE);
+        namesub = getString(R.string.notas);
+        enviarAct();
+        obtenerNotas();
+    }
+
+    private void clickEventos() {
+
+        btnNotas.setVisibility(View.VISIBLE);
+        btnNotas.setText("");
+        btnEventos.setBackgroundResource(0);
+        btnNotas.setBackgroundResource(R.drawable.ic_fast_forward_white_24dp);
+        btnEventos.setText(getString(R.string.proximos_eventos));
+        btnEspera.setVisibility(View.GONE);
+        btnCobros.setVisibility(View.GONE);
+        btnPresup.setVisibility(View.GONE);
+        btnTareas.setVisibility(View.GONE);
+        namesub = getString(R.string.proximos_eventos);
+        enviarAct();
+        obtenerEventos();
+    }
+
+
     @Override
     public void onResume() {
         super.onResume();
 
-        obtenerEventos();
+
+    }
+
+    private void obtenerNotas() {
+
+        final ArrayList<Modelo> listaNotas = consulta.queryList(CAMPOS_NOTA,NOTA_ID_RELACIONADO,null,null,IGUAL,null);
+
+        AdaptadorRVNotas adaptadorRV = new AdaptadorRVNotas(listaNotas);
+        rvAgenda.setAdapter(adaptadorRV);
+
+        adaptadorRV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Modelo nota = listaNotas.get(rvAgenda.getChildAdapterPosition(v));
+                bundle = new Bundle();
+                bundle.putString(NAMESUB,namef);
+                bundle.putSerializable(MODELO,nota);
+                bundle.putString(ID,nota.getString(NOTA_ID_NOTA));
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
+            }
+        });
     }
 
     private void obtenerTareas(){
@@ -173,56 +321,56 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
         listaAgendaPresup = new ArrayList<>();
         listaAgendaTarea = new ArrayList<>();
 
-        ArrayList<Modelo> lista ;
-        ArrayList<Modelo> listaPartidasSinCompletar = new ArrayList<>();
 
-        lista = consulta.queryList(CAMPOS_PARTIDA);
+                ArrayList<Modelo> lista ;
+                ArrayList<Modelo> listaPartidasSinCompletar = new ArrayList<>();
 
-        for (Modelo item : lista) {
+                lista = consulta.queryList(CAMPOS_PARTIDA);
 
-            if (item.getInt(PARTIDA_COMPLETADA) < 100 &&
-                    item.getInt(PARTIDA_TIPO_ESTADO) >= 4){
+                for (Modelo item : lista) {
 
-                listaPartidasSinCompletar.add(item);
-            }
-        }
+                    if (item.getInt(PARTIDA_COMPLETADA) < 100 &&
+                            item.getInt(PARTIDA_TIPO_ESTADO) >= 4){
 
-        for (Modelo partida : listaPartidasSinCompletar) {
+                        listaPartidasSinCompletar.add(item);
+                    }
+                }
 
-            AgendaTarea agendaTarea = new AgendaTarea();
+                for (Modelo partida : listaPartidasSinCompletar) {
 
-            agendaTarea.setIdProyecto(partida.getString(PARTIDA_ID_PROYECTO));
-            agendaTarea.setSecuencia(partida.getString(PARTIDA_SECUENCIA));
-            agendaTarea.setDescripcion(partida.getCampos(PARTIDA_DESCRIPCION));
-            agendaTarea.setCantidad(partida.getCampos(PARTIDA_CANTIDAD));
-            agendaTarea.setTiempo(partida.getCampos(PARTIDA_PRECIO));
-            agendaTarea.setCompletada(partida.getCampos(PARTIDA_COMPLETADA));
-            agendaTarea.setIdEstado(partida.getCampos(PARTIDA_ID_ESTADO));
-            agendaTarea.setTipoEstado(partida.getCampos(PARTIDA_TIPO_ESTADO));
-            agendaTarea.setRetraso(partida.getCampos(PARTIDA_PROYECTO_RETRASO));
+                    AgendaTarea agendaTarea = new AgendaTarea();
 
-            Modelo proyecto = consulta.queryObject
-                    (CAMPOS_PROYECTO,partida.getCampos(PARTIDA_ID_PROYECTO));
+                    agendaTarea.setIdProyecto(partida.getString(PARTIDA_ID_PROYECTO));
+                    agendaTarea.setSecuencia(partida.getString(PARTIDA_SECUENCIA));
+                    agendaTarea.setDescripcion(partida.getCampos(PARTIDA_DESCRIPCION));
+                    agendaTarea.setCantidad(partida.getCampos(PARTIDA_CANTIDAD));
+                    agendaTarea.setTiempo(partida.getCampos(PARTIDA_PRECIO));
+                    agendaTarea.setCompletada(partida.getCampos(PARTIDA_COMPLETADA));
+                    agendaTarea.setIdEstado(partida.getCampos(PARTIDA_ID_ESTADO));
+                    agendaTarea.setTipoEstado(partida.getCampos(PARTIDA_TIPO_ESTADO));
+                    agendaTarea.setRetraso(partida.getCampos(PARTIDA_PROYECTO_RETRASO));
 
-            agendaTarea.setPeso(proyecto.getCampos(PROYECTO_CLIENTE_PESOTIPOCLI));
-            agendaTarea.setNombreProyecto(proyecto.getCampos(PROYECTO_NOMBRE));
-            agendaTarea.setNombreCliente(proyecto.getCampos(PROYECTO_CLIENTE_NOMBRE));
-            agendaTarea.setRutaFoto(proyecto.getCampos(PROYECTO_RUTAFOTO));
-            agendaTarea.setFechaEntrada(proyecto.getCampos(PROYECTO_FECHAENTRADA));
-            agendaTarea.setFechaEntregaPresup(proyecto.getCampos(PROYECTO_FECHAENTREGAPRESUP));
-            agendaTarea.setFechaAcordada(proyecto.getCampos(PROYECTO_FECHAENTREGAACORDADA));
-            agendaTarea.setFechaCalculada(proyecto.getCampos(PROYECTO_FECHAENTREGACALCULADA));
-            agendaTarea.setFechaFinal(proyecto.getCampos(PROYECTO_FECHAFINAL));
+                    Modelo proyecto = consulta.queryObject
+                            (CAMPOS_PROYECTO,partida.getCampos(PARTIDA_ID_PROYECTO));
 
-            Modelo cliente = consulta.queryObject
-                    (CAMPOS_CLIENTE,proyecto.getString(PROYECTO_ID_CLIENTE));
+                    agendaTarea.setPeso(proyecto.getCampos(PROYECTO_CLIENTE_PESOTIPOCLI));
+                    agendaTarea.setNombreProyecto(proyecto.getCampos(PROYECTO_NOMBRE));
+                    agendaTarea.setNombreCliente(proyecto.getCampos(PROYECTO_CLIENTE_NOMBRE));
+                    agendaTarea.setRutaFoto(proyecto.getCampos(PROYECTO_RUTAFOTO));
+                    agendaTarea.setFechaEntrada(proyecto.getCampos(PROYECTO_FECHAENTRADA));
+                    agendaTarea.setFechaEntregaPresup(proyecto.getCampos(PROYECTO_FECHAENTREGAPRESUP));
+                    agendaTarea.setFechaAcordada(proyecto.getCampos(PROYECTO_FECHAENTREGAACORDADA));
+                    agendaTarea.setFechaCalculada(proyecto.getCampos(PROYECTO_FECHAENTREGACALCULADA));
+                    agendaTarea.setFechaFinal(proyecto.getCampos(PROYECTO_FECHAFINAL));
 
-            agendaTarea.setTipoCliente(cliente.getString(CLIENTE_DESCRIPCIONTIPOCLI));
+                    Modelo cliente = consulta.queryObject
+                            (CAMPOS_CLIENTE,proyecto.getString(PROYECTO_ID_CLIENTE));
+
+                    agendaTarea.setTipoCliente(cliente.getString(CLIENTE_DESCRIPCIONTIPOCLI));
 
 
-            listaAgendaTarea.add(agendaTarea);
-        }
-
+                    listaAgendaTarea.add(agendaTarea);
+                }
 
         AdaptadorAgendaTareas adaptadorAgenda = new AdaptadorAgendaTareas(listaAgendaTarea);
 
@@ -241,8 +389,9 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PARTIDA,partida);
-                bundle.putString(NAMEF,namef);
-                icFragmentos.enviarBundleAFragment(bundle,new FragmentCUDPartidaProyecto());
+                bundle.putString(NAMEF,PARTIDA);
+                bundle.putString(NAMESUB,PROYECTO);
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDPartidaProyecto());
                 bundle = null;
             }
         });
@@ -293,9 +442,9 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
                 Modelo proyecto =  consulta.queryObject(CAMPOS_PROYECTO,idProyecto);
 
                 bundle = new Bundle();
-                bundle.putSerializable(TABLA_PROYECTO,proyecto);
-                bundle.putString(NAMEF,namef);
-                icFragmentos.enviarBundleAFragment(bundle,new FragmentCUDProyecto());
+                bundle.putSerializable(MODELO,proyecto);
+                bundle.putString(NAMEF,PRESUPUESTO);
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDProyecto());
                 bundle = null;
 
             }
@@ -349,8 +498,8 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PROYECTO,proyecto);
-                bundle.putString(NAMEF,namef);
-                icFragmentos.enviarBundleAFragment(bundle,new FragmentCUDProyecto());
+                bundle.putString(NAMEF,PROYECTO);
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDProyecto());
                 bundle = null;
 
             }
@@ -404,8 +553,8 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PROYECTO,proyecto);
-                bundle.putString(NAMEF,namef);
-                icFragmentos.enviarBundleAFragment(bundle,new FragmentCUDProyecto());
+                bundle.putString(NAMEF,PRESUPUESTO);
+                icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDProyecto());
                 bundle = null;
 
             }
@@ -459,7 +608,7 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
         @Override
         public EventoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
 
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_evento, null, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_evento_agenda, null, false);
 
             view.setOnClickListener(this);
 
@@ -516,73 +665,145 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
                 //        (ContratoPry.Tablas.EVENTO_RUTAFOTO)));
             }
 
-            String tipoEvento = listaEvento.get(position).getCampos
+
+            if (!expandido[position]) {
+
+                //eventoViewHolder.layoutimg.setVisibility(View.GONE);
+                eventoViewHolder.fechaini.setVisibility(View.GONE);
+                eventoViewHolder.fechafin.setVisibility(View.GONE);
+                eventoViewHolder.horaini.setVisibility(View.GONE);
+                eventoViewHolder.horafin.setVisibility(View.GONE);
+                eventoViewHolder.btnllamada.setVisibility(View.GONE);
+                eventoViewHolder.btnmapa.setVisibility(View.GONE);
+                eventoViewHolder.btnemail.setVisibility(View.GONE);
+                eventoViewHolder.telefono.setVisibility(View.GONE);
+                eventoViewHolder.lugar.setVisibility(View.GONE);
+                eventoViewHolder.email.setVisibility(View.GONE);
+                eventoViewHolder.btneditar.setVisibility(View.GONE);
+                //eventoViewHolder.imgret.setVisibility(View.GONE);
+                //eventoViewHolder.foto.setVisibility(View.GONE);
+                eventoViewHolder.completa.setVisibility(View.GONE);
+                eventoViewHolder.porccompleta.setVisibility(View.GONE);
+            }
+
+            final String tipoEvento = listaEvento.get(position).getCampos
                     (ContratoPry.Tablas.EVENTO_TIPOEVENTO);
 
-            eventoViewHolder.fechaini.setVisibility(View.GONE);
-            eventoViewHolder.fechafin.setVisibility(View.GONE);
-            eventoViewHolder.horaini.setVisibility(View.GONE);
-            eventoViewHolder.horafin.setVisibility(View.GONE);
-            eventoViewHolder.btnllamada.setVisibility(View.GONE);
-            eventoViewHolder.btnmapa.setVisibility(View.GONE);
-            eventoViewHolder.btnemail.setVisibility(View.GONE);
-            eventoViewHolder.telefono.setVisibility(View.GONE);
-            eventoViewHolder.lugar.setVisibility(View.GONE);
-            eventoViewHolder.email.setVisibility(View.GONE);
+            eventoViewHolder.expandir.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-            if (listaEvento.get(position).getCampos
-                    (EVENTO_NOMCLIENTEREL)!=null){
+                    expandido[position]= !expandido[position];
 
-                eventoViewHolder.nomCliRel.setVisibility(View.VISIBLE);
-            }else{
 
-                eventoViewHolder.nomCliRel.setVisibility(View.GONE);
-            }
-            if (listaEvento.get(position).getCampos
-                    (EVENTO_NOMPROYECTOREL)!=null){
+            if (!expandido[position]) {
 
-                eventoViewHolder.nomPryRel.setVisibility(View.VISIBLE);
+                //eventoViewHolder.layoutimg.setVisibility(View.GONE);
+                eventoViewHolder.expandir.setImageResource(android.R.drawable.ic_input_add);
+                eventoViewHolder.fechaini.setVisibility(View.GONE);
+                eventoViewHolder.fechafin.setVisibility(View.GONE);
+                eventoViewHolder.horaini.setVisibility(View.GONE);
+                eventoViewHolder.horafin.setVisibility(View.GONE);
+                eventoViewHolder.btnllamada.setVisibility(View.GONE);
+                eventoViewHolder.btnmapa.setVisibility(View.GONE);
+                eventoViewHolder.btnemail.setVisibility(View.GONE);
+                eventoViewHolder.telefono.setVisibility(View.GONE);
+                eventoViewHolder.lugar.setVisibility(View.GONE);
+                eventoViewHolder.email.setVisibility(View.GONE);
+                eventoViewHolder.btneditar.setVisibility(View.GONE);
+                //eventoViewHolder.imgret.setVisibility(View.GONE);
+                //eventoViewHolder.foto.setVisibility(View.GONE);
+                eventoViewHolder.completa.setVisibility(View.GONE);
+                eventoViewHolder.porccompleta.setVisibility(View.GONE);
             }else {
 
-                eventoViewHolder.nomPryRel.setVisibility(View.GONE);
+                eventoViewHolder.expandir.setImageResource(android.R.drawable.ic_delete);
+
+                eventoViewHolder.layoutimg.setVisibility(View.VISIBLE);
+                eventoViewHolder.btneditar.setVisibility(View.VISIBLE);
+                //eventoViewHolder.imgret.setVisibility(View.VISIBLE);
+                eventoViewHolder.foto.setVisibility(View.VISIBLE);
+                eventoViewHolder.completa.setVisibility(View.VISIBLE);
+
+                if (Integer.parseInt(listaEvento.get(position).getCampos
+                        (ContratoPry.Tablas.EVENTO_COMPLETADA))==0){
+                    eventoViewHolder.pbar.setVisibility(View.GONE);
+                    eventoViewHolder.porccompleta.setVisibility(View.GONE);
+                }else if (Integer.parseInt(listaEvento.get(position).getCampos
+                        (ContratoPry.Tablas.EVENTO_COMPLETADA))>99) {
+                    eventoViewHolder.completa.setChecked(true);
+                }else{
+                    eventoViewHolder.pbar.setProgress(Integer.parseInt(listaEvento.get(position).getCampos
+                            (ContratoPry.Tablas.EVENTO_COMPLETADA)));
+                    eventoViewHolder.porccompleta.setVisibility(View.VISIBLE);
+                    eventoViewHolder.porccompleta.setText(String.format("%s %s",listaEvento.get(position).getCampos
+                            (EVENTO_COMPLETADA),"%"));
+                }
+                ImagenUtil imagenUtil = new ImagenUtil(getContext());
+                if (listaEvento.get(position).getCampos
+                        (ContratoPry.Tablas.EVENTO_RUTAFOTO)!=null) {
+                    imagenUtil.setImageUriCircle(listaEvento.get(position).getCampos
+                            (ContratoPry.Tablas.EVENTO_RUTAFOTO),eventoViewHolder.foto);
+                    //eventoViewHolder.foto.setImageURI(Uri.parse(list.get(position).getCampos
+                    //        (ContratoPry.Tablas.EVENTO_RUTAFOTO)));
+                }
+                if (listaEvento.get(position).getCampos
+                        (EVENTO_NOMCLIENTEREL) != null) {
+
+                    eventoViewHolder.nomCliRel.setVisibility(View.VISIBLE);
+                } else {
+
+                    eventoViewHolder.nomCliRel.setVisibility(View.GONE);
+                }
+                if (listaEvento.get(position).getCampos
+                        (EVENTO_NOMPROYECTOREL) != null) {
+
+                    eventoViewHolder.nomPryRel.setVisibility(View.VISIBLE);
+                } else {
+
+                    eventoViewHolder.nomPryRel.setVisibility(View.GONE);
+                }
+
+                switch (tipoEvento) {
+
+                    case TAREA:
+
+
+                        break;
+
+                    case CITA:
+                        eventoViewHolder.lugar.setVisibility(View.VISIBLE);
+                        eventoViewHolder.fechaini.setVisibility(View.VISIBLE);
+                        eventoViewHolder.horaini.setVisibility(View.VISIBLE);
+                        eventoViewHolder.btnmapa.setVisibility(View.VISIBLE);
+                        break;
+
+                    case EMAIL:
+                        eventoViewHolder.btnemail.setVisibility(View.VISIBLE);
+                        eventoViewHolder.fechaini.setVisibility(View.VISIBLE);
+                        eventoViewHolder.horaini.setVisibility(View.VISIBLE);
+                        eventoViewHolder.email.setVisibility(View.VISIBLE);
+                        break;
+
+                    case LLAMADA:
+                        eventoViewHolder.telefono.setVisibility(View.VISIBLE);
+                        eventoViewHolder.fechaini.setVisibility(View.VISIBLE);
+                        eventoViewHolder.horaini.setVisibility(View.VISIBLE);
+                        eventoViewHolder.btnllamada.setVisibility(View.VISIBLE);
+                        break;
+
+                    case EVENTO:
+                        eventoViewHolder.fechaini.setVisibility(View.VISIBLE);
+                        eventoViewHolder.horaini.setVisibility(View.VISIBLE);
+                        eventoViewHolder.fechafin.setVisibility(View.VISIBLE);
+                        eventoViewHolder.horafin.setVisibility(View.VISIBLE);
+                        break;
+
+                }
             }
+                }
+            });
 
-            switch (tipoEvento){
-
-                case TAREA:
-
-
-                    break;
-
-                case CITA:
-                    eventoViewHolder.lugar.setVisibility(View.VISIBLE);
-                    eventoViewHolder.fechaini.setVisibility(View.VISIBLE);
-                    eventoViewHolder.horaini.setVisibility(View.VISIBLE);
-                    eventoViewHolder.btnmapa.setVisibility(View.VISIBLE);
-                    break;
-
-                case EMAIL:
-                    eventoViewHolder.btnemail.setVisibility(View.VISIBLE);
-                    eventoViewHolder.fechaini.setVisibility(View.VISIBLE);
-                    eventoViewHolder.horaini.setVisibility(View.VISIBLE);
-                    eventoViewHolder.email.setVisibility(View.VISIBLE);
-                    break;
-
-                case LLAMADA:
-                    eventoViewHolder.telefono.setVisibility(View.VISIBLE);
-                    eventoViewHolder.fechaini.setVisibility(View.VISIBLE);
-                    eventoViewHolder.horaini.setVisibility(View.VISIBLE);
-                    eventoViewHolder.btnllamada.setVisibility(View.VISIBLE);
-                    break;
-
-                case EVENTO:
-                    eventoViewHolder.fechaini.setVisibility(View.VISIBLE);
-                    eventoViewHolder.horaini.setVisibility(View.VISIBLE);
-                    eventoViewHolder.fechafin.setVisibility(View.VISIBLE);
-                    eventoViewHolder.horafin.setVisibility(View.VISIBLE);
-                    break;
-
-            }
 
             long retraso = JavaUtil.hoy()-listaEvento.get(position).getLong(EVENTO_FECHAINIEVENTO);
             if (retraso > 3 * DIASLONG){eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));}
@@ -590,6 +811,7 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
             else {eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));}//imgret.setImageResource(R.drawable.alert_box_v);}
             if(tipoEvento.equals(TAREA))
             {eventoViewHolder.card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_tarea));}
+            eventoViewHolder.btneditar.setText("EDITAR "+ tipoEvento.toUpperCase());
 
             eventoViewHolder.btnllamada.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -619,9 +841,6 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
                     }
 
-
-
-
                 }
             });
 
@@ -629,11 +848,16 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                    ContentValues valores = new ContentValues();
+                    if (isChecked) {
 
-                    consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_COMPLETADA,"100");
-                    consulta.updateRegistro(TABLA_EVENTO,listaEvento.get(position).getCampos
-                            (ContratoPry.Tablas.EVENTO_ID_EVENTO),valores);
+                        ContentValues valores = new ContentValues();
+
+                        consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_COMPLETADA, "100");
+                        consulta.updateRegistro(TABLA_EVENTO, listaEvento.get(position).getString
+                                (EVENTO_ID_EVENTO), valores);
+                        eventoViewHolder.completa.setVisibility(View.GONE);
+                        eventoViewHolder.porccompleta.setText("100%");
+                    }
 
                 }
             });
@@ -645,11 +869,12 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
                     String idEvento = listaEvento.get(position).getCampos
                             (ContratoPry.Tablas.EVENTO_ID_EVENTO);
 
-                    Modelo evento = consulta.queryObject(CAMPOS_EVENTO,idEvento);
+                    Modelo evento = listaEvento.get(position);
 
                     bundle = new Bundle();
-                    bundle.putSerializable(TABLA_EVENTO,evento);
-                    bundle.putString(NAMEF,namef);
+                    bundle.putSerializable(MODELO,evento);
+                    bundle.putString(NAMESUB,EVENTO);
+                    bundle.putString(ID,idEvento);
                     icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
                     bundle = null;
                 }
@@ -680,10 +905,11 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
                     fechafin, horaini,horafin,porccompleta,email,tipo;
             ImageButton btnllamada, btnmapa, btnemail;
             ProgressBar pbar;
-            ImageView foto,imgret;
+            ImageView foto,imgret,expandir;
             CheckBox completa;
             Button btneditar;
             CardView card;
+            LinearLayout layoutimg;
 
             public EventoViewHolder(@NonNull View itemView) {
                 super(itemView);
@@ -708,6 +934,8 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
                 btneditar = itemView.findViewById(R.id.btneditevento);
                 tipo = itemView.findViewById(R.id.tvtipolevento);
                 card = itemView.findViewById(R.id.cardlevento);
+                expandir = itemView.findViewById(R.id.imgexpandirevento);
+                layoutimg = itemView.findViewById(R.id.linearimgagenda);
 
             }
         }
@@ -761,7 +989,9 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
                 if (listaAgendaPresup.get(position).getRutaFoto()!=null){
 
-                    agendaPresupViewHolder.imagenPresup.setImageURI(Uri.parse(listaAgendaPresup.get(position).getRutaFoto()));
+                    //agendaPresupViewHolder.imagenPresup.setImageURI(Uri.parse(listaAgendaPresup.get(position).getRutaFoto()));
+                    ImagenUtil imagenUtil = new ImagenUtil(getAppContext());
+                    imagenUtil.setImageUriCircle(listaAgendaPresup.get(position).getRutaFoto(),agendaPresupViewHolder.imagenPresup);
 
                 }
             String retraso = listaAgendaPresup.get(position).getRetraso();
@@ -865,6 +1095,9 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
             if (listaPartidas.get(position).getRutaFoto()!=null) {
                 agendaViewHolder.imagenProyecto.setImageURI(Uri.parse(listaPartidas.get(position).getRutaFoto()));
+                ImagenUtil imagenUtil = new ImagenUtil(getAppContext());
+                imagenUtil.setImageUriCircle(listaPartidas.get(position).getRutaFoto(),agendaViewHolder.imagenProyecto);
+
             }
             long retraso = Long.parseLong(listaPartidas.get(position).getRetraso());
             if (retraso > 3 * DIASLONG) {
@@ -928,6 +1161,137 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
                 cantidadPartida = itemView.findViewById(R.id.tvcantidadpartidaagenda);
                 completadaPartida = itemView.findViewById(R.id.tvcompletadapartidaagenda);
                 progressBarPartida = itemView.findViewById(R.id.progressBarpartidaagenda);
+
+            }
+        }
+    }
+
+    public static class AdaptadorRVNotas extends RecyclerView.Adapter<AdaptadorRVNotas.ViewHolder>
+            implements View.OnClickListener, ContratoPry.Tablas {
+
+        ArrayList<Modelo> list;
+        private View.OnClickListener listener;
+        private boolean reproduciendo;
+        private boolean grabando;
+        private MediaPlayer play;
+        private MediaRecorder rec;
+        private String path;
+
+        public AdaptadorRVNotas(ArrayList<Modelo> list) {
+            this.list = list;
+        }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_nota, null, false);
+
+            view.setOnClickListener(this);
+
+
+            return new ViewHolder(view);
+        }
+
+        public void setOnClickListener(View.OnClickListener listener) {
+
+            this.listener = listener;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
+
+            viewHolder.descripcion.setText(list.get(position).getString(NOTA_DESCRIPCION));
+            viewHolder.fecha.setText(JavaUtil.getDateTime(list.get(position).getLong(NOTA_FECHA)));
+            String tipo = list.get(position).getString(NOTA_TIPO);
+            viewHolder.tipoNota.setText(tipo);
+            viewHolder.playAudio.setVisibility(View.GONE);
+            viewHolder.playVideo.setVisibility(View.GONE);
+            viewHolder.imagen.setVisibility(View.GONE);
+
+            if (tipo!=null) {
+
+
+                switch (tipo) {
+
+                    case NOTATEXTO:
+
+                        break;
+
+                    case NOTAAUDIO:
+
+                        viewHolder.playAudio.setVisibility(View.VISIBLE);
+                        path = list.get(position).getString(NOTA_RUTA);
+
+                        break;
+
+                    case NOTAVIDEO:
+
+                        viewHolder.playVideo.setVisibility(View.VISIBLE);
+                        path = list.get(position).getString(NOTA_RUTA);
+
+                        break;
+
+                    case NOTAIMAGEN:
+
+                        viewHolder.imagen.setVisibility(View.VISIBLE);
+                        ImagenUtil imagenUtil = new ImagenUtil(AppActivity.getAppContext());
+                        imagenUtil.setImageUriCircle(list.get(position).getString(NOTA_RUTA), viewHolder.imagen);
+                }
+            }
+            viewHolder.playAudio.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    reproduciendo = !reproduciendo;
+                    AppActivity.reproducirAudio(play,path,reproduciendo);
+                    if (reproduciendo){
+                        viewHolder.playAudio.setText("Stop");
+                    }else{
+                        viewHolder.playAudio.setText("Reproducir audio");
+                    }
+                }
+            });
+
+
+
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return list.size();
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            if (listener != null) {
+
+                listener.onClick(v);
+
+
+            }
+
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+
+            TextView descripcion,fecha,tipoNota;
+            Button playAudio,playVideo;
+            ImageView imagen;
+
+            public ViewHolder(@NonNull View itemView) {
+                super(itemView);
+
+                tipoNota = itemView.findViewById(R.id.tvtipo_lnota);
+                descripcion = itemView.findViewById(R.id.tvdesc_lnota);
+                imagen = itemView.findViewById(R.id.imagen_lnota);
+                playAudio =itemView.findViewById(R.id.btn_play_audiol);
+                playVideo = itemView.findViewById(R.id.btn_play_videol);
+                fecha = itemView.findViewById(R.id.tvfechalnota);
+
+
 
             }
         }

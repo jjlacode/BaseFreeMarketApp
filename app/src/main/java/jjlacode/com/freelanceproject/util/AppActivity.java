@@ -1,21 +1,33 @@
 package jjlacode.com.freelanceproject.util;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+import static androidx.core.app.ActivityCompat.startActivityForResult;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.AUDIORECORD;
 
 public class AppActivity extends Application {
 
@@ -40,6 +52,58 @@ public class AppActivity extends Application {
             context.startActivity(intent);
         }else {
             Toast.makeText(context, "El numero no es valido", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static void grabarAudio(MediaRecorder grabadora, boolean grabando){
+
+        String path= null;
+
+        if(!grabando){
+            if (grabadora != null) {
+                grabadora.stop();
+                grabadora.release();
+            }
+        }else{
+            try {
+                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                String fileName = "3gp_" + timeStamp + "_";
+                File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC);
+                File file = File.createTempFile(
+                        fileName,  /* prefix */
+                        ".3gp",         /* suffix */
+                        storageDir      /* directory */
+                );
+
+                path = "contex:/"+file.getAbsolutePath();
+                //path = context.getContentResolver().insert(
+                //        MediaStore.Media.EXTERNAL_CONTENT_URI);
+                System.out.println("path = " + path);
+                grabadora.reset();
+                grabadora.setAudioSource(MediaRecorder.AudioSource.MIC);
+                grabadora.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                grabadora.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+                grabadora.setOutputFile(path);
+                grabadora.prepare();
+                grabadora.start();
+            } catch (IllegalStateException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void reproducirAudio(MediaPlayer reproductor, String path, boolean reproduciendo){
+
+        if (reproduciendo) {
+            try {
+                reproductor.setDataSource(path);
+                reproductor.prepare();
+                reproductor.start();
+            } catch (IllegalArgumentException | IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            reproductor.stop();
         }
     }
 

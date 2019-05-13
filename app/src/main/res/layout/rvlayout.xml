@@ -23,9 +23,16 @@
             android:id="@+id/imgbuscar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="6"
+            android:layout_weight="4"
             android:minHeight="30dp"
-            app:srcCompat="@drawable/ic_search_black_24dp"/>
+            app:srcCompat="@drawable/ic_filter_list_black_24dp"/>
+        <ImageView
+            android:id="@+id/imgrenovar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:minHeight="30dp"
+            app:srcCompat="@drawable/ic_autorenew_black_24dp"/>
     </LinearLayout>
     <RelativeLayout
         android:layout_width="match_parent"
