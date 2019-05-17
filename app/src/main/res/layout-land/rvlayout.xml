@@ -23,13 +23,31 @@
             android:id="@+id/imgbuscar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="6"
+            android:layout_weight="3"
             android:minHeight="30dp"
-            app:srcCompat="@drawable/ic_search_black_24dp"/>
+            app:srcCompat="@drawable/ic_filter_list_black_24dp"/>
+        <ImageView
+            android:id="@+id/imgrenovar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:minHeight="30dp"
+            app:srcCompat="@drawable/ic_autorenew_black_24dp"/>
+        <ImageView
+            android:id="@+id/imginicio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:minHeight="30dp"
+            app:srcCompat="@drawable/ic_inicio_black_24dp"/>
     </LinearLayout>
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
@@ -37,5 +55,6 @@
             android:layout_height="match_parent"
             app:layoutManager="LinearLayoutManager"/>
     </RelativeLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>

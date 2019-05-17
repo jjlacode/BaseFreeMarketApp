@@ -2,25 +2,16 @@ package jjlacode.com.freelanceproject.ui;
 // Created by jjlacode on 8/05/19. 
 
 import android.content.Context;
-import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.net.Uri;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
@@ -29,15 +20,12 @@ import jjlacode.com.freelanceproject.util.BaseViewHolder;
 import jjlacode.com.freelanceproject.util.FragmentCRUD;
 import jjlacode.com.freelanceproject.util.ImagenUtil;
 import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltro;
 import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltroRV;
 import jjlacode.com.freelanceproject.util.Modelo;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.CommonPry;
 import jjlacode.com.freelanceproject.util.TipoViewHolder;
-
-import static android.app.Activity.RESULT_OK;
 
 
 public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constantes,
@@ -87,12 +75,11 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
         if (idrelacionado != null) {
 
             setListaModelo(NOTA_ID_RELACIONADO,idrelacionado,IGUAL);
-            //lista = consulta.queryList(CAMPOS_NOTA, NOTA_ID_RELACIONADO, idrelacionado, null, IGUAL, null);
 
         } else {
 
             setListaModelo(NOTA_ID_RELACIONADO,null,IGUAL);
-            //lista = consulta.queryList(CAMPOS_NOTA, NOTA_ID_RELACIONADO, null, null, IGUAL, null);
+
         }
     }
 
@@ -117,7 +104,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
     protected void setDefectoMaestroDetalleSeparados() {
         super.setDefectoMaestroDetalleSeparados();
 
-        if (idrelacionado != null && !nuevo && modelo == null) {
+        if (idrelacionado != null && id!=null && modelo == null) {
             frPie.setVisibility(View.VISIBLE);
             btnsave.setVisibility(View.GONE);
             btndelete.setVisibility(View.GONE);
@@ -183,6 +170,9 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
 
         idrelacionado = bundle.getString(IDREL);
 
+        if (!origen.equals(AGENDA)){
+            btnback.setVisibility(View.VISIBLE);
+        }
 
     }
 
@@ -252,7 +242,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
         listaTipoNota.add(NOTAIMAGEN);
 
         ArrayAdapter<String> adapterTipoNota = new ArrayAdapter<>
-                (getContext(), R.layout.spinner_item_tipo_evento, listaTipoNota);
+                (getContext(), R.layout.spinner_item_tipo, listaTipoNota);
 
         sptiponota.setAdapter(adapterTipoNota);
 
@@ -339,6 +329,12 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
     }
 
     @Override
+    protected void setTitulo() {
+        tituloSingular = R.string.nota;
+        tituloPlural = R.string.notas;
+    }
+
+    @Override
     protected void setInicio() {
 
         sptiponota = view.findViewById(R.id.sptiponota);
@@ -394,40 +390,53 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
     @Override
     protected void setcambioFragment() {
 
-        System.out.println("namef = " + namef);
-        if (namesubclass.equals(EVENTO)) {
+        System.out.println("actual = " + tituloPlural);
+        System.out.println("subTitulo = " + subTitulo);
+
+        if (id!=null){
+
+            id=null;
+            modelo=null;
+            setRv();
+
+        }else if (origen.equals(EVENTO)) {
 
             enviarBundle();
             bundle.putString(ID, idrelacionado);
-            bundle.putSerializable(MODELO, null);
-            System.out.println("Enviando a Evento");
+            bundle.putSerializable(MODELO, setModelo(CAMPOS_EVENTO,idrelacionado));
+            bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
-        } else if (namesubclass.equals(AGENDA)) {
-
-            enviarBundle();
-            bundle.putString(NAMESUB, getString(R.string.notas));
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentAgenda());
-        } else if (namesubclass.equals(PRESUPUESTO)) {
+        } else if (origen.equals(PRESUPUESTO)) {
 
             enviarBundle();
             bundle.putString(ID, idrelacionado);
+            bundle.putSerializable(MODELO, setModelo(CAMPOS_PROYECTO,idrelacionado));
+            bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
-        } else if (namesubclass.equals(PROYECTO)) {
+        } else if (origen.equals(PROYECTO)) {
 
             enviarBundle();
             bundle.putString(ID, idrelacionado);
+            bundle.putSerializable(MODELO, setModelo(CAMPOS_PROYECTO,idrelacionado));
+            bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
-        } else if (namesubclass.equals(CLIENTE)) {
+        } else if (origen.equals(CLIENTE)) {
 
             enviarBundle();
             bundle.putString(ID, idrelacionado);
+            bundle.putSerializable(MODELO, setModelo(CAMPOS_CLIENTE,idrelacionado));
+            bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDCliente());
-        } else if (namesubclass.equals(PROSPECTO)) {
+        } else if (origen.equals(PROSPECTO)) {
 
             enviarBundle();
             bundle.putString(ID, idrelacionado);
+            bundle.putSerializable(MODELO, setModelo(CAMPOS_CLIENTE,idrelacionado));
+            bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDCliente());
         }
+
+
 
 
     }
@@ -545,7 +554,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
 
         @Override
         public BaseViewHolder holder(View view) {
-            return null;
+            return new ViewHolderRV(view);
         }
     }
 }

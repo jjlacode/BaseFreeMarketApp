@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Nombre Actividad Ajustes-->
+    <string name="title_activity_settings">Configuración</string>
+</resources>

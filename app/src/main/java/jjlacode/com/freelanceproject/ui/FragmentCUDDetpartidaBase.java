@@ -322,6 +322,12 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
     }
 
+    @Override
+    protected void setTitulo() {
+        tituloSingular = R.string.detpartidabase;
+        tituloPlural = tituloSingular;
+    }
+
 
     @Override
     protected void setLayout() {

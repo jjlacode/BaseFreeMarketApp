@@ -2,7 +2,6 @@ package jjlacode.com.freelanceproject.util;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +14,14 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 
+import jjlacode.com.freelanceproject.MainActivity;
 import jjlacode.com.freelanceproject.R;
+
+import static jjlacode.com.freelanceproject.R.color.colorAccent;
 
 public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Constantes, CommonPry.Constantes{
 
@@ -37,11 +40,13 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
     protected RecyclerView rv;
     protected AutoCompleteTextView auto;
     protected boolean maestroDetalleSeparados;
-    protected String namesubclasstemp;
     protected ArrayList<Modelo> listafiltrada;
     protected ImageView buscar;
     protected ImageView renovar;
+    protected ImageView inicio;
     protected ListaAdaptadorFiltroRV adaptadorFiltroRV;
+    protected RVAdapter adaptadorRV;
+    protected SwipeRefreshLayout refreshLayout;
 
 
     public FragmentCRUD() {
@@ -94,9 +99,20 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
         btnsave = view.findViewById(R.id.btn_save);
         btndelete = view.findViewById(R.id.btn_del);
         rv = view.findViewById(R.id.rv);
+        refreshLayout = view.findViewById(R.id.swipeRefresh);
         auto = view.findViewById(R.id.auto);
         buscar = view.findViewById(R.id.imgbuscar);
         renovar = view.findViewById(R.id.imgrenovar);
+        inicio = view.findViewById(R.id.imginicio);
+        btnsave.setVisibility(View.GONE);
+        btndelete.setTextColor(getResources().getColor(colorAccent));
+
+        refreshLayout.setColorSchemeResources(
+                R.color.s1,
+                R.color.s2,
+                R.color.s3,
+                R.color.s4
+        );
 
         setInicio();
 
@@ -105,35 +121,94 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
     protected void selector(){
 
-        listaRV();
-        maestroDetalle();
+        if (bundle.getBoolean(NUEVOREGISTRO)){
 
-        if (modelo!=null){
-
-            setDatos();
-
-        } else if (nuevo) {
-
+            id=null;
+            modelo = null;
+            secuencia=0;
+            icFragmentos.showSubTitle(getString(R.string.nuevo)+" " + getString(tituloSingular));
             setNuevo();
             btndelete.setVisibility(View.GONE);
-            if (!maestroDetalleSeparados){
-                icFragmentos.fabVisible();
-                enviarAct();
-            }else{
-                frLista.setVisibility(View.GONE);
-            }
+            activityBase.fab.hide();
+            activityBase.fab2.show();
+        }else if (modelo!=null) {
 
+            id = modelo.getString(campoID);
+            if (tablaCab != null) {
+                secuencia = modelo.getInt(SECUENCIA);
+            }
+            if (maestroDetalleSeparados){
+                if (layoutCabecera>0) {
+                    frCabecera.setVisibility(View.GONE);
+                }
+                refreshLayout.setVisibility(View.GONE);
+                frdetalle.setVisibility(View.VISIBLE);
+                frPie.setVisibility(View.VISIBLE);
+                activityBase.fab.hide();
+                activityBase.fab2.show();
+            }
+            setDatos();
+
+            activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+
+        }else{
+                maestroDetalle();
+                activityBase.fab2.hide();
+                activityBase.fab.show();
+                listaRV();
+                activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+                enviarAct();
         }
+
+        activityBase.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                modelo = new Modelo(campos);
+                setDatos();
+                modelo = null;
+                id=null;
+                secuencia=0;
+                maestroDetalle();
+                if (maestroDetalleSeparados){
+
+                    frCabecera.setVisibility(View.GONE);
+                    frLista.setVisibility(View.GONE);
+                    frdetalle.setVisibility(View.VISIBLE);
+                    frPie.setVisibility(View.VISIBLE);
+                    activityBase.fab.hide();
+                    activityBase.fab2.show();
+
+                }
+                activityBase.toolbar.setSubtitle(getString(R.string.nuevo) + " " + getString(tituloSingular));
+
+                setNuevo();
+
+            }
+        });
+
+        activityBase.fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onUpdate();
+            }
+        });
+
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
     protected boolean onUpdate(){
 
         if (update()) {
-            nuevo = false;
-            maestroDetalle();
-            enviarAct();
-            listaRV();
+            if (maestroDetalleSeparados){
+                btndelete.setVisibility(View.VISIBLE);
+            }
             return true;
         }
         return false;
@@ -143,40 +218,30 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
     protected void listaRV(){
 
-        actualizarConsultasRV();
-
-        setLista();
+        if (listab==null) {
+            if (tablaCab==null){
+                setListaModelo();
+            }else{
+                setListaModeloDetalle();
+            }
+            setLista();
+        }else {
+            lista = listab;
+        }
 
         setRv();
-
-        buscar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                lista.clearAddAll(adaptadorFiltroRV.getLista());
-
-                setRv();
-            }
-        });
-
-        renovar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                actualizarConsultasRV();
-                setRv();
-            }
-        });
 
 
     }
 
     protected void setRv(){
 
-        RVAdapter adapter = new RVAdapter(setViewHolder(view),lista.getLista(),layoutitem, namef);
-        rv.setAdapter(adapter);
+        adaptadorRV = new RVAdapter(setViewHolder(view),lista.getLista(),layoutitem, getString(tituloPlural));
+        rv.setAdapter(adaptadorRV);
 
         onSetAdapter(lista.getLista());
 
-        adapter.setOnClickListener(new View.OnClickListener() {
+        adaptadorRV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -189,6 +254,84 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
         auto.setAdapter(adaptadorFiltroRV);
 
         setOnItemClickAuto();
+
+        if (lista.chech()) {
+            auto.setVisibility(View.VISIBLE);
+            buscar.setVisibility(View.VISIBLE);
+            renovar.setVisibility(View.VISIBLE);
+            inicio.setVisibility(View.VISIBLE);
+
+        }else {
+            auto.setVisibility(View.GONE);
+            buscar.setVisibility(View.GONE);
+            renovar.setVisibility(View.GONE);
+            inicio.setVisibility(View.GONE);
+        }
+
+        refreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+
+                        if (listab==null) {
+
+                            setLista();
+
+                        }
+
+                        setRv();
+                        refreshLayout.setRefreshing(false);
+                    }
+                }
+        );
+
+
+        buscar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                lista.clearAddAll(adaptadorFiltroRV.getLista());
+
+                setRv();
+            }
+        });
+
+        renovar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (listab==null) {
+                    if (tablaCab!=null){
+                        setListaModeloDetalle();
+                        setLista();
+                    }else {
+                        setListaModelo();
+                        setLista();
+                    }
+                    setLista();
+                }else{
+                    lista = listab;
+                }
+                setRv();
+            }
+        });
+
+        inicio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (tablaCab!=null){
+                    setListaModeloDetalle();
+                    setLista();
+                }else {
+                    setListaModelo();
+                    setLista();
+                }
+                setRv();
+                activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+                enviarAct();
+            }
+        });
 
     }
     protected abstract ListaAdaptadorFiltroRV setAdaptadorAuto
@@ -222,6 +365,8 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
     @Override
     protected void acciones() {
         super.acciones();
+
+
 
     }
 
@@ -271,28 +416,15 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
     protected void defectoMaestroDetalleSeparados(){
 
-        if (nuevo || modelo!=null){
-            if (layoutCabecera>0) {
-                frCabecera.setVisibility(View.GONE);
-            }
-            rv.setVisibility(View.GONE);
-            frdetalle.setVisibility(View.VISIBLE);
-            frPie.setVisibility(View.VISIBLE);
-            icFragmentos.fabOculto();
-            if (!nuevo) {
-                btndelete.setVisibility(View.VISIBLE);
-            }
-        }else {
+
             if (layoutCabecera>0) {
                 frCabecera.setVisibility(View.VISIBLE);
             }
             frLista.setVisibility(View.VISIBLE);
-            rv.setVisibility(View.VISIBLE);
+            refreshLayout.setVisibility(View.VISIBLE);
             frdetalle.setVisibility(View.GONE);
             frPie.setVisibility(View.GONE);
             icFragmentos.fabVisible();
-
-        }
 
         setDefectoMaestroDetalleSeparados();
 
@@ -309,7 +441,9 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
     protected void defectoMaestroDetalleJuntos(){
 
         frLista.setVisibility(View.VISIBLE);
-        rv.setVisibility(View.VISIBLE);
+        frdetalle.setVisibility(View.VISIBLE);
+        frPie.setVisibility(View.VISIBLE);
+        refreshLayout.setVisibility(View.VISIBLE);
         btnback.setVisibility(View.GONE);
         if (layoutCabecera>0) {
             frCabecera.setVisibility(View.VISIBLE);
@@ -329,83 +463,55 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
     protected void actualizarConsultasRV(){
 
 
-                System.out.println("idRV = " + id);
-                System.out.println("tablaCab = " + tablaCab);
-                if (tablaCab != null) {
+            if (tablaCab != null) {
 
-                    setListaModeloDetalle();
-                    //lista.setLista(consulta.queryList(campos,campoID,id,null,IGUAL,null));
-                    if (lista.chech()){
-                        System.out.println("listadetalle = " + lista.size());
-                    }else{
-                        Log.e(TAG,"listadetalle nula");
-                    }
+                setListaModeloDetalle();
 
-                } else {
+            } else {
 
-                    setListaModelo();
-                    if (lista.chech()){
-                        System.out.println("lista = " + lista.size());
-                    }else{
-                        Log.e(TAG,"lista nula");
-                    }
+                setListaModelo();
 
-                }
+            }
 
     }
 
     protected void onClickRV(View v){
 
-        if (lista!=null && lista.size()>0) {
             modelo = lista.getItem(rv.getChildAdapterPosition(v));
-            if (modelo != null) {
-                id = modelo.getString(campoID);
-                if (tablaCab != null) {
-                    secuencia = modelo.getInt(SECUENCIA);
+            id = modelo.getString(campoID);
+            if (tablaCab != null) {
+                secuencia = modelo.getInt(SECUENCIA);
+            }
+            if (maestroDetalleSeparados){
+                if (layoutCabecera>0) {
+                    frCabecera.setVisibility(View.GONE);
                 }
-            }else{
-                Log.e(TAG, "modelo null");
+                refreshLayout.setVisibility(View.GONE);
+                frdetalle.setVisibility(View.VISIBLE);
+                frPie.setVisibility(View.VISIBLE);
+                activityBase.fab.hide();
+                activityBase.fab2.show();
             }
-            if (nuevo) {
-                nuevo = false;
-                namesubclass = namesubtemp;
-            } else {
-                namesubtemp = namesubclass;
-            }
-            enviarAct();
-            maestroDetalle();
             setDatos();
-        }else{
-            Log.e(TAG, "Lista RV null");
-        }
+
+            activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
     }
 
     protected void onSetAdapter(ArrayList<Modelo> lista){
 
-        maestroDetalle();
-        if (!maestroDetalleSeparados) {
-
-
-            if (!nuevo && lista != null && lista.size() > 0) {
-
-                frdetalle.setVisibility(View.VISIBLE);
+        if (!maestroDetalleSeparados && lista != null && lista.size() > 0) {
 
                 modelo = lista.get(0);
 
-                if (tablaCab!=null){
+                if (tablaCab != null) {
                     secuencia = lista.get(0).getInt(SECUENCIA);
-                }else{
+                } else {
                     id = lista.get(0).getString(campoID);
                 }
 
                 setDatos();
-
-            } else if (!nuevo) {
-                frdetalle.setVisibility(View.GONE);
-            } else {
-                    frdetalle.setVisibility(View.VISIBLE);
-            }
         }
+
     }
 
     protected void setOnItemClickAuto(){
@@ -415,37 +521,26 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
             public void onItemClick(AdapterView<?> parent, View view, int position, long ids) {
 
                 auto.setText("");
-                modelo = (Modelo) auto.getAdapter().getItem(position);
-                id = modelo.getString(campoID);
-                if (tablaCab!=null){
-                    secuencia = lista.getItem(0).getInt(SECUENCIA);
+                modelo = adaptadorFiltroRV.getItem(position);
+                if (modelo!=null) {
+                    id = modelo.getString(campoID);
+                    if (tablaCab != null) {
+                        secuencia = modelo.getInt(SECUENCIA);
+                    }
                 }
-                if (nuevo){
-                    nuevo = false;
-                    namesubclass = namesubclasstemp;
-                }else {
-                    namesubclasstemp = namesubclass;
-                }
-                enviarAct();
-                maestroDetalle();
+
                 setDatos();
 
             }
         });
 
-
-
     }
-
 
     protected void cambiarFragment(){
 
-        maestroDetalle();
-        setcambioFragment();
         enviarBundle();
-        enviarAct();
+        setcambioFragment();
         listaRV();
     }
-
 
 }

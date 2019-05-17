@@ -7,9 +7,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -26,10 +24,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
@@ -49,7 +45,6 @@ import jjlacode.com.freelanceproject.util.TimePickerFragment;
 import jjlacode.com.freelanceproject.util.TipoViewHolder;
 
 import static jjlacode.com.freelanceproject.util.AppActivity.viewOnMapA;
-import static jjlacode.com.freelanceproject.util.CommonPry.namesubdef;
 import static jjlacode.com.freelanceproject.util.CommonPry.setNamefdef;
 import static jjlacode.com.freelanceproject.util.JavaUtil.getDate;
 import static jjlacode.com.freelanceproject.util.JavaUtil.getTime;
@@ -94,7 +89,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     private String nombreProyecto;
     private String nombreCliente;
     private String tevento;
-    private String idRel;
     private long finiEvento;
     private long ffinEvento;
     private long hiniEvento;
@@ -134,16 +128,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     @Override
     protected void setLista() {
 
-        setAdaptadorClientes(cliRel);
 
-        setAdaptadorProyectos(proyRel);
-    }
-
-    @Override
-    protected void actualizarConsultasRV() {
-        if (idRel==null){
-            super.actualizarConsultasRV();
-        }
     }
 
     @Override
@@ -208,7 +193,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
         listaTiposEvento.add(CommonPry.TiposEvento.EVENTO);
 
         ArrayAdapter<String> adapterTiposEvento = new ArrayAdapter<>
-                (getContext(),R.layout.spinner_item_tipo_evento,listaTiposEvento);
+                (getContext(),R.layout.spinner_item_tipo,listaTiposEvento);
 
         tiposEvento.setAdapter(adapterTiposEvento);
 
@@ -502,7 +487,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     while (duracionRep + hoy > fecharep) {
 
                         consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, fecharep);
-                        if (tipoEvento.equals(CommonPry.TiposEvento.EVENTO)) {
+                        if (tevento.equals(CommonPry.TiposEvento.EVENTO)) {
                             consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTO, (fecharep + diffecha));
                         }
                         consulta.insertRegistro(TABLA_EVENTO, valores);
@@ -516,7 +501,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
             Toast.makeText(contexto, "Registro actualizado", Toast.LENGTH_SHORT).show();
 
-            modelo = consulta.queryObject(campos, id);
+            modelo = setModelo(id);
             setDatos();
             return true;
         }
@@ -560,14 +545,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
         proyecto = (Modelo) bundle.getSerializable(TABLA_PROYECTO);
         cliente = (Modelo) bundle.getSerializable(TABLA_CLIENTE);
-        idRel = bundle.getString(IDREL);
-        if (cliente!=null && proyecto==null){
-            setListaModelo(EVENTO_CLIENTEREL,idRel,IGUAL);
-            //lista = consulta.queryList(campos,EVENTO_CLIENTEREL,idRel,null,IGUAL,null);
-        }else if (proyecto!=null && cliente!=null){
-            setListaModelo(EVENTO_PROYECTOREL,idRel,IGUAL);
-            //lista = consulta.queryList(campos,EVENTO_PROYECTOREL,idRel,null,IGUAL,null);
-        }
 
         if (modelo!=null) {
             idMulti = modelo.getString(EVENTO_IDMULTI);
@@ -584,10 +561,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
         completa.setText(modelo.getString(EVENTO_COMPLETADA));
         imagenUtil = new ImagenUtil(contexto);
-        if (modelo !=null && modelo.getString(EVENTO_RUTAFOTO)!=null) {
-            imagenUtil.setImageUriCircle(modelo.getString(EVENTO_RUTAFOTO), imagen);
+        imagenUtil.setImageUriCircle(modelo.getString(EVENTO_RUTAFOTO), imagen);
             path = modelo.getString(EVENTO_RUTAFOTO);
-        }
 
         if (consulta.checkQueryList(CAMPOS_NOTA,NOTA_ID_RELACIONADO,id,null,IGUAL,null)){
             btnVerNotas.setVisibility(View.VISIBLE);
@@ -641,9 +616,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
         lcompleta.setVisibility(View.VISIBLE);
         completa.setVisibility(View.VISIBLE);
 
-        tipoEvento.setText(modelo.getString(EVENTO_TIPOEVENTO).toUpperCase());
         tevento = modelo.getString(EVENTO_TIPOEVENTO);
-        imagenUtil = new ImagenUtil(contexto);
+        tipoEvento.setText(tevento.toUpperCase());
 
         descipcion.setText(modelo.getString(EVENTO_DESCRIPCION));
 
@@ -748,7 +722,9 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     @Override
     protected void setAcciones() {
 
+        setAdaptadorClientes(cliRel);
 
+        setAdaptadorProyectos(proyRel);
 
         btnfini.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -918,7 +894,9 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 enviarBundle();
                 bundle.putString(IDREL,modelo.getString(EVENTO_ID_EVENTO));
                 bundle.putSerializable(MODELO,null);
-                bundle.putString(NAMESUB,namef);
+                if (actual.equals(AGENDA)){
+                    bundle.putString(SUBTITULO, getString(R.string.proximos_eventos));
+                }
                 bundle.putBoolean(NUEVOREGISTRO,true);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
             }
@@ -930,13 +908,22 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
                 enviarBundle();
                 bundle.putSerializable(MODELO,null);
-                bundle.putString(NAMESUB,namef);
+                if (actual.equals(AGENDA)){
+                    bundle.putString(SUBTITULO, getString(R.string.proximos_eventos));
+                }
                 bundle.putString(IDREL,modelo.getString(EVENTO_ID_EVENTO));
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
             }
         });
 
 
+    }
+
+    @Override
+    protected void setTitulo() {
+
+        tituloPlural = R.string.eventos;
+        tituloSingular = R.string.evento;
     }
 
 
@@ -952,7 +939,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
             imagen.setImageURI(Uri.parse(path));
         }
         tiposEvento = view.findViewById(R.id.sptiponevento);
-        tipoEvento = view.findViewById(R.id.sptipoudevento);
+        tipoEvento = view.findViewById(R.id.tvtipoudevento);
         proyRel = view.findViewById(R.id.sppryudevento);
         cliRel = view.findViewById(R.id.spcliudevento);
         descipcion = view.findViewById(R.id.etdescudevento);
@@ -1071,7 +1058,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
         consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_DESCRIPCION,descipcion.getText().toString());
         consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_TIPOEVENTO,tevento);
 
-        if (aviso.isChecked() && !tipoEvento.equals(TAREA)){
+        if (aviso.isChecked() && !tevento.equals(TAREA)){
 
             long fechaaviso = (JavaUtil.comprobarLong(avisoMinutos.getText().toString()) * MINUTOSLONG) +
                     (JavaUtil.comprobarLong(avisoHoras.getText().toString()) * HORASLONG) +
@@ -1087,9 +1074,9 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
             idMulti = id = consulta.idInsertRegistro(tabla, valores);
 
-            modelo = consulta.queryObject(campos,id);
+            modelo = new Modelo(campos,id);//consulta.queryObject(campos,id);
 
-            if (repeticiones.isChecked() && !tipoEvento.equals(TAREA)) {
+            if (repeticiones.isChecked() && !tevento.equals(TAREA)) {
 
                 consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_IDMULTI, idMulti);
 
@@ -1114,7 +1101,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
                     consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, fecharep);
 
-                    if (tipoEvento.equals(CommonPry.TiposEvento.EVENTO)) {
+                    if (tevento.equals(CommonPry.TiposEvento.EVENTO)) {
                         valores.put(ContratoPry.Tablas.EVENTO_FECHAFINEVENTO, String.valueOf(fecharep + diffecha));
                     }
                     consulta.insertRegistro(TABLA_EVENTO, valores);
@@ -1124,9 +1111,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
             }
 
 
-            nuevo = false;
             if (modelo!=null) {
-                setDatos();
                 Toast.makeText(getContext(), "Registro creado",
                         Toast.LENGTH_SHORT).show();
                 return true;
@@ -1147,33 +1132,22 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     @Override
     protected void setcambioFragment() {
 
-        if (tipoEvento!=null) {
+        if (tevento!=null) {
 
-            if (namesubclass==null){
-                namesubclass=namesub;
-            }
-
-            if (namesubclass.equals(AGENDA)) {
-
-                bundle.putString(NAMEF,namesubclass);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentAgenda());
-
-            } else if (namesubclass.equals(PRESUPUESTO) || namesubclass.equals(PROYECTO)) {
+            if (actual.equals(PRESUPUESTO) || actual.equals(PROYECTO)) {
 
                 bundle.putSerializable(MODELO, proyecto);
-                bundle.putString(NAMEF,namesubclass);
 
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
 
-            } else if (namesubclass.equals(CLIENTE) || namesubclass.equals(PROSPECTO)) {
+            } else if (actual.equals(CLIENTE) || actual.equals(PROSPECTO)) {
 
                 bundle.putSerializable(MODELO, cliente);
-                bundle.putString(NAMEF,namesubclass);
 
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDCliente());
 
-            }else if (namef.equals(CommonPry.TiposEvento.EVENTO) && namesubclass.equals(NUEVOEVENTO)){
-                namesubclass = namesubdef = setNamefdef();
+            }else if (actual.equals(CommonPry.TiposEvento.EVENTO) ){
+                activityBase.toolbar.setSubtitle(setNamefdef());
 
             }
 
@@ -1197,7 +1171,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                         Toast.makeText(contexto, "Registro borrado ", Toast.LENGTH_SHORT).show();
                         actualizarConsultasRV();
                         listaRV();
-                        namesubclass = namesubdef = setNamefdef();
+                        activityBase.toolbar.setSubtitle(setNamefdef());
                         enviarAct();
                         if (maestroDetalleSeparados) {
                             defectoMaestroDetalleSeparados();
@@ -1218,7 +1192,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                         Toast.makeText(contexto, "Regitros borrados", Toast.LENGTH_SHORT).show();
                         actualizarConsultasRV();
                         listaRV();
-                        namesubclass = namesubdef = setNamefdef();
+                        activityBase.toolbar.setSubtitle(setNamefdef());
                         enviarAct();
                         if (maestroDetalleSeparados) {
                             defectoMaestroDetalleSeparados();
@@ -1240,7 +1214,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                         Toast.makeText(contexto, "Regitros borrados", Toast.LENGTH_SHORT).show();
                         actualizarConsultasRV();
                         listaRV();
-                        namesubclass = namesubdef = setNamefdef();
+                        activityBase.toolbar.setSubtitle(setNamefdef());
                         enviarAct();
                         if (maestroDetalleSeparados) {
                             defectoMaestroDetalleSeparados();
@@ -1383,6 +1357,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
             if(tipoEvento.equals(TAREA))
             {card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_tarea));}
 
+            btneditar.setVisibility(View.GONE);
             btneditar.setText("EDITAR "+ tipoEvento.toUpperCase());
             btnllamada.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -1580,8 +1555,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     (ContratoPry.Tablas.EVENTO_RUTAFOTO)!=null) {
                 imagenUtil.setImageUriCircle(entrada.get(posicion).getCampos
                         (ContratoPry.Tablas.EVENTO_RUTAFOTO),foto);
-                //eventoViewHolder.foto.setImageURI(Uri.parse(list.get(position).getCampos
-                //        (ContratoPry.Tablas.EVENTO_RUTAFOTO)));
             }
 
 
@@ -1708,11 +1681,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 (JavaUtil.hoy(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                        // +1 because january is zero
-                        //String selectedDate = CommonPry.twoDigits(day) + " / " +
-                        //        CommonPry.twoDigits(month+1) + " / " + year;
                         finiEvento = JavaUtil.fechaALong(year, month, day);
-                        //String selectedDate = CommonPry.formatDateForUi(year,month,day);
                         String selectedDate = getDate(finiEvento);
                         fechaIni.setText(selectedDate);
                         if (!tipoEvento.equals(CommonPry.TiposEvento.EVENTO)){
@@ -1730,11 +1699,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 (JavaUtil.hoy(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                        // +1 because january is zero
-                        //String selectedDate = CommonPry.twoDigits(day) + " / " +
-                        //        CommonPry.twoDigits(month+1) + " / " + year;
                         ffinEvento = JavaUtil.fechaALong(year, month, day);
-                        //String selectedDate = CommonPry.formatDateForUi(year,month,day);
                         String selectedDate = getDate(ffinEvento);
                         fechaFin.setText(selectedDate);
                     }

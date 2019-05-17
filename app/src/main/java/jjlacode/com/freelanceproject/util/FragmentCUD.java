@@ -4,9 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -51,25 +48,53 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
 
     protected void selector(){
 
-        if (modelo != null) {
+        if (nuevo){
 
-            setDatos();
-
-        } else {
-
+            id=null;
+            modelo = null;
+            secuencia=0;
+            icFragmentos.showSubTitle(getString(R.string.nuevo) + " " + getString(tituloSingular));
             setNuevo();
-
+            btndelete.setVisibility(View.GONE);
+            activityBase.fab.hide();
+            activityBase.fab2.show();
+        }else{
+            setDatos();
         }
+
+        activityBase.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                id=null;
+                modelo = null;
+                secuencia=0;
+                activityBase.toolbar.setSubtitle(getString(R.string.nuevo)+" " + tituloSingular);
+                setNuevo();
+                btndelete.setVisibility(View.GONE);
+                activityBase.fab.hide();
+                activityBase.fab2.show();
+
+            }
+        });
+
+        activityBase.fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                activityBase.fab2.hide();
+                activityBase.fab.show();
+                onUpdate();
+            }
+        });
+
     }
 
     protected boolean onUpdate(){
 
         if (update()) {
-            nuevo = false;
-            if(tablaCab!=null){
-                namesubclass = namesubtemp;
-            }
-            enviarAct();
+
+            setDatos();
             return true;
         }
         return false;
@@ -77,17 +102,21 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
 
     protected boolean onDelete(){
 
-        if (delete()){
-            if (tablaCab==null) {
-                id = null;
-                modelo=null;
-            }else{
-                secuencia = 0;
-                modelo=null;
-            }
-            cambiarFragment();
+        if ((id==null && tablaCab==null)||(tablaCab!=null && secuencia==0)){
+            modelo = new Modelo(campos);
+            setDatos();
+            modelo = null;
+            setNuevo();
+        }else {
+            if (delete()) {
 
-            return true;
+
+                modelo = null;
+                selector();
+                cambiarFragment();
+
+                return true;
+            }
         }
 
         return false;
@@ -95,24 +124,16 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
 
     protected boolean onBack(){
 
-        if (nuevo) {
-            nuevo = false;
-            namesubclass = namesubtemp;
-        }
-        if (tablaCab==null) {
-            id = null;
-            modelo=null;
-
-        }else{
-            secuencia = 0;
-            modelo=null;
-        }
+        modelo=null;
+        selector();
         cambiarFragment();
 
         return true;
     }
 
     protected void acciones(){
+
+
 
         btnback.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,7 +179,6 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
     }
 
 
-
     protected abstract void setNuevo();
 
     protected boolean delete(){
@@ -187,6 +207,8 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
 
         setContenedor();
 
+        setDato("timestamp",JavaUtil.hoy());
+
         if (tablaCab != null && secuencia == 0 && modelo == null) {
 
             secuencia = consulta.secInsertRegistroDetalle(campos, id, tablaCab, valores);
@@ -194,7 +216,6 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
             modelo = consulta.queryObjectDetalle(campos, id, secuencia);
 
             Toast.makeText(getContext(), "Registro detalle creado", Toast.LENGTH_SHORT).show();
-            namesubclass = namesubtemp;
             return true;
 
         } else if (id == null && modelo == null) {
@@ -229,6 +250,8 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
         valores = new ContentValues();
 
         setContenedor();
+
+        setDato("timestamp",JavaUtil.hoy());
 
         if (id!=null && (tablaCab==null||secuencia>0)){
 

@@ -21,8 +21,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import jjlacode.com.freelanceproject.MainActivity;
 import jjlacode.com.freelanceproject.R;
 
 public abstract class FragmentBase extends Fragment {
@@ -30,7 +32,8 @@ public abstract class FragmentBase extends Fragment {
     protected final String TAG = getClass().getName();
     protected View view;
     protected int layout;
-    protected AppCompatActivity activity;
+    protected AppCompatActivity activityAtach;
+    protected MainActivityBase activityBase;
     protected ICFragmentos icFragmentos;
     protected Bundle bundle;
     protected boolean land;
@@ -62,9 +65,9 @@ public abstract class FragmentBase extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if (context instanceof Activity) {
-            this.activity = (AppCompatActivity) context;
-            icFragmentos = (ICFragmentos) this.activity;
+        if (context instanceof MainActivityBase) {
+            this.activityBase = (MainActivityBase) context;
+            icFragmentos = this.activityBase;
         }
 
     }

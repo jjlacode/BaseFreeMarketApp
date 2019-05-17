@@ -347,6 +347,12 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
     }
 
     @Override
+    protected void setTitulo() {
+        tituloSingular = R.string.detpartida;
+        tituloPlural = tituloSingular;
+    }
+
+    @Override
     protected void setLayout() {
 
         layout = R.layout.fragment_cud_detpartida;
@@ -597,7 +603,7 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
         }
 
     }
-
+    /*
     //Start Listening Adapter
     @Override
     public void onStart() {
@@ -615,6 +621,8 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
             mAdapter.stopListening();
         }
     }
+
+     */
 
     @Override
     protected void setContenedor() {
@@ -670,8 +678,8 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
         bundle.putSerializable(MODELO,partida);
         bundle.putSerializable(TABLA_PROYECTO,proyecto);
         bundle.putString(TIPO, tipo);
-        bundle.putString(NAMEF, namef);
-        bundle.putString(NAMESUB, namesubclass);
+        bundle.putString(ORIGEN, DETPARTIDA);
+        bundle.putString(SUBTITULO, subTitulo);
         bundle.putString(ID,idProyecto_Partida);
         bundle.putInt(SECUENCIA,secuenciaPartida);
         icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDPartidaProyecto());

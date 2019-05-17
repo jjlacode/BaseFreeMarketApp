@@ -43,6 +43,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         public static String idProyecto;
         public static String agendaTemp;
         public static String namesubdef;
+        public static boolean grabar;
 
 
     private static ConsultaBD consulta = new ConsultaBD();
@@ -76,6 +77,14 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         String CLIENTE = "cliente";
         String TCLIENTE = getAppContext().getString(R.string.t_cliente);
         String CLIENTES = getAppContext().getString(R.string.clientes);
+        String TTIPOCLIENTE = getAppContext().getString(R.string.tipo_cliente);
+        String TIPOCLIENTE = "tipo_cliente";
+        String ESTADO = "estado";
+        String PRODUCTO = "producto";
+        String GASTOFIJO = "gastofijo";
+        String DETPARTIDABASE = "detpartidabase";
+        String DETPARTIDA = "detpartida";
+        String PEDIDOSPROV = "pedidosprov";
         String PROSPECTO = "prospecto";
         String TPROSPECTO = getAppContext().getString(R.string.t_prospecto);
         String PROSPECTOS = getAppContext().getString(R.string.prospectos);
@@ -90,8 +99,11 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         String HISTORICO = "Proyectos historico";
         String PROYHISTORICO = getAppContext().getString(R.string.proyectos_historico);
         String AGENDA = "agenda";
+        String INICIO = "Inicio";
         String EVENTO = "evento";
         String PERFIL = "perfil";
+        String NOTA = "nota";
+        String NOTAS = "notas";
         String AMORTIZACION = "amortizacion";
         String GASTOSFIJOS = "gastos fijos";
         String PARTIDA = "partida";
@@ -330,6 +342,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
 
                             ContentValues valores = new ContentValues();
                             consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAFINAL,JavaUtil.hoy());
+                            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAFINALF,JavaUtil.getDate(JavaUtil.hoy()));
                             consulta.updateRegistro(TABLA_PROYECTO,proyecto.getString(PROYECTO_ID_PROYECTO),valores);
 
                         }

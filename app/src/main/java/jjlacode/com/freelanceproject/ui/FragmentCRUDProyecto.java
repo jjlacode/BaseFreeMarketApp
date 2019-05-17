@@ -6,9 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -22,10 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
@@ -37,6 +32,7 @@ import jjlacode.com.freelanceproject.util.ImagenUtil;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltro;
 import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.ListaModelo;
 import jjlacode.com.freelanceproject.util.Modelo;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
@@ -110,7 +106,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private Button btnproyectos;
     private Button btncobros;
     private Button btnhistorico;
-    private AdaptadorFiltroRV adaptadorFiltroRV;
+
+    private String actualtemp;
 
     public FragmentCRUDProyecto() {
         // Required empty public constructor
@@ -130,14 +127,19 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setLista() {
 
+        btnpresupuestos.setVisibility(View.VISIBLE);
+        btnproyectos.setVisibility(View.VISIBLE);
+        btncobros.setVisibility(View.VISIBLE);
+        btnhistorico.setVisibility(View.VISIBLE);
 
         btnpresupuestos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Toast.makeText(getContext(),PRESUPUESTOS, Toast.LENGTH_SHORT).show();
-                namef = PRESUPUESTO;
-                actualizarConsultasRV();
+                actual = PRESUPUESTO;
+                actualtemp = actual;
+                    actualizarConsultas(listab);
             }
         });
 
@@ -146,8 +148,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             public void onClick(View v) {
 
                 Toast.makeText(getContext(),PROYECTOS, Toast.LENGTH_SHORT).show();
-                namef = PROYECTO;
-                actualizarConsultasRV();
+                actual = PROYECTO;
+                actualtemp = actual;
+                actualizarConsultas(listab);
             }
         });
 
@@ -156,8 +159,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             public void onClick(View v) {
 
                 Toast.makeText(getContext(),PROYCOBROS, Toast.LENGTH_SHORT).show();
-                namef = COBROS;
-                actualizarConsultasRV();
+                actual = COBROS;
+                actualtemp = PROYECTO;
+                actualizarConsultas(listab);
             }
         });
 
@@ -166,117 +170,83 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             public void onClick(View v) {
 
                 Toast.makeText(getContext(),PROYHISTORICO, Toast.LENGTH_SHORT).show();
-                namef = HISTORICO;
-                actualizarConsultasRV();
+                actual = HISTORICO;
+                actualtemp = PROYECTO;
+                actualizarConsultas(listab);
             }
         });
 
-        actualizarConsultasRV();
+        actualizarConsultas(listab);
 
 
 
     }
 
-    @Override
-    protected void actualizarConsultasRV() {
+    protected void actualizarConsultas(ListaModelo lista) {
 
         new CommonPry.Calculos.TareaActualizarProys().execute();
 
-        setListaModelo();
+        if (lista==null) {
+            setListaModelo();
+            lista = this.lista;
+        }else{
+            inicio.setVisibility(View.VISIBLE);
+        }
 
-        if (lista != null && lista.size() > 0) {
+        System.out.println("lista.size() = " + lista.size());
+
+        if (lista.chech()) {
 
             ArrayList<Modelo> listatemp = new ArrayList<>();
 
-            switch (namef) {
+            for (Modelo item : lista.getLista()) {
 
-                case PRESUPUESTO:
-                    for (Modelo item : lista.getLista()) {
+                int estado = item.getInt(PROYECTO_TIPOESTADO);
 
-                        int estado = item.getInt(PROYECTO_TIPOESTADO);
+                switch (actual) {
+
+                    case PRESUPUESTO:
+
                         if (estado >= 1 && estado <= 3) {
                             listatemp.add(item);
                         }
 
-                    }
-                    lista.clear();
-                    lista.addAll(listatemp);
-                    break;
-                case PROYECTO:
-                    for (Modelo item : lista.getLista()) {
+                        break;
 
-                        int estado = item.getInt(PROYECTO_TIPOESTADO);
-                        if (estado > 3 && estado <= 6) {
-                            listatemp.add(item);
-                        }
+                    case PROYECTO:
 
-                    }
-                    lista.clear();
-                    lista.addAll(listatemp);
+                            if (estado > 3 && estado <= 6) {
+                                listatemp.add(item);
+                            }
 
-                    break;
-                case COBROS:
-                    for (Modelo item : lista.getLista()) {
+                        break;
 
-                        int estado = item.getInt(PROYECTO_TIPOESTADO);
-                        if (estado == 7) {
-                            listatemp.add(item);
-                        }
+                    case COBROS:
 
-                    }
-                    lista.clear();
-                    lista.addAll(listatemp);
+                            if (estado == 7) {
+                                listatemp.add(item);
+                            }
 
-                    break;
-                case HISTORICO:
-                    for (Modelo item : lista.getLista()) {
+                        break;
 
-                        int estado = item.getInt(PROYECTO_TIPOESTADO);
-                        if (estado == 8 || estado == 0) {
-                            listatemp.add(item);
-                        }
+                    case HISTORICO:
 
-                    }
-                    lista.clear();
-                    lista.addAll(listatemp);
+                            if (estado == 8 || estado == 0) {
+                                listatemp.add(item);
+                            }
 
-                    break;
+                        break;
+                }
             }
-
+            System.out.println("listatemp = " + listatemp.size());
+            setListaModelo(listatemp);
+            System.out.println("lista final= " + lista.size());
 
         }
-
+        setRv();
         enviarAct();
 
-        Adaptador adapter = new Adaptador(lista.getLista(), namef);
-        rv.setAdapter(adapter);
-
-        onSetAdapter(lista.getLista());
-
-        adapter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                onClickRV(v);
-
-
-            }
-        });
-
-        if (lista != null && lista.size() > 0) {
-            auto.setVisibility(View.VISIBLE);
-            adaptadorFiltroRV = new AdaptadorFiltroRV(contexto,R.layout.item_list_proyecto,lista.getLista(),campos);
-            //setAdaptadorProyectos(auto);
-
-            auto.setAdapter(adaptadorFiltroRV);
-            setOnItemClickAuto();
-
-
-        }else {
-            auto.setVisibility(View.GONE);
-        }
     }
-
 
     @Override
     protected void setLayout() {
@@ -316,7 +286,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     @Override
     protected void setCampoID() {
+
         campoID = PROYECTO_ID_PROYECTO;
+
     }
 
     @Override
@@ -325,8 +297,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         if (bundle != null) {
 
             if (modelo !=null) {
-                id = modelo.getString(campoID);
-                idCliente = modelo.getString(PROYECTO_ID_CLIENTE);
+                id = getID();
+                idCliente = getString(PROYECTO_ID_CLIENTE);
             }else{
 
                 id =null;
@@ -345,10 +317,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setAcciones() {
 
-        if (modelo!=null && modelo.getString(PROYECTO_RUTAFOTO) != null) {
-            setImagenUri(contexto,modelo.getString(PROYECTO_RUTAFOTO));
-            path = modelo.getString(PROYECTO_RUTAFOTO);
-        }
+            setLista();
 
         btnVerPdf.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -393,7 +362,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_CLIENTE,cliente);
                 bundle.putSerializable(TABLA_PROYECTO, modelo);
-                bundle.putString(NAMESUB,namef);
+                bundle.putString(SUBTITULO, actualtemp);
+                bundle.putString(ORIGEN, actualtemp);
                 bundle.putBoolean(NUEVOREGISTRO, true);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
                 bundle = null;
@@ -410,7 +380,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_CLIENTE,cliente);
                 bundle.putSerializable(TABLA_PROYECTO, modelo);
-                bundle.putString(NAMESUB,namef);
+                bundle.putString(SUBTITULO, actualtemp);
+                bundle.putString(ORIGEN, actualtemp);
                 bundle.putString(IDREL, id);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
                 bundle = null;
@@ -423,8 +394,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
                 update();
                 bundle.putSerializable(PROYECTO,modelo);
-                bundle.putString(NAMEF,PARTIDA);
-                bundle.putString(NAMESUB,namef);
+                bundle.putString(ORIGEN,PARTIDA);
+                bundle.putString(SUBTITULO, actualtemp);
+                bundle.putString(ORIGEN, actualtemp);
                 bundle.putString(ID,id);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDPartidaProyecto());
 
@@ -487,34 +459,14 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             }
         });
 
-        buscar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                lista.clear();
-                lista.addAll(adaptadorFiltroRV.getLista());
-                //auto.setText("");
 
-                Adaptador adapter = new Adaptador(lista.getLista(),namef);
+    }
 
-                rv.setAdapter(adapter);
+    @Override
+    protected void setTitulo() {
 
-                onSetAdapter(lista.getLista());
-
-                adapter.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        onClickRV(v);
-                    }
-                });
-                adaptadorFiltroRV = new AdaptadorFiltroRV(contexto,
-                        R.layout.item_list_proyecto,lista.getLista(),campos);
-
-                auto.setAdapter(adaptadorFiltroRV);
-            }
-        });
-
-
+        tituloSingular = R.string.proyecto;
+        tituloPlural = R.string.proyectos;
     }
 
 
@@ -562,6 +514,11 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         btnhistorico = view.findViewById(R.id.btnhistoricopry);
         btnVerEventos = view.findViewById(R.id.btnvereventosudpry);
 
+        btnpresupuestos.setVisibility(View.GONE);
+        btnproyectos.setVisibility(View.GONE);
+        btncobros.setVisibility(View.GONE);
+        btnhistorico.setVisibility(View.GONE);
+
     }
 
 
@@ -608,28 +565,26 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             btnVerEventos.setVisibility(View.GONE);
         }
 
-
-        if (namef.equals(PRESUPUESTO)|| namef.equals(PROYECTO) ) {
+        if (actualtemp.equals(PRESUPUESTO)|| actualtemp.equals(PROYECTO) ) {
             frLista.setVisibility(View.VISIBLE);
             rv.setVisibility(View.GONE);
         }
 
-        if (modelo.getString(PROYECTO_RUTAFOTO)!=null){
-            ImagenUtil imagenUtil = new ImagenUtil(contexto);
-            imagenUtil.setImageUriCircle(modelo.getString(PROYECTO_RUTAFOTO),imagen);
+        if (getString(PROYECTO_RUTAFOTO)!=null){
+            setImagenUriCircle(contexto,getString(PROYECTO_RUTAFOTO));
         }
 
-        nombrePry.setText(modelo.getString(PROYECTO_NOMBRE));
-        descripcionPry.setText(modelo.getString(PROYECTO_DESCRIPCION));
-        idCliente = modelo.getString(PROYECTO_ID_CLIENTE);
-        idEstado = modelo.getString(PROYECTO_ID_ESTADO);
+        nombrePry.setText(getString(PROYECTO_NOMBRE));
+        descripcionPry.setText(getString(PROYECTO_DESCRIPCION));
+        idCliente = getString(PROYECTO_ID_CLIENTE);
+        idEstado = getString(PROYECTO_ID_ESTADO);
         //id = modelo.getString(PROYECTO_ID_PROYECTO);
-        fechaEntradaPry.setText(JavaUtil.getDateTime(modelo.getLong(PROYECTO_FECHAENTRADA)));
-        if (modelo.getLong(PROYECTO_FECHAENTREGAPRESUP) == 0) {
+        fechaEntradaPry.setText(JavaUtil.getDateTime(getLong(PROYECTO_FECHAENTRADA)));
+        if (getLong(PROYECTO_FECHAENTREGAPRESUP) == 0) {
             fechaEntregaPresup.setText
                     (R.string.establecer_fecha_entrega_presup);
-        } else if (modelo.getLong(PROYECTO_FECHAENTREGAPRESUP) > 0) {
-            fechaEntregaPresup.setText(JavaUtil.getDate(modelo.getLong(PROYECTO_FECHAENTREGAPRESUP)));
+        } else if (getLong(PROYECTO_FECHAENTREGAPRESUP) > 0) {
+            fechaEntregaPresup.setText(JavaUtil.getDate(getLong(PROYECTO_FECHAENTREGAPRESUP)));
         }
 
         calculoTotales();
@@ -724,9 +679,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         }
 
 
-        estadoProyecto.setText(modelo.getString(PROYECTO_DESCRIPCION_ESTADO));
+        estadoProyecto.setText(getString(PROYECTO_DESCRIPCION_ESTADO));
 
-            long retraso = modelo.getLong(PROYECTO_RETRASO);
+            long retraso = getLong(PROYECTO_RETRASO);
             if (retraso > 3 * CommonPry.DIASLONG) {
                 btnimgEstadoPry.setImageResource(R.drawable.alert_box_r);
             } else if (retraso > CommonPry.DIASLONG) {
@@ -735,7 +690,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 btnimgEstadoPry.setImageResource(R.drawable.alert_box_v);
             }
 
-        if (modelo.getInt(PROYECTO_TIPOESTADO)>=TPRESUPPENDENTREGA){
+        if (getInt(PROYECTO_TIPOESTADO)>=TPRESUPPENDENTREGA){
 
                 btnVerPdf.setVisibility(View.VISIBLE);
                 btnenviarPdf.setVisibility(View.VISIBLE);
@@ -818,6 +773,13 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         spEstadoProyecto.setVisibility(View.GONE);
         btnsave.setVisibility(View.GONE);
 
+        String seleccion = EVENTO_PROYECTOREL+" = '"+id+"'";
+        if (consulta.checkQueryList(CAMPOS_EVENTO,seleccion,null)){
+            btnVerEventos.setVisibility(View.VISIBLE);
+        }else {
+            btnVerEventos.setVisibility(View.GONE);
+        }
+
         setAdaptadorClientes(spClienteProyecto);
 
         System.out.println("idCliente = " + idCliente);
@@ -840,13 +802,13 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         spEstadoProyecto.setAdapter(adaptadorEstado);
 
-        if (namesubclass.equals(NUEVOPRESUPUESTO)){
+        if (subTitulo.equals(NUEVO + " " + PRESUPUESTO)){
 
-            spEstadoProyecto.setSelection(1);
-            idEstado = objEstados.get(1).getString(ESTADO_ID_ESTADO);
-        }else if(namesubclass.equals(NUEVOPROYECTO)){
-            spEstadoProyecto.setSelection(8);
-            idEstado = objEstados.get(8).getString(ESTADO_ID_ESTADO);
+            spEstadoProyecto.setSelection(TNUEVOPRESUP);
+            idEstado = objEstados.get(TNUEVOPRESUP).getString(ESTADO_ID_ESTADO);
+        }else if(subTitulo.equals(NUEVO + " " + PROYECTO)){
+            spEstadoProyecto.setSelection(TPRESUPACEPTADO);
+            idEstado = objEstados.get(TPRESUPACEPTADO).getString(ESTADO_ID_ESTADO);
         }
 
         spEstadoProyecto.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -927,61 +889,12 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         }
         totcompletada = (int) (Math.round(((double) totcompletada) / (double) x));
 
-        totPartidas = modelo.getDouble(PROYECTO_TIEMPO);
+        totPartidas = getDouble(PROYECTO_TIEMPO);
         precioPartidas = totPartidas * CommonPry.hora;
-        preciototal = modelo.getDouble(PROYECTO_IMPORTEPRESUPUESTO);
+        preciototal = getDouble(PROYECTO_IMPORTEPRESUPUESTO);
 
         Log.d(TAG,"calculosTotales");
 
-    }
-
-
-    private void enviarProyectoTemporal(String namef, String namefsub, Fragment myfragment) {
-
-        if (id !=null) {
-            new CommonPry.Calculos.Tareafechas().execute();
-            Modelo pry = consulta.queryObject(CAMPOS_PROYECTO, id);
-            fechaCalculada = pry.getLong(PROYECTO_FECHAENTREGACALCULADA);
-            calculoTotales();
-        }
-
-        comprobarEstado();
-        Modelo proyectotmp = new Modelo(CAMPOS_PROYECTO);
-        if (id!=null) {
-            proyectotmp.setCampos(PROYECTO_ID_PROYECTO, id);
-        }
-        proyectotmp.setCampos(PROYECTO_ID_ESTADO,idEstado);
-        proyectotmp.setCampos(PROYECTO_TIPOESTADO, consulta.queryObject(CAMPOS_ESTADO,idEstado).getString(ESTADO_TIPOESTADO));
-        proyectotmp.setCampos(PROYECTO_DESCRIPCION_ESTADO, consulta.queryObject(CAMPOS_ESTADO,idEstado).getString(ESTADO_DESCRIPCION));
-        proyectotmp.setCampos(PROYECTO_NOMBRE,nombrePry.getText().toString());
-        proyectotmp.setCampos(PROYECTO_DESCRIPCION,descripcionPry.getText().toString());
-        proyectotmp.setCampos(PROYECTO_ID_CLIENTE,idCliente);
-        proyectotmp.setCampos(PROYECTO_FECHAENTREGAACORDADA,fechaAcordada);
-        //proyectotmp.setCampos(PROYECTO_FECHAENTREGAPRESUP,fechaEntregaP);
-        proyectotmp.setCampos(PROYECTO_FECHAENTREGACALCULADA,fechaCalculada);
-        if (fechaCalculada<=fechaAcordada){proyectotmp.setCampos(PROYECTO_RETRASO,0);
-        }else {
-            proyectotmp.setCampos(PROYECTO_RETRASO,fechaCalculada - fechaAcordada);
-        }
-        proyectotmp.setCampos(PROYECTO_TIEMPO,totPartidas);
-        proyectotmp.setCampos(PROYECTO_IMPORTEPRESUPUESTO,preciototal);
-        proyectotmp.setCampos(PROYECTO_IMPORTEFINAL,JavaUtil.sinFormato(importeFinalPry.getText().toString()));
-        if (modelo !=null) {
-            proyectotmp.setCampos(PROYECTO_FECHAENTRADA, modelo.getLong(PROYECTO_FECHAENTRADA));
-            proyectotmp.setCampos(PROYECTO_FECHAFINAL, modelo.getLong(PROYECTO_FECHAFINAL));
-        }
-        proyectotmp.setCampos(PROYECTO_RUTAFOTO,path);
-        proyectotmp.setCampos(PROYECTO_TOTCOMPLETADO,totcompletada);
-
-        bundle = new Bundle();
-        bundle.putBoolean(NUEVOREGISTRO,true);
-        bundle.putSerializable(TABLA_PROYECTO, proyectotmp);
-        bundle.putString(NAMEF, namef);
-        bundle.putString(NAMESUB, namefsub);
-        icFragmentos.enviarBundleAFragment(bundle, myfragment);
-        bundle = null;
-
-        Log.e(TAG,"enviarProyTem");
     }
 
     @Override
@@ -989,12 +902,15 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         new CommonPry.Calculos.Tareafechas().execute();
         if (modelo!=null) {
-            fechaCalculada = modelo.getLong(PROYECTO_FECHAENTREGACALCULADA);
+            fechaCalculada = getLong(PROYECTO_FECHAENTREGACALCULADA);
             calculoTotales();
         }
 
-        return super.update();
+        if (idCliente!=null && idEstado!=null) {
+            return super.update();
+        }
 
+        return false;
     }
 
     @Override
@@ -1054,51 +970,46 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     }
 
-
-    private void modificarEstado() {
-
-        String idNuevoPresup = null;
-        String idPresupPendEntrega = null;
-        String idPresupEnEspera = null;
-        String idPresupAceptado = null;
-        String idProyEnEjecucion = null;
-        String idProyPendEntrega = null;
-        String idProyPendCobro = null;
-        String idProyCobrado = null;
+    private String getIdEstado(int tipoEstado){
 
         ArrayList<Modelo> listaEstados = consulta.queryList(CAMPOS_ESTADO,null, null);
 
         for (Modelo estado : listaEstados) {
 
-            switch (estado.getInt(ESTADO_TIPOESTADO)){
+            if (estado.getInt(ESTADO_TIPOESTADO)==tipoEstado){
 
-                case TNUEVOPRESUP:
-                    idNuevoPresup = estado.getString(ESTADO_ID_ESTADO);
-                    break;
-                case TPRESUPPENDENTREGA:
-                    idPresupPendEntrega = estado.getString(ESTADO_ID_ESTADO);
-                    break;
-                case TPRESUPESPERA:
-                    idPresupEnEspera = estado.getString(ESTADO_ID_ESTADO);
-                    break;
-                case TPRESUPACEPTADO:
-                    idPresupAceptado = estado.getString(ESTADO_ID_ESTADO);
-                    break;
-                case TPROYECTEJECUCION:
-                    idProyEnEjecucion = estado.getString(ESTADO_ID_ESTADO);
-                    break;
-                case TPROYECPENDENTREGA:
-                    idProyPendEntrega = estado.getString(ESTADO_ID_ESTADO);
-                    break;
-                case TPROYECTPENDCOBRO:
-                    idProyPendCobro = estado.getString(ESTADO_ID_ESTADO);
-                    break;
-                case TPROYECTCOBRADO:
-                    idProyCobrado = estado.getString(ESTADO_ID_ESTADO);
+                    return estado.getString(ESTADO_ID_ESTADO);
             }
 
+        }
+        return null;
+    }
+
+    private String getIdEstado(String descTipoEstado){
+
+        ArrayList<Modelo> listaEstados = consulta.queryList(CAMPOS_ESTADO,null, null);
+
+        for (Modelo estado : listaEstados) {
+
+            if (estado.getString(ESTADO_DESCRIPCION).equals(descTipoEstado)){
+
+                return estado.getString(ESTADO_ID_ESTADO);
+            }
 
         }
+        return null;
+    }
+
+    private void modificarEstado() {
+
+        String idNuevoPresup = getIdEstado(TNUEVOPRESUP);
+        String idPresupPendEntrega = getIdEstado(TPRESUPPENDENTREGA);
+        String idPresupEnEspera = getIdEstado(TPRESUPESPERA);
+        String idPresupAceptado = getIdEstado(TPRESUPACEPTADO);
+        String idProyEnEjecucion = getIdEstado(TPROYECTEJECUCION);
+        String idProyPendEntrega = getIdEstado(TPROYECPENDENTREGA);
+        String idProyPendCobro = getIdEstado(TPROYECTPENDCOBRO);
+        String idProyCobrado = getIdEstado(TPROYECTCOBRADO);
 
         if (idEstado.equals(idNuevoPresup)) {
 
@@ -1182,17 +1093,17 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             }
         }
 
-        Log.e(TAG,"modificarEstadoNoAceptado");
+        Log.d(TAG,"modificarEstadoNoAceptado");
 
     }
 
     private void modificarEstadoPartidas(String idProyecto, String idEstado){
 
-        ContentValues valores = new ContentValues();
+        valores = new ContentValues();
         consulta.putDato(valores,CAMPOS_PARTIDA, PARTIDA_ID_ESTADO,idEstado);
         consulta.updateRegistrosDetalle(TABLA_PARTIDA,idProyecto,TABLA_PROYECTO,valores,null);
 
-        Log.e(TAG,"modificarEstadoPartidas");
+        Log.d(TAG,"modificarEstadoPartidas");
     }
 
     @Override
@@ -1203,6 +1114,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         setDato(PROYECTO_ID_CLIENTE,JavaUtil.noNuloString(idCliente));
         setDato(PROYECTO_ID_ESTADO,JavaUtil.noNuloString(idEstado));
         setDato(PROYECTO_FECHAENTREGAACORDADA,fechaAcordada);
+        setDato(PROYECTO_FECHAENTREGAACORDADAF,JavaUtil.getDate(fechaAcordada));
 
         if (fechaCalculada<=fechaAcordada){
             setDato(PROYECTO_RETRASO,0);
@@ -1218,6 +1130,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         if (id ==null){
 
             setDato(PROYECTO_FECHAENTRADA,JavaUtil.hoy());
+            setDato(PROYECTO_FECHAENTRADAF,JavaUtil.getDateTime(JavaUtil.hoy()));
         }
 
     }
@@ -1226,24 +1139,19 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setcambioFragment() {
 
-        if (namef.equals(AGENDA)) {
-
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentAgenda());
-
-        }
     }
 
     private void listaObjetosEstados() {
 
         objEstados = new ArrayList<>();
         String seleccion = null;
-        if (namef.equals(PROYECTO)){
+        if (actual.equals(PROYECTO)){
             seleccion = ESTADO_TIPOESTADO + " >3";
-        }else if (namef.equals(PRESUPUESTO)){
+        }else if (actual.equals(PRESUPUESTO)){
             seleccion = ESTADO_TIPOESTADO + " <4";
-        }else if (namef.equals(COBROS)){
+        }else if (actual.equals(COBROS)){
             seleccion = ESTADO_TIPOESTADO + " >6";
-        }else if (namef.equals(HISTORICO)){
+        }else if (actual.equals(HISTORICO)){
             seleccion = ESTADO_TIPOESTADO + " == 8";
         }
 
@@ -1255,7 +1163,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private void obtenerListaEstados() {
 
         listaEstados = new ArrayList<String>();
-        listaEstados.add("Seleccione Estado");
+        listaEstados.add(getString(R.string.seleccion_estado));
 
         for (int i=0;i<objEstados.size();i++){
 
@@ -1320,16 +1228,16 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
                     bundle = new Bundle();
                     bundle.putBoolean(NUEVOREGISTRO,true);
-                    bundle.putString(NAMESUB,CLIENTE);
-                    bundle.putString(NAMEF,namef);
+                    bundle.putString(SUBTITULO,CLIENTE);
+                    bundle.putString(ORIGEN, actualtemp);
                     icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDCliente());
 
                 }else if (opciones[which].equals("Nuevo prospecto")){
 
                     bundle = new Bundle();
                     bundle.putBoolean(NUEVOREGISTRO,true);
-                    bundle.putString(NAMESUB,PROSPECTO);
-                    bundle.putString(NAMEF,namef);
+                    bundle.putString(SUBTITULO,PROSPECTO);
+                    bundle.putString(ORIGEN, actualtemp);
                     icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDCliente());
 
                 }else {
@@ -1346,22 +1254,19 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 (fechaCalculada, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                        // +1 because january is zero
-                        //String selectedDate = CommonPry.twoDigits(day) + " / " +
-                        //        CommonPry.twoDigits(month+1) + " / " + year;
                         fechaAcordada = JavaUtil.fechaALong(year, month, day);
                         if (fechaAcordada>0){
                             fechaEntregaPresup.setVisibility(View.VISIBLE);
                             btnfechaentrega.setVisibility(View.VISIBLE);
                             labelfentregap.setVisibility(View.VISIBLE);
                         }
-                        //String selectedDate = CommonPry.formatDateForUi(year,month,day);
                         String selectedDate = JavaUtil.getDate(fechaAcordada);
                         fechaAcordadaPry.setText(selectedDate);
                         btnActualizar.setVisibility(View.VISIBLE);
-                        ContentValues valores = new ContentValues();
-                        consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAENTREGAACORDADA,fechaAcordada);
-                        consulta.updateRegistro(TABLA_PROYECTO, id,valores);
+                        valores = new ContentValues();
+                        setDato(PROYECTO_FECHAENTREGAACORDADA,fechaAcordada);
+                        setDato(PROYECTO_FECHAENTREGAACORDADAF,selectedDate);
+                        actualizarRegistro();
 
                             new CommonPry.Calculos.Tareafechas().execute();
 
@@ -1375,17 +1280,13 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 (JavaUtil.hoy(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                        // +1 because january is zero
-                        //String selectedDate = CommonPry.twoDigits(day) + " / " +
-                        //        CommonPry.twoDigits(month+1) + " / " + year;
                         fechaEntregaP = JavaUtil.fechaALong(year, month, day);
-                        //String selectedDate = CommonPry.formatDateForUi(year,month,day);
                         String selectedDate = JavaUtil.getDate(fechaEntregaP);
                         fechaEntregaPresup.setText(selectedDate);
-                        ContentValues valores = new ContentValues();
-                        consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAENTREGAPRESUP,fechaEntregaP);
-                        consulta.updateRegistro(TABLA_PROYECTO, id,valores);
-
+                        valores = new ContentValues();
+                        setDato(PROYECTO_FECHAENTREGAPRESUP,fechaEntregaP);
+                        setDato(PROYECTO_FECHAENTREGAPRESUPF,selectedDate);
+                        actualizarRegistro();
 
                             new CommonPry.Calculos.Tareafechas().execute();
 
@@ -1395,124 +1296,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         newFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
     }
 
-    public static class Adaptador extends RecyclerView.Adapter<Adaptador.ProyectoViewHolder>
-            implements View.OnClickListener, ContratoPry.Tablas {
-
-
-        private ArrayList<Modelo> listaProyecto;
-        private String namef;
-
-        private View.OnClickListener listener;
-
-        public Adaptador(ArrayList<Modelo> listaProyecto, String namef) {
-            this.listaProyecto = listaProyecto;
-            this.namef = namef;
-        }
-
-        @NonNull
-        @Override
-        public ProyectoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
-
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_proyecto,null,false);
-
-            view.setOnClickListener(this);
-
-            return new ProyectoViewHolder(view);
-        }
-
-        public void setOnClickListener(View.OnClickListener listener) {
-
-            this.listener = listener;
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull ProyectoViewHolder proyectoViewHolder, int position) {
-
-
-            proyectoViewHolder.nombreProyecto.setText(listaProyecto.get(position).getCampos(PROYECTO_NOMBRE));
-            proyectoViewHolder.descripcionProyecto.setText(listaProyecto.get(position).getCampos(PROYECTO_DESCRIPCION));
-            proyectoViewHolder.clienteProyecto.setText(listaProyecto.get(position).getCampos(PROYECTO_CLIENTE_NOMBRE));
-            proyectoViewHolder.estadoProyecto.setText(listaProyecto.get(position).getCampos(PROYECTO_DESCRIPCION_ESTADO));
-            proyectoViewHolder.importe.setText(JavaUtil.formatoMonedaLocal(listaProyecto.get(position).getDouble(PROYECTO_IMPORTEPRESUPUESTO)));
-
-            if (namef.equals(PROYECTO)){
-
-                proyectoViewHolder.progressBarProyecto.setProgress(listaProyecto.get(position).getInt(PROYECTO_TOTCOMPLETADO));
-
-                long retraso = listaProyecto.get(position).getLong(PROYECTO_RETRASO);
-                if (retraso > 3 * DIASLONG){proyectoViewHolder.imagenEstado.setImageResource(R.drawable.alert_box_r);}
-                else if (retraso > DIASLONG){proyectoViewHolder.imagenEstado.setImageResource(R.drawable.alert_box_a);}
-                else {proyectoViewHolder.imagenEstado.setImageResource(R.drawable.alert_box_v);}
-
-            }else{
-
-                proyectoViewHolder.progressBarProyecto.setVisibility(View.GONE);
-                long retraso = listaProyecto.get(position).getLong(PROYECTO_RETRASO);
-                if (retraso > 3 * DIASLONG){proyectoViewHolder.imagenEstado.setImageResource(R.drawable.alert_box_r);}
-                else if (retraso > DIASLONG){proyectoViewHolder.imagenEstado.setImageResource(R.drawable.alert_box_a);}
-                else {proyectoViewHolder.imagenEstado.setImageResource(R.drawable.alert_box_v);}
-
-            }
-            System.out.println("ruta foto pry = " + listaProyecto.get(position).getCampos(PROYECTO_RUTAFOTO));
-            if (listaProyecto.get(position).getCampos(PROYECTO_RUTAFOTO)!=null) {
-                //proyectoViewHolder.imagenProyecto.setImageURI(Uri.parse(listaProyecto.get(position).getCampos(PROYECTO_RUTAFOTO)));
-                ImagenUtil imagenUtil =new ImagenUtil(AppActivity.getAppContext());
-                imagenUtil.setImageUriCircle(listaProyecto.get(position).getString(PROYECTO_RUTAFOTO),proyectoViewHolder.imagenProyecto);
-            }
-            int peso = Integer.parseInt(listaProyecto.get(position).getCampos(PROYECTO_CLIENTE_PESOTIPOCLI));
-
-            if (peso>6){proyectoViewHolder.imagenCliente.setImageResource(R.drawable.clientev);}
-            else if (peso>3){proyectoViewHolder.imagenCliente.setImageResource(R.drawable.clientea);}
-            else if (peso>0){proyectoViewHolder.imagenCliente.setImageResource(R.drawable.clienter);}
-            else {proyectoViewHolder.imagenCliente.setImageResource(R.drawable.cliente);}
-
-
-
-        }
-
-        @Override
-        public int getItemCount() {
-            if (listaProyecto==null){
-                return 0;
-            }
-            return listaProyecto.size();
-        }
-
-        @Override
-        public void onClick(View v) {
-
-            if (listener!= null){
-
-                listener.onClick(v);
-
-
-            }
-
-        }
-
-        public class ProyectoViewHolder extends RecyclerView.ViewHolder {
-
-            ImageView imagenProyecto, imagenEstado, imagenCliente;
-            TextView nombreProyecto,descripcionProyecto,clienteProyecto, estadoProyecto,
-                    importe;
-            ProgressBar progressBarProyecto;
-
-            public ProyectoViewHolder(@NonNull View itemView) {
-                super(itemView);
-
-                imagenProyecto = itemView.findViewById(R.id.imglistaproyectos);
-                imagenCliente = itemView.findViewById(R.id.imgclientelistaproyectos);
-                imagenEstado = itemView.findViewById(R.id.imgestadolistaproyectos);
-                nombreProyecto = itemView.findViewById(R.id.tvnombrelistaproyectos);
-                descripcionProyecto = itemView.findViewById(R.id.tvdesclistaproyectos);
-                clienteProyecto = itemView.findViewById(R.id.tvnombreclientelistaproyectos);
-                estadoProyecto = itemView.findViewById(R.id.tvestadolistaproyectos);
-                progressBarProyecto = itemView.findViewById(R.id.progressBarlistaproyectos);
-                importe = itemView.findViewById(R.id.tvimptotlistaproyectos);
-
-            }
-        }
-    }
 
     public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
 
@@ -1543,7 +1326,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             estadoProyecto.setText(modelo.getString(PROYECTO_DESCRIPCION_ESTADO));
             importe.setText(JavaUtil.formatoMonedaLocal(modelo.getDouble(PROYECTO_IMPORTEPRESUPUESTO)));
 
-            if (namef.equals(PROYECTO)){
+            if (actualtemp.equals(PROYECTO)){
 
                 progressBarProyecto.setProgress(modelo.getInt(PROYECTO_TOTCOMPLETADO));
 
@@ -1642,66 +1425,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
             super.setEntradas(posicion, view, entrada);
         }
-    }
-
-    private void setAdaptadorProyectos(final AutoCompleteTextView autoCompleteTextView){
-
-        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
-                R.layout.item_list_proyecto, lista.getLista(),campos) {
-
-            @Override
-            public void onEntrada(Modelo entrada, View view) {
-
-                ImageView imagen = view.findViewById(R.id.imglistaproyectos);
-                TextView nombre = view.findViewById(R.id.tvnombrelistaproyectos);
-                TextView descripcion = view.findViewById(R.id.tvdesclistaproyectos);
-                ImageView imgcli = view.findViewById(R.id.imgclientelistaproyectos);
-                TextView nomcli = view.findViewById(R.id.tvnombreclientelistaproyectos);
-                ImageView imgest = view.findViewById(R.id.imgestadolistaproyectos);
-                TextView estado = view.findViewById(R.id.tvestadolistaproyectos);
-                ProgressBar bar = view.findViewById(R.id.progressBarlistaproyectos);
-
-                descripcion.setText(entrada.getCampos(ContratoPry.Tablas.PROYECTO_DESCRIPCION));
-
-                nombre.setText(entrada.getCampos(ContratoPry.Tablas.PROYECTO_NOMBRE));
-                nomcli.setText(entrada.getCampos(ContratoPry.Tablas.CLIENTE_NOMBRE));
-                estado.setText(entrada.getCampos(ContratoPry.Tablas.ESTADO_DESCRIPCION));
-
-                bar.setProgress(Integer.parseInt(entrada.getCampos
-                        (ContratoPry.Tablas.PROYECTO_TOTCOMPLETADO)));
-
-                long retraso = Long.parseLong(entrada.getCampos
-                        (ContratoPry.Tablas.PROYECTO_RETRASO));
-                if (retraso > 3 * CommonPry.DIASLONG) {
-                    imgest.setImageResource(R.drawable.alert_box_r);
-                } else if (retraso > CommonPry.DIASLONG) {
-                    imgest.setImageResource(R.drawable.alert_box_a);
-                } else {
-                    imgest.setImageResource(R.drawable.alert_box_v);
-                }
-
-                if (entrada.getCampos(ContratoPry.Tablas.PROYECTO_RUTAFOTO) != null) {
-                    //imagen.setImageURI(Uri.parse(entrada.getCampos
-                    //        (ContratoPry.Tablas.PROYECTO_RUTAFOTO)));
-                    imagenUtil = new ImagenUtil(contexto);
-                    imagenUtil.setImageUriCircle(entrada.getString(PROYECTO_RUTAFOTO),imagen);
-                }
-                int peso = Integer.parseInt(entrada.getCampos
-                        (ContratoPry.Tablas.CLIENTE_PESOTIPOCLI));
-
-                if (peso > 6) {
-                    imgcli.setImageResource(R.drawable.clientev);
-                } else if (peso > 3) {
-                    imgcli.setImageResource(R.drawable.clientea);
-                } else if (peso > 0) {
-                    imgcli.setImageResource(R.drawable.clienter);
-                } else {
-                    imgcli.setImageResource(R.drawable.cliente);
-                }
-
-            }
-        });
-
     }
 
 }

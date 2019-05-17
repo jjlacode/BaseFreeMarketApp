@@ -38,8 +38,8 @@ import java.util.ArrayList;
 
 import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.VISORPDF;
 import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.VISORPDFMAIL;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NAMEF;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NAMESUB;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ORIGEN;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.SUBTITULO;
 
 public class PdfUtils extends FragmentBase {
 
@@ -174,9 +174,9 @@ public class PdfUtils extends FragmentBase {
         buscarPDF();
         if(fPDF==1) {
             //bundle = new Bundle();
-            bundle.putString(NAMESUB,bundle.getString(NAMEF));
+            bundle.putString(SUBTITULO,bundle.getString(ORIGEN));
             bundle.putString("path", archivoPDF.getAbsolutePath());
-            bundle.putString(NAMEF,VISORPDF);
+            bundle.putString(ORIGEN,VISORPDF);
             icFragmentos.enviarBundleAFragment(bundle, new VisorPDF());
             Toast.makeText(context,"Si existe archivo PDF para LEER",Toast.LENGTH_LONG).show();
         }
@@ -197,7 +197,7 @@ public class PdfUtils extends FragmentBase {
             bundle.putString("texto",texto);
             bundle.putString("uri", fileUri.toString());
             bundle.putString("path", archivoPDF.getAbsolutePath());
-            bundle.putString(NAMEF,VISORPDFMAIL);
+            bundle.putString(ORIGEN,VISORPDFMAIL);
             icFragmentos.enviarBundleAFragment(bundle, new VisorPDFEmail());
             Toast.makeText(context,"Si existe archivo PDF para Enviar",Toast.LENGTH_LONG).show();
         }
@@ -215,7 +215,7 @@ public class PdfUtils extends FragmentBase {
             bundle = new Bundle();
             bundle.putString("uri", fileUri.toString());
             bundle.putString("path", archivoPDF.getAbsolutePath());
-            bundle.putString(NAMEF,"visor pdf - compartir");
+            bundle.putString(ORIGEN,"visor pdf - compartir");
             icFragmentos.enviarBundleAFragment(bundle, new VisorPDF());
             Toast.makeText(context,"Si existe archivo PDF para compartir",Toast.LENGTH_LONG).show();
         }

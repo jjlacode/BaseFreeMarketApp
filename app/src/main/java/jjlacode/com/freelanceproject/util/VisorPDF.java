@@ -11,8 +11,8 @@ import java.io.File;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDProyecto;
 
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NAMEF;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NAMESUB;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ORIGEN;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.SUBTITULO;
 
 public class VisorPDF extends FragmentBase {
 
@@ -74,8 +74,8 @@ public class VisorPDF extends FragmentBase {
             @Override
             public void onClick(View v) {
 
-                bundle.putString(NAMEF, bundle.getString(NAMESUB));
-                bundle.putString(NAMESUB,CommonPry.setNamefdef());
+                bundle.putString(ORIGEN, bundle.getString(SUBTITULO));
+                bundle.putString(SUBTITULO,CommonPry.setNamefdef());
                 icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDProyecto());
             }
         });

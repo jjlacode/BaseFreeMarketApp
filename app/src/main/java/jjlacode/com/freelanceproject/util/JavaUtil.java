@@ -20,9 +20,10 @@ public class JavaUtil {
 
     public interface Constantes {
 
-        String NAMEF = "namef";
-        String NAMESUB = "namesub";
-        String NAMEFTEMP = "nameftemp";
+        String ORIGEN = "actual";
+        String ACTUAL = "actual";
+        String SUBTITULO = "subTitulo";
+        String ORIGENTEMP = "origenTemp";
         String NAMESUBTEMP = "namesubtemp";
         String LISTA = "lista";
         String TIPO = "tipo";
@@ -31,6 +32,8 @@ public class JavaUtil {
         String SECUENCIA = "secuencia";
         String MODELO = "modelo";
         String NUEVOREGISTRO = "nuevoreg";
+        String VERLISTA = "verlista";
+        String ESDETALLE = "esdetalle";
 
 
         long SEGUNDOSLONG = (1000);

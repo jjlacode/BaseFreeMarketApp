@@ -62,7 +62,7 @@
     <string name="ocasional">Ocasional</string>
     <string name="gastos">gastos</string>
     <string name="partidas">partidas</string>
-    <string name="nuevo_presupuesto">Nuevo_presupuesto</string>
+    <string name="nuevo_presupuesto">Nuevo presupuesto</string>
     <string name="presupuesto_pendiente_entrega">Presupuesto_pendiente_entrega</string>
     <string name="presupuesto_en_espera_aceptar">Presupuesto_en_espera_aceptar</string>
     <string name="presupuesto_aceptado_pendiente_ejecucion">Presupuesto_aceptado_pendiente_ejecucion</string>
@@ -218,6 +218,18 @@
     <string name="nuevo_prodprov">Nuevo producto prov</string>
     <string name="nueva_tarea">Nueva tarea</string>
     <string name="nueva_tarea_base">Nueva tarea</string>
+    <string name="inicio">Inicio</string>
+    <string name="seleccion_estado">Seleccione Estado</string>
+    <string name="tipo_cliente">Tipo cliente</string>
+    <string name="evento">Evento</string>
+    <string name="gasto_fijo">Gasto fijo</string>
+    <string name="gastos_fijos">Gastos fijos</string>
+    <string name="partidas_base">Partidas base</string>
+    <string name="detpartida">Detalle partida</string>
+    <string name="perfil">Perfil</string>
+    <string name="nota">Nota</string>
+    <string name="amortizaciones">Amortizaciones</string>
+    <string name="detpartidabase">Detalle partida base</string>
 
 
 </resources>

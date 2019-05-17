@@ -22,7 +22,7 @@
             android:spinnerMode="dialog" />
 
         <TextView
-            android:id="@+id/sptipoudevento"
+            android:id="@+id/tvtipoudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp"

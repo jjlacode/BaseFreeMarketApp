@@ -2,24 +2,19 @@ package jjlacode.com.freelanceproject.ui;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 import jjlacode.com.freelanceproject.util.AppActivity;
 import jjlacode.com.freelanceproject.util.BaseViewHolder;
 import jjlacode.com.freelanceproject.util.FragmentCRUD;
-import jjlacode.com.freelanceproject.util.FragmentCUD;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltroRV;
 import jjlacode.com.freelanceproject.util.Modelo;
@@ -145,10 +140,11 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
         btndelete.setVisibility(View.VISIBLE);
         btnperfilact.setVisibility(View.VISIBLE);
 
-        if (modelo.getString(PERFIL_NOMBRE).equals(CommonPry.perfila)){
+        if (modelo.getString(PERFIL_NOMBRE)!=null && modelo.getString(PERFIL_NOMBRE).equals(CommonPry.perfila)){
 
             activo.setVisibility(View.VISIBLE);
             btnperfilact.setVisibility(View.GONE);
+
         }else{
 
             activo.setVisibility(View.GONE);
@@ -176,12 +172,18 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
 
                 new CommonPry.Calculos.Tareafechas().execute();
 
-                namesubclass = CommonPry.setNamefdef();
+                subTitulo = CommonPry.setNamefdef();
                 enviarAct();
             }
         });
 
 
+    }
+
+    @Override
+    protected void setTitulo() {
+        tituloSingular = R.string.perfil;
+        tituloPlural = R.string.perfiles;
     }
 
 
@@ -227,7 +229,6 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
         sueldo.setText(JavaUtil.formatoMonedaLocal(0));
         activo.setVisibility(View.GONE);
         btnperfilact.setVisibility(View.GONE);
-        btndelete.setVisibility(View.GONE);
 
     }
 
@@ -282,8 +283,6 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     protected void cambiarFragment(){
 
         super.cambiarFragment();
-
-        icFragmentos.enviarBundleAFragment(bundle, new FragmentPerfil());
 
     }
 

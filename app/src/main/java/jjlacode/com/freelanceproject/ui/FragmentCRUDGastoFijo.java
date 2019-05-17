@@ -1,29 +1,20 @@
 package jjlacode.com.freelanceproject.ui;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 import jjlacode.com.freelanceproject.util.BaseViewHolder;
 import jjlacode.com.freelanceproject.util.CommonPry;
 import jjlacode.com.freelanceproject.util.FragmentCRUD;
-import jjlacode.com.freelanceproject.util.FragmentCUD;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltroRV;
 import jjlacode.com.freelanceproject.util.Modelo;
-import jjlacode.com.freelanceproject.util.RVAdapter;
 import jjlacode.com.freelanceproject.util.TipoViewHolder;
 
 public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.Tablas {
@@ -82,11 +73,17 @@ public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.T
 
     }
 
+    @Override
+    protected void setTitulo() {
+
+        tituloSingular = R.string.gasto_fijo;
+        tituloPlural = R.string.gastos_fijos;
+    }
+
 
     @Override
     protected void setNuevo() {
 
-        btndelete.setVisibility(View.GONE);
 
     }
 
@@ -165,21 +162,20 @@ public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.T
     @Override
     protected void setContenedor() {
 
-        consulta.putDato(valores, campos, GASTOFIJO_NOMBRE, nombre.getText().toString());
-        consulta.putDato(valores, campos, GASTOFIJO_DESCRIPCION, descripcion.getText().toString());
-        consulta.putDato(valores, campos, GASTOFIJO_CANTIDAD, JavaUtil.comprobarDouble(cantidad.getText().toString()));
-        consulta.putDato(valores, campos, GASTOFIJO_IMPORTE, JavaUtil.comprobarDouble(importe.getText().toString()));
-        consulta.putDato(valores, campos, GASTOFIJO_ANYOS, JavaUtil.comprobarInteger(anios.getText().toString()));
-        consulta.putDato(valores, campos, GASTOFIJO_MESES, JavaUtil.comprobarInteger(meses.getText().toString()));
-        consulta.putDato(valores, campos, GASTOFIJO_DIAS, JavaUtil.comprobarInteger(dias.getText().toString()));
-
+        setDato(GASTOFIJO_NOMBRE, nombre.getText().toString());
+        setDato(GASTOFIJO_DESCRIPCION, descripcion.getText().toString());
+        setDato(GASTOFIJO_CANTIDAD, JavaUtil.comprobarDouble(cantidad.getText().toString()));
+        setDato(GASTOFIJO_IMPORTE, JavaUtil.comprobarDouble(importe.getText().toString()));
+        setDato(GASTOFIJO_ANYOS, JavaUtil.comprobarInteger(anios.getText().toString()));
+        setDato(GASTOFIJO_MESES, JavaUtil.comprobarInteger(meses.getText().toString()));
+        setDato(GASTOFIJO_DIAS, JavaUtil.comprobarInteger(dias.getText().toString()));
 
     }
 
     @Override
     protected void setcambioFragment() {
 
-        namesubclass = CommonPry.setNamefdef();
+        subTitulo = CommonPry.setNamefdef();
 
     }
 

@@ -3,6 +3,7 @@ package jjlacode.com.freelanceproject.util;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 
 import java.util.ArrayList;
@@ -10,16 +11,12 @@ import java.util.ArrayList;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 
 import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.PERSISTENCIA;
-import static jjlacode.com.freelanceproject.util.CommonPry.namesubdef;
-import static jjlacode.com.freelanceproject.util.CommonPry.setNamefdef;
 
 public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.Constantes {
 
-    protected String namef;
-    protected String namesub;
-    protected String nameftemp;
-    protected String namesubtemp;
-    protected String namesubclass;
+
+    protected int tituloPlural;
+    protected int tituloSingular;
     protected String tabla;
     protected String[] campos;
     protected String id;
@@ -28,10 +25,15 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     protected Context contexto;
     protected Modelo modelo;
     protected String campoID;
-    protected boolean nuevo;
+
     protected ConsultaBD consulta = new ConsultaBD();
     protected ContentValues valores;
     protected ListaModelo lista;
+    protected ListaModelo listab;
+    protected String origen;
+    protected String actual;
+    protected String subTitulo;
+    protected boolean nuevo;
 
 
     public FragmentBaseCRUD() {
@@ -43,12 +45,11 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
 
         SharedPreferences persistencia=getActivity().getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor=persistencia.edit();
-        editor.putString(NAMEF,namef);
+        editor.putString(ORIGEN, origen);
+        editor.putString(ACTUAL, actual);
+        editor.putString(SUBTITULO, subTitulo);
         editor.putString(ID,id);
         editor.putInt(SECUENCIA,secuencia);
-        editor.putString(NAMESUB,namesubclass);
-        editor.putString(NAMEFTEMP,nameftemp);
-        editor.putString(NAMESUBTEMP,namesubtemp);
         editor.apply();
         System.out.println("Guardado onPause");
     }
@@ -60,51 +61,30 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
 
         super.cargarBundle();
 
+        listab = null;
+
         if (bundle != null) {
-            namef = bundle.getString(NAMEF);
-            namesub = bundle.getString(NAMESUB);
-            nameftemp = bundle.getString(NAMEFTEMP);
-            namesubtemp = bundle.getString(NAMESUBTEMP);
-            lista = (ListaModelo) bundle.getSerializable(LISTA);
-
-            if (tablaCab==null) {
-                modelo = (Modelo) bundle.getSerializable(MODELO);
-            }
-            secuencia = bundle.getInt(SECUENCIA);
-            id = bundle.getString(ID);
+            origen = bundle.getString(ORIGEN);
+            subTitulo = bundle.getString(SUBTITULO);
+            actual = bundle.getString(ACTUAL);
             nuevo = bundle.getBoolean(NUEVOREGISTRO);
-            if (modelo==null && id!=null){
-                if(secuencia>0){
-                    modelo = consulta.queryObjectDetalle(campos,id,secuencia);
-                }else if(tablaCab==null){
-                    System.out.println("id recibido de bundle= " + id);
-                    System.out.println("tabla = " + tabla);
-                    modelo = consulta.queryObject(campos,id);
-                }
+            if (subTitulo==null){
+                subTitulo = CommonPry.setNamefdef();
             }
-            if (nuevo){
-                if (tablaCab==null){
-                    id=null;
-                    modelo = null;
-                }else{
-                    secuencia=0;
-                    modelo = null;
-                }
-            }
-            if (lista==null){
-
-                if (tablaCab==null){
-                    setListaModelo();
-                }else if (id!=null){
-                    setListaModeloDetalle();
-                }
-            }
+            listab = (ListaModelo) bundle.getSerializable(LISTA);
+            modelo = (Modelo) bundle.getSerializable(MODELO);
 
         }
+        if (tablaCab!=null && modelo!=null){
+                getID();
+                getSecuencia();
+        }else if (modelo!=null){
+                getID();
+        }
+
         setBundle();
+        enviarAct();
     }
-
-
 
     protected abstract void setTabla();
 
@@ -122,53 +102,38 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
 
     protected abstract void setAcciones();
 
+    protected abstract void setTitulo();
 
     protected void acciones(){
 
-
     }
-
 
     protected void enviarAct(){
 
-        enviarBundle();
         icFragmentos.enviarBundleAActivity(bundle);
-        System.out.println("bundle enviado a activity "+namef);
+        System.out.println("bundle enviado a activityBase desde "+ tituloPlural);
     }
 
     protected void enviarBundle(){
 
         bundle = new Bundle();
-        bundle.putString(NAMEF,namef);
-        bundle.putString(NAMESUB,namesubclass);
+        bundle.putString(ORIGEN, origen);
+        bundle.putString(ACTUAL,actual);
         bundle.putSerializable(MODELO,modelo);
-        bundle.putInt(SECUENCIA,secuencia);
-        bundle.putString(ID,id);
 
     }
 
     @Override
     public void onResume() {
 
+        if (tituloPlural>0) {
+            activityBase.toolbar.setTitle(tituloPlural);
+        }
+        if (subTitulo!=null) {
+            activityBase.toolbar.setSubtitle(subTitulo);
+        }
+
         cargarBundle();
-        /*
-        if (!nuevo){
-
-            namesubclass = namesubtemp;
-
-        }else{
-
-            namesubclass = namesub;
-        }
-        */
-        if (namesub!=null) {
-            namesubclass = namesub;
-        }else{
-            namesubclass = namesubdef = setNamefdef();
-        }
-        if (bundle!=null) {
-            enviarAct();
-        }
 
         super.onResume();
     }
@@ -181,12 +146,23 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
         setCampos();
         setCampoID();
         setContext();
+        setTitulo();
 
         super.onCreate(savedInstanceState);
     }
 
     protected void setListaModelo(){
         lista = new ListaModelo(campos);
+    }
+
+    protected void setListaModelo(ListaModelo list){
+        lista = new ListaModelo(campos);
+        lista.clearAddAll(list.getLista());
+    }
+
+    protected void setListaModelo(ArrayList<Modelo> list){
+        lista = new ListaModelo(campos);
+        lista.clearAddAll(list);
     }
 
     protected void setListaModeloDetalle(){
@@ -211,6 +187,131 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
 
     protected void setListaModelo(String campo, String valor, int flag){
         lista = new ListaModelo(campos,campo,valor,null,flag,null);
+    }
+
+    protected Modelo setModelo(String id){
+        return consulta.queryObject(campos,id);
+    }
+
+    protected Modelo setModelo(String id, int secuencia){
+
+        return consulta.queryObjectDetalle(campos,id,secuencia);
+    }
+
+    protected Modelo setModelo(String id, String secuencia){
+        return consulta.queryObjectDetalle(campos,id,secuencia);
+    }
+
+    protected Modelo setModelo(String[] campos, String id){
+        return consulta.queryObject(campos,id);
+    }
+
+    protected Modelo setModelo(String[] campos, String id, String secuencia){
+        return consulta.queryObjectDetalle(campos,id,secuencia);
+    }
+
+    protected int actualizarRegistro(){
+
+        if (tablaCab==null) {
+            return consulta.updateRegistro(tabla, id, valores);
+        }else{
+            return consulta.updateRegistroDetalle(tabla, id, secuencia,valores);
+        }
+    }
+
+    protected int actualizarRegistro(String tabla, String id, int secuencia){
+
+        if (tablaCab==null) {
+            return consulta.updateRegistro(tabla, id, valores);
+        }else{
+            return consulta.updateRegistroDetalle(tabla, id, secuencia,valores);
+        }
+    }
+
+    protected Uri crearRegistroUri(){
+
+        if (tablaCab==null){
+            return consulta.insertRegistro(tabla,valores);
+        }else{
+            return consulta.insertRegistroDetalle(campos,id,tablaCab,valores);
+        }
+    }
+
+    protected Uri crearRegistroUri(String tabla, String[] campos, String tablacab, String id){
+
+        if (tablaCab==null){
+            return consulta.insertRegistro(tabla,valores);
+        }else{
+            return consulta.insertRegistroDetalle(campos,id,tablaCab,valores);
+        }
+    }
+
+    protected String crearRegistroId(){
+
+            return consulta.idInsertRegistro(tabla,valores);
+    }
+
+    protected String crearRegistroId(String tabla){
+
+        return consulta.idInsertRegistro(tabla,valores);
+    }
+
+    protected int crearRegistroDetalleSec(){
+
+            return consulta.secInsertRegistroDetalle(campos,id,tablaCab,valores);
+    }
+
+    protected int crearRegistroDetalleSec(String[] campos, String tablacab, String id){
+
+        return consulta.secInsertRegistroDetalle(campos,id,tablaCab,valores);
+    }
+
+    protected int borrarRegistro(){
+        if (tablaCab==null) {
+            return consulta.deleteRegistro(tabla, id);
+        }else{
+            return consulta.deleteRegistroDetalle(tabla,id,secuencia);
+        }
+    }
+
+    protected int borrarRegistro(String tabla, String id, int secuencia){
+        if (tablaCab==null) {
+            return consulta.deleteRegistro(tabla, id);
+        }else{
+            return consulta.deleteRegistroDetalle(tabla,id,secuencia);
+        }
+    }
+
+    protected String getString(String campo){
+        return modelo.getString(campo);
+    }
+
+    protected int getInt(String campo){
+        return modelo.getInt(campo);
+    }
+
+    protected long getLong(String campo){
+        return modelo.getLong(campo);
+    }
+
+    protected double getDouble(String campo){
+        return modelo.getDouble(campo);
+    }
+
+    protected float getFloat(String campo){
+        return modelo.getFloat(campo);
+    }
+
+    protected short getShort(String campo){
+        return modelo.getShort(campo);
+    }
+
+    protected String getID(){
+        return modelo.getString(campoID);
+    }
+
+    protected int getSecuencia(){
+        return modelo.getInt("secuencia");
     }
 
 

@@ -2,9 +2,7 @@ package jjlacode.com.freelanceproject.ui;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -12,9 +10,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
@@ -30,7 +26,6 @@ import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltroRV;
 import jjlacode.com.freelanceproject.util.Modelo;
 import jjlacode.com.freelanceproject.util.TipoViewHolder;
 
-import static jjlacode.com.freelanceproject.util.CommonPry.namesubdef;
 import static jjlacode.com.freelanceproject.util.CommonPry.setNamefdef;
 
 public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPry.Tablas {
@@ -146,6 +141,12 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
     }
 
     @Override
+    protected void setTitulo() {
+        tituloSingular = R.string.amortizacion;
+        tituloPlural = R.string.amortizaciones;
+    }
+
+    @Override
     protected void setLayout() {
 
         layoutCuerpo = R.layout.fragment_cud_amortizacion;
@@ -184,7 +185,7 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
         meses.setText(null);
         dias.setText(null);
 
-        btndelete.setVisibility(View.GONE);
+        activityBase.toolbar.setSubtitle(NUEVAAMORTIZACION);
 
     }
 
@@ -251,9 +252,7 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
         consulta.putDato(valores,CAMPOS_AMORTIZACION,AMORTIZACION_MESES,JavaUtil.comprobarInteger(meses.getText().toString()));
         consulta.putDato(valores,CAMPOS_AMORTIZACION,AMORTIZACION_DIAS,JavaUtil.comprobarInteger(dias.getText().toString()));
         consulta.putDato(valores,CAMPOS_AMORTIZACION,AMORTIZACION_FECHACOMPRA,fechaCompra);
-        if (path!=null) {
-            consulta.putDato(valores, CAMPOS_AMORTIZACION, AMORTIZACION_RUTAFOTO, path);
-        }
+        consulta.putDato(valores, CAMPOS_AMORTIZACION, AMORTIZACION_RUTAFOTO, path);
 
 
     }
@@ -261,10 +260,7 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
     @Override
     protected void setcambioFragment() {
 
-        if (namesubclass.equals(NUEVAAMORTIZACION)){
-            namesubclass = namesubdef = setNamefdef();
-        }
-
+        activityBase.toolbar.setSubtitle(setNamefdef());
 
     }
 

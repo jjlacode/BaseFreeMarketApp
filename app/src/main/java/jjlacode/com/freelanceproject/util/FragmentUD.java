@@ -40,8 +40,8 @@ public abstract class FragmentUD extends FragmentBaseCRUD {
         bundle = getArguments();
 
         if (bundle != null) {
-            namef = bundle.getString(NAMEF);
-            namesub = bundle.getString(NAMESUB);
+            origen = bundle.getString(ORIGEN);
+            subTitulo = bundle.getString(SUBTITULO);
         }
 
         cargarBundle();

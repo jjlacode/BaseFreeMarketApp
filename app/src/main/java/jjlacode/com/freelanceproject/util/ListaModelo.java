@@ -93,6 +93,12 @@ public class ListaModelo implements Serializable {
         lista.addAll(listaClon);
     }
 
+    public void addAll(ListaModelo listaClon){
+
+        lista.addAll(listaClon.getLista());
+    }
+
+
     public int size(){
 
         if (lista!=null) {
@@ -107,8 +113,18 @@ public class ListaModelo implements Serializable {
         lista.addAll(listaClon);
     }
 
+    public void clearAddAll(ListaModelo listaClon){
+
+        lista.clear();
+        lista.addAll(listaClon.getLista());
+    }
+
     public void setLista(ArrayList<Modelo> lista) {
         this.lista = lista;
+    }
+
+    public void setLista(ListaModelo lista) {
+        this.lista = lista.getLista();
     }
 
     public void setLista(String[] campos){

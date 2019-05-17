@@ -119,13 +119,13 @@ public class copy {
 
 
     private ArrayList<Modelo> listaProyecto;
-    private String namef;
+    private String actual;
 
     private View.OnClickListener listener;
 
-    public Adaptador(ArrayList<Modelo> listaProyecto, String namef) {
+    public Adaptador(ArrayList<Modelo> listaProyecto, String actual) {
         this.listaProyecto = listaProyecto;
-        this.namef = namef;
+        this.actual = actual;
     }
 
     @NonNull
@@ -152,7 +152,7 @@ public class copy {
         proyectoViewHolder.descripcionProyecto.setText(listaProyecto.get(position).getCampos(PROYECTO_DESCRIPCION));
         proyectoViewHolder.clienteProyecto.setText(listaProyecto.get(position).getCampos(PROYECTO_CLIENTE_NOMBRE));
         proyectoViewHolder.estadoProyecto.setText(listaProyecto.get(position).getCampos(PROYECTO_DESCRIPCION_ESTADO));
-        if (namef.equals(PROYECTO)){
+        if (actual.equals(PROYECTO)){
 
             proyectoViewHolder.progressBarProyecto.setProgress(Integer.parseInt(listaProyecto.get(position).getCampos(PROYECTO_TOTCOMPLETADO)));
 

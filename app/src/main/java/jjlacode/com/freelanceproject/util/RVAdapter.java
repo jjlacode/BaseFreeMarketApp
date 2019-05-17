@@ -44,6 +44,21 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
         holder.bind(list.get(position));
     }
 
+    /*
+   Añade una lista completa de items
+    */
+    public void addAll(ArrayList<Modelo> lista){
+        list.addAll(lista);
+        notifyDataSetChanged();
+    }
+
+    /*
+    Permite limpiar todos los elementos del recycler
+     */
+    public void clear(){
+        list.clear();
+        notifyDataSetChanged();
+    }
     public void setOnClickListener(View.OnClickListener listener) {
 
         this.listener = listener;

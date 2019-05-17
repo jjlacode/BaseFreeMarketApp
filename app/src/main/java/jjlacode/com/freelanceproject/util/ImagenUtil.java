@@ -73,7 +73,7 @@ public class ImagenUtil {
 
     public Intent takePhotoIntent() throws IOException {
         Intent in = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
+        // Ensure that there's a camera activityBase to handle the intent
         if (in.resolveActivity(context.getPackageManager()) != null) {
 
             File photoFile = null;

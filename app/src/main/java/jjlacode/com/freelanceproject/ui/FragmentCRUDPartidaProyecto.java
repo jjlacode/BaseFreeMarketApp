@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,6 +86,10 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     @Override
     protected void setLista() {
 
+        if (listab==null) {
+            btnVolverProy.setVisibility(View.VISIBLE);
+        }
+
     }
 
     @Override
@@ -102,8 +105,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                 bundle.putSerializable(TABLA_PROYECTO, proyecto);
                 bundle.putSerializable(TABLA_PARTIDA, modelo);
                 bundle.putString(ID, modelo.getString(PARTIDA_ID_PARTIDA));
-                bundle.putString(NAMEF, namef);
-                bundle.putString(NAMESUB, namesubclass);
+                bundle.putString(ORIGEN, PARTIDA);
+                bundle.putString(SUBTITULO, subTitulo);
                 bundle.putString(TIPO, TIPOTAREA);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
 
@@ -121,8 +124,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                 bundle.putSerializable(TABLA_PROYECTO, proyecto);
                 bundle.putSerializable(TABLA_PARTIDA, modelo);
                 bundle.putString(ID, modelo.getString(PARTIDA_ID_PARTIDA));
-                bundle.putString(NAMEF, namef);
-                bundle.putString(NAMESUB, namesubclass);
+                bundle.putString(ORIGEN, PARTIDA);
+                bundle.putString(SUBTITULO, subTitulo);
                 bundle.putString(TIPO, TIPOPRODUCTO);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
 
@@ -140,8 +143,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                 bundle.putSerializable(TABLA_PROYECTO, proyecto);
                 bundle.putSerializable(TABLA_PARTIDA, modelo);
                 bundle.putString(ID, modelo.getString(PARTIDA_ID_PARTIDA));
-                bundle.putString(NAMEF, namef);
-                bundle.putString(NAMESUB, namesubclass);
+                bundle.putString(ORIGEN, PARTIDA);
+                bundle.putString(SUBTITULO, subTitulo);
                 bundle.putString(TIPO, TIPOPRODUCTOPROV);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
 
@@ -159,8 +162,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                 bundle.putSerializable(TABLA_PROYECTO, proyecto);
                 bundle.putSerializable(TABLA_PARTIDA, modelo);
                 bundle.putString(ID, modelo.getString(PARTIDA_ID_PARTIDA));
-                bundle.putString(NAMEF, namef);
-                bundle.putString(NAMESUB, namesubclass);
+                bundle.putString(ORIGEN, PARTIDA);
+                bundle.putString(SUBTITULO, subTitulo);
                 bundle.putString(TIPO, TIPOPARTIDA);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
 
@@ -173,12 +176,16 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
             public void onClick(View v) {
                 new CommonPry.Calculos.TareaActualizaProy().execute(id);
                 bundle.putSerializable(MODELO, proyecto);
-                bundle.putString(NAMEF, namesubclass);
-                bundle.putString(NAMESUB, CommonPry.setNamefdef());
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
             }
         });
 
+    }
+
+    @Override
+    protected void setTitulo() {
+        tituloSingular = R.string.partida;
+        tituloPlural = R.string.partidas;
     }
 
 
@@ -270,6 +277,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
         rvdetalles = view.findViewById(R.id.rvdetalleUDpartida);
         btnVolverProy = view.findViewById(R.id.btn_volverproy);
 
+        btnVolverProy.setVisibility(View.GONE);
+
     }
 
     @Override
@@ -338,7 +347,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
 
         }
 
-        if (namesubclass.equals(PRESUPUESTO)) {
+        if (subTitulo.equals(PRESUPUESTO)) {
 
             progressBarPartida.setVisibility(View.GONE);
             completadaPartida.setVisibility(View.GONE);
@@ -374,7 +383,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
 
             rvdetalles.setLayoutManager(new LinearLayoutManager(getContext()));
 
-            AdaptadorDetpartida adapter = new AdaptadorDetpartida(listaDetpartidas, namef);
+            AdaptadorDetpartida adapter = new AdaptadorDetpartida(listaDetpartidas, actual);
 
             rvdetalles.setAdapter(adapter);
 
@@ -396,8 +405,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                     bundle.putSerializable(MODELO, detpartida);
                     bundle.putString(ID, idDetPartida);
                     bundle.putInt(SECUENCIA, secuenciadetpartida);
-                    bundle.putString(NAMEF, namef);
-                    bundle.putString(NAMESUB, namesubclass);
+                    bundle.putString(ORIGEN, PARTIDA);
+                    bundle.putString(SUBTITULO, subTitulo);
                     bundle.putString(TIPO, tipo);
                     icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
 
@@ -424,12 +433,6 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     @Override
     protected void setcambioFragment() {
 
-        if (namef.equals(AGENDA)) {
-
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentAgenda());
-
-        }
-
         new CommonPry.Calculos.TareaActualizaProy().execute(id);
 
     }
@@ -455,12 +458,12 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
         consulta.putDato(valores, CAMPOS_PARTIDA, PARTIDA_COMPLETADA, JavaUtil.comprobarInteger(completadaPartida.getText().toString()));
         consulta.putDato(valores, CAMPOS_PARTIDA, PARTIDA_RUTAFOTO, path);
         consulta.putDato(valores, campos, PARTIDA_ID_PROYECTO, id);
-        if (idDetPartida == null && nuevo) {
+        if (idDetPartida == null && secuencia==0) {
             System.out.println("Generar idetPartida");
             idDetPartida = ContratoPry.generarIdTabla(tabla);
             System.out.println("idDetPartida = " + idDetPartida);
         }
-        if (nuevo) {
+        if (secuencia==0) {
             consulta.putDato(valores, CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, idDetPartida);
             proyecto = consulta.queryObject(CAMPOS_PROYECTO, id);
             consulta.putDato(valores, campos, PARTIDA_ID_ESTADO, proyecto.getString(PROYECTO_ID_ESTADO));
@@ -861,7 +864,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                     }
 
                     modelo = consulta.queryObjectDetalle(campos, id, secuencia);
-                    nuevo = false;
+
 
                 } else {
                     dialog.dismiss();
@@ -917,7 +920,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                 imagenret.setImageResource(R.drawable.alert_box_v);
             }
 
-            if (namef.equals(PRESUPUESTO)) {
+            if (origen.equals(PRESUPUESTO)) {
 
                 progressBarPartida.setVisibility(View.GONE);
 
@@ -975,7 +978,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                 imagenret.setImageResource(R.drawable.alert_box_v);
             }
 
-            if (namef.equals(PRESUPUESTO)) {
+            if (origen.equals(PRESUPUESTO)) {
 
                 progressBarPartida.setVisibility(View.GONE);
 
