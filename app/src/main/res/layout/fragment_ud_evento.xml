@@ -43,7 +43,7 @@
             <EditText
                 android:id="@+id/etdescudevento"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="@string/descripcion_tipo_cliente"
@@ -62,16 +62,15 @@
                 android:layout_weight="2"
                 android:ems="10"
                 android:hint="@string/fecha_ini_evento"
-                android:inputType="date"
                 android:textSize="18sp" />
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/imgbtnfiniudevento"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_weight="3"
-                android:scaleType="fitXY"
-                app:srcCompat="@drawable/ico_calendario_reloj" />
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_search_black_24dp" />
 
             <TextView
                 android:id="@+id/ethorainiudevento"
@@ -80,16 +79,15 @@
                 android:layout_weight="2"
                 android:ems="10"
                 android:hint="@string/hora_ini_evento"
-                android:inputType="time"
                 android:textSize="18sp" />
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/imgbtnhiniudevento"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_weight="3"
-                android:scaleType="fitXY"
-                app:srcCompat="@drawable/ico_calendario_reloj" />
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_search_black_24dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -104,16 +102,15 @@
                 android:layout_weight="2"
                 android:ems="10"
                 android:hint="@string/fecha_fin_evento"
-                android:inputType="date"
                 android:textSize="18sp" />
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/imgbtnffinudevento"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_weight="3"
-                android:scaleType="fitXY"
-                app:srcCompat="@drawable/ico_calendario_reloj" />
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_search_black_24dp" />
 
             <TextView
                 android:id="@+id/ethorafinudevento"
@@ -122,41 +119,100 @@
                 android:layout_weight="2"
                 android:ems="10"
                 android:hint="@string/hora_fin_evento"
-                android:inputType="time"
                 android:textSize="18sp" />
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/imgbtnhfinudevento"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_weight="3"
-                android:scaleType="fitXY"
-                app:srcCompat="@drawable/ico_calendario_reloj" />
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_search_black_24dp" />
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
         <EditText
             android:id="@+id/ettelefonoudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:layout_weight="1"
             android:hint="@string/telefono"
             android:inputType="phone" />
+
+        <ImageView
+            android:id="@+id/imgllamadaevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            card_view:srcCompat="@drawable/ic_phone_in_talk_black_24dp" />
+
+        </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <EditText
             android:id="@+id/etlugarudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:layout_weight="1"
             android:hint="@string/direccion"
             android:inputType="textPostalAddress" />
+
+        <ImageView
+            android:id="@+id/imgmapaevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="3"
+            card_view:srcCompat="@drawable/ic_place_black_24dp" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <EditText
             android:id="@+id/etemailudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:layout_weight="1"
             android:hint="@string/email"
             android:inputType="textEmailAddress" />
+
+        <ImageView
+            android:id="@+id/imgemailevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            card_view:srcCompat="@drawable/ic_mail_outline_black_24dp" />
+
+    </LinearLayout>
+
+        <EditText
+            android:id="@+id/etasuntoevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/asunto"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/etmensajeevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/texto_mensaje"
+            android:inputType="textMultiLine|text" />
 
         <CheckBox
             android:id="@+id/chavisoudevento"
@@ -205,11 +261,31 @@
 
         </LinearLayout>
 
+        <Button
+            android:id="@+id/btnverrepevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ver_repeticiones"
+            android:background="@drawable/boton_redondo_verde"
+            android:textColor="@color/Color_texto_titulos"/>
+
         <CheckBox
             android:id="@+id/chrptudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/modificar_repeticiones" />
+
+        <CheckBox
+            android:id="@+id/chmmesevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/mismo_dia_mes" />
+
+        <CheckBox
+            android:id="@+id/chmanioevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/mismo_dia_anio" />
 
         <LinearLayout
             android:layout_width="match_parent"

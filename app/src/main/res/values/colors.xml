@@ -10,6 +10,9 @@
     <color name="Color_card_notok">#6CFC0000</color>
     <color name="Color_card_tarea">#4E909090</color>
     <color name="Color_card_defecto">#C2D8A8</color>
+    <color name="Color_contador_ok">#FA00FF00</color>
+    <color name="Color_contador_acept">#FFFF00</color>
+    <color name="Color_contador_notok">#FCFC0000</color>
     <color name="s1">#A7FFEB</color>
     <color name="s2">#64FFDA</color>
     <color name="s3">#1DE9B6</color>

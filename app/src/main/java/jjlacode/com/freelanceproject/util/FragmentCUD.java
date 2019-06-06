@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -19,18 +18,6 @@ import jjlacode.com.freelanceproject.R;
 import static jjlacode.com.freelanceproject.util.CommonPry.permiso;
 
 public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.Constantes{
-
-    protected Button btnsave;
-    protected Button btnback;
-    protected Button btndelete;
-    protected ImageView imagen;
-
-    protected String path;
-    protected ImagenUtil imagenUtil = new ImagenUtil(contexto);
-    protected ContentValues valores;
-    final protected int COD_FOTO = 10;
-    final protected int COD_SELECCIONA = 20;
-
 
     public FragmentCUD() {
     }
@@ -50,15 +37,21 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
 
         if (nuevo){
 
-            id=null;
+            if (tablaCab==null) {
+                id = null;
+            }
             modelo = null;
             secuencia=0;
             icFragmentos.showSubTitle(getString(R.string.nuevo) + " " + getString(tituloSingular));
+            modelo = new Modelo(campos);
+            setDatos();
+            modelo = null;
             setNuevo();
             btndelete.setVisibility(View.GONE);
             activityBase.fab.hide();
-            activityBase.fab2.show();
+            activityBase.fab2.hide();
         }else{
+            btndelete.setVisibility(View.VISIBLE);
             setDatos();
         }
 
@@ -73,7 +66,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
                 setNuevo();
                 btndelete.setVisibility(View.GONE);
                 activityBase.fab.hide();
-                activityBase.fab2.show();
+                activityBase.fab2.hide();
 
             }
         });
@@ -90,6 +83,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
 
     }
 
+    @Override
     protected boolean onUpdate(){
 
         if (update()) {
@@ -110,8 +104,11 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
         }else {
             if (delete()) {
 
-
                 modelo = null;
+                if (tablaCab==null) {
+                    id = null;
+                }
+                secuencia=0;
                 selector();
                 cambiarFragment();
 
@@ -125,6 +122,10 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
     protected boolean onBack(){
 
         modelo=null;
+        if(tablaCab==null) {
+            id = null;
+        }
+        secuencia=0;
         selector();
         cambiarFragment();
 
@@ -148,7 +149,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
             @Override
             public void onClick(View v) {
 
-                onDelete();
+                mostrarDialogDelete();
             }
         });
 
@@ -167,7 +168,6 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
                     @Override
                     public void onClick(View v) {
 
-                        onUpdate();
                         mostrarDialogoOpcionesImagen(contexto);
                     }
                 });
@@ -222,7 +222,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
 
             id = consulta.idInsertRegistro(tabla, valores);
             modelo = consulta.queryObject(campos, id);
-            System.out.println("idcliente registro = " + id);
+            idAOrigen = id;
 
             Toast.makeText(getContext(), "Registro creado", Toast.LENGTH_SHORT).show();
             return true;
@@ -278,7 +278,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
 
             }
 
-        }else{
+        }else if (modelo==null){
             return registrar();
         }
 
@@ -290,7 +290,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
     protected void mostrarDialogoOpcionesImagen(final Context contexto) {
 
         final CharSequence[] opciones = {"Hacer foto desde cámara",
-                "Elegir de la galería", "Cancelar"};
+                "Elegir de la galería", "Quitar foto","Cancelar"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
         builder.setTitle("Elige una opción");
         builder.setItems(opciones, new DialogInterface.OnClickListener() {
@@ -303,24 +303,30 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
                 if (opciones[which].equals("Hacer foto desde cámara")) {
 
                     try {
+                        onUpdate();
                         startActivityForResult(imagenUtil.takePhotoIntent(), COD_FOTO);
                         imagenUtil.addToGallery();
 
                     } catch (IOException e) {
-                        Log.e ("DialogoOpcionesImagen",e.toString());
+                        Log.e("DialogoOpcionesImagen", e.toString());
                     }
 
                 } else if (opciones[which].equals("Elegir de la galería")) {
 
-
+                    onUpdate();
                     startActivityForResult(imagenUtil.openGalleryIntent(), COD_SELECCIONA);
 
-                } else {
-                    dialog.dismiss();
+                }else if (opciones[which].equals("Quitar foto")) {
+
+                        path = null;
+                        onUpdate();
+
+                }else {
+                        dialog.dismiss();
+                    }
                 }
-            }
-        });
-        builder.show();
+            });
+            builder.show();
     }
 
 
@@ -335,14 +341,14 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
                 case COD_SELECCIONA:
                     imagenUtil.setPhotoUri(data.getData());
                     path = imagenUtil.getPath();
-                    onUpdate();
                     setImagenUriCircle(imagenUtil,path);
+                    onUpdate();
                     break;
 
                 case COD_FOTO:
                     path = imagenUtil.getPath();
-                    onUpdate();
                     setImagenUriCircle(imagenUtil,path);
+                    onUpdate();
                     break;
 
                 case AUDIORECORD:
@@ -350,7 +356,6 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
                 case VIDEORECORD:
 
                         path = String.valueOf(data.getData());
-                        onUpdate();
 
             }
         }
@@ -591,6 +596,28 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
     protected void setDato(String campo, short valor){
 
         consulta.putDato(valores,campos,campo,valor);
+    }
+
+    protected void mostrarDialogDelete(){
+
+        final CharSequence[] opciones = {getString(R.string.confirmar_borrado),getString(R.string.cancelar)};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(getString(R.string.borrar));
+        builder.setItems(opciones, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                if (opciones[which].equals(getString(R.string.confirmar_borrado))){
+
+                    onDelete();
+
+                }else{
+                    dialog.dismiss();
+                }
+
+            }
+        });
+        builder.show();
     }
 
 }

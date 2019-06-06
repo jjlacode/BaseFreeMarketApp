@@ -16,6 +16,9 @@ import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.CommonPry;
 
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.PERSISTENCIA;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.PREFERENCIAS;
+
 
 public class SplashActivity extends AppCompatActivity implements ContratoPry.Tablas, CommonPry.Constantes {
 
@@ -90,6 +93,7 @@ public class SplashActivity extends AppCompatActivity implements ContratoPry.Tab
 
 
                 Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                intent.putExtra(INICIO,1);
                 startActivity(intent);
                 finish();
             }

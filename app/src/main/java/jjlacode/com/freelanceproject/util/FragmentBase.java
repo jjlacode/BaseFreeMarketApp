@@ -1,8 +1,8 @@
 package jjlacode.com.freelanceproject.util;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,13 +18,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import jjlacode.com.freelanceproject.MainActivity;
 import jjlacode.com.freelanceproject.R;
 
 public abstract class FragmentBase extends Fragment {
@@ -32,18 +29,36 @@ public abstract class FragmentBase extends Fragment {
     protected final String TAG = getClass().getName();
     protected View view;
     protected int layout;
-    protected AppCompatActivity activityAtach;
     protected MainActivityBase activityBase;
     protected ICFragmentos icFragmentos;
     protected Bundle bundle;
     protected boolean land;
     protected boolean tablet;
+    protected DisplayMetrics metrics;
+    protected float sizef;
+    protected int altoimg;
+    protected int padimg;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         setLayout();
+        metrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        land = getResources().getBoolean(R.bool.esLand);
+        tablet = getResources().getBoolean(R.bool.esTablet);
+        int ancho = metrics.widthPixels;
+        if (!land){
+            altoimg = (int) ((double)ancho/3);
+            padimg = (int) ((double)ancho/10);
+            sizef = (float) ((double)ancho/100);
+        }else {
+            altoimg = (int) ((double)ancho/6);
+            padimg = (int) ((double)ancho/20);
+            sizef = (float) ((double)ancho/100);
+        }
 
         super.onCreate(savedInstanceState);
     }
@@ -52,10 +67,10 @@ public abstract class FragmentBase extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(layout, container, false);
-        land = getResources().getBoolean(R.bool.esLand);
-        tablet = getResources().getBoolean(R.bool.esTablet);
+
         System.out.println("land = " + land);
         System.out.println("tablet = " + tablet);
+        System.out.println("sizef = " + sizef);
         setInicio();
 
         return view;
@@ -81,6 +96,7 @@ public abstract class FragmentBase extends Fragment {
     protected void cargarBundle(){
 
         bundle = getArguments();
+        System.out.println("bundle getArguments = " + bundle);
     }
 
 

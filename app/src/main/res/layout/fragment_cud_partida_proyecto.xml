@@ -63,7 +63,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:hint="@string/clonarpartida"
-                            android:textSize="14sp" />
+                            android:textSize="@dimen/texto"/>
 
                     <ImageView
                         android:id="@+id/imgbuscarpartida"
@@ -74,6 +74,14 @@
 
                     </LinearLayout>
 
+                    <CheckBox
+                        android:id="@+id/cbox_npartidabase"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/texto"
+                        android:text="@string/nueva_partidabase"
+                        android:checked="true"/>
+
 
                     <EditText
                         android:id="@+id/etnomudpartida"
@@ -81,8 +89,7 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:hint="@string/nombre"
-                        android:textSize="16sp" />
-
+                        android:textSize="@dimen/texto"/>
 
                     <EditText
                         android:id="@+id/etdescripcionUDpartida"
@@ -91,7 +98,7 @@
                         android:ems="10"
                         android:hint="@string/descripcion_tipo_cliente"
                         android:inputType="textMultiLine"
-                        android:textSize="16sp" />
+                        android:textSize="@dimen/texto"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -106,6 +113,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textSize="@dimen/texto"
                     android:text="@string/horas" />
 
                 <TextView
@@ -113,6 +121,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textSize="@dimen/texto"
                     android:text="@string/cantidad" />
 
                 <TextView
@@ -120,6 +129,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textSize="@dimen/texto"
                     android:text="@string/importe" />
 
                 <TextView
@@ -127,6 +137,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textSize="@dimen/texto"
                     android:gravity="center"
                     android:text="@string/completada" />
             </LinearLayout>
@@ -142,6 +153,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
+                    android:textSize="@dimen/texto"
                     android:hint="@string/tiempo"
                     android:inputType="numberDecimal" />
 
@@ -151,6 +163,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
+                    android:textSize="@dimen/texto"
                     android:hint="@string/cantidad"
                     android:inputType="numberDecimal" />
 
@@ -160,6 +173,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
+                    android:textSize="@dimen/texto"
                     android:hint="@string/importe"
                     android:inputType="numberDecimal" />
 
@@ -169,7 +183,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:gravity="right"
+                    android:textSize="@dimen/texto"
+                    android:gravity="end"
                     android:hint="@string/completada"
                     android:inputType="number" />
             </LinearLayout>
@@ -180,8 +195,6 @@
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-
-
 
             <LinearLayout
                 android:layout_width="match_parent"

@@ -42,8 +42,8 @@
     <string name="prospecto">Prospecto</string>
     <string name="clientes">Clientes</string>
     <string name="prospectos">Prospectos</string>
-    <string name="presupuesto">presupuesto</string>
-    <string name="presupuestos">presupuestos</string>
+    <string name="presupuesto">Presupuesto</string>
+    <string name="presupuestos">Presupuestos</string>
     <string name="proyecto">proyecto</string>
     <string name="proyectos">Proyectos</string>
     <string name="cobros">Cobros</string>
@@ -128,7 +128,7 @@
     <string name="convertir">Convertir en</string>
     <string name="proximos_eventos">Proximos eventos</string>
     <string name="evento_relacionado">Crear evento relacionado</string>
-    <string name="fecha_acordada_trabajo">Fecha acordada entrega trabajo</string>
+    <string name="fecha_acordada_trabajo">Fecha acordada</string>
     <string name="establecer_fecha_entrega_presup">Establecer fecha entrega Presup.</string>
     <string name="seleccione_cliente">Seleccione el cliente</string>
     <string name="seleccione_proyecto">Seleccione proyecto relacionado</string>
@@ -176,9 +176,9 @@
     <string name="ver_pdf">Ver PDF</string>
     <string name="asunto">Asunto</string>
     <string name="texto_mensaje">Texto mensaje</string>
-    <string name="compartir_presup">Compartir presupuesto</string>
+    <string name="compartir_presup">Compartir</string>
     <string name="activo">ACTIVO</string>
-    <string name="enviar_pdf">Enviar archivo por email</string>
+    <string name="enviar_pdf">Enviar por email</string>
     <string name="compartir_pdf">Compartir pdf</string>
     <string name="nuevo_cliente">Nuevo Cliente</string>
     <string name="nuevo_prospecto">Nuevo Prospecto</string>
@@ -219,5 +219,28 @@
     <string name="nota">Nota</string>
     <string name="amortizaciones">Amortizaciones</string>
     <string name="detpartidabase">Detalle partida base</string>
+    <string name="confirmar_borrado">Confirmar el borrado</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="inicio_trek">Iniciar contador tiempo</string>
+    <string name="stop_trek">Detener contador tiempo</string>
+    <string name="trek">Treking</string>
+    <string name="partida_completada">Partida completada</string>
+    <string name="tiempo_detpartida">Horas unidad:</string>
+    <string name="cant">Und.</string>
+    <string name="pausa_trek">Pausar contador</string>
+    <string name="reanudar_trek">Reanudar contador</string>
+    <string name="hora">hora</string>
+    <string name="reset_trek">Resetear tiempo tarea a 0</string>
+    <string name="de">de</string>
+    <string name="filtra_busqueda">Filtra la lista por la busqueda hecha en el cuadro de busqueda</string>
+    <string name="sin_asignar">No asignada</string>
+    <string name="posponer">Posponer</string>
+    <string name="ver">Ver</string>
+    <string name="descartar">Descartar</string>
+    <string name="service_message">Servicio eventos arrancado...</string>
+    <string name="crear_repeticiones">Crear repeticiones</string>
+    <string name="ver_repeticiones">Ver repeticiones</string>
+    <string name="mismo_dia_anio">Mismo dia del año</string>
+    <string name="mismo_dia_mes">Mismo dia del mes</string>
 
 </resources>

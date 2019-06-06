@@ -2,9 +2,9 @@ package jjlacode.com.freelanceproject.ui;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +12,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.Chronometer;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.ImageView;
@@ -19,13 +22,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Locale;
 
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
@@ -36,18 +38,21 @@ import jjlacode.com.freelanceproject.util.FragmentCRUD;
 import jjlacode.com.freelanceproject.util.ImagenUtil;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.ListaModelo;
 import jjlacode.com.freelanceproject.util.Modelo;
 import jjlacode.com.freelanceproject.util.TipoViewHolder;
 
 public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonPry.Constantes,
-        ContratoPry.Tablas, CommonPry.TiposDetPartida {
+        ContratoPry.Tablas, CommonPry.TiposDetPartida, CommonPry.TiposEstados {
 
     private Long retraso;
     private EditText nombrePartida;
     private AutoCompleteTextView autoNombrePartida;
     private EditText descripcionPartida;
     private EditText tiempoPartida;
+    private TextView ltiempoPartida;
     private EditText importePartida;
+    private TextView limportePartida;
     private EditText cantidadPartida;
     private EditText completadaPartida;
     private Button btnNuevaTarea;
@@ -55,7 +60,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     private Button btnNuevoProdProv;
     private Button btnNuevaPartida;
     private ImageView imagenret;
-
+    private CheckBox newPartidaBase;
     private RecyclerView rvdetalles;
     private ProgressBar progressBarPartida;
     private TextView labelCompletada;
@@ -67,6 +72,11 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     private Modelo partida;
     private Uri uri;
     private Button btnVolverProy;
+    private double completada;
+    private double tiempo;
+    private double tiemporeal;
+    private int secuenciatemp;
+    private boolean clonada;
 
     public FragmentCRUDPartidaProyecto() {
         // Required empty public constructor
@@ -86,6 +96,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     @Override
     protected void setLista() {
 
+        System.out.println("listab = " + listab);
         if (listab==null) {
             btnVolverProy.setVisibility(View.VISIBLE);
         }
@@ -105,9 +116,11 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                 bundle.putSerializable(TABLA_PROYECTO, proyecto);
                 bundle.putSerializable(TABLA_PARTIDA, modelo);
                 bundle.putString(ID, modelo.getString(PARTIDA_ID_PARTIDA));
+                System.out.println("id nueva tarea= " + modelo.getString(PARTIDA_ID_PARTIDA));
                 bundle.putString(ORIGEN, PARTIDA);
-                bundle.putString(SUBTITULO, subTitulo);
+                bundle.putString(SUBTITULO, proyecto.getString(PROYECTO_NOMBRE));
                 bundle.putString(TIPO, TIPOTAREA);
+                bundle.putBoolean(NUEVOREGISTRO, true);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
 
             }
@@ -127,6 +140,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                 bundle.putString(ORIGEN, PARTIDA);
                 bundle.putString(SUBTITULO, subTitulo);
                 bundle.putString(TIPO, TIPOPRODUCTO);
+                bundle.putBoolean(NUEVOREGISTRO, true);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
 
             }
@@ -146,6 +160,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                 bundle.putString(ORIGEN, PARTIDA);
                 bundle.putString(SUBTITULO, subTitulo);
                 bundle.putString(TIPO, TIPOPRODUCTOPROV);
+                bundle.putBoolean(NUEVOREGISTRO, true);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
 
             }
@@ -165,6 +180,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                 bundle.putString(ORIGEN, PARTIDA);
                 bundle.putString(SUBTITULO, subTitulo);
                 bundle.putString(TIPO, TIPOPARTIDA);
+                bundle.putBoolean(NUEVOREGISTRO, true);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
 
             }
@@ -176,6 +192,9 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
             public void onClick(View v) {
                 new CommonPry.Calculos.TareaActualizaProy().execute(id);
                 bundle.putSerializable(MODELO, proyecto);
+                bundle.putString(ACTUAL,origen);
+                bundle.putString(ORIGEN,actual);
+                bundle.putString(ID,id);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
             }
         });
@@ -193,7 +212,9 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     protected void setNuevo() {
 
         tiempoPartida.setVisibility(View.GONE);
+        ltiempoPartida.setVisibility(View.GONE);
         importePartida.setVisibility(View.GONE);
+        limportePartida.setVisibility(View.GONE);
         completadaPartida.setVisibility(View.GONE);
         btndelete.setVisibility(View.GONE);
         labelCompletada.setVisibility(View.GONE);
@@ -204,6 +225,12 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
         btnNuevaPartida.setVisibility(View.GONE);
         progressBarPartida.setVisibility(View.GONE);
         imagenret.setVisibility(View.GONE);
+        autoNombrePartida.setVisibility(View.VISIBLE);
+        newPartidaBase.setVisibility(View.VISIBLE);
+        nombrePartida.setVisibility(View.GONE);
+        newPartidaBase.setChecked(true);
+
+        new CommonPry.Calculos.TareaSincronizarPartidasBase().execute();
 
         setAdaptadorAuto(autoNombrePartida);
 
@@ -213,7 +240,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
 
                 modelo = (Modelo) autoNombrePartida.getAdapter().getItem(position);
 
-                mostrarDialogoClonarPartida();
+                clonarPartidaBase();
 
             }
 
@@ -263,9 +290,12 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
         autoNombrePartida = view.findViewById(R.id.autonomudpartida);
         descripcionPartida = view.findViewById(R.id.etdescripcionUDpartida);
         tiempoPartida = view.findViewById(R.id.ettiempoUDpartida);
+        ltiempoPartida = view.findViewById(R.id.ltiempoUDpartida);
         importePartida = view.findViewById(R.id.etprecioUDpartida);
+        limportePartida = view.findViewById(R.id.lprecioUDpartida);
         cantidadPartida = view.findViewById(R.id.etcantidadUDpartida);
         completadaPartida = view.findViewById(R.id.etcompletadaUDpartida);
+        newPartidaBase = view.findViewById(R.id.cbox_npartidabase);
         btnNuevaTarea = view.findViewById(R.id.btntareaudpartida);
         btnNuevoProd = view.findViewById(R.id.btnprodudpartida);
         btnNuevoProdProv = view.findViewById(R.id.btnprovudpartida);
@@ -276,10 +306,14 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
         labelCompletada = view.findViewById(R.id.lcompletadaUDpartida);
         rvdetalles = view.findViewById(R.id.rvdetalleUDpartida);
         btnVolverProy = view.findViewById(R.id.btn_volverproy);
-
         btnVolverProy.setVisibility(View.GONE);
+        tiempoPartida.setEnabled(false);
+        importePartida.setEnabled(false);
+        btnNuevaPartida.setVisibility(View.GONE);
 
     }
+
+
 
     @Override
     protected void setTabla() {
@@ -326,18 +360,60 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     protected void setDatos() {
 
         tiempoPartida.setVisibility(View.VISIBLE);
+        ltiempoPartida.setVisibility(View.VISIBLE);
         importePartida.setVisibility(View.VISIBLE);
+        limportePartida.setVisibility(View.VISIBLE);
         completadaPartida.setVisibility(View.VISIBLE);
         btndelete.setVisibility(View.VISIBLE);
         labelCompletada.setVisibility(View.VISIBLE);
+        nombrePartida.setVisibility(View.VISIBLE);
         rvdetalles.setVisibility(View.VISIBLE);
         btnNuevaTarea.setVisibility(View.VISIBLE);
         btnNuevoProd.setVisibility(View.VISIBLE);
         //btnNuevoProdProv.setVisibility(View.VISIBLE);
         btnNuevoProdProv.setVisibility(View.GONE);
-        btnNuevaPartida.setVisibility(View.VISIBLE);
+        //btnNuevaPartida.setVisibility(View.VISIBLE);
         progressBarPartida.setVisibility(View.VISIBLE);
         imagenret.setVisibility(View.VISIBLE);
+        newPartidaBase.setVisibility(View.GONE);
+        autoNombrePartida.setVisibility(View.GONE);
+        tiempo = (modelo.getDouble(PARTIDA_TIEMPO)*HORASLONG)/1000;
+        completada = modelo.getDouble(PARTIDA_COMPLETADA);
+        completadaPartida.setText(JavaUtil.getDecimales(completada));
+        tiemporeal = (modelo.getDouble(PARTIDA_TIEMPOREAL)*HORASLONG)/1000;
+        secuenciatemp = secuencia;
+
+        ListaModelo listaPartidasBase = new ListaModelo(CAMPOS_PARTIDABASE,
+                PARTIDABASE_ID_PARTIDAORIGEN,id,null,IGUAL,null);
+
+        if (listaPartidasBase.chech()){
+            newPartidaBase.setChecked(true);
+
+        }else{
+            newPartidaBase.setChecked(false);
+            btnNuevaPartida.setVisibility(View.GONE);
+            btnNuevaTarea.setVisibility(View.GONE);
+            btnNuevoProd.setVisibility(View.GONE);
+            btnNuevoProdProv.setVisibility(View.GONE);
+            clonada = true;
+        }
+
+        if (getTipoEstado(modelo.getString(PARTIDA_ID_ESTADO))<=TPRESUPACEPTADO) {
+
+            progressBarPartida.setVisibility(View.GONE);
+            completadaPartida.setVisibility(View.GONE);
+            labelCompletada.setVisibility(View.GONE);
+        }else{
+
+            progressBarPartida.setVisibility(View.VISIBLE);
+            completadaPartida.setVisibility(View.VISIBLE);
+            labelCompletada.setVisibility(View.VISIBLE);
+
+            if (modelo.getInt(PARTIDA_COMPLETA) == 1) {
+                tiempoPartida.setText(JavaUtil.getDecimales(modelo.getDouble(PARTIDA_TIEMPOREAL)));
+            }
+
+        }
 
         if (modelo.getString(PARTIDA_RUTAFOTO) != null) {
 
@@ -347,25 +423,16 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
 
         }
 
-        if (subTitulo.equals(PRESUPUESTO)) {
-
-            progressBarPartida.setVisibility(View.GONE);
-            completadaPartida.setVisibility(View.GONE);
-            labelCompletada.setVisibility(View.GONE);
-        } else {
-
-            progressBarPartida.setVisibility(View.VISIBLE);
-            completadaPartida.setVisibility(View.VISIBLE);
-            labelCompletada.setVisibility(View.VISIBLE);
-        }
 
         nombrePartida.setText(modelo.getString(PARTIDA_NOMBRE));
         descripcionPartida.setText(modelo.getString(PARTIDA_DESCRIPCION));
-        tiempoPartida.setText(modelo.getString(PARTIDA_TIEMPO));
-        importePartida.setText(JavaUtil.formatoMonedaLocal(modelo.getDouble(PARTIDA_PRECIO)));
+        tiempoPartida.setText(JavaUtil.getDecimales(modelo.getDouble(PARTIDA_TIEMPO)*
+                modelo.getDouble(PARTIDA_CANTIDAD)));
+        importePartida.setText(JavaUtil.formatoMonedaLocal(modelo.getDouble(PARTIDA_PRECIO)*
+                modelo.getDouble(PARTIDA_CANTIDAD)));
         cantidadPartida.setText(modelo.getString(PARTIDA_CANTIDAD));
-        completadaPartida.setText(modelo.getString(PARTIDA_COMPLETADA));
-        progressBarPartida.setProgress(modelo.getInt(PARTIDA_COMPLETADA));
+        //completadaPartida.setText(modelo.getString(PARTIDA_COMPLETADA));
+        //progressBarPartida.setProgress(modelo.getInt(PARTIDA_COMPLETADA));
         idDetPartida = modelo.getString(PARTIDA_ID_PARTIDA);
 
         retraso = modelo.getLong(PARTIDA_PROYECTO_RETRASO);
@@ -387,31 +454,34 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
 
             rvdetalles.setAdapter(adapter);
 
-            adapter.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            if (!clonada) {
 
-                    idDetPartida = (listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v)).
-                            getString(DETPARTIDA_ID_PARTIDA));
-                    int secuenciadetpartida = (listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v)).
-                            getInt(DETPARTIDA_SECUENCIA));
-                    String tipo = (listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v)).
-                            getString(DETPARTIDA_TIPO));
-                    Modelo detpartida = listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v));
+                adapter.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
-                    bundle = new Bundle();
-                    bundle.putSerializable(TABLA_PROYECTO, proyecto);
-                    bundle.putSerializable(TABLA_PARTIDA, modelo);
-                    bundle.putSerializable(MODELO, detpartida);
-                    bundle.putString(ID, idDetPartida);
-                    bundle.putInt(SECUENCIA, secuenciadetpartida);
-                    bundle.putString(ORIGEN, PARTIDA);
-                    bundle.putString(SUBTITULO, subTitulo);
-                    bundle.putString(TIPO, tipo);
-                    icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
+                        idDetPartida = (listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v)).
+                                getString(DETPARTIDA_ID_PARTIDA));
+                        int secuenciadetpartida = (listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v)).
+                                getInt(DETPARTIDA_SECUENCIA));
+                        String tipo = (listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v)).
+                                getString(DETPARTIDA_TIPO));
+                        Modelo detpartida = listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v));
 
-                }
-            });
+                        bundle = new Bundle();
+                        bundle.putSerializable(TABLA_PROYECTO, proyecto);
+                        bundle.putSerializable(TABLA_PARTIDA, modelo);
+                        bundle.putSerializable(MODELO, detpartida);
+                        bundle.putString(ID, idDetPartida);
+                        bundle.putInt(SECUENCIA, secuenciadetpartida);
+                        bundle.putString(ORIGEN, PARTIDA);
+                        bundle.putString(SUBTITULO, subTitulo);
+                        bundle.putString(TIPO, tipo);
+                        icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
+
+                    }
+                });
+            }
 
         } else {
 
@@ -425,7 +495,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 modelo = (Modelo) autoNombrePartida.getAdapter().getItem(position);
-                mostrarDialogoClonarPartida();
+                clonarPartidaBase();
             }
         });
     }
@@ -450,27 +520,56 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     @Override
     protected void setContenedor() {
 
-        consulta.putDato(valores, CAMPOS_PARTIDA, PARTIDA_NOMBRE, nombrePartida.getText().toString());
+        if (modelo!=null && modelo.getString(PARTIDA_ID_PARTIDABASE)!=null && newPartidaBase.isChecked()){
+
+            CommonPry.Calculos.actualizarPartidaBase(modelo.getString(PARTIDA_ID_PARTIDABASE));
+
+        }
+
+        if (secuencia==0){
+            consulta.putDato(valores, CAMPOS_PARTIDA, PARTIDA_NOMBRE, autoNombrePartida.getText().toString());
+
+        }else {
+            consulta.putDato(valores, CAMPOS_PARTIDA, PARTIDA_NOMBRE, nombrePartida.getText().toString());
+        }
         consulta.putDato(valores, CAMPOS_PARTIDA, PARTIDA_DESCRIPCION, descripcionPartida.getText().toString());
         consulta.putDato(valores, CAMPOS_PARTIDA, PARTIDA_TIEMPO, JavaUtil.comprobarDouble(tiempoPartida.getText().toString()));
         consulta.putDato(valores, CAMPOS_PARTIDA, PARTIDA_PRECIO, JavaUtil.comprobarDouble(importePartida.getText().toString()));
         consulta.putDato(valores, CAMPOS_PARTIDA, PARTIDA_CANTIDAD, JavaUtil.comprobarDouble(cantidadPartida.getText().toString()));
-        consulta.putDato(valores, CAMPOS_PARTIDA, PARTIDA_COMPLETADA, JavaUtil.comprobarInteger(completadaPartida.getText().toString()));
+        consulta.putDato(valores, CAMPOS_PARTIDA, PARTIDA_COMPLETADA, JavaUtil.comprobarDouble(completadaPartida.getText().toString()));
         consulta.putDato(valores, CAMPOS_PARTIDA, PARTIDA_RUTAFOTO, path);
         consulta.putDato(valores, campos, PARTIDA_ID_PROYECTO, id);
-        if (idDetPartida == null && secuencia==0) {
+        System.out.println("id = " + id);
+        if (idDetPartida == null ) {
             System.out.println("Generar idetPartida");
             idDetPartida = ContratoPry.generarIdTabla(tabla);
             System.out.println("idDetPartida = " + idDetPartida);
         }
         if (secuencia==0) {
-            consulta.putDato(valores, CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, idDetPartida);
-            proyecto = consulta.queryObject(CAMPOS_PROYECTO, id);
+            consulta.putDato(valores, campos, PARTIDA_ID_PARTIDA, idDetPartida);
             consulta.putDato(valores, campos, PARTIDA_ID_ESTADO, proyecto.getString(PROYECTO_ID_ESTADO));
 
         }
 
 
+    }
+
+    private int getTipoEstado(String idEstado){
+
+        if (idEstado!=null) {
+
+            ArrayList<Modelo> listaEstados = consulta.queryList(CAMPOS_ESTADO, null, null);
+
+            for (Modelo estado : listaEstados) {
+
+                if (estado.getString(ESTADO_ID_ESTADO).equals(idEstado)) {
+
+                    return estado.getInt(ESTADO_TIPOESTADO);
+                }
+
+            }
+        }
+        return 0;
     }
 
     @Override
@@ -479,8 +578,18 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
         new CommonPry.Calculos.Tareafechas().execute();
         new CommonPry.Calculos.TareaActualizaProy().execute(id);
 
-        return super.update();
+        super.update();
 
+        if (newPartidaBase.isChecked()) {
+
+            String idpartidabase = actualizarPartidabase(modelo);
+            valores = new ContentValues();
+            consulta.putDato(valores, campos, PARTIDA_ID_PARTIDABASE, idpartidabase);
+            consulta.updateRegistroDetalle(tabla, id, secuencia, valores);
+            modelo = consulta.queryObjectDetalle(campos,id,secuencia);
+        }
+
+        return true;
     }
 
 
@@ -522,11 +631,9 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
             detpartidaViewHolder.tipo.setText(tipodetpartida.toUpperCase());
             detpartidaViewHolder.nombre.setText(listDetpartida.get(position).getString(DETPARTIDA_NOMBRE));
             detpartidaViewHolder.tiempo.setText(listDetpartida.get(position).getString(DETPARTIDA_TIEMPO));
-            detpartidaViewHolder.cantidad.setText(listDetpartida.get(position).getString(DETPARTIDA_CANTIDAD));
             if (listDetpartida.get(position).getString(DETPARTIDA_TIPO).equals(CommonPry.TiposDetPartida.TIPOTAREA)) {
                 detpartidaViewHolder.importe.setText(JavaUtil.formatoMonedaLocal(
-                        (listDetpartida.get(position).getDouble(DETPARTIDA_TIEMPO) * CommonPry.hora *
-                                listDetpartida.get(position).getDouble(DETPARTIDA_CANTIDAD))));
+                        (listDetpartida.get(position).getDouble(DETPARTIDA_TIEMPO) * CommonPry.hora)));
             } else {
                 detpartidaViewHolder.importe.setText(listDetpartida.get(position).getString(DETPARTIDA_PRECIO));
             }
@@ -592,49 +699,34 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     private void setAdaptadorAuto(AutoCompleteTextView autoCompleteTextView) {
 
 
-        ArrayList<Modelo> lista = consulta.queryList(CAMPOS_PARTIDA);
-        ArrayList<Modelo> listabase = consulta.queryList(CAMPOS_PARTIDABASE);
-        lista.addAll(listabase);
+        ArrayList<Modelo> lista = consulta.queryList(CAMPOS_PARTIDABASE);
+        //ArrayList<Modelo> listabase = consulta.queryList(CAMPOS_PARTIDABASE);
+        //lista.addAll(listabase);
 
 
         autoCompleteTextView.setAdapter(new ListaAdaptadorFiltroPartidas(getContext(),
-                R.layout.item_list_partida, lista) {
+                R.layout.item_list_partidabase, lista) {
             @Override
             public void onEntrada(Modelo entrada, View view) {
 
-                ImageView imagen = view.findViewById(R.id.imglpartida);
-                TextView descripcion = view.findViewById(R.id.tvdescripcionpartida);
-                TextView tiempo = view.findViewById(R.id.tvtiempopartida);
-                TextView cantidad = view.findViewById(R.id.tvcantidadpartida);
-                TextView importe = view.findViewById(R.id.tvimppartida);
+                ImageView imagen = view.findViewById(R.id.imglpartidabase);
+                TextView descripcion = view.findViewById(R.id.tvdescripcionpartidabase);
+                TextView tiempo = view.findViewById(R.id.tvtiempopartidabase);
+                TextView importe = view.findViewById(R.id.tvimppartidabase);
+                TextView ltiempo = view.findViewById(R.id.lhoraspartidabase);
+                TextView limporte = view.findViewById(R.id.limppartidabase);
 
-                String tabla = entrada.getNombreTabla();
-                System.out.println("tabla = " + tabla);
 
-                if (tabla.equals(TABLA_PARTIDA)) {
+                descripcion.setText(entrada.getString(PARTIDABASE_DESCRIPCION));
+                tiempo.setText(entrada.getString(PARTIDABASE_TIEMPO));
+                importe.setText(JavaUtil.formatoMonedaLocal(entrada.getDouble(PARTIDABASE_PRECIO)));
+                ltiempo.setText("h.");
+                limporte.setVisibility(View.GONE);
 
-                    descripcion.setText(entrada.getString(PARTIDA_DESCRIPCION));
-                    tiempo.setText(entrada.getString(PARTIDA_TIEMPO));
-                    cantidad.setText(entrada.getString(PARTIDA_CANTIDAD));
-                    importe.setText(entrada.getString(PARTIDA_PRECIO));
-
-                    if (entrada.getString(PARTIDA_RUTAFOTO) != null) {
-                        ImagenUtil imagenUtil = new ImagenUtil(contexto);
-                        imagenUtil.setImageUriCircle(entrada.getString(PARTIDA_RUTAFOTO), imagen);
-                        //imagen.setImageURI(entrada.getUri(PARTIDA_RUTAFOTO));
-                    }
-                } else if (tabla.equals(TABLA_PARTIDABASE)) {
-
-                    descripcion.setText(entrada.getString(PARTIDABASE_DESCRIPCION));
-                    tiempo.setText(entrada.getString(PARTIDABASE_TIEMPO));
-                    importe.setText(entrada.getString(PARTIDABASE_PRECIO));
-
-                    if (entrada.getString(PARTIDABASE_RUTAFOTO) != null) {
-                        ImagenUtil imagenUtil = new ImagenUtil(contexto);
-                        imagenUtil.setImageUriCircle(entrada.getString(PARTIDABASE_RUTAFOTO), imagen);
-                        //imagen.setImageURI(entrada.getUri(PARTIDABASE_RUTAFOTO));
-                    }
-
+                if (entrada.getString(PARTIDABASE_RUTAFOTO) != null) {
+                    ImagenUtil imagenUtil = new ImagenUtil(contexto);
+                    imagenUtil.setImageUriCircle(entrada.getString(PARTIDABASE_RUTAFOTO), imagen);
+                    //imagen.setImageURI(entrada.getUri(PARTIDABASE_RUTAFOTO));
                 }
 
             }
@@ -691,11 +783,6 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
 
                         for (Modelo item : entradas) {
 
-                            String tabla = item.getNombreTabla();
-                            System.out.println("tabla = " + tabla);
-
-                            if (tabla.equals(TABLA_PARTIDABASE)) {
-
                                 if (item.getCampos(PARTIDABASE_NOMBRE).toLowerCase().contains(constraint.toString().toLowerCase())) {
 
                                     suggestion.add(item);
@@ -703,18 +790,6 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
 
                                     suggestion.add(item);
                                 }
-
-                            } else if (tabla.equals(TABLA_PARTIDA)) {
-
-                                if (item.getCampos(PARTIDA_NOMBRE).toLowerCase().contains(constraint.toString().toLowerCase())) {
-
-                                    suggestion.add(item);
-                                } else if (item.getCampos(PARTIDA_DESCRIPCION).toLowerCase().contains(constraint.toString().toLowerCase())) {
-
-                                    suggestion.add(item);
-                                }
-                            }
-
 
                         }
                         // Query the autocomplete API for the entered constraint
@@ -765,117 +840,138 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
         public abstract void onEntrada(Modelo entrada, View view);
     }
 
-    private void mostrarDialogoClonarPartida() {
-
-        final CharSequence[] opciones = {"Clonar partida", "Cancelar"};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
-        builder.setTitle("Elige una opción");
-        builder.setItems(opciones, new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                if (opciones[which].equals("Clonar partida")) {
-
-                    if (modelo.getNombreTabla().equals(TABLA_PARTIDA)) {
-
-                        valores = modelo.contenido();
-                        idPartida = ContratoPry.generarIdTabla(TABLA_PARTIDA);
-                        valores.put(PARTIDA_ID_PROYECTO, id);
-                        valores.put(PARTIDA_ID_PARTIDA, idPartida);
-                        valores.put(PARTIDA_CANTIDAD, 0);
-                        valores.remove(PARTIDA_SECUENCIA);
-
-                    } else if (modelo.getNombreTabla().equals(TABLA_PARTIDABASE)) {
-
-                        valores = new ContentValues();
-                        idPartida = modelo.getString(PARTIDABASE_ID_PARTIDABASE);
-                        valores.put(PARTIDA_CANTIDAD, 0);
-                        valores.put(PARTIDA_DESCRIPCION, modelo.getString(PARTIDABASE_DESCRIPCION));
-                        valores.put(PARTIDA_NOMBRE, modelo.getString(PARTIDABASE_NOMBRE));
-                        valores.put(PARTIDA_PRECIO, modelo.getString(PARTIDABASE_PRECIO));
-                        valores.put(PARTIDA_TIEMPO, modelo.getString(PARTIDABASE_TIEMPO));
-                        valores.put(PARTIDA_RUTAFOTO, modelo.getString(PARTIDABASE_RUTAFOTO));
-                        valores.put(PARTIDA_ID_PROYECTO, id);
-                        valores.put(PARTIDA_ID_ESTADO, proyecto.getString(PROYECTO_ID_ESTADO));
-                        valores.put(PARTIDA_ID_PARTIDA, idPartida);
-                    }
-
-                    uri = consulta.insertRegistroDetalle(CAMPOS_PARTIDA, id,
-                            TABLA_PROYECTO, valores);
-                    System.out.println("uri = " + uri);
-
-                    partida = consulta.queryObjectDetalle(CAMPOS_PARTIDA, uri);
-                    secuencia = partida.getInt(PARTIDA_SECUENCIA);
-
-                    nombrePartida.setText(partida.getString(PARTIDA_NOMBRE));
-                    descripcionPartida.setText(partida.getString(PARTIDA_DESCRIPCION));
-
-                    if (partida.getString(PARTIDA_RUTAFOTO) != null) {
-                        setImagenUri(contexto,partida.getString(PARTIDA_RUTAFOTO));
-                        path = partida.getString(PARTIDA_RUTAFOTO);
-                    }
-
-                    if (modelo.getNombreTabla().equals(TABLA_PARTIDABASE)) {
-
-                        ArrayList<Modelo> listaclon = consulta.queryListDetalle
-                                (CAMPOS_DETPARTIDABASE, modelo.getString(PARTIDABASE_ID_PARTIDABASE), TABLA_PARTIDABASE);
-
-                        for (Modelo clonpart : listaclon) {
-
-                            valores = new ContentValues();
-                            valores.put(DETPARTIDA_ID_PARTIDA, idPartida);
-                            valores.put(DETPARTIDA_NOMBRE, clonpart.getString(DETPARTIDABASE_NOMBRE));
-                            valores.put(DETPARTIDA_DESCRIPCION, clonpart.getString(DETPARTIDABASE_DESCRIPCION));
-                            valores.put(DETPARTIDA_BENEFICIO, clonpart.getString(DETPARTIDABASE_BENEFICIO));
-                            valores.put(DETPARTIDA_CANTIDAD, clonpart.getString(DETPARTIDABASE_CANTIDAD));
-                            valores.put(DETPARTIDA_DESCUENTOPROV, clonpart.getString(DETPARTIDABASE_DESCUENTOPROV));
-                            valores.put(DETPARTIDA_PRECIO, clonpart.getString(DETPARTIDABASE_PRECIO));
-                            valores.put(DETPARTIDA_ID_DETPARTIDA, clonpart.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
-                            valores.put(DETPARTIDA_REFPROV, clonpart.getString(DETPARTIDABASE_REFPROV));
-                            valores.put(DETPARTIDA_TIEMPO, clonpart.getString(DETPARTIDABASE_TIEMPO));
-                            valores.put(DETPARTIDA_RUTAFOTO, clonpart.getString(DETPARTIDABASE_RUTAFOTO));
-                            valores.put(DETPARTIDA_TIPO, clonpart.getString(DETPARTIDABASE_TIPO));
-                            valores.remove(DETPARTIDABASE_SECUENCIA);
-
-                            consulta.insertRegistroDetalle(CAMPOS_DETPARTIDA, idPartida
-                                    , TABLA_PARTIDA, valores);
-                        }
-
-                        nombrePartida.setText(modelo.getString(PARTIDABASE_NOMBRE));
-
-                    } else if (modelo.getNombreTabla().equals(TABLA_PARTIDA)) {
-
-                        ArrayList<Modelo> listaclon = consulta.queryListDetalle
-                                (CAMPOS_DETPARTIDA, modelo.getString(PARTIDA_ID_PARTIDA), TABLA_PARTIDA);
-
-                        System.out.println("listaclon = " + listaclon.toString());
-
-                        for (Modelo clonpart : listaclon) {
-
-                            valores = clonpart.contenido();//AndroidUtil.clonarSinRef(clonpart);
-                            valores.put(DETPARTIDA_ID_PARTIDA, idPartida);
-                            valores.remove(DETPARTIDA_SECUENCIA);
-
-                            consulta.insertRegistroDetalle(CAMPOS_DETPARTIDA, idPartida
-                                    , TABLA_PARTIDA, valores);
-                        }
-                        nombrePartida.setText(modelo.getString(PARTIDA_NOMBRE));
-                    }
-
-                    modelo = consulta.queryObjectDetalle(campos, id, secuencia);
+    private void clonarPartidaBase() {
 
 
-                } else {
-                    dialog.dismiss();
-                }
+        valores = new ContentValues();
+        idPartida = modelo.getString(PARTIDABASE_ID_PARTIDABASE);
+        valores.put(PARTIDA_ID_PARTIDABASE, idPartida);
+        valores.put(PARTIDA_CANTIDAD, 0);
+        valores.put(PARTIDA_DESCRIPCION, modelo.getString(PARTIDABASE_DESCRIPCION));
+        valores.put(PARTIDA_NOMBRE, modelo.getString(PARTIDABASE_NOMBRE));
+        valores.put(PARTIDA_PRECIO, modelo.getString(PARTIDABASE_PRECIO));
+        valores.put(PARTIDA_TIEMPO, modelo.getString(PARTIDABASE_TIEMPO));
+        valores.put(PARTIDA_RUTAFOTO, modelo.getString(PARTIDABASE_RUTAFOTO));
+        valores.put(PARTIDA_ID_PROYECTO, id);
+        valores.put(PARTIDA_ID_ESTADO, proyecto.getString(PROYECTO_ID_ESTADO));
+        valores.put(PARTIDA_ID_PARTIDA, idPartida);
 
-                autoNombrePartida.setText("");
+        uri = consulta.insertRegistroDetalle(CAMPOS_PARTIDA, id,
+                TABLA_PROYECTO, valores);
+        System.out.println("uri = " + uri);
 
-            }
-        });
-        builder.show();
+        partida = consulta.queryObjectDetalle(CAMPOS_PARTIDA, uri);
+        secuencia = partida.getInt(PARTIDA_SECUENCIA);
+
+        autoNombrePartida.setText(partida.getString(PARTIDA_NOMBRE));
+        descripcionPartida.setText(partida.getString(PARTIDA_DESCRIPCION));
+
+        if (partida.getString(PARTIDA_RUTAFOTO) != null) {
+            setImagenUri(contexto, partida.getString(PARTIDA_RUTAFOTO));
+            path = partida.getString(PARTIDA_RUTAFOTO);
+        }
+
+
+        ArrayList<Modelo> listaclon = consulta.queryListDetalle
+                (CAMPOS_DETPARTIDABASE, modelo.getString(PARTIDABASE_ID_PARTIDABASE), TABLA_PARTIDABASE);
+
+        for (Modelo clonpart : listaclon) {
+
+            valores = new ContentValues();
+            valores.put(DETPARTIDA_ID_PARTIDA, idPartida);
+            valores.put(DETPARTIDA_NOMBRE, clonpart.getString(DETPARTIDABASE_NOMBRE));
+            valores.put(DETPARTIDA_DESCRIPCION, clonpart.getString(DETPARTIDABASE_DESCRIPCION));
+            valores.put(DETPARTIDA_BENEFICIO, clonpart.getString(DETPARTIDABASE_BENEFICIO));
+            valores.put(DETPARTIDA_DESCUENTOPROV, clonpart.getString(DETPARTIDABASE_DESCUENTOPROV));
+            valores.put(DETPARTIDA_PRECIO, clonpart.getString(DETPARTIDABASE_PRECIO));
+            valores.put(DETPARTIDA_ID_DETPARTIDA, clonpart.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
+            valores.put(DETPARTIDA_REFPROV, clonpart.getString(DETPARTIDABASE_REFPROV));
+            valores.put(DETPARTIDA_TIEMPO, clonpart.getString(DETPARTIDABASE_TIEMPO));
+            valores.put(DETPARTIDA_RUTAFOTO, clonpart.getString(DETPARTIDABASE_RUTAFOTO));
+            valores.put(DETPARTIDA_TIPO, clonpart.getString(DETPARTIDABASE_TIPO));
+            valores.remove(DETPARTIDABASE_SECUENCIA);
+
+            consulta.insertRegistroDetalle(CAMPOS_DETPARTIDA, idPartida
+                    , TABLA_PARTIDA, valores);
+        }
+
+        modelo = consulta.queryObjectDetalle(campos, id, secuencia);
+        newPartidaBase.setChecked(false);
+        newPartidaBase.setVisibility(View.GONE);
+        selector();
+
     }
+
+    private String actualizarPartidabase(final Modelo clon) {
+
+        String idpartidabase = clon.getString(PARTIDA_ID_PARTIDABASE);
+        System.out.println("Actualizando idpartidabase = " + idpartidabase);
+        Modelo partidabase = null;
+
+        valores = new ContentValues();
+
+        valores.put(PARTIDABASE_DESCRIPCION, clon.getString(PARTIDA_DESCRIPCION));
+        valores.put(PARTIDABASE_ID_PARTIDAORIGEN,clon.getString(PARTIDA_ID_PROYECTO));
+        valores.put(PARTIDABASE_NOMBRE, clon.getString(PARTIDA_NOMBRE));
+        valores.put(PARTIDABASE_PRECIO, 0);
+        valores.put(PARTIDABASE_TIEMPO, clon.getString(PARTIDA_TIEMPO));
+        valores.put(PARTIDABASE_RUTAFOTO, clon.getString(PARTIDA_RUTAFOTO));
+
+        if (idpartidabase==null) {
+
+            Uri uri = consulta.insertRegistro(TABLA_PARTIDABASE,valores);
+            partidabase = consulta.queryObject(CAMPOS_PARTIDABASE,uri);
+            idpartidabase = partidabase.getString(PARTIDABASE_ID_PARTIDABASE);
+        }else{
+            consulta.updateRegistro(TABLA_PARTIDABASE,idpartidabase,valores);
+            partidabase = consulta.queryObject(CAMPOS_PARTIDABASE,idpartidabase);
+        }
+
+        ArrayList<Modelo> listaclon = consulta.queryListDetalle
+                (CAMPOS_DETPARTIDA,clon.getString(PARTIDA_ID_PARTIDA),TABLA_PARTIDA);
+
+        for (Modelo clonpart : listaclon) {
+
+            valores = new ContentValues();
+            consulta.putDato(valores,CAMPOS_DETPARTIDABASE,DETPARTIDABASE_ID_PARTIDABASE,idpartidabase);
+            consulta.putDato(valores,CAMPOS_DETPARTIDABASE,DETPARTIDABASE_NOMBRE,clonpart.getString(DETPARTIDA_NOMBRE));
+            consulta.putDato(valores,CAMPOS_DETPARTIDABASE,DETPARTIDABASE_DESCRIPCION,clonpart.getString(DETPARTIDA_DESCRIPCION));
+            consulta.putDato(valores,CAMPOS_DETPARTIDABASE,DETPARTIDABASE_BENEFICIO,clonpart.getString(DETPARTIDA_BENEFICIO));
+            consulta.putDato(valores,CAMPOS_DETPARTIDABASE,DETPARTIDABASE_DESCUENTOPROV,clonpart.getString(DETPARTIDA_DESCUENTOPROV));
+            consulta.putDato(valores,CAMPOS_DETPARTIDABASE,DETPARTIDABASE_PRECIO,clonpart.getString(DETPARTIDA_PRECIO));
+            consulta.putDato(valores,CAMPOS_DETPARTIDABASE,DETPARTIDABASE_ID_DETPARTIDABASE,clonpart.getString(DETPARTIDA_ID_DETPARTIDA));
+            consulta.putDato(valores,CAMPOS_DETPARTIDABASE,DETPARTIDABASE_REFPROV,clonpart.getString(DETPARTIDA_REFPROV));
+            consulta.putDato(valores,CAMPOS_DETPARTIDABASE,DETPARTIDABASE_TIEMPO,clonpart.getString(DETPARTIDA_TIEMPO));
+            consulta.putDato(valores,CAMPOS_DETPARTIDABASE,DETPARTIDABASE_RUTAFOTO,clonpart.getString(DETPARTIDA_RUTAFOTO));
+            consulta.putDato(valores,CAMPOS_DETPARTIDABASE,DETPARTIDABASE_TIPO,clonpart.getString(DETPARTIDA_TIPO));
+            valores.remove(DETPARTIDA_SECUENCIA);
+
+            ArrayList<Modelo>listaDetallePartidabase = consulta.queryListDetalle(CAMPOS_DETPARTIDABASE,idpartidabase,
+                    TABLA_PARTIDABASE);
+
+            boolean nuevoRegistro = true;
+
+            for (Modelo detallePartidaBase : listaDetallePartidabase) {
+
+                if (detallePartidaBase.getString(DETPARTIDABASE_ID_DETPARTIDABASE).equals(
+                        clonpart.getString(DETPARTIDA_ID_DETPARTIDA))){
+                    consulta.updateRegistroDetalle(TABLA_DETPARTIDABASE,idpartidabase,
+                            detallePartidaBase.getInt(DETPARTIDABASE_SECUENCIA),valores);
+                    nuevoRegistro = false;
+                    break;
+                }
+            }
+            if (nuevoRegistro) {
+
+                System.out.println("valores = " + valores);
+                consulta.insertRegistroDetalle(CAMPOS_DETPARTIDABASE, idpartidabase
+                        , TABLA_PARTIDABASE, valores);
+            }
+            CommonPry.Calculos.actualizarPartidaBase(idpartidabase);
+        }
+         return idpartidabase;
+    }
+
 
     public class AdaptadorFiltroRV extends ListaAdaptadorFiltroRV {
 
@@ -961,8 +1057,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
             tiempoPartida.setText(modelo.getCampos(PARTIDA_TIEMPO));
             cantidadPartida.setText(modelo.getCampos(PARTIDA_CANTIDAD));
             importePartida.setText(JavaUtil.formatoMonedaLocal(modelo.getDouble(PARTIDA_PRECIO)));
-            completadaPartida.setText(modelo.getCampos(PARTIDA_COMPLETADA));
-            progressBarPartida.setProgress(Integer.parseInt(modelo.getCampos(PARTIDA_COMPLETADA)));
+            completadaPartida.setText(JavaUtil.getDecimales(modelo.getDouble(PARTIDA_COMPLETADA)));
+            progressBarPartida.setProgress(modelo.getInt(PARTIDA_COMPLETADA));
 
             if (modelo.getString(PARTIDA_RUTAFOTO) != null) {
 

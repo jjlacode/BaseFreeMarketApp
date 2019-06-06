@@ -1,5 +1,10 @@
 package jjlacode.com.freelanceproject.util;
 
+import android.content.Context;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -15,13 +20,19 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import jjlacode.com.freelanceproject.R;
+
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.HORASLONG;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.MINUTOSLONG;
+
 
 public class JavaUtil {
 
     public interface Constantes {
 
-        String ORIGEN = "actual";
+        String ORIGEN = "origen";
         String ACTUAL = "actual";
+        String ACTUALTEMP = "actualtemp";
         String SUBTITULO = "subTitulo";
         String ORIGENTEMP = "origenTemp";
         String NAMESUBTEMP = "namesubtemp";
@@ -33,7 +44,13 @@ public class JavaUtil {
         String MODELO = "modelo";
         String NUEVOREGISTRO = "nuevoreg";
         String VERLISTA = "verlista";
+        String PAUSA = "pausa";
         String ESDETALLE = "esdetalle";
+        String NOTIFICACIONES = "notificaciones";
+        String PERSISTENCIA = "persistencia";
+        String CONTNOT ="Contador notificacion";
+        String PREFERENCIAS = "preferencias";
+
 
 
         long SEGUNDOSLONG = (1000);
@@ -93,7 +110,7 @@ public class JavaUtil {
         if (null==dato){return 0;}
 
         try {
-            dato = sinFormato(dato);
+            //dato = sinFormato(dato);
             long res = Long.parseLong(dato)/Long.parseLong(dato);
             if (res==1)return Long.parseLong(dato);
 
@@ -161,6 +178,13 @@ public class JavaUtil {
         return dato.trim();
     }
 
+    public static String sinRetornoCarro(String dato){
+
+        dato = dato.replace("/n","");
+
+        return dato.trim();
+    }
+
     public static String noNuloString(String dato){
 
         if (dato!=null){return dato;}
@@ -184,8 +208,9 @@ public class JavaUtil {
     public static long horaALong(int hora, int minuto){
 
         Calendar calendar = new GregorianCalendar(0,0,0,hora,minuto);
-
-        return calendar.getTimeInMillis();//date.getTime();
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.setTimeZone(TimeZone.getDefault());
+        return calendar.getTimeInMillis();
     }
 
     public static String longAFecha(long fecha){
@@ -249,7 +274,7 @@ public class JavaUtil {
     }
 
     public static String getTime(long time) {
-        Date date = new Date(time);
+        Date date = new Date(time-3600000);
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm ", Locale.getDefault());
 
         return sdf.format(date);
@@ -298,9 +323,95 @@ public class JavaUtil {
         return simpleDateFormat.format(date);
     }
 
+    public static long horarioVerano(){
+
+       TimeZone tz = TimeZone.getDefault();
+       return tz.getDSTSavings();
+    }
+
+    public static long horarioVerano(String zona){
+
+        TimeZone tz = TimeZone.getTimeZone(zona);
+        return tz.getDSTSavings();
+    }
+
+    public static long mismoDiaMes(long fecha, int dia){
+
+        Calendar c = new GregorianCalendar();
+        c.setTimeInMillis(fecha);
+
+        int mes = c.get(Calendar.MONTH);
+        int anio = c.get(Calendar.YEAR);
+        if (mes==11){
+            mes = -1;
+            anio++;
+        }
+        mes++;
+        if (dia>30 && (mes==3||mes==5||mes==8||mes==10)){
+            dia = 30;
+        }
+        if (dia>28 && mes==1){
+            dia = 28;
+        }
+        c = new GregorianCalendar(anio,mes,dia);
+        return c.getTimeInMillis();
+    }
+
+    public static long mismoDiaAnio(long fecha, int dia){
+
+        Calendar c = new GregorianCalendar();
+        c.setTimeInMillis(fecha);
+
+        int mes = c.get(Calendar.MONTH);
+        int anio = c.get(Calendar.YEAR)+1;
+        if (dia>30 && (mes==3||mes==5||mes==8||mes==10)){
+            dia = 30;
+        }
+        if (dia>28 && mes==1){
+            dia = 28;
+        }
+        c = new GregorianCalendar(anio,mes,dia);
+        return c.getTimeInMillis();
+    }
+
+    public static int diaMes(long fecha){
+
+        Calendar c = new GregorianCalendar();
+        c.setTimeInMillis(fecha);
+
+        return c.get(Calendar.DAY_OF_MONTH);
+
+    }
+
     public static String twoDigits(int n) {
 
         return (n<=9) ? ("0"+n) : String.valueOf(n);
+    }
+
+    public static String relojContador(long countUp){
+
+        String asdias = String.format(Locale.getDefault(),"%d dias, ",
+                ((int)((double)countUp / (3600*24))));
+        if (((int)((double)countUp / (3600*24)))==0){asdias = " ";}
+        else if (((int)((double)countUp / (3600*24)))==1){
+            asdias = String.format(Locale.getDefault(),"%d dia, ",
+                    ((int)((double)countUp / (3600*24))));}
+        String ashoras = String.format(Locale.getDefault(),"%d h. ",
+                (int)((countUp % (3600*24))/3600));
+        if ((int)((countUp % (3600*24))/3600)==0){ashoras = " ";}
+        String asmin = String.format(Locale.getDefault(),"%d min. ",
+                ((int)((countUp % 3600))/60));
+        if (((int)((countUp % 3600))/60)==0){asmin = "";}
+        String assec = JavaUtil.twoDigits((int)(countUp % 60));
+        return asdias + ashoras + asmin + assec + "sec.";
+    }
+
+    public static long horaMin(long hora){
+
+        Date date = new Date(hora);
+        long horas = date.getHours();
+        long minutos = date.getMinutes();
+        return (horas*HORASLONG)+(minutos*MINUTOSLONG);
     }
 
     public static String formatoMonedaLocal(double importe){
@@ -346,9 +457,9 @@ public class JavaUtil {
 
         long lfechaaviso = flong;
         long ldias = lfechaaviso / Constantes.DIASLONG;
-        long lhoras = (lfechaaviso - (ldias* Constantes.DIASLONG)) / Constantes.HORASLONG;
-        long lminutos = (lfechaaviso - (lhoras* Constantes.HORASLONG) -
-                (ldias* Constantes.DIASLONG)) / Constantes.MINUTOSLONG;
+        long lhoras = (lfechaaviso - (ldias* Constantes.DIASLONG)) / HORASLONG;
+        long lminutos = (lfechaaviso - (lhoras* HORASLONG) -
+                (ldias* Constantes.DIASLONG)) / MINUTOSLONG;
         long[] res = {ldias,lhoras,lminutos};
 
         return res;

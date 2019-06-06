@@ -70,7 +70,7 @@ public class VisorPDFEmail extends FragmentBase {
             @Override
             public void onClick(View v) {
 
-                AppActivity.enviarEmail(emailDir.getText().toString(),
+                AppActivity.enviarEmail(getContext(),emailDir.getText().toString(),
                         asunto.getText().toString(),textoEmail.getText().toString(),
                         Uri.parse(uri));
             }

@@ -36,6 +36,7 @@ import java.util.Objects;
 
 import jjlacode.com.freelanceproject.util.AppActivity;
 import jjlacode.com.freelanceproject.util.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.CRUDutil;
 import jjlacode.com.freelanceproject.util.FragmentCRUD;
 import jjlacode.com.freelanceproject.util.ImagenUtil;
 import jjlacode.com.freelanceproject.util.JavaUtil;
@@ -209,14 +210,14 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
         CommonPry.Calculos.actualizarPartidaBase(id);
 
 
-        nombrePartida.setText(getString(PARTIDABASE_NOMBRE));
-        descripcionPartida.setText(getString(PARTIDABASE_DESCRIPCION));
-        tiempoPartida.setText(getString(PARTIDABASE_TIEMPO));
-        importePartida.setText(JavaUtil.formatoMonedaLocal(getDouble(PARTIDABASE_PRECIO)));
+        nombrePartida.setText(modelo.getString(PARTIDABASE_NOMBRE));
+        descripcionPartida.setText(modelo.getString(PARTIDABASE_DESCRIPCION));
+        tiempoPartida.setText(modelo.getString(PARTIDABASE_TIEMPO));
+        importePartida.setText(JavaUtil.formatoMonedaLocal(modelo.getDouble(PARTIDABASE_PRECIO)));
 
-        if (getString(PARTIDABASE_RUTAFOTO)!=null){
+        if (modelo.getString(PARTIDABASE_RUTAFOTO)!=null){
 
-            path = getString(PARTIDABASE_RUTAFOTO);
+            path = modelo.getString(PARTIDABASE_RUTAFOTO);
             setImagenUriCircle(contexto,path);
 
         }
@@ -269,7 +270,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
             public void onClick(View v) {
 
                 update();
-                setModelo(id);
+                modelo = CRUDutil.setModelo(campos,id);
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PARTIDABASE, modelo);
                 bundle.putString(ORIGEN, PARTIDABASE);
@@ -287,7 +288,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
             public void onClick(View v) {
 
                 update();
-                setModelo(id);
+                CRUDutil.setModelo(campos,id);
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PARTIDABASE, modelo);
                 bundle.putString(ORIGEN, PARTIDABASE);
@@ -305,7 +306,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
             public void onClick(View v) {
 
                 update();
-                setModelo(id);
+                CRUDutil.setModelo(campos,id);
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PARTIDABASE, modelo);
                 bundle.putString(ORIGEN, PARTIDABASE);
@@ -323,7 +324,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
             public void onClick(View v) {
 
                 update();
-                setModelo(id);
+                CRUDutil.setModelo(campos,id);
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_PARTIDABASE, modelo);
                 bundle.putString(ORIGEN, PARTIDABASE);
@@ -694,7 +695,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
 
         private void setAdaptadorAuto(AutoCompleteTextView autoCompleteTextView) {
 
-        setListaModelo();
+        lista = CRUDutil.setListaModelo(campos);
             ArrayList<Modelo> listaPartidasProy = consulta.queryList(CAMPOS_PARTIDA);
             lista.addAll(listaPartidasProy);
 

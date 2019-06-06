@@ -125,9 +125,9 @@ public class AppActivity extends Application {
         }
     }
 
-    public static void enviarEmail(Context context, String[] direcciones, String subject, CharSequence texto){
+    public static void enviarEmail(Context context, String[] direcciones, String subject, String texto){
 
-        Intent intent = new Intent(Intent.ACTION_SEND);
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:"));
         intent.putExtra(Intent.EXTRA_EMAIL, direcciones);
         intent.putExtra(Intent.EXTRA_SUBJECT,subject);
@@ -139,11 +139,13 @@ public class AppActivity extends Application {
         }
     }
 
-    public static void enviarEmail(Context context, String direccion, String subject, CharSequence texto){
+    public static void enviarEmail(Context context, String direccion, String subject, String texto){
 
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setData(Uri.parse("mailto:"+direccion));
+        String[]dir = {direccion};
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:"));
         if (!TextUtils.isEmpty(direccion)) {
+            intent.putExtra(Intent.EXTRA_EMAIL,dir);
             intent.putExtra(Intent.EXTRA_SUBJECT,subject);
             intent.putExtra(Intent.EXTRA_TEXT,texto);
             if (intent.resolveActivity(context.getPackageManager()) != null) {
@@ -158,9 +160,11 @@ public class AppActivity extends Application {
 
     public static void enviarEmail(Context context, String direccion){
 
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setData(Uri.parse("mailto:"+direccion));
+        String[]dir = {direccion};
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:"));
         if (!TextUtils.isEmpty(direccion)) {
+            intent.putExtra(Intent.EXTRA_EMAIL,dir);
             if (intent.resolveActivity(context.getPackageManager()) != null) {
                 context.startActivity(intent);
             } else {
@@ -171,7 +175,7 @@ public class AppActivity extends Application {
         }
     }
 
-    public static void enviarEmail(String direccion, String subject, String texto, Uri uriPdf){
+    public static void enviarEmail(Context context, String direccion, String subject, String texto, Uri uriPdf){
 
 
         String[]dir = {direccion};

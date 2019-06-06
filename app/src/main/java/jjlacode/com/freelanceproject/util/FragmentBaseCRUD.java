@@ -3,14 +3,22 @@ package jjlacode.com.freelanceproject.util;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
-import java.util.ArrayList;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.PERSISTENCIA;
+import static jjlacode.com.freelanceproject.R.color.colorAccent;
 
 public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.Constantes {
 
@@ -20,6 +28,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     protected String tabla;
     protected String[] campos;
     protected String id;
+    protected String idAOrigen;
     protected int secuencia;
     protected String tablaCab;
     protected Context contexto;
@@ -32,11 +41,82 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     protected ListaModelo listab;
     protected String origen;
     protected String actual;
+    protected String actualtemp;
     protected String subTitulo;
     protected boolean nuevo;
 
+    protected RelativeLayout frPrincipal;
+    protected LinearLayout frdetalle;
+    protected LinearLayout frPie;
+    protected LinearLayout frCabecera;
+    protected View viewCabecera;
+    protected View viewCuerpo;
+    protected View viewBotones;
+    protected int layoutCuerpo;
+    protected int layoutCabecera;
+
+    protected Button btnsave;
+    protected Button btnback;
+    protected Button btndelete;
+    protected ImageView imagen;
+
+
+    protected String path;
+    protected ImagenUtil imagenUtil = new ImagenUtil(contexto);
+    final protected int COD_FOTO = 10;
+    final protected int COD_SELECCIONA = 20;
+
 
     public FragmentBaseCRUD() {
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        view = inflater.inflate(R.layout.contenido, container, false);
+        land = getResources().getBoolean(R.bool.esLand);
+        tablet = getResources().getBoolean(R.bool.esTablet);
+        System.out.println("land = " + land);
+        System.out.println("tablet = " + tablet);
+
+        frPrincipal = view.findViewById(R.id.contenedor);
+        frdetalle = view.findViewById(R.id.layout_detalle);
+
+        frPie = view.findViewById(R.id.layout_pie);
+        viewBotones = inflater.inflate(R.layout.btn_sdb,container,false);
+        viewCuerpo = inflater.inflate(layoutCuerpo,container,false);
+        frCabecera = view.findViewById(R.id.layout_cabecera);
+        if (layoutCabecera>0) {
+            viewCabecera = inflater.inflate(layoutCabecera, container,false);
+            if(viewCabecera.getParent() != null) {
+                ((ViewGroup)viewCabecera.getParent()).removeView(viewCabecera); // <- fix
+            }
+            if (viewCabecera!=null) {
+                frCabecera.addView(viewCabecera);
+            }
+        }
+        if(viewBotones.getParent() != null) {
+            ((ViewGroup)viewBotones.getParent()).removeView(viewBotones); // <- fix
+        }
+        if(viewCuerpo.getParent() != null) {
+            ((ViewGroup)viewCuerpo.getParent()).removeView(viewCuerpo); // <- fix
+        }
+
+
+        frdetalle.addView(viewCuerpo);
+        frPie.addView(viewBotones);
+
+        btnback = view.findViewById(R.id.btn_back);
+        btnsave = view.findViewById(R.id.btn_save);
+        btndelete = view.findViewById(R.id.btn_del);
+
+        //btnsave.setVisibility(View.GONE);
+        btndelete.setTextColor(getResources().getColor(colorAccent));
+
+        setInicio();
+
+        return view;
     }
 
     @Override
@@ -47,11 +127,21 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
         SharedPreferences.Editor editor=persistencia.edit();
         editor.putString(ORIGEN, origen);
         editor.putString(ACTUAL, actual);
+        editor.putString(ACTUALTEMP, actualtemp);
         editor.putString(SUBTITULO, subTitulo);
         editor.putString(ID,id);
         editor.putInt(SECUENCIA,secuencia);
         editor.apply();
         System.out.println("Guardado onPause");
+        System.out.println("id = " + id);
+        //enviarBundle();
+        //enviarAct();
+    }
+
+
+    protected boolean onUpdate(){
+
+        return false;
     }
 
     /**
@@ -67,23 +157,25 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
             origen = bundle.getString(ORIGEN);
             subTitulo = bundle.getString(SUBTITULO);
             actual = bundle.getString(ACTUAL);
+            actualtemp = bundle.getString(ACTUALTEMP);
             nuevo = bundle.getBoolean(NUEVOREGISTRO);
             if (subTitulo==null){
                 subTitulo = CommonPry.setNamefdef();
             }
             listab = (ListaModelo) bundle.getSerializable(LISTA);
             modelo = (Modelo) bundle.getSerializable(MODELO);
+            if (id==null) {
+                id = bundle.getString(ID);
+            }
+            if (secuencia==0) {
+                secuencia = bundle.getInt(SECUENCIA);
+            }
 
-        }
-        if (tablaCab!=null && modelo!=null){
-                getID();
-                getSecuencia();
-        }else if (modelo!=null){
-                getID();
         }
 
         setBundle();
-        enviarAct();
+        //enviarBundle();
+        //enviarAct();
     }
 
     protected abstract void setTabla();
@@ -111,35 +203,46 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     protected void enviarAct(){
 
         icFragmentos.enviarBundleAActivity(bundle);
-        System.out.println("bundle enviado a activityBase desde "+ tituloPlural);
+        System.out.println("bundle enviado a activityBase desde "+ getString(tituloPlural));
+        System.out.println("bundle = " + bundle);
     }
 
     protected void enviarBundle(){
 
-        bundle = new Bundle();
         bundle.putString(ORIGEN, origen);
         bundle.putString(ACTUAL,actual);
+        bundle.putString(ACTUALTEMP, actualtemp);
         bundle.putSerializable(MODELO,modelo);
+        bundle.putString(ID,id);
+        bundle.putString(SUBTITULO,subTitulo);
+        bundle.putInt(SECUENCIA, secuencia);
 
     }
 
     @Override
     public void onResume() {
 
-        if (tituloPlural>0) {
-            activityBase.toolbar.setTitle(tituloPlural);
-        }
-        if (subTitulo!=null) {
-            activityBase.toolbar.setSubtitle(subTitulo);
-        }
+        super.onResume();
 
         cargarBundle();
 
-        super.onResume();
-    }
+        if (bundle.containsKey(PERSISTENCIA) && bundle.getBoolean(PERSISTENCIA)) {
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+            SharedPreferences persistencia = getActivity().getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = persistencia.edit();
+            if (id == null) {
+                id = persistencia.getString(ID, null);
+            }
+            if (secuencia == 0) {
+                secuencia = persistencia.getInt(SECUENCIA, 0);
+            }
+
+            editor.putString(ID, null);
+            editor.putInt(SECUENCIA, 0);
+            editor.apply();
+        }
+
+        System.out.println("onResume id = " + id);
 
         setTabla();
         setTablaCab();
@@ -148,171 +251,28 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
         setContext();
         setTitulo();
 
-        super.onCreate(savedInstanceState);
-    }
-
-    protected void setListaModelo(){
-        lista = new ListaModelo(campos);
-    }
-
-    protected void setListaModelo(ListaModelo list){
-        lista = new ListaModelo(campos);
-        lista.clearAddAll(list.getLista());
-    }
-
-    protected void setListaModelo(ArrayList<Modelo> list){
-        lista = new ListaModelo(campos);
-        lista.clearAddAll(list);
-    }
-
-    protected void setListaModeloDetalle(){
-        lista = new ListaModelo(campos,id,tablaCab,null,null);
-    }
-
-    protected void setListaModelo(String seleccion){
-        lista = new ListaModelo(campos,seleccion,null);
-    }
-
-    protected void setListaModeloDetalle(String seleccion){
-        lista = new ListaModelo(campos,id,tablaCab,seleccion,null);
-    }
-
-    protected void setListaModelo(String seleccion, String orden){
-        lista = new ListaModelo(campos,seleccion,orden);
-    }
-
-    protected void setListaModeloDetalle(String seleccion, String orden){
-        lista = new ListaModelo(campos,id,tablaCab,seleccion,orden);
-    }
-
-    protected void setListaModelo(String campo, String valor, int flag){
-        lista = new ListaModelo(campos,campo,valor,null,flag,null);
-    }
-
-    protected Modelo setModelo(String id){
-        return consulta.queryObject(campos,id);
-    }
-
-    protected Modelo setModelo(String id, int secuencia){
-
-        return consulta.queryObjectDetalle(campos,id,secuencia);
-    }
-
-    protected Modelo setModelo(String id, String secuencia){
-        return consulta.queryObjectDetalle(campos,id,secuencia);
-    }
-
-    protected Modelo setModelo(String[] campos, String id){
-        return consulta.queryObject(campos,id);
-    }
-
-    protected Modelo setModelo(String[] campos, String id, String secuencia){
-        return consulta.queryObjectDetalle(campos,id,secuencia);
-    }
-
-    protected int actualizarRegistro(){
-
-        if (tablaCab==null) {
-            return consulta.updateRegistro(tabla, id, valores);
-        }else{
-            return consulta.updateRegistroDetalle(tabla, id, secuencia,valores);
+        if (tablaCab==null && id!=null){
+            modelo = CRUDutil.setModelo(campos,id);
         }
-    }
-
-    protected int actualizarRegistro(String tabla, String id, int secuencia){
-
-        if (tablaCab==null) {
-            return consulta.updateRegistro(tabla, id, valores);
-        }else{
-            return consulta.updateRegistroDetalle(tabla, id, secuencia,valores);
+        else if (id!=null && secuencia>0){
+            modelo = CRUDutil.setModelo(campos,id,secuencia);
         }
-    }
 
-    protected Uri crearRegistroUri(){
+        System.out.println("onResume modelo = " + modelo);
 
-        if (tablaCab==null){
-            return consulta.insertRegistro(tabla,valores);
-        }else{
-            return consulta.insertRegistroDetalle(campos,id,tablaCab,valores);
+        if (tituloPlural>0) {
+            activityBase.toolbar.setTitle(tituloPlural);
         }
-    }
-
-    protected Uri crearRegistroUri(String tabla, String[] campos, String tablacab, String id){
-
-        if (tablaCab==null){
-            return consulta.insertRegistro(tabla,valores);
-        }else{
-            return consulta.insertRegistroDetalle(campos,id,tablaCab,valores);
+        if (subTitulo!=null) {
+            activityBase.toolbar.setSubtitle(subTitulo);
         }
+
+        enviarBundle();
+        enviarAct();
+
     }
 
-    protected String crearRegistroId(){
 
-            return consulta.idInsertRegistro(tabla,valores);
-    }
-
-    protected String crearRegistroId(String tabla){
-
-        return consulta.idInsertRegistro(tabla,valores);
-    }
-
-    protected int crearRegistroDetalleSec(){
-
-            return consulta.secInsertRegistroDetalle(campos,id,tablaCab,valores);
-    }
-
-    protected int crearRegistroDetalleSec(String[] campos, String tablacab, String id){
-
-        return consulta.secInsertRegistroDetalle(campos,id,tablaCab,valores);
-    }
-
-    protected int borrarRegistro(){
-        if (tablaCab==null) {
-            return consulta.deleteRegistro(tabla, id);
-        }else{
-            return consulta.deleteRegistroDetalle(tabla,id,secuencia);
-        }
-    }
-
-    protected int borrarRegistro(String tabla, String id, int secuencia){
-        if (tablaCab==null) {
-            return consulta.deleteRegistro(tabla, id);
-        }else{
-            return consulta.deleteRegistroDetalle(tabla,id,secuencia);
-        }
-    }
-
-    protected String getString(String campo){
-        return modelo.getString(campo);
-    }
-
-    protected int getInt(String campo){
-        return modelo.getInt(campo);
-    }
-
-    protected long getLong(String campo){
-        return modelo.getLong(campo);
-    }
-
-    protected double getDouble(String campo){
-        return modelo.getDouble(campo);
-    }
-
-    protected float getFloat(String campo){
-        return modelo.getFloat(campo);
-    }
-
-    protected short getShort(String campo){
-        return modelo.getShort(campo);
-    }
-
-    protected String getID(){
-        return modelo.getString(campoID);
-    }
-
-    protected int getSecuencia(){
-        return modelo.getInt("secuencia");
-    }
 
 
 }

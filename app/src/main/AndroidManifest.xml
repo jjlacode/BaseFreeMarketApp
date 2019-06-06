@@ -3,13 +3,13 @@
     package="jjlacode.com.freelanceproject">
 
     <application
+        android:name=".util.AppActivity"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name="jjlacode.com.freelanceproject.util.AppActivity">
+        android:theme="@style/AppTheme">
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,15 +21,14 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".util.MainActivityBase" />
-
-
         <provider
             android:name=".sqlite.ProviderFreelanceProject"
             android:authorities="jjlacode.com.freelanceproject"
             android:enabled="true"
             android:exported="false" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="jjlacode.com.freelanceproject.provider"
@@ -37,14 +36,34 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
+        <receiver android:enabled="false"
+                  android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
+                  android:name=".services.AutoArranque" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".services.EventosReceiver" >
+            <intent-filter>
+                <action android:name="jjlacode.com.freelanceproject.action.AVISOEVENTO" />
+                <action android:name="jjlacode.com.freelanceproject.action.POSPONER" />
+                <action android:name="jjlacode.com.freelanceproject.action.CANCELAR" />
+            </intent-filter>
+        </receiver>
+        <service
+            android:name=".services.AvisoEventos"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
     </application>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
 </manifest>

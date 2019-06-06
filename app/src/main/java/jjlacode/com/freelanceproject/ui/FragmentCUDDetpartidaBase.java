@@ -80,6 +80,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
         autoCat.setVisibility(View.GONE);
         autoProv.setVisibility(View.GONE);
 
+
     }
 
     @Override
@@ -332,16 +333,13 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
     @Override
     protected void setLayout() {
 
-        layout = R.layout.fragment_cud_detpartida;
+        layoutCuerpo = R.layout.fragment_cud_detpartida;
 
     }
 
     @Override
     protected void setInicio() {
 
-        btnsave = view.findViewById(R.id.detpartida_c_btn_save);
-        btnback = view.findViewById(R.id.detpartida_c_btn_back);
-        btndelete = view.findViewById(R.id.detpartida_c_btn_delete);
         btnNuevaTarea = view.findViewById(R.id.btnntareacdetpartida);
         btnNuevoProd = view.findViewById(R.id.btnnprodcdetpartida);
         rvDetpartida = view.findViewById(R.id.rvcdetpartida);

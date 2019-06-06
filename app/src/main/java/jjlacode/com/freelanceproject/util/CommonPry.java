@@ -1,32 +1,55 @@
 package jjlacode.com.freelanceproject.util;
 
-import android.content.ContentResolver;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
-import android.database.Cursor;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.provider.MediaStore;
+import android.text.TextUtils;
+import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.google.common.base.Ascii;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 
 import jjlacode.com.freelanceproject.BuildConfig;
+import jjlacode.com.freelanceproject.MainActivity;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.model.ProdProv;
+import jjlacode.com.freelanceproject.services.EventosReceiver;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+import static android.content.Intent.EXTRA_EMAIL;
+import static android.content.Intent.EXTRA_SUBJECT;
+import static android.content.Intent.EXTRA_TEXT;
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+import static android.util.TypedValue.COMPLEX_UNIT_SP;
 import static jjlacode.com.freelanceproject.util.AppActivity.getAppContext;
+import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.ACCION_CANCELAR;
+import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.ACCION_POSPONER;
+import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.ACCION_VER;
+import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.EXTRA_ACTUAL;
+import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.EXTRA_ID;
+import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.EXTRA_IDEVENTO;
 
 
 public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
@@ -51,9 +74,8 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
 
     public interface  Constantes {
 
-        String PERSISTENCIA = "persistencia";
+
         String PRIORIDAD = "prioridad";
-        String PREFERENCIAS = "preferencias";
         String DIASPASADOS = "diaspasados";
         String DIASFUTUROS = "diasfuturos";
         String BASEDATOS = "freelanceproject.db";
@@ -120,6 +142,19 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         String CARPETA_IMAGEN = "imagenes";
         String DIRECTORIO_IMAGEN = CARPETA_PRINCIPAL + CARPETA_IMAGEN;
         String PROVIDERFILE = BuildConfig.APPLICATION_ID + ".providerFreelanceProject";
+        String ACCION_AVISOEVENTO = "jjlacode.com.freelanceproject.action.AVISOEVENTO";
+        String ACCION_POSPONER = "jjlacode.com.freelanceproject.action.POSPONER";
+        String ACCION_CANCELAR = "jjlacode.com.freelanceproject.action.CANCELAR";
+        String ACCION_VER = "jjlacode.com.freelanceproject.action.VER";
+        String ACCION_VERLUGAR = "jjlacode.com.freelanceproject.action.VERLUGAR";
+        String STARTSERVER ="Servicio iniciado";
+        String STOPSERVER = "Servicio detenido";
+        String EXTRA_IDEVENTO = "jjlacode.com.freelanceproject.EXTRA_IDEVENTO";
+        String EXTRA_ACTUAL = "jjlacode.com.freelanceproject.EXTRA_ACTUAL";
+        String EXTRA_BUNDLE = "jjlacode.com.freelanceproject.EXTRA_BUNDLE";
+        String EXTRA_ACCION = "jjlacode.com.freelanceproject.EXTRA_ACCION";
+        String EXTRA_ID = "jjlacode.com.freelanceproject.EXTRA_ID";
+
 
     }
 
@@ -200,6 +235,390 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         return namesubdef;
     }
 
+    public static void notificationEvento(Context contexto, Class<?> clase, Modelo evento, String actual,
+                                          int id, int iconId, String titulo, String contenido ) {
+
+        RemoteViews remoteView = new RemoteViews(contexto.getPackageName(), R.layout.notificacion_evento_evento);
+        remoteView.setTextViewText(R.id.tvdescnot, evento.getString(EVENTO_DESCRIPCION));
+
+        String tipo = evento.getString(EVENTO_TIPOEVENTO);
+        String idEvento = null;
+        if (tipo.equals(TiposEvento.CITA)) {
+            remoteView = new RemoteViews(contexto.getPackageName(), R.layout.notificacion_evento_cita);
+
+            idEvento = evento.getString(EVENTO_ID_EVENTO);
+            String direccion = evento.getString(EVENTO_LUGAR);
+            String dir = direccion.substring(0,35);
+            remoteView.setTextViewText(R.id.tvdescnot, evento.getString(EVENTO_DESCRIPCION));
+            remoteView.setTextViewText(R.id.tvlugarnot, dir);
+
+            String address = evento.getString(EVENTO_LUGAR);
+            String urlMap = null;
+
+            if (address!=null) {
+                address = address.replace(" ", "+");
+                String address2 = address.replace(",", "%2C");
+                String baseUrl = "https://www.google.com/maps/search/?api=1&query=";
+                urlMap = String.format("%s%s", baseUrl, address2);
+
+                System.out.println("address = " + address);
+
+            }
+
+            Intent intentMapa = null;
+            try {
+
+                intentMapa = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse(String.format("geo:0,0?q=%s",
+                                URLEncoder.encode(address, "UTF-8"))));
+
+                PackageManager packageManager = contexto.getPackageManager();
+                List activities = packageManager.queryIntentActivities(intentMapa,
+                        PackageManager.MATCH_DEFAULT_ONLY);
+                boolean isIntentSafe = activities.size() > 0;
+                if (isIntentSafe){
+                    PendingIntent lugar = PendingIntent.getActivity(
+                            contexto,
+                            2,
+                            intentMapa,
+                            PendingIntent.FLAG_UPDATE_CURRENT);
+                    remoteView.setOnClickPendingIntent(R.id.imgmapanot,lugar);
+                }else{
+                    System.out.println("urlMap = " + urlMap);
+                    intentMapa = new Intent(Intent.ACTION_VIEW,Uri.parse(String.format("%s",
+                            URLEncoder.encode(urlMap, "UTF-8"))));
+                    contexto.startActivity(intentMapa);
+                    PendingIntent lugar = PendingIntent.getActivity(
+                            contexto,
+                            3,
+                            intentMapa,
+                            PendingIntent.FLAG_UPDATE_CURRENT);
+                    remoteView.setOnClickPendingIntent(R.id.imgmapanot,lugar);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            Intent intentCancelarCita = new Intent(contexto, EventosReceiver.class);
+            intentCancelarCita.setAction(ACCION_CANCELAR);
+            intentCancelarCita.putExtra(EXTRA_IDEVENTO,idEvento);
+            intentCancelarCita.putExtra(EXTRA_ACTUAL,actual);
+            intentCancelarCita.putExtra(EXTRA_ID,id);
+            PendingIntent cancelarCita = PendingIntent.getBroadcast(
+                    contexto,
+                    id,
+                    intentCancelarCita,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            remoteView.setOnClickPendingIntent(R.id.btndescartarrnotcita,cancelarCita);
+
+            Intent intentVerCita = new Intent(contexto, clase);
+            intentVerCita.setAction(ACCION_VER);
+            intentVerCita.putExtra(EXTRA_IDEVENTO,idEvento);
+            intentVerCita.putExtra(EXTRA_ACTUAL,actual);
+            intentVerCita.putExtra(EXTRA_ID,id);
+
+            intentVerCita.setFlags(FLAG_ACTIVITY_NEW_TASK);
+            PendingIntent verCita = PendingIntent.getActivity(
+                    contexto,
+                    id,
+                    intentVerCita,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            remoteView.setOnClickPendingIntent(R.id.btnvernotcita,verCita);
+
+            Intent intentPosponerCita = new Intent(contexto, EventosReceiver.class);
+
+            intentPosponerCita.setAction(ACCION_POSPONER);
+            intentPosponerCita.putExtra(EXTRA_IDEVENTO,idEvento);
+            intentPosponerCita.putExtra(EXTRA_ACTUAL,actual);
+            intentPosponerCita.putExtra(EXTRA_ID,id);
+
+            PendingIntent posponerCita = PendingIntent.getBroadcast(
+                    contexto,
+                    id,
+                    intentPosponerCita,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            remoteView.setOnClickPendingIntent(R.id.btnposponernotcita,posponerCita);
+
+            System.out.println("id = " + id);
+
+            // Estructurar la notificación
+            Notification.Builder builder =
+                    new Notification.Builder(contexto)
+                            .setDefaults(Notification.DEFAULT_LIGHTS)
+                            .setSmallIcon(iconId)
+                            .setContentTitle(titulo)
+                            .setContentText(contenido)
+                            .setWhen(evento.getLong(EVENTO_HORAINIEVENTO))
+                            .setColor(contexto.getResources().getColor(R.color.colorPrimary))
+                            .setTicker(titulo)
+                            .setVibrate(new long[] {100, 250, 100, 500})
+                            .setVisibility(Notification.VISIBILITY_PUBLIC)
+                            .setPriority(Notification.PRIORITY_HIGH)
+                            .setSound(Uri.parse("android.resource://" + contexto.getPackageName() + "/" + R.raw.popcorn))
+                            .setContent(remoteView)
+                            .setAutoCancel(true);
+
+            Notification notification = builder.build();
+            NotificationManager notifyMgrCita = (NotificationManager) contexto.getSystemService(NOTIFICATION_SERVICE);
+
+            // Construir la notificación y emitirla
+            notifyMgrCita.notify(id, notification);
+
+        }else if (tipo.equals(TiposEvento.LLAMADA)) {
+
+            idEvento = evento.getString(EVENTO_ID_EVENTO);
+            remoteView = new RemoteViews(contexto.getPackageName(), R.layout.notificacion_evento_llamada);
+
+            remoteView.setTextViewText(R.id.tvdescnot, evento.getString(EVENTO_DESCRIPCION));
+            remoteView.setTextViewText(R.id.tvtelefononot, evento.getString(EVENTO_TELEFONO));
+            Uri uri = Uri.parse("tel:" + evento.getString(EVENTO_TELEFONO));
+            Intent intentllamada = new Intent(Intent.ACTION_DIAL, uri);
+            intentllamada.addFlags(FLAG_ACTIVITY_NEW_TASK);
+
+            PendingIntent llamada = PendingIntent.getActivity(
+                    contexto,
+                    4,
+                    intentllamada,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+
+            remoteView.setOnClickPendingIntent(R.id.imgllamadanot,llamada);
+
+            Intent intentCancelarLlamada = new Intent(contexto, EventosReceiver.class);
+            intentCancelarLlamada.setAction(ACCION_CANCELAR);
+            intentCancelarLlamada.putExtra(EXTRA_IDEVENTO,idEvento);
+            intentCancelarLlamada.putExtra(EXTRA_ACTUAL,actual);
+            intentCancelarLlamada.putExtra(EXTRA_ID,id);
+            PendingIntent cancelarLlamada = PendingIntent.getBroadcast(
+                    contexto,
+                    id,
+                    intentCancelarLlamada,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            remoteView.setOnClickPendingIntent(R.id.btndescartarrnotllamada,cancelarLlamada);
+
+            Intent intentVerLlamada = new Intent(contexto, clase);
+            intentVerLlamada.setAction(ACCION_VER);
+            intentVerLlamada.putExtra(EXTRA_IDEVENTO,idEvento);
+            intentVerLlamada.putExtra(EXTRA_ACTUAL,actual);
+            intentVerLlamada.putExtra(EXTRA_ID,id);
+
+            intentVerLlamada.setFlags(FLAG_ACTIVITY_NEW_TASK);
+            PendingIntent verLlamada = PendingIntent.getActivity(
+                    contexto,
+                    id,
+                    intentVerLlamada,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            remoteView.setOnClickPendingIntent(R.id.btnvernotllamada,verLlamada);
+
+            Intent intentPosponerLlamada = new Intent(contexto, EventosReceiver.class);
+
+            intentPosponerLlamada.setAction(ACCION_POSPONER);
+            intentPosponerLlamada.putExtra(EXTRA_IDEVENTO,idEvento);
+            intentPosponerLlamada.putExtra(EXTRA_ACTUAL,actual);
+            intentPosponerLlamada.putExtra(EXTRA_ID,id);
+
+            PendingIntent posponerLlamada = PendingIntent.getBroadcast(
+                    contexto,
+                    id,
+                    intentPosponerLlamada,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            remoteView.setOnClickPendingIntent(R.id.btnposponernotllamada,posponerLlamada);
+
+            System.out.println("id = " + id);
+
+            // Estructurar la notificación
+            Notification.Builder builder =
+                    new Notification.Builder(contexto)
+                            .setDefaults(Notification.DEFAULT_LIGHTS)
+                            .setSmallIcon(iconId)
+                            .setContentTitle(titulo)
+                            .setContentText(contenido)
+                            .setWhen(evento.getLong(EVENTO_HORAINIEVENTO))
+                            .setColor(contexto.getResources().getColor(R.color.colorPrimary))
+                            .setTicker(titulo)
+                            .setVibrate(new long[] {100, 250, 100, 500})
+                            .setVisibility(Notification.VISIBILITY_PUBLIC)
+                            .setPriority(Notification.PRIORITY_HIGH)
+                            .setSound(Uri.parse("android.resource://" + contexto.getPackageName() + "/" + R.raw.popcorn))
+                            .setContent(remoteView)
+                            .setAutoCancel(true);
+
+            Notification notification = builder.build();
+            NotificationManager notifyMgrLlamada = (NotificationManager) contexto.getSystemService(NOTIFICATION_SERVICE);
+
+            // Construir la notificación y emitirla
+            notifyMgrLlamada.notify(id, notification);
+
+        }else if (tipo.equals(TiposEvento.EMAIL)) {
+
+            idEvento = evento.getString(EVENTO_ID_EVENTO);
+            remoteView = new RemoteViews(contexto.getPackageName(), R.layout.notificacion_evento_email);
+
+            remoteView.setTextViewText(R.id.tvdescnot, evento.getString(EVENTO_DESCRIPCION));
+            remoteView.setTextViewText(R.id.tvemailnot, evento.getString(EVENTO_EMAIL));
+            String[] dir = {evento.getString(EVENTO_EMAIL)};
+            Intent intentmail = new Intent(Intent.ACTION_SENDTO);
+            intentmail.setData(Uri.parse("mailto:"));
+            if (!TextUtils.isEmpty(evento.getString(EVENTO_EMAIL))) {
+                intentmail.putExtra(EXTRA_EMAIL,dir);
+                intentmail.putExtra(EXTRA_SUBJECT,evento.getString(EVENTO_ASUNTO));
+                intentmail.putExtra(EXTRA_TEXT,evento.getString(EVENTO_MENSAJE));
+                if (evento.getString(EVENTO_RUTAADJUNTO)!=null) {
+                    intentmail.setType("application/pdf");
+                    intentmail.putExtra(Intent.EXTRA_STREAM, evento.getUri(EVENTO_RUTAADJUNTO));
+                }
+                if (intentmail.resolveActivity(contexto.getPackageManager()) == null){
+                    Toast.makeText(contexto, "No hay disponible ninguna app de email", Toast.LENGTH_SHORT).show();
+                }
+            }else {
+                Toast.makeText(contexto, "La dirección de email no es valida", Toast.LENGTH_SHORT).show();
+            }
+            intentmail.addFlags(FLAG_ACTIVITY_NEW_TASK);
+
+            PendingIntent email = PendingIntent.getActivity(
+                    contexto,
+                    id,
+                    intentmail,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+
+            remoteView.setOnClickPendingIntent(R.id.imgemailnot,email);
+
+            Intent intentCancelarEmail = new Intent(contexto, EventosReceiver.class);
+            intentCancelarEmail.setAction(ACCION_CANCELAR);
+            intentCancelarEmail.putExtra(EXTRA_IDEVENTO,idEvento);
+            intentCancelarEmail.putExtra(EXTRA_ACTUAL,actual);
+            intentCancelarEmail.putExtra(EXTRA_ID,id);
+            PendingIntent cancelarEmail = PendingIntent.getBroadcast(
+                    contexto,
+                    id,
+                    intentCancelarEmail,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            remoteView.setOnClickPendingIntent(R.id.btndescartarrnotemail,cancelarEmail);
+
+            Intent intentVerEmail = new Intent(contexto, clase);
+            intentVerEmail.setAction(ACCION_VER);
+            intentVerEmail.putExtra(EXTRA_IDEVENTO,idEvento);
+            intentVerEmail.putExtra(EXTRA_ACTUAL,actual);
+            intentVerEmail.putExtra(EXTRA_ID,id);
+
+            intentVerEmail.setFlags(FLAG_ACTIVITY_NEW_TASK);
+            PendingIntent verEmail = PendingIntent.getActivity(
+                    contexto,
+                    id,
+                    intentVerEmail,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            remoteView.setOnClickPendingIntent(R.id.btnvernotemail,verEmail);
+
+            Intent intentPosponerEmail = new Intent(contexto, EventosReceiver.class);
+
+            intentPosponerEmail.setAction(ACCION_POSPONER);
+            intentPosponerEmail.putExtra(EXTRA_IDEVENTO,idEvento);
+            intentPosponerEmail.putExtra(EXTRA_ACTUAL,actual);
+            intentPosponerEmail.putExtra(EXTRA_ID,id);
+
+            PendingIntent posponerEmail = PendingIntent.getBroadcast(
+                    contexto,
+                    id,
+                    intentPosponerEmail,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            remoteView.setOnClickPendingIntent(R.id.btnposponernotemail,posponerEmail);
+
+            System.out.println("id = " + id);
+
+            // Estructurar la notificación
+            Notification.Builder builder =
+                    new Notification.Builder(contexto)
+                            .setDefaults(Notification.DEFAULT_LIGHTS)
+                            .setSmallIcon(iconId)
+                            .setContentTitle(titulo)
+                            .setContentText(contenido)
+                            .setWhen(evento.getLong(EVENTO_HORAINIEVENTO))
+                            .setColor(contexto.getResources().getColor(R.color.colorPrimary))
+                            .setTicker(titulo)
+                            .setVibrate(new long[] {100, 250, 100, 500})
+                            .setVisibility(Notification.VISIBILITY_PUBLIC)
+                            .setPriority(Notification.PRIORITY_HIGH)
+                            .setSound(Uri.parse("android.resource://" + contexto.getPackageName() + "/" + R.raw.popcorn))
+                            .setContent(remoteView)
+                            .setAutoCancel(true);
+
+            Notification notification = builder.build();
+            NotificationManager notifyMgrEmail = (NotificationManager) contexto.getSystemService(NOTIFICATION_SERVICE);
+
+            // Construir la notificación y emitirla
+            notifyMgrEmail.notify(id, notification);
+
+        }else if (tipo.equals(TiposEvento.EVENTO)) {
+
+            idEvento = evento.getString(EVENTO_ID_EVENTO);
+
+            Intent intentCancelarEvento = new Intent(contexto, EventosReceiver.class);
+            intentCancelarEvento.setAction(ACCION_CANCELAR);
+            intentCancelarEvento.putExtra(EXTRA_IDEVENTO,idEvento);
+            intentCancelarEvento.putExtra(EXTRA_ACTUAL,actual);
+            intentCancelarEvento.putExtra(EXTRA_ID,id);
+            PendingIntent cancelarEvento = PendingIntent.getBroadcast(
+                    contexto,
+                    id,
+                    intentCancelarEvento,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            remoteView.setOnClickPendingIntent(R.id.btndescartarrnotevento,cancelarEvento);
+
+            Intent intentVerEvento = new Intent(contexto, clase);
+            intentVerEvento.setAction(ACCION_VER);
+            intentVerEvento.putExtra(EXTRA_IDEVENTO,idEvento);
+            intentVerEvento.putExtra(EXTRA_ACTUAL,actual);
+            intentVerEvento.putExtra(EXTRA_ID,id);
+
+            intentVerEvento.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|FLAG_ACTIVITY_NEW_TASK);
+            PendingIntent verEvento = PendingIntent.getActivity(
+                    contexto,
+                    id,
+                    intentVerEvento,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            remoteView.setOnClickPendingIntent(R.id.btnvernotevento,verEvento);
+
+            Intent intentPosponerEvento = new Intent(contexto, EventosReceiver.class);
+
+            intentPosponerEvento.setAction(ACCION_POSPONER);
+            intentPosponerEvento.putExtra(EXTRA_IDEVENTO,idEvento);
+            intentPosponerEvento.putExtra(EXTRA_ACTUAL,actual);
+            intentPosponerEvento.putExtra(EXTRA_ID,id);
+
+            PendingIntent posponerEvento = PendingIntent.getBroadcast(
+                    contexto,
+                    id,
+                    intentPosponerEvento,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            remoteView.setOnClickPendingIntent(R.id.btnposponernotevento,posponerEvento);
+
+            System.out.println("id = " + id);
+
+            // Estructurar la notificación
+            Notification.Builder builder =
+                    new Notification.Builder(contexto)
+                            .setDefaults(Notification.DEFAULT_LIGHTS)
+                            .setSmallIcon(iconId)
+                            .setContentTitle(titulo)
+                            .setContentText(contenido)
+                            .setWhen(evento.getLong(EVENTO_HORAINIEVENTO))
+                            .setColor(contexto.getResources().getColor(R.color.colorPrimary))
+                            .setTicker(titulo)
+                            .setVibrate(new long[] {100, 250, 100, 500})
+                            .setVisibility(Notification.VISIBILITY_PUBLIC)
+                            .setPriority(Notification.PRIORITY_HIGH)
+                            .setSound(Uri.parse("android.resource://" + contexto.getPackageName() + "/" + R.raw.popcorn))
+                            .setContent(remoteView)
+                            .setAutoCancel(true);
+
+            Notification notification = builder.build();
+            NotificationManager notifyMgrEvento = (NotificationManager) contexto.getSystemService(NOTIFICATION_SERVICE);
+
+            // Construir la notificación y emitirla
+            notifyMgrEvento.notify(id, notification);
+        }
+
+    }
+
 
     public static long fechaEntregaCalculada(double horastrabajos, double hlunes, double hmartes,
                                              double hmiercoles, double hjueves, double hviernes,
@@ -226,30 +645,39 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
 
     }
 
-    public static String getRealPathFromURI(Uri contentUri, ContentResolver resolver) {
-
-        Cursor cursor = null;
-        try {
-
-            String[] proj = {MediaStore.Images.Media.DATA};
-            cursor = resolver.query(contentUri, proj, null, null, null);
-            cursor.moveToFirst();
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            return cursor.getString(column_index);
-        } finally {
-
-            if (cursor != null) {
-
-                cursor.close();
-            }
-        }
-    }
-
-
-
-
     public static class Calculos implements  Constantes, TiposDetPartida{
 
+
+        public static ArrayList<Modelo> comprobarEventos(){
+
+            long hoy = JavaUtil.hoy();
+            ArrayList<Modelo> lista = new ArrayList<>();
+
+            ListaModelo listaEventos = new ListaModelo(CAMPOS_EVENTO);
+
+            for (Modelo evento : listaEventos.getLista()) {
+
+                long aviso = evento.getLong(EVENTO_AVISO);
+
+                if (aviso>0){
+
+                    if (hoy>=evento.getLong(EVENTO_FECHAINIEVENTO) +
+                                    evento.getLong(EVENTO_HORAINIEVENTO)-
+                                    evento.getLong(EVENTO_AVISO)){
+
+                         lista.add(evento);
+
+                    }
+
+                    System.out.println(JavaUtil.getDateTime(evento.getLong(EVENTO_FECHAINIEVENTO) +
+                            evento.getLong(EVENTO_HORAINIEVENTO)-
+                            evento.getLong(EVENTO_AVISO)));
+                    System.out.println("hoy = " + hoy);
+                }
+            }
+
+            return lista;
+        }
 
         public static double calculoPrecioHora() {
 
@@ -531,7 +959,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
                         case TIPOTAREA:
 
                             Modelo tarea = consulta.queryObject(CAMPOS_TAREA, id);
-                            if (tarea != null) {
+                            if (tarea != null && tarea.getLong(TAREA_TIMESTAMP)>detPartida.getLong(DETPARTIDABASE_TIMESTAMP)) {
                                 valores = new ContentValues();
                                 consulta.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_DESCRIPCION, tarea.getString(TAREA_DESCRIPCION));
                                 consulta.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_NOMBRE, tarea.getString(TAREA_NOMBRE));
@@ -545,7 +973,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
                         case TIPOPRODUCTO:
 
                             Modelo producto = consulta.queryObject(CAMPOS_PRODUCTO, id);
-                            if (producto != null) {
+                            if (producto != null  && producto.getLong(PRODUCTO_TIMESTAMP)>detPartida.getLong(DETPARTIDABASE_TIMESTAMP)) {
                                 valores = new ContentValues();
                                 consulta.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_DESCRIPCION, producto.getString(PRODUCTO_DESCRIPCION));
                                 consulta.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_NOMBRE, producto.getString(PRODUCTO_NOMBRE));
@@ -560,7 +988,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
                         case TIPOPARTIDA:
 
                             Modelo partida = consulta.queryObject(CAMPOS_PARTIDABASE, id);
-                            if (partida != null) {
+                            if (partida != null  && partida.getLong(PARTIDABASE_TIMESTAMP)>detPartida.getLong(DETPARTIDABASE_TIMESTAMP)) {
                                 valores = new ContentValues();
                                 consulta.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_DESCRIPCION, partida.getString(PARTIDABASE_DESCRIPCION));
                                 consulta.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_NOMBRE, partida.getString(PARTIDABASE_NOMBRE));
@@ -672,6 +1100,20 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
             return false;
         }
 
+        public static void sincronizarPartidasBase(){
+
+            ListaModelo listaPartidasBase = new ListaModelo(CAMPOS_PARTIDABASE);
+            if (listaPartidasBase.chech()){
+                for (Modelo partidasBase : listaPartidasBase.getLista()) {
+
+                    String id = partidasBase.getString(PARTIDABASE_ID_PARTIDABASE);
+                    sincronizarPartidaBase(id);
+
+                }
+
+            }
+        }
+
         public static boolean actualizarPartidaBase(String idPartidabase){
 
             double tiempoPartida= 0;
@@ -699,6 +1141,8 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
                     }
                 }
             }
+
+
             coste += (tiempoPartida * calculoCosteHora());
             importeTiempoPartida = tiempoPartida * CommonPry.hora;
             totalPartida = importeProductosPartida +importeTiempoPartida;
@@ -809,6 +1253,28 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
 
         }
 
+        public static void actualizarTarea(String idtarea){
+
+            ListaModelo listaDetPartidas = new ListaModelo(CAMPOS_DETPARTIDA,DETPARTIDA_ID_DETPARTIDA,idtarea);
+
+            double tiempo = 0;
+            int cont = 0;
+            for (Modelo detPartida : listaDetPartidas.getLista()) {
+
+                if (detPartida.getInt(DETPARTIDA_COMPLETA)==1){
+                    tiempo += detPartida.getDouble(DETPARTIDA_TIEMPOREAL);
+                    cont++;
+                }
+            }
+            if (cont>0){
+
+                ContentValues valores = new ContentValues();
+                double mediaTiempo = tiempo/cont;
+                consulta.putDato(valores,CAMPOS_TAREA,TAREA_TIEMPO,mediaTiempo);
+                consulta.updateRegistro(TABLA_TAREA,idtarea,valores);
+            }
+        }
+
         public static class Tareafechas extends AsyncTask<Void, Float, Integer> {
 
             @Override
@@ -848,6 +1314,28 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
             protected Integer doInBackground(String... strings) {
 
                 actualizarPresupuesto(strings[0]);
+                return null;
+            }
+
+        }
+
+        public static class TareaSincronizarPartidasBase extends AsyncTask<Void, Float, Integer> {
+
+            @Override
+            protected Integer doInBackground(Void... voids) {
+
+                sincronizarPartidasBase();
+                return null;
+            }
+
+        }
+
+        public static class TareaActualizarTarea extends AsyncTask<String, Float, Integer> {
+
+            @Override
+            protected Integer doInBackground(String... strings) {
+
+                actualizarTarea(strings[0]);
                 return null;
             }
 

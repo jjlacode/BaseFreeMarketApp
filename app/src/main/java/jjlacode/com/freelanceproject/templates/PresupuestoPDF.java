@@ -3,6 +3,7 @@ package jjlacode.com.freelanceproject.templates;
 
 import java.util.ArrayList;
 
+import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.Modelo;
 import jjlacode.com.freelanceproject.util.PdfUtils;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
@@ -24,7 +25,9 @@ public class PresupuestoPDF extends PdfUtils implements ContratoPry.Tablas {
         Modelo presupuesto = consulta.queryObject(CAMPOS_PROYECTO,idProyecto);
         ArrayList<Modelo> listaPartidas = consulta.queryListDetalle(CAMPOS_PARTIDA,idProyecto,TABLA_PROYECTO);
         abrirPdf(idProyecto);
-        addImagen(rutalogo, ALINEACION_IZQUIERDA,100,100);
+        if (rutalogo!=null) {
+            addImagen(rutalogo, ALINEACION_IZQUIERDA, 100, 100);
+        }
         setFuente(HELVETICA,38,BOLD,ROJO);
         addParrafo(ALINEACION_CENTRO,"PRESUPUESTO");
         setFuente(HELVETICA,22,BOLD,NEGRO);
@@ -48,7 +51,7 @@ public class PresupuestoPDF extends PdfUtils implements ContratoPry.Tablas {
 
             String[] partidatemp = {partida.getString(PARTIDA_NOMBRE),
                                     partida.getString(PARTIDA_CANTIDAD),
-                                    partida.getString(PARTIDA_PRECIO)};
+                                    JavaUtil.formatoMonedaLocal(partida.getDouble(PARTIDA_PRECIO))};
 
             lista.add(partidatemp);
         }

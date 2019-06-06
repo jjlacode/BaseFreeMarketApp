@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="altobtn">50dp</dimen>
+    <dimen name="altobtn">60dp</dimen>
+    <dimen name="contador">32sp</dimen>
+    <dimen name="texto">24sp</dimen>
+    <dimen name="texto_boton">22sp</dimen>
+    <dimen name="texto_doble">70dp</dimen>
+    <dimen name="texto_not">10sp</dimen>
 </resources>

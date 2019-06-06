@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/tvdescnot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="italic"
+        android:text="@string/descripcion_tipo_cliente" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnvernotevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boton_redondo_verde"
+            android:textColor="@color/Color_texto_titulos"
+            android:layout_weight="1"
+            android:text="@string/ver" />
+
+        <Button
+            android:id="@+id/btnposponernotevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boton_redondo_verde"
+            android:textColor="@color/Color_texto_titulos"
+            android:layout_weight="1"
+            android:text="@string/posponer" />
+
+        <Button
+            android:id="@+id/btndescartarrnotevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boton_redondo_verde"
+            android:textColor="@color/Color_texto_titulos"
+            android:layout_weight="1"
+            android:text="@string/completa" />
+    </LinearLayout>
+
+</LinearLayout>
+

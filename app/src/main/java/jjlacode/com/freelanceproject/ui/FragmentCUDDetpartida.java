@@ -2,7 +2,10 @@ package jjlacode.com.freelanceproject.ui;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +14,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.Chronometer;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,9 +38,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import jjlacode.com.freelanceproject.model.Categorias;
 import jjlacode.com.freelanceproject.model.Proveedores;
+import jjlacode.com.freelanceproject.util.AndroidUtil;
+import jjlacode.com.freelanceproject.util.CRUDutil;
 import jjlacode.com.freelanceproject.util.FragmentCUD;
 import jjlacode.com.freelanceproject.util.ImagenUtil;
 import jjlacode.com.freelanceproject.util.JavaUtil;
@@ -45,16 +55,23 @@ import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.CommonPry;
 
 public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Constantes,
-        ContratoPry.Tablas, CommonPry.TiposDetPartida {
+        ContratoPry.Tablas, CommonPry.TiposDetPartida, CommonPry.TiposEstados  {
 
     private EditText descripcion;
     private EditText precio;
     private EditText cantidad;
+    private TextView cantidadPartida;
     private EditText descProv;
     private TextView refprov;
     private TextView tipoDetPartida;
+    private TextView tiempoTotalDetPartida;
+    private Button btntrek;
+    private Button btntrekPausa;
+    private Button btntrekReset;
+    private TextView trek;
     private AutoCompleteTextView nombre;
-    private EditText tiempo;
+    private EditText tiempoDet;
+    private TextView ltiempoDet;
     private Button btnNuevaTarea;
     private Button btnNuevoProd;
     private RecyclerView rvDetpartida;
@@ -74,6 +91,22 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
     private AutoCompleteTextView autoProv;
     private String proveedor = TODOS;
     private String categoria = TODAS;
+    private ProgressBar progressBarPartida;
+    private ProgressBar progressBarPartida2;
+    private EditText completadaPartida;
+
+
+    private boolean trekOn;
+    private long contador;
+    Chronometer timer;
+    private long countUp;
+    private double completada;
+    private double tiempo;
+    private double tiemporeal;
+    private double cantidadTotal;
+    private CheckBox partida_completada;
+    private boolean trekOnpausa;
+
 
     public FragmentCUDDetpartida() {
         // Required empty public constructor
@@ -86,12 +119,18 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
         tipoDetPartida.setText(tipo.toUpperCase());
         refprov.setVisibility(View.GONE);
         precio.setVisibility(View.GONE);
-        tiempo.setVisibility(View.GONE);
+        tiempoDet.setVisibility(View.GONE);
+        ltiempoDet.setVisibility(View.GONE);
         descProv.setVisibility(View.GONE);
         btnNuevaTarea.setVisibility(View.GONE);
         btnNuevoProd.setVisibility(View.GONE);
         autoCat.setVisibility(View.GONE);
         autoProv.setVisibility(View.GONE);
+        completadaPartida.setVisibility(View.GONE);
+        progressBarPartida.setVisibility(View.GONE);
+        partida_completada.setVisibility(View.GONE);
+        btntrek.setVisibility(View.GONE);
+        trek.setVisibility(View.GONE);
 
     }
 
@@ -135,15 +174,56 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
 
         proyecto = (Modelo) bundle.getSerializable(TABLA_PROYECTO);
         partida = (Modelo) bundle.getSerializable(TABLA_PARTIDA);
-        if (bundle.containsKey(MODELO)) {
-            modelo = (Modelo) bundle.getSerializable(MODELO);
-            secuencia = bundle.getInt(SECUENCIA);
-            id = bundle.getString(ID);
-        }
-            secuenciaPartida = partida.getInt(PARTIDA_SECUENCIA);
-            idProyecto_Partida = partida.getString(PARTIDA_ID_PROYECTO);
-            tipo = bundle.getString(TIPO);
 
+        secuenciaPartida = partida.getInt(PARTIDA_SECUENCIA);
+        idProyecto_Partida = partida.getString(PARTIDA_ID_PROYECTO);
+        tipo = bundle.getString(TIPO);
+
+    }
+
+    public void cronometro (){
+
+        modelo = CRUDutil.setModelo(campos,id,secuencia);
+        contador = modelo.getLong(DETPARTIDA_CONTADOR);
+        completada = modelo.getDouble(DETPARTIDA_COMPLETADA);
+        cantidadTotal = partida.getDouble(PARTIDA_CANTIDAD);
+        tiemporeal = (modelo.getDouble(DETPARTIDA_TIEMPOREAL)*HORASLONG)/1000;
+        tiempo = (modelo.getDouble(DETPARTIDA_TIEMPO)*cantidadTotal*HORASLONG)/1000;
+
+        System.out.println("contador = " + contador);
+
+        if (contador==0) {
+            contador = SystemClock.elapsedRealtime();
+            valores = new ContentValues();
+            consulta.putDato(valores,campos,DETPARTIDA_CONTADOR,contador);
+            consulta.updateRegistroDetalle(tabla,id,secuencia,valores);
+            modelo = CRUDutil.setModelo(campos,id,secuencia);
+
+        }
+        timer.setBase(contador);
+
+        timer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener(){
+            @Override
+            public void onChronometerTick(Chronometer arg0) {
+                if (SystemClock.elapsedRealtime() > arg0.getBase()) {
+                    countUp = (SystemClock.elapsedRealtime() - arg0.getBase()) / 1000;
+                }else{
+                    countUp = (arg0.getBase() - SystemClock.elapsedRealtime()) / 1000;
+                }
+                String asText = JavaUtil.relojContador(countUp);
+                trek.setText(String.format(Locale.getDefault(),"%s",asText));
+                completada = (((tiemporeal*100)/tiempo)+((countUp*100)/tiempo));
+                AndroidUtil.bars(contexto,progressBarPartida,progressBarPartida2,completada,
+                        completadaPartida,trek,R.color.Color_contador_ok, R.color.Color_contador_acept,
+                        R.color.Color_contador_notok);
+
+                tiempoTotalDetPartida.setText(String.format(Locale.getDefault(),
+                        "%s %s %s %s %s", JavaUtil.getDecimales(((tiemporeal+countUp)/3600)),
+                        getString(R.string.horas), getString(R.string.de),
+                        JavaUtil.getDecimales(tiempo/3600), getString(R.string.horas)));
+            }
+        });
+        //timer.start();
     }
 
     @Override
@@ -153,7 +233,8 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
         tipoDetPartida.setText(tipo.toUpperCase());
         refprov.setVisibility(View.GONE);
         precio.setVisibility(View.GONE);
-        tiempo.setVisibility(View.GONE);
+        tiempoDet.setVisibility(View.GONE);
+        ltiempoDet.setVisibility(View.GONE);
         descProv.setVisibility(View.GONE);
         btnNuevaTarea.setVisibility(View.GONE);
         btnNuevoProd.setVisibility(View.GONE);
@@ -163,9 +244,89 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
         descripcion.setText(modelo.getString(DETPARTIDA_DESCRIPCION));
         precio.setText(modelo.getString(DETPARTIDA_PRECIO));
         cantidad.setText(modelo.getString(DETPARTIDA_CANTIDAD));
-        tiempo.setText(modelo.getString(DETPARTIDA_TIEMPO));
+        tiempoDet.setText(modelo.getString(DETPARTIDA_TIEMPO));
         descProv.setText(modelo.getString(DETPARTIDA_DESCUENTOPROV));
         refprov.setText(modelo.getString(DETPARTIDA_REFPROV));
+        completadaPartida.setVisibility(View.VISIBLE);
+        //labelCompletada.setVisibility(View.VISIBLE);
+        progressBarPartida.setVisibility(View.VISIBLE);
+        btntrek.setVisibility(View.VISIBLE);
+        btntrekPausa.setVisibility(View.GONE);
+        trek.setVisibility(View.GONE);
+        completada = modelo.getDouble(DETPARTIDA_COMPLETADA);
+        //completadaPartida.setText(String.format(Locale.getDefault(),
+        //        "%s %s",JavaUtil.getDecimales(completada),"% completa"));
+        tiemporeal = (modelo.getDouble(DETPARTIDA_TIEMPOREAL)*HORASLONG)/1000;
+        cantidadTotal = partida.getDouble(PARTIDA_CANTIDAD);
+        tiempo = ((modelo.getDouble(DETPARTIDA_TIEMPO)*cantidadTotal*HORASLONG))/1000;
+            tiempoTotalDetPartida.setText(String.format(Locale.getDefault(),
+                    "%s %s %s %s %s", JavaUtil.getDecimales(((tiemporeal+countUp)/3600)),
+                    getString(R.string.horas), getString(R.string.de),
+                    JavaUtil.getDecimales(tiempo/3600), getString(R.string.horas)));
+        rvDetpartida.setVisibility(View.GONE);
+        cantidadPartida.setText(String.format(Locale.getDefault(),
+                "%s %s",JavaUtil.getDecimales(cantidadTotal),getString(R.string.cant)));
+        AndroidUtil.bars(contexto,progressBarPartida,progressBarPartida2,completada,
+                completadaPartida,trek,R.color.Color_contador_ok, R.color.Color_contador_acept,
+                R.color.Color_contador_notok);
+
+        if (getTipoEstado(partida.getString(PARTIDA_ID_ESTADO))<=-1){//TPRESUPACEPTADO) {
+
+            progressBarPartida.setVisibility(View.GONE);
+            completadaPartida.setVisibility(View.GONE);
+            partida_completada.setVisibility(View.GONE);
+            btntrek.setVisibility(View.GONE);
+        }else{
+
+            progressBarPartida.setVisibility(View.VISIBLE);
+            completadaPartida.setVisibility(View.VISIBLE);
+            //labelCompletada.setVisibility(View.VISIBLE);
+            partida_completada.setVisibility(View.VISIBLE);
+
+            if (modelo.getInt(DETPARTIDA_COMPLETA) == 1) {
+                partida_completada.setChecked(true);
+                tiempoDet.setText(JavaUtil.getDecimales(modelo.getDouble(DETPARTIDA_TIEMPOREAL)));
+            } else {
+                partida_completada.setChecked(false);
+            }
+
+            if (tiempo > 0) {
+
+                trek.setVisibility(View.VISIBLE);
+                btntrek.setVisibility(View.VISIBLE);
+
+                if (modelo.getLong(DETPARTIDA_PAUSA)>0){
+
+                    btntrek.setText(getString(R.string.stop_trek));
+                    btntrekPausa.setVisibility(View.VISIBLE);
+                    btntrekPausa.setText(getString(R.string.reanudar_trek));
+                    trekOn = true;
+                    trekOnpausa = true;
+                    trek.setText(String.format(Locale.getDefault(),"%s %s",
+                            JavaUtil.getDecimales(((tiemporeal+countUp)/3600)),getString(R.string.horas)));
+
+                }else if (modelo.getLong(DETPARTIDA_CONTADOR) > 0) {
+                    btntrek.setText(getString(R.string.stop_trek));
+                    btntrekPausa.setVisibility(View.VISIBLE);
+                    trek.setText(String.format(Locale.getDefault(),"%s %s",
+                            JavaUtil.getDecimales(((tiemporeal+countUp)/3600)),getString(R.string.horas)));
+                    cronometro();
+                    timer.start();
+                    trekOn = true;
+                } else {
+                    btntrek.setText(getString(R.string.inicio_trek));
+                    trek.setText(String.format(Locale.getDefault(),"%s %s",
+                            JavaUtil.getDecimales(((tiemporeal+countUp)/3600)),getString(R.string.horas)));
+                    trekOn = false;
+                }
+            } else {
+                trek.setVisibility(View.GONE);
+                btntrek.setVisibility(View.GONE);
+            }
+        }
+
+
+
         if (tipo.equals(TIPOPRODUCTOPROV) && modelo.getString(DETPARTIDA_RUTAFOTO)!=null){
             imagenUtil = new ImagenUtil(contexto);
             path = modelo.getString(DETPARTIDA_RUTAFOTO);
@@ -174,7 +335,7 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
         else if (modelo.getString(DETPARTIDA_RUTAFOTO)!=null){
             imagenUtil = new ImagenUtil(contexto);
             path = modelo.getString(DETPARTIDA_RUTAFOTO);
-            imagenUtil.setImageUriCircle(modelo.getString(DETPARTIDA_RUTAFOTO),imagen);
+            imagenUtil.setImageUri(modelo.getString(DETPARTIDA_RUTAFOTO),imagen);
         }
 
     }
@@ -191,11 +352,12 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
         setAdaptadorAutoProv();
 
 
+        /*
         btnNuevaTarea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if (descripcion.getText()!=null && tiempo.getText()!=null && nombre.getText()!=null){
+                if (descripcion.getText()!=null && tiempoDet.getText()!=null && nombre.getText()!=null){
 
                     int cont = 0;
 
@@ -214,11 +376,11 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
                             valores = new ContentValues();
 
                             consulta.putDato(valores,CAMPOS_TAREA,TAREA_DESCRIPCION,descripcion.getText().toString());
-                            consulta.putDato(valores,CAMPOS_TAREA,TAREA_TIEMPO,tiempo.getText().toString());
+                            consulta.putDato(valores,CAMPOS_TAREA,TAREA_TIEMPO, tiempoDet.getText().toString());
                             consulta.putDato(valores,CAMPOS_TAREA,TAREA_NOMBRE,nombre.getText().toString());
                             consulta.putDato(valores,CAMPOS_TAREA,TAREA_RUTAFOTO,path);
 
-                            consulta.insertRegistro(TABLA_TAREA,valores);
+                            idDetPartida = consulta.idInsertRegistro(TABLA_TAREA,valores);
 
                             Toast.makeText(getContext(), "Nueva tarea guardada", Toast.LENGTH_SHORT).show();
 
@@ -260,7 +422,7 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
                             consulta.putDato(valores,CAMPOS_PRODUCTO,PRODUCTO_NOMBRE,nombre.getText().toString());
                             consulta.putDato(valores,CAMPOS_PRODUCTO,PRODUCTO_RUTAFOTO,path);
 
-                            consulta.insertRegistro(TABLA_PRODUCTO,valores);
+                            idDetPartida = consulta.idInsertRegistro(TABLA_PRODUCTO,valores);
 
                             Toast.makeText(getContext(), "Nuevo producto guardado", Toast.LENGTH_SHORT).show();
 
@@ -275,6 +437,8 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
             }
         });
 
+         */
+
         nombre.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -287,7 +451,8 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
                         idDetPartida = tarea.getString(TAREA_ID_TAREA);
                         nombre.setText(tarea.getString(TAREA_NOMBRE));
                         descripcion.setText(tarea.getString(TAREA_DESCRIPCION));
-                        tiempo.setText(tarea.getString(TAREA_TIEMPO));
+                        tiempoDet.setText(tarea.getString(TAREA_TIEMPO));
+                        cantidad.setEnabled(false);
 
                         if (tarea.getString(TAREA_RUTAFOTO) != null) {
                             imagen.setImageURI(tarea.getUri(TAREA_RUTAFOTO));
@@ -303,6 +468,8 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
                         nombre.setText(producto.getString(PRODUCTO_NOMBRE));
                         descripcion.setText(producto.getString(PRODUCTO_DESCRIPCION));
                         precio.setText(producto.getString(PRODUCTO_IMPORTE));
+                        cantidad.setEnabled(true);
+
                         if (producto.getString(PRODUCTO_RUTAFOTO) != null) {
                             imagen.setImageURI(producto.getUri(PRODUCTO_RUTAFOTO));
                             path = producto.getString(PRODUCTO_RUTAFOTO);
@@ -316,7 +483,7 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
                         nombre.setText(partida.getString(PARTIDABASE_NOMBRE));
                         descripcion.setText(partida.getString(PARTIDABASE_DESCRIPCION));
                         precio.setText(partida.getString(PARTIDABASE_PRECIO));
-                        tiempo.setText(partida.getString(PARTIDABASE_TIEMPO));
+                        tiempoDet.setText(partida.getString(PARTIDABASE_TIEMPO));
                         if (partida.getString(PARTIDABASE_RUTAFOTO) != null) {
                             imagen.setImageURI(partida.getUri(PARTIDABASE_RUTAFOTO));
                             path = partida.getString(PARTIDABASE_RUTAFOTO);
@@ -331,6 +498,8 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
                         descripcion.setText(prodprov.getDescripcion());
                         precio.setText(String.valueOf(prodprov.getPrecio()));
                         refprov.setText(prodprov.getRefprov());
+                        cantidad.setEnabled(true);
+
                         if (prodprov.getRutafoto() != null) {
 
                             setImagenFireStoreCircle(contexto,prodprov.getRutafoto(),imagen);
@@ -344,6 +513,212 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
 
         });
 
+        btntrek.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (trekOn) {
+                    btntrek.setText(getString(R.string.inicio_trek));
+                    btntrekPausa.setVisibility(View.GONE);
+
+                    valores = new ContentValues();
+                    consulta.putDato(valores,campos,DETPARTIDA_COMPLETADA,completada);
+                    consulta.putDato(valores,campos,DETPARTIDA_TIEMPOREAL,(((double)(tiemporeal+countUp)/3600)));
+                    trek.setText(String.format(Locale.getDefault(),"%s %s",
+                            JavaUtil.getDecimales(((tiemporeal+countUp)/3600)),getString(R.string.horas)));
+                    trekOn = false;
+                    timer.stop();
+                    consulta.putDato(valores,campos,DETPARTIDA_CONTADOR,0);
+                    int i = consulta.updateRegistroDetalle(tabla,id,secuencia,valores);
+                    modelo = consulta.queryObjectDetalle(campos,id,secuencia);
+
+                    System.out.println("contador actualizado = " + i);
+                    System.out.println("tiemporeal = " + tiemporeal);
+                    System.out.println("completada = " + completada);
+                }else{
+                    btntrek.setText(getString(R.string.stop_trek));
+                    btntrekPausa.setVisibility(View.VISIBLE);
+                    btntrekReset.setVisibility(View.VISIBLE);
+                    cronometro();
+                    timer.start();
+                    trekOn = true;
+                }
+
+            }
+        });
+
+        btntrekPausa.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (trekOn && !trekOnpausa) {
+                    btntrekPausa.setText(getString(R.string.reanudar_trek));
+
+                    valores = new ContentValues();
+                    consulta.putDato(valores,campos,DETPARTIDA_PAUSA,SystemClock.elapsedRealtime());
+                    consulta.putDato(valores,campos,DETPARTIDA_COMPLETADA,completada);
+                    consulta.putDato(valores,campos,DETPARTIDA_TIEMPOREAL,(((double)(tiemporeal+countUp)/3600)));
+                    trekOnpausa = true;
+                    timer.stop();
+
+                    int i = consulta.updateRegistroDetalle(tabla,id,secuencia,valores);
+                    modelo = CRUDutil.setModelo(campos,id,secuencia);
+
+                    System.out.println("contador actualizado = " + i);
+                    System.out.println("tiemporeal = " + tiemporeal);
+                    System.out.println("completada = " + completada);
+                }else if (trekOn){
+                    btntrekPausa.setText(getString(R.string.pausa_trek));
+                    modelo = CRUDutil.setModelo(campos,id,secuencia);
+                    contador = modelo.getLong(DETPARTIDA_CONTADOR);
+                    long pausa = modelo.getLong(DETPARTIDA_PAUSA);
+                    long contadortemp = SystemClock.elapsedRealtime() - (pausa - contador);
+                    valores = new ContentValues();
+                    consulta.putDato(valores,campos,DETPARTIDA_PAUSA,0);
+                    consulta.putDato(valores, campos, DETPARTIDA_CONTADOR, contadortemp);
+                    int i = consulta.updateRegistroDetalle(tabla,id,secuencia,valores);
+                    modelo = CRUDutil.setModelo(campos,id,secuencia);
+                    cronometro();
+                    timer.start();
+                    trekOnpausa = false;
+                }
+
+            }
+        });
+
+        btntrekReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                    btntrek.setText(getString(R.string.inicio_trek));
+                    btntrekPausa.setVisibility(View.GONE);
+
+                    valores = new ContentValues();
+                    consulta.putDato(valores,campos,DETPARTIDA_COMPLETADA,0);
+                    consulta.putDato(valores,campos,DETPARTIDA_TIEMPOREAL,0);
+                    trek.setText(String.format(Locale.getDefault(),"%s %s",
+                            JavaUtil.getDecimales(0),getString(R.string.horas)));
+                    trekOn = false;
+                    timer.stop();
+                    consulta.putDato(valores,campos,DETPARTIDA_CONTADOR,0);
+                    int i = consulta.updateRegistroDetalle(tabla,id,secuencia,valores);
+                    modelo = consulta.queryObjectDetalle(campos,id,secuencia);
+                    completadaPartida.setText("0");
+
+                    System.out.println("contador actualizado = " + i);
+                    System.out.println("tiemporeal = " + tiemporeal);
+                    System.out.println("completada = " + completada);
+
+            }
+        });
+
+        partida_completada.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (contador > 0 && isChecked) {
+
+                    valores = new ContentValues();
+                    consulta.putDato(valores, campos, DETPARTIDA_COMPLETADA, completada);
+                    consulta.putDato(valores, campos, DETPARTIDA_TIEMPOREAL, (((double) (tiemporeal + countUp) / 3600)));
+                    consulta.putDato(valores, campos, DETPARTIDA_CONTADOR, 0);
+                    consulta.updateRegistroDetalle(tabla, id, secuencia, valores);
+                    modelo = consulta.queryObjectDetalle(campos, id, secuencia);
+                    timer.stop();
+                    trek.setVisibility(View.GONE);
+                    btntrek.setVisibility(View.GONE);
+                } else {
+
+                    trek.setVisibility(View.VISIBLE);
+                    btntrek.setVisibility(View.VISIBLE);
+                }
+            }
+
+        });
+
+    }
+
+    private void nuevaTarea(){
+
+        if (descripcion.getText()!=null && tiempoDet.getText()!=null && nombre.getText()!=null){
+
+            int cont = 0;
+
+            ContentValues valorestarea = new ContentValues();
+
+            consulta.putDato(valorestarea,CAMPOS_TAREA,TAREA_DESCRIPCION,descripcion.getText().toString());
+            consulta.putDato(valorestarea,CAMPOS_TAREA,TAREA_TIEMPO, tiempoDet.getText().toString());
+            consulta.putDato(valorestarea,CAMPOS_TAREA,TAREA_NOMBRE,nombre.getText().toString());
+            consulta.putDato(valorestarea,CAMPOS_TAREA,TAREA_RUTAFOTO,path);
+
+            if (lista!=null && lista.size()>0) {
+
+                for (Modelo tarea : lista) {
+                    if (tarea.getString(TAREA_NOMBRE).equals(nombre.getText().toString())) {
+                        consulta.updateRegistro(TABLA_TAREA,tarea.getString(TAREA_ID_TAREA),valorestarea);
+                        Toast.makeText(getContext(), "tarea actualizada", Toast.LENGTH_SHORT).show();
+                        cont++;
+                    }
+                }
+            }
+            if (cont == 0) {
+
+                try {
+
+                    idDetPartida = consulta.idInsertRegistro(TABLA_TAREA,valorestarea);
+
+                    Toast.makeText(getContext(), "Nueva tarea guardada", Toast.LENGTH_SHORT).show();
+
+                    rv();
+
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), "Error al guardar tarea", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        }
+    }
+
+    private void nuevoProducto(){
+
+        if (descripcion.getText()!=null && precio.getText()!=null && nombre.getText()!=null){
+
+            int cont = 0;
+
+            ContentValues valoresprod = new ContentValues();
+
+            consulta.putDato(valoresprod,CAMPOS_PRODUCTO,PRODUCTO_DESCRIPCION,descripcion.getText().toString());
+            consulta.putDato(valoresprod,CAMPOS_PRODUCTO,PRODUCTO_IMPORTE,precio.getText().toString());
+            consulta.putDato(valoresprod,CAMPOS_PRODUCTO,PRODUCTO_NOMBRE,nombre.getText().toString());
+            consulta.putDato(valoresprod,CAMPOS_PRODUCTO,PRODUCTO_RUTAFOTO,path);
+
+            if (lista!=null && lista.size()>0) {
+
+                for (Modelo producto : lista) {
+                    if (producto.getString(PRODUCTO_NOMBRE).equals(nombre.getText().toString())) {
+                        consulta.updateRegistro(TABLA_PRODUCTO,producto.getString(PRODUCTO_ID_PRODUCTO),valoresprod);
+                        Toast.makeText(getContext(), "producto actualizdo", Toast.LENGTH_SHORT).show();
+                        cont++;
+                    }
+                }
+            }
+            if (cont == 0) {
+
+                try {
+
+
+                    idDetPartida = consulta.idInsertRegistro(TABLA_PRODUCTO,valoresprod);
+
+                    Toast.makeText(getContext(), "Nuevo producto guardado", Toast.LENGTH_SHORT).show();
+
+                    rv();
+
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), "Error al guardar producto", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        }
     }
 
     @Override
@@ -355,7 +730,7 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
     @Override
     protected void setLayout() {
 
-        layout = R.layout.fragment_cud_detpartida;
+        layoutCuerpo = R.layout.fragment_cud_detpartida;
 
     }
 
@@ -368,23 +743,32 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
         descripcion = view.findViewById(R.id.etdesccdetpartida);
         precio = view.findViewById(R.id.etpreciocdetpartida);
         cantidad = view.findViewById(R.id.etcantcdetpartida);
+        cantidadPartida = view.findViewById(R.id.cantidaddetpartida);
         nombre = view.findViewById(R.id.etnomcdetpartida);
-        tiempo = view.findViewById(R.id.ettiempocdetpartida);
+        tiempoDet = view.findViewById(R.id.ettiempocdetpartida);
+        ltiempoDet = view.findViewById(R.id.ltiempodetpartida);
+        tiempoTotalDetPartida = view.findViewById(R.id.tvtiempototaldetpartida);
         imagen = view.findViewById(R.id.imgcdetpartida);
         refprov = view.findViewById(R.id.tvrefprovcdetpartida);
         descProv = view.findViewById(R.id.etdescprovcdetpartida);
         tipoDetPartida = view.findViewById(R.id.tvtipocdetpartida);
-        btnsave = view.findViewById(R.id.detpartida_c_btn_save);
-        btndelete = view.findViewById(R.id.detpartida_c_btn_delete);
-        btnback = view.findViewById(R.id.detpartida_c_btn_back);
         autoCat = view.findViewById(R.id.autocat);
         autoProv = view.findViewById(R.id.autoprov);
-
+        partida_completada = view.findViewById(R.id.cbox_hacer_detpartida_completa);
+        btntrek = view.findViewById(R.id.btn_trek);
+        btntrekPausa = view.findViewById(R.id.btn_trek_pausa);
+        btntrekReset = view.findViewById(R.id.btn_trek_reset);
+        progressBarPartida = view.findViewById(R.id.progressBardetpartida);
+        progressBarPartida2 = view.findViewById(R.id.progressBar2detpartida);
+        trek = view.findViewById(R.id.tvtrek);
+        timer = (Chronometer) view.findViewById(R.id.chronocrud);
+        completadaPartida = view.findViewById(R.id.etcompletadadetpartida);
+        cantidad.setText("1");
+        cantidad.setEnabled(false);
 
     }
 
     private void rv(){
-
 
         imagenUtil = new ImagenUtil(contexto);
 
@@ -395,8 +779,11 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
                 rvDetpartida.setLayoutManager(new LinearLayoutManager(getContext()));
                 rvDetpartida.setHasFixedSize(true);
 
-                tiempo.setVisibility(View.VISIBLE);
-                btnNuevaTarea.setVisibility(View.VISIBLE);
+                tiempoDet.setVisibility(View.VISIBLE);
+                ltiempoDet.setVisibility(View.VISIBLE);
+                //btnNuevaTarea.setVisibility(View.VISIBLE);
+                cantidad.setVisibility(View.GONE);
+                cantidadPartida.setVisibility(View.VISIBLE);
                 lista = consulta.queryList(CAMPOS_TAREA);
                 AdaptadorTareas adaptadorTareas = new AdaptadorTareas(lista);
                 rvDetpartida.setAdapter(adaptadorTareas);
@@ -408,7 +795,7 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
                         Modelo tarea = consulta.queryObject(CAMPOS_TAREA, idDetPartida);
                         nombre.setText(tarea.getString(TAREA_NOMBRE));
                         descripcion.setText(tarea.getString(TAREA_DESCRIPCION));
-                        tiempo.setText(tarea.getString(TAREA_TIEMPO));
+                        tiempoDet.setText(tarea.getString(TAREA_TIEMPO));
                         if (tarea.getString(TAREA_RUTAFOTO) != null) {
                             path = tarea.getString(TAREA_RUTAFOTO);
                             imagenUtil.setImageUriCircle(path,imagen);
@@ -423,7 +810,8 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
                 rvDetpartida.setHasFixedSize(true);
 
                 precio.setVisibility(View.VISIBLE);
-                btnNuevoProd.setVisibility(View.VISIBLE);
+                //btnNuevoProd.setVisibility(View.VISIBLE);
+                cantidad.setVisibility(View.VISIBLE);
                 lista = consulta.queryList(CAMPOS_PRODUCTO);
                 AdaptadorProducto adaptadorProducto = new AdaptadorProducto(lista);
                 rvDetpartida.setAdapter(adaptadorProducto);
@@ -451,9 +839,9 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
 
                 rvDetpartida.setLayoutManager(new LinearLayoutManager(getContext()));
                 rvDetpartida.setHasFixedSize(true);
-
+                cantidad.setVisibility(View.VISIBLE);
                 precio.setVisibility(View.VISIBLE);
-                tiempo.setVisibility(View.VISIBLE);
+                tiempoDet.setVisibility(View.VISIBLE);
                 lista = consulta.queryList(CAMPOS_PARTIDABASE);
                 AdaptadorPartida adaptadorPartida = new AdaptadorPartida(lista);
                 rvDetpartida.setAdapter(adaptadorPartida);
@@ -487,9 +875,7 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
                 descProv.setVisibility(View.VISIBLE);
                 autoCat.setVisibility(View.VISIBLE);
                 autoProv.setVisibility(View.VISIBLE);
-
-
-
+                cantidad.setVisibility(View.VISIBLE);
 
                 listaProdProv = new ArrayList<>();
 
@@ -629,29 +1015,45 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
 
         consulta.putDato(valores,CAMPOS_DETPARTIDA,DETPARTIDA_NOMBRE,nombre.getText().toString());
         consulta.putDato(valores,CAMPOS_DETPARTIDA,DETPARTIDA_DESCRIPCION,descripcion.getText().toString());
-        consulta.putDato(valores,CAMPOS_DETPARTIDA,DETPARTIDA_CANTIDAD,cantidad.getText().toString());
+        if (tipo.equals(TIPOTAREA)){
+            consulta.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_CANTIDAD, 1);
+
+        }else {
+            consulta.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_CANTIDAD, cantidad.getText().toString());
+        }
         consulta.putDato(valores,CAMPOS_DETPARTIDA,DETPARTIDA_RUTAFOTO,path);
         consulta.putDato(valores,CAMPOS_DETPARTIDA,DETPARTIDA_ID_DETPARTIDA,idDetPartida);
         consulta.putDato(valores,CAMPOS_DETPARTIDA,DETPARTIDA_ID_PARTIDA, id);
         consulta.putDato(valores,CAMPOS_DETPARTIDA,DETPARTIDA_TIPO,tipo);
+        consulta.putDato(valores,campos,DETPARTIDA_CONTADOR,contador);
+
+
+        if (partida_completada.isChecked()){
+            consulta.putDato(valores,campos,DETPARTIDA_COMPLETA,1);
+        }else{
+            consulta.putDato(valores,campos,DETPARTIDA_COMPLETA,0);
+
+        }
 
         switch (tipo){
 
             case TIPOTAREA:
 
-                consulta.putDato(valores,CAMPOS_DETPARTIDA,DETPARTIDA_TIEMPO,tiempo.getText().toString());
+                nuevaTarea();
+                consulta.putDato(valores,CAMPOS_DETPARTIDA,DETPARTIDA_TIEMPO, tiempoDet.getText().toString());
 
                 break;
 
             case TIPOPRODUCTO:
 
+                nuevoProducto();
                 consulta.putDato(valores,CAMPOS_DETPARTIDA,DETPARTIDA_PRECIO,precio.getText().toString());
 
                 break;
 
             case TIPOPARTIDA:
 
-                consulta.putDato(valores,CAMPOS_DETPARTIDABASE,DETPARTIDABASE_TIEMPO,tiempo.getText().toString());
+                consulta.putDato(valores,CAMPOS_DETPARTIDABASE,DETPARTIDABASE_TIEMPO, tiempoDet.getText().toString());
                 consulta.putDato(valores,CAMPOS_DETPARTIDABASE,DETPARTIDABASE_PRECIO,precio.getText().toString());
 
                 break;
@@ -666,15 +1068,33 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
 
         }
 
+        CommonPry.Calculos.actualizarPartidaProyecto(id);
 
     }
 
-    protected void cambiarFragment(){
+    private int getTipoEstado(String idEstado){
+
+        if (idEstado!=null) {
+
+            ArrayList<Modelo> listaEstados = consulta.queryList(CAMPOS_ESTADO, null, null);
+
+            for (Modelo estado : listaEstados) {
+
+                if (estado.getString(ESTADO_ID_ESTADO).equals(idEstado)) {
+
+                    return estado.getInt(ESTADO_TIPOESTADO);
+                }
+
+            }
+        }
+        return 0;
+    }
+
+    protected boolean onBack(){
 
         bundle = new Bundle();
         new CommonPry.Calculos.TareaActualizaProy().execute(idProyecto_Partida);
         partida = consulta.queryObjectDetalle(CAMPOS_PARTIDA,idProyecto_Partida,secuenciaPartida);
-        CommonPry.Calculos.actualizarPartidaProyecto(id);
         bundle.putSerializable(MODELO,partida);
         bundle.putSerializable(TABLA_PROYECTO,proyecto);
         bundle.putString(TIPO, tipo);
@@ -684,6 +1104,19 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
         bundle.putInt(SECUENCIA,secuenciaPartida);
         icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDPartidaProyecto());
         bundle = null;
+
+        return true;
+    }
+
+    @Override
+    protected boolean update() {
+        if (super.update()){
+            if (tipo.equals(TIPOTAREA)){
+                new CommonPry.Calculos.TareaActualizarTarea().execute(idDetPartida);
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override

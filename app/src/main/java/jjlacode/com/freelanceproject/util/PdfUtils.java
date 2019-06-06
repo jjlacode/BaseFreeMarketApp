@@ -38,6 +38,7 @@ import java.util.ArrayList;
 
 import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.VISORPDF;
 import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.VISORPDFMAIL;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ACTUAL;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ORIGEN;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.SUBTITULO;
 
@@ -176,7 +177,7 @@ public class PdfUtils extends FragmentBase {
             //bundle = new Bundle();
             bundle.putString(SUBTITULO,bundle.getString(ORIGEN));
             bundle.putString("path", archivoPDF.getAbsolutePath());
-            bundle.putString(ORIGEN,VISORPDF);
+            bundle.putString(ACTUAL,VISORPDF);
             icFragmentos.enviarBundleAFragment(bundle, new VisorPDF());
             Toast.makeText(context,"Si existe archivo PDF para LEER",Toast.LENGTH_LONG).show();
         }
@@ -195,9 +196,9 @@ public class PdfUtils extends FragmentBase {
             bundle.putString("email",email);
             bundle.putString("asunto",asunto);
             bundle.putString("texto",texto);
-            bundle.putString("uri", fileUri.toString());
+            bundle.putString("uri", getUriArchivo().toString());
             bundle.putString("path", archivoPDF.getAbsolutePath());
-            bundle.putString(ORIGEN,VISORPDFMAIL);
+            bundle.putString(ACTUAL,VISORPDFMAIL);
             icFragmentos.enviarBundleAFragment(bundle, new VisorPDFEmail());
             Toast.makeText(context,"Si existe archivo PDF para Enviar",Toast.LENGTH_LONG).show();
         }
@@ -213,7 +214,7 @@ public class PdfUtils extends FragmentBase {
         buscarPDF();
         if(fPDF==1) {
             bundle = new Bundle();
-            bundle.putString("uri", fileUri.toString());
+            bundle.putString("uri", getUriArchivo().toString());
             bundle.putString("path", archivoPDF.getAbsolutePath());
             bundle.putString(ORIGEN,"visor pdf - compartir");
             icFragmentos.enviarBundleAFragment(bundle, new VisorPDF());
@@ -350,7 +351,9 @@ public class PdfUtils extends FragmentBase {
 
         Bitmap bitmap = BitmapFactory.decodeFile(rutafoto);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG,100, stream);
+        if (bitmap!=null) {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        }
         Image imagen = null;
         try {
             imagen = Image.getInstance(stream.toByteArray());

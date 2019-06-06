@@ -205,7 +205,11 @@ public class ImagenUtil {
 
     public void setImageUri(String uri, ImageView imagen){
 
-        Glide.with(context).load(uri).into(imagen);
+        RequestOptions options = new RequestOptions()
+                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
+                .error(R.drawable.ic_add_a_photo_black_24dp);
+
+        Glide.with(context).load(uri).apply(options).into(imagen);
     }
 
 

@@ -17,4 +17,14 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="ProgressBarStyleAcept">
+        <item name="colorAccent">@color/Color_contador_acept</item>
+    </style>
+    <style name="ProgressBarStyleOk">
+        <item name="colorAccent">@color/Color_contador_ok</item>
+    </style>
+    <style name="ProgressBarStyleNotok">
+        <item name="colorAccent">@color/Color_contador_notok</item>
+    </style>
+
 </resources>

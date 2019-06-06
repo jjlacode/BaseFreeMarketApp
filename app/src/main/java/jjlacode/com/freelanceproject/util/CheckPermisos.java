@@ -18,13 +18,15 @@ public class CheckPermisos extends Fragment {
 
     private boolean valido = false;
     private Context contexto;
-    Activity activity = getActivity();
+    MainActivityBase activity = new MainActivityBase();
 
     public CheckPermisos(Context context) {
         this.contexto = context;
     }
 
     public boolean check(String permisoSolicitado){
+
+        valido = false;
 
         if (validarPermisos(permisoSolicitado)) {valido = true;}
 

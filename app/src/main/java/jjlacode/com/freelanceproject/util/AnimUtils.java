@@ -20,6 +20,8 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
 import java.io.Serializable;
 
+import jjlacode.com.freelanceproject.R;
+
 
 public final class AnimUtils {
 
@@ -41,8 +43,7 @@ public final class AnimUtils {
                                        int oldBottom) {
                 v.removeOnLayoutChangeListener(this);
 
-                Animation anim = AnimationUtils.loadAnimation(context,
-                        jjlacode.com.freelanceproject.R.anim.slide_in_left);
+                Animation anim = AnimationUtils.loadAnimation(context,R.anim.slide_in_left);
                 anim.setDuration(duration);
                 v.startAnimation(anim);
 
@@ -62,7 +63,7 @@ public final class AnimUtils {
                                    final Dismissible.OnDismissedListener listener,
                                    final long duration) {
         Animation anim =
-                AnimationUtils.loadAnimation(context, jjlacode.com.freelanceproject.R.anim.slide_out_left);
+                AnimationUtils.loadAnimation(context, R.anim.slide_out_left);
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -350,7 +351,7 @@ public final class AnimUtils {
      * @param v animated view
      */
     public static void shakeAnimate(Context context, View v){
-        Animation animation = AnimationUtils.loadAnimation(context, jjlacode.com.freelanceproject.R.anim.shake);
+        Animation animation = AnimationUtils.loadAnimation(context, R.anim.shake);
         v.startAnimation(animation);
     }
 

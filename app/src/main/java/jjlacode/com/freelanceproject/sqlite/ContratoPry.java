@@ -117,16 +117,20 @@ public class ContratoPry implements JavaUtil.Constantes {
 
         String PARTIDA_ID_PROYECTO = "id_proyecto_partida";
         String PARTIDA_ID_PARTIDA = "id_partida";
+        String PARTIDA_ID_PARTIDABASE = "partida_id_partidabase";
         String PARTIDA_SECUENCIA = "secuencia";
         String PARTIDA_ID_ESTADO = "id_estado_partida";
         String PARTIDA_DESCRIPCION = "descripcion_partida";
         String PARTIDA_NOMBRE = "nombre_partida";
         String PARTIDA_CANTIDAD = "cantidad_partida";
         String PARTIDA_TIEMPO = "tiempo_partida";
+        String PARTIDA_TIEMPOREAL = "tiemporeal_partida";
+        String PARTIDA_CONTADOR = "contador_partida";
         String PARTIDA_PRECIOHORA = "preciohora_partida";
         String PARTIDA_PRECIO = "precio_partida";
         String PARTIDA_COSTE = "coste_partida";
         String PARTIDA_COMPLETADA = "completada_partida";
+        String PARTIDA_COMPLETA = "completa_partida";
         String PARTIDA_RUTAFOTO = "rutafoto_partida";
         String PARTIDA_TIMESTAMP = "timestamp";
         //REFERENCIAS
@@ -141,6 +145,11 @@ public class ContratoPry implements JavaUtil.Constantes {
         String DETPARTIDA_NOMBRE = "nombre_detpartida";
         String DETPARTIDA_CANTIDAD = "cantidad_detpartida";
         String DETPARTIDA_TIEMPO = "tiempo_detpartida";
+        String DETPARTIDA_TIEMPOREAL = "tiemporeal_detpartida";
+        String DETPARTIDA_CONTADOR = "contador_detpartida";
+        String DETPARTIDA_PAUSA = "pausa_detpartida";
+        String DETPARTIDA_COMPLETADA = "completada_partida";
+        String DETPARTIDA_COMPLETA = "completa_partida";
         String DETPARTIDA_PRECIO = "precio_detpartida";
         String DETPARTIDA_BENEFICIO = "beneficio_detpartida";
         String DETPARTIDA_DESCUENTOPROV = "descuentoprov_detpartida";
@@ -150,6 +159,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         String DETPARTIDA_TIMESTAMP = "timestamp";
 
         String PARTIDABASE_ID_PARTIDABASE = "id_partidabase";
+        String PARTIDABASE_ID_PARTIDAORIGEN = "partidabase_id_partidaorigen";
         String PARTIDABASE_DESCRIPCION = "descripcion_partidabase";
         String PARTIDABASE_NOMBRE = "nombre_partidabase";
         String PARTIDABASE_TIEMPO = "tiempo_partidabase";
@@ -238,9 +248,13 @@ public class ContratoPry implements JavaUtil.Constantes {
         String EVENTO_HORAINIEVENTOF = "horainieventof";
         String EVENTO_HORAFINEVENTOF = "horafineventof";
         String EVENTO_AVISO = "aviso_evento";
+        String EVENTO_NOTIFICADO = "notificado_evento";
         String EVENTO_TELEFONO = "telefono_evento";
         String EVENTO_LUGAR = "lugar_evento";
         String EVENTO_EMAIL = "email_evento";
+        String EVENTO_ASUNTO = "asunto_evento";
+        String EVENTO_MENSAJE = "mensaje_evento";
+        String EVENTO_RUTAADJUNTO = "rutaadjunto_evento";
         String EVENTO_PROYECTOREL = "proyectorel";
         String EVENTO_NOMPROYECTOREL = "nomproyectorel";
         String EVENTO_CLIENTEREL = "clienterel";
@@ -358,19 +372,22 @@ public class ContratoPry implements JavaUtil.Constantes {
                 ESTADO_TIPOESTADO, "INTEGER NON NULL",INT
         };
 
-        String[] CAMPOS_PARTIDA = {"44", TABLA_PARTIDA,
+        String[] CAMPOS_PARTIDA = {"53", TABLA_PARTIDA,
                 PARTIDA_ID_PROYECTO, String.format("TEXT NON NULL %s", ID_PROYECTO),STRING,
                 PARTIDA_ID_PARTIDA, "TEXT NON NULL UNIQUE",STRING,
+                PARTIDA_ID_PARTIDABASE, "TEXT",STRING,
                 PARTIDA_SECUENCIA, "INTEGER NON NULL",INT,
                 PARTIDA_ID_ESTADO, String.format("TEXT NON NULL %s", ID_ESTADO),STRING,
                 PARTIDA_DESCRIPCION, "TEXT NON NULL",STRING,
                 PARTIDA_NOMBRE, "TEXT NON NULL",STRING,
                 PARTIDA_CANTIDAD, "REAL NON NULL DEFAULT 0",DOUBLE,
                 PARTIDA_TIEMPO, "REAL NON NULL DEFAULT 0",DOUBLE,
+                PARTIDA_TIEMPOREAL, "REAL NON NULL DEFAULT 0",DOUBLE,
                 PARTIDA_PRECIOHORA, "REAL NON NULL DEFAULT 0",DOUBLE,
                 PARTIDA_PRECIO, "REAL NON NULL DEFAULT 0",DOUBLE,
                 PARTIDA_COSTE, "REAL NON NULL DEFAULT 0",DOUBLE,
-                PARTIDA_COMPLETADA, "INTEGER NON NULL DEFAULT 0",INT,
+                PARTIDA_COMPLETADA, "REAL NON NULL DEFAULT 0",DOUBLE,
+                PARTIDA_COMPLETA, "INTEGER NON NULL DEFAULT 0", INT,
                 PARTIDA_RUTAFOTO, "TEXT",STRING,
                 PARTIDA_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG,
                 //Campos referencias
@@ -378,7 +395,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PARTIDA_TIPO_ESTADO, NULL,INT
         };
 
-        String[] CAMPOS_DETPARTIDA = {"44", TABLA_DETPARTIDA,
+        String[] CAMPOS_DETPARTIDA = {"59", TABLA_DETPARTIDA,
                 DETPARTIDA_ID_PARTIDA, String.format("TEXT NON NULL %s", ID_PARTIDA),STRING,
                 DETPARTIDA_SECUENCIA, "INTEGER NON NULL",INT,
                 DETPARTIDA_ID_DETPARTIDA,"TEXT",STRING,
@@ -386,6 +403,11 @@ public class ContratoPry implements JavaUtil.Constantes {
                 DETPARTIDA_DESCRIPCION,"TEXT NON NULL",STRING,
                 DETPARTIDA_CANTIDAD, "REAL NON NULL DEFAULT 0",DOUBLE,
                 DETPARTIDA_TIEMPO, "REAL NON NULL DEFAULT 0",DOUBLE,
+                DETPARTIDA_TIEMPOREAL, "REAL NON NULL DEFAULT 0",DOUBLE,
+                DETPARTIDA_CONTADOR, "INTEGER NON NULL DEFAULT 0",LONG,
+                DETPARTIDA_PAUSA, "INTEGER NON NULL DEFAULT 0",LONG,
+                DETPARTIDA_COMPLETADA, "REAL NON NULL DEFAULT 0",DOUBLE,
+                DETPARTIDA_COMPLETA, "INTEGER NON NULL DEFAULT 0", INT,
                 DETPARTIDA_PRECIO, "REAL NON NULL DEFAULT 0",DOUBLE,
                 DETPARTIDA_BENEFICIO, "REAL NON NULL DEFAULT 0",DOUBLE,
                 DETPARTIDA_DESCUENTOPROV, "REAL NON NULL DEFAULT 0",DOUBLE,
@@ -396,8 +418,9 @@ public class ContratoPry implements JavaUtil.Constantes {
 
         };
 
-        String[] CAMPOS_PARTIDABASE = {"26", TABLA_PARTIDABASE,
+        String[] CAMPOS_PARTIDABASE = {"29", TABLA_PARTIDABASE,
                 PARTIDABASE_ID_PARTIDABASE, "TEXT NON NULL UNIQUE",STRING,
+                PARTIDABASE_ID_PARTIDAORIGEN, "TEXT NON NULL UNIQUE",STRING,
                 PARTIDABASE_DESCRIPCION, "TEXT NON NULL",STRING,
                 PARTIDABASE_NOMBRE, "TEXT NON NULL",STRING,
                 PARTIDABASE_TIEMPO, "REAL NON NULL DEFAULT 0",DOUBLE,
@@ -488,7 +511,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 AMORTIZACION_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG
         };
 
-        String[] CAMPOS_EVENTO = {"71", TABLA_EVENTO,
+        String[] CAMPOS_EVENTO = {"83", TABLA_EVENTO,
                 EVENTO_ID_EVENTO, "TEXT NON NULL UNIQUE",STRING,
                 EVENTO_IDMULTI, "TEXT NON NULL",STRING,
                 EVENTO_DESCRIPCION, "TEXT NON NULL",STRING,
@@ -501,16 +524,20 @@ public class ContratoPry implements JavaUtil.Constantes {
                 EVENTO_HORAINIEVENTOF, "TEXT",STRING,
                 EVENTO_HORAFINEVENTOF, "TEXT",STRING,
                 EVENTO_AVISO, "INTEGER NON NULL DEFAULT 0",LONG,
+                EVENTO_NOTIFICADO, "INTEGER NON NULL DEFAULT 0",INT,
                 EVENTO_TELEFONO, "TEXT",STRING,
                 EVENTO_LUGAR, "TEXT",STRING,
                 EVENTO_EMAIL, "TEXT",STRING,
+                EVENTO_ASUNTO, "TEXT",STRING,
+                EVENTO_MENSAJE, "TEXT",STRING,
+                EVENTO_RUTAADJUNTO, "TEXT",STRING,
                 EVENTO_PROYECTOREL, "TEXT",STRING,
                 EVENTO_NOMPROYECTOREL, "TEXT",STRING,
                 EVENTO_CLIENTEREL, "TEXT",STRING,
                 EVENTO_NOMCLIENTEREL, "TEXT",STRING,
                 EVENTO_TIPOEVENTO, "TEXT NON NULL",STRING,
                 EVENTO_RUTAFOTO, "TEXT",STRING,
-                EVENTO_COMPLETADA, "INTEGER NON NULL DEFAULT 0",INT,
+                EVENTO_COMPLETADA, "REAL NON NULL DEFAULT 0",DOUBLE,
                 EVENTO_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG,
         };
 

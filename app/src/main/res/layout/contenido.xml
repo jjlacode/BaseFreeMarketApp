@@ -4,6 +4,11 @@
     android:layout_height="match_parent"
     android:id="@+id/contenedor">
 
+    <Chronometer android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/chronocrud"
+        android:visibility="gone"/>
+
     <LinearLayout
         android:id="@+id/layout_cabecera"
         android:orientation="vertical"
@@ -11,8 +16,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
-
-
 
     </LinearLayout>
 

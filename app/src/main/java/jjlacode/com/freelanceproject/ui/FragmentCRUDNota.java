@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import jjlacode.com.freelanceproject.util.AppActivity;
 import jjlacode.com.freelanceproject.util.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.CRUDutil;
 import jjlacode.com.freelanceproject.util.FragmentCRUD;
 import jjlacode.com.freelanceproject.util.ImagenUtil;
 import jjlacode.com.freelanceproject.util.JavaUtil;
@@ -74,11 +75,11 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
 
         if (idrelacionado != null) {
 
-            setListaModelo(NOTA_ID_RELACIONADO,idrelacionado,IGUAL);
+            lista = CRUDutil.setListaModelo(campos,NOTA_ID_RELACIONADO,idrelacionado,IGUAL);
 
         } else {
 
-            setListaModelo(NOTA_ID_RELACIONADO,null,IGUAL);
+            lista = CRUDutil.setListaModelo(campos,NOTA_ID_RELACIONADO,null,IGUAL);
 
         }
     }
@@ -403,35 +404,35 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
 
             enviarBundle();
             bundle.putString(ID, idrelacionado);
-            bundle.putSerializable(MODELO, setModelo(CAMPOS_EVENTO,idrelacionado));
+            bundle.putSerializable(MODELO, CRUDutil.setModelo(CAMPOS_EVENTO,idrelacionado));
             bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
         } else if (origen.equals(PRESUPUESTO)) {
 
             enviarBundle();
             bundle.putString(ID, idrelacionado);
-            bundle.putSerializable(MODELO, setModelo(CAMPOS_PROYECTO,idrelacionado));
+            bundle.putSerializable(MODELO, CRUDutil.setModelo(CAMPOS_PROYECTO,idrelacionado));
             bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
         } else if (origen.equals(PROYECTO)) {
 
             enviarBundle();
             bundle.putString(ID, idrelacionado);
-            bundle.putSerializable(MODELO, setModelo(CAMPOS_PROYECTO,idrelacionado));
+            bundle.putSerializable(MODELO, CRUDutil.setModelo(CAMPOS_PROYECTO,idrelacionado));
             bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
         } else if (origen.equals(CLIENTE)) {
 
             enviarBundle();
             bundle.putString(ID, idrelacionado);
-            bundle.putSerializable(MODELO, setModelo(CAMPOS_CLIENTE,idrelacionado));
+            bundle.putSerializable(MODELO, CRUDutil.setModelo(CAMPOS_CLIENTE,idrelacionado));
             bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDCliente());
         } else if (origen.equals(PROSPECTO)) {
 
             enviarBundle();
             bundle.putString(ID, idrelacionado);
-            bundle.putSerializable(MODELO, setModelo(CAMPOS_CLIENTE,idrelacionado));
+            bundle.putSerializable(MODELO, CRUDutil.setModelo(CAMPOS_CLIENTE,idrelacionado));
             bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDCliente());
         }

@@ -1,20 +1,35 @@
 package jjlacode.com.freelanceproject.util;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+
+import jjlacode.com.freelanceproject.MainActivity;
+import jjlacode.com.freelanceproject.R;
+
+import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.ACCION_POSPONER;
 
 public class AndroidUtil extends AppCompatActivity {
 
@@ -25,6 +40,45 @@ public class AndroidUtil extends AppCompatActivity {
                 emailAddress).matches();
     }
 
+    public static void notificacionSimple(Context contexto, int id, int iconId, int img,
+                                          int color, String titulo, String contenido) {
+
+        NotificationManager notifyMgr = (NotificationManager) contexto.getSystemService(NOTIFICATION_SERVICE);
+
+        Notification.Builder builder =
+                new Notification.Builder(contexto)
+                        .setSmallIcon(iconId)
+                        .setLargeIcon(BitmapFactory.decodeResource(contexto.getResources(),img))
+                        .setContentTitle(titulo)
+                        .setContentText(contenido)
+                        .setColor(contexto.getResources().getColor(color));
+
+        // Construir la notificación y emitirla
+        notifyMgr.notify(id, builder.build());
+    }
+
+    public static void bars(Context contexto, ProgressBar bar, ProgressBar bar2, double completada, TextView lcompletada,
+                        TextView trek, int color_ok, int color_acept, int color_notok){
+
+        if (completada>100){
+            bar2.setVisibility(View.VISIBLE);
+            bar2.setProgress((int)completada-100);
+        }else{
+            bar2.setVisibility(View.GONE);
+        }
+        bar.setProgress((int)completada);
+        if (completada<90){bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok,null));
+            trek.setTextColor(contexto.getResources().getColor(color_ok));
+        }
+        else if (completada>90 && completada<120){bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept,null));
+            trek.setTextColor(contexto.getResources().getColor(color_acept));
+        }
+        else {bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok,null));
+            trek.setTextColor(contexto.getResources().getColor(color_notok));
+        }
+        lcompletada.setText(String.format(Locale.getDefault(),
+                "%s %s",JavaUtil.getDecimales(completada),"% completa"));
+    }
 
     public static boolean validateCardNumber(String cardNumber) {
 

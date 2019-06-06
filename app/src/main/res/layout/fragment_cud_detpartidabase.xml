@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:orientation="vertical"
+    tools:context=".ui.FragmentCUDDetpartidaBase">
+
+
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+
+        <TextView
+            android:id="@+id/tvtipocdetpartidabase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/tipo_detpartida"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imgcdetpartidabase"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="2.5"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ico_calendario_reloj" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <AutoCompleteTextView
+                    android:id="@+id/autocat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/cuadro_texto"
+                    android:textSize="@dimen/texto"
+                    android:hint="@string/categoria"/>
+
+                <AutoCompleteTextView
+                    android:id="@+id/autoprov"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/cuadro_texto"
+                    android:textSize="@dimen/texto"
+                    android:hint="@string/proveedor"/>
+
+                <AutoCompleteTextView
+                    android:id="@+id/etnomcdetpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/cuadro_texto"
+                    android:textSize="@dimen/texto"
+                    android:hint="@string/nombre" />
+
+                <TextView
+                    android:id="@+id/tvrefprovcdetpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/texto"
+                    android:text="@string/referencia_proveedor" />
+
+                <EditText
+                    android:id="@+id/etdesccdetpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/descripcion"
+                    android:textSize="@dimen/texto"
+                    android:background="@drawable/cuadro_texto"
+                    android:inputType="textMultiLine|text" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/cantidaddetpartida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="@dimen/texto"
+                android:text="@string/cantidad"/>
+
+            <TextView
+                android:id="@+id/ltiempodetpartida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="@dimen/texto"
+                android:text="@string/tiempo_detpartida"/>
+
+            <EditText
+                android:id="@+id/ettiempocdetpartida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/tiempo"
+                android:textSize="@dimen/texto"
+                android:gravity="center"
+                android:background="@drawable/cuadro_texto"
+                android:inputType="numberDecimal" />
+
+            <EditText
+                android:id="@+id/etpreciocdetpartida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/importe"
+                android:textSize="@dimen/texto"
+                android:background="@drawable/cuadro_texto"
+                android:inputType="numberDecimal" />
+
+            <EditText
+                android:id="@+id/etcantcdetpartida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="@string/cantidad"
+                android:textSize="@dimen/texto"
+                android:background="@drawable/cuadro_texto"
+                android:inputType="numberDecimal" />
+
+            <EditText
+                android:id="@+id/etdescprovcdetpartida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:textSize="@dimen/texto"
+                android:hint="@string/descuento_proveedor"
+                android:background="@drawable/cuadro_texto"
+                android:inputType="numberDecimal" />
+
+        </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvtiempototaldetpartida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/texto"
+                android:gravity="center"/>
+
+
+            <EditText
+                android:id="@+id/etcompletadadetpartida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:textSize="@dimen/texto"
+                android:gravity="center"
+                android:background="@drawable/cuadro_texto"
+                android:hint="@string/completada"
+                android:inputType="number" />
+
+        <ProgressBar
+            android:id="@+id/progressBardetpartida"
+            style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+            android:progressDrawable="@drawable/bar_ok"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <ProgressBar
+            android:id="@+id/progressBar2detpartida"
+            style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+            android:progressDrawable="@drawable/bar_notok"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvtrek"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/contador"
+            android:gravity="center"
+            android:text="@string/trek"/>
+
+        <Button
+            android:id="@+id/btn_trek"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boton_redondo_verde"
+            android:textColor="@color/Color_texto_titulos"
+            android:text="@string/inicio_trek"/>
+
+        <Button
+            android:id="@+id/btn_trek_pausa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boton_redondo_verde"
+            android:textColor="@color/Color_texto_titulos"
+            android:text="@string/pausa_trek"/>
+
+        <Button
+            android:id="@+id/btn_trek_reset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boton_redondo_verde"
+            android:textColor="@color/colorAccent"
+            android:text="@string/reset_trek"/>
+
+        <CheckBox
+            android:id="@+id/cbox_hacer_detpartida_completa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/texto"
+            android:text="@string/partida_completada"
+            android:layout_gravity="center"
+            android:checked="false"/>
+
+        <Button
+            android:id="@+id/btnntareacdetpartida"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boton_redondo_verde"
+            android:textColor="@color/Color_texto_titulos"
+            android:text="@string/guardar_nueva_tarea" />
+
+        <Button
+            android:id="@+id/btnnprodcdetpartida"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boton_redondo_verde"
+            android:textColor="@color/Color_texto_titulos"
+            android:text="@string/guardar_nuevo_producto" />
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvcdetpartida"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </RelativeLayout>
+
+    </LinearLayout>
+</ScrollView>

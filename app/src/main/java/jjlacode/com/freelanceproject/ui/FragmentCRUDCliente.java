@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 import jjlacode.com.freelanceproject.util.AppActivity;
 import jjlacode.com.freelanceproject.util.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.CRUDutil;
 import jjlacode.com.freelanceproject.util.FragmentCRUD;
 import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltroRV;
 import jjlacode.com.freelanceproject.util.ListaModelo;
@@ -77,15 +78,14 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
     @Override
     protected void setLista() {
 
-        if (actualtemp==null){actualtemp = actual;}
 
         if (actualtemp.equals(PROSPECTO)){
 
-            setListaModelo(CLIENTE_DESCRIPCIONTIPOCLI,PROSPECTO,IGUAL);
+            lista = CRUDutil.setListaModelo(campos,CLIENTE_DESCRIPCIONTIPOCLI,PROSPECTO,IGUAL);
 
         }else if (actualtemp.equals(CLIENTE)) {
 
-            setListaModelo(CLIENTE_DESCRIPCIONTIPOCLI,PROSPECTO,DIFERENTE);
+            lista = CRUDutil.setListaModelo(campos,CLIENTE_DESCRIPCIONTIPOCLI,PROSPECTO,DIFERENTE);
 
         }
 
@@ -191,6 +191,10 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
     protected void setBundle() {
 
         proyecto = (Modelo) bundle.getSerializable(TABLA_PROYECTO);
+        if (actualtemp==null){actualtemp = actual;}
+        System.out.println("actualtemp = " + actualtemp);
+        System.out.println("actual = " + actual);
+        System.out.println("origen = " + origen);
     }
 
     @Override
@@ -207,8 +211,8 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
             peso = modelo.getInt(CLIENTE_PESOTIPOCLI);
 
 
-            if (origen.equals(PROYECTO) || origen.equals(PRESUPUESTO)
-                    || origen.equals(AGENDA)) {
+            if (origen!=null && (origen.equals(PROYECTO) || origen.equals(PRESUPUESTO)
+                    || origen.equals(AGENDA))) {
 
                 btndelete.setVisibility(View.GONE);
 
@@ -249,8 +253,6 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_CLIENTE, modelo);
                 bundle.putBoolean(NUEVOREGISTRO,true);
-                bundle.putBoolean(VERLISTA,false);
-                bundle.putString(SUBTITULO,EVENTO);
                 icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDEvento());
             }
         });
@@ -261,10 +263,8 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
 
                 bundle = new Bundle();
                 //bundle.putSerializable(TABLA_CLIENTE, modelo);
-                bundle.putBoolean(VERLISTA,true);
                 bundle.putSerializable(LISTA,new ListaModelo(CAMPOS_EVENTO,EVENTO_CLIENTEREL,id,null,IGUAL,null));
                 //bundle.putString(IDREL,id);
-                bundle.putString(SUBTITULO,EVENTO);
                 icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDEvento());
             }
         });
@@ -378,13 +378,13 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
     @Override
     protected void setcambioFragment() {
 
-        if ((origen.equals(PROYECTO))||(origen.equals(PRESUPUESTO))){
+        if (origen!=null && ((origen.equals(PROYECTO))||(origen.equals(PRESUPUESTO)))){
 
-            update();
             bundle = new Bundle();
             bundle.putString(ORIGEN, actualtemp);
-            System.out.println("idCliente = " + id);
-            bundle.putString(CLIENTE, id);
+            System.out.println("idCliente = " + idAOrigen);
+            bundle.putString(CLIENTE, idAOrigen);
+            bundle.putString(ACTUAL,origen);
             bundle.putBoolean(NUEVOREGISTRO,true);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
 
