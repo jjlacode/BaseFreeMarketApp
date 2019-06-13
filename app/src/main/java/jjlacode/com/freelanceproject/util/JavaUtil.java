@@ -37,17 +37,22 @@ public class JavaUtil {
         String ORIGENTEMP = "origenTemp";
         String NAMESUBTEMP = "namesubtemp";
         String LISTA = "lista";
+        String CALENDARIO = "calendario";
+        String FECHA = "fecha";
         String TIPO = "tipo";
         String ID = "id";
         String IDREL = "idrel";
         String SECUENCIA = "secuencia";
         String MODELO = "modelo";
+        String TIMESTAMP = "timestamp";
+        String RUTAFOTO = "rutafoto";
         String NUEVOREGISTRO = "nuevoreg";
         String VERLISTA = "verlista";
         String PAUSA = "pausa";
         String ESDETALLE = "esdetalle";
         String NOTIFICACIONES = "notificaciones";
         String PERSISTENCIA = "persistencia";
+        String PATH = "path";
         String CONTNOT ="Contador notificacion";
         String PREFERENCIAS = "preferencias";
 
@@ -406,12 +411,22 @@ public class JavaUtil {
         return asdias + ashoras + asmin + assec + "sec.";
     }
 
-    public static long horaMin(long hora){
+    public static long sumaHoraMin(long hora){
 
-        Date date = new Date(hora);
-        long horas = date.getHours();
-        long minutos = date.getMinutes();
+        Calendar c = new GregorianCalendar(Locale.getDefault());
+        c.setTimeInMillis(hora);
+        long horas = c.get(Calendar.HOUR_OF_DAY);
+        long minutos = c.get(Calendar.MINUTE);
         return (horas*HORASLONG)+(minutos*MINUTOSLONG);
+    }
+
+    public static long sumaDiaMesAnio(long fecha){
+
+        Calendar c = new GregorianCalendar(Locale.getDefault());
+        c.setTimeInMillis(fecha);
+        c.set(Calendar.HOUR_OF_DAY,0);
+        c.set(Calendar.MINUTE,0);
+        return (c.getTimeInMillis());
     }
 
     public static String formatoMonedaLocal(double importe){

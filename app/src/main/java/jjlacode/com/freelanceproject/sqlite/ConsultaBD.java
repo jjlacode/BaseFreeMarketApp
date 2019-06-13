@@ -8,9 +8,9 @@ import android.net.Uri;
 import java.util.ArrayList;
 
 import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.Modelo;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
 
-import static jjlacode.com.freelanceproject.util.AppActivity.getAppContext;
+import static jjlacode.com.freelanceproject.util.android.AppActivity.getAppContext;
 import static jjlacode.com.freelanceproject.sqlite.ContratoPry.crearUriTabla;
 import static jjlacode.com.freelanceproject.sqlite.ContratoPry.crearUriTablaDetalle;
 import static jjlacode.com.freelanceproject.sqlite.ContratoPry.crearUriTablaDetalleId;

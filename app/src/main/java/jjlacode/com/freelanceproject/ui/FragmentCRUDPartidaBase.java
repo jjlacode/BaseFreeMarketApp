@@ -34,19 +34,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import jjlacode.com.freelanceproject.util.AppActivity;
-import jjlacode.com.freelanceproject.util.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.CRUDutil;
-import jjlacode.com.freelanceproject.util.FragmentCRUD;
-import jjlacode.com.freelanceproject.util.ImagenUtil;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.crud.CRUDutil;
+import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
+import jjlacode.com.freelanceproject.util.media.MediaUtil;
 import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltroRV;
-import jjlacode.com.freelanceproject.util.ListaModelo;
-import jjlacode.com.freelanceproject.util.Modelo;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.crud.ListaModelo;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.util.CommonPry;
-import jjlacode.com.freelanceproject.util.TipoViewHolder;
+import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 
 public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.Constantes,
         ContratoPry.Tablas, CommonPry.TiposDetPartida {
@@ -136,7 +136,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
     protected void setLayout() {
 
         layoutCuerpo = R.layout.fragment_ud_partidabase;
-        layoutitem = R.layout.item_list_partidabase;
+        layoutItem = R.layout.item_list_partidabase;
     }
 
     @Override
@@ -544,7 +544,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
                     StorageReference spaceRef = storageRef.child(listDetpartida.get(position).getString(DETPARTIDABASE_RUTAFOTO));
                     //GlideApp.with(context)
                     //        .load(spaceRef)
-                    //        .into(detpartidaViewHolder.imagen);
+                    //        .into(detpartidaViewHolder.imagenTarea);
                 } else {
                     detpartidaViewHolder.imagen.setImageURI(listDetpartida.get(position).getUri(DETPARTIDABASE_RUTAFOTO));
                 }
@@ -621,7 +621,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
         public void bind(Modelo modelo) {
 
             String tipodetpartida = modelo.getString(DETPARTIDABASE_TIPO);
-            ImagenUtil imagenUtil = new ImagenUtil(contexto);
+            MediaUtil imagenUtil = new MediaUtil(contexto);
 
             tipo.setText(tipodetpartida.toUpperCase());
             nombre.setText(modelo.getString(DETPARTIDABASE_NOMBRE));
@@ -679,7 +679,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
 
             if (modelo.getString(PARTIDABASE_RUTAFOTO)!=null){
 
-                ImagenUtil imagenUtil = new ImagenUtil(AppActivity.getAppContext());
+                MediaUtil imagenUtil = new MediaUtil(AppActivity.getAppContext());
                 imagenUtil.setImageUriCircle(modelo.getString(PARTIDABASE_RUTAFOTO),imagenPartida);
             }
 
@@ -700,7 +700,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
             lista.addAll(listaPartidasProy);
 
             AdaptadorFiltroRVPartidas adaptadorPartida = new AdaptadorFiltroRVPartidas(contexto,
-                    layoutitem,lista.getLista(),campos);
+                    layoutItem,lista.getLista(),campos);
             autoCompleteTextView.setAdapter(adaptadorPartida);
 
     }

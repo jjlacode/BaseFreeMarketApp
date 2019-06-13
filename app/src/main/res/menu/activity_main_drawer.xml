@@ -21,7 +21,7 @@
         android:title="@string/proyectos" />
     <item
         android:id="@+id/nav_perfiles"
-        android:icon="@drawable/ic_menu_manage"
+        android:icon="@drawable/ic_ajustes_black_24dp"
         android:title="@string/perfiles" />
     <item
         android:id="@+id/nav_amortizacion"
@@ -35,6 +35,14 @@
         android:id="@+id/nav_partidabase"
         android:icon="@drawable/ic_format_list_numbered_black_24dp"
         android:title="@string/partida_base" />
+    <item
+        android:id="@+id/nav_tarea"
+        android:icon="@drawable/ic_menu_manage"
+        android:title="@string/tareas" />
+    <item
+        android:id="@+id/nav_producto"
+        android:icon="@drawable/ic_producto_black_24dp"
+        android:title="@string/productos" />
 
 
 </menu>

@@ -8,14 +8,14 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import jjlacode.com.freelanceproject.util.FragmentBase;
+import jjlacode.com.freelanceproject.util.android.FragmentBase;
 import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.ListaModelo;
-import jjlacode.com.freelanceproject.util.Modelo;
+import jjlacode.com.freelanceproject.util.crud.ListaModelo;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.util.CommonPry;
+import jjlacode.com.freelanceproject.CommonPry;
 
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ACTUAL;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.DIASLONG;
@@ -38,6 +38,9 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
     private ImageView presupEntrega;
     private ImageView presupCobros;
     private ImageView calendario;
+    private ImageView otro;
+    private ImageView salir;
+
     private TextView tvProxEvent;
     private TextView tvNotasGen;
     private TextView tvPartidasPend;
@@ -45,6 +48,8 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
     private TextView tvPresupEntrega;
     private TextView tvPresupCobros;
     private TextView tvcalendario;
+    private TextView tvsalir;
+    private TextView tvOtro;
 
 
     private static ConsultaBD consulta = new ConsultaBD();
@@ -88,12 +93,12 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
         tvPresupCobros = view.findViewById(R.id.tvagendapresupcobros);
         calendario = view.findViewById(R.id.imgagendacalendario);
         tvcalendario = view.findViewById(R.id.tvagendacalendario);
+        otro = view.findViewById(R.id.imgagendaotro);
+        tvOtro = view.findViewById(R.id.tvagendaotro);
+        salir = view.findViewById(R.id.imgagendasalir);
+        tvsalir = view.findViewById(R.id.tvagendasalir);
 
-        /*
-        DisplayMetrics metrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-        int ancho = metrics.widthPixels;
         int altoimg = 100;
         int padimg = 10;
         float sizef = 0f;
@@ -107,19 +112,19 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
             sizef = (float) ((double)ancho/100);
         }
 
-         */
+        calendario.setMinimumHeight(altoimg);
+        calendario.setPadding(padimg, padimg,0,0);
+        tvcalendario.setPadding(padimg,0,0,0);
+        tvcalendario.setTextSize(sizef);
         proxEvent.setMinimumHeight(altoimg);
-        proxEvent.setPadding(padimg, padimg,0,0);
-        tvProxEvent.setPadding(padimg,0,0,0);
+        proxEvent.setPadding(padimg, padimg,padimg,0);
+        tvProxEvent.setPadding(padimg,0,padimg,0);
         tvProxEvent.setTextSize(sizef);
         notasGen.setMinimumHeight(altoimg);
-        notasGen.setPadding(padimg, padimg, padimg,0);
-        tvNotasGen.setPadding(padimg,0, padimg,0);
+        notasGen.setPadding(0, padimg, padimg,0);
+        tvNotasGen.setPadding(0,0, padimg,0);
         tvNotasGen.setTextSize(sizef);
-        partidasPend.setMinimumHeight(altoimg);
-        partidasPend.setPadding(0, padimg, padimg,0);
-        tvPartidasPend.setPadding(0,0, padimg,0);
-        tvPartidasPend.setTextSize(sizef);
+
 
         presupEntrega.setMinimumHeight(altoimg);
         presupEntrega.setPadding(padimg, padimg,0,0);
@@ -134,10 +139,18 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
         tvPresupCobros.setPadding(0,0, padimg,0);
         tvPresupCobros.setTextSize(sizef);
 
-        calendario.setMinimumHeight(altoimg);
-        calendario.setPadding(padimg, padimg,0,0);
-        tvcalendario.setPadding(padimg,0,0,0);
-        tvcalendario.setTextSize(sizef);
+        partidasPend.setMinimumHeight(altoimg);
+        partidasPend.setPadding(padimg, padimg, 0,0);
+        tvPartidasPend.setPadding(padimg,0, 0,0);
+        tvPartidasPend.setTextSize(sizef);
+        otro.setMinimumHeight(altoimg);
+        otro.setPadding(padimg, padimg, padimg,0);
+        tvOtro.setPadding(padimg,0, padimg,0);
+        tvOtro.setTextSize(sizef);
+        salir.setMinimumHeight(altoimg);
+        salir.setPadding(0, padimg, padimg,0);
+        tvsalir.setPadding(0,0, padimg,0);
+        tvsalir.setTextSize(sizef);
 
         proxEvent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -191,11 +204,8 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
             @Override
             public void onClick(View v) {
 
-                bundle = new Bundle();
-                bundle.putString(ORIGEN,AGENDA);
-                bundle.putString(SUBTITULO,"calendario");
-                icFragmentos.enviarBundleAFragment(bundle,new Calendario());
-
+                activityBase.getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.content_main,new Calendario()).addToBackStack(null).commit();
 
             }
         });
@@ -327,7 +337,7 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
         for (Modelo item : lista) {
 
             if ((lista.get(i).getCampos(ContratoPry.Tablas.EVENTO_TIPOEVENTO) != null &&
-                    lista.get(i).getCampos(ContratoPry.Tablas.EVENTO_TIPOEVENTO).equals(TAREA) &&
+                    lista.get(i).getCampos(ContratoPry.Tablas.EVENTO_TIPOEVENTO).equals(CommonPry.TiposEvento.TIPOEVENTOTAREA) &&
                     Double.parseDouble(lista.get(i).getCampos(ContratoPry.Tablas.EVENTO_COMPLETADA)) < 100)
                     || (item.getCampos(ContratoPry.Tablas.EVENTO_FECHAINIEVENTO) != null &&
                     Long.parseLong(item.getCampos(ContratoPry.Tablas.EVENTO_FECHAINIEVENTO)) > diaspasadosEventos &&
@@ -343,7 +353,7 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
             bundle = new Bundle();
             bundle.putSerializable(LISTA, listaEventos);
-            bundle.putString(ACTUAL, CommonPry.TiposEvento.EVENTO);
+            bundle.putString(ACTUAL, CommonPry.TiposEvento.TIPOEVENTOEVENTO);
             bundle.putString(SUBTITULO, "Proximos eventos");
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
         }else{

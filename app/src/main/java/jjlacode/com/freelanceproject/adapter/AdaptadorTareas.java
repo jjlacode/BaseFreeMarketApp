@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import jjlacode.com.freelanceproject.util.Modelo;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 

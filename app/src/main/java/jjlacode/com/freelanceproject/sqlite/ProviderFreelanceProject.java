@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
-import jjlacode.com.freelanceproject.util.CommonPry;
+import jjlacode.com.freelanceproject.CommonPry;
 import static jjlacode.com.freelanceproject.sqlite.ContratoPry.*;
 
 public class ProviderFreelanceProject extends ContentProvider

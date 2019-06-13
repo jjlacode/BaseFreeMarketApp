@@ -4,31 +4,35 @@
     android:layout_height="@dimen/altobtn"
     android:orientation="horizontal">
 
-    <Button
+    <ImageButton
         android:id="@+id/btn_save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="@drawable/boton_redondo_verde"
+        android:background="@drawable/boton_redondo_primary"
         android:text="@string/guardar"
+        android:src="@drawable/ic_guardar_blanco"
+        android:scaleType="center"
         android:textColor="@color/Color_texto_titulos" />
 
-    <Button
+    <ImageButton
         android:id="@+id/btn_back"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="@drawable/boton_redondo_verde"
+        android:background="@drawable/boton_redondo_secondary"
         android:text="@string/volver"
+        android:src="@drawable/ic_volver_verde"
         android:textColor="@color/Color_texto_titulos" />
 
-    <Button
+    <ImageButton
         android:id="@+id/btn_del"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="@drawable/boton_redondo_verde"
+        android:background="@drawable/boton_redondo_secondary"
         android:text="@string/borrar"
+        android:src="@drawable/ic_eliminar_acent"
         android:textColor="@color/Color_texto_titulos" />
 
 

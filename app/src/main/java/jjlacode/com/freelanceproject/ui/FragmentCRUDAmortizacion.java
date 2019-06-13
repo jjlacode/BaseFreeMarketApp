@@ -14,19 +14,19 @@ import androidx.cardview.widget.CardView;
 
 import java.util.ArrayList;
 
-import jjlacode.com.freelanceproject.util.AppActivity;
-import jjlacode.com.freelanceproject.util.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.DatePickerFragment;
-import jjlacode.com.freelanceproject.util.FragmentCRUD;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.time.DatePickerFragment;
+import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.util.CommonPry;
-import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltroRV;
-import jjlacode.com.freelanceproject.util.Modelo;
-import jjlacode.com.freelanceproject.util.TipoViewHolder;
+import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
+import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 
-import static jjlacode.com.freelanceproject.util.CommonPry.setNamefdef;
+import static jjlacode.com.freelanceproject.CommonPry.setNamefdef;
 
 public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPry.Tablas {
 
@@ -150,7 +150,7 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
     protected void setLayout() {
 
         layoutCuerpo = R.layout.fragment_cud_amortizacion;
-        layoutitem = R.layout.item_list_amortizacion;
+        layoutItem = R.layout.item_list_amortizacion;
 
     }
 

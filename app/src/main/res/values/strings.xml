@@ -180,7 +180,7 @@
     <string name="action_help">Help</string>
     <string name="action_info">Info</string>
     <string name="genera_pdf">Genera PDF</string>
-    <string name="ver_pdf">Ver PDF</string>
+    <string name="ver_pdf">PDF</string>
     <string name="asunto">Asunto</string>
     <string name="texto_mensaje">Texto mensaje</string>
     <string name="compartir_presup">Compartir</string>
@@ -253,6 +253,16 @@
     <string name="ver_repeticiones">Ver repeticiones</string>
     <string name="mismo_dia_anio">Mismo dia del año</string>
     <string name="mismo_dia_mes">Mismo dia del mes</string>
+    <string name="compartir">Compartir</string>
+    <string name="parar_grabacion">Parar grabacion</string>
+    <string name="notificado">Notificado</string>
+    <string name="salir">Salir</string>
+    <string name="otro">Otro</string>
+    <string name="calendario">Calendario</string>
+    <string name="tarea">Tarea</string>
+    <string name="productos">Productos</string>
+    <string name="importe_mo">Importe mano de obra</string>
+    <string name="horas_mo">Horas mano de obra</string>
 
 
 </resources>

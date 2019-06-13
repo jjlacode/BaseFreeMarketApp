@@ -22,10 +22,4 @@
         android:title="@string/action_info"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/action_inicio"
-        android:icon="@drawable/ic_home_white_24dp"
-        android:orderInCategory="10"
-        android:title="@string/inicio"
-        app:showAsAction="never" />
 </menu>

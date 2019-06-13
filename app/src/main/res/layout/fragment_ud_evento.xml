@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,12 +8,12 @@
     android:orientation="vertical"
     tools:context=".ui.FragmentCRUDEvento">
 
-    <LinearLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <Spinner
+        <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/sptiponevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,90 +21,81 @@
             android:minHeight="30dp"
             android:spinnerMode="dialog" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvtipoudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:gravity="center"/>
 
-        <LinearLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgudevento"
-                card_view:srcCompat="@drawable/ico_calendario_reloj"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_weight="3" />
 
-            <EditText
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etdescudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="10"
-                android:hint="@string/descripcion_tipo_cliente"
-                android:inputType="textMultiLine|text" />
-        </LinearLayout>
+                app:hint_text="@string/descripcion_tipo_cliente"
+                app:tipo_dato="MULTI|TEXTO" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <LinearLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/etfechainiudevento"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:ems="10"
-                android:hint="@string/fecha_ini_evento"
-                android:textSize="18sp" />
-
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgbtnfiniudevento"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_weight="3"
                 android:scaleType="center"
                 app:srcCompat="@drawable/ic_search_black_24dp" />
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
 
-            <TextView
+                android:id="@+id/etfechainiudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                app:hint_text="@string/fecha_ini_evento"
+                app:activo="false" />
+
+
+
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+
                 android:id="@+id/ethorainiudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:ems="10"
-                android:hint="@string/hora_ini_evento"
-                android:textSize="18sp" />
+                android:layout_weight="2.5"
+                app:hint_text="@string/hora_ini_evento"
+                app:gravedad="inicio"
+                app:activo="false" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgbtnhiniudevento"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_weight="3"
                 android:scaleType="center"
                 app:srcCompat="@drawable/ic_search_black_24dp" />
-        </LinearLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <LinearLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/etfechafinudevento"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:ems="10"
-                android:hint="@string/fecha_fin_evento"
-                android:textSize="18sp" />
-
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgbtnffinudevento"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
@@ -112,61 +103,70 @@
                 android:scaleType="center"
                 app:srcCompat="@drawable/ic_search_black_24dp" />
 
-            <TextView
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                android:id="@+id/etfechafinudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                app:hint_text="@string/fecha_fin_evento"
+                app:activo="false" />
+
+
+
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/ethorafinudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:ems="10"
-                android:hint="@string/hora_fin_evento"
-                android:textSize="18sp" />
+                android:layout_weight="2.5"
+                app:hint_text="@string/hora_fin_evento"
+                app:activo="false"
+                app:gravedad="inicio"/>
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgbtnhfinudevento"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_weight="3"
                 android:scaleType="center"
                 app:srcCompat="@drawable/ic_search_black_24dp" />
-        </LinearLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <LinearLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-        <EditText
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
             android:id="@+id/ettelefonoudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
             android:layout_weight="1"
-            android:hint="@string/telefono"
-            android:inputType="phone" />
+            app:hint_text="@string/telefono"
+            app:tipo_dato="NUMERO|TELEFONO" />
 
-        <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgllamadaevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+                android:layout_gravity="center"
             android:layout_weight="3"
             card_view:srcCompat="@drawable/ic_phone_in_talk_black_24dp" />
 
-        </LinearLayout>
-    <LinearLayout
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <EditText
+        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
             android:id="@+id/etlugarudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
             android:layout_weight="1"
-            android:hint="@string/direccion"
-            android:inputType="textPostalAddress" />
+            app:hint_text="@string/direccion"
+            app:tipo_dato="DIRECCION" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgmapaevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -174,269 +174,273 @@
             android:layout_weight="3"
             card_view:srcCompat="@drawable/ic_place_black_24dp" />
 
-    </LinearLayout>
-    <LinearLayout
+    </androidx.appcompat.widget.LinearLayoutCompat>
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <EditText
+        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
             android:id="@+id/etemailudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
             android:layout_weight="1"
-            android:hint="@string/email"
-            android:inputType="textEmailAddress" />
+            app:hint_text="@string/email"
+            app:tipo_dato="EMAIL" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgemailevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="3"
             card_view:srcCompat="@drawable/ic_mail_outline_black_24dp" />
 
-    </LinearLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <EditText
+        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
             android:id="@+id/etasuntoevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/asunto"
-            android:inputType="text" />
+            app:hint_text="@string/asunto"
+            app:tipo_dato="TEXTO" />
 
-        <EditText
+        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
             android:id="@+id/etmensajeevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/texto_mensaje"
-            android:inputType="textMultiLine|text" />
+            app:hint_text="@string/texto_mensaje"
+            app:tipo_dato="MULTI|TEXTO" />
 
-        <CheckBox
+        <androidx.appcompat.widget.AppCompatCheckBox
             android:id="@+id/chavisoudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/aviso" />
 
-        <LinearLayout
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/chnotificadoevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/notificado" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/ltvavisoudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/aviso" />
 
-            <EditText
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etdiasudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="10"
-                android:hint="@string/dias"
-                android:inputType="number" />
+                app:hint_text="@string/dias"
+                app:tipo_dato="NUMERO"
+                app:gravedad="centro"/>
 
-            <EditText
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/ethorasudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="10"
-                android:hint="@string/horas"
-                android:inputType="number" />
+                app:hint_text="@string/horas"
+                app:tipo_dato="NUMERO"
+                app:gravedad="centro"/>
 
-            <EditText
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etminutosudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="10"
-                android:hint="@string/minutos"
-                android:inputType="number" />
+                app:hint_text="@string/minutos"
+                app:tipo_dato="NUMERO"
+                app:gravedad="centro"/>
 
-        </LinearLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnverrepevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/ver_repeticiones"
-            android:background="@drawable/boton_redondo_verde"
+            android:background="@drawable/boton_redondo_primary"
             android:textColor="@color/Color_texto_titulos"/>
 
-        <CheckBox
+        <androidx.appcompat.widget.AppCompatCheckBox
             android:id="@+id/chrptudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/modificar_repeticiones" />
 
-        <CheckBox
+        <androidx.appcompat.widget.AppCompatCheckBox
             android:id="@+id/chmmesevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/mismo_dia_mes" />
 
-        <CheckBox
+        <androidx.appcompat.widget.AppCompatCheckBox
             android:id="@+id/chmanioevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/mismo_dia_anio" />
 
-        <LinearLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:weightSum="100">
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/ltvreptudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="25"
                 android:text="@string/repetir_evento" />
 
-            <EditText
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etrepaniosudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="25"
-                android:ems="10"
-                android:hint="@string/anios"
-                android:inputType="number" />
+                app:hint_text="@string/anios"
+                app:tipo_dato="NUMERO"
+                app:gravedad="centro"/>
 
-            <EditText
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etrepmesesudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="25"
-                android:ems="10"
-                android:hint="@string/meses"
-                android:inputType="number" />
+                app:hint_text="@string/meses"
+                app:tipo_dato="NUMERO"
+                app:gravedad="centro"/>
 
-            <EditText
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etrepdiasudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="25"
-                android:ems="10"
-                android:hint="@string/dias"
-                android:inputType="number" />
+                app:hint_text="@string/dias"
+                app:tipo_dato="NUMERO"
+                app:gravedad="centro"/>
 
-        </LinearLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <LinearLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:weightSum="100">
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/ltvdreptudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="25"
                 android:text="@string/duracion" />
 
-            <EditText
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etrepdaniosudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="25"
-                android:ems="10"
-                android:hint="@string/anios"
-                android:inputType="number" />
+                app:hint_text="@string/anios"
+                app:tipo_dato="NUMERO"
+                app:gravedad="centro"/>
 
-            <EditText
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etrepdmesesudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="25"
-                android:ems="10"
-                android:hint="@string/meses"
-                android:inputType="number" />
+                app:hint_text="@string/meses"
+                app:tipo_dato="NUMERO"
+                app:gravedad="centro"/>
 
-            <EditText
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etrepddiasudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="25"
-                android:ems="10"
-                android:hint="@string/dias"
-                android:inputType="number" />
-        </LinearLayout>
+                app:hint_text="@string/dias"
+                app:tipo_dato="NUMERO"
+                app:gravedad="centro"/>
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <CheckBox
+        <androidx.appcompat.widget.AppCompatCheckBox
             android:id="@+id/chpryudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/relacionar_proyecto" />
 
-        <AutoCompleteTextView
+        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
             android:id="@+id/sppryudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/seleccione_proyecto" />
 
-        <CheckBox
+        <androidx.appcompat.widget.AppCompatCheckBox
             android:id="@+id/chcliudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/relacionar_cliente" />
 
-        <AutoCompleteTextView
+        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
             android:id="@+id/spcliudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/seleccione_cliente" />
-    <LinearLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
-        <TextView
-            android:id="@+id/ltvcompletadaudevento"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/completada" />
-        <EditText
+
+        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
             android:id="@+id/etcompletadaudevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:ems="10"
-            android:hint="@string/completada"
-            android:inputType="number" />
-    </LinearLayout>
-        <LinearLayout
+            app:hint_text="@string/completada"
+            app:tipo_dato="NUMERO"
+            app:gravedad="centro"/>
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/chcompletadaevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:text="@string/completa"/>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btn_crearnota"
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_crearnota_evento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/nueva_nota"
-                android:background="@drawable/boton_redondo_verde"
-                android:textColor="@color/Color_texto_titulos"
+                android:background="@drawable/boton_redondo_secondary"
+                android:src="@drawable/ic_nueva_nota_verde"
                 android:layout_weight="1"/>
 
-            <Button
-                android:id="@+id/btn_vernotas"
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_vernotas_evento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/ver_notas"
-                android:background="@drawable/boton_redondo_verde"
-                android:textColor="@color/Color_texto_titulos"
+                android:background="@drawable/boton_redondo_secondary"
+                android:src="@drawable/ic_lista_notas_verde"
                 android:layout_weight="1"/>
 
-        </LinearLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
-    </LinearLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>

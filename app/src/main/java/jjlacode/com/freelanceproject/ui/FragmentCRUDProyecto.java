@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,7 +13,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -24,22 +24,23 @@ import androidx.appcompat.app.AlertDialog;
 
 import java.util.ArrayList;
 
-import jjlacode.com.freelanceproject.util.AppActivity;
-import jjlacode.com.freelanceproject.util.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.CRUDutil;
-import jjlacode.com.freelanceproject.util.DatePickerFragment;
-import jjlacode.com.freelanceproject.util.FragmentCRUD;
-import jjlacode.com.freelanceproject.util.ImagenUtil;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
+import jjlacode.com.freelanceproject.util.crud.CRUDutil;
+import jjlacode.com.freelanceproject.util.time.DatePickerFragment;
+import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
+import jjlacode.com.freelanceproject.util.media.MediaUtil;
 import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltro;
-import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltroRV;
-import jjlacode.com.freelanceproject.util.ListaModelo;
-import jjlacode.com.freelanceproject.util.Modelo;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltro;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.crud.ListaModelo;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.util.CommonPry;
+import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.templates.PresupuestoPDF;
-import jjlacode.com.freelanceproject.util.TipoViewHolder;
+import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 
 public class FragmentCRUDProyecto extends FragmentCRUD
         implements CommonPry.Constantes, ContratoPry.Tablas, CommonPry.Estados,
@@ -48,46 +49,31 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private ImageView imagenTipoClienteProyecto;
     private ImageView btnfechaentrega;
     private AutoCompleteTextView spClienteProyecto;
-    private EditText nombrePry;
-    private EditText descripcionPry;
-    private TextView estadoProyecto;
-    private TextView fechaEntregaPresup;
-    private TextView fechaAcordadaPry;
-    private EditText importeFinalPry;
-    private TextView labelfentregap;
-    private TextView labelimportefinal;
-    private TextView labelhoras;
-    private TextView labelfentrada;
-    private TextView fechaEntradaPry;
-    private TextView fechaCalculadaPry;
-    private TextView fechaFinalPry;
-    private TextView totalPartidasPry;
-    private TextView pvpPartidas;
-    private TextView importeCalculadoPry;
-    private TextView labelfcalc;
-    private TextView labelfacor;
-    private TextView labelffinal;
-    private TextView labelimportecalculado;
-    private Button btnEvento;
+    private EditMaterial nombrePry;
+    private EditMaterial descripcionPry;
+    private EditMaterial estadoProyecto;
+    private EditMaterial fechaEntregaPresup;
+    private EditMaterial fechaAcordadaPry;
+    private EditMaterial importeFinalPry;
+    private EditMaterial fechaEntradaPry;
+    private EditMaterial fechaCalculadaPry;
+    private EditMaterial fechaFinalPry;
+    private EditMaterial totalPartidasPry;
+    private EditMaterial pvpPartidas;
+    private EditMaterial importeCalculadoPry;
+    private ImageButton btnEvento;
     private Button btnPartidasPry;
     private Button btnActualizar;
     private Button btnActualizar2;
-    private Button btncompartirPdf;
+    private ImageButton btncompartirPdf;
     private Button btnVerPdf;
-    private Button btnenviarPdf;
-    private Button btnVerEventos;
+    private ImageButton btnenviarPdf;
+    private ImageButton btnVerEventos;
     private ImageView btnimgEstadoPry;
     private ImageView btnfechaacord;
     private Spinner spEstadoProyecto;
-    private View sepFechaCalc;
-    private View sepFechaAcord;
-    private View sepFechaEntr;
-    private View sepFechaFin;
-    private View sepImpCalc;
-    private View sepPrecios;
 
 
-    private ArrayList<Modelo> objClientes;
     private ArrayList<String> listaEstados;
     private ArrayList<Modelo> listaClientes;
     private ArrayList<Modelo> objEstados;
@@ -265,7 +251,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         layoutCuerpo = R.layout.fragment_cud_proyecto;
         layoutCabecera = R.layout.cabacera_crud_proyecto;
-        layoutitem = R.layout.item_list_proyecto;
+        layoutItem = R.layout.item_list_proyecto;
 
     }
 
@@ -275,33 +261,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         tabla = TABLA_PROYECTO;
     }
 
-    @Override
-    protected void setTablaCab() {
-
-        tablaCab = null;
-
-    }
-
-    @Override
-    protected void setContext() {
-
-        contexto = getContext();
-
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = CAMPOS_PROYECTO;
-
-    }
-
-    @Override
-    protected void setCampoID() {
-
-        campoID = PROYECTO_ID_PROYECTO;
-
-    }
 
     @Override
     protected void setBundle() {
@@ -363,10 +322,14 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             @Override
             public void onClick(View v) {
 
+                Modelo cliente = CRUDutil.setModelo(CAMPOS_CLIENTE,idCliente);
+                String email = cliente.getString(CLIENTE_EMAIL);
+                String asunto = "Presupuesto solicitado";
+                String mensaje = "Envio presupuesto" + modelo.getString(PROYECTO_NOMBRE) + "solicitado por usted";
                 PresupuestoPDF presupuestoPDF = new PresupuestoPDF();
                 presupuestoPDF.setNombreArchivo(id);
                 presupuestoPDF.crearPdf(id,modelo.getString(PROYECTO_RUTAFOTO));
-                presupuestoPDF.enviarPDFEmail(icFragmentos,getContext(),null,null,null);
+                presupuestoPDF.enviarPDFEmail(icFragmentos,getContext(),email,asunto,mensaje);
 
             }
         });
@@ -431,6 +394,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 bundle.putString(SUBTITULO, actualtemp);
                 bundle.putString(ID,id);
                 bundle.putInt(SECUENCIA,0);
+                bundle.putSerializable(MODELO,null);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDPartidaProyecto());
 
             }
@@ -505,63 +469,54 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         tituloSingular = R.string.proyecto;
         tituloPlural = R.string.proyectos;
+        if (actualtemp.equals(PRESUPUESTO)) {
+            tituloNuevo = R.string.nuevo_presupuesto;
+        }else{
+            tituloNuevo = R.string.nuevo_proyecto;
+        }
     }
 
 
     @Override
     protected void setInicio() {
 
-        imagen = setImageView(R.id.imudpry);
-        imagenTipoClienteProyecto = setImageView(R.id.imgbtntipocliudpry);
-        btnimgEstadoPry = setImageView(R.id.imgbtnestudpry);
-        nombrePry = setEditText(R.id.etnomudpry);
-        descripcionPry = setEditText(R.id.etdescudpry);
-        spClienteProyecto = setAutoCompleteTextView(R.id.sptipocliudpry);
-        spEstadoProyecto = setSpinner(R.id.spestudpry);
-        estadoProyecto = setTextView(R.id.tvestudproy);
-        fechaEntradaPry = setTextView(R.id.proyecto_ud_tv_fecha_entrada);
-        fechaEntregaPresup = setTextView(R.id.tvfentpresuppry);
-        fechaCalculadaPry = setTextView(R.id.tvfcalcudpry);
-        fechaAcordadaPry = setTextView(R.id.tvfacorudpry);
-        fechaFinalPry = setTextView(R.id.tvffinudpry);
-        totalPartidasPry = setTextView(R.id.tvtotpartudpry);
-        pvpPartidas = setTextView(R.id.tvpreciopartidasudpry);
-        importeCalculadoPry = setTextView(R.id.tvimpcaludpry);
-        importeFinalPry = setEditText(R.id.etimpfinudpry);
-        btnEvento = setButton(R.id.btneventoudpry);
-        btnPartidasPry = setButton(R.id.btnpartudpry);
-        btnActualizar = setButton(R.id.btnactualizar);
-        btnActualizar2 = setButton(R.id.btnactualizar2);
-        btnfechaacord = setImageView(R.id.btnfechaacord);
-        btnfechaentrega = setImageView(R.id.btnfechaentrega);
-        labelfcalc = setTextView(R.id.lfcalcudpry);
-        labelfacor = setTextView(R.id.lfacorudpry);
-        labelffinal = setTextView(R.id.lffinudpry);
-        labelfentregap = setTextView(R.id.lfentpresupudpry);
-        labelimportecalculado = setTextView(R.id.limpcaludpry);
-        labelimportefinal = setTextView(R.id.limpfinudpry);
-        labelfentrada = setTextView(R.id.lfentudpry);
-        labelhoras = setTextView(R.id.lpreciopartidasudpry);
-        btnVerPdf = setButton(R.id.btnverpdfudpry);
-        btnenviarPdf = setButton(R.id.btnenviarpdfudpry);
-        btncompartirPdf = setButton(R.id.btncompartirpdfudpry);
-        btnpresupuestos = view.findViewById(R.id.btnpresuplpry);
-        btnproyectos = view.findViewById(R.id.btnproyectoslpry);
-        btncobros = view.findViewById(R.id.btnproycobroslpry);
-        btnhistorico = view.findViewById(R.id.btnhistoricopry);
-        btnVerEventos = view.findViewById(R.id.btnvereventosudpry);
-        sepFechaAcord = view.findViewById(R.id.separador_fecha_acordada);
-        sepFechaCalc = view.findViewById(R.id.separador_fecha_calculada);
-        sepFechaEntr = view.findViewById(R.id.separador_fecha_entrega);
-        sepFechaFin = view.findViewById(R.id.separador_fecha_final);
-        sepImpCalc = view.findViewById(R.id.separador_importe_calculado);
-        sepPrecios = view.findViewById(R.id.separador_precios);
+        imagen = (ImageView) ctrl(R.id.imudpry);
+        imagenTipoClienteProyecto = (ImageView) ctrl(R.id.imgbtntipocliudpry);
+        btnimgEstadoPry = (ImageView) ctrl(R.id.imgbtnestudpry);
+        nombrePry = (EditMaterial) ctrl(R.id.etnomudpry);
+        descripcionPry = (EditMaterial) ctrl(R.id.etdescudpry);
+        spClienteProyecto = (AutoCompleteTextView) ctrl(R.id.sptipocliudpry);
+        spEstadoProyecto = (Spinner) ctrl(R.id.spestudpry);
+        estadoProyecto = (EditMaterial) ctrl(R.id.tvestudproy);
+        fechaEntradaPry = (EditMaterial) ctrl(R.id.proyecto_ud_tv_fecha_entrada);
+        fechaEntregaPresup = (EditMaterial) ctrl(R.id.tvfentpresuppry);
+        fechaCalculadaPry = (EditMaterial) ctrl(R.id.tvfcalcudpry);
+        fechaAcordadaPry = (EditMaterial) ctrl(R.id.tvfacorudpry);
+        fechaFinalPry = (EditMaterial) ctrl(R.id.tvffinudpry);
+        totalPartidasPry = (EditMaterial) ctrl(R.id.tvtotpartudpry);
+        pvpPartidas = (EditMaterial) ctrl(R.id.tvpreciopartidasudpry);
+        importeCalculadoPry = (EditMaterial) ctrl(R.id.tvimpcaludpry);
+        importeFinalPry = (EditMaterial) ctrl(R.id.etimpfinudpry);
+        btnEvento = (ImageButton) ctrl(R.id.btneventoudpry);
+        btnPartidasPry = (Button) ctrl(R.id.btnpartudpry);
+        btnActualizar = (Button) ctrl(R.id.btnactualizar);
+        btnActualizar2 = (Button) ctrl(R.id.btnactualizar2);
+        btnfechaacord = (ImageView) ctrl(R.id.btnfechaacord);
+        btnfechaentrega = (ImageView) ctrl(R.id.btnfechaentrega);
+        btnVerPdf = (Button) ctrl(R.id.btnverpdfudpry);
+        btnVerPdf = (Button) ctrl(R.id.btnverpdfudpry);
+        btnenviarPdf = (ImageButton) ctrl(R.id.btnenviarpdfudpry);
+        btncompartirPdf = (ImageButton) ctrl(R.id.btncompartirpdfudpry);
+        btnpresupuestos = (Button) ctrl(R.id.btnpresuplpry);
+        btnproyectos = (Button) ctrl(R.id.btnproyectoslpry);
+        btncobros = (Button) ctrl(R.id.btnproycobroslpry);
+        btnhistorico = (Button) ctrl(R.id.btnhistoricopry);
+        btnVerEventos = (ImageButton) ctrl(R.id.btnvereventosudpry);
 
-        btnpresupuestos.setVisibility(View.GONE);
-        btnproyectos.setVisibility(View.GONE);
-        btncobros.setVisibility(View.GONE);
-        btnhistorico.setVisibility(View.GONE);
-        sepPrecios.setVisibility(View.VISIBLE);
+        gone(btnpresupuestos);
+        gone(btnproyectos);
+        gone(btncobros);
+        gone(btnhistorico);
 
     }
 
@@ -576,8 +531,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         btndelete.setVisibility(View.VISIBLE);
 
 
-        labelfentrada.setVisibility(View.VISIBLE);
-        labelhoras.setVisibility(View.VISIBLE);
         btndelete.setVisibility(View.VISIBLE);
         btnEvento.setVisibility(View.VISIBLE);
         btnPartidasPry.setVisibility(View.VISIBLE);
@@ -586,19 +539,12 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         fechaCalculadaPry.setVisibility(View.VISIBLE);
         btnfechaacord.setVisibility(View.VISIBLE);
         btnfechaentrega.setVisibility(View.VISIBLE);
-        labelfacor.setVisibility(View.VISIBLE);
-        labelfcalc.setVisibility(View.VISIBLE);
         btnActualizar.setVisibility(View.VISIBLE);
         btnActualizar2.setVisibility(View.VISIBLE);
         pvpPartidas.setVisibility(View.VISIBLE);
         fechaEntregaPresup.setVisibility(View.VISIBLE);
-        labelfentregap.setVisibility(View.VISIBLE);
         fechaFinalPry.setVisibility(View.VISIBLE);
-        labelfentregap.setVisibility(View.VISIBLE);
-        labelffinal.setVisibility(View.VISIBLE);
         totalPartidasPry.setVisibility(View.VISIBLE);
-        labelimportecalculado.setVisibility(View.VISIBLE);
-        labelimportefinal.setVisibility(View.VISIBLE);
         importeFinalPry.setVisibility(View.VISIBLE);
         importeCalculadoPry.setVisibility(View.VISIBLE);
         btnimgEstadoPry.setVisibility(View.VISIBLE);
@@ -617,12 +563,14 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             rv.setVisibility(View.GONE);
         }
 
-         */
+
 
         if (modelo.getString(PROYECTO_RUTAFOTO)!=null){
             path = modelo.getString(PROYECTO_RUTAFOTO);
-            setImagenUriCircle(contexto,path);
+            setImagenUri(contexto,path);
         }
+
+         */
 
         nombrePry.setText(modelo.getString(PROYECTO_NOMBRE));
         descripcionPry.setText(modelo.getString(PROYECTO_DESCRIPCION));
@@ -632,7 +580,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         fechaEntradaPry.setText(JavaUtil.getDateTime(modelo.getLong(PROYECTO_FECHAENTRADA)));
         if (modelo.getLong(PROYECTO_FECHAENTREGAPRESUP) == 0) {
             fechaEntregaPresup.setText
-                    (R.string.establecer_fecha_entrega_presup);
+                    (getResources().getString(R.string.establecer_fecha_entrega_presup));
         } else if (modelo.getLong(PROYECTO_FECHAENTREGAPRESUP) > 0) {
             fechaEntregaPresup.setText(JavaUtil.getDate(modelo.getLong(PROYECTO_FECHAENTREGAPRESUP)));
         }
@@ -651,31 +599,21 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             fechaCalculadaPry.setVisibility(View.GONE);
             btnfechaacord.setVisibility(View.GONE);
             btnfechaentrega.setVisibility(View.GONE);
-            labelfacor.setVisibility(View.GONE);
-            labelfcalc.setVisibility(View.GONE);
             btnActualizar.setVisibility(View.GONE);
             btnActualizar2.setVisibility(View.GONE);
             pvpPartidas.setVisibility(View.GONE);
             fechaEntregaPresup.setVisibility(View.GONE);
-            labelfentregap.setVisibility(View.GONE);
             totalPartidasPry.setVisibility(View.GONE);
-            labelhoras.setVisibility(View.GONE);
 
         } else {
 
             fechaAcordadaPry.setVisibility(View.VISIBLE);
             fechaCalculadaPry.setVisibility(View.VISIBLE);
             btnfechaacord.setVisibility(View.VISIBLE);
-            labelfacor.setVisibility(View.VISIBLE);
-            labelfcalc.setVisibility(View.VISIBLE);
             btnActualizar.setVisibility(View.VISIBLE);
             pvpPartidas.setVisibility(View.VISIBLE);
             btnfechaentrega.setVisibility(View.GONE);
             fechaEntregaPresup.setVisibility(View.GONE);
-            labelfentregap.setVisibility(View.GONE);
-            sepFechaAcord.setVisibility(View.VISIBLE);
-            sepFechaCalc.setVisibility(View.VISIBLE);
-            labelhoras.setVisibility(View.VISIBLE);
             totalPartidasPry.setVisibility(View.VISIBLE);
 
             if (modelo.getLong(PROYECTO_FECHAENTREGAACORDADA) == 0) {
@@ -693,12 +631,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
                     btnfechaentrega.setVisibility(View.VISIBLE);
                     fechaEntregaPresup.setVisibility(View.VISIBLE);
-                    sepFechaEntr.setVisibility(View.VISIBLE);
-                    labelfentregap.setVisibility(View.VISIBLE);
                 }
 
             }
-
 
             fechaCalculada = modelo.getLong(PROYECTO_FECHAENTREGACALCULADA);
             fechaCalculadaPry.setText(JavaUtil.getDate(fechaCalculada));
@@ -708,32 +643,24 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         if (modelo.getLong(PROYECTO_FECHAFINAL) == 0) {
             fechaFinalPry.setVisibility(View.GONE);
-            labelffinal.setVisibility(View.GONE);
         } else {
             fechaFinalPry.setVisibility(View.VISIBLE);
-            labelffinal.setVisibility(View.VISIBLE);
-            sepFechaFin.setVisibility(View.VISIBLE);
             fechaFinalPry.setText(JavaUtil.getDate(modelo.getLong(PROYECTO_FECHAFINAL)));
         }
 
 
         if (preciototal == 0) {
             importeCalculadoPry.setVisibility(View.GONE);
-            labelimportecalculado.setVisibility(View.GONE);
         } else {
             importeCalculadoPry.setVisibility(View.VISIBLE);
-            labelimportecalculado.setVisibility(View.VISIBLE);
-            sepImpCalc.setVisibility(View.VISIBLE);
             importeCalculadoPry.setText(JavaUtil.formatoMonedaLocal
                     (preciototal));
         }
 
         if (modelo.getInt(PROYECTO_TIPOESTADO) < 4) {
             importeFinalPry.setVisibility(View.GONE);
-            labelimportefinal.setVisibility(View.GONE);
         } else {
             importeFinalPry.setVisibility(View.VISIBLE);
-            labelimportefinal.setVisibility(View.VISIBLE);
             importeFinalPry.setText(JavaUtil.formatoMonedaLocal(modelo.getDouble(PROYECTO_IMPORTEFINAL)));
         }
 
@@ -795,44 +722,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setNuevo() {
 
-        labelfentrada.setVisibility(View.GONE);
-        labelhoras.setVisibility(View.GONE);
-        btndelete.setVisibility(View.GONE);
-        btnEvento.setVisibility(View.GONE);
-        btnPartidasPry.setVisibility(View.GONE);
-        estadoProyecto.setVisibility(View.GONE);
-        fechaAcordadaPry.setVisibility(View.GONE);
-        fechaCalculadaPry.setVisibility(View.GONE);
-        btnfechaacord.setVisibility(View.GONE);
-        btnfechaentrega.setVisibility(View.GONE);
-        labelfacor.setVisibility(View.GONE);
-        labelfcalc.setVisibility(View.GONE);
-        btnActualizar.setVisibility(View.GONE);
-        btnActualizar2.setVisibility(View.GONE);
-        pvpPartidas.setVisibility(View.GONE);
-        fechaEntregaPresup.setVisibility(View.GONE);
-        labelfentregap.setVisibility(View.GONE);
-        fechaFinalPry.setVisibility(View.GONE);
-        labelfentregap.setVisibility(View.GONE);
-        labelffinal.setVisibility(View.GONE);
-        totalPartidasPry.setVisibility(View.GONE);
-        labelimportecalculado.setVisibility(View.GONE);
-        labelimportefinal.setVisibility(View.GONE);
-        importeFinalPry.setVisibility(View.GONE);
-        importeCalculadoPry.setVisibility(View.GONE);
-        btnimgEstadoPry.setVisibility(View.GONE);
-        fechaEntradaPry.setVisibility(View.GONE);
-        btnVerPdf.setVisibility(View.GONE);
-        btnenviarPdf.setVisibility(View.GONE);
-        btncompartirPdf.setVisibility(View.GONE);
-        nombrePry.setVisibility(View.GONE);
-        descripcionPry.setVisibility(View.GONE);
-        imagen.setVisibility(View.GONE);
-        spEstadoProyecto.setVisibility(View.GONE);
-        btnsave.setVisibility(View.GONE);
-        btnVerEventos.setVisibility(View.GONE);
-        path = null;
-
+        allGone();
+        visible(imagenTipoClienteProyecto);
+        visible(spClienteProyecto);
 
         listaObjetosEstados();
 
@@ -1018,7 +910,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                     break;
                 case TPRESUPACEPTADO:
                     importeFinalPry.setVisibility(View.VISIBLE);
-                    labelimportefinal.setVisibility(View.VISIBLE);
                     importeFinalPry.setText(JavaUtil.formatoMonedaLocal
                             (proyecto.getDouble(PROYECTO_IMPORTEFINAL)));
                     btnActualizar.setText(String.format("%s %s", convertir, PROYECTEJECUCION));
@@ -1086,6 +977,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             estadoProyecto.setText(PRESUPPENDENTREGA);
             idEstado = idPresupPendEntrega;
 
+            crearEventoPresupuesto();
+
         } else if (idEstado.equals(idPresupPendEntrega)) {
 
             estadoProyecto.setText(PRESUPESPERA);
@@ -1093,7 +986,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             //showDatePickerDialogEntrega();
             btnfechaentrega.setVisibility(View.VISIBLE);
             fechaEntregaPresup.setVisibility(View.VISIBLE);
-            labelfentregap.setVisibility(View.VISIBLE);
 
         } else if (idEstado.equals(idPresupEnEspera) && fechaEntregaP >0) {
 
@@ -1140,6 +1032,47 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         new CommonPry.Calculos.TareaTipoCliente().execute(idCliente);
 
         Log.e(TAG,"modificarEstado");
+    }
+
+    private void crearEventoPresupuesto() {
+        Uri uri = generarPDF();
+        long fechaini = JavaUtil.sumaDiaMesAnio(JavaUtil.hoy());
+        long horaini = JavaUtil.sumaHoraMin(JavaUtil.hoy());
+        String asunto = "Presupuesto solicitado";
+        String mensaje = "Envio presupuesto solicitado por usted";
+        Modelo cliente = consulta.queryObject(CAMPOS_CLIENTE,idCliente);
+        valores = new ContentValues();
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_TIPOEVENTO, CommonPry.TiposEvento.TIPOEVENTOEMAIL);
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_DESCRIPCION,"Envío presupuesto a cliente");
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_EMAIL,cliente.getString(CLIENTE_EMAIL));
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO, fechaini);
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO, horaini+HORASLONG);
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF, JavaUtil.getDate(fechaini));
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF, JavaUtil.getTime(horaini+HORASLONG));
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_TIMESTAMP, JavaUtil.hoy());
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_ASUNTO, asunto);
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_MENSAJE, mensaje);
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_RUTAADJUNTO, String.valueOf(uri));
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_RUTAFOTO, modelo.getString(PROYECTO_RUTAFOTO));
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_PROYECTOREL, id);
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_CLIENTEREL, idCliente);
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMPROYECTOREL, modelo.getString(PROYECTO_NOMBRE));
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMCLIENTEREL, nombreCliente);
+        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_AVISO, 50*MINUTOSLONG);
+
+        consulta.insertRegistro(TABLA_EVENTO,valores);
+    }
+
+    private Uri generarPDF() {
+
+        PresupuestoPDF presupuestoPDF = new PresupuestoPDF();
+        presupuestoPDF.setNombreArchivo(id);
+        presupuestoPDF.crearPdf(id,modelo.getString(PROYECTO_RUTAFOTO));
+        valores = new ContentValues();
+        consulta.putDato(valores,campos,PROYECTO_RUTAPDF,String.valueOf(presupuestoPDF.getFileUri()));
+        consulta.updateRegistro(tabla,id,valores);
+
+        return presupuestoPDF.getFileUri();
     }
 
     private void modificarEstadoNoAceptado() {
@@ -1342,7 +1275,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                         if (fechaAcordada>0){
                             fechaEntregaPresup.setVisibility(View.VISIBLE);
                             btnfechaentrega.setVisibility(View.VISIBLE);
-                            labelfentregap.setVisibility(View.VISIBLE);
                         }
                         String selectedDate = JavaUtil.getDate(fechaAcordada);
                         fechaAcordadaPry.setText(selectedDate);
@@ -1429,7 +1361,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
             }
             if (modelo.getString(PROYECTO_RUTAFOTO)!=null) {
-                ImagenUtil imagenUtil =new ImagenUtil(AppActivity.getAppContext());
+                MediaUtil imagenUtil =new MediaUtil(AppActivity.getAppContext());
                 imagenUtil.setImageUriCircle(modelo.getString(PROYECTO_RUTAFOTO),imagenProyecto);
             }
             int peso = modelo.getInt(PROYECTO_CLIENTE_PESOTIPOCLI);
@@ -1488,10 +1420,10 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             }
 
             if (entrada.get(posicion).getCampos(ContratoPry.Tablas.PROYECTO_RUTAFOTO) != null) {
-                //imagen.setImageURI(Uri.parse(entrada.getCampos
+                //imagenTarea.setImageURI(Uri.parse(entrada.getCampos
                 //        (ContratoPry.Tablas.PROYECTO_RUTAFOTO)));
-                imagenUtil = new ImagenUtil(contexto);
-                imagenUtil.setImageUriCircle(entrada.get(posicion).getString(PROYECTO_RUTAFOTO),imagen);
+                mediaUtil = new MediaUtil(contexto);
+                mediaUtil.setImageUriCircle(entrada.get(posicion).getString(PROYECTO_RUTAFOTO),imagen);
             }
             int peso = Integer.parseInt(entrada.get(posicion).getCampos
                     (ContratoPry.Tablas.CLIENTE_PESOTIPOCLI));

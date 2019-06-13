@@ -75,7 +75,7 @@
                     android:id="@+id/btnsaveNpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/boton_redondo_verde"
+                    android:background="@drawable/boton_redondo_primary"
                     android:textColor="@color/Color_texto_titulos"
                     android:text="@string/guardar" />
 
@@ -83,7 +83,7 @@
                     android:id="@+id/btnvolverNpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/boton_redondo_verde"
+                    android:background="@drawable/boton_redondo_primary"
                     android:textColor="@color/Color_texto_titulos"
                     android:text="@string/volver" />
 

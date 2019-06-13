@@ -2,8 +2,6 @@ package jjlacode.com.freelanceproject.ui;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -42,17 +40,17 @@ import java.util.Locale;
 
 import jjlacode.com.freelanceproject.model.Categorias;
 import jjlacode.com.freelanceproject.model.Proveedores;
-import jjlacode.com.freelanceproject.util.AndroidUtil;
-import jjlacode.com.freelanceproject.util.CRUDutil;
-import jjlacode.com.freelanceproject.util.FragmentCUD;
-import jjlacode.com.freelanceproject.util.ImagenUtil;
+import jjlacode.com.freelanceproject.util.android.AndroidUtil;
+import jjlacode.com.freelanceproject.util.crud.CRUDutil;
+import jjlacode.com.freelanceproject.util.crud.FragmentCUD;
+import jjlacode.com.freelanceproject.util.media.MediaUtil;
 import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltro;
-import jjlacode.com.freelanceproject.util.Modelo;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltro;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.model.ProdProv;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.util.CommonPry;
+import jjlacode.com.freelanceproject.CommonPry;
 
 public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Constantes,
         ContratoPry.Tablas, CommonPry.TiposDetPartida, CommonPry.TiposEstados  {
@@ -328,14 +326,14 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
 
 
         if (tipo.equals(TIPOPRODUCTOPROV) && modelo.getString(DETPARTIDA_RUTAFOTO)!=null){
-            imagenUtil = new ImagenUtil(contexto);
+            mediaUtil = new MediaUtil(contexto);
             path = modelo.getString(DETPARTIDA_RUTAFOTO);
             setImagenFireStoreCircle(contexto,path,imagen);
         }
         else if (modelo.getString(DETPARTIDA_RUTAFOTO)!=null){
-            imagenUtil = new ImagenUtil(contexto);
+            mediaUtil = new MediaUtil(contexto);
             path = modelo.getString(DETPARTIDA_RUTAFOTO);
-            imagenUtil.setImageUri(modelo.getString(DETPARTIDA_RUTAFOTO),imagen);
+            mediaUtil.setImageUri(modelo.getString(DETPARTIDA_RUTAFOTO),imagen);
         }
 
     }
@@ -770,7 +768,7 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
 
     private void rv(){
 
-        imagenUtil = new ImagenUtil(contexto);
+        mediaUtil = new MediaUtil(contexto);
 
         switch (tipo) {
 
@@ -798,7 +796,7 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
                         tiempoDet.setText(tarea.getString(TAREA_TIEMPO));
                         if (tarea.getString(TAREA_RUTAFOTO) != null) {
                             path = tarea.getString(TAREA_RUTAFOTO);
-                            imagenUtil.setImageUriCircle(path,imagen);
+                            mediaUtil.setImageUriCircle(path,imagen);
                         }
                     }
                 });
@@ -827,7 +825,7 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
 
                         if (producto.getString(PRODUCTO_RUTAFOTO) != null) {
                             path = producto.getString(PRODUCTO_RUTAFOTO);
-                            imagenUtil.setImageUriCircle(path,imagen);
+                            mediaUtil.setImageUriCircle(path,imagen);
                         }
 
                     }
@@ -857,7 +855,7 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
 
                         if (partidabase.getString(PARTIDABASE_RUTAFOTO) != null) {
                             path = partidabase.getString(PARTIDABASE_RUTAFOTO);
-                            imagenUtil.setImageUriCircle(path,imagen);
+                            mediaUtil.setImageUriCircle(path,imagen);
                         }
 
                     }
@@ -953,7 +951,7 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
 
                         path = prodProv.getRutafoto();
                         if (path!=null) {
-                            setImagenFireStoreCircle(path, imagen);
+                            setImagenFireStoreCircle(path, imagenTarea);
                         }
 
 
@@ -1237,7 +1235,7 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
                             //StorageReference spaceRef = storageRef.child(rutafoto);
                             //GlideApp.with(getContext())
                             //        .load(spaceRef)
-                            //        .into(imagen);
+                            //        .into(imagenTarea);
                         }
 
                     }
@@ -1525,7 +1523,7 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
                 //FirebaseStorage storage = FirebaseStorage.getInstance();
                 //StorageReference storageRef = storage.getReference();
                 //StorageReference spaceRef = storageRef.child(rutafoto);
-                imagenUtil = new ImagenUtil(getContext());
+                mediaUtil = new MediaUtil(getContext());
                 imagen = mView.findViewById(R.id.imagenprov);
                 setImagenFireStoreCircle(contexto,rutafoto,imagen);
                 path = rutafoto;
@@ -1574,7 +1572,7 @@ public class FragmentCUDDetpartida extends FragmentCUD implements CommonPry.Cons
             holder.precio.setText(String.valueOf(lista.get(position).getPrecio()));
             if (lista.get(position).getRutafoto()!=null){
 
-                ImagenUtil imagenUtil = new ImagenUtil(contexto);
+                MediaUtil imagenUtil = new MediaUtil(contexto);
                 imagenUtil.setImageFireStoreCircle(lista.get(position).getRutafoto(),imagen);
             }
         }

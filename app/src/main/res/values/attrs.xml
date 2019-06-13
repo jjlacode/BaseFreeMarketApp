@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="OneCalendarView">
+        <attr name="mainBackgroundColor" format="color" />
+        <attr name="calendarBackgroundColor" format="color" />
+        <attr name="currentDayBackgroundColor" format="color" />
+        <attr name="backgroundColorDaysOfMonth" format="color" />
+        <attr name="backgroundColorDaysOfAnotherMonth" format="color" />
+        <attr name="textColorDaysOfMonth" format="color" />
+        <attr name="textColorDaysOfAnotherMonth" format="color" />
+        <attr name="textColorMonthAndYear" format="color" />
+        <attr name="textColorSelectedDay" format="color" />
+        <attr name="textColorCurrentDayDay" format="color" />
+        <attr name="backgroundColorSelectedDay" format="color" />
+        <attr name="calendarLanguage" format="enum">
+            <enum name="ES" value="0" />
+            <enum name="EN" value="1" />
+            <enum name="PT_BR" value="2" />
+        </attr>
+
+
+    </declare-styleable>
+    <declare-styleable name="EditMaterial">
+        <attr name="hint_text" format="string"/>
+        <attr name="activo" format="boolean"/>
+        <attr name="tipo_dato" format="flags">
+            <flag name="NUMERO" value="2"/>
+            <flag name="TEXTO" value="1"/>
+            <flag name="TELEFONO" value="3"/>
+            <flag name="FECHA" value="4"/>
+            <flag name="DECIMAL" value="8192"/>
+            <flag name="EMAIL" value="32"/>
+            <flag name="ASUNTO" value="48"/>
+            <flag name="MENSAJE" value="80"/>
+            <flag name="MULTI" value="131072"/>
+            <flag name="DIRECCION" value="112"/>
+            <flag name="PASS" value="128"/>
+            <flag name="PERSONA" value="96"/>
+            <flag name="URI" value="16"/>
+            <flag name="CAPINI" value="16384"/>
+            <flag name="CAPPALABRAS" value="8192"/>
+            <flag name="CAP" value="4096"/>
+            <flag name="AUTO" value="65536"/>
+            <flag name="SIGNO" value="4096"/>
+            <flag name="NUMEROPASS" value="16"/>
+        </attr>
+        <attr name="gravedad" format="flags">
+            <flag name="inicio" value="8388611"/>
+            <flag name="fin" value="8388613"/>
+            <flag name="centro" value="17"/>
+            <flag name="horizontal" value="1"/>
+            <flag name="vertical" value="16"/>
+            <flag name="top" value="48"/>
+            <flag name="bottom" value="80"/>
+        </attr>
+    </declare-styleable>
+
+</resources>

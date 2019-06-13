@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:jjla="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,17 +9,17 @@
     tools:context=".ui.FragmentCRUDProyecto">
 
 
-        <LinearLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imudpry"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -26,60 +27,52 @@
                     android:minHeight="80dp"
                     app:srcCompat="@drawable/ico_calendario_reloj" />
 
-                <LinearLayout
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
-                    <EditText
+                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                         android:id="@+id/etnomudpry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/nombre"
-                        android:textSize="@dimen/texto"
-                        android:inputType="textPersonName"
-                        android:background="@drawable/cuadro_texto"
-                        android:minHeight="25dp" />
+                        app:hint_text="@string/nombre"
+                        app:tipo_dato="PERSONA"/>
 
-                    <EditText
+                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                         android:id="@+id/etdescudpry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:minHeight="@dimen/texto_doble"
-                        android:ems="10"
-                        android:gravity="top"
-                        android:textSize="@dimen/texto"
-                        android:hint="@string/descripcion_tipo_cliente"
-                        android:background="@drawable/cuadro_texto"
-                        android:inputType="textMultiLine" />
-                </LinearLayout>
+                        app:gravedad="top"
+                        app:hint_text="@string/descripcion"
+                        app:tipo_dato="MULTI|TEXTO" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
-            </LinearLayout>
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <LinearLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgbtntipocliudpry"
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:layout_weight="10"
-                    android:scaleType="fitCenter"
+                    android:scaleType="center"
                     app:srcCompat="@drawable/ic_person_add_black_24dp" />
 
-                <AutoCompleteTextView
+
+                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                     android:id="@+id/sptipocliudpry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.2"
-                    android:textSize="@dimen/texto"
-                    android:background="@drawable/cuadro_texto"
-                    android:hint="@string/asignar_cliente" />
-            </LinearLayout>
+                    android:hint="@string/cliente" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -93,17 +86,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:layout_weight="10"
-                    android:scaleType="fitCenter"
+                    android:scaleType="center"
                     app:srcCompat="@drawable/alert_box_v" />
 
-                <TextView
+                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/tvestudproy"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="center"
-                    android:singleLine="true"
-                    android:textSize="@dimen/texto" />
+                    app:hint_text="@string/estado"
+                    app:gravedad="centro"/>
 
                 <Spinner
                     android:id="@+id/spestudpry"
@@ -114,47 +106,12 @@
 
             </LinearLayout>
 
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:background="@drawable/separador" />
-
-            <LinearLayout
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                android:id="@+id/proyecto_ud_tv_fecha_entrada"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/lfentudpry"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:textSize="@dimen/texto"
-                    android:text="@string/fecha_entrada" />
-
-                <TextView
-                    android:id="@+id/proyecto_ud_tv_fecha_entrada"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="end"
-                    android:text="@string/fecha_entrada"
-                    android:textSize="@dimen/texto" />
-            </LinearLayout>
-
-            <View
-                android:id="@+id/separador_fecha_calculada"
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_weight="3"
-                android:visibility="gone"
-                android:background="@drawable/separador" />
+                app:activo="false"
+                app:hint_text="@string/fecha_entrada"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -169,32 +126,21 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
                     android:textSize="@dimen/texto"
+                    android:visibility="gone"
                     android:text="@string/fecha_calculada" />
 
-                <TextView
+                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/tvfcalcudpry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="end"
-                    android:text="@string/fecha_calculada"
-                    android:textSize="@dimen/texto"/>
+                    app:hint_text="@string/fecha_calculada"
+                    app:activo="false"/>
             </LinearLayout>
-
-            <View
-                android:id="@+id/separador_fecha_acordada"
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_weight="3"
-                android:visibility="gone"
-                android:background="@drawable/separador" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -207,44 +153,27 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
-
                         android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/lfacorudpry"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="3"
-                            android:textSize="@dimen/texto"
-                            android:text="@string/fecha_acordada_trabajo" />
 
-                        <TextView
+                        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                             android:id="@+id/tvfacorudpry"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="2"
-                            android:gravity="end"
+                            android:layout_weight="1"
                             android:text="@string/sinfecha"
-                            android:textSize="@dimen/texto" />
+                            app:hint_text="@string/fecha_acordada"
+                            app:activo="false"/>
 
                         <ImageView
                             android:id="@+id/btnfechaacord"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_weight="4"
-                            android:scaleType="fitCenter"
+                            android:layout_weight="5"
+                            android:scaleType="center"
                             app:srcCompat="@drawable/ic_search_black_24dp" />
 
                     </LinearLayout>
-
-                    <View
-                        android:id="@+id/separador_fecha_entrega"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:visibility="gone"
-                        android:background="@drawable/separador" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -253,46 +182,45 @@
                         android:layout_marginRight="5dp"
                         android:orientation="horizontal">
 
-                        <TextView
-                            android:id="@+id/lfentpresupudpry"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="3"
-                            android:textSize="@dimen/texto"
-                            android:text="@string/fecha_entrega_presup" />
-
-                        <TextView
+                        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                             android:id="@+id/tvfentpresuppry"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="bottom"
-                            android:layout_weight="2"
-                            android:gravity="end"
+                            android:layout_weight="1"
                             android:text="@string/sinfecha"
-                            android:textSize="@dimen/texto" />
+                            app:hint_text="@string/fecha_entrega_presup"
+                            app:activo="false"/>
 
                         <ImageView
                             android:id="@+id/btnfechaentrega"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_weight="4"
-                            android:scaleType="fitCenter"
+                            android:layout_weight="5"
+                            android:scaleType="center"
                             app:srcCompat="@drawable/ic_search_black_24dp" />
                     </LinearLayout>
                 </LinearLayout>
 
             </LinearLayout>
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnpartudpry"
+                style="@style/boton_primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/partidas_proyecto"/>
 
-            <View
-                android:id="@+id/separador_fecha_final"
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_weight="3"
-                android:visibility="gone"
-                android:background="@drawable/separador" />
+
+
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+
+                android:id="@+id/tvffinudpry"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="@string/sinfecha"
+                app:hint_text="@string/fecha_final"
+                app:activo="false"/>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -301,226 +229,131 @@
                 android:layout_marginRight="5dp"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/lffinudpry"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:textSize="@dimen/texto"
-                    android:text="@string/fecha_final" />
 
-                <TextView
-                    android:id="@+id/tvffinudpry"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/sinfecha"
-                    android:textSize="@dimen/texto" />
-            </LinearLayout>
-
-            <View
-                android:id="@+id/separador_importe_calculado"
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:visibility="gone"
-                android:background="@drawable/separador" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/limpcaludpry"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top|fill_vertical"
-                    android:layout_weight="1"
-                    android:gravity="top"
-                    android:textSize="@dimen/texto"
-                    android:text="@string/importe_calculado" />
-
-                <TextView
+                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/tvimpcaludpry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
                     android:layout_weight="1"
                     android:text="@string/sinprecio"
-                    android:textSize="@dimen/texto" />
+                    app:hint_text="@string/importe_calculado"
+                    app:activo="false"/>
 
-                <TextView
-                    android:id="@+id/limpfinudpry"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:textSize="@dimen/texto"
-                    android:text="@string/importe_final" />
 
-                <EditText
+                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/etimpfinudpry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="fill_vertical"
                     android:layout_weight="1"
                     android:inputType="numberDecimal"
                     android:text="@string/sinprecio"
-                    android:background="@drawable/cuadro_texto"
-                    android:textSize="@dimen/texto" />
-            </LinearLayout>
+                    app:hint_text="@string/importe_final" />
 
-            <View
-                android:id="@+id/separador_precios"
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_weight="1"
-                android:visibility="gone"
-                android:background="@drawable/separador" />
+            </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:weightSum="3">
+                    android:layout_marginRight="5dp">
 
 
-                    <TextView
+                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                         android:id="@+id/tvtotpartudpry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/sinpartidas"
-                        android:textSize="@dimen/texto" />
+                        app:hint_text="@string/horas_mo"
+                        app:activo="false"/>
 
-                    <TextView
-                        android:id="@+id/lpreciopartidasudpry"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:textSize="@dimen/texto"
-                        android:text="@string/horas" />
 
-                    <TextView
+                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                         android:id="@+id/tvpreciopartidasudpry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:textSize="@dimen/texto"
-                        android:text="TextView" />
-                    <Button
-                        android:id="@+id/btnpartudpry"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/altobtn"
-                        android:layout_weight="1"
-                        android:background="@drawable/boton_redondo_verde_sinpd"
-                        android:textColor="@color/Color_texto_titulos"
-                        android:textSize="@dimen/texto_boton"
-                        android:text="@string/partidas_proyecto" />
+                        app:hint_text="@string/importe_mo"
+                        app:activo="false"/>
+
+
+
                 </LinearLayout>
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnactualizar"
+                style="@style/boton_primary"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/altobtn"
-                android:layout_weight="1"
-                android:background="@drawable/boton_redondo_verde"
-                android:textColor="@color/Color_texto_titulos"
-                android:textSize="@dimen/texto_boton"
-                android:text="Button"/>
+                android:layout_height="wrap_content"/>
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnactualizar2"
+                style="@style/boton_secondary"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/altobtn"
-                android:background="@drawable/boton_redondo_verde"
-                android:textColor="@color/Color_texto_titulos"
-                android:textSize="@dimen/texto_boton"
-                android:text="Button" />
+                android:layout_height="wrap_content"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/altobtn"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btneventoudpry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/boton_redondo_verde"
-                android:textColor="@color/Color_texto_titulos"
-                android:layout_weight="1"
-                android:textSize="@dimen/texto_boton"
-                android:text="@string/evento_relacionado" />
-
-            <Button
-                android:id="@+id/btnvereventosudpry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/boton_redondo_verde"
-                android:textColor="@color/Color_texto_titulos"
-                android:layout_weight="1"
-                android:textSize="@dimen/texto_boton"
-                android:text="@string/ver_eventos_relacionados" />
-
-            </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/altobtn"
+        android:layout_height="@dimen/altobtnico"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btneventoudpry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scaleType="center"
+            android:background="@drawable/boton_redondo_blanco"
+            android:src="@drawable/ic_evento_verde"/>
+
+        <ImageButton
+            android:id="@+id/btnvereventosudpry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scaleType="center"
+            android:background="@drawable/boton_redondo_blanco"
+            android:src="@drawable/ic_lista_evento_verde" />
 
         <Button
             android:id="@+id/btnverpdfudpry"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/boton_redondo_verde"
+            android:layout_gravity="center"
+            android:background="@drawable/boton_redondo_blanco"
             android:text="@string/ver_pdf"
             android:textSize="@dimen/texto_boton"
             android:textColor="@color/Color_texto_titulos" />
 
-        <Button
+        <ImageButton
             android:id="@+id/btnenviarpdfudpry"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/boton_redondo_verde"
-            android:text="@string/enviar_pdf"
-            android:textSize="@dimen/texto_boton"
-            android:textColor="@color/Color_texto_titulos" />
+            android:scaleType="center"
+            android:background="@drawable/boton_redondo_blanco"
+            android:src="@drawable/ic_mail_verde"/>
 
-        <Button
+        <ImageButton
             android:id="@+id/btncompartirpdfudpry"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/boton_redondo_verde"
-            android:text="@string/compartir_presup"
-            android:textSize="@dimen/texto_boton"
-            android:textColor="@color/Color_texto_titulos" />
+            android:scaleType="center"
+            android:background="@drawable/boton_redondo_blanco"
+            android:src="@drawable/ic_compartir_verde"/>
 
     </LinearLayout>
 
 
 
 
-        </LinearLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>

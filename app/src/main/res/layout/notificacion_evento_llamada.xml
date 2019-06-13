@@ -56,7 +56,7 @@
             android:id="@+id/btnvernotllamada"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/boton_redondo_verde"
+            android:background="@drawable/boton_redondo_primary"
             android:textColor="@color/Color_texto_titulos"
             android:layout_weight="1"
             android:text="@string/ver" />
@@ -65,7 +65,7 @@
             android:id="@+id/btnposponernotllamada"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/boton_redondo_verde"
+            android:background="@drawable/boton_redondo_primary"
             android:textColor="@color/Color_texto_titulos"
             android:layout_weight="1"
             android:text="@string/posponer" />
@@ -74,7 +74,7 @@
             android:id="@+id/btndescartarrnotllamada"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/boton_redondo_verde"
+            android:background="@drawable/boton_redondo_primary"
             android:textColor="@color/Color_texto_titulos"
             android:layout_weight="1"
             android:text="@string/completa" />

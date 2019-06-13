@@ -5,25 +5,24 @@ import android.net.Uri;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import jjlacode.com.freelanceproject.util.CommonPry;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.AMORTIZACION;
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.CLIENTE;
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.DETPARTIDA;
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.DETPARTIDABASE;
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.ESTADO;
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.EVENTO;
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.GASTOFIJO;
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.NOTA;
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.PARTIDA;
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.PARTIDABASE;
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.PEDIDOSPROV;
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.PERFIL;
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.PRODUCTO;
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.PROYECTO;
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.TIPOCLIENTE;
-import static jjlacode.com.freelanceproject.util.CommonPry.TiposEvento.TAREA;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.AMORTIZACION;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.CLIENTE;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.DETPARTIDA;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.DETPARTIDABASE;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.ESTADO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.EVENTO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.GASTOFIJO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.NOTA;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PARTIDA;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PARTIDABASE;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PEDIDOSPROV;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PERFIL;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PRODUCTO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PROYECTO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.TAREA;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.TIPOCLIENTE;
 
 
 public class ContratoPry implements JavaUtil.Constantes {
@@ -86,6 +85,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         String PROYECTO_COSTE = "coste_proyecto";
         String PROYECTO_TIEMPO = "tiempo_proyecto";
         String PROYECTO_RUTAFOTO = "rutafoto_proyecto";
+        String PROYECTO_RUTAPDF = "rutapdf_proyecto";
         String PROYECTO_TOTCOMPLETADO = "totcomplet_proyecto";
         String PROYECTO_TIMESTAMP = "timestamp";
         //REFERENCIAS
@@ -314,7 +314,7 @@ public class ContratoPry implements JavaUtil.Constantes {
 
         //CAMPOS----------------------------------------------------------------
 
-        String[] CAMPOS_PROYECTO = {"71", TABLA_PROYECTO,
+        String[] CAMPOS_PROYECTO = {"74", TABLA_PROYECTO,
                 PROYECTO_ID_PROYECTO, "TEXT NON NULL UNIQUE",STRING,
                 PROYECTO_ID_CLIENTE, String.format("TEXT NON NULL %s", ID_CLIENTE),STRING,
                 PROYECTO_ID_ESTADO, String.format("TEXT NON NULL %s", ID_ESTADO),STRING,
@@ -336,6 +336,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PROYECTO_COSTE, "REAL NON NULL DEFAULT 0",DOUBLE,
                 PROYECTO_TIEMPO, "REAL NON NULL DEFAULT 0",DOUBLE,
                 PROYECTO_RUTAFOTO, "TEXT ",STRING,
+                PROYECTO_RUTAPDF, "TEXT ",STRING,
                 PROYECTO_TOTCOMPLETADO, "INTEGER NON NULL DEFAULT 0",INT,
                 PROYECTO_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG,
                 //Campos referencia
@@ -592,6 +593,39 @@ public class ContratoPry implements JavaUtil.Constantes {
         listaCampos.add(Tablas.CAMPOS_NOTA);
 
         return listaCampos;
+    }
+
+    public static String[] obtenerCampos(String tabla){
+
+        ArrayList<String[]> listaCampos = obtenerListaCampos();
+
+        for (String[] campo : listaCampos) {
+             if (campo[1].equals(tabla)){
+                 return campo;
+             }
+        }
+
+        return null;
+    }
+
+    public static String getTabCab(String tabla){
+
+        switch (tabla){
+
+            case Tablas.TABLA_PARTIDA:
+
+                return Tablas.TABLA_PROYECTO;
+
+            case Tablas.TABLA_DETPARTIDA:
+
+                return Tablas.TABLA_PARTIDA;
+
+            case Tablas.TABLA_DETPARTIDABASE:
+
+                return Tablas.TABLA_PARTIDABASE;
+        }
+
+        return null;
     }
 
     public static Uri obtenerUriContenido(String tabla){

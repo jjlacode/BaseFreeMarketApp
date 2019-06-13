@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:jjla="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/imgtarea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY" />
+
+    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+        android:id="@+id/etnombretarea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        jjla:hint_text="nombre"/>
+
+    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+        android:id="@+id/etdesctarea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        jjla:hint_text="@string/descripcion"/>
+
+    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+        android:id="@+id/ettiempotarea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        jjla:tipo_dato= "NUMERO|DECIMAL"
+        jjla:hint_text="@string/horas"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btn_crearnota_tarea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boton_redondo_primary"
+            android:src="@drawable/ic_nueva_nota_verde"
+            android:layout_weight="1"/>
+
+        <ImageButton
+            android:id="@+id/btn_vernotas_tarea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boton_redondo_primary"
+            android:src="@drawable/ic_lista_notas_verde"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

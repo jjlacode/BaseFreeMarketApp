@@ -3,7 +3,7 @@
     package="jjlacode.com.freelanceproject">
 
     <application
-        android:name=".util.AppActivity"
+        android:name=".util.android.AppActivity"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -22,7 +22,7 @@
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".util.MainActivityBase" />
+        <activity android:name=".util.android.MainActivityBase" />
         <provider
             android:name=".sqlite.ProviderFreelanceProject"
             android:authorities="jjlacode.com.freelanceproject"

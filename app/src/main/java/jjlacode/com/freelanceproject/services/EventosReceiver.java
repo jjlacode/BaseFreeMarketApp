@@ -8,13 +8,12 @@ import android.content.Intent;
 
 import jjlacode.com.freelanceproject.MainActivity;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.SplashActivity;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.util.CRUDutil;
-import jjlacode.com.freelanceproject.util.CommonPry;
+import jjlacode.com.freelanceproject.util.crud.CRUDutil;
+import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.Modelo;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.CONTNOT;
@@ -60,8 +59,8 @@ public class EventosReceiver extends BroadcastReceiver implements CommonPry.Cons
             Modelo evento = CRUDutil.setModelo(CAMPOS_EVENTO, idEvento);
             ConsultaBD consulta = new ConsultaBD();
             ContentValues valores = new ContentValues();
-            long minhoy = JavaUtil.horaMin(JavaUtil.hoy());
-            long minAviso = JavaUtil.horaMin(evento.getLong(EVENTO_HORAINIEVENTO));
+            long minhoy = JavaUtil.sumaHoraMin(JavaUtil.hoy());
+            long minAviso = JavaUtil.sumaHoraMin(evento.getLong(EVENTO_HORAINIEVENTO));
             consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_NOTIFICADO, 0);
             consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, (minAviso - minhoy - HORASLONG) - (3 * MINUTOSLONG));
             consulta.updateRegistro(TABLA_EVENTO, idEvento, valores);

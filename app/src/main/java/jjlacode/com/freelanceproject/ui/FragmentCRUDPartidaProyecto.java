@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.Chronometer;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.ImageView;
@@ -22,25 +19,25 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.util.AppActivity;
-import jjlacode.com.freelanceproject.util.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.CommonPry;
-import jjlacode.com.freelanceproject.util.FragmentCRUD;
-import jjlacode.com.freelanceproject.util.ImagenUtil;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
+import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
+import jjlacode.com.freelanceproject.util.media.MediaUtil;
 import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltroRV;
-import jjlacode.com.freelanceproject.util.ListaModelo;
-import jjlacode.com.freelanceproject.util.Modelo;
-import jjlacode.com.freelanceproject.util.TipoViewHolder;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.crud.ListaModelo;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
+import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 
 public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonPry.Constantes,
         ContratoPry.Tablas, CommonPry.TiposDetPartida, CommonPry.TiposEstados {
@@ -279,7 +276,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
 
         layoutCuerpo = R.layout.fragment_cud_partida_proyecto;
         layoutCabecera = R.layout.cabecera_crud_partida;
-        layoutitem = R.layout.item_list_partida;
+        layoutItem = R.layout.item_list_partida;
 
     }
 
@@ -322,6 +319,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
 
     }
 
+    /*
     @Override
     protected void setTablaCab() {
 
@@ -346,11 +344,14 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
         campoID = PARTIDA_ID_PROYECTO;
     }
 
+     */
+
     @Override
     protected void setBundle() {
 
         if (bundle != null) {
             proyecto = (Modelo) bundle.getSerializable(PROYECTO);
+            activityBase.toolbar.setSubtitle(proyecto.getString(PROYECTO_NOMBRE));
 
         }
 
@@ -415,13 +416,16 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
 
         }
 
+        /*
         if (modelo.getString(PARTIDA_RUTAFOTO) != null) {
 
             path = modelo.getString(PARTIDA_RUTAFOTO);
-            ImagenUtil imagenUtil = new ImagenUtil(contexto);
-            imagenUtil.setImageUriCircle(path, imagen);
+            MediaUtil imagenUtil = new MediaUtil(contexto);
+            imagenUtil.setImageUri(path, imagen);
 
         }
+
+         */
 
 
         nombrePartida.setText(modelo.getString(PARTIDA_NOMBRE));
@@ -639,7 +643,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
             }
             if (listDetpartida.get(position).getString(DETPARTIDA_RUTAFOTO) != null) {
                 if (tipodetpartida.equals(TIPOPRODUCTOPROV)) {
-                    ImagenUtil imagenUtil = new ImagenUtil(context);
+                    MediaUtil imagenUtil = new MediaUtil(context);
                     imagenUtil.setImageFireStoreCircle(listDetpartida.get(position).getString(DETPARTIDA_RUTAFOTO), detpartidaViewHolder.imagen);
 
                 } else {
@@ -724,9 +728,9 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                 limporte.setVisibility(View.GONE);
 
                 if (entrada.getString(PARTIDABASE_RUTAFOTO) != null) {
-                    ImagenUtil imagenUtil = new ImagenUtil(contexto);
+                    MediaUtil imagenUtil = new MediaUtil(contexto);
                     imagenUtil.setImageUriCircle(entrada.getString(PARTIDABASE_RUTAFOTO), imagen);
-                    //imagen.setImageURI(entrada.getUri(PARTIDABASE_RUTAFOTO));
+                    //imagenTarea.setImageURI(entrada.getUri(PARTIDABASE_RUTAFOTO));
                 }
 
             }
@@ -1036,6 +1040,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
         ImageView imagenPartida, imagenret;
         TextView descripcionPartida, tiempoPartida, cantidadPartida, completadaPartida, importePartida;
         ProgressBar progressBarPartida;
+        CardView card;
 
         public ViewHolderRV(View itemView) {
             super(itemView);
@@ -1047,6 +1052,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
             importePartida = itemView.findViewById(R.id.tvimppartida);
             completadaPartida = itemView.findViewById(R.id.tvcompletadapartida);
             progressBarPartida = itemView.findViewById(R.id.progressBarpartida);
+            card = itemView.findViewById(R.id.cardlpartida);
 
         }
 
@@ -1062,7 +1068,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
 
             if (modelo.getString(PARTIDA_RUTAFOTO) != null) {
 
-                imagenPartida.setImageURI(modelo.getUri(PARTIDA_RUTAFOTO));
+                mediaUtil = new MediaUtil(contexto);
+                mediaUtil.setImageUriCircle(modelo.getString(PARTIDA_RUTAFOTO),imagenPartida);
             }
 
             long retraso = modelo.getLong(PARTIDA_PROYECTO_RETRASO);
@@ -1081,6 +1088,9 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
             } else {
 
                 progressBarPartida.setVisibility(View.VISIBLE);
+            }
+            if ((getAdapterPosition()+1)%2==0){
+                card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_defecto));
             }
 
             super.bind(modelo);

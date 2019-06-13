@@ -10,13 +10,20 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
+        <ImageView
+            android:id="@+id/imgsearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:minHeight="30dp"
+            app:srcCompat="@drawable/ic_search_black_24dp"/>
+
         <AutoCompleteTextView
             android:id="@+id/auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/boton_redondo_blanco"
-            android:hint="@android:string/search_go"
             android:minHeight="30dp" />
 
         <ImageView

@@ -8,16 +8,14 @@ import android.util.Log;
 
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import jjlacode.com.freelanceproject.util.CommonPry;
-import jjlacode.com.freelanceproject.util.Modelo;
+import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
 
 import static jjlacode.com.freelanceproject.sqlite.ContratoPry.Tablas.EVENTO_AVISO;
 import static jjlacode.com.freelanceproject.sqlite.ContratoPry.Tablas.EVENTO_COMPLETADA;
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.ACCION_AVISOEVENTO;
-import static jjlacode.com.freelanceproject.util.CommonPry.Constantes.EVENTO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.ACCION_AVISOEVENTO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.EVENTO;
 
 public class AvisoEventos extends JobService {
 

@@ -4,8 +4,8 @@ package jjlacode.com.freelanceproject.templates;
 import java.util.ArrayList;
 
 import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.Modelo;
-import jjlacode.com.freelanceproject.util.PdfUtils;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
+import jjlacode.com.freelanceproject.util.media.PdfUtils;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 

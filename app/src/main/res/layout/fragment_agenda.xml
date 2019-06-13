@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/cardview_light_background"
+    android:background="@color/colorPrimary"
     tools:context=".ui.FragmentAgenda">
 
 
@@ -12,6 +12,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imgagendacalendario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_lista_evento_verde" />
 
         <ImageView
             android:id="@+id/imgagendaeventos"
@@ -27,21 +35,24 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_event_note_verde_24dp" />
+            android:src="@drawable/ic_lista_notas_verde" />
 
-        <ImageView
-            android:id="@+id/imgagendapartidas"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_tareas_verde_24dp" />
+
 
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvagendacalendario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="@string/calendario"/>
 
         <TextView
             android:id="@+id/tvagendaeventos"
@@ -61,14 +72,7 @@
             android:textStyle="bold"
             android:text="@string/notas"/>
 
-        <TextView
-            android:id="@+id/tvagendapartidas"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:text="@string/tareas_pendientes"/>
+
 
     </LinearLayout>
     <LinearLayout
@@ -107,69 +111,6 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/tvagendacalendario"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:text="@string/presupuesto_pendiente_entrega"/>
-
-        <TextView
-            android:id="@+id/tvagendaotro"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:text="@string/presupuestos_en_espera"/>
-
-        <TextView
-            android:id="@+id/tvagendasalir"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:text="@string/pendiente_cobro"/>
-
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/imgagendacalendario"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_entrega_verde_24dp" />
-
-        <ImageView
-            android:id="@+id/imgagendaotro"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_espera_verde_24dp" />
-
-        <ImageView
-            android:id="@+id/imgagendasalir"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_cobros_verde_24dp" />
-
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
             android:id="@+id/tvagendapresupentrega"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -195,6 +136,71 @@
             android:gravity="center"
             android:textStyle="bold"
             android:text="@string/pendiente_cobro"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imgagendapartidas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_tareas_verde_24dp" />
+
+
+
+        <ImageView
+            android:id="@+id/imgagendaotro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_espera_verde_24dp" />
+
+        <ImageView
+            android:id="@+id/imgagendasalir"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_stop_verde" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvagendapartidas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="@string/tareas_pendientes"/>
+
+        <TextView
+            android:id="@+id/tvagendaotro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="@string/otro"/>
+
+        <TextView
+            android:id="@+id/tvagendasalir"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="@string/salir"/>
 
     </LinearLayout>
 

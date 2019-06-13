@@ -1,16 +1,10 @@
 package jjlacode.com.freelanceproject;
 
 import android.app.NotificationManager;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -20,29 +14,24 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import jjlacode.com.freelanceproject.services.AutoArranque;
-import jjlacode.com.freelanceproject.services.AvisoEventos;
 import jjlacode.com.freelanceproject.settings.SettingsActivity;
-import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.ui.FragmentAgenda;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDEvento;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDPartidaProyecto;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDPartidaBase;
-import jjlacode.com.freelanceproject.util.AppActivity;
-import jjlacode.com.freelanceproject.util.CRUDutil;
-import jjlacode.com.freelanceproject.util.CommonPry;
-import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.MainActivityBase;
+import jjlacode.com.freelanceproject.ui.FragmentCRUDProducto;
+import jjlacode.com.freelanceproject.ui.FragmentCRUDTarea;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.android.MainActivityBase;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDAmortizacion;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDCliente;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDGastoFijo;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDPerfil;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDProyecto;
-import jjlacode.com.freelanceproject.util.Modelo;
-import jjlacode.com.freelanceproject.util.VisorPDF;
-import jjlacode.com.freelanceproject.util.VisorPDFEmail;
+import jjlacode.com.freelanceproject.util.media.VisorPDF;
+import jjlacode.com.freelanceproject.util.media.VisorPDFEmail;
 
 import static android.Manifest.permission.CALL_PHONE;
 import static android.Manifest.permission.CAMERA;
@@ -124,7 +113,11 @@ public class MainActivity extends MainActivityBase {
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
-        }if (id == R.id.action_inicio) {
+        }else if (id == R.id.action_info) {
+            bundle.putString(ACTUAL, INICIO);
+            recargarFragment();
+            return true;
+        }else if (id == R.id.action_help) {
             bundle.putString(ACTUAL, INICIO);
             recargarFragment();
             return true;
@@ -141,7 +134,7 @@ public class MainActivity extends MainActivityBase {
         bundle.putString(ID, null);
         bundle.putString(MODELO, null);
         bundle.putInt(SECUENCIA, 0);
-        bundle.putString(ORIGEN, null);
+        bundle.putString(ORIGEN, INICIO);
         bundle.putString(ACTUAL, null);
         bundle.putString(ACTUALTEMP, null);
         bundle.putBoolean(PERSISTENCIA,false);
@@ -187,7 +180,18 @@ public class MainActivity extends MainActivityBase {
             bundle.putString(ACTUAL, PARTIDABASE);
             recargarFragment();
 
+        }else if (itemId == R.id.nav_tarea) {
+
+            bundle.putString(ACTUAL, TAREA);
+            recargarFragment();
+
+        }else if (itemId == R.id.nav_producto) {
+
+            bundle.putString(ACTUAL, PRODUCTO);
+            recargarFragment();
+
         }
+
 
     }
 
@@ -260,6 +264,14 @@ public class MainActivity extends MainActivityBase {
                 enviarBundleAFragment(bundle, new VisorPDF());
                 break;
 
+            case TAREA:
+                enviarBundleAFragment(bundle, new FragmentCRUDTarea());
+                break;
+
+            case PRODUCTO:
+                enviarBundleAFragment(bundle, new FragmentCRUDProducto());
+                break;
+
 
         }
 
@@ -277,6 +289,7 @@ public class MainActivity extends MainActivityBase {
         else if ((checkSelfPermission(CAMERA)== PackageManager.PERMISSION_GRANTED) &&
                 (checkSelfPermission(CALL_PHONE)== PackageManager.PERMISSION_GRANTED) &&
                 (checkSelfPermission(INTERNET)== PackageManager.PERMISSION_GRANTED) &&
+                (checkSelfPermission(RECORD_AUDIO)== PackageManager.PERMISSION_GRANTED) &&
                 (checkSelfPermission(READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED) &&
                 (checkSelfPermission(RECEIVE_BOOT_COMPLETED)== PackageManager.PERMISSION_GRANTED) &&
                 (checkSelfPermission(WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED)
@@ -287,6 +300,7 @@ public class MainActivity extends MainActivityBase {
         else if ((shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE))||
                 (shouldShowRequestPermissionRationale(READ_EXTERNAL_STORAGE))||
                 (shouldShowRequestPermissionRationale(RECEIVE_BOOT_COMPLETED))||
+                (shouldShowRequestPermissionRationale(RECORD_AUDIO))||
                 (shouldShowRequestPermissionRationale(INTERNET))||
                 (shouldShowRequestPermissionRationale(CAMERA))||
                 (shouldShowRequestPermissionRationale(CALL_PHONE))){

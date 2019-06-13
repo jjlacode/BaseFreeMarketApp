@@ -130,7 +130,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/boton_redondo_verde"
+                    android:background="@drawable/boton_redondo_primary"
                     android:textColor="@color/Color_texto_titulos"
                     android:text="@string/nueva_tarea_base" />
 
@@ -139,7 +139,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/boton_redondo_verde"
+                    android:background="@drawable/boton_redondo_primary"
                     android:textColor="@color/Color_texto_titulos"
                     android:text="@string/nuevo_producto" />
 
@@ -148,7 +148,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/boton_redondo_verde"
+                    android:background="@drawable/boton_redondo_primary"
                     android:textColor="@color/Color_texto_titulos"
                     android:text="@string/nuevo_producto_proveedor" />
 
@@ -157,7 +157,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/boton_redondo_verde"
+                    android:background="@drawable/boton_redondo_primary"
                     android:textColor="@color/Color_texto_titulos"
                     android:text="@string/nueva_partidabase" />
 

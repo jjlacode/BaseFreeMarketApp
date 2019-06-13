@@ -15,7 +15,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -31,25 +30,25 @@ import java.util.ArrayList;
 
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.util.AppActivity;
-import jjlacode.com.freelanceproject.util.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.CRUDutil;
-import jjlacode.com.freelanceproject.util.CommonPry;
-import jjlacode.com.freelanceproject.util.DatePickerFragment;
-import jjlacode.com.freelanceproject.util.FragmentCRUD;
-import jjlacode.com.freelanceproject.util.ImagenUtil;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
+import jjlacode.com.freelanceproject.util.crud.CRUDutil;
+import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.util.time.DatePickerFragment;
+import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
+import jjlacode.com.freelanceproject.util.media.MediaUtil;
 import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltro;
-import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltroRV;
-import jjlacode.com.freelanceproject.util.ListaModelo;
-import jjlacode.com.freelanceproject.util.Modelo;
-import jjlacode.com.freelanceproject.util.TimePickerFragment;
-import jjlacode.com.freelanceproject.util.TipoViewHolder;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltro;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.crud.ListaModelo;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
+import jjlacode.com.freelanceproject.util.time.TimePickerFragment;
+import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 
-import static jjlacode.com.freelanceproject.util.AppActivity.viewOnMapA;
-import static jjlacode.com.freelanceproject.util.CommonPry.setNamefdef;
+import static jjlacode.com.freelanceproject.util.android.AppActivity.viewOnMapA;
+import static jjlacode.com.freelanceproject.CommonPry.setNamefdef;
 import static jjlacode.com.freelanceproject.util.JavaUtil.getDate;
-import static jjlacode.com.freelanceproject.util.JavaUtil.getDateTime;
 import static jjlacode.com.freelanceproject.util.JavaUtil.getTime;
 import static jjlacode.com.freelanceproject.util.JavaUtil.hoy;
 
@@ -60,35 +59,36 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     private Spinner tiposEvento;
     private AutoCompleteTextView proyRel;
     private AutoCompleteTextView cliRel;
-    private EditText descipcion;
-    private EditText lugar;
-    private EditText telefono;
-    private EditText email;
-    private EditText asunto;
-    private EditText mensaje;
-    private TextView fechaIni;
-    private TextView fechaFin;
-    private TextView horaIni;
-    private TextView horaFin;
-    private EditText repAnios;
-    private EditText repMeses;
-    private EditText repDias;
-    private EditText drepAnios;
-    private EditText drepMeses;
-    private EditText drepDias;
-    private EditText avisoMinutos;
-    private EditText avisoHoras;
-    private EditText avisoDias;
+    private EditMaterial descipcion;
+    private EditMaterial lugar;
+    private EditMaterial telefono;
+    private EditMaterial email;
+    private EditMaterial asunto;
+    private EditMaterial mensaje;
+    private EditMaterial fechaIni;
+    private EditMaterial fechaFin;
+    private EditMaterial horaIni;
+    private EditMaterial horaFin;
+    private EditMaterial repAnios;
+    private EditMaterial repMeses;
+    private EditMaterial repDias;
+    private EditMaterial drepAnios;
+    private EditMaterial drepMeses;
+    private EditMaterial drepDias;
+    private EditMaterial avisoMinutos;
+    private EditMaterial avisoHoras;
+    private EditMaterial avisoDias;
     private CheckBox aviso;
     private CheckBox repeticiones;
     private CheckBox mismoDiaMes;
     private CheckBox mismoDiaAnio;
+    private CheckBox chNotificado;
     private TextView laviso;
     private TextView lrep;
     private TextView ldrep;
     private TextView tipoEvento;
-    private Button btnNota;
-    private Button btnVerNotas;
+    private ImageButton btnNota;
+    private ImageButton btnVerNotas;
     private Button btnVerRepeticiones;
 
     private ArrayList<Modelo> listaClientes;
@@ -105,7 +105,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
 
     private String idMulti;
-    private EditText completa;
+    private EditMaterial completa;
 
     private ImageView btnhfin;
     private ImageView btnhini;
@@ -116,10 +116,10 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     private ImageView imgemail;
     private CheckBox relCli;
     private CheckBox relProy;
+    private CheckBox completada;
     private Modelo proyecto;
     private Modelo cliente;
     private ArrayList<String> listaTiposEvento;
-    private TextView lcompleta;
     private AdaptadorFiltroRV adaptadorFiltroRV;
     private int notificado;
 
@@ -151,15 +151,19 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
             idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
             relCli.setChecked(true);
+            activityBase.toolbar.setSubtitle("Nuevo evento - "+cliente.getString(CLIENTE_NOMBRE));
 
         }
         if (proyecto!=null) {
 
             idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
             relProy.setChecked(true);
+            activityBase.toolbar.setSubtitle("Nuevo evento - "+proyecto.getString(PROYECTO_NOMBRE));
 
         }
 
+        allGone();
+        /*
         lugar.setVisibility(View.GONE);
         imgmapa.setVisibility(View.GONE);
         telefono.setVisibility(View.GONE);
@@ -196,24 +200,28 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
         descipcion.setVisibility(View.GONE);
         relProy.setVisibility(View.GONE);
         relCli.setVisibility(View.GONE);
-        tiposEvento.setVisibility(View.VISIBLE);
         completa.setVisibility(View.GONE);
-        lcompleta.setVisibility(View.GONE);
         btnNota.setVisibility(View.GONE);
         btnVerNotas.setVisibility(View.GONE);
         tipoEvento.setVisibility(View.GONE);
         btnVerRepeticiones.setVisibility(View.GONE);
         mismoDiaMes.setVisibility(View.GONE);
         mismoDiaAnio.setVisibility(View.GONE);
+        asunto.setVisibility(View.GONE);
+        mensaje.setVisibility(View.GONE);
+        chNotificado.setVisibility(View.GONE);
 
+         */
+
+        tiposEvento.setVisibility(View.VISIBLE);
 
         listaTiposEvento = new ArrayList<>();
         listaTiposEvento.add("Elija el tipo de evento");
-        listaTiposEvento.add(TAREA);
-        listaTiposEvento.add(CITA);
-        listaTiposEvento.add(EMAIL);
-        listaTiposEvento.add(LLAMADA);
-        listaTiposEvento.add(CommonPry.TiposEvento.EVENTO);
+        listaTiposEvento.add(TIPOEVENTOTAREA);
+        listaTiposEvento.add(TIPOEVENTOCITA);
+        listaTiposEvento.add(TIPOEVENTOEMAIL);
+        listaTiposEvento.add(TIPOEVENTOLLAMADA);
+        listaTiposEvento.add(CommonPry.TiposEvento.TIPOEVENTOEVENTO);
 
         ArrayAdapter<String> adapterTiposEvento = new ArrayAdapter<>
                 (getContext(),R.layout.spinner_item_tipo,listaTiposEvento);
@@ -228,42 +236,10 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
                 if (position>0) {
 
-                    lugar.setVisibility(View.GONE);
-                    imgmapa.setVisibility(View.GONE);
-                    telefono.setVisibility(View.GONE);
-                    imgllamada.setVisibility(View.GONE);
-                    email.setVisibility(View.GONE);
-                    imgemail.setVisibility(View.GONE);
-                    asunto.setVisibility(View.GONE);
-                    mensaje.setVisibility(View.GONE);
-                    repAnios.setVisibility(View.GONE);
-                    repMeses.setVisibility(View.GONE);
-                    repDias.setVisibility(View.GONE);
-                    drepAnios.setVisibility(View.GONE);
-                    drepMeses.setVisibility(View.GONE);
-                    drepDias.setVisibility(View.GONE);
-                    avisoDias.setVisibility(View.GONE);
-                    avisoHoras.setVisibility(View.GONE);
-                    avisoMinutos.setVisibility(View.GONE);
-                    fechaIni.setVisibility(View.GONE);
-                    horaIni.setVisibility(View.GONE);
-                    fechaFin.setVisibility(View.GONE);
-                    horaFin.setVisibility(View.GONE);
-                    btnfini.setVisibility(View.GONE);
-                    btnffin.setVisibility(View.GONE);
-                    btnhini.setVisibility(View.GONE);
-                    btnhfin.setVisibility(View.GONE);
-                    laviso.setVisibility(View.GONE);
-                    lrep.setVisibility(View.GONE);
-                    ldrep.setVisibility(View.GONE);
-                    repeticiones.setVisibility(View.GONE);
-                    aviso.setVisibility(View.GONE);
-                    imagen.setVisibility(View.GONE);
-                    descipcion.setVisibility(View.GONE);
+                    allGone();
+
                     relProy.setVisibility(View.VISIBLE);
                     relCli.setVisibility(View.VISIBLE);
-                    cliRel.setVisibility(View.GONE);
-                    proyRel.setVisibility(View.GONE);
 
                     tevento = listaTiposEvento.get(position);
                     imagen.setVisibility(View.VISIBLE);
@@ -296,11 +272,14 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
                     switch (tevento){
 
-                        case TAREA:
+                        case TIPOEVENTOTAREA:
+
+                            asunto.setVisibility(View.VISIBLE);
+                            mensaje.setVisibility(View.VISIBLE);
 
                             break;
 
-                        case CITA:
+                        case TIPOEVENTOCITA:
                             lugar.setVisibility(View.VISIBLE);
                             asunto.setVisibility(View.VISIBLE);
                             mensaje.setVisibility(View.VISIBLE);
@@ -310,9 +289,15 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                             btnhini.setVisibility(View.VISIBLE);
                             repeticiones.setVisibility(View.VISIBLE);
                             aviso.setVisibility(View.VISIBLE);
+                            asunto.setVisibility(View.VISIBLE);
+                            mensaje.setVisibility(View.VISIBLE);
+                            if (origen.equals(CALENDARIO)){
+                                finiEvento = bundle.getLong(FECHA);
+                                fechaIni.setText(JavaUtil.getDate(finiEvento));
+                            }
                             break;
 
-                        case EMAIL:
+                        case TIPOEVENTOEMAIL:
                             email.setVisibility(View.VISIBLE);
                             asunto.setVisibility(View.VISIBLE);
                             mensaje.setVisibility(View.VISIBLE);
@@ -322,9 +307,16 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                             btnhini.setVisibility(View.VISIBLE);
                             repeticiones.setVisibility(View.VISIBLE);
                             aviso.setVisibility(View.VISIBLE);
+                            asunto.setVisibility(View.VISIBLE);
+                            mensaje.setVisibility(View.VISIBLE);
+                            if (origen.equals(CALENDARIO)){
+                                finiEvento = bundle.getLong(FECHA);
+                                fechaIni.setText(JavaUtil.getDate(finiEvento));
+                            }
+
                             break;
 
-                        case LLAMADA:
+                        case TIPOEVENTOLLAMADA:
                             telefono.setVisibility(View.VISIBLE);
                             asunto.setVisibility(View.VISIBLE);
                             mensaje.setVisibility(View.VISIBLE);
@@ -334,9 +326,16 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                             btnhini.setVisibility(View.VISIBLE);
                             repeticiones.setVisibility(View.VISIBLE);
                             aviso.setVisibility(View.VISIBLE);
+                            asunto.setVisibility(View.VISIBLE);
+                            mensaje.setVisibility(View.VISIBLE);
+                            if (origen.equals(CALENDARIO)){
+                                finiEvento = bundle.getLong(FECHA);
+                                fechaIni.setText(JavaUtil.getDate(finiEvento));
+                            }
+
                             break;
 
-                        case CommonPry.TiposEvento.EVENTO:
+                        case CommonPry.TiposEvento.TIPOEVENTOEVENTO:
                             fechaIni.setVisibility(View.VISIBLE);
                             horaIni.setVisibility(View.VISIBLE);
                             fechaFin.setVisibility(View.VISIBLE);
@@ -347,48 +346,22 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                             btnhfin.setVisibility(View.VISIBLE);
                             repeticiones.setVisibility(View.VISIBLE);
                             aviso.setVisibility(View.VISIBLE);
+                            asunto.setVisibility(View.VISIBLE);
+                            mensaje.setVisibility(View.VISIBLE);
+                            if (origen.equals(CALENDARIO)){
+                                finiEvento = bundle.getLong(FECHA);
+                                fechaIni.setText(JavaUtil.getDate(finiEvento));
+                            }
+
                             break;
 
                     }
 
                 }else{
 
-                    lugar.setVisibility(View.GONE);
-                    imgmapa.setVisibility(View.GONE);
-                    telefono.setVisibility(View.GONE);
-                    imgllamada.setVisibility(View.GONE);
-                    email.setVisibility(View.GONE);
-                    imgemail.setVisibility(View.GONE);
-                    asunto.setVisibility(View.GONE);
-                    mensaje.setVisibility(View.GONE);
-                    repAnios.setVisibility(View.GONE);
-                    repMeses.setVisibility(View.GONE);
-                    repDias.setVisibility(View.GONE);
-                    drepAnios.setVisibility(View.GONE);
-                    drepMeses.setVisibility(View.GONE);
-                    drepDias.setVisibility(View.GONE);
-                    avisoDias.setVisibility(View.GONE);
-                    avisoHoras.setVisibility(View.GONE);
-                    avisoMinutos.setVisibility(View.GONE);
-                    fechaIni.setVisibility(View.GONE);
-                    horaIni.setVisibility(View.GONE);
-                    fechaFin.setVisibility(View.GONE);
-                    horaFin.setVisibility(View.GONE);
-                    btnfini.setVisibility(View.GONE);
-                    btnffin.setVisibility(View.GONE);
-                    btnhini.setVisibility(View.GONE);
-                    btnhfin.setVisibility(View.GONE);
-                    laviso.setVisibility(View.GONE);
-                    lrep.setVisibility(View.GONE);
-                    ldrep.setVisibility(View.GONE);
-                    repeticiones.setVisibility(View.GONE);
-                    aviso.setVisibility(View.GONE);
-                    proyRel.setVisibility(View.GONE);
-                    cliRel.setVisibility(View.GONE);
-                    imagen.setVisibility(View.GONE);
-                    descipcion.setVisibility(View.GONE);
-                    relProy.setVisibility(View.GONE);
-                    relCli.setVisibility(View.GONE);
+                    allGone();
+                    tiposEvento.setVisibility(View.VISIBLE);
+
                 }
 
             }
@@ -452,10 +425,14 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
             switch (tevento) {
 
-                case TAREA:
+                case TIPOEVENTOTAREA:
+
+                    consulta.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
+                    consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
+
                     break;
 
-                case CITA:
+                case TIPOEVENTOCITA:
                     consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, finiEvento);
                     consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, hiniEvento);
                     consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
@@ -465,7 +442,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
                     break;
 
-                case EMAIL:
+                case TIPOEVENTOEMAIL:
                     consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, finiEvento);
                     consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, hiniEvento);
                     consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
@@ -475,7 +452,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
                     break;
 
-                case LLAMADA:
+                case TIPOEVENTOLLAMADA:
                     consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, finiEvento);
                     consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, hiniEvento);
                     consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
@@ -485,7 +462,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
                     break;
 
-                case CommonPry.TiposEvento.EVENTO:
+                case CommonPry.TiposEvento.TIPOEVENTOEVENTO:
                     consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, finiEvento);
                     consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTO, ffinEvento);
                     consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, hiniEvento);
@@ -494,6 +471,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
                     consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTOF,fechaFin.getText().toString());
                     consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTOF,horaFin.getText().toString());
+                    consulta.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
+                    consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
 
                     break;
 
@@ -581,7 +560,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                         consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, fecharep);
                         consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,JavaUtil.getDate(fecharep));
 
-                        if (tevento.equals(CommonPry.TiposEvento.EVENTO)) {
+                        if (tevento.equals(CommonPry.TiposEvento.TIPOEVENTOEVENTO)) {
                             consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTO, (fecharep + diffecha));
                             consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTOF,JavaUtil.getDate(fecharep+diffecha));
 
@@ -630,29 +609,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     }
 
     @Override
-    protected void setTablaCab() {
-
-        tablaCab = null;
-    }
-
-    @Override
-    protected void setContext() {
-
-        contexto = getContext();
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = CAMPOS_EVENTO;
-    }
-
-    @Override
-    protected void setCampoID() {
-        campoID = EVENTO_ID_EVENTO;
-    }
-
-    @Override
     protected void setBundle() {
 
         proyecto = (Modelo) bundle.getSerializable(TABLA_PROYECTO);
@@ -675,11 +631,13 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
         mismoDiaAnio.setVisibility(View.GONE);
         mismoDiaMes.setChecked(false);
         mismoDiaAnio.setChecked(false);
+        chNotificado.setVisibility(View.GONE);
+
 
         completa.setText(modelo.getString(EVENTO_COMPLETADA));
-        imagenUtil = new ImagenUtil(contexto);
-        imagenUtil.setImageUri(modelo.getString(EVENTO_RUTAFOTO), imagen);
-            path = modelo.getString(EVENTO_RUTAFOTO);
+        //mediaUtil = new MediaUtil(contexto);
+        //mediaUtil.setImageUri(modelo.getString(EVENTO_RUTAFOTO), imagenTarea);
+        //    path = modelo.getString(EVENTO_RUTAFOTO);
 
         if (consulta.checkQueryList(CAMPOS_NOTA,NOTA_ID_RELACIONADO,id,null,IGUAL,null)){
             btnVerNotas.setVisibility(View.VISIBLE);
@@ -687,6 +645,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
             btnVerNotas.setVisibility(View.GONE);
         }
 
+
+        notificado = modelo.getInt(EVENTO_NOTIFICADO);
 
         if (modelo.getString(EVENTO_PROYECTOREL)!=null){
 
@@ -698,45 +658,30 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
             nombreCliente = modelo.getString(EVENTO_NOMCLIENTEREL);
             cliRel.setText(nombreCliente);
             relCli.setChecked(true);
+            proyRel.setVisibility(View.VISIBLE);
+            cliRel.setVisibility(View.VISIBLE);
+            proyRel.setEnabled(false);
+            cliRel.setEnabled(false);
+            activityBase.toolbar.setSubtitle(nombreProyecto);
+
 
         }else if (modelo.getString(EVENTO_CLIENTEREL)!=null){
 
             idCliente = modelo.getString(EVENTO_CLIENTEREL);
             nombreCliente = modelo.getString(EVENTO_NOMCLIENTEREL);
+            if (nombreProyecto==null) {
+                activityBase.toolbar.setSubtitle(nombreCliente);
+            }
+
             cliRel.setText(nombreCliente);
             relCli.setChecked(true);
+            cliRel.setVisibility(View.VISIBLE);
+            cliRel.setEnabled(false);
         }
 
-        lugar.setVisibility(View.GONE);
-        imgmapa.setVisibility(View.GONE);
-        telefono.setVisibility(View.GONE);
-        imgllamada.setVisibility(View.GONE);
-        email.setVisibility(View.GONE);
-        imgemail.setVisibility(View.GONE);
-        asunto.setVisibility(View.GONE);
-        mensaje.setVisibility(View.GONE);
-        repAnios.setVisibility(View.GONE);
-        repMeses.setVisibility(View.GONE);
-        repDias.setVisibility(View.GONE);
-        drepAnios.setVisibility(View.GONE);
-        drepMeses.setVisibility(View.GONE);
-        drepDias.setVisibility(View.GONE);
-        fechaIni.setVisibility(View.GONE);
-        horaIni.setVisibility(View.GONE);
-        fechaFin.setVisibility(View.GONE);
-        horaFin.setVisibility(View.GONE);
-        btnfini.setVisibility(View.GONE);
-        btnffin.setVisibility(View.GONE);
-        btnhini.setVisibility(View.GONE);
-        btnhfin.setVisibility(View.GONE);
-        laviso.setVisibility(View.GONE);
-        lrep.setVisibility(View.GONE);
-        ldrep.setVisibility(View.GONE);
-        repeticiones.setVisibility(View.GONE);
+
+        allGone();
         repeticiones.setChecked(false);
-        proyRel.setVisibility(View.GONE);
-        cliRel.setVisibility(View.GONE);
-        lcompleta.setVisibility(View.VISIBLE);
         completa.setVisibility(View.VISIBLE);
 
         idMulti =  modelo.getString(EVENTO_IDMULTI);
@@ -757,6 +702,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
             tevento = modelo.getString(EVENTO_TIPOEVENTO);
             tipoEvento.setVisibility(View.VISIBLE);
             descipcion.setText(modelo.getString(EVENTO_DESCRIPCION));
+            asunto.setText(modelo.getString(EVENTO_ASUNTO));
+            mensaje.setText(modelo.getString(EVENTO_MENSAJE));
 
 
             if (modelo.getLong(EVENTO_AVISO) > 0) {
@@ -771,12 +718,20 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 avisoHoras.setVisibility(View.VISIBLE);
                 avisoMinutos.setVisibility(View.VISIBLE);
                 laviso.setVisibility(View.VISIBLE);
+                chNotificado.setVisibility(View.VISIBLE);
+                if (notificado==1){
+                    chNotificado.setChecked(true);
+                }else{
+                    chNotificado.setChecked(false);
+                }
+
             } else {
                 avisoDias.setVisibility(View.GONE);
                 avisoHoras.setVisibility(View.GONE);
                 avisoMinutos.setVisibility(View.GONE);
                 laviso.setVisibility(View.GONE);
                 aviso.setChecked(false);
+                chNotificado.setVisibility(View.GONE);
             }
         }
 
@@ -786,11 +741,11 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
             switch (tevento) {
 
-                case TAREA:
+                case TIPOEVENTOTAREA:
 
                     break;
 
-                case CITA:
+                case TIPOEVENTOCITA:
                     lugar.setVisibility(View.VISIBLE);
                     imgmapa.setVisibility(View.VISIBLE);
                     asunto.setVisibility(View.VISIBLE);
@@ -808,7 +763,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     horaIni.setText(getTime(hiniEvento));
                     break;
 
-                case EMAIL:
+                case TIPOEVENTOEMAIL:
                     email.setVisibility(View.VISIBLE);
                     imgemail.setVisibility(View.VISIBLE);
                     asunto.setVisibility(View.VISIBLE);
@@ -826,7 +781,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     horaIni.setText(getTime(hiniEvento));
                     break;
 
-                case LLAMADA:
+                case TIPOEVENTOLLAMADA:
                     telefono.setVisibility(View.VISIBLE);
                     imgllamada.setVisibility(View.VISIBLE);
                     asunto.setVisibility(View.VISIBLE);
@@ -844,7 +799,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     horaIni.setText(getTime(hiniEvento));
                     break;
 
-                case CommonPry.TiposEvento.EVENTO:
+                case CommonPry.TiposEvento.TIPOEVENTOEVENTO:
                     fechaIni.setVisibility(View.VISIBLE);
                     horaIni.setVisibility(View.VISIBLE);
                     fechaFin.setVisibility(View.VISIBLE);
@@ -880,11 +835,22 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
         btnfini.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                showDatePickerDialogInicio();
+            }
+        });
+        fechaIni.setOnClick(new EditMaterial.OnClick() {
+            @Override
+            public void onClick(View v) {
                 showDatePickerDialogInicio();
             }
         });
         btnffin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialogFin();
+            }
+        });
+        fechaFin.setOnClick(new EditMaterial.OnClick() {
             @Override
             public void onClick(View v) {
 
@@ -894,11 +860,23 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
         btnhini.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showTimePickerDialogini();
+            }
+        });
+        horaFin.setOnClick(new EditMaterial.OnClick() {
+            @Override
+            public void onClick(View v) {
 
                 showTimePickerDialogini();
             }
         });
         btnhfin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTimePickerDialogfin();
+            }
+        });
+        horaFin.setOnClick(new EditMaterial.OnClick() {
             @Override
             public void onClick(View v) {
 
@@ -911,7 +889,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
             public void onClick(View v) {
 
                 AppActivity.hacerLlamada(AppActivity.getAppContext()
-                        ,telefono.getText().toString());
+                        ,modelo.getString(EVENTO_TELEFONO));
             }
         });
 
@@ -921,7 +899,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
                 AppActivity.enviarEmail(contexto, modelo.getString(EVENTO_EMAIL),
                         modelo.getString(EVENTO_ASUNTO),modelo.getString(EVENTO_MENSAJE),
-                        modelo.getUri(EVENTO_RUTAADJUNTO));
+                        modelo.getString(EVENTO_RUTAADJUNTO));
 
             }
         });
@@ -932,7 +910,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
                 if (!lugar.getText().toString().equals("")){
 
-                    viewOnMapA(AppActivity.getAppContext(),lugar.getText().toString());
+                    viewOnMapA(contexto,modelo.getString(EVENTO_LUGAR));
                 }
 
             }
@@ -952,9 +930,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     if (finiEvento>hoy()) {
                         notificado = 0;
                     }
-                    //avisoDias.setText("0");
-                    //avisoHoras.setText("0");
-                    //avisoMinutos.setText("0");
+                    chNotificado.setVisibility(View.VISIBLE);
 
                 }else{
 
@@ -965,7 +941,20 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     avisoDias.setText("0");
                     avisoHoras.setText("0");
                     avisoMinutos.setText("0");
+                    chNotificado.setVisibility(View.GONE);
 
+                }
+            }
+        });
+
+        chNotificado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (!isChecked){
+                    notificado = 0;
+                }else{
+                    notificado = 1;
                 }
             }
         });
@@ -1078,6 +1067,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     idProyecto = null;
                     nombreProyecto = null;
                     proyRel.setText(null);
+                    relProy.setEnabled(true);
 
                 }
             }
@@ -1097,6 +1087,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     idCliente = null;
                     nombreCliente = null;
                     cliRel.setText(null);
+                    relCli.setEnabled(true);
 
                 }
             }
@@ -1138,10 +1129,10 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
                 enviarBundle();
                 bundle.putString(IDREL,modelo.getString(EVENTO_ID_EVENTO));
+                bundle.putString(SUBTITULO, modelo.getString(EVENTO_DESCRIPCION));
+                bundle.putString(ORIGEN, EVENTO);
                 bundle.putSerializable(MODELO,null);
-                if (actual.equals(AGENDA)){
-                    bundle.putString(SUBTITULO, getString(R.string.proximos_eventos));
-                }
+                bundle.putString(ID,null);
                 bundle.putBoolean(NUEVOREGISTRO,true);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
             }
@@ -1152,11 +1143,11 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
             public void onClick(View v) {
 
                 enviarBundle();
-                bundle.putSerializable(MODELO,null);
-                if (actual.equals(AGENDA)){
-                    bundle.putString(SUBTITULO, getString(R.string.proximos_eventos));
-                }
                 bundle.putString(IDREL,modelo.getString(EVENTO_ID_EVENTO));
+                bundle.putString(SUBTITULO, modelo.getString(EVENTO_DESCRIPCION));
+                bundle.putString(ORIGEN, EVENTO);
+                bundle.putSerializable(MODELO,null);
+                bundle.putString(ID,null);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
             }
         });
@@ -1165,6 +1156,18 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
             @Override
             public void onClick(View v) {
                 verRepeticiones();
+            }
+        });
+
+        completada.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked){
+                    completa.setText("100.0");
+                }else{
+                    completa.setText("0.0");
+                }
             }
         });
 
@@ -1187,64 +1190,63 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
         tituloPlural = R.string.eventos;
         tituloSingular = R.string.evento;
+        tituloNuevo = R.string.nuevo_evento;
     }
 
 
     @Override
     protected void setInicio() {
 
-        btnsave = view.findViewById(R.id.btn_save);
-        btndelete = view.findViewById(R.id.btn_del);
-        btnback = view.findViewById(R.id.btn_back);
-        imagen = view.findViewById(R.id.imgudevento);
+        imagen = (ImageView) ctrl(R.id.imgudevento);
         if (proyecto!=null && proyecto.getString(PROYECTO_RUTAFOTO)!=null){
             path = proyecto.getString(PROYECTO_RUTAFOTO);
             imagen.setImageURI(Uri.parse(path));
         }
-        tiposEvento = view.findViewById(R.id.sptiponevento);
-        tipoEvento = view.findViewById(R.id.tvtipoudevento);
-        proyRel = view.findViewById(R.id.sppryudevento);
-        cliRel = view.findViewById(R.id.spcliudevento);
-        descipcion = view.findViewById(R.id.etdescudevento);
-        lugar = view.findViewById(R.id.etlugarudevento);
-        email = view.findViewById(R.id.etemailudevento);
-        telefono = view.findViewById(R.id.ettelefonoudevento);
-        fechaIni = view.findViewById(R.id.etfechainiudevento);
-        horaIni = view.findViewById(R.id.ethorainiudevento);
-        fechaFin = view.findViewById(R.id.etfechafinudevento);
-        horaFin = view.findViewById(R.id.ethorafinudevento);
-        repAnios = view.findViewById(R.id.etrepaniosudevento);
-        repMeses = view.findViewById(R.id.etrepmesesudevento);
-        repDias = view.findViewById(R.id.etrepdiasudevento);
-        drepAnios = view.findViewById(R.id.etrepdaniosudevento);
-        drepMeses = view.findViewById(R.id.etrepdmesesudevento);
-        drepDias = view.findViewById(R.id.etrepddiasudevento);
-        avisoDias = view.findViewById(R.id.etdiasudevento);
-        avisoHoras = view.findViewById(R.id.ethorasudevento);
-        avisoMinutos = view.findViewById(R.id.etminutosudevento);
-        aviso = view.findViewById(R.id.chavisoudevento);
-        repeticiones = view.findViewById(R.id.chrptudevento);
-        mismoDiaMes = view.findViewById(R.id.chmmesevento);
-        mismoDiaAnio = view.findViewById(R.id.chmanioevento);
-        relProy = view.findViewById(R.id.chpryudevento);
-        relCli = view.findViewById(R.id.chcliudevento);
-        laviso = view.findViewById(R.id.ltvavisoudevento);
-        lrep = view.findViewById(R.id.ltvreptudevento);
-        ldrep = view.findViewById(R.id.ltvdreptudevento);
-        btnfini = view.findViewById(R.id.imgbtnfiniudevento);
-        btnffin = view.findViewById(R.id.imgbtnffinudevento);
-        btnhini = view.findViewById(R.id.imgbtnhiniudevento);
-        btnhfin = view.findViewById(R.id.imgbtnhfinudevento);
-        completa = view.findViewById(R.id.etcompletadaudevento);
-        lcompleta = view.findViewById(R.id.ltvcompletadaudevento);
-        btnNota = view.findViewById(R.id.btn_crearnota);
-        btnVerNotas = view.findViewById(R.id.btn_vernotas);
-        btnVerRepeticiones = view.findViewById(R.id.btnverrepevento);
-        imgmapa = view.findViewById(R.id.imgmapaevento);
-        imgllamada = view.findViewById(R.id.imgllamadaevento);
-        imgemail = view.findViewById(R.id.imgemailevento);
-        asunto = view.findViewById(R.id.etasuntoevento);
-        mensaje = view.findViewById(R.id.etmensajeevento);
+        tiposEvento = (Spinner) ctrl(R.id.sptiponevento);
+        tipoEvento = (TextView) ctrl(R.id.tvtipoudevento);
+        proyRel = (AutoCompleteTextView) ctrl(R.id.sppryudevento);
+        cliRel = (AutoCompleteTextView) ctrl(R.id.spcliudevento);
+        descipcion = (EditMaterial) ctrl(R.id.etdescudevento);
+        lugar = (EditMaterial) ctrl(R.id.etlugarudevento);
+        email = (EditMaterial) ctrl(R.id.etemailudevento);
+        telefono = (EditMaterial) ctrl(R.id.ettelefonoudevento);
+        fechaIni = (EditMaterial) ctrl(R.id.etfechainiudevento);
+        horaIni = (EditMaterial) ctrl(R.id.ethorainiudevento);
+        fechaFin = (EditMaterial) ctrl(R.id.etfechafinudevento);
+        horaFin = (EditMaterial) ctrl(R.id.ethorafinudevento);
+        repAnios = (EditMaterial) ctrl(R.id.etrepaniosudevento);
+        repMeses = (EditMaterial) ctrl(R.id.etrepmesesudevento);
+        repDias = (EditMaterial) ctrl(R.id.etrepdiasudevento);
+        drepAnios = (EditMaterial) ctrl(R.id.etrepdaniosudevento);
+        drepMeses = (EditMaterial) ctrl(R.id.etrepdmesesudevento);
+        drepDias = (EditMaterial) ctrl(R.id.etrepddiasudevento);
+        avisoDias = (EditMaterial) ctrl(R.id.etdiasudevento);
+        avisoHoras = (EditMaterial) ctrl(R.id.ethorasudevento);
+        avisoMinutos = (EditMaterial) ctrl(R.id.etminutosudevento);
+        aviso = (CheckBox) ctrl(R.id.chavisoudevento);
+        repeticiones = (CheckBox) ctrl(R.id.chrptudevento);
+        mismoDiaMes = (CheckBox) ctrl(R.id.chmmesevento);
+        mismoDiaAnio = (CheckBox) ctrl(R.id.chmanioevento);
+        relProy = (CheckBox) ctrl(R.id.chpryudevento);
+        relCli = (CheckBox) ctrl(R.id.chcliudevento);
+        laviso = (TextView) ctrl(R.id.ltvavisoudevento);
+        lrep = (TextView) ctrl(R.id.ltvreptudevento);
+        ldrep = (TextView) ctrl(R.id.ltvdreptudevento);
+        btnfini = (ImageView) ctrl(R.id.imgbtnfiniudevento);
+        btnffin = (ImageView) ctrl(R.id.imgbtnffinudevento);
+        btnhini = (ImageView) ctrl(R.id.imgbtnhiniudevento);
+        btnhfin = (ImageView) ctrl(R.id.imgbtnhfinudevento);
+        completa = (EditMaterial) ctrl(R.id.etcompletadaudevento);
+        btnNota = (ImageButton) ctrl(R.id.btn_crearnota_evento);
+        btnVerNotas = (ImageButton) ctrl(R.id.btn_vernotas_evento);
+        btnVerRepeticiones = (Button) ctrl(R.id.btnverrepevento);
+        imgmapa = (ImageView) ctrl(R.id.imgmapaevento);
+        imgllamada = (ImageView) ctrl(R.id.imgllamadaevento);
+        imgemail = (ImageView) ctrl(R.id.imgemailevento);
+        asunto = (EditMaterial) ctrl(R.id.etasuntoevento);
+        mensaje = (EditMaterial) ctrl(R.id.etmensajeevento);
+        chNotificado = (CheckBox) ctrl(R.id.chnotificadoevento);
+        completada = (CheckBox) ctrl(R.id.chcompletadaevento);
 
     }
 
@@ -1252,7 +1254,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     protected void setLayout() {
 
         layoutCuerpo = R.layout.fragment_ud_evento;
-        layoutitem = R.layout.item_list_evento;
+        layoutItem = R.layout.item_list_evento;
 
     }
 
@@ -1281,9 +1283,13 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
         switch (tevento){
 
             case TAREA:
+
+                consulta.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
+                consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
+
                 break;
 
-            case CITA:
+            case TIPOEVENTOCITA:
                 consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
                 consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
                 consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
@@ -1300,7 +1306,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 }
                 break;
 
-            case EMAIL:
+            case TIPOEVENTOEMAIL:
                 consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
                 consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
                 consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
@@ -1315,7 +1321,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
                 break;
 
-            case LLAMADA:
+            case TIPOEVENTOLLAMADA:
                 consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
                 consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
                 consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
@@ -1331,7 +1337,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
                 break;
 
-            case CommonPry.TiposEvento.EVENTO:
+            case CommonPry.TiposEvento.TIPOEVENTOEVENTO:
                 consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
                 consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
                 consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTO,ffinEvento);
@@ -1340,6 +1346,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
                 consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTOF,fechaFin.getText().toString());
                 consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTOF,horaFin.getText().toString());
+                consulta.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
+                consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
 
                 break;
 
@@ -1421,7 +1429,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,JavaUtil.getDate(fecharep));
 
 
-                    if (tevento.equals(CommonPry.TiposEvento.EVENTO)) {
+                    if (tevento.equals(CommonPry.TiposEvento.TIPOEVENTOEVENTO)) {
                         consulta.putDato(valores,campos,EVENTO_FECHAFINEVENTO, String.valueOf(fecharep + diffecha));
                         consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTOF,JavaUtil.getDate(fecharep+diffecha));
 
@@ -1469,20 +1477,25 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
         if (tevento!=null) {
 
-            if (actual.equals(PRESUPUESTO) || actual.equals(PROYECTO)) {
+            if (origen.equals(PRESUPUESTO) || origen.equals(PROYECTO)) {
 
                 bundle.putSerializable(MODELO, proyecto);
+                bundle.putString(ACTUAL,origen);
 
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
 
-            } else if (actual.equals(CLIENTE) || actual.equals(PROSPECTO)) {
+            } else if (origen.equals(CLIENTE) || origen.equals(PROSPECTO)) {
 
                 bundle.putSerializable(MODELO, cliente);
+                bundle.putString(ACTUAL,origen);
 
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDCliente());
 
             }else {
                 activityBase.toolbar.setSubtitle(setNamefdef());
+                idCliente = null;
+                idProyecto = null;
+                idMulti = null;
 
             }
 
@@ -1621,17 +1634,14 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 pbar.setVisibility(View.GONE);
                 completa.setChecked(false);
                 porccompleta.setVisibility(View.GONE);
-                lcompleta.setVisibility(View.GONE);
             }else if (completada>99) {
                 completa.setChecked(true);
                 pbar.setVisibility(View.GONE);
                 porccompleta.setVisibility(View.GONE);
-                lcompleta.setVisibility(View.GONE);
 
             }else{
                 pbar.setVisibility(View.VISIBLE);
                 porccompleta.setVisibility(View.VISIBLE);
-                lcompleta.setVisibility(View.VISIBLE);
                 completa.setChecked(false);
                 pbar.setProgress((int)completada);
                 porccompleta.setText(String.format("%s %s",modelo.getDouble(EVENTO_COMPLETADA),"%"));
@@ -1655,28 +1665,28 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 case TAREA:
                     break;
 
-                case CITA:
+                case TIPOEVENTOCITA:
                     lugar.setVisibility(View.VISIBLE);
                     fechaini.setVisibility(View.VISIBLE);
                     horaini.setVisibility(View.VISIBLE);
                     btnmapa.setVisibility(View.VISIBLE);
                     break;
 
-                case EMAIL:
+                case TIPOEVENTOEMAIL:
                     btnemail.setVisibility(View.VISIBLE);
                     fechaini.setVisibility(View.VISIBLE);
                     horaini.setVisibility(View.VISIBLE);
                     email.setVisibility(View.VISIBLE);
                     break;
 
-                case LLAMADA:
+                case TIPOEVENTOLLAMADA:
                     telefono.setVisibility(View.VISIBLE);
                     fechaini.setVisibility(View.VISIBLE);
                     horaini.setVisibility(View.VISIBLE);
                     btnllamada.setVisibility(View.VISIBLE);
                     break;
 
-                case CommonPry.TiposEvento.EVENTO:
+                case CommonPry.TiposEvento.TIPOEVENTOEVENTO:
                     fechaini.setVisibility(View.VISIBLE);
                     horaini.setVisibility(View.VISIBLE);
                     fechafin.setVisibility(View.VISIBLE);
@@ -1684,9 +1694,9 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     break;
 
             }
-            imagenUtil = new ImagenUtil(contexto);
+            mediaUtil = new MediaUtil(contexto);
             if (modelo.getString(EVENTO_RUTAFOTO)!=null) {
-                imagenUtil.setImageUriCircle(modelo.getString(EVENTO_RUTAFOTO),foto);
+                mediaUtil.setImageUriCircle(modelo.getString(EVENTO_RUTAFOTO),foto);
             }
 
 
@@ -1704,7 +1714,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 public void onClick(View v) {
 
                     AppActivity.hacerLlamada(AppActivity.getAppContext()
-                            ,telefono.getText().toString());
+                            ,modelo.getString(EVENTO_TELEFONO));
                 }
             });
 
@@ -1712,7 +1722,9 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 @Override
                 public void onClick(View v) {
 
-                    AppActivity.enviarEmail(AppActivity.getAppContext(),email.getText().toString());
+                    AppActivity.enviarEmail(contexto,modelo.getString(EVENTO_EMAIL),
+                            modelo.getString(EVENTO_ASUNTO), modelo.getString(EVENTO_MENSAJE),
+                            modelo.getString(EVENTO_RUTAADJUNTO));
 
                 }
             });
@@ -1721,9 +1733,9 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 @Override
                 public void onClick(View v) {
 
-                    if (!lugar.getText().toString().equals("")){
+                    if (!modelo.getString(EVENTO_LUGAR).equals("")){
 
-                        viewOnMapA(AppActivity.getAppContext(),lugar.getText().toString());
+                        viewOnMapA(contexto,modelo.getString(EVENTO_LUGAR));
                     }
 
                 }
@@ -1840,16 +1852,13 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 completa.setChecked(false);
                 pbar.setVisibility(View.GONE);
                 porccompleta.setVisibility(View.GONE);
-                lcompleta.setVisibility(View.GONE);
             }else if (completada>99) {
                 completa.setChecked(true);
                 porccompleta.setVisibility(View.GONE);
-                lcompleta.setVisibility(View.GONE);
                 pbar.setVisibility(View.GONE);
             }else{
                 pbar.setVisibility(View.VISIBLE);
                 porccompleta.setVisibility(View.VISIBLE);
-                lcompleta.setVisibility(View.VISIBLE);
                 completa.setChecked(false);
                 pbar.setProgress((int)completada);
                 porccompleta.setText(entrada.get(posicion).getString(EVENTO_COMPLETADA));
@@ -1874,28 +1883,28 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 case TAREA:
                     break;
 
-                case CITA:
+                case TIPOEVENTOCITA:
                     lugar.setVisibility(View.VISIBLE);
                     fechaini.setVisibility(View.VISIBLE);
                     horaini.setVisibility(View.VISIBLE);
                     btnmapa.setVisibility(View.VISIBLE);
                     break;
 
-                case EMAIL:
+                case TIPOEVENTOEMAIL:
                     btnemail.setVisibility(View.VISIBLE);
                     fechaini.setVisibility(View.VISIBLE);
                     horaini.setVisibility(View.VISIBLE);
                     email.setVisibility(View.VISIBLE);
                     break;
 
-                case LLAMADA:
+                case TIPOEVENTOLLAMADA:
                     telefono.setVisibility(View.VISIBLE);
                     fechaini.setVisibility(View.VISIBLE);
                     horaini.setVisibility(View.VISIBLE);
                     btnllamada.setVisibility(View.VISIBLE);
                     break;
 
-                case CommonPry.TiposEvento.EVENTO:
+                case CommonPry.TiposEvento.TIPOEVENTOEVENTO:
                     fechaini.setVisibility(View.VISIBLE);
                     horaini.setVisibility(View.VISIBLE);
                     fechafin.setVisibility(View.VISIBLE);
@@ -1903,10 +1912,10 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     break;
 
             }
-            imagenUtil = new ImagenUtil(contexto);
+            mediaUtil = new MediaUtil(contexto);
             if (entrada.get(posicion).getCampos
                     (ContratoPry.Tablas.EVENTO_RUTAFOTO)!=null) {
-                imagenUtil.setImageUriCircle(entrada.get(posicion).getCampos
+                mediaUtil.setImageUriCircle(entrada.get(posicion).getCampos
                         (ContratoPry.Tablas.EVENTO_RUTAFOTO),foto);
             }
 
@@ -2037,7 +2046,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                         finiEvento = JavaUtil.fechaALong(year, month, day);
                         String selectedDate = getDate(finiEvento);
                         fechaIni.setText(selectedDate);
-                        if (!tipoEvento.equals(CommonPry.TiposEvento.EVENTO)){
+                        if (!tipoEvento.equals(CommonPry.TiposEvento.TIPOEVENTOEVENTO)){
                             fechaFin.setText(selectedDate);
                         }
 
@@ -2068,7 +2077,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
-                        hiniEvento = JavaUtil.horaMin(JavaUtil.horaALong(hourOfDay,minute));
+                        hiniEvento = JavaUtil.sumaHoraMin(JavaUtil.horaALong(hourOfDay,minute));
                         System.out.println("hiniEvento = " + hiniEvento);
                         String selectedHour = JavaUtil.getTime(hiniEvento);
                         horaIni.setText(selectedHour);
@@ -2086,7 +2095,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
-                        hfinEvento = JavaUtil.horaMin(JavaUtil.horaALong(hourOfDay,minute));
+                        hfinEvento = JavaUtil.sumaHoraMin(JavaUtil.horaALong(hourOfDay,minute));
                         String selectedHour = JavaUtil.getTime(hfinEvento);
                         horaFin.setText(selectedHour);
 

@@ -12,20 +12,20 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import jjlacode.com.freelanceproject.util.AppActivity;
-import jjlacode.com.freelanceproject.util.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.CRUDutil;
-import jjlacode.com.freelanceproject.util.FragmentCRUD;
-import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltroRV;
-import jjlacode.com.freelanceproject.util.ListaModelo;
-import jjlacode.com.freelanceproject.util.Modelo;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.crud.CRUDutil;
+import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.crud.ListaModelo;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.util.CommonPry;
-import jjlacode.com.freelanceproject.util.TipoViewHolder;
+import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 
-import static jjlacode.com.freelanceproject.util.CommonPry.namesubdef;
-import static jjlacode.com.freelanceproject.util.CommonPry.setNamefdef;
+import static jjlacode.com.freelanceproject.CommonPry.namesubdef;
+import static jjlacode.com.freelanceproject.CommonPry.setNamefdef;
 
 
 public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Constantes,
@@ -38,7 +38,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
     private EditText emailCliente;
     private EditText contactoCliente;
     private TextView tipoCliente;
-    private Button btnevento;
+    private ImageButton btnevento;
     private ImageButton mapa;
     private ImageButton llamada;
     private ImageButton mail;
@@ -50,7 +50,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
 
     int peso;
     private Modelo proyecto;
-    private Button btnVerEventos;
+    private ImageButton btnVerEventos;
     private String actualtemp;
 
 
@@ -199,6 +199,8 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
 
     @Override
     protected void setDatos() {
+
+        activityBase.toolbar.setSubtitle(modelo.getString(CLIENTE_NOMBRE));
 
             nombreCliente.setText(modelo.getString(CLIENTE_NOMBRE));
             direccionCliente.setText(modelo.getString(CLIENTE_DIRECCION));
@@ -358,7 +360,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
 
         layoutCuerpo = R.layout.fragment_cud_cliente;
         layoutCabecera = R.layout.cabecera_crud_cliente;
-        layoutitem = R.layout.item_list_cliente;
+        layoutItem = R.layout.item_list_cliente;
 
     }
 

@@ -12,17 +12,17 @@ import androidx.cardview.widget.CardView;
 
 import java.util.ArrayList;
 
-import jjlacode.com.freelanceproject.util.AppActivity;
-import jjlacode.com.freelanceproject.util.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.FragmentCRUD;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
 import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.ListaAdaptadorFiltroRV;
-import jjlacode.com.freelanceproject.util.Modelo;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.util.CommonPry;
-import jjlacode.com.freelanceproject.util.TipoViewHolder;
+import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 
 public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tablas {
 
@@ -191,7 +191,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     protected void setLayout() {
 
         layoutCuerpo = R.layout.fragment_cud_perfil;
-        layoutitem = R.layout.item_list_perfil;
+        layoutItem = R.layout.item_list_perfil;
 
     }
 

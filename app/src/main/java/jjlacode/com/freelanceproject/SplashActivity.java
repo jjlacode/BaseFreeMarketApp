@@ -14,7 +14,6 @@ import android.util.Log;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.util.CommonPry;
 
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.PERSISTENCIA;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.PREFERENCIAS;

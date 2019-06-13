@@ -1,11 +1,32 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorControlActivated">@color/colorPrimaryDark</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="editTextStyle">@style/EditTextDefault</item>
+    </style>
+
+
+    <style name="Widget.Design.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="hintTextAppearance">@style/AppTheme.TextFloatLabelAppearance</item>
+        <item name="errorTextAppearance">@style/AppTheme.TextErrorAppearance</item>
+    </style>
+
+    <style name="AppTheme.TextFloatLabelAppearance" parent="TextAppearance.Design.Hint">
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.TextErrorAppearance" parent="TextAppearance.Design.Error">
+        <item name="android:textColor">#d32f2f</item>
+    </style>
+
+    <style name="EditTextDefault" parent="android:Widget.EditText">
+        <item name="android:paddingLeft">10dp</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -13,9 +34,15 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.AppBarOverlay" parent="ActionBar_custom" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ActionBar_custom" />
+
+    <style name="TextInputLayout" >
+        <item name="hintTextColor"> @color/colorAccent </item>
+        <item name="boxBackgroundColor"> @color/colorPrimary</item>
+        <item name="errorTextColor">@color/colorAccent</item>
+    </style>
 
     <style name="ProgressBarStyleAcept">
         <item name="colorAccent">@color/Color_contador_acept</item>
@@ -26,5 +53,26 @@
     <style name="ProgressBarStyleNotok">
         <item name="colorAccent">@color/Color_contador_notok</item>
     </style>
+    <style name="ActionBar_custom">
+        <item name="android:tint">@color/Color_texto_titulos</item>
+        <item name="android:textColor">@color/Color_texto_titulos</item>
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+    <style name="boton_primary">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:background">@drawable/boton_redondo_primary</item>
+        <item name="android:textSize">@dimen/texto_boton</item>
+    </style>
+    <style name="boton_secondary">
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:background">@drawable/boton_redondo_secondary</item>
+        <item name="android:textSize">@dimen/texto_boton</item>
+    </style>
+    <style name="boton_terciary">
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:background">@drawable/boton_redondo_secondary</item>
+        <item name="android:textSize">@dimen/texto_boton</item>
+    </style>
+
 
 </resources>
