@@ -14,7 +14,6 @@ import java.util.ArrayList;
 
 import jjlacode.com.freelanceproject.util.android.AppActivity;
 import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
 import jjlacode.com.freelanceproject.util.crud.CRUDutil;
 import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
 import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
@@ -33,11 +32,11 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
         ContratoPry.Tablas {
 
 
-    private EditMaterial nombreCliente;
-    private EditMaterial direccionCliente;
-    private EditMaterial telefonoCliente;
-    private EditMaterial emailCliente;
-    private EditMaterial contactoCliente;
+    private EditText nombreCliente;
+    private EditText direccionCliente;
+    private EditText telefonoCliente;
+    private EditText emailCliente;
+    private EditText contactoCliente;
     private TextView tipoCliente;
     private ImageButton btnevento;
     private ImageButton mapa;
@@ -334,12 +333,6 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
     protected void setTitulo() {
         tituloSingular = R.string.cliente;
         tituloPlural = R.string.clientes;
-        if (actualtemp.equals(CLIENTE)) {
-            tituloNuevo = R.string.nuevo_cliente;
-        }else{
-            tituloNuevo = R.string.nuevo_prospecto;
-
-        }
     }
 
 
