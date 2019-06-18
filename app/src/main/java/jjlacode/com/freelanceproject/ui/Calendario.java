@@ -56,6 +56,10 @@ public class Calendario extends FragmentBase implements ContratoPry.Tablas {
 
         calendarView = view.findViewById(R.id.oneCalendar);
         rv = view.findViewById(R.id.rveventocalendario);
+        lista = new ListaModelo(CAMPOS_EVENTO);
+        RVAdapter adaptadorRV = new RVAdapter(new ViewHolderRV(view),
+                lista.getLista(),R.layout.item_list_evento_calendario, null);
+        rv.setAdapter(adaptadorRV);
 
         calendarView.setOneCalendarClickListener(new OneCalendarView.OneCalendarClickListener() {
             @Override

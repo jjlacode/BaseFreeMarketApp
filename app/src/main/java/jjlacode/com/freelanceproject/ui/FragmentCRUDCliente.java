@@ -332,6 +332,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
     protected void setTitulo() {
         tituloSingular = R.string.cliente;
         tituloPlural = R.string.clientes;
+        tituloNuevo = R.string.nuevo_cliente;
     }
 
 
