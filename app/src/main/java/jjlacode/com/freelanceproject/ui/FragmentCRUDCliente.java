@@ -202,6 +202,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
     protected void setDatos() {
 
         activityBase.toolbar.setSubtitle(modelo.getString(CLIENTE_NOMBRE));
+        visible(btnevento);
 
             nombreCliente.setText(modelo.getString(CLIENTE_NOMBRE));
             direccionCliente.setText(modelo.getString(CLIENTE_DIRECCION));
