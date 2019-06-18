@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_lista_evento_verde" />
+            android:src="@drawable/ic_lista_eventos_indigo" />
 
         <ImageView
             android:id="@+id/imgagendaeventos"
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_event_verde_24dp" />
+            android:src="@drawable/ic_evento_indigo" />
 
         <ImageView
             android:id="@+id/imgagendanotas"
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_lista_notas_verde" />
+            android:src="@drawable/ic_lista_notas_indigo" />
 
 
 

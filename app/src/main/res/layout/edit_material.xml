@@ -9,13 +9,16 @@
         android:id="@+id/ti_material"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Widget.Design.TextInputLayout"
+        app:boxBackgroundColor="@color/colorPrimary"
+        app:hintTextColor="@color/colorAccent"
+        app:errorTextColor="@color/colorAccent"
         >
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_material"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textCursorDrawable="@drawable/cursor_primary_dark"
             android:textSize="@dimen/texto"/>
 
     </com.google.android.material.textfield.TextInputLayout>

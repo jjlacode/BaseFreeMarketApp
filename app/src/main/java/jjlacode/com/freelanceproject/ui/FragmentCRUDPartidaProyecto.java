@@ -202,6 +202,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     protected void setTitulo() {
         tituloSingular = R.string.partida;
         tituloPlural = R.string.partidas;
+        tituloNuevo = R.string.nueva_partida;
     }
 
 
