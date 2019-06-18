@@ -25,6 +25,7 @@ import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
 import jjlacode.com.freelanceproject.util.adapter.RVAdapter;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
+import jjlacode.com.freelanceproject.util.android.AndroidUtil;
 
 public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Constantes, CommonPry.Constantes {
 
@@ -111,6 +112,8 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
         );
 
         setInicio();
+
+        AndroidUtil.ocultarTeclado(activityBase, view);
 
         return view;
     }

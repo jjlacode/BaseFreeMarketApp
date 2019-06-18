@@ -107,13 +107,13 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     private String idMulti;
     private EditMaterial completa;
 
-    private ImageView btnhfin;
-    private ImageView btnhini;
-    private ImageView btnffin;
-    private ImageView btnfini;
-    private ImageView imgmapa;
-    private ImageView imgllamada;
-    private ImageView imgemail;
+    private ImageButton btnhfin;
+    private ImageButton btnhini;
+    private ImageButton btnffin;
+    private ImageButton btnfini;
+    private ImageButton imgmapa;
+    private ImageButton imgllamada;
+    private ImageButton imgemail;
     private CheckBox relCli;
     private CheckBox relProy;
     private CheckBox completada;
@@ -163,55 +163,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
         }
 
         allGone();
-        /*
-        lugar.setVisibility(View.GONE);
-        imgmapa.setVisibility(View.GONE);
-        telefono.setVisibility(View.GONE);
-        imgllamada.setVisibility(View.GONE);
-        email.setVisibility(View.GONE);
-        imgemail.setVisibility(View.GONE);
-        asunto.setVisibility(View.GONE);
-        mensaje.setVisibility(View.GONE);
-        repAnios.setVisibility(View.GONE);
-        repMeses.setVisibility(View.GONE);
-        repDias.setVisibility(View.GONE);
-        drepAnios.setVisibility(View.GONE);
-        drepMeses.setVisibility(View.GONE);
-        drepDias.setVisibility(View.GONE);
-        avisoDias.setVisibility(View.GONE);
-        avisoHoras.setVisibility(View.GONE);
-        avisoMinutos.setVisibility(View.GONE);
-        fechaIni.setVisibility(View.GONE);
-        horaIni.setVisibility(View.GONE);
-        fechaFin.setVisibility(View.GONE);
-        horaFin.setVisibility(View.GONE);
-        btnfini.setVisibility(View.GONE);
-        btnffin.setVisibility(View.GONE);
-        btnhini.setVisibility(View.GONE);
-        btnhfin.setVisibility(View.GONE);
-        laviso.setVisibility(View.GONE);
-        lrep.setVisibility(View.GONE);
-        ldrep.setVisibility(View.GONE);
-        repeticiones.setVisibility(View.GONE);
-        aviso.setVisibility(View.GONE);
-        proyRel.setVisibility(View.GONE);
-        cliRel.setVisibility(View.GONE);
-        imagen.setVisibility(View.GONE);
-        descipcion.setVisibility(View.GONE);
-        relProy.setVisibility(View.GONE);
-        relCli.setVisibility(View.GONE);
-        completa.setVisibility(View.GONE);
-        btnNota.setVisibility(View.GONE);
-        btnVerNotas.setVisibility(View.GONE);
-        tipoEvento.setVisibility(View.GONE);
-        btnVerRepeticiones.setVisibility(View.GONE);
-        mismoDiaMes.setVisibility(View.GONE);
-        mismoDiaAnio.setVisibility(View.GONE);
-        asunto.setVisibility(View.GONE);
-        mensaje.setVisibility(View.GONE);
-        chNotificado.setVisibility(View.GONE);
-
-         */
 
         tiposEvento.setVisibility(View.VISIBLE);
 
@@ -244,7 +195,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     tevento = listaTiposEvento.get(position);
                     imagen.setVisibility(View.VISIBLE);
                     descipcion.setVisibility(View.VISIBLE);
-                    repeticiones.setText("Crear repeticiones");
+                    repeticiones.setText(getString(R.string.crear_repeticiones));
 
                     if (idProyecto!=null){
 
@@ -623,6 +574,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     @Override
     protected void setDatos() {
 
+        allGone();
         tiposEvento.setVisibility(View.GONE);
         btnVerNotas.setVisibility(View.VISIBLE);
         btnNota.setVisibility(View.VISIBLE);
@@ -632,7 +584,10 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
         mismoDiaMes.setChecked(false);
         mismoDiaAnio.setChecked(false);
         chNotificado.setVisibility(View.GONE);
-
+        visible(imagen);
+        visible(descipcion);
+        visible(relCli);
+        visible(relProy);
 
         completa.setText(modelo.getString(EVENTO_COMPLETADA));
         //mediaUtil = new MediaUtil(contexto);
@@ -679,8 +634,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
             cliRel.setEnabled(false);
         }
 
-
-        allGone();
         repeticiones.setChecked(false);
         completa.setVisibility(View.VISIBLE);
 
@@ -749,7 +702,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     lugar.setVisibility(View.VISIBLE);
                     imgmapa.setVisibility(View.VISIBLE);
                     asunto.setVisibility(View.VISIBLE);
-                    mensaje.setVisibility(View.VISIBLE);
                     fechaIni.setVisibility(View.VISIBLE);
                     horaIni.setVisibility(View.VISIBLE);
                     btnfini.setVisibility(View.VISIBLE);
@@ -1232,17 +1184,17 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
         laviso = (TextView) ctrl(R.id.ltvavisoudevento);
         lrep = (TextView) ctrl(R.id.ltvreptudevento);
         ldrep = (TextView) ctrl(R.id.ltvdreptudevento);
-        btnfini = (ImageView) ctrl(R.id.imgbtnfiniudevento);
-        btnffin = (ImageView) ctrl(R.id.imgbtnffinudevento);
-        btnhini = (ImageView) ctrl(R.id.imgbtnhiniudevento);
-        btnhfin = (ImageView) ctrl(R.id.imgbtnhfinudevento);
+        btnfini = (ImageButton) ctrl(R.id.imgbtnfiniudevento);
+        btnffin = (ImageButton) ctrl(R.id.imgbtnffinudevento);
+        btnhini = (ImageButton) ctrl(R.id.imgbtnhiniudevento);
+        btnhfin = (ImageButton) ctrl(R.id.imgbtnhfinudevento);
         completa = (EditMaterial) ctrl(R.id.etcompletadaudevento);
         btnNota = (ImageButton) ctrl(R.id.btn_crearnota_evento);
         btnVerNotas = (ImageButton) ctrl(R.id.btn_vernotas_evento);
         btnVerRepeticiones = (Button) ctrl(R.id.btnverrepevento);
-        imgmapa = (ImageView) ctrl(R.id.imgmapaevento);
-        imgllamada = (ImageView) ctrl(R.id.imgllamadaevento);
-        imgemail = (ImageView) ctrl(R.id.imgemailevento);
+        imgmapa = (ImageButton) ctrl(R.id.imgmapaevento);
+        imgllamada = (ImageButton) ctrl(R.id.imgllamadaevento);
+        imgemail = (ImageButton) ctrl(R.id.imgemailevento);
         asunto = (EditMaterial) ctrl(R.id.etasuntoevento);
         mensaje = (EditMaterial) ctrl(R.id.etmensajeevento);
         chNotificado = (CheckBox) ctrl(R.id.chnotificadoevento);

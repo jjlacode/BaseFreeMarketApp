@@ -25,6 +25,7 @@ import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.util.android.AndroidUtil;
 import jjlacode.com.freelanceproject.util.android.FragmentBase;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.media.MediaUtil;
@@ -124,6 +125,8 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
         btndelete = view.findViewById(R.id.btn_del);
 
         setInicio();
+
+        AndroidUtil.ocultarTeclado(activityBase, view);
 
         return view;
     }
