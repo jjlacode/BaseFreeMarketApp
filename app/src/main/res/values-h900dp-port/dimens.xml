@@ -7,4 +7,5 @@
     <dimen name="texto_doble">70dp</dimen>
     <dimen name="texto_not">10sp</dimen>
     <dimen name="altobtnico">46dp</dimen>
+    <dimen name="titulo_xl">36sp</dimen>
 </resources>

@@ -1,196 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:jjla="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frcli"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:id="@+id/frcli"
     tools:context=".ui.FragmentCRUDCliente">
 
 
-    <LinearLayout
-        android:id="@+id/frclicud"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-        <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <LinearLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/imgudcliente"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    app:srcCompat="@drawable/cliente" />
-
-                <TextView
-                    android:id="@+id/tvtipoudcliente"
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginRight="5dp"
-                    android:gravity="center"
-                    android:text="@string/tipocliente"
-                    android:textSize="36sp" />
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imgudcliente"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        app:srcCompat="@drawable/cliente" />
 
-            <EditText
-                android:id="@+id/etnombreudcliente"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="5dp"
-                android:background="@drawable/cuadro_texto"
-                android:ems="10"
-                android:hint="@string/nombre"
-                android:inputType="textPersonName"/>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvtipoudcliente"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginRight="5dp"
+                        android:gravity="center"
+                        android:text="@string/tipocliente"
+                        android:textSize="@dimen/titulo_xl" />
 
-            <EditText
-                android:id="@+id/etdirudcliente"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_weight="1"
-                android:background="@drawable/cuadro_texto"
-                android:ems="10"
-                android:gravity="top|left"
-                android:hint="@string/direccion"
-                android:inputType="textMultiLine|textPostalAddress" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <ImageButton
-                android:id="@+id/imgbtndirudcliente"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="6"
-                android:minHeight="30dp"
-                android:background="@drawable/boton_redondo_primary"
-                app:srcCompat="@drawable/ic_place_black_24dp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/etteludcliente"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_weight="1"
-                android:background="@drawable/cuadro_texto"
-                android:ems="10"
-                android:hint="@string/telefono"
-                android:inputType="phone" />
-
-            <ImageButton
-                android:id="@+id/imgbtnteludcliente"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="6"
-                android:minHeight="30dp"
-                android:background="@drawable/boton_redondo_primary"
-                app:srcCompat="@drawable/ic_phone_in_talk_black_24dp" />
-
-        </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/etemailudcliente"
+                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                    android:id="@+id/etnombreudcliente"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:layout_marginTop="5dp"
                     android:layout_marginRight="5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/cuadro_texto"
-                    android:ems="10"
-                    android:hint="@string/email"
-                    android:inputType="textEmailAddress" />
+                    jjla:hint_text="@string/nombre"
+                    jjla:tipo_dato="PERSONA" />
 
-                <ImageButton
-                    android:id="@+id/imgbtnmailudcliente"
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="6"
-                    android:background="@drawable/boton_redondo_primary"
-                    android:minHeight="30dp"
-                    app:srcCompat="@drawable/ic_mail_outline_black_24dp" />
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                        android:id="@+id/etdirudcliente"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        jjla:gravedad="top|inicio"
+                        jjla:hint_text="@string/direccion"
+                        jjla:tipo_dato="MULTI|DIRECCION" />
 
-            <EditText
-                android:id="@+id/etcontudcliente"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginRight="5dp"
-                android:background="@drawable/cuadro_texto"
-                android:ems="10"
-                android:hint="@string/contacto"
-                android:inputType="textPersonName"/>
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/imgbtndirudcliente"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="6"
+                        android:background="@drawable/boton_redondo_secondary"
+                        android:minHeight="30dp"
+                        app:srcCompat="@drawable/ic_place_black_24dp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-            <ImageButton
-                android:id="@+id/btneventoudcliente"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/ic_evento_verde"
-                android:background="@drawable/boton_redondo_primary"/>
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <ImageButton
-                android:id="@+id/btnvereventoudcliente"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/boton_redondo_primary"
-                android:src="@drawable/ic_lista_evento_verde" />
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                        android:id="@+id/etteludcliente"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        jjla:hint_text="string/telefono"
+                        jjla:tipo_dato="NUMERO|TELEFONO" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/imgbtnteludcliente"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="6"
+                        android:background="@drawable/boton_redondo_secondary"
+                        android:minHeight="30dp"
+                        app:srcCompat="@drawable/ic_phone_in_talk_black_24dp" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                        android:id="@+id/etemailudcliente"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        jjla:hint_text="@string/email"
+                        jjla:tipo_dato="EMAIL" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/imgbtnmailudcliente"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="6"
+                        android:background="@drawable/boton_redondo_secondary"
+                        android:minHeight="30dp"
+                        app:srcCompat="@drawable/ic_mail_outline_black_24dp" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                    android:id="@+id/etcontudcliente"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="5dp"
+                    jjla:hint_text="@string/contacto"
+                    jjla:tipo_dato="PERSONA" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btneventoudcliente"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/boton_redondo_secondary"
+                        android:src="@drawable/ic_evento_indigo" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnvereventoudcliente"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/boton_redondo_secondary"
+                        android:src="@drawable/ic_lista_eventos_indigo" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
 
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
-        </LinearLayout>
-    </ScrollView>
 
-        </LinearLayout>
-    </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-</LinearLayout>

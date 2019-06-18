@@ -15,6 +15,7 @@
     <style name="Widget.Design.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="hintTextAppearance">@style/AppTheme.TextFloatLabelAppearance</item>
         <item name="errorTextAppearance">@style/AppTheme.TextErrorAppearance</item>
+        <item name="boxBackgroundColor">@color/colorPrimary</item>
     </style>
 
     <style name="AppTheme.TextFloatLabelAppearance" parent="TextAppearance.Design.Hint">
