@@ -132,6 +132,7 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
             activityBase.toolbar.setSubtitle(tituloNuevo);
             vaciarControles();
             path = null;
+            setImagen();
             if (maestroDetalleSeparados) {
                 if (layoutCabecera > 0) {
                     frCabecera.setVisibility(View.GONE);
@@ -228,6 +229,8 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
                 }
                 secuencia=0;
                 vaciarControles();
+                path=null;
+                setImagen();
                 maestroDetalle();
                 if (maestroDetalleSeparados){
 
@@ -239,7 +242,7 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
                     activityBase.fab2.hide();
 
                 }
-                activityBase.toolbar.setSubtitle(getString(R.string.nuevo) + " " + getString(tituloSingular));
+                activityBase.toolbar.setSubtitle(tituloNuevo);
 
                 setNuevo();
 

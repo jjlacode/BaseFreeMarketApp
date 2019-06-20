@@ -21,7 +21,6 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:windowSoftInputMode="stateVisible|adjustResize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".util.android.MainActivityBase" />
         <provider

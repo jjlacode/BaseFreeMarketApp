@@ -273,6 +273,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         String NOTA_ID_NOTA = "id_nota";
         String NOTA_ID_RELACIONADO = "id_relacionado";
         String NOTA_NOMBREREL = "nombre_rel_nota";
+        String NOTA_TITULO = "titulo_nota";
         String NOTA_DESCRIPCION = "descripcion_nota";
         String NOTA_RUTA = "rutanota";
         String NOTA_TIPO = "tiponota";
@@ -550,10 +551,11 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PEDIDOPROV_TIMESTAMP,"INTEGER NON NULL DEFAULT 0",LONG,
         };
 
-        String[] CAMPOS_NOTA = {"29",TABLA_NOTA,
+        String[] CAMPOS_NOTA = {"32",TABLA_NOTA,
                 NOTA_ID_NOTA,"TEXT NON NULL UNIQUE",STRING,
                 NOTA_ID_RELACIONADO,"TEXT",STRING,
                 NOTA_NOMBREREL,"TEXT",STRING,
+                NOTA_TITULO,"TEXT",STRING,
                 NOTA_DESCRIPCION,"TEXT",STRING,
                 NOTA_RUTA,"TEXT",STRING,
                 NOTA_FECHA,"INTEGER NON NULL DEFAULT 0",LONG,

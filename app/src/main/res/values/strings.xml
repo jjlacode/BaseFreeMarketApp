@@ -263,6 +263,11 @@
     <string name="productos">Productos</string>
     <string name="importe_mo">Importe mano de obra</string>
     <string name="horas_mo">Horas mano de obra</string>
+    <string name="listo_grabar">Listo para grabar</string>
+    <string name="listo_play">Listo para reproducir</string>
+    <string name="preparando_play">Preparando la reproduccion</string>
+    <string name="grabando">Grabando</string>
+    <string name="titulo">Titulo</string>
 
 
 </resources>

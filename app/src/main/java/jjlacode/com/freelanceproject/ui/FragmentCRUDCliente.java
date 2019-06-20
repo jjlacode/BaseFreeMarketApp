@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -46,7 +45,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
     private Button btnclientes;
     private Button btnprospectos;
     private String idTipoCliente = null;
-    private ArrayList <Modelo> objTiposCli;
+    private ArrayList<Modelo> objTiposCli;
 
 
     int peso;
@@ -66,27 +65,27 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
     }
 
     @Override
-    protected TipoViewHolder setViewHolder(View view){
+    protected TipoViewHolder setViewHolder(View view) {
 
         return new ViewHolderRV(view);
     }
 
     @Override
     protected ListaAdaptadorFiltroRV setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
-        return new AdaptadorFiltroRV(context,layoutItem,lista,campos);
+        return new AdaptadorFiltroRV(context, layoutItem, lista, campos);
     }
 
     @Override
     protected void setLista() {
 
 
-        if (actualtemp.equals(PROSPECTO)){
+        if (actualtemp.equals(PROSPECTO)) {
 
-            lista = CRUDutil.setListaModelo(campos,CLIENTE_DESCRIPCIONTIPOCLI,PROSPECTO,IGUAL);
+            lista = CRUDutil.setListaModelo(campos, CLIENTE_DESCRIPCIONTIPOCLI, PROSPECTO, IGUAL);
 
-        }else if (actualtemp.equals(CLIENTE)) {
+        } else if (actualtemp.equals(CLIENTE)) {
 
-            lista = CRUDutil.setListaModelo(campos,CLIENTE_DESCRIPCIONTIPOCLI,PROSPECTO,DIFERENTE);
+            lista = CRUDutil.setListaModelo(campos, CLIENTE_DESCRIPCIONTIPOCLI, PROSPECTO, DIFERENTE);
 
         }
 
@@ -96,36 +95,32 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
     @Override
     protected void setNuevo() {
 
-        objTiposCli = consulta.queryList(CAMPOS_TIPOCLIENTE,null,null);
+        objTiposCli = consulta.queryList(CAMPOS_TIPOCLIENTE, null, null);
 
         //btndelete.setVisibility(View.GONE);
         btnevento.setVisibility(View.GONE);
 
-        try{
+        try {
 
-            if (actualtemp.equals(PROSPECTO) ){
-
-                activityBase.toolbar.setSubtitle(getString(R.string.nuevo) + " " + getString(R.string.prospecto));
+            if (actualtemp.equals(PROSPECTO)) {
 
                 tipoCliente.setText(getString(R.string.prospecto));
 
-                for (int i=0;i < objTiposCli.size();i++){
+                for (int i = 0; i < objTiposCli.size(); i++) {
 
-                    if (objTiposCli.get(i).getString(TIPOCLIENTE_DESCRIPCION).equals(PROSPECTO)){
+                    if (objTiposCli.get(i).getString(TIPOCLIENTE_DESCRIPCION).equals(PROSPECTO)) {
 
                         idTipoCliente = objTiposCli.get(i).getString(TIPOCLIENTE_ID_TIPOCLIENTE);
                         peso = objTiposCli.get(i).getInt(TIPOCLIENTE_PESO);
                     }
                 }
-            }else if (actualtemp.equals(CLIENTE) ){
-
-                activityBase.toolbar.setSubtitle(getString(R.string.nuevo) + " " + getString(R.string.cliente));
+            } else if (actualtemp.equals(CLIENTE)) {
 
                 tipoCliente.setText(getString(R.string.cliente));
 
-                for (int i=0;i < objTiposCli.size();i++){
+                for (int i = 0; i < objTiposCli.size(); i++) {
 
-                    if (objTiposCli.get(i).getString(TIPOCLIENTE_DESCRIPCION).equals(NUEVO)){
+                    if (objTiposCli.get(i).getString(TIPOCLIENTE_DESCRIPCION).equals(NUEVO)) {
 
                         idTipoCliente = objTiposCli.get(i).getString(TIPOCLIENTE_ID_TIPOCLIENTE);
                         peso = objTiposCli.get(i).getInt(TIPOCLIENTE_PESO);
@@ -135,28 +130,14 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String seleccion = EVENTO_CLIENTEREL+" = '"+id+"'";
-        if (consulta.checkQueryList(CAMPOS_EVENTO,seleccion,null)){
+        String seleccion = EVENTO_CLIENTEREL + " = '" + id + "'";
+        if (consulta.checkQueryList(CAMPOS_EVENTO, seleccion, null)) {
             btnVerEventos.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             btnVerEventos.setVisibility(View.GONE);
         }
 
     }
-
-    @Override
-    protected void setMaestroDetallePort() {
-        maestroDetalleSeparados = true;
-    }
-
-    @Override
-    protected void setMaestroDetalleLand() { maestroDetalleSeparados = false; }
-
-    @Override
-    protected void setMaestroDetalleTabletLand() { maestroDetalleSeparados = false; }
-
-    @Override
-    protected void setMaestroDetalleTabletPort() { maestroDetalleSeparados = false; }
 
     @Override
     protected void setTabla() {
@@ -165,37 +146,14 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
 
     }
 
-    @Override
-    protected void setTablaCab() {
-
-        tablaCab = null;
-    }
-
-    @Override
-    protected void setContext() {
-
-        contexto = getContext();
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = CAMPOS_CLIENTE;
-    }
-
-    @Override
-    protected void setCampoID() {
-        campoID = CLIENTE_ID_CLIENTE;
-    }
 
     @Override
     protected void setBundle() {
 
         proyecto = (Modelo) bundle.getSerializable(TABLA_PROYECTO);
-        if (actualtemp==null){actualtemp = actual;}
-        System.out.println("actualtemp = " + actualtemp);
-        System.out.println("actual = " + actual);
-        System.out.println("origen = " + origen);
+        if (actualtemp == null) {
+            actualtemp = actual;
+        }
     }
 
     @Override
@@ -204,47 +162,47 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
         activityBase.toolbar.setSubtitle(modelo.getString(CLIENTE_NOMBRE));
         visible(btnevento);
 
-            nombreCliente.setText(modelo.getString(CLIENTE_NOMBRE));
-            direccionCliente.setText(modelo.getString(CLIENTE_DIRECCION));
-            telefonoCliente.setText(modelo.getString(CLIENTE_TELEFONO));
-            emailCliente.setText(modelo.getString(CLIENTE_EMAIL));
-            contactoCliente.setText(modelo.getString(CLIENTE_CONTACTO));
-            idTipoCliente = modelo.getString(CLIENTE_ID_TIPOCLIENTE);
-            id = modelo.getString(CLIENTE_ID_CLIENTE);
-            tipoCliente.setText(modelo.getString(CLIENTE_DESCRIPCIONTIPOCLI));
-            peso = modelo.getInt(CLIENTE_PESOTIPOCLI);
+        nombreCliente.setText(modelo.getString(CLIENTE_NOMBRE));
+        direccionCliente.setText(modelo.getString(CLIENTE_DIRECCION));
+        telefonoCliente.setText(modelo.getString(CLIENTE_TELEFONO));
+        emailCliente.setText(modelo.getString(CLIENTE_EMAIL));
+        contactoCliente.setText(modelo.getString(CLIENTE_CONTACTO));
+        idTipoCliente = modelo.getString(CLIENTE_ID_TIPOCLIENTE);
+        id = modelo.getString(CLIENTE_ID_CLIENTE);
+        tipoCliente.setText(modelo.getString(CLIENTE_DESCRIPCIONTIPOCLI));
+        peso = modelo.getInt(CLIENTE_PESOTIPOCLI);
 
 
-            if (origen!=null && (origen.equals(PROYECTO) || origen.equals(PRESUPUESTO)
-                    || origen.equals(AGENDA))) {
+        if (origen != null && (origen.equals(PROYECTO) || origen.equals(PRESUPUESTO)
+                || origen.equals(AGENDA))) {
 
-                btndelete.setVisibility(View.GONE);
+            btndelete.setVisibility(View.GONE);
 
-            } else {
+        } else {
 
-                btndelete.setVisibility(View.VISIBLE);
-
-            }
-
-            if (peso > 6) {
-                imagen.setImageResource(R.drawable.clientev);
-            } else if (peso > 3) {
-                imagen.setImageResource(R.drawable.clientea);
-            } else if (peso > 0) {
-                imagen.setImageResource(R.drawable.clienter);
-            } else {
-                imagen.setImageResource(R.drawable.cliente);
-            }
-
-            String seleccion = EVENTO_CLIENTEREL+" = '"+id+"'";
-            if (consulta.checkQueryList(CAMPOS_EVENTO,seleccion,null)){
-                btnVerEventos.setVisibility(View.VISIBLE);
-            }else {
-                btnVerEventos.setVisibility(View.GONE);
-            }
-
+            btndelete.setVisibility(View.VISIBLE);
 
         }
+
+        if (peso > 6) {
+            imagen.setImageResource(R.drawable.clientev);
+        } else if (peso > 3) {
+            imagen.setImageResource(R.drawable.clientea);
+        } else if (peso > 0) {
+            imagen.setImageResource(R.drawable.clienter);
+        } else {
+            imagen.setImageResource(R.drawable.cliente);
+        }
+
+        String seleccion = EVENTO_CLIENTEREL + " = '" + id + "'";
+        if (consulta.checkQueryList(CAMPOS_EVENTO, seleccion, null)) {
+            btnVerEventos.setVisibility(View.VISIBLE);
+        } else {
+            btnVerEventos.setVisibility(View.GONE);
+        }
+
+
+    }
 
     @Override
     protected void setAcciones() {
@@ -256,8 +214,8 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
 
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_CLIENTE, modelo);
-                bundle.putBoolean(NUEVOREGISTRO,true);
-                icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDEvento());
+                bundle.putBoolean(NUEVOREGISTRO, true);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
             }
         });
 
@@ -267,9 +225,9 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
 
                 bundle = new Bundle();
                 //bundle.putSerializable(TABLA_CLIENTE, modelo);
-                bundle.putSerializable(LISTA,new ListaModelo(CAMPOS_EVENTO,EVENTO_CLIENTEREL,id,null,IGUAL,null));
+                bundle.putSerializable(LISTA, new ListaModelo(CAMPOS_EVENTO, EVENTO_CLIENTEREL, id, null, IGUAL, null));
                 //bundle.putString(IDREL,id);
-                icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDEvento());
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
             }
         });
 
@@ -278,9 +236,9 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
             @Override
             public void onClick(View v) {
 
-                if (!direccionCliente.getText().toString().equals("")){
+                if (!direccionCliente.getText().toString().equals("")) {
 
-                    AppActivity.viewOnMapA(contexto,direccionCliente.getText().toString());
+                    AppActivity.viewOnMapA(contexto, direccionCliente.getText().toString());
 
                 }
             }
@@ -291,7 +249,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
             public void onClick(View v) {
 
                 AppActivity.hacerLlamada(AppActivity.getAppContext()
-                        ,telefonoCliente.getText().toString());
+                        , telefonoCliente.getText().toString());
             }
         });
 
@@ -299,7 +257,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
             @Override
             public void onClick(View v) {
 
-                AppActivity.enviarEmail(getContext(),emailCliente.getText().toString());
+                AppActivity.enviarEmail(getContext(), emailCliente.getText().toString());
             }
         });
 
@@ -326,41 +284,44 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
         });
 
 
-
-
     }
 
     @Override
     protected void setTitulo() {
         tituloSingular = R.string.cliente;
         tituloPlural = R.string.clientes;
+        if (actualtemp.equals(PROSPECTO)){
+            tituloNuevo = R.string.nuevo_prospecto;
+        }else {
+            tituloNuevo = R.string.nuevo_cliente;
+        }
     }
 
 
     @Override
     protected void setInicio() {
 
-        btnclientes = view.findViewById(R.id.btnclientes);
-        btnprospectos = view.findViewById(R.id.btnprospectos);
-        nombreCliente = view.findViewById(R.id.etnombreudcliente);
-        direccionCliente = view.findViewById(R.id.etdirudcliente);
-        telefonoCliente = view.findViewById(R.id.etteludcliente);
-        emailCliente = view.findViewById(R.id.etemailudcliente);
-        contactoCliente = view.findViewById(R.id.etcontudcliente);
-        btnevento = view.findViewById(R.id.btneventoudcliente);
-        tipoCliente = view.findViewById(R.id.tvtipoudcliente);
-        imagen = view.findViewById(R.id.imgudcliente);
-        mapa = view.findViewById(R.id.imgbtndirudcliente);
-        llamada = view.findViewById(R.id.imgbtnteludcliente);
-        mail = view.findViewById(R.id.imgbtnmailudcliente);
-        btnVerEventos = view.findViewById(R.id.btnvereventoudcliente);
+        btnclientes = (Button) ctrl(R.id.btnclientes);
+        btnprospectos = (Button) ctrl(R.id.btnprospectos);
+        nombreCliente = (EditMaterial) ctrl(R.id.etnombreudcliente);
+        direccionCliente = (EditMaterial) ctrl(R.id.etdirudcliente);
+        telefonoCliente = (EditMaterial) ctrl(R.id.etteludcliente);
+        emailCliente = (EditMaterial) ctrl(R.id.etemailudcliente);
+        contactoCliente = (EditMaterial) ctrl(R.id.etcontudcliente);
+        btnevento = (ImageButton) ctrl(R.id.btneventoudcliente);
+        tipoCliente = (TextView) ctrl(R.id.tvtipoudcliente);
+        imagen = (ImageView) ctrl(R.id.imgudcliente);
+        mapa = (ImageButton) ctrl(R.id.imgbtndirudcliente);
+        llamada = (ImageButton) ctrl(R.id.imgbtnteludcliente);
+        mail = (ImageButton) ctrl(R.id.imgbtnmailudcliente);
+        btnVerEventos = (ImageButton) ctrl(R.id.btnvereventoudcliente);
 
     }
 
     @Override
     protected void setLayout() {
 
-        layoutCuerpo = R.layout.fragment_cud_cliente;
+        layoutCuerpo = R.layout.fragment_crud_cliente;
         layoutCabecera = R.layout.cabecera_crud_cliente;
         layoutItem = R.layout.item_list_cliente;
 
@@ -369,42 +330,35 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
     @Override
     protected void setContenedor() {
 
-        setDato(CLIENTE_NOMBRE,nombreCliente.getText().toString());
-        setDato(CLIENTE_DIRECCION,direccionCliente.getText().toString());
-        setDato(CLIENTE_TELEFONO,telefonoCliente.getText().toString());
-        setDato(CLIENTE_EMAIL,emailCliente.getText().toString());
-        setDato(CLIENTE_CONTACTO,contactoCliente.getText().toString());
-        setDato(CLIENTE_ID_TIPOCLIENTE,idTipoCliente);
-        setDato(CLIENTE_PESOTIPOCLI,peso);
+        setDato(CLIENTE_NOMBRE, nombreCliente.getText().toString());
+        setDato(CLIENTE_DIRECCION, direccionCliente.getText().toString());
+        setDato(CLIENTE_TELEFONO, telefonoCliente.getText().toString());
+        setDato(CLIENTE_EMAIL, emailCliente.getText().toString());
+        setDato(CLIENTE_CONTACTO, contactoCliente.getText().toString());
+        setDato(CLIENTE_ID_TIPOCLIENTE, idTipoCliente);
+        setDato(CLIENTE_PESOTIPOCLI, peso);
 
     }
 
     @Override
     protected void setcambioFragment() {
 
-        if (origen!=null && ((origen.equals(PROYECTO))||(origen.equals(PRESUPUESTO)))){
+        if (origen != null && ((origen.equals(PROYECTO)) || (origen.equals(PRESUPUESTO)))) {
 
             bundle = new Bundle();
             bundle.putString(ORIGEN, actualtemp);
-            System.out.println("idCliente = " + idAOrigen);
             bundle.putString(CLIENTE, idAOrigen);
-            bundle.putString(ACTUAL,origen);
-            bundle.putBoolean(NUEVOREGISTRO,true);
+            bundle.putString(ACTUAL, origen);
+            bundle.putBoolean(NUEVOREGISTRO, true);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
 
-        }else if (subTitulo.equals(NUEVOCLIENTE)){
-            subTitulo = namesubdef = setNamefdef();
-            actualtemp = CLIENTE;
-        }else if (subTitulo.equals(NUEVOPROSPECTO)){
-            subTitulo = setNamefdef();
-            actualtemp = PROSPECTO;
-        }else{
-            subTitulo = setNamefdef();
-
         }
+
+        subTitulo = setNamefdef();
+        activityBase.toolbar.setSubtitle(subTitulo);
     }
 
-    public class AdaptadorFiltroRV extends ListaAdaptadorFiltroRV{
+    public class AdaptadorFiltroRV extends ListaAdaptadorFiltroRV {
 
         public AdaptadorFiltroRV(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
@@ -436,13 +390,13 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
             telefonoCli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_TELEFONO));
             emailCli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_EMAIL));
             dirCli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_DIRECCION));
-            super.setEntradas(posicion,view,entrada);
+            super.setEntradas(posicion, view, entrada);
         }
     }
 
     public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
 
-        TextView nombre,direccion,telefono,email,contacto;
+        TextView nombre, direccion, telefono, email, contacto;
         ImageView imagen;
 
         public ViewHolderRV(View itemView) {

@@ -33,6 +33,7 @@
             <flag name="ASUNTO" value="48"/>
             <flag name="MENSAJE" value="80"/>
             <flag name="MULTI" value="131072"/>
+            <flag name="IMEMULTI" value="262144"/>
             <flag name="DIRECCION" value="112"/>
             <flag name="PASS" value="128"/>
             <flag name="PERSONA" value="96"/>

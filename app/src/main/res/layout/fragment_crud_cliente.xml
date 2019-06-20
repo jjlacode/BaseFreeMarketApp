@@ -48,7 +48,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginRight="5dp"
                     jjla:hint_text="@string/nombre"
-                    jjla:tipo_dato="PERSONA" />
+                    jjla:tipo_dato="TEXTO|PERSONA" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
@@ -65,13 +65,14 @@
                         android:layout_weight="1"
                         jjla:gravedad="top|inicio"
                         jjla:hint_text="@string/direccion"
-                        jjla:tipo_dato="MULTI|DIRECCION" />
+                        jjla:tipo_dato="TEXTO|MULTI|DIRECCION" />
 
                     <androidx.appcompat.widget.AppCompatImageButton
                         android:id="@+id/imgbtndirudcliente"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="6"
+                        android:layout_gravity="center"
                         android:background="@drawable/boton_redondo_secondary"
                         android:minHeight="30dp"
                         app:srcCompat="@drawable/ic_place_black_24dp" />
@@ -91,14 +92,15 @@
                         android:layout_marginTop="5dp"
                         android:layout_marginRight="5dp"
                         android:layout_weight="1"
-                        jjla:hint_text="string/telefono"
-                        jjla:tipo_dato="NUMERO|TELEFONO" />
+                        jjla:hint_text="@string/telefono"
+                        jjla:tipo_dato="TELEFONO" />
 
                     <androidx.appcompat.widget.AppCompatImageButton
                         android:id="@+id/imgbtnteludcliente"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="6"
+                        android:layout_gravity="center"
                         android:background="@drawable/boton_redondo_secondary"
                         android:minHeight="30dp"
                         app:srcCompat="@drawable/ic_phone_in_talk_black_24dp" />
@@ -119,13 +121,14 @@
                         android:layout_marginRight="5dp"
                         android:layout_weight="1"
                         jjla:hint_text="@string/email"
-                        jjla:tipo_dato="EMAIL" />
+                        jjla:tipo_dato="TEXTO|EMAIL" />
 
                     <androidx.appcompat.widget.AppCompatImageButton
                         android:id="@+id/imgbtnmailudcliente"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="6"
+                        android:layout_gravity="center"
                         android:background="@drawable/boton_redondo_secondary"
                         android:minHeight="30dp"
                         app:srcCompat="@drawable/ic_mail_outline_black_24dp" />
@@ -140,7 +143,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginRight="5dp"
                     jjla:hint_text="@string/contacto"
-                    jjla:tipo_dato="PERSONA" />
+                    jjla:tipo_dato="TEXTO|PERSONA" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"

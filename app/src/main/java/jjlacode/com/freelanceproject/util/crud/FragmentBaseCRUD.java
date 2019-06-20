@@ -241,12 +241,25 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
                 modelo = CRUDutil.setModelo(campos, id);
             }
 
-            if (modelo.getString(campoImagen) != null) {
+            if (modelo!=null && modelo.getString(campoImagen) != null) {
 
                 path = modelo.getString(campoImagen);
 
+            }
+
+            if (path != null) {
+
                 setImagenUri(contexto, path);
 
+            }else {
+
+                try {
+
+                    imagen.setImageResource(R.drawable.ic_add_a_photo_black_24dp);
+
+                }catch (Exception er){
+                    er.printStackTrace();
+                }
             }
 
         }catch (Exception e){
@@ -373,7 +386,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
                         startActivityForResult(mediaUtil.takePhotoIntent(), COD_FOTO);
                         mediaUtil.addPhotoToGallery();
                         path = mediaUtil.getPath(mediaUtil.getPhotoUri());
-                        System.out.println("path foto= " + path);
                         CRUDutil.setSharePreference(contexto,PERSISTENCIA,PATH,path);
                         onUpdate();
 
@@ -404,28 +416,79 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        System.out.println("requestCode = " + requestCode);
-        System.out.println("data = " + data);
         mediaUtil = new MediaUtil(contexto);
 
         if (requestCode>0) {
 
             switch (requestCode) {
 
+                case COD_FOTO:
+
+                    path = CRUDutil.getSharePreference(contexto,PERSISTENCIA,PATH,path);
+
                 case COD_SELECCIONA:
 
-                    path = mediaUtil.getPath(data.getData());
-                    System.out.println("path = " + path);
+                    if (data.getData()!=null) {
+                        path = mediaUtil.getPath(data.getData());
+                    }
                     onUpdate();
                     break;
 
                 case AUDIORECORD:
 
-                    path = mediaUtil.getPath(data.getData());
+                    if (data.getData()!=null) {
+                        path = mediaUtil.getPath(data.getData());
+                    }
                     onUpdate();
 
             }
         }
+    }
+
+    protected void visibleSoloBtnBack() {
+        visible(frPie);
+        gone(btnsave);
+        gone(btndelete);
+        visible(btnback);
+    }
+
+    protected void visibleSoloBtnSave() {
+        visible(frPie);
+        gone(btnback);
+        gone(btndelete);
+        visible(btnsave);
+    }
+
+    protected void visibleSoloBtnDel() {
+        visible(frPie);
+        gone(btnsave);
+        gone(btnback);
+        visible(btndelete);
+    }
+
+    protected void visibleBtnBackSave() {
+        visible(frPie);
+        visible(btnsave);
+        gone(btndelete);
+        visible(btnback);
+    }
+
+    protected void visibleBtnSaveDel() {
+        visible(frPie);
+        gone(btnback);
+        visible(btndelete);
+        visible(btnsave);
+    }
+
+    protected void visiblePie() {
+        visible(frPie);
+        visible(btnsave);
+        visible(btndelete);
+        visible(btnback);
+    }
+
+    protected void gonePie() {
+        gone(frPie);
     }
 
     protected void imagenMediaPantalla(){
@@ -433,9 +496,64 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
         if (!land) {
             imagen.setMinimumHeight((int) ((double) alto / 2));
             imagen.setMinimumWidth(ancho);
+            imagen.setMaxHeight((int) ((double) alto / 2));
+            imagen.setMaxWidth(ancho);
         }else{
             imagen.setMinimumWidth((int) ((double) ancho / 2));
             imagen.setMinimumHeight((int) ((double) alto / 2));
+            imagen.setMaxWidth((int) ((double) ancho / 2));
+            imagen.setMaxHeight((int) ((double) alto / 2));
+
+        }
+
+    }
+
+    protected void imagenMediaPantalla(ImageView imagen){
+
+        if (!land) {
+            imagen.setMinimumHeight((int) ((double) alto / 2));
+            imagen.setMinimumWidth(ancho);
+            imagen.setMaxHeight((int) ((double) alto / 2));
+            imagen.setMaxWidth(ancho);
+        }else{
+            imagen.setMinimumWidth((int) ((double) ancho / 2));
+            imagen.setMinimumHeight((int) ((double) alto / 2));
+            imagen.setMaxWidth((int) ((double) ancho / 2));
+            imagen.setMaxHeight((int) ((double) alto / 2));
+
+        }
+
+    }
+
+    protected void imagenPantalla(int falto, int fancho){
+
+        if (!land) {
+            imagen.setMinimumHeight((int) ((double) alto / falto));
+            imagen.setMinimumWidth((int) ((double)ancho/fancho));
+            imagen.setMaxHeight((int) ((double) alto / falto));
+            imagen.setMaxWidth((int) ((double)ancho/fancho));
+        }else{
+            imagen.setMinimumWidth((int) ((double) ancho / (falto+fancho)));
+            imagen.setMinimumHeight((int) ((double) alto / falto));
+            imagen.setMaxWidth((int) ((double) ancho / (falto+fancho)));
+            imagen.setMaxHeight((int) ((double) alto / falto));
+
+        }
+
+    }
+
+    protected void imagenPantalla(ImageView imagen, int falto, int fancho){
+
+        if (!land) {
+            imagen.setMinimumHeight((int) ((double) alto / falto));
+            imagen.setMinimumWidth((int) ((double)ancho/fancho));
+            imagen.setMaxHeight((int) ((double) alto / falto));
+            imagen.setMaxWidth((int) ((double)ancho/fancho));
+        }else{
+            imagen.setMinimumWidth((int) ((double) ancho / (falto+fancho)));
+            imagen.setMinimumHeight((int) ((double) alto / falto));
+            imagen.setMaxWidth((int) ((double) ancho / (falto+fancho)));
+            imagen.setMaxHeight((int) ((double) alto / falto));
 
         }
 

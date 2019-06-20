@@ -3,21 +3,14 @@ package jjlacode.com.freelanceproject.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.net.Uri;
-import android.os.Environment;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,8 +18,10 @@ import java.util.ArrayList;
 
 import jjlacode.com.freelanceproject.util.android.AppActivity;
 import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
 import jjlacode.com.freelanceproject.util.crud.CRUDutil;
 import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
+import jjlacode.com.freelanceproject.util.media.AudioPlayRec;
 import jjlacode.com.freelanceproject.util.media.MediaUtil;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
@@ -38,31 +33,29 @@ import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 
 
 public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constantes,
-        ContratoPry.Tablas , CommonPry.TiposNota, MediaPlayer.OnCompletionListener {
+        ContratoPry.Tablas , CommonPry.TiposNota{
 
 
     private String idrelacionado;
-    private Spinner sptiponota;
-    private EditText descripcion;
+    private EditMaterial titulo;
+    private EditMaterial descripcion;
     private ArrayList<String> listaTipoNota;
+    private ImageView notaTexto;
+    private ImageView notaAudio;
+    private ImageView notaVideo;
+    private ImageView notaImagen;
     private String tipoNota;
-    private Button recVideo;
-    private Button playVideo;
+    private ImageView recVideo;
+    private ImageView playVideo;
+    private ImageView ampliar;
     private TextView fecha;
     private TextView tvTipo;
     private long fechaNota;
-    private MediaPlayer player = new MediaPlayer();
-    private MediaRecorder recorder = new MediaRecorder();
     private MediaUtil.MyVideoView videoView;
     private RelativeLayout rl;
     private ImageButton btncompartir;
-    private File archivo;
-    private ImageView b1;
-    private ImageView b2;
-    private ImageView b3;
-    private TextView tv1;
-    private boolean grabando;
-    private boolean reproduciendo;
+    private AudioPlayRec audioPlayRec;
+    private boolean ampliado;
 
 
     public FragmentCRUDNota() {
@@ -92,34 +85,40 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
             lista = CRUDutil.setListaModelo(campos,NOTA_ID_RELACIONADO,null,IGUAL);
 
         }
-    }
 
-    @Override
-    protected void actualizarConsultasRV() {
-
-
+        if (!origen.equals(INICIO)){
+            visibleSoloBtnBack();
+        }
     }
 
     @Override
     protected void setNuevo() {
 
-        btndelete.setVisibility(View.GONE);
-        playVideo.setVisibility(View.GONE);
-        recVideo.setVisibility(View.GONE);
-        imagen.setVisibility(View.GONE);
-        fecha.setVisibility(View.GONE);
-        descripcion.setVisibility(View.GONE);
-        btnsave.setVisibility(View.GONE);
-        tvTipo.setVisibility(View.GONE);
-        videoView.setVisibility(View.GONE);
-        rl.setVisibility(View.GONE);
-        sptiponota.setVisibility(View.VISIBLE);
-        btncompartir.setVisibility(View.GONE);
-        rl.setVisibility(View.GONE);
-        b1.setVisibility(View.GONE);
-        b2.setVisibility(View.GONE);
-        b3.setVisibility(View.GONE);
-        tv1.setVisibility(View.GONE);
+        allGone();
+
+        imagenPantalla(recVideo,4,2);
+        imagenPantalla(playVideo,8,4);
+
+        int padimg = 10;
+        if (!land){
+            padimg = (int) ((double)ancho/10);
+        }else {
+            padimg = (int) ((double)ancho/20);
+        }
+
+        imagenPantalla(notaTexto,4,2);
+        notaTexto.setPadding(padimg, padimg,padimg,0);
+        imagenPantalla(notaAudio,4,2);
+        notaAudio.setPadding(0, padimg,padimg,0);
+        imagenPantalla(notaVideo,4,2);
+        notaVideo.setPadding(padimg, padimg,padimg,0);
+        imagenPantalla(notaImagen,4,2);
+        notaImagen.setPadding(0, padimg,padimg,0);
+
+        visible(notaTexto);
+        visible(notaAudio);
+        visible(notaVideo);
+        visible(notaImagen);
 
     }
 
@@ -137,29 +136,6 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
     }
 
     @Override
-    protected void setMaestroDetallePort() {
-        maestroDetalleSeparados = true;
-    }
-
-    @Override
-    protected void setMaestroDetalleLand() {
-        maestroDetalleSeparados = false;
-
-    }
-
-    @Override
-    protected void setMaestroDetalleTabletLand() {
-        maestroDetalleSeparados = false;
-
-    }
-
-    @Override
-    protected void setMaestroDetalleTabletPort() {
-        maestroDetalleSeparados = false;
-
-    }
-
-    @Override
     protected void setTabla() {
 
         tabla = TABLA_NOTA;
@@ -167,37 +143,9 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
     }
 
     @Override
-    protected void setTablaCab() {
-
-        tablaCab = null;
-    }
-
-    @Override
-    protected void setContext() {
-
-        contexto = getContext();
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = CAMPOS_NOTA;
-    }
-
-    @Override
-    protected void setCampoID() {
-
-        campoID = NOTA_ID_NOTA;
-    }
-
-    @Override
     protected void setBundle() {
 
         idrelacionado = bundle.getString(IDREL);
-
-        if (!origen.equals(INICIO)){
-            btnback.setVisibility(View.VISIBLE);
-        }
 
     }
 
@@ -211,22 +159,18 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
         }
 
         descripcion.setText(modelo.getString(NOTA_DESCRIPCION));
+        titulo.setText(modelo.getString(NOTA_TITULO));
         fechaNota = modelo.getLong(NOTA_FECHA);
         path = modelo.getString(NOTA_RUTA);
         fecha.setText(JavaUtil.getDateTime(fechaNota));
         playVideo.setVisibility(View.GONE);
         recVideo.setVisibility(View.GONE);
         imagen.setVisibility(View.GONE);
-        sptiponota.setVisibility(View.GONE);
         tipoNota = modelo.getString(NOTA_TIPO);
-        tvTipo.setVisibility(View.VISIBLE);
+        tvTipo.setVisibility(View.GONE);
         videoView.setVisibility(View.GONE);
         btncompartir.setVisibility(View.GONE);
         rl.setVisibility(View.GONE);
-        b1.setVisibility(View.GONE);
-        b2.setVisibility(View.GONE);
-        b3.setVisibility(View.GONE);
-        tv1.setVisibility(View.GONE);
 
         if (tipoNota != null) {
 
@@ -236,49 +180,36 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
 
                 case NOTATEXTO:
 
-                    descripcion.setVisibility(View.VISIBLE);
+                    visible(titulo);
+                    visible(descripcion);
 
                     break;
 
                 case NOTAAUDIO:
 
                     if (path!=null) {
-                        btncompartir.setVisibility(View.VISIBLE);
-                        descripcion.setVisibility(View.VISIBLE);
+                        visible(btncompartir);
+                        visible(descripcion);
+                        visible(titulo);
                     }
-                        if (path == null) {
+                    audioPlayRec = new AudioPlayRec(activityBase,view,contexto,R.id.btn_grabar_audio,
+                            R.id.btn_play_audio, R.id.btn_audio_stop, R.id.btn_audio_pausa,
+                            R.id.tvaudio, R.id.pbaraudio);
 
-                            b3.setVisibility(View.VISIBLE);
-                            tv1.setText("Listo para grabar");
-
-                        }else {
-                            b2.setVisibility(View.VISIBLE);
-                            tv1.setText("Listo para reproducir");
-
+                    audioPlayRec.setPath(path);
+                    audioPlayRec.init();
+                    audioPlayRec.setListener(new AudioPlayRec.Listeners() {
+                        @Override
+                        public void onRec(String p) {
+                            path = p;
                         }
-                        tv1.setVisibility(View.VISIBLE);
-                    if (!land) {
-                        b1.setMinimumHeight((int) ((double) alto / 4));
-                        b1.setMinimumWidth(ancho);
-                    }else{
-                        b1.setMinimumWidth((int) ((double) ancho / 4));
-                        b1.setMinimumHeight((int) ((double) alto / 4));
-                    }
-                    if (!land) {
-                        b2.setMinimumHeight((int) ((double) alto / 4));
-                        b2.setMinimumWidth(ancho);
-                    }else{
-                        b2.setMinimumWidth((int) ((double) ancho / 4));
-                        b2.setMinimumHeight((int) ((double) alto / 4));
-                    }
-                    if (!land) {
-                        b3.setMinimumHeight((int) ((double) alto / 4));
-                        b3.setMinimumWidth(ancho);
-                    }else{
-                        b3.setMinimumWidth((int) ((double) ancho / 4));
-                        b3.setMinimumHeight((int) ((double) alto / 4));
-                    }
 
+                        @Override
+                        public void onEndRec() {
+
+                            onUpdate();
+                        }
+                    });
 
                     break;
 
@@ -286,52 +217,35 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
 
                     if (path!=null) {
 
-                        playVideo.setVisibility(View.GONE);
-                        btncompartir.setVisibility(View.VISIBLE);
-                        descripcion.setVisibility(View.VISIBLE);
-                        videoView.setVisibility(View.VISIBLE);
-                        rl.setVisibility(View.VISIBLE);
-                        path = modelo.getString(NOTA_RUTA);
-                        if (!land) {
-                            videoView.setVideoSize(ancho, (int) ((double) alto / 2));
-                        } else {
-                            videoView.setVideoSize((int) ((double) ancho / 2), (int) ((double) alto / 2));
-                        }
+                        visible(playVideo);
+                        visible(titulo);
+                        visible(btncompartir);
+                        visible(descripcion);
+                        imagenPantalla(playVideo,4,2);
 
-                        videoView.setVisibility(View.VISIBLE);
-
-                        MediaController mc = new MediaController(contexto);
-                        mc.setAnchorView(videoView);
-
-                        videoView.setMediaController(mc);
-
-                        videoView.setVideoURI(Uri.parse(path));
-                        videoView.requestFocus();
                     }
 
                     break;
 
                 case NOTAIMAGEN:
 
-                    imagen.setVisibility(View.VISIBLE);
-                    btncompartir.setVisibility(View.VISIBLE);
+                    visible(imagen);
+                    visible(titulo);
+                    visible(descripcion);
+                    visible(btncompartir);
+                    visible(ampliar);
+                    imagenPantalla(ampliar,10,6);
 
                     mediaUtil = new MediaUtil(contexto);
 
                     if (modelo.getString(NOTA_RUTA) != null) {
-                        descripcion.setVisibility(View.VISIBLE);
                         path = modelo.getString(NOTA_RUTA);
                         System.out.println("path set Datos= " + path);
                         setImagenUri(mediaUtil, path);
-                        if (!land) {
-                            System.out.println("alto = " + alto);
-                            System.out.println("ancho = " + ancho);
-                            imagen.setMinimumHeight((int) ((double) alto / 2));
-                            imagen.setMinimumWidth(ancho);
+                        if (!ampliado) {
+                            imagenPantalla(4, 2);
                         }else{
-                            imagen.setMinimumWidth((int) ((double) ancho / 2));
-                            imagen.setMinimumHeight((int) ((double) alto / 2));
-
+                            imagenPantalla(2,1);
                         }
                     }
 
@@ -343,109 +257,84 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
     @Override
     protected void setAcciones() {
 
-        listaTipoNota = new ArrayList<>();
-        listaTipoNota.add("Elija el tipo de Nota");
-        listaTipoNota.add(NOTATEXTO);
-        listaTipoNota.add(NOTAAUDIO);
-        listaTipoNota.add(NOTAVIDEO);
-        listaTipoNota.add(NOTAIMAGEN);
-
-        ArrayAdapter<String> adapterTipoNota = new ArrayAdapter<>
-                (getContext(), R.layout.spinner_item_tipo, listaTipoNota);
-
-        sptiponota.setAdapter(adapterTipoNota);
-
-        sptiponota.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        notaTexto.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onClick(View view) {
 
-                tipoNota = listaTipoNota.get(position);
-                recVideo.setVisibility(View.GONE);
-                imagen.setVisibility(View.GONE);
-                descripcion.setVisibility(View.GONE);
-                b1.setVisibility(View.GONE);
-                b2.setVisibility(View.GONE);
-                b3.setVisibility(View.GONE);
-                tv1.setVisibility(View.GONE);
-
-                switch (tipoNota) {
-
-                    case NOTATEXTO:
-
-                        descripcion.setVisibility(View.VISIBLE);
-                        btnsave.setVisibility(View.VISIBLE);
-
-                        break;
-
-                    case NOTAAUDIO:
-
-                        btnsave.setVisibility(View.GONE);
-                        if (path == null) {
-
-                            b3.setVisibility(View.VISIBLE);
-                            tv1.setText("Listo para grabar");
-                        }else {
-                            b2.setVisibility(View.VISIBLE);
-                            tv1.setText("Listo para reproducir");
-                        }
-                        tv1.setVisibility(View.VISIBLE);
-
-                        if (!land) {
-                            b1.setMinimumHeight((int) ((double) alto / 4));
-                            b1.setMinimumWidth(ancho);
-                        }else{
-                            b1.setMinimumWidth((int) ((double) ancho / 4));
-                            b1.setMinimumHeight((int) ((double) alto / 4));
-                        }
-                        if (!land) {
-                            b2.setMinimumHeight((int) ((double) alto / 4));
-                            b2.setMinimumWidth(ancho);
-                        }else{
-                            b2.setMinimumWidth((int) ((double) ancho / 4));
-                            b2.setMinimumHeight((int) ((double) alto / 4));
-                        }
-                        if (!land) {
-                            b3.setMinimumHeight((int) ((double) alto / 4));
-                            b3.setMinimumWidth(ancho);
-                        }else{
-                            b3.setMinimumWidth((int) ((double) ancho / 4));
-                            b3.setMinimumHeight((int) ((double) alto / 4));
-                        }
-
-
-
-
-                        break;
-
-                    case NOTAVIDEO:
-
-                        recVideo.setVisibility(View.VISIBLE);
-                        btnsave.setVisibility(View.GONE);
-
-
-                        break;
-
-                    case NOTAIMAGEN:
-
-                        imagen.setVisibility(View.VISIBLE);
-                        btnsave.setVisibility(View.GONE);
-                        mediaUtil = new MediaUtil(contexto);
-                        setImagenUri(mediaUtil, path);
-                        if (!land) {
-                            imagen.setMinimumHeight((int) ((double) alto / 2));
-                            imagen.setMinimumWidth(ancho);
-                        }else{
-                            imagen.setMinimumWidth((int) ((double) ancho / 2));
-                            imagen.setMinimumHeight((int) ((double) alto / 2));
-
-                        }
-
-                }
+                visible(titulo);
+                visible(descripcion);
+                visible(btnsave);
+                tipoNota = NOTATEXTO;
+                gone(notaTexto);
+                gone(notaAudio);
+                gone(notaVideo);
+                gone(notaImagen);
             }
+        });
 
+        notaAudio.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onClick(View v) {
 
+                btnsave.setVisibility(View.GONE);
+                tipoNota = NOTAAUDIO;
+                gone(notaTexto);
+                gone(notaAudio);
+                gone(notaVideo);
+                gone(notaImagen);
+
+
+                audioPlayRec = new AudioPlayRec(activityBase,view,contexto,R.id.btn_grabar_audio,
+                        R.id.btn_play_audio, R.id.btn_audio_stop, R.id.btn_audio_pausa,
+                        R.id.tvaudio, R.id.pbaraudio );
+
+                audioPlayRec.setPath(path);
+                audioPlayRec.init();
+                audioPlayRec.setListener(new AudioPlayRec.Listeners() {
+                    @Override
+                    public void onRec(String p) {
+                        path = p;
+                    }
+
+                    @Override
+                    public void onEndRec() {
+
+                        onUpdate();
+                    }
+                });
+            }
+        });
+
+        notaVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                recVideo.setVisibility(View.VISIBLE);
+                btnsave.setVisibility(View.GONE);
+                tipoNota = NOTAVIDEO;
+                gone(notaTexto);
+                gone(notaAudio);
+                gone(notaVideo);
+                gone(notaImagen);
+
+            }
+        });
+
+        notaImagen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                tipoNota = NOTAIMAGEN;
+                gone(notaTexto);
+                gone(notaAudio);
+                gone(notaVideo);
+                gone(notaImagen);
+
+                imagen.setVisibility(View.VISIBLE);
+                btnsave.setVisibility(View.GONE);
+                mediaUtil = new MediaUtil(contexto);
+                setImagenUri(mediaUtil, path);
+                imagenPantalla(2,1);
             }
         });
 
@@ -454,7 +343,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
             public void onClick(View v) {
 
                 System.out.println("Video play path = " + path);
-
+                gone(playVideo);
 
                 if (!land) {
                     videoView.setVideoSize(ancho, (int) ((double) alto / 2));
@@ -470,7 +359,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
 
                 videoView.setMediaController(mc);
 
-                videoView.setVideoURI(Uri.parse(path));
+                videoView.setVideoURI(Uri.fromFile(new File(path)));
                 videoView.requestFocus();
 
                 videoView.start();
@@ -521,35 +410,24 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
             }
         });
 
-        b1.setOnClickListener(new View.OnClickListener() {
+        ampliar.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
 
-                detener(v);
-                b1.setVisibility(View.GONE);
-                b2.setVisibility(View.VISIBLE);
+                if (!ampliado) {
+                    ampliado = true;
+                    ampliar.setImageResource(R.drawable.ic_reducir_indigo);
+                    datos();
+                }else{
+                    ampliado = false;
+                    ampliar.setImageResource(R.drawable.ic_ampliar_indigo);
+                    datos();
+
+                }
 
             }
         });
 
-        b2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reproducir(v);
-                b3.setVisibility(View.GONE);
-                b1.setVisibility(View.VISIBLE);
-            }
-        });
-
-        b3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                grabar(v);
-                b3.setVisibility(View.GONE);
-                b1.setVisibility(View.VISIBLE);
-            }
-        });
     }
 
     @Override
@@ -563,24 +441,26 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
     protected void setTitulo() {
         tituloSingular = R.string.nota;
         tituloPlural = R.string.notas;
+        tituloNuevo = R.string.nueva_nota;
     }
 
     @Override
     protected void setInicio() {
 
-        sptiponota = view.findViewById(R.id.sptiponota);
-        descripcion = view.findViewById(R.id.etdesc_nota);
-        imagen = view.findViewById(R.id.imagen_nota);
-        b1 = view.findViewById(R.id.btn_grabar_audio_stop);
-        playVideo = view.findViewById(R.id.btn_play_video);
-        b2 = view.findViewById(R.id.btn_play_audio);
-        b3 = view.findViewById(R.id.btn_grabar_audio);
-        tv1 = view.findViewById(R.id.tvaudio);
-        recVideo = view.findViewById(R.id.btn_grabar_video);
-        fecha = view.findViewById(R.id.tvfechanota);
-        tvTipo = view.findViewById(R.id.tvtiponota);
-        btncompartir = view.findViewById(R.id.btncompartirnota);
-        rl = view.findViewById(R.id.rl_videoview);
+        notaTexto = (ImageView) ctrl(R.id.btn_texto);
+        notaAudio = (ImageView) ctrl(R.id.btn_audio);
+        notaVideo = (ImageView) ctrl(R.id.btn_video);
+        notaImagen = (ImageView) ctrl(R.id.btn_imagen);
+        titulo = (EditMaterial) ctrl(R.id.ettitulo_nota);
+        descripcion = (EditMaterial) ctrl(R.id.etdesc_nota);
+        imagen = (ImageView) ctrl(R.id.imagen_nota);
+        playVideo = (ImageView) ctrl(R.id.btn_play_video);
+        recVideo = (ImageView) ctrl(R.id.btn_grabar_video);
+        ampliar = (ImageView) ctrl(R.id.ampliar_imagen);
+        fecha = (TextView) ctrl(R.id.tvfechanota);
+        tvTipo = (TextView) ctrl(R.id.tvtiponota);
+        btncompartir = (ImageButton) ctrl(R.id.btncompartirnota);
+        rl = (RelativeLayout) ctrl(R.id.rl_videoview);
         videoView = new MediaUtil.MyVideoView(activityBase.getApplicationContext());
         rl.addView(videoView);
 
@@ -590,16 +470,23 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
     protected boolean onDelete() {
 
         if (delete()) {
-            if (tablaCab == null) {
-                id = null;
-                modelo = null;
-            } else {
-                secuencia = 0;
-                modelo = null;
+            id = null;
+            modelo = null;
+            if (path!=null) {
+
+                File file = new File(path);
+                boolean res = file.delete();
+                if (res) {
+                    Toast.makeText(contexto, "Archivo adjunto borrado", Toast.LENGTH_SHORT).show();
+                    selector();
+                    return true;
+                }else{
+                    Toast.makeText(contexto, "error al borrar el archivo adjunto", Toast.LENGTH_SHORT).show();
+                    selector();
+                    return false;
+                }
             }
-
-            onResume();
-
+            selector();
             return true;
         }
 
@@ -618,6 +505,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
     protected void setContenedor() {
 
         setDato(NOTA_DESCRIPCION, descripcion.getText().toString());
+        setDato(NOTA_TITULO,titulo.getText().toString());
         if (path!=null) {
             setDato(NOTA_RUTA, path);
         }
@@ -634,22 +522,24 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
     @Override
     protected void setcambioFragment() {
 
-        System.out.println("actual = " + tituloPlural);
+        System.out.println("actual = " + getString(tituloPlural));
         System.out.println("subTitulo = " + subTitulo);
 
         if (id!=null){
 
             id=null;
             modelo=null;
-            listaRV();
+            selector();
 
         }else if (origen.equals(EVENTO)) {
 
             enviarBundle();
             bundle.putString(ID, idrelacionado);
-            bundle.putSerializable(MODELO, CRUDutil.setModelo(CAMPOS_EVENTO,idrelacionado));
+            Modelo evento = CRUDutil.setModelo(CAMPOS_EVENTO,idrelacionado);
+            bundle.putSerializable(MODELO, evento);
             bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
+
         } else if (origen.equals(PRESUPUESTO)) {
 
             enviarBundle();
@@ -657,6 +547,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
             bundle.putSerializable(MODELO, CRUDutil.setModelo(CAMPOS_PROYECTO,idrelacionado));
             bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
+
         } else if (origen.equals(PROYECTO)) {
 
             enviarBundle();
@@ -664,6 +555,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
             bundle.putSerializable(MODELO, CRUDutil.setModelo(CAMPOS_PROYECTO,idrelacionado));
             bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
+
         } else if (origen.equals(CLIENTE)) {
 
             enviarBundle();
@@ -671,6 +563,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
             bundle.putSerializable(MODELO, CRUDutil.setModelo(CAMPOS_CLIENTE,idrelacionado));
             bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDCliente());
+
         } else if (origen.equals(PROSPECTO)) {
 
             enviarBundle();
@@ -678,10 +571,8 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
             bundle.putSerializable(MODELO, CRUDutil.setModelo(CAMPOS_CLIENTE,idrelacionado));
             bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDCliente());
+
         }
-
-
-
 
     }
 
@@ -728,7 +619,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
         @Override
         public void bind(Modelo modelo) {
 
-            descripcion.setText(modelo.getString(NOTA_DESCRIPCION));
+            descripcion.setText(modelo.getString(NOTA_TITULO));
             fecha.setText(JavaUtil.getDateTime(modelo.getLong(NOTA_FECHA)));
             String tipo = modelo.getString(NOTA_TIPO);
             tipoNota.setText(tipo);
@@ -786,63 +677,5 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
         }
     }
 
-    public void grabar(View v) {
-        recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        File pathAudio = new File(Environment.getExternalStorageDirectory()
-                .getPath());
-        try {
-            archivo = File.createTempFile("temporal", ".3gp", pathAudio);
-        } catch (IOException e) {
-        }
-        path = archivo.getAbsolutePath();
-        recorder.setOutputFile(path);
-        try {
-            recorder.prepare();
-        } catch (IOException e) {
-        }
-        recorder.start();
-        grabando = true;
-        tv1.setText("Grabando");
-    }
 
-    public void detener(View v) {
-
-        if (grabando) {
-            recorder.stop();
-            grabando = false;
-            recorder.release();
-            onUpdate();
-            player = new MediaPlayer();
-            player.setOnCompletionListener(this);
-            try {
-                player.setDataSource(path);
-            } catch (IOException e) {
-            }
-            try {
-                player.prepare();
-            } catch (IOException e) {
-            }
-
-        }
-        if (reproduciendo){
-            player.pause();
-            reproduciendo = false;
-        }
-        tv1.setText("Listo para reproducir");
-    }
-
-    public void reproducir(View v) {
-        player.start();
-        reproduciendo = true;
-        tv1.setText("Reproduciendo");
-    }
-
-    public void onCompletion(MediaPlayer mp) {
-        b1.setVisibility(View.GONE);
-        b2.setVisibility(View.VISIBLE);
-        tv1.setText("Listo");
-    }
 }

@@ -327,20 +327,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     }
 
     @Override
-    protected void setMaestroDetallePort() {
-        maestroDetalleSeparados = true;
-    }
-
-    @Override
-    protected void setMaestroDetalleLand() { maestroDetalleSeparados = false; }
-
-    @Override
-    protected void setMaestroDetalleTabletLand() { maestroDetalleSeparados = false; }
-
-    @Override
-    protected void setMaestroDetalleTabletPort() { maestroDetalleSeparados = false; }
-
-    @Override
     protected void mostrarDialogDelete() {
 
         delete();
@@ -429,11 +415,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
             }
 
-            System.out.println("fecha inicio Evento = " + finiEvento);
-            System.out.println("fecha fin Evento = " + ffinEvento);
-            System.out.println("hora inicio Evento = " + hiniEvento);
-            System.out.println("hora fin Evento = " + hfinEvento);
-
             consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_DESCRIPCION, descipcion.getText().toString());
             consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_TIPOEVENTO, tevento);
             consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_COMPLETADA, JavaUtil.comprobarDouble(completa.getText().toString()));
@@ -466,7 +447,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
                 idMulti = modelo.getString(EVENTO_IDMULTI);
 
-                System.out.println("idMulti = " + idMulti);
                 String seleccion = ContratoPry.Tablas.EVENTO_IDMULTI + " = '" + idMulti +
                         "' AND " + ContratoPry.Tablas.EVENTO_ID_EVENTO +
                         " <> '" + id + "'";
@@ -590,9 +570,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
         visible(relProy);
 
         completa.setText(modelo.getString(EVENTO_COMPLETADA));
-        //mediaUtil = new MediaUtil(contexto);
-        //mediaUtil.setImageUri(modelo.getString(EVENTO_RUTAFOTO), imagenTarea);
-        //    path = modelo.getString(EVENTO_RUTAFOTO);
 
         if (consulta.checkQueryList(CAMPOS_NOTA,NOTA_ID_RELACIONADO,id,null,IGUAL,null)){
             btnVerNotas.setVisibility(View.VISIBLE);
@@ -1083,6 +1060,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 bundle.putString(IDREL,modelo.getString(EVENTO_ID_EVENTO));
                 bundle.putString(SUBTITULO, modelo.getString(EVENTO_DESCRIPCION));
                 bundle.putString(ORIGEN, EVENTO);
+                bundle.putString(ACTUAL,NOTA);
                 bundle.putSerializable(MODELO,null);
                 bundle.putString(ID,null);
                 bundle.putBoolean(NUEVOREGISTRO,true);
@@ -1098,6 +1076,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 bundle.putString(IDREL,modelo.getString(EVENTO_ID_EVENTO));
                 bundle.putString(SUBTITULO, modelo.getString(EVENTO_DESCRIPCION));
                 bundle.putString(ORIGEN, EVENTO);
+                bundle.putString(ACTUAL,NOTA);
                 bundle.putSerializable(MODELO,null);
                 bundle.putString(ID,null);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());

@@ -10,6 +10,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -17,7 +19,11 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.util.Base64;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.VideoView;
 
 import androidx.loader.content.CursorLoader;
@@ -29,6 +35,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -383,6 +390,13 @@ public class MediaUtil {
         // Save a file: path for use with ACTION_VIEW intents
         audioPath = audio.getAbsolutePath();
         return audio;
+    }
+
+    public File getAudioFile(String path){
+
+        File audio = new File(path);
+        audioPath = audio.getAbsolutePath();
+        return  audio;
     }
 
     public void addPhotoToGallery() {
@@ -864,4 +878,30 @@ public class MediaUtil {
 
 
      */
+
+    public static void eliminarArchivosPorExtension(String path, final String extension){
+
+        File[] archivos = new File(path).listFiles(new FileFilter() {
+
+            public boolean accept(File archivo) {
+
+                if (archivo.isFile())
+
+                return archivo.getName().endsWith('.' + extension);
+
+                return false;
+
+            }
+
+        });
+
+        for (File archivo : archivos) {
+
+            boolean res = archivo.delete();
+
+        }
+
+    }
+
+
 }

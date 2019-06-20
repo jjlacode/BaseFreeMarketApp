@@ -8,4 +8,8 @@
     <dimen name="texto_not">10sp</dimen>
     <dimen name="altobtnico">46dp</dimen>
     <dimen name="titulo_xl">36sp</dimen>
+    <dimen name="alto_layout_sbd">90dp</dimen>
+    <dimen name="margen_sdb">15dp</dimen>
+    <dimen name="margen_sdb_doble">30dp</dimen>
+
 </resources>

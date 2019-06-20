@@ -36,13 +36,13 @@
                 android:text="@string/tipo_nota"
                 android:gravity="center"
                 android:textStyle="bold"
-                android:textSize="@dimen/texto_card" />
+                android:textSize="@dimen/texto_not" />
 
             <TextView
                 android:id="@+id/tvdesc_lnota"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/descripcion"
+                android:text="@string/titulo"
                 android:textStyle="italic"
                 android:textSize="@dimen/texto_card" />
             <TextView

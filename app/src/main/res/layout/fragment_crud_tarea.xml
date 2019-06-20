@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:jjla="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imgtarea"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:scaleType="fitXY" />
+        android:layout_gravity="center" />
 
     <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
         android:id="@+id/etnombretarea"
@@ -36,29 +35,29 @@
         jjla:tipo_dato= "NUMERO|DECIMAL"
         jjla:hint_text="@string/horas"/>
 
-    <LinearLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageButton
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btn_crearnota_tarea"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/boton_redondo_primary"
-            android:src="@drawable/ic_nueva_nota_verde"
+            android:background="@drawable/boton_redondo_secondary"
+            android:src="@drawable/ic_nueva_nota_indigo"
             android:layout_weight="1"/>
 
-        <ImageButton
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btn_vernotas_tarea"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/boton_redondo_primary"
-            android:src="@drawable/ic_lista_notas_verde"
+            android:background="@drawable/boton_redondo_secondary"
+            android:src="@drawable/ic_lista_notas_indigo"
             android:layout_weight="1"/>
 
-    </LinearLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
-    </LinearLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

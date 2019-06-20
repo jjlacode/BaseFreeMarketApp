@@ -61,11 +61,11 @@ public class FragmentCRUDTarea extends FragmentCRUD implements CommonPry.Constan
     @Override
     protected void setDatos() {
 
+        imagenPantalla(3,2);
         nombre.setText(modelo.getString(TAREA_NOMBRE));
         descripcion.setText(modelo.getString(TAREA_DESCRIPCION));
         tiempo.setText(modelo.getString(TAREA_TIEMPO));
 
-        imagenMediaPantalla();
     }
 
     @Override
