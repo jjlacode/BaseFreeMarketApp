@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,12 +9,12 @@
     tools:context=".ui.FragmentAgenda">
 
 
-    <LinearLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgagendacalendario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,7 +22,7 @@
             android:scaleType="centerCrop"
             android:src="@drawable/ic_lista_eventos_indigo" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgagendaeventos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -29,7 +30,7 @@
             android:scaleType="centerCrop"
             android:src="@drawable/ic_evento_indigo" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgagendanotas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -37,15 +38,14 @@
             android:scaleType="centerCrop"
             android:src="@drawable/ic_lista_notas_indigo" />
 
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
-
-    </LinearLayout>
-    <LinearLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvagendacalendario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
             android:textStyle="bold"
             android:text="@string/calendario"/>
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvagendaeventos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -63,7 +63,7 @@
             android:textStyle="bold"
             android:text="@string/proximos_eventos"/>
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvagendanotas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -74,43 +74,45 @@
 
 
 
-    </LinearLayout>
-    <LinearLayout
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgagendapresupentrega"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_entrega_verde_24dp" />
+            android:src="@drawable/ic_pte_entrega_indigo" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgagendapresupespera"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_espera_verde_24dp" />
+            android:src="@drawable/ic_espera_indigo" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgagendapresupcobros"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_cobros_verde_24dp" />
+            android:src="@drawable/ic_cobros_indigo" />
 
-    </LinearLayout>
-    <LinearLayout
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvagendapresupentrega"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -119,7 +121,7 @@
             android:textStyle="bold"
             android:text="@string/presupuesto_pendiente_entrega"/>
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvagendapresupespera"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -128,7 +130,7 @@
             android:textStyle="bold"
             android:text="@string/presupuestos_en_espera"/>
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvagendapresupcobros"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -137,45 +139,47 @@
             android:textStyle="bold"
             android:text="@string/pendiente_cobro"/>
 
-    </LinearLayout>
-    <LinearLayout
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgagendapartidas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_tareas_verde_24dp" />
+            android:src="@drawable/ic_tareas_indigo" />
 
 
 
-        <ImageView
-            android:id="@+id/imgagendaotro"
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgagendatraking"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_espera_verde_24dp" />
+            android:src="@drawable/ic_traking_indigo" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgagendasalir"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_stop_verde" />
+            android:src="@drawable/ic_apagar_indigo" />
 
-    </LinearLayout>
-    <LinearLayout
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvagendapartidas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -184,8 +188,8 @@
             android:textStyle="bold"
             android:text="@string/tareas_pendientes"/>
 
-        <TextView
-            android:id="@+id/tvagendaotro"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvagendatraking"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -193,7 +197,7 @@
             android:textStyle="bold"
             android:text="@string/otro"/>
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvagendasalir"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -202,8 +206,6 @@
             android:textStyle="bold"
             android:text="@string/salir"/>
 
-    </LinearLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
-
-
-</LinearLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

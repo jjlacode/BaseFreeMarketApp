@@ -22,6 +22,7 @@ import java.util.Locale;
 
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.util.android.MainActivityBase;
+import jjlacode.com.freelanceproject.util.crud.ListaModelo;
 import jjlacode.com.freelanceproject.util.time.calendar.clases.Day;
 import jjlacode.com.freelanceproject.util.time.calendar.fragments.MonthFragment;
 
@@ -60,7 +61,7 @@ public class OneCalendarView extends LinearLayout {
 
 
     //para el estilo del calendar
-    int mainBackgroundColor = Color.parseColor("#008577");//Color.parseColor("#0239a9");
+    int mainBackgroundColor = Color.parseColor("#3949AB");//Color.parseColor("#0239a9");
     int calendarBackgroundColor = Color.parseColor("#FFF5F5F5");
     int currentDayBackgroundColor = Color.parseColor("#0099cc");
     int backgroundColorDaysOfMonth = Color.parseColor("#FFF5F5F5");
@@ -68,9 +69,9 @@ public class OneCalendarView extends LinearLayout {
     int textColorDaysOfMonth = Color.parseColor("#0099cc");
     int textColorDaysOfAnotherMonth = Color.parseColor("#d2d2d2");
     int textColorMonthAndYear = Color.parseColor("#0099cc");
-    int textColorSelectedDay = Color.parseColor("#000000");
+    int textColorSelectedDay = Color.parseColor("#D81B60");
     int textColorCurrentDayDay = Color.parseColor("#000000");
-    int backgroundColorSelectedDay = Color.parseColor("#d2d2d2");
+    int backgroundColorSelectedDay = Color.parseColor("#D81B60");
     int calendarLanguage = 0;
 
     public OneCalendarView(Context context) {
@@ -148,6 +149,15 @@ public class OneCalendarView extends LinearLayout {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.one_calendar_view, this, true);
 
+    }
+
+    public void setLista(ListaModelo listaModelo){
+        fragment.setLista(listaModelo);
+    }
+
+    public void setCampo(String campo){
+
+        fragment.setCampo(campo);
     }
 
 

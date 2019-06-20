@@ -121,6 +121,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         String HISTORICO = "Proyectos historico";
         String PROYHISTORICO = getAppContext().getString(R.string.proyectos_historico);
         String AGENDA = "agenda";
+        String DIARIO = "diario";
         String INICIO = "Inicio";
         String EVENTO = "evento";
         String PERFIL = "perfil";

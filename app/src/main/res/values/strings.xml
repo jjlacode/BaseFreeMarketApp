@@ -63,13 +63,13 @@
     <string name="gastos">gastos</string>
     <string name="partidas">partidas</string>
     <string name="nuevo_presupuesto">Nuevo presupuesto</string>
-    <string name="presupuesto_pendiente_entrega">Presupuesto_pendiente_entrega</string>
-    <string name="presupuesto_en_espera_aceptar">Presupuesto_en_espera_aceptar</string>
-    <string name="presupuesto_aceptado_pendiente_ejecucion">Presupuesto_aceptado_pendiente_ejecucion</string>
-    <string name="proyecto_en_ejecucion">Proyecto_en_ejecucion</string>
-    <string name="proyecto_pendiente_entrega">Proyecto_pendiente_entrega</string>
-    <string name="proyecto_entregado_pendiente_cobro">Proyecto_entregado_pendiente_cobro</string>
-    <string name="proyecto_cobrado">Proyecto_cobrado</string>
+    <string name="presupuesto_pendiente_entrega">Presupuesto pendiente entrega</string>
+    <string name="presupuesto_en_espera_aceptar">Presupuesto en espera aceptar</string>
+    <string name="presupuesto_aceptado_pendiente_ejecucion">Presupuesto aceptado pendiente ejecucion</string>
+    <string name="proyecto_en_ejecucion">Proyecto en ejecucion</string>
+    <string name="proyecto_pendiente_entrega">Proyecto pendiente entrega</string>
+    <string name="proyecto_entregado_pendiente_cobro">Proyecto entregado pendiente cobro</string>
+    <string name="proyecto_cobrado">Proyecto cobrado</string>
     <string name="nuevo_presupuesto_est">Nuevo presupuesto</string>
     <string name="presupuesto_pendiente_entrega_est">Presupuesto pendiente entrega</string>
     <string name="presupuesto_en_espera_aceptar_est">Presupuesto en espera aceptar</string>
@@ -268,6 +268,9 @@
     <string name="preparando_play">Preparando la reproduccion</string>
     <string name="grabando">Grabando</string>
     <string name="titulo">Titulo</string>
+    <string name="nueva_cita">Nueva Cita</string>
+    <string name="nueva_llamada">Nueva Llamada</string>
+    <string name="nuevo_email">Nuevo Email</string>
 
 
 </resources>

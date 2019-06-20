@@ -52,6 +52,7 @@ public class MonthFragment extends Fragment implements CalendarAdapter.DayOnClic
     private ArrayList<Day> days = new ArrayList<>();
     private int imonth, iyear, currentDay, backgroundColorDays, backgroundColorDaysNV, backgroundColorCurrentDay, textColorCurrentDayDay, textColorDays, textColorDaysNV;
     private String campo;
+    private ListaModelo listaModelo;
 
 
     @Override
@@ -100,6 +101,10 @@ public class MonthFragment extends Fragment implements CalendarAdapter.DayOnClic
 
 
         return rootView;
+    }
+
+    public void setCampo(String campo){
+        this.campo = campo;
     }
 
     private void fillUpMonth(int month, int year) {
@@ -153,32 +158,34 @@ public class MonthFragment extends Fragment implements CalendarAdapter.DayOnClic
 
         int numberOfDaysMonthYear = getNumberOfDaysMonthYear(year, month);
 
-        ListaModelo listaModelo = new ListaModelo(CAMPOS_EVENTO);
-
         for (int i = 1; i <= numberOfDaysMonthYear; i++) {
 
             Calendar c = new GregorianCalendar(year, month, i);
 
             //Date date = new Date(year,month,i);
             long fecha = c.getTimeInMillis();
-            ListaModelo lista = new ListaModelo(CAMPOS_EVENTO);
+            ListaModelo lista = new ListaModelo(listaModelo.getLista());
             lista.clear();
 
+            System.out.println("listaModelo diario = " + listaModelo.size());
             if (listaModelo.chech()) {
                 for (Modelo modelo : listaModelo.getLista()) {
 
-                    System.out.println("fecha = " + JavaUtil.getDate(fecha));
-                    System.out.println("modelo = " + JavaUtil.getDate(modelo.getLong(EVENTO_FECHAINIEVENTO)));
-                    if (modelo.getLong(EVENTO_FECHAINIEVENTO) == fecha) {
+                    System.out.println("fecha campo = " +JavaUtil.soloFecha(modelo.getLong(campo)));
+                    System.out.println("fecha calendario = "+ fecha);
+                    if (JavaUtil.getDate(modelo.getLong(campo)).equals(JavaUtil.getDate(fecha))) {
 
                         lista.add(modelo);
+                        System.out.println("Fecha evento cal = " + JavaUtil.getDate(modelo.getLong(campo)));
 
                     }
                 }
             }
 
-            if (lista.size()>0) {
-                days.add(new Day(new Date(fecha), textColorCurrentDayDay,R.color.Color_card_notok, lista));
+            if (lista.size()>0  && this.currentDay != i) {
+                days.add(new Day(new Date(fecha), R.color.Color_card_notok,R.color.Color_card_notok, lista));
+            }else if (lista.size()>0  && this.iyear == year && this.imonth == month && this.currentDay == i) {
+                days.add(new Day(new Date(fecha), R.color.Color_card_notok, backgroundColorCurrentDay,lista));
             }else if (this.iyear == year && this.imonth == month && this.currentDay == i) {
                 days.add(new Day(new Date(fecha), textColorCurrentDayDay, backgroundColorCurrentDay));
             } else {
@@ -289,6 +296,10 @@ public class MonthFragment extends Fragment implements CalendarAdapter.DayOnClic
     public void dayOnLongClik(Day day, int position) {
 
         onDayClickListener.dayOnLongClik(day, position);
+    }
+
+    public void setLista(ListaModelo listaModelo) {
+        this.listaModelo = listaModelo;
     }
 
     public interface OnSwipeListener {

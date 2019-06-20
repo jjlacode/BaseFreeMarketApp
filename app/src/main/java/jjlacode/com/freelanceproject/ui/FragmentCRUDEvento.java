@@ -56,7 +56,6 @@ import static jjlacode.com.freelanceproject.util.JavaUtil.hoy;
 public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Constantes,
         ContratoPry.Tablas, CommonPry.TiposEvento {
 
-    private Spinner tiposEvento;
     private AutoCompleteTextView proyRel;
     private AutoCompleteTextView cliRel;
     private EditMaterial descipcion;
@@ -90,6 +89,12 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     private ImageButton btnNota;
     private ImageButton btnVerNotas;
     private Button btnVerRepeticiones;
+    private ImageView btnTarea;
+    private ImageView btnCita;
+    private ImageView btnLlamada;
+    private ImageView btnEmail;
+    private ImageView btnEvento;
+    private ImageView btnOtro;
 
     private ArrayList<Modelo> listaClientes;
     private ArrayList<Modelo> listaProyectos;
@@ -147,182 +152,31 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     @Override
     protected void setNuevo() {
 
-        if (cliente != null) {
-
-            idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
-            relCli.setChecked(true);
-            activityBase.toolbar.setSubtitle("Nuevo evento - "+cliente.getString(CLIENTE_NOMBRE));
-
-        }
-        if (proyecto!=null) {
-
-            idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
-            relProy.setChecked(true);
-            activityBase.toolbar.setSubtitle("Nuevo evento - "+proyecto.getString(PROYECTO_NOMBRE));
-
-        }
-
         allGone();
 
-        tiposEvento.setVisibility(View.VISIBLE);
+        int padimg = 10;
+        if (!land){
+            padimg = (int) ((double)ancho/10);
+        }else {
+            padimg = (int) ((double)ancho/20);
+        }
 
-        listaTiposEvento = new ArrayList<>();
-        listaTiposEvento.add("Elija el tipo de evento");
-        listaTiposEvento.add(TIPOEVENTOTAREA);
-        listaTiposEvento.add(TIPOEVENTOCITA);
-        listaTiposEvento.add(TIPOEVENTOEMAIL);
-        listaTiposEvento.add(TIPOEVENTOLLAMADA);
-        listaTiposEvento.add(CommonPry.TiposEvento.TIPOEVENTOEVENTO);
+        imagenPantalla(btnTarea,4,2);
+        btnTarea.setPadding(padimg, padimg,padimg,0);
+        imagenPantalla(btnCita,4,2);
+        btnCita.setPadding(0, padimg,padimg,0);
+        imagenPantalla(btnLlamada,4,2);
+        btnLlamada.setPadding(padimg, padimg,padimg,0);
+        imagenPantalla(btnEmail,4,2);
+        btnEmail.setPadding(0, padimg,padimg,0);
+        imagenPantalla(btnEvento,4,4);
+        btnEvento.setPadding(padimg*3,padimg,padimg*3,0);
 
-        ArrayAdapter<String> adapterTiposEvento = new ArrayAdapter<>
-                (getContext(),R.layout.spinner_item_tipo,listaTiposEvento);
-
-        tiposEvento.setAdapter(adapterTiposEvento);
-
-        tiposEvento.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-
-                if (position>0) {
-
-                    allGone();
-
-                    relProy.setVisibility(View.VISIBLE);
-                    relCli.setVisibility(View.VISIBLE);
-
-                    tevento = listaTiposEvento.get(position);
-                    imagen.setVisibility(View.VISIBLE);
-                    descipcion.setVisibility(View.VISIBLE);
-                    repeticiones.setText(getString(R.string.crear_repeticiones));
-
-                    if (idProyecto!=null){
-
-                        proyRel.setVisibility(View.VISIBLE);
-                        nombreProyecto = proyecto.getString(PROYECTO_NOMBRE);
-                        proyRel.setText(nombreProyecto);
-                        cliRel.setVisibility(View.VISIBLE);
-                        lugar.setText(cliente.getString(CLIENTE_DIRECCION));
-                        telefono.setText(cliente.getString(CLIENTE_TELEFONO));
-                        email.setText(cliente.getString(CLIENTE_EMAIL));
-                        nombreCliente = cliente.getString(CLIENTE_NOMBRE);
-                        cliRel.setText(nombreCliente);
-
-                    }else if (idCliente!=null){
-
-                        //relCli.setVisibility(View.GONE);
-                        cliRel.setVisibility(View.VISIBLE);
-                        lugar.setText(cliente.getString(CLIENTE_DIRECCION));
-                        telefono.setText(cliente.getString(CLIENTE_TELEFONO));
-                        email.setText(cliente.getString(CLIENTE_EMAIL));
-                        nombreCliente = cliente.getString(CLIENTE_NOMBRE);
-                        cliRel.setText(nombreCliente);
-                    }
-
-
-                    switch (tevento){
-
-                        case TIPOEVENTOTAREA:
-
-                            asunto.setVisibility(View.VISIBLE);
-                            mensaje.setVisibility(View.VISIBLE);
-
-                            break;
-
-                        case TIPOEVENTOCITA:
-                            lugar.setVisibility(View.VISIBLE);
-                            asunto.setVisibility(View.VISIBLE);
-                            mensaje.setVisibility(View.VISIBLE);
-                            fechaIni.setVisibility(View.VISIBLE);
-                            horaIni.setVisibility(View.VISIBLE);
-                            btnfini.setVisibility(View.VISIBLE);
-                            btnhini.setVisibility(View.VISIBLE);
-                            repeticiones.setVisibility(View.VISIBLE);
-                            aviso.setVisibility(View.VISIBLE);
-                            asunto.setVisibility(View.VISIBLE);
-                            mensaje.setVisibility(View.VISIBLE);
-                            if (origen.equals(CALENDARIO)){
-                                finiEvento = bundle.getLong(FECHA);
-                                fechaIni.setText(JavaUtil.getDate(finiEvento));
-                            }
-                            break;
-
-                        case TIPOEVENTOEMAIL:
-                            email.setVisibility(View.VISIBLE);
-                            asunto.setVisibility(View.VISIBLE);
-                            mensaje.setVisibility(View.VISIBLE);
-                            fechaIni.setVisibility(View.VISIBLE);
-                            horaIni.setVisibility(View.VISIBLE);
-                            btnfini.setVisibility(View.VISIBLE);
-                            btnhini.setVisibility(View.VISIBLE);
-                            repeticiones.setVisibility(View.VISIBLE);
-                            aviso.setVisibility(View.VISIBLE);
-                            asunto.setVisibility(View.VISIBLE);
-                            mensaje.setVisibility(View.VISIBLE);
-                            if (origen.equals(CALENDARIO)){
-                                finiEvento = bundle.getLong(FECHA);
-                                fechaIni.setText(JavaUtil.getDate(finiEvento));
-                            }
-
-                            break;
-
-                        case TIPOEVENTOLLAMADA:
-                            telefono.setVisibility(View.VISIBLE);
-                            asunto.setVisibility(View.VISIBLE);
-                            mensaje.setVisibility(View.VISIBLE);
-                            fechaIni.setVisibility(View.VISIBLE);
-                            horaIni.setVisibility(View.VISIBLE);
-                            btnfini.setVisibility(View.VISIBLE);
-                            btnhini.setVisibility(View.VISIBLE);
-                            repeticiones.setVisibility(View.VISIBLE);
-                            aviso.setVisibility(View.VISIBLE);
-                            asunto.setVisibility(View.VISIBLE);
-                            mensaje.setVisibility(View.VISIBLE);
-                            if (origen.equals(CALENDARIO)){
-                                finiEvento = bundle.getLong(FECHA);
-                                fechaIni.setText(JavaUtil.getDate(finiEvento));
-                            }
-
-                            break;
-
-                        case CommonPry.TiposEvento.TIPOEVENTOEVENTO:
-                            fechaIni.setVisibility(View.VISIBLE);
-                            horaIni.setVisibility(View.VISIBLE);
-                            fechaFin.setVisibility(View.VISIBLE);
-                            horaFin.setVisibility(View.VISIBLE);
-                            btnfini.setVisibility(View.VISIBLE);
-                            btnhini.setVisibility(View.VISIBLE);
-                            btnffin.setVisibility(View.VISIBLE);
-                            btnhfin.setVisibility(View.VISIBLE);
-                            repeticiones.setVisibility(View.VISIBLE);
-                            aviso.setVisibility(View.VISIBLE);
-                            asunto.setVisibility(View.VISIBLE);
-                            mensaje.setVisibility(View.VISIBLE);
-                            if (origen.equals(CALENDARIO)){
-                                finiEvento = bundle.getLong(FECHA);
-                                fechaIni.setText(JavaUtil.getDate(finiEvento));
-                            }
-
-                            break;
-
-                    }
-
-                }else{
-
-                    allGone();
-                    tiposEvento.setVisibility(View.VISIBLE);
-
-                }
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
+        visible(btnTarea);
+        visible(btnCita);
+        visible(btnLlamada);
+        visible(btnEmail);
+        visible(btnEvento);
 
     }
 
@@ -555,7 +409,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     protected void setDatos() {
 
         allGone();
-        tiposEvento.setVisibility(View.GONE);
         btnVerNotas.setVisibility(View.VISIBLE);
         btnNota.setVisibility(View.VISIBLE);
         btndelete.setVisibility(View.VISIBLE);
@@ -754,12 +607,176 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
     }
 
+    private void comprobarCliProy(){
+
+        if (cliente != null) {
+
+            idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
+            relCli.setChecked(true);
+            activityBase.toolbar.setSubtitle(subTitulo +" - "+cliente.getString(CLIENTE_NOMBRE));
+
+        }else if (proyecto!=null) {
+
+            idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
+            relProy.setChecked(true);
+            activityBase.toolbar.setSubtitle(subTitulo+" - "+proyecto.getString(PROYECTO_NOMBRE));
+
+        }else {
+
+            activityBase.toolbar.setSubtitle(subTitulo);
+
+        }
+
+        if (idProyecto!=null){
+
+            proyRel.setVisibility(View.VISIBLE);
+            nombreProyecto = proyecto.getString(PROYECTO_NOMBRE);
+            proyRel.setText(nombreProyecto);
+            cliRel.setVisibility(View.VISIBLE);
+            lugar.setText(cliente.getString(CLIENTE_DIRECCION));
+            telefono.setText(cliente.getString(CLIENTE_TELEFONO));
+            email.setText(cliente.getString(CLIENTE_EMAIL));
+            nombreCliente = cliente.getString(CLIENTE_NOMBRE);
+            cliRel.setText(nombreCliente);
+
+        }else if (idCliente!=null){
+
+            //relCli.setVisibility(View.GONE);
+            cliRel.setVisibility(View.VISIBLE);
+            lugar.setText(cliente.getString(CLIENTE_DIRECCION));
+            telefono.setText(cliente.getString(CLIENTE_TELEFONO));
+            email.setText(cliente.getString(CLIENTE_EMAIL));
+            nombreCliente = cliente.getString(CLIENTE_NOMBRE);
+            cliRel.setText(nombreCliente);
+        }
+
+        relProy.setVisibility(View.VISIBLE);
+        relCli.setVisibility(View.VISIBLE);
+        imagen.setVisibility(View.VISIBLE);
+        repeticiones.setText(getString(R.string.crear_repeticiones));
+        if (origen.equals(CALENDARIO)){
+            finiEvento = bundle.getLong(FECHA);
+            fechaIni.setText(JavaUtil.getDate(finiEvento));
+        }
+        gone(btnTarea);
+        gone(btnCita);
+        gone(btnLlamada);
+        gone(btnEmail);
+        gone(btnEvento);
+    }
+
     @Override
     protected void setAcciones() {
 
         setAdaptadorClientes(cliRel);
 
         setAdaptadorProyectos(proyRel);
+
+        btnTarea.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                tevento = TIPOEVENTOTAREA;
+                subTitulo = getString(R.string.nueva_tarea);
+                visible(descipcion);
+                asunto.setVisibility(View.VISIBLE);
+                mensaje.setVisibility(View.VISIBLE);
+                comprobarCliProy();
+            }
+        });
+
+        btnCita.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                tevento = TIPOEVENTOCITA;
+                subTitulo = getString(R.string.nueva_cita);
+                visible(descipcion);
+                lugar.setVisibility(View.VISIBLE);
+                asunto.setVisibility(View.VISIBLE);
+                mensaje.setVisibility(View.VISIBLE);
+                fechaIni.setVisibility(View.VISIBLE);
+                horaIni.setVisibility(View.VISIBLE);
+                btnfini.setVisibility(View.VISIBLE);
+                btnhini.setVisibility(View.VISIBLE);
+                repeticiones.setVisibility(View.VISIBLE);
+                aviso.setVisibility(View.VISIBLE);
+                asunto.setVisibility(View.VISIBLE);
+                mensaje.setVisibility(View.VISIBLE);
+                comprobarCliProy();
+
+            }
+        });
+
+        btnLlamada.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                tevento = TIPOEVENTOLLAMADA;
+                subTitulo = getString(R.string.nueva_llamada);
+                visible(descipcion);
+                telefono.setVisibility(View.VISIBLE);
+                asunto.setVisibility(View.VISIBLE);
+                mensaje.setVisibility(View.VISIBLE);
+                fechaIni.setVisibility(View.VISIBLE);
+                horaIni.setVisibility(View.VISIBLE);
+                btnfini.setVisibility(View.VISIBLE);
+                btnhini.setVisibility(View.VISIBLE);
+                repeticiones.setVisibility(View.VISIBLE);
+                aviso.setVisibility(View.VISIBLE);
+                asunto.setVisibility(View.VISIBLE);
+                mensaje.setVisibility(View.VISIBLE);
+                comprobarCliProy();
+
+            }
+        });
+
+        btnEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                tevento = TIPOEVENTOEMAIL;
+                subTitulo = getString(R.string.nuevo_email);
+                visible(descipcion);
+                email.setVisibility(View.VISIBLE);
+                asunto.setVisibility(View.VISIBLE);
+                mensaje.setVisibility(View.VISIBLE);
+                fechaIni.setVisibility(View.VISIBLE);
+                horaIni.setVisibility(View.VISIBLE);
+                btnfini.setVisibility(View.VISIBLE);
+                btnhini.setVisibility(View.VISIBLE);
+                repeticiones.setVisibility(View.VISIBLE);
+                aviso.setVisibility(View.VISIBLE);
+                asunto.setVisibility(View.VISIBLE);
+                mensaje.setVisibility(View.VISIBLE);
+                comprobarCliProy();
+
+            }
+        });
+
+        btnEvento.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                tevento = TIPOEVENTOEVENTO;
+                subTitulo = getString(R.string.nuevo_evento);
+                visible(descipcion);
+                fechaIni.setVisibility(View.VISIBLE);
+                horaIni.setVisibility(View.VISIBLE);
+                fechaFin.setVisibility(View.VISIBLE);
+                horaFin.setVisibility(View.VISIBLE);
+                btnfini.setVisibility(View.VISIBLE);
+                btnhini.setVisibility(View.VISIBLE);
+                btnffin.setVisibility(View.VISIBLE);
+                btnhfin.setVisibility(View.VISIBLE);
+                repeticiones.setVisibility(View.VISIBLE);
+                aviso.setVisibility(View.VISIBLE);
+                asunto.setVisibility(View.VISIBLE);
+                mensaje.setVisibility(View.VISIBLE);
+                comprobarCliProy();
+
+            }
+        });
 
         btnfini.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1133,7 +1150,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
             path = proyecto.getString(PROYECTO_RUTAFOTO);
             imagen.setImageURI(Uri.parse(path));
         }
-        tiposEvento = (Spinner) ctrl(R.id.sptiponevento);
         tipoEvento = (TextView) ctrl(R.id.tvtipoudevento);
         proyRel = (AutoCompleteTextView) ctrl(R.id.sppryudevento);
         cliRel = (AutoCompleteTextView) ctrl(R.id.spcliudevento);
@@ -1178,6 +1194,12 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
         mensaje = (EditMaterial) ctrl(R.id.etmensajeevento);
         chNotificado = (CheckBox) ctrl(R.id.chnotificadoevento);
         completada = (CheckBox) ctrl(R.id.chcompletadaevento);
+        btnTarea = (ImageView) ctrl(R.id.btn_evento_tarea);
+        btnCita = (ImageView) ctrl(R.id.btn_evento_cita);
+        btnLlamada = (ImageView) ctrl(R.id.btn_evento_llamada);
+        btnEmail = (ImageView) ctrl(R.id.btn_evento_email);
+        btnEvento = (ImageView) ctrl(R.id.btn_evento_evento);
+        btnOtro = (ImageView) ctrl(R.id.btn_evento_otro);
 
     }
 

@@ -20,6 +20,11 @@ public class Day {
     private ListaModelo lista;
 
 
+    public Day(Date date) {
+        this.date = date;
+        valid = true;
+    }
+
     public Day(Date date, int textColor, int backgroundColor) {
         this.date = date;
         this.textColor = textColor;

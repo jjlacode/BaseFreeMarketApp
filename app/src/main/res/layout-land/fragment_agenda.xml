@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_lista_evento_verde" />
+            android:src="@drawable/ic_lista_eventos_indigo" />
 
         <ImageView
             android:id="@+id/imgagendaeventos"
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_event_verde_24dp" />
+            android:src="@drawable/ic_evento_indigo" />
 
         <ImageView
             android:id="@+id/imgagendanotas"
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_lista_notas_verde" />
+            android:src="@drawable/ic_lista_notas_indigo" />
 
 
         <ImageView
@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_entrega_verde_24dp" />
+            android:src="@drawable/ic_pte_entrega_indigo" />
 
         <ImageView
             android:id="@+id/imgagendapresupespera"
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_espera_verde_24dp" />
+            android:src="@drawable/ic_espera_indigo" />
 
         <ImageView
             android:id="@+id/imgagendapresupcobros"
@@ -60,7 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_cobros_verde_24dp" />
+            android:src="@drawable/ic_cobros_indigo" />
 
     </LinearLayout>
     <LinearLayout
@@ -136,17 +136,17 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="center"
-            android:src="@drawable/ic_tareas_verde_24dp" />
+            android:src="@drawable/ic_tareas_indigo" />
 
 
 
         <ImageView
-            android:id="@+id/imgagendaotro"
+            android:id="@+id/imgagendatraking"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="center"
-            android:src="@drawable/ic_espera_verde_24dp" />
+            android:src="@drawable/ic_traking_indigo" />
 
         <ImageView
             android:id="@+id/imgagendasalir"
@@ -154,7 +154,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:scaleType="center"
-            android:src="@drawable/ic_stop_verde" />
+            android:src="@drawable/ic_apagar_indigo" />
 
     </LinearLayout>
     <LinearLayout
@@ -172,7 +172,7 @@
             android:text="@string/tareas_pendientes"/>
 
         <TextView
-            android:id="@+id/tvagendaotro"
+            android:id="@+id/tvagendatraking"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"

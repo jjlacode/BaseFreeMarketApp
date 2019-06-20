@@ -86,7 +86,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
 
         }
 
-        if (!origen.equals(INICIO)){
+        if (!origen.equals(DIARIO)){
             visibleSoloBtnBack();
         }
     }

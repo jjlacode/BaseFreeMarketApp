@@ -9,6 +9,9 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.android.AppActivity;
@@ -22,6 +25,10 @@ import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 import jjlacode.com.freelanceproject.util.time.calendar.clases.Day;
 import jjlacode.com.freelanceproject.util.time.calendar.views.OneCalendarView;
 
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.EVENTO;
+import static jjlacode.com.freelanceproject.CommonPry.TiposEvento.TIPOEVENTOTAREA;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.DIFERENTE;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.IGUAL;
 import static jjlacode.com.freelanceproject.util.android.AppActivity.viewOnMapA;
 import static jjlacode.com.freelanceproject.CommonPry.TiposEvento.TIPOEVENTOCITA;
 import static jjlacode.com.freelanceproject.CommonPry.TiposEvento.TIPOEVENTOEMAIL;
@@ -43,6 +50,10 @@ public class Calendario extends FragmentBase implements ContratoPry.Tablas {
     RecyclerView rv;
     ListaModelo lista;
     long fecha;
+    String[] campos;
+    String campo;
+    int layoutItem;
+    private int positionOld;
 
     @Override
     protected void setLayout() {
@@ -56,34 +67,58 @@ public class Calendario extends FragmentBase implements ContratoPry.Tablas {
 
         calendarView = view.findViewById(R.id.oneCalendar);
         rv = view.findViewById(R.id.rveventocalendario);
-        lista = new ListaModelo(CAMPOS_EVENTO);
+        layoutItem = R.layout.item_list_evento_calendario;
+        campos = CAMPOS_EVENTO;
+        campo = EVENTO_FECHAINIEVENTO;
+        lista = new ListaModelo(campos);
+
+
+            long fechaHoy = JavaUtil.hoyFecha();
+            ListaModelo listaModelo = new ListaModelo(campos,EVENTO_TIPOEVENTO,
+                    TIPOEVENTOTAREA,null,DIFERENTE,null);
+            lista.clear();
+
+            if (listaModelo.chech()) {
+                for (Modelo modelo : listaModelo.getLista()) {
+
+                    System.out.println("fecha = " + JavaUtil.getDate(fechaHoy));
+
+                    if (JavaUtil.getDate(modelo.getLong(campo)).equals(JavaUtil.getDate(fechaHoy))) {
+
+                        lista.add(modelo);
+                        System.out.println("modelo = " + JavaUtil.getDate(modelo.getLong(campo)));
+
+                    }
+                }
+            }
+
         RVAdapter adaptadorRV = new RVAdapter(new ViewHolderRV(view),
-                lista.getLista(),R.layout.item_list_evento_calendario, null);
+                lista.getLista(),layoutItem, null);
         rv.setAdapter(adaptadorRV);
 
+        calendarView.setLista(listaModelo);
+        calendarView.setCampo(campo);
+
         calendarView.setOneCalendarClickListener(new OneCalendarView.OneCalendarClickListener() {
+
+
             @Override
             public void dateOnClick(Day day, int position) {
 
                 lista = day.getLista();
-                if (lista==null){lista = new ListaModelo(CAMPOS_EVENTO);lista.clear();}
-                fecha = day.getDate().getTime();
-                RVAdapter adaptadorRV = new RVAdapter(new ViewHolderRV(view),
-                        lista.getLista(),R.layout.item_list_evento_calendario, null);
-                rv.setAdapter(adaptadorRV);
-                /*
-                if (lista!=null && lista.size()>0) {
-                    bundle = new Bundle();
-                    bundle.putSerializable(LISTA, lista);
-                    bundle.putString(ORIGEN, CALENDARIO);
-                    bundle.putString(ACTUAL, CommonPry.TiposEvento.TIPOEVENTOEVENTO);
-                    bundle.putLong(FECHA,day.getDate().getTime());
-                    bundle.putString(SUBTITULO, JavaUtil.getDate(day.getDate().getTime()));
-                    icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
+                if (lista==null){
+                    lista = new ListaModelo(campos);
+                    lista.clear();
                 }
+                fecha = day.getDate().getTime();
+                System.out.println("fecha day= " + JavaUtil.getDate(fecha));
+                RVAdapter adaptadorRV = new RVAdapter(new ViewHolderRV(view),
+                        lista.getLista(),layoutItem, null);
+                rv.setAdapter(adaptadorRV);
 
-                 */
-
+                calendarView.removeDaySeleted(positionOld);
+                calendarView.addDaySelected(position);
+                positionOld = position;
             }
 
             @Override
@@ -93,7 +128,7 @@ public class Calendario extends FragmentBase implements ContratoPry.Tablas {
                 bundle.putBoolean(NUEVOREGISTRO,true);
                 bundle.putString(ORIGEN,CALENDARIO);
                 bundle.putLong(FECHA,day.getDate().getTime());
-                bundle.putString(ACTUAL, TIPOEVENTOEVENTO);
+                bundle.putString(ACTUAL, EVENTO);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
 
             }

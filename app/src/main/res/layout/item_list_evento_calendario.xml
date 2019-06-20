@@ -122,10 +122,10 @@
                     android:id="@+id/btnvereventocalendario"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/boton_redondo_primary"
+                    android:background="@drawable/boton_redondo_secondary"
                     android:layout_gravity="center"
                     android:layout_weight="2"
-                    android:src="@drawable/ic_ver_verde"/>
+                    android:src="@drawable/ic_ver_indigo"/>
 
             </LinearLayout>
 

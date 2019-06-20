@@ -264,6 +264,33 @@ public class JavaUtil {
         return 52;
     }
 
+    public static long hoyFecha(){
+
+        Calendar c = new GregorianCalendar();
+        c.set(Calendar.MINUTE,0);
+        c.set(Calendar.HOUR_OF_DAY,0);
+        c.set(Calendar.MILLISECOND,0);
+        return c.getTimeInMillis();
+    }
+
+    public static long soloFecha(long fecha){
+
+        Calendar c = new GregorianCalendar();
+        c.setTimeInMillis(fecha);
+        c.set(Calendar.MINUTE,0);
+        c.set(Calendar.HOUR_OF_DAY,0);
+        c.set(Calendar.MILLISECOND,0);
+        return c.getTimeInMillis();
+    }
+    public static long hoyHora(){
+
+        Calendar c = new GregorianCalendar();
+        c.set(Calendar.YEAR,0);
+        c.set(Calendar.MONTH,0);
+        c.set(Calendar.DAY_OF_WEEK,0);
+        return c.getTimeInMillis();
+    }
+
     public static String getDate(long date) {
         Date fecha = new Date(date);
         SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM yyyy ", Locale.getDefault());

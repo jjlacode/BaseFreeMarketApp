@@ -90,8 +90,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
         view = inflater.inflate(R.layout.contenido, container, false);
         land = getResources().getBoolean(R.bool.esLand);
         tablet = getResources().getBoolean(R.bool.esTablet);
-        System.out.println("land = " + land);
-        System.out.println("tablet = " + tablet);
 
         frPrincipal = view.findViewById(R.id.contenedor);
         frdetalle = view.findViewById(R.id.layout_detalle);
@@ -144,8 +142,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
         editor.putString(ID,id);
         editor.putInt(SECUENCIA,secuencia);
         editor.apply();
-        System.out.println("Guardado onPause");
-        System.out.println("id = " + id);
     }
 
 
@@ -293,8 +289,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     protected void enviarAct(){
 
         icFragmentos.enviarBundleAActivity(bundle);
-        System.out.println("bundle enviado a activityBase desde "+ getString(tituloPlural));
-        System.out.println("bundle = " + bundle);
     }
 
     protected void enviarBundle(){
@@ -332,8 +326,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
             editor.apply();
         }
 
-        System.out.println("onResume id = " + id);
-
         setTabla();
         setTablaCab();
         setCampos();
@@ -351,8 +343,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
         else if (id!=null && secuencia>0){
             modelo = CRUDutil.setModelo(campos,id,secuencia);
         }
-
-        System.out.println("onResume modelo = " + modelo);
 
         if (tituloPlural>0) {
             activityBase.toolbar.setTitle(tituloPlural);
@@ -382,12 +372,13 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
                 if (opciones[which].equals("Hacer foto desde cámara")) {
 
                     try {
-                        onUpdate();
-                        startActivityForResult(mediaUtil.takePhotoIntent(), COD_FOTO);
-                        mediaUtil.addPhotoToGallery();
-                        path = mediaUtil.getPath(mediaUtil.getPhotoUri());
-                        CRUDutil.setSharePreference(contexto,PERSISTENCIA,PATH,path);
-                        onUpdate();
+                        if (onUpdate()) {
+                            startActivityForResult(mediaUtil.takePhotoIntent(), COD_FOTO);
+                            mediaUtil.addPhotoToGallery();
+                            path = mediaUtil.getPath(mediaUtil.getPhotoUri());
+                            CRUDutil.setSharePreference(contexto, PERSISTENCIA, PATH, path);
+                            onUpdate();
+                        }
 
                     } catch (IOException e) {
                         Log.e("DialogoOpcionesImagen", e.toString());
@@ -395,8 +386,9 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
 
                 } else if (opciones[which].equals("Elegir de la galería")) {
 
-                    onUpdate();
-                    startActivityForResult(mediaUtil.openGalleryIntent(), COD_SELECCIONA);
+                    if (onUpdate()) {
+                        startActivityForResult(mediaUtil.openGalleryIntent(), COD_SELECCIONA);
+                    }
 
                 }else if (opciones[which].equals("Quitar foto")) {
 

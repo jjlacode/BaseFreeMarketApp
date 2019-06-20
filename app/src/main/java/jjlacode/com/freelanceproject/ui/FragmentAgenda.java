@@ -38,7 +38,7 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
     private ImageView presupEntrega;
     private ImageView presupCobros;
     private ImageView calendario;
-    private ImageView otro;
+    private ImageView traking;
     private ImageView salir;
 
     private TextView tvProxEvent;
@@ -49,7 +49,7 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
     private TextView tvPresupCobros;
     private TextView tvcalendario;
     private TextView tvsalir;
-    private TextView tvOtro;
+    private TextView tvTraking;
 
 
     private static ConsultaBD consulta = new ConsultaBD();
@@ -93,8 +93,8 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
         tvPresupCobros = view.findViewById(R.id.tvagendapresupcobros);
         calendario = view.findViewById(R.id.imgagendacalendario);
         tvcalendario = view.findViewById(R.id.tvagendacalendario);
-        otro = view.findViewById(R.id.imgagendaotro);
-        tvOtro = view.findViewById(R.id.tvagendaotro);
+        traking = view.findViewById(R.id.imgagendatraking);
+        tvTraking = view.findViewById(R.id.tvagendatraking);
         salir = view.findViewById(R.id.imgagendasalir);
         tvsalir = view.findViewById(R.id.tvagendasalir);
 
@@ -143,10 +143,10 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
         partidasPend.setPadding(padimg, padimg, 0,0);
         tvPartidasPend.setPadding(padimg,0, 0,0);
         tvPartidasPend.setTextSize(sizef);
-        otro.setMinimumHeight(altoimg);
-        otro.setPadding(padimg, padimg, padimg,0);
-        tvOtro.setPadding(padimg,0, padimg,0);
-        tvOtro.setTextSize(sizef);
+        traking.setMinimumHeight(altoimg);
+        traking.setPadding(padimg, padimg, padimg,0);
+        tvTraking.setPadding(padimg,0, padimg,0);
+        tvTraking.setTextSize(sizef);
         salir.setMinimumHeight(altoimg);
         salir.setPadding(0, padimg, padimg,0);
         tvsalir.setPadding(0,0, padimg,0);
@@ -164,7 +164,9 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
             @Override
             public void onClick(View v) {
 
-                obtenerNotas();
+                //obtenerNotas();
+                activityBase.getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.content_main,new Diario()).addToBackStack(null).commit();
             }
         });
 
@@ -207,6 +209,22 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
                 activityBase.getSupportFragmentManager().beginTransaction()
                         .replace(R.id.content_main,new Calendario()).addToBackStack(null).commit();
 
+            }
+        });
+
+        traking.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                obtenerDeptpartidasTraking();
+
+            }
+        });
+
+        salir.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                activityBase.finish();
             }
         });
 
@@ -256,6 +274,40 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
         }else{
             Toast.makeText(getContext(), "No hay partidas pendientes de completar", Toast.LENGTH_SHORT).show();
+        }
+
+
+
+    }
+
+    private void obtenerDeptpartidasTraking(){
+
+        ArrayList<Modelo> lista ;
+        ListaModelo listaPartidasSinCompletar = new ListaModelo(CAMPOS_DETPARTIDA);
+        listaPartidasSinCompletar.clear();
+
+        lista = consulta.queryList(CAMPOS_DETPARTIDA);
+
+        for (Modelo item : lista) {
+
+            if (item.getInt(DETPARTIDA_CONTADOR) > 0 ){
+
+                listaPartidasSinCompletar.add(item);
+            }
+        }
+
+        if (listaPartidasSinCompletar.chech()){
+
+            bundle = new Bundle();
+            bundle.putBoolean(VERLISTA,true);
+            bundle.putSerializable(LISTA,listaPartidasSinCompletar);
+            bundle.putString(ORIGEN,INICIO);
+            bundle.putString(SUBTITULO,"Tareas Traking");
+
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
+
+        }else{
+            Toast.makeText(getContext(), "No hay Tareas en Traking", Toast.LENGTH_SHORT).show();
         }
 
 
