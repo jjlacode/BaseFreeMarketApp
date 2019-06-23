@@ -93,9 +93,9 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     @Override
     protected void setLista() {
 
-        System.out.println("listab = " + listab);
-        if (listab==null) {
-            btnVolverProy.setVisibility(View.VISIBLE);
+        if (proyecto!=null) {
+            visible(btnVolverProy);
+            visible(viewCabecera);
         }
 
     }
@@ -188,9 +188,11 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
             @Override
             public void onClick(View v) {
                 new CommonPry.Calculos.TareaActualizaProy().execute(id);
+                System.out.println("origen = " + origen);
                 bundle.putSerializable(MODELO, proyecto);
-                bundle.putString(ACTUAL,origen);
-                bundle.putString(ORIGEN,actual);
+                bundle.putString(ACTUAL,PROYECTO);
+                bundle.putString(ACTUALTEMP,origen);
+                bundle.putString(ORIGEN,PARTIDA);
                 bundle.putString(ID,id);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
             }
@@ -248,31 +250,6 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     }
 
     @Override
-    protected void setMaestroDetallePort() {
-        maestroDetalleSeparados = true;
-
-    }
-
-    @Override
-    protected void setMaestroDetalleLand() {
-        maestroDetalleSeparados = false;
-
-    }
-
-    @Override
-    protected void setMaestroDetalleTabletLand() {
-        maestroDetalleSeparados = false;
-
-    }
-
-    @Override
-    protected void setMaestroDetalleTabletPort() {
-        maestroDetalleSeparados = false;
-
-    }
-
-
-    @Override
     protected void setLayout() {
 
         layoutCuerpo = R.layout.fragment_cud_partida_proyecto;
@@ -320,38 +297,16 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
 
     }
 
-    /*
-    @Override
-    protected void setTablaCab() {
-
-        tablaCab = TABLA_PROYECTO;
-    }
-
-    @Override
-    protected void setContext() {
-
-        contexto = getContext();
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = CAMPOS_PARTIDA;
-
-    }
-
-    @Override
-    protected void setCampoID() {
-        campoID = PARTIDA_ID_PROYECTO;
-    }
-
-     */
 
     @Override
     protected void setBundle() {
 
+        System.out.println("bundle = " + bundle);
+
+
         if (bundle != null) {
             proyecto = (Modelo) bundle.getSerializable(PROYECTO);
+            System.out.println("proyecto = " + proyecto);
             activityBase.toolbar.setSubtitle(proyecto.getString(PROYECTO_NOMBRE));
 
         }
@@ -416,17 +371,6 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
             }
 
         }
-
-        /*
-        if (modelo.getString(PARTIDA_RUTAFOTO) != null) {
-
-            path = modelo.getString(PARTIDA_RUTAFOTO);
-            MediaUtil imagenUtil = new MediaUtil(contexto);
-            imagenUtil.setImageUri(path, imagen);
-
-        }
-
-         */
 
 
         nombrePartida.setText(modelo.getString(PARTIDA_NOMBRE));

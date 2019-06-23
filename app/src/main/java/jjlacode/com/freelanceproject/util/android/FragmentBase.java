@@ -2,6 +2,7 @@ package jjlacode.com.freelanceproject.util.android;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
@@ -19,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -55,6 +58,19 @@ public abstract class FragmentBase extends Fragment {
     protected ArrayList<EditMaterial> materialEdits;
     protected ArrayList<Integer> recursos;
 
+    protected RelativeLayout frPrincipal;
+    protected LinearLayout frdetalle;
+    protected LinearLayout frPie;
+    protected LinearLayout frCabecera;
+    protected View viewCabecera;
+    protected View viewCuerpo;
+    protected View viewBotones;
+    protected int layoutCuerpo;
+    protected int layoutCabecera;
+    protected int layoutPie;
+    private Chronometer timerg;
+    private boolean onTimer;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -84,13 +100,72 @@ public abstract class FragmentBase extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(layout, container, false);
+        //view = inflater.inflate(layout, container, false);
 
-        System.out.println("land = " + land);
-        System.out.println("tablet = " + tablet);
+        view = inflater.inflate(R.layout.contenido, container, false);
+        land = getResources().getBoolean(R.bool.esLand);
+        tablet = getResources().getBoolean(R.bool.esTablet);
+
+        layoutCuerpo = layout;
+
+        frPrincipal = view.findViewById(R.id.contenedor);
+        frdetalle = view.findViewById(R.id.layout_detalle);
+        frCabecera = view.findViewById(R.id.layout_cabecera);
+        frPie = view.findViewById(R.id.layout_pie);
+
+        if (layoutCuerpo>0) {
+            viewCuerpo = inflater.inflate(layoutCuerpo, container, false);
+            if (viewCuerpo.getParent()!=null){
+                ((ViewGroup)viewCuerpo.getParent()).removeView(viewCuerpo); // <- fix
+            }
+            if (viewCuerpo!=null) {
+                frdetalle.addView(viewCuerpo);
+            }
+
+        }
+
+        if (layoutCabecera>0) {
+            viewCabecera = inflater.inflate(layoutCabecera, container,false);
+            if(viewCabecera.getParent() != null) {
+                ((ViewGroup)viewCabecera.getParent()).removeView(viewCabecera); // <- fix
+            }
+            if (viewCabecera!=null) {
+                frCabecera.addView(viewCabecera);
+            }
+        }
+
+        if (layoutPie>0){
+
+            viewBotones = inflater.inflate(layoutPie,container,false);
+            if(viewBotones.getParent() != null) {
+                ((ViewGroup)viewBotones.getParent()).removeView(viewBotones); // <- fix
+            }
+            frPie.addView(viewBotones);
+
+        }
+
+        timerg = (Chronometer) view.findViewById(R.id.chronocrud);
+
         setInicio();
 
+        AndroidUtil.ocultarTeclado(activityBase, view);
+
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        timerg.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+            @Override
+            public void onChronometerTick(Chronometer arg0) {
+
+                setOnCronometro(arg0);
+
+            }
+        });
+
     }
 
     @Override
@@ -143,6 +218,50 @@ public abstract class FragmentBase extends Fragment {
         materialEdits.add(vista);
         return vista;
 
+    }
+
+    protected void setOnCronometro(Chronometer arg0){
+
+        System.out.println("onTick base");
+    }
+
+    protected void setTimer(Chronometer timer){
+
+        timerg = timer;
+        System.out.println("Set Timer base");
+    }
+
+    protected void startTimer(){
+
+        timerg.start();
+        System.out.println("Start timer");
+        onTimer = true;
+        isOnTimer();
+    }
+
+    protected void stopTimer(){
+
+        if (onTimer) {
+            timerg.stop();
+            System.out.println("Stop timer");
+            onTimer = false;
+            isOnTimer();
+        }
+    }
+
+    protected boolean isOnTimer(){
+        System.out.println("onTimer = "+onTimer);
+
+        return onTimer;
+    }
+
+    protected long setCounterUp(Chronometer arg0){
+
+        if (SystemClock.elapsedRealtime() > arg0.getBase()) {
+            return (SystemClock.elapsedRealtime() - arg0.getBase()) ;
+        } else {
+            return (arg0.getBase() - SystemClock.elapsedRealtime()) ;
+        }
     }
 
     protected void vaciarControles(){

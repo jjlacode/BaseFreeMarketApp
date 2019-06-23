@@ -13,14 +13,16 @@ import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.crud.ListaModelo;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.CommonPry;
 
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ACTUAL;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.DIASLONG;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ID;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.IGUAL;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.LISTA;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.MODELO;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ORIGEN;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.SUBTITULO;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.VERLISTA;
@@ -29,30 +31,6 @@ import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.VERLISTA;
 public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvento,
         ContratoPry.Tablas, CommonPry.Constantes {
 
-
-    private String origen;
-    private ImageView proxEvent;
-    private ImageView notasGen;
-    private ImageView partidasPend;
-    private ImageView presupEspera;
-    private ImageView presupEntrega;
-    private ImageView presupCobros;
-    private ImageView calendario;
-    private ImageView traking;
-    private ImageView salir;
-
-    private TextView tvProxEvent;
-    private TextView tvNotasGen;
-    private TextView tvPartidasPend;
-    private TextView tvPresupEspera;
-    private TextView tvPresupEntrega;
-    private TextView tvPresupCobros;
-    private TextView tvcalendario;
-    private TextView tvsalir;
-    private TextView tvTraking;
-
-
-    private static ConsultaBD consulta = new ConsultaBD();
 
     public FragmentAgenda() {
         // Required empty public constructor
@@ -65,7 +43,6 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
     }
 
-
     @Override
     protected void setInicio() {
 
@@ -73,30 +50,30 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
         bundle = getArguments();
         if (bundle!=null){
 
-            origen = bundle.getString(ORIGEN);
+            String origen = bundle.getString(ORIGEN);
             bundle=null;
         }
 
         //activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
 
-        proxEvent = view.findViewById(R.id.imgagendaeventos);
-        notasGen = view.findViewById(R.id.imgagendanotas);
-        partidasPend = view.findViewById(R.id.imgagendapartidas);
-        tvProxEvent = view.findViewById(R.id.tvagendaeventos);
-        tvNotasGen = view.findViewById(R.id.tvagendanotas);
-        tvPartidasPend = view.findViewById(R.id.tvagendapartidas);
-        presupEntrega = view.findViewById(R.id.imgagendapresupentrega);
-        presupEspera = view.findViewById(R.id.imgagendapresupespera);
-        presupCobros = view.findViewById(R.id.imgagendapresupcobros);
-        tvPresupEntrega = view.findViewById(R.id.tvagendapresupentrega);
-        tvPresupEspera = view.findViewById(R.id.tvagendapresupespera);
-        tvPresupCobros = view.findViewById(R.id.tvagendapresupcobros);
-        calendario = view.findViewById(R.id.imgagendacalendario);
-        tvcalendario = view.findViewById(R.id.tvagendacalendario);
-        traking = view.findViewById(R.id.imgagendatraking);
-        tvTraking = view.findViewById(R.id.tvagendatraking);
-        salir = view.findViewById(R.id.imgagendasalir);
-        tvsalir = view.findViewById(R.id.tvagendasalir);
+        ImageView proxEvent = view.findViewById(R.id.imgagendaeventos);
+        ImageView notasGen = view.findViewById(R.id.imgagendanotas);
+        ImageView partidasPend = view.findViewById(R.id.imgagendapartidas);
+        TextView tvProxEvent = view.findViewById(R.id.tvagendaeventos);
+        TextView tvNotasGen = view.findViewById(R.id.tvagendanotas);
+        TextView tvPartidasPend = view.findViewById(R.id.tvagendapartidas);
+        ImageView presupEntrega = view.findViewById(R.id.imgagendapresupentrega);
+        ImageView presupEspera = view.findViewById(R.id.imgagendapresupespera);
+        ImageView presupCobros = view.findViewById(R.id.imgagendapresupcobros);
+        TextView tvPresupEntrega = view.findViewById(R.id.tvagendapresupentrega);
+        TextView tvPresupEspera = view.findViewById(R.id.tvagendapresupespera);
+        TextView tvPresupCobros = view.findViewById(R.id.tvagendapresupcobros);
+        ImageView calendario = view.findViewById(R.id.imgagendacalendario);
+        TextView tvcalendario = view.findViewById(R.id.tvagendacalendario);
+        ImageView traking = view.findViewById(R.id.imgagendatraking);
+        TextView tvTraking = view.findViewById(R.id.tvagendatraking);
+        ImageView salir = view.findViewById(R.id.imgagendasalir);
+        TextView tvsalir = view.findViewById(R.id.tvagendasalir);
 
 
         int altoimg = 100;
@@ -156,7 +133,9 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
             @Override
             public void onClick(View v) {
 
-                obtenerEventos();
+                //obtenerEventos();
+                activityBase.getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.content_main,new Trabajos()).addToBackStack(null).commit();
             }
         });
 
@@ -252,7 +231,7 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
         ListaModelo listaPartidasSinCompletar = new ListaModelo(CAMPOS_PARTIDA);
         listaPartidasSinCompletar.clear();
 
-        lista = consulta.queryList(CAMPOS_PARTIDA);
+        lista = ConsultaBD.queryList(CAMPOS_PARTIDA);
 
         for (Modelo item : lista) {
 
@@ -286,11 +265,11 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
         ListaModelo listaPartidasSinCompletar = new ListaModelo(CAMPOS_DETPARTIDA);
         listaPartidasSinCompletar.clear();
 
-        lista = consulta.queryList(CAMPOS_DETPARTIDA);
+        lista = ConsultaBD.queryList(CAMPOS_DETPARTIDA);
 
         for (Modelo item : lista) {
 
-            if (item.getInt(DETPARTIDA_CONTADOR) > 0 ){
+            if (item.getLong(DETPARTIDA_CONTADOR) > 0 ){
 
                 listaPartidasSinCompletar.add(item);
             }
@@ -384,72 +363,36 @@ public class FragmentAgenda extends FragmentBase implements CommonPry.TiposEvent
 
         ListaModelo listaEventos = new ListaModelo(CAMPOS_EVENTO);
         listaEventos.clear();
-        ArrayList<Modelo> lista = consulta.queryList(CAMPOS_EVENTO, null, null);
-        int i = 0;
+        ArrayList<Modelo> lista = ConsultaBD.queryList(CAMPOS_EVENTO, null, null);
+
         for (Modelo item : lista) {
 
-            if ((lista.get(i).getCampos(ContratoPry.Tablas.EVENTO_TIPOEVENTO) != null &&
-                    lista.get(i).getCampos(ContratoPry.Tablas.EVENTO_TIPOEVENTO).equals(CommonPry.TiposEvento.TIPOEVENTOTAREA) &&
-                    Double.parseDouble(lista.get(i).getCampos(ContratoPry.Tablas.EVENTO_COMPLETADA)) < 100)
-                    || (item.getCampos(ContratoPry.Tablas.EVENTO_FECHAINIEVENTO) != null &&
-                    Long.parseLong(item.getCampos(ContratoPry.Tablas.EVENTO_FECHAINIEVENTO)) > diaspasadosEventos &&
-                    Long.parseLong(item.getCampos(ContratoPry.Tablas.EVENTO_FECHAINIEVENTO)) < diasfuturosEventos &&
-                    Double.parseDouble(lista.get(i).getCampos(ContratoPry.Tablas.EVENTO_COMPLETADA)) < 100)) {
+            if ((item.getString(EVENTO_TIPOEVENTO) != null &&
+                    item.getString(EVENTO_TIPOEVENTO).equals(TIPOEVENTOTAREA) &&
+                    item.getDouble(EVENTO_COMPLETADA) < 100)
+                    || (item.getLong(EVENTO_FECHAINIEVENTO) >0 &&
+                    item.getLong(EVENTO_FECHAINIEVENTO) > diaspasadosEventos &&
+                    item.getLong(EVENTO_FECHAINIEVENTO) < diasfuturosEventos &&
+                    item.getDouble(EVENTO_COMPLETADA) < 100)) {
 
                 listaEventos.add(item);
             }
-            i++;
         }
 
         if (listaEventos.chech()) {
 
             bundle = new Bundle();
             bundle.putSerializable(LISTA, listaEventos);
-            bundle.putString(ACTUAL, CommonPry.TiposEvento.TIPOEVENTOEVENTO);
-            bundle.putString(SUBTITULO, "Proximos eventos");
+            bundle.putString(ACTUAL, EVENTO);
+            bundle.putSerializable(MODELO,null);
+            bundle.putString(ID,null);
+            bundle.putString(SUBTITULO, getString(R.string.proximos_eventos));
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
         }else{
-            Toast.makeText(getContext(), "No hay ninugún evento próximo", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.no_eventos_proximos), Toast.LENGTH_SHORT).show();
 
         }
 
     }
-
-    private void obtenerEventosGenerales() {
-
-        long diasfuturosEventos = JavaUtil.hoy() + (CommonPry.diasfuturos * DIASLONG);
-        long diaspasadosEventos = JavaUtil.hoy() - (CommonPry.diaspasados * DIASLONG);
-
-        ListaModelo listaEventos = new ListaModelo(CAMPOS_EVENTO);
-        listaEventos.clear();
-        ArrayList<Modelo> lista = consulta.queryList(CAMPOS_EVENTO, null, null);
-        int i = 0;
-        for (Modelo item : lista) {
-
-            if ((lista.get(i).getString(EVENTO_CLIENTEREL)==null &&
-                    lista.get(i).getString(EVENTO_PROYECTOREL)==null &&
-                    lista.get(i).getDouble(EVENTO_COMPLETADA) < 100)) {
-
-                listaEventos.add(item);
-            }
-            i++;
-        }
-
-        if (listaEventos.chech()) {
-
-            bundle = new Bundle();
-            bundle.putSerializable(LISTA, listaEventos);
-            bundle.putString(ORIGEN, CommonPry.Constantes.EVENTO);
-            bundle.putString(SUBTITULO, "Proximos eventos");
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
-        }else{
-            Toast.makeText(getContext(), "No hay ninugún evento próximo", Toast.LENGTH_SHORT).show();
-
-        }
-
-    }
-
-
-
 
 }

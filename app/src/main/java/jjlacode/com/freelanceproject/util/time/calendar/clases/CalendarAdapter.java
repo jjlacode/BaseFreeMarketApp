@@ -40,8 +40,8 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewDa
     public void onBindViewHolder(final ViewDayHolder holder, final int position) {
 
         final Day dia = dias.get(position);
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(dia.getDate());
+        Calendar cal = dia.getDate();//Calendar.getInstance();
+        //cal.setTime(dia.getDate());
         int nday = cal.get(Calendar.DAY_OF_MONTH);
         holder.dia.setText(nday + "");
 

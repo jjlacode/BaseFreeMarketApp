@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 
 import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.PERSISTENCIA;

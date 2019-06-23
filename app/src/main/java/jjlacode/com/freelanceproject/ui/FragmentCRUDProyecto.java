@@ -391,6 +391,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 bundle.putSerializable(LISTA,lista);
                 bundle.putSerializable(PROYECTO,modelo);
                 bundle.putString(ORIGEN,actualtemp);
+                bundle.putString(ACTUAL,PARTIDA);
                 bundle.putString(SUBTITULO, actualtemp);
                 bundle.putString(ID,id);
                 bundle.putInt(SECUENCIA,0);

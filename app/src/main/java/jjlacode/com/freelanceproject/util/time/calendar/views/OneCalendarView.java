@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -40,6 +41,7 @@ public class OneCalendarView extends LinearLayout {
     private ImageButton buttonUp, buttonDown;
     private TextView textViewMY;
     private TextView textViewD, textViewL, textViewM, textViewX, textViewJ, textViewV, textViewS;
+    private ListaModelo lista;
 
     public static final int SPANISH = 0, ENGLISH = 1;//si el calendario estara en español o ingles
 
@@ -152,6 +154,8 @@ public class OneCalendarView extends LinearLayout {
     }
 
     public void setLista(ListaModelo listaModelo){
+
+        lista = listaModelo;
         fragment.setLista(listaModelo);
     }
 
@@ -246,6 +250,7 @@ public class OneCalendarView extends LinearLayout {
         fragment = new MonthFragment();
 
         Bundle bundle = new Bundle();
+
         bundle.putInt(MonthFragment.YEAR, year);
         bundle.putInt(MonthFragment.MONTH, month);
         bundle.putInt(MonthFragment.TCDAYS, textColorDaysOfMonth);
@@ -497,6 +502,11 @@ public class OneCalendarView extends LinearLayout {
         return new SimpleDateFormat("EEEE", Locale.ENGLISH).format(date1);
     }
 
+    public ArrayList<Day> getDays(){
+        return fragment.getDays();
+    }
+
+
     private void nextMoth() {
         if (month == 11) {
             month = 0;
@@ -514,7 +524,6 @@ public class OneCalendarView extends LinearLayout {
         } else {
             month--;
         }
-
         showMonth(month, year);
     }
 

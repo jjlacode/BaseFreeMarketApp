@@ -2,6 +2,7 @@ package jjlacode.com.freelanceproject.util.time.calendar.clases;
 
 import android.graphics.Color;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import jjlacode.com.freelanceproject.util.crud.ListaModelo;
@@ -11,7 +12,7 @@ import jjlacode.com.freelanceproject.util.crud.ListaModelo;
  */
 
 public class Day {
-    private Date date;
+    private Calendar date;
     private boolean valid, selected;
     private int textColor = Color.parseColor("#0099cc");
     private int textColorNV = Color.parseColor("#d2d2d2");
@@ -20,19 +21,19 @@ public class Day {
     private ListaModelo lista;
 
 
-    public Day(Date date) {
+    public Day(Calendar date) {
         this.date = date;
         valid = true;
     }
 
-    public Day(Date date, int textColor, int backgroundColor) {
+    public Day(Calendar date, int textColor, int backgroundColor) {
         this.date = date;
         this.textColor = textColor;
         this.backgroundColor = backgroundColor;
         valid = true;
     }
 
-    public Day(Date date, int textColor, int backgroundColor, ListaModelo lista) {
+    public Day(Calendar date, int textColor, int backgroundColor, ListaModelo lista) {
         this.date = date;
         this.textColor = textColor;
         this.backgroundColor = backgroundColor;
@@ -40,18 +41,18 @@ public class Day {
         this.lista = lista;
     }
 
-    public Day(Date date, boolean valid, int textColorNV, int backgroundColorNV) {
+    public Day(Calendar date, boolean valid, int textColorNV, int backgroundColorNV) {
         this.date = date;
         this.valid = valid;
         this.textColorNV = textColorNV;
         this.backgroundColorNV = backgroundColorNV;
     }
 
-    public Date getDate() {
+    public Calendar getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(Calendar date) {
         this.date = date;
     }
 

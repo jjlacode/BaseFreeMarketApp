@@ -87,8 +87,8 @@
     <string name="tareas">Tareas</string>
     <string name="presupuestos_pendientes">Presup sin entregar</string>
     <string name="tareas_pendientes">Tareas pendientes</string>
-    <string name="presupuestos_en_espera">Presup en espera</string>
-    <string name="pendiente_cobro">Pendiente cobro</string>
+    <string name="presupuestos_en_espera">Presupuesto en espera</string>
+    <string name="pendiente_cobro">Presupuesto Pendiente cobro</string>
     <string name="fecha_entrega_presup">Fecha entrega presupuesto</string>
     <string name="eventos">Eventos</string>
     <string name="fecha_evento">Fecha vencimiento evento</string>
@@ -246,8 +246,8 @@
     <string name="parar_grabacion">Parar grabacion</string>
     <string name="notificado">Notificado</string>
     <string name="salir">Salir</string>
-    <string name="otro">Otro</string>
-    <string name="calendario">Calendario</string>
+    <string name="treking">Treking</string>
+    <string name="calendario">Calendario Eventos</string>
     <string name="tarea">Tarea</string>
     <string name="productos">Productos</string>
     <string name="importe_mo">Importe mano de obra</string>
@@ -259,5 +259,10 @@
     <string name="nueva_cita">Nueva Cita</string>
     <string name="nueva_llamada">Nueva Llamada</string>
     <string name="nuevo_email">Nuevo Email</string>
+    <string name="diario">Diario</string>
+    <string name="tareas_ejecucion">Tareas en Ejecución</string>
+    <string name="no_eventos_proximos">No hay eventos proximos</string>
+    <string name="proyectos_en_curso">Proyectos en curso</string>
+    <string name="nuevo_detalle_partida">Nuevo detalle de partida</string>
 
 </resources>

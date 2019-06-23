@@ -126,6 +126,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
     protected void setDefectoMaestroDetalleSeparados() {
         super.setDefectoMaestroDetalleSeparados();
 
+        /*
         if (idrelacionado != null && id!=null && modelo == null) {
             frPie.setVisibility(View.VISIBLE);
             btnsave.setVisibility(View.GONE);
@@ -133,6 +134,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
         }else if (idrelacionado!=null){
             rv.setVisibility(View.GONE);
         }
+        */
     }
 
     @Override
@@ -146,6 +148,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
     protected void setBundle() {
 
         idrelacionado = bundle.getString(IDREL);
+        fechaNota = bundle.getLong(FECHA);
 
     }
 
@@ -240,7 +243,6 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
 
                     if (modelo.getString(NOTA_RUTA) != null) {
                         path = modelo.getString(NOTA_RUTA);
-                        System.out.println("path set Datos= " + path);
                         setImagenUri(mediaUtil, path);
                         if (!ampliado) {
                             imagenPantalla(4, 2);
@@ -469,26 +471,34 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
     @Override
     protected boolean onDelete() {
 
-        if (delete()) {
-            id = null;
-            modelo = null;
             if (path!=null) {
 
                 File file = new File(path);
                 boolean res = file.delete();
                 if (res) {
                     Toast.makeText(contexto, "Archivo adjunto borrado", Toast.LENGTH_SHORT).show();
-                    selector();
-                    return true;
+                    path=null;
+                    if (delete()) {
+                        id = null;
+                        modelo = null;
+                        selector();
+                        return true;
+                    }
                 }else{
                     Toast.makeText(contexto, "error al borrar el archivo adjunto", Toast.LENGTH_SHORT).show();
                     selector();
                     return false;
                 }
+            }else if(tipoNota.equals(NOTATEXTO)){
+                path=null;
+                if (delete()) {
+                    id = null;
+                    modelo = null;
+                    selector();
+                    return true;
+                }
             }
             selector();
-            return true;
-        }
 
         return false;
     }
@@ -512,8 +522,14 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
 
         if (id==null) {
             setDato(NOTA_ID_RELACIONADO, idrelacionado);
-            setDato(NOTA_FECHA, JavaUtil.hoy());
-            setDato(NOTA_FECHAF,JavaUtil.getDateTime(JavaUtil.hoy()));
+            if (idrelacionado!=null) {
+                setDato(NOTA_NOMBREREL, subTitulo);
+            }
+            if (fechaNota==0){
+                fechaNota = JavaUtil.hoy();
+            }
+            setDato(NOTA_FECHA, fechaNota);
+            setDato(NOTA_FECHAF,JavaUtil.getDateTime(fechaNota));
             setDato(NOTA_TIPO, tipoNota);
         }
 
@@ -522,8 +538,6 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
     @Override
     protected void setcambioFragment() {
 
-        System.out.println("actual = " + getString(tituloPlural));
-        System.out.println("subTitulo = " + subTitulo);
 
         if (id!=null){
 

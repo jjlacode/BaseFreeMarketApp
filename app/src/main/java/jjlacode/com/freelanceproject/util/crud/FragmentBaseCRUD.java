@@ -6,10 +6,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,13 +24,15 @@ import androidx.appcompat.app.AlertDialog;
 import java.io.IOException;
 
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.util.android.AndroidUtil;
 import jjlacode.com.freelanceproject.util.android.FragmentBase;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.media.MediaUtil;
+
+import static android.app.Activity.RESULT_OK;
 
 public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.Constantes {
 
@@ -58,16 +62,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     protected String actualtemp;
     protected String subTitulo;
     protected boolean nuevo;
-
-    protected RelativeLayout frPrincipal;
-    protected LinearLayout frdetalle;
-    protected LinearLayout frPie;
-    protected LinearLayout frCabecera;
-    protected View viewCabecera;
-    protected View viewCuerpo;
-    protected View viewBotones;
-    protected int layoutCuerpo;
-    protected int layoutCabecera;
 
     protected ImageButton btnsave;
     protected ImageButton btnback;
@@ -121,6 +115,9 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
         btnback = view.findViewById(R.id.btn_back);
         btnsave = view.findViewById(R.id.btn_save);
         btndelete = view.findViewById(R.id.btn_del);
+
+        Chronometer timer = (Chronometer) view.findViewById(R.id.chronocrud);
+        setTimer(timer);
 
         setInicio();
 
@@ -410,7 +407,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
 
         mediaUtil = new MediaUtil(contexto);
 
-        if (requestCode>0) {
+        if (resultCode == RESULT_OK) {
 
             switch (requestCode) {
 
@@ -420,7 +417,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
 
                 case COD_SELECCIONA:
 
-                    if (data.getData()!=null) {
+                    if (data!=null && data.getData()!=null) {
                         path = mediaUtil.getPath(data.getData());
                     }
                     onUpdate();

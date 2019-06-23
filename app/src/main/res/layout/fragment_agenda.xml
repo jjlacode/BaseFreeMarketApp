@@ -70,7 +70,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:textStyle="bold"
-            android:text="@string/notas"/>
+            android:text="@string/diario"/>
 
 
 
@@ -186,7 +186,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:textStyle="bold"
-            android:text="@string/tareas_pendientes"/>
+            android:text="@string/tareas_ejecucion"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvagendatraking"
@@ -195,7 +195,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:textStyle="bold"
-            android:text="@string/otro"/>
+            android:text="@string/treking"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvagendasalir"

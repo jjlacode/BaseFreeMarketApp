@@ -2,6 +2,7 @@ package jjlacode.com.freelanceproject.util.crud;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -110,6 +112,9 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
                 R.color.s3,
                 R.color.s4
         );
+
+        Chronometer timer = (Chronometer) view.findViewById(R.id.chronocrud);
+        setTimer(timer);
 
         setInicio();
 

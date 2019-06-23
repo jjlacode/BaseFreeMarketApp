@@ -8,7 +8,7 @@ import android.net.Uri;
 import java.util.ArrayList;
 import java.util.Set;
 
-import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
 
 public class CRUDutil {
 

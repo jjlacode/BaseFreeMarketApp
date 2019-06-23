@@ -3,7 +3,7 @@ package jjlacode.com.freelanceproject.util.crud;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
 
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.SECUENCIA;
 

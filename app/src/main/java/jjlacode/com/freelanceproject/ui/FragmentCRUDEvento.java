@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.net.Uri;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -18,7 +17,6 @@ import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -35,6 +33,7 @@ import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
 import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
 import jjlacode.com.freelanceproject.util.crud.CRUDutil;
 import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.util.time.DatePickerFragment;
 import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
 import jjlacode.com.freelanceproject.util.media.MediaUtil;
@@ -127,6 +126,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     private ArrayList<String> listaTiposEvento;
     private AdaptadorFiltroRV adaptadorFiltroRV;
     private int notificado;
+    private boolean esLista;
 
 
     public FragmentCRUDEvento() {
@@ -146,6 +146,9 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     @Override
     protected void setLista() {
 
+        if (origen.equals(CALENDARIO)) {
+            visibleSoloBtnBack();
+        }
 
     }
 
@@ -153,6 +156,12 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     protected void setNuevo() {
 
         allGone();
+        visibleSoloBtnBack();
+        gone(lupa);
+        gone(inicio);
+        gone(renovar);
+        gone(buscar);
+        gone(auto);
 
         int padimg = 10;
         if (!land){
@@ -204,76 +213,81 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
             if (idProyecto != null) {
 
-                consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_NOMPROYECTOREL, nombreProyecto);
-                consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_PROYECTOREL, idProyecto);
+                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_NOMPROYECTOREL, nombreProyecto);
+                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_PROYECTOREL, idProyecto);
 
             }
             if (idCliente != null) {
 
-                consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_NOMCLIENTEREL, nombreCliente);
-                consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_CLIENTEREL, idCliente);
+                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_NOMCLIENTEREL, nombreCliente);
+                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_CLIENTEREL, idCliente);
             }
 
             switch (tevento) {
 
                 case TIPOEVENTOTAREA:
 
-                    consulta.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                    consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
+                    ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
+                    ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTO, ffinEvento);
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAFINEVENTO, hfinEvento);
+                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTOF,JavaUtil.getDate(ffinEvento));
+                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTOF,JavaUtil.getTime(hfinEvento));
+
 
                     break;
 
                 case TIPOEVENTOCITA:
-                    consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, finiEvento);
-                    consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, hiniEvento);
-                    consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
-                    consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
-                    consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_LUGAR, lugar.getText().toString());
-                    consulta.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                    consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, finiEvento);
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, hiniEvento);
+                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
+                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_LUGAR, lugar.getText().toString());
+                    ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
+                    ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
                     break;
 
                 case TIPOEVENTOEMAIL:
-                    consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, finiEvento);
-                    consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, hiniEvento);
-                    consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
-                    consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
-                    consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_EMAIL, email.getText().toString());
-                    consulta.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                    consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, finiEvento);
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, hiniEvento);
+                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
+                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_EMAIL, email.getText().toString());
+                    ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
+                    ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
                     break;
 
                 case TIPOEVENTOLLAMADA:
-                    consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, finiEvento);
-                    consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, hiniEvento);
-                    consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
-                    consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
-                    consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_TELEFONO, telefono.getText().toString());
-                    consulta.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                    consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, finiEvento);
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, hiniEvento);
+                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
+                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_TELEFONO, telefono.getText().toString());
+                    ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
+                    ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
                     break;
 
                 case CommonPry.TiposEvento.TIPOEVENTOEVENTO:
-                    consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, finiEvento);
-                    consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTO, ffinEvento);
-                    consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, hiniEvento);
-                    consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAFINEVENTO, hfinEvento);
-                    consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
-                    consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
-                    consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTOF,fechaFin.getText().toString());
-                    consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTOF,horaFin.getText().toString());
-                    consulta.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                    consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, finiEvento);
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTO, ffinEvento);
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, hiniEvento);
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAFINEVENTO, hfinEvento);
+                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
+                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
+                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTOF,fechaFin.getText().toString());
+                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTOF,horaFin.getText().toString());
+                    ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
+                    ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
 
                     break;
 
             }
 
-            consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_DESCRIPCION, descipcion.getText().toString());
-            consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_TIPOEVENTO, tevento);
-            consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_COMPLETADA, JavaUtil.comprobarDouble(completa.getText().toString()));
-            consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_RUTAFOTO, path);
-            consulta.putDato(valores,campos,EVENTO_NOTIFICADO,notificado);
+            ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_DESCRIPCION, descipcion.getText().toString());
+            ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_TIPOEVENTO, tevento);
+            ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_COMPLETADA, JavaUtil.comprobarDouble(completa.getText().toString()));
+            ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_RUTAFOTO, path);
+            ConsultaBD.putDato(valores,campos,EVENTO_NOTIFICADO,notificado);
 
             if (aviso.isChecked()) {
 
@@ -281,20 +295,20 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 long fechaaviso = (JavaUtil.comprobarLong(avisoMinutos.getText().toString()) * MINUTOSLONG) +
                         (JavaUtil.comprobarLong(avisoHoras.getText().toString()) * HORASLONG) +
                         (JavaUtil.comprobarLong(avisoDias.getText().toString()) * DIASLONG);
-                consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, fechaaviso);
+                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, fechaaviso);
 
             } else {
 
                 if (modelo != null) {
-                    consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, modelo.getLong(EVENTO_AVISO));
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, modelo.getLong(EVENTO_AVISO));
                 }
             }
 
             if (idMulti==null && repeticiones.isChecked()){
-                consulta.putDato(valores,campos,EVENTO_IDMULTI,id);
+                ConsultaBD.putDato(valores,campos,EVENTO_IDMULTI,id);
             }
 
-            consulta.updateRegistro(TABLA_EVENTO, id, valores);
+            ConsultaBD.updateRegistro(TABLA_EVENTO, id, valores);
             modelo = CRUDutil.setModelo(campos,id);
 
             if (repeticiones.isChecked()) {
@@ -304,7 +318,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 String seleccion = ContratoPry.Tablas.EVENTO_IDMULTI + " = '" + idMulti +
                         "' AND " + ContratoPry.Tablas.EVENTO_ID_EVENTO +
                         " <> '" + id + "'";
-                if (consulta.deleteRegistros(TABLA_EVENTO, seleccion)>=0) {
+                if (ConsultaBD.deleteRegistros(TABLA_EVENTO, seleccion)>=0) {
 
                     long hoy = JavaUtil.hoy();
                     if (finiEvento == 0) {
@@ -342,17 +356,17 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
                     while (duracionRep + hoy > fecharep) {
 
-                        consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, fecharep);
-                        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,JavaUtil.getDate(fecharep));
+                        ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, fecharep);
+                        ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,JavaUtil.getDate(fecharep));
 
                         if (tevento.equals(CommonPry.TiposEvento.TIPOEVENTOEVENTO)) {
-                            consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTO, (fecharep + diffecha));
-                            consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTOF,JavaUtil.getDate(fecharep+diffecha));
+                            ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTO, (fecharep + diffecha));
+                            ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTOF,JavaUtil.getDate(fecharep+diffecha));
 
                         }
-                        consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_COMPLETADA, 0);
+                        ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_COMPLETADA, 0);
 
-                        consulta.insertRegistro(TABLA_EVENTO, valores);
+                        ConsultaBD.insertRegistro(TABLA_EVENTO, valores);
 
                         if (mismoDiaMes.isChecked()){
 
@@ -421,10 +435,11 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
         visible(descipcion);
         visible(relCli);
         visible(relProy);
+        visiblePie();
 
         completa.setText(modelo.getString(EVENTO_COMPLETADA));
 
-        if (consulta.checkQueryList(CAMPOS_NOTA,NOTA_ID_RELACIONADO,id,null,IGUAL,null)){
+        if (ConsultaBD.checkQueryList(CAMPOS_NOTA,NOTA_ID_RELACIONADO,id,null,IGUAL,null)){
             btnVerNotas.setVisibility(View.VISIBLE);
         }else{
             btnVerNotas.setVisibility(View.GONE);
@@ -473,8 +488,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
             repeticiones.setText(getString(R.string.crear_repeticiones));
             btnVerRepeticiones.setVisibility(View.GONE);
         }else{
-
-            System.out.println("IDMULTI si no null = " + idMulti);
 
             repeticiones.setText(getString(R.string.modificar_repeticiones));
             btnVerRepeticiones.setVisibility(View.VISIBLE);
@@ -525,6 +538,15 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
             switch (tevento) {
 
                 case TIPOEVENTOTAREA:
+
+                    fechaFin.setVisibility(View.VISIBLE);
+                    horaFin.setVisibility(View.VISIBLE);
+                    btnffin.setVisibility(View.VISIBLE);
+                    btnhfin.setVisibility(View.VISIBLE);
+                    ffinEvento = modelo.getLong(EVENTO_FECHAFINEVENTO);
+                    fechaFin.setText(getDate(ffinEvento));
+                    hfinEvento = modelo.getLong(EVENTO_HORAFINEVENTO);
+                    horaFin.setText(getTime(hfinEvento));
 
                     break;
 
@@ -663,6 +685,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
         gone(btnLlamada);
         gone(btnEmail);
         gone(btnEvento);
+        visibleBtnBackSave();
     }
 
     @Override
@@ -681,6 +704,10 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 visible(descipcion);
                 asunto.setVisibility(View.VISIBLE);
                 mensaje.setVisibility(View.VISIBLE);
+                fechaFin.setVisibility(View.VISIBLE);
+                horaFin.setVisibility(View.VISIBLE);
+                btnffin.setVisibility(View.VISIBLE);
+                btnhfin.setVisibility(View.VISIBLE);
                 comprobarCliProy();
             }
         });
@@ -1079,6 +1106,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 bundle.putString(ORIGEN, EVENTO);
                 bundle.putString(ACTUAL,NOTA);
                 bundle.putSerializable(MODELO,null);
+                bundle.putSerializable(LISTA,null);
                 bundle.putString(ID,null);
                 bundle.putBoolean(NUEVOREGISTRO,true);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
@@ -1094,6 +1122,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 bundle.putString(SUBTITULO, modelo.getString(EVENTO_DESCRIPCION));
                 bundle.putString(ORIGEN, EVENTO);
                 bundle.putString(ACTUAL,NOTA);
+                bundle.putSerializable(LISTA,null);
                 bundle.putSerializable(MODELO,null);
                 bundle.putString(ID,null);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
@@ -1126,8 +1155,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
         idMulti = modelo.getString(EVENTO_IDMULTI);
         listab = new ListaModelo(campos,EVENTO_IDMULTI,idMulti,null,IGUAL,null);
-        System.out.println("listab.getLista() = " + listab.getLista().size());
-        System.out.println("idMulti = " + idMulti);
         id = null;
         modelo = null;
         selector();
@@ -1218,39 +1245,49 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
         if (idProyecto!=null){
 
-            consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMPROYECTOREL,nombreProyecto);
-            consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_PROYECTOREL,idProyecto);
+            ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMPROYECTOREL,nombreProyecto);
+            ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_PROYECTOREL,idProyecto);
 
         }
         if (idCliente!=null){
 
-            consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMCLIENTEREL,nombreCliente);
-            consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_CLIENTEREL,idCliente);
+            ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMCLIENTEREL,nombreCliente);
+            ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_CLIENTEREL,idCliente);
         }
 
         if (path!=null){
 
-            consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_RUTAFOTO,path);
+            ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_RUTAFOTO,path);
         }
 
         switch (tevento){
 
             case TAREA:
 
-                consulta.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
+                System.out.println("ffinEvento = " + ffinEvento);
+                System.out.println("hfinEvento = " + hfinEvento);
+
+                if (ffinEvento==0){ffinEvento = JavaUtil.hoyFecha();}
+                if (hfinEvento==0){hfinEvento = JavaUtil.hoyHora();}
+                ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
+                ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
+                ConsultaBD.putDato(valores, CAMPOS_EVENTO,EVENTO_FECHAFINEVENTO, ffinEvento);
+                ConsultaBD.putDato(valores, CAMPOS_EVENTO,EVENTO_HORAFINEVENTO, hfinEvento);
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTOF,JavaUtil.getDate(ffinEvento));
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTOF,JavaUtil.getTime(hfinEvento));
+
 
                 break;
 
             case TIPOEVENTOCITA:
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
-                consulta.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
+                ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
+                ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
 
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_LUGAR,lugar.getText().toString());
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_LUGAR,lugar.getText().toString());
 
                 if (lugar==null || lugar.getText().toString().equals("")){
                     Toast.makeText(getContext(), "Debe introducir una direccion para la cita",
@@ -1260,85 +1297,76 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 break;
 
             case TIPOEVENTOEMAIL:
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_EMAIL,email.getText().toString());
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_EMAIL,email.getText().toString());
                 if (email==null || email.getText().toString().equals("")) {
                     Toast.makeText(getContext(), "Debe introducir una direccion de email",
                             Toast.LENGTH_SHORT).show();
                     return false;
                 }
-                consulta.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
+                ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
+                ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
                 break;
 
             case TIPOEVENTOLLAMADA:
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_TELEFONO,telefono.getText().toString());
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_TELEFONO,telefono.getText().toString());
 
                 if (telefono==null || telefono.getText().toString().equals("")) {
                     Toast.makeText(getContext(), "Debe introducir un numero de telefono",
                             Toast.LENGTH_SHORT).show();
                     return false;
                 }
-                consulta.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
+                ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
+                ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
                 break;
 
             case CommonPry.TiposEvento.TIPOEVENTOEVENTO:
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTO,ffinEvento);
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTO,hfinEvento);
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTOF,fechaFin.getText().toString());
-                consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTOF,horaFin.getText().toString());
-                consulta.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                consulta.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTO,ffinEvento);
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTO,hfinEvento);
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTOF,fechaFin.getText().toString());
+                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTOF,horaFin.getText().toString());
+                ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
+                ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
 
                 break;
 
         }
 
-        System.out.println("fecha inicio Evento = " + finiEvento);
-        System.out.println("fecha fin Evento = " + ffinEvento);
-        System.out.println("hora inicio Evento = " + hiniEvento);
-        System.out.println("hora fin Evento = " + hfinEvento);
+        ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_DESCRIPCION,descipcion.getText().toString());
+        ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_TIPOEVENTO,tevento);
 
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_DESCRIPCION,descipcion.getText().toString());
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_TIPOEVENTO,tevento);
-
-        if (aviso.isChecked() && !tevento.equals(TAREA)){
+        if (aviso.isChecked() && !tevento.equals(TIPOEVENTOTAREA)){
 
             long fechaaviso = (JavaUtil.comprobarLong(avisoMinutos.getText().toString()) * MINUTOSLONG) +
                     (JavaUtil.comprobarLong(avisoHoras.getText().toString()) * HORASLONG) +
                     (JavaUtil.comprobarLong(avisoDias.getText().toString()) * DIASLONG);
-            consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_AVISO,fechaaviso);
+            ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_AVISO,fechaaviso);
 
 
         }
 
-        System.out.println("valores = " + valores);
-
-
-
-            id = consulta.idInsertRegistro(tabla, valores);
+            id = ConsultaBD.idInsertRegistro(tabla, valores);
 
             modelo = new Modelo(campos,id);//consulta.queryObject(campos,id);
 
-            if (repeticiones.isChecked() && !tevento.equals(TAREA)) {
+            if (repeticiones.isChecked() && !tevento.equals(TIPOEVENTOTAREA)) {
 
                 idMulti = id;
 
-                consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_IDMULTI, idMulti);
+                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_IDMULTI, idMulti);
 
-                consulta.updateRegistro(TABLA_EVENTO, idMulti, valores);
+                ConsultaBD.updateRegistro(TABLA_EVENTO, idMulti, valores);
 
                 long hoy = JavaUtil.hoy();
                 if (finiEvento == 0) {
@@ -1375,19 +1403,18 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                         (JavaUtil.comprobarLong(drepDias.getText().toString()) * DIASLONG);
 
 
-                System.out.println("duracion mayor k = " + (duracionRep + hoy > fecharep));
                 while (duracionRep + hoy > fecharep) {
 
-                    consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, fecharep);
-                    consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,JavaUtil.getDate(fecharep));
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, fecharep);
+                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,JavaUtil.getDate(fecharep));
 
 
                     if (tevento.equals(CommonPry.TiposEvento.TIPOEVENTOEVENTO)) {
-                        consulta.putDato(valores,campos,EVENTO_FECHAFINEVENTO, String.valueOf(fecharep + diffecha));
-                        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTOF,JavaUtil.getDate(fecharep+diffecha));
+                        ConsultaBD.putDato(valores,campos,EVENTO_FECHAFINEVENTO, String.valueOf(fecharep + diffecha));
+                        ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTOF,JavaUtil.getDate(fecharep+diffecha));
 
                     }
-                    consulta.insertRegistro(TABLA_EVENTO, valores);
+                    ConsultaBD.insertRegistro(TABLA_EVENTO, valores);
 
                     if (mismoDiaMes.isChecked()){
 
@@ -1422,42 +1449,51 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     @Override
     protected void setContenedor() {
 
-
     }
 
     @Override
     protected void setcambioFragment() {
 
-        if (tevento!=null) {
+
+        if (esLista) {
 
             if (origen.equals(PRESUPUESTO) || origen.equals(PROYECTO)) {
 
                 bundle.putSerializable(MODELO, proyecto);
-                bundle.putString(ACTUAL,origen);
+                bundle.putString(ACTUAL, origen);
 
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
 
             } else if (origen.equals(CLIENTE) || origen.equals(PROSPECTO)) {
 
                 bundle.putSerializable(MODELO, cliente);
-                bundle.putString(ACTUAL,origen);
+                bundle.putString(ACTUAL, origen);
 
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDCliente());
+
+            }
+        }
+
+            if (origen.equals(CALENDARIO)) {
+
+                bundle.putString(ACTUAL,origen);
+
+                icFragmentos.enviarBundleAFragment(bundle, new Calendario());
 
             }else {
                 activityBase.toolbar.setSubtitle(setNamefdef());
                 idCliente = null;
                 idProyecto = null;
                 idMulti = null;
+                esLista = true;
 
             }
 
-        }
     }
 
     private boolean mostrarDialogoBorrarRep(final String idEvento) {
 
-        modelo = consulta.queryObject(campos,idEvento);
+        modelo = ConsultaBD.queryObject(campos,idEvento);
         final CharSequence[] opciones = {"Borrar sólo este modelo", "Borrar este y repeticiones", "Borrar sólo repeticiones", "Cancelar"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Elige una opción");
@@ -1467,7 +1503,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
                 if (opciones[which].equals("Borrar sólo este modelo")) {
 
-                    if (consulta.deleteRegistro(TABLA_EVENTO, idEvento)>0) {
+                    if (ConsultaBD.deleteRegistro(TABLA_EVENTO, idEvento)>0) {
 
                         Toast.makeText(contexto, "Registro borrado ", Toast.LENGTH_SHORT).show();
                         if (listab!=null){
@@ -1486,7 +1522,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
                     idMulti = modelo.getString(EVENTO_IDMULTI);
                     String seleccion = EVENTO_IDMULTI + " = '" + idMulti + "'";
-                    if (consulta.deleteRegistros(TABLA_EVENTO,EVENTO_IDMULTI,idMulti,null,IGUAL)>0) {
+                    if (ConsultaBD.deleteRegistros(TABLA_EVENTO,EVENTO_IDMULTI,idMulti,null,IGUAL)>0) {
 
                         id = null;
                         modelo = null;
@@ -1504,11 +1540,11 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     idMulti = modelo.getString(EVENTO_IDMULTI);
                     String seleccion = EVENTO_IDMULTI + " = '" + idMulti +
                             "' AND " + EVENTO_ID_EVENTO + " <> '" + idEvento + "'";
-                    if (consulta.deleteRegistros(TABLA_EVENTO,seleccion)>0) {
+                    if (ConsultaBD.deleteRegistros(TABLA_EVENTO,seleccion)>0) {
 
                         valores = new ContentValues();
                         valores.putNull(EVENTO_IDMULTI);
-                        consulta.updateRegistro(tabla,idEvento,valores);
+                        ConsultaBD.updateRegistro(tabla,idEvento,valores);
                         modelo = CRUDutil.setModelo(campos,idEvento);
                         idMulti = null;
                         Toast.makeText(contexto, "Regitros borrados", Toast.LENGTH_SHORT).show();
@@ -1616,6 +1652,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
             switch (tipoEvento){
 
                 case TAREA:
+                    fechafin.setVisibility(View.VISIBLE);
+                    horafin.setVisibility(View.VISIBLE);
                     break;
 
                 case TIPOEVENTOCITA:
@@ -1652,13 +1690,33 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 mediaUtil.setImageUriCircle(modelo.getString(EVENTO_RUTAFOTO),foto);
             }
 
+            if (completada < 100) {
 
-            long retraso = JavaUtil.hoy()-modelo.getLong(EVENTO_FECHAINIEVENTO);
-            if (retraso > 3 * CommonPry.DIASLONG){card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));}
-            else if (retraso > CommonPry.DIASLONG){card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));}
-            else {card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));}//imgret.setImageResource(R.drawable.alert_box_v);}
-            if(tipoEvento.equals(TAREA))
-            {card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_tarea));}
+                long retraso = JavaUtil.hoy() - modelo.getLong(EVENTO_FECHAINIEVENTO);
+
+                if (!tipoEvento.equals(TIPOEVENTOTAREA)) {
+                    if (retraso > 3 * CommonPry.DIASLONG) {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
+                    } else if (retraso > CommonPry.DIASLONG) {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
+                    } else {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
+                    }//imgret.setImageResource(R.drawable.alert_box_v);}
+                }else {
+                    retraso = JavaUtil.hoy() - modelo.getLong(EVENTO_FECHAFINEVENTO);
+                    if (retraso > 3 * CommonPry.DIASLONG) {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
+                    } else if (retraso > CommonPry.DIASLONG) {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
+                    } else {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
+                    }
+                }
+
+            }else{
+                card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
+            }
+
 
             btneditar.setVisibility(View.GONE);
             btneditar.setText("EDITAR "+ tipoEvento.toUpperCase());
@@ -1704,8 +1762,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
                         ContentValues valores = new ContentValues();
 
-                        consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_COMPLETADA, "100");
-                        consulta.updateRegistro(TABLA_EVENTO, modelo.getString
+                        ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_COMPLETADA, "100");
+                        ConsultaBD.updateRegistro(TABLA_EVENTO, modelo.getString
                                 (EVENTO_ID_EVENTO), valores);
                         porccompleta.setVisibility(View.GONE);
                         pbar.setVisibility(View.GONE);
@@ -1834,6 +1892,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
             switch (tipoEvento){
 
                 case TAREA:
+                    fechafin.setVisibility(View.VISIBLE);
+                    horafin.setVisibility(View.VISIBLE);
                     break;
 
                 case TIPOEVENTOCITA:
@@ -1873,12 +1933,32 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
             }
 
 
-            long retraso = JavaUtil.hoy()-entrada.get(posicion).getLong(EVENTO_FECHAINIEVENTO);
-            if (retraso > 3 * CommonPry.DIASLONG){card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));}
-            else if (retraso > CommonPry.DIASLONG){card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));}
-            else {card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));}//imgret.setImageResource(R.drawable.alert_box_v);}
-            if(tipoEvento.equals(TAREA))
-            {card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_tarea));}
+            if (completada < 100) {
+
+                long retraso = JavaUtil.hoy() - entrada.get(posicion).getLong(EVENTO_FECHAINIEVENTO);
+
+                if (!tipoEvento.equals(TIPOEVENTOTAREA)) {
+                    if (retraso > 3 * CommonPry.DIASLONG) {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
+                    } else if (retraso > CommonPry.DIASLONG) {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
+                    } else {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
+                    }//imgret.setImageResource(R.drawable.alert_box_v);}
+                }else {
+                    retraso = JavaUtil.hoy() - entrada.get(posicion).getLong(EVENTO_FECHAFINEVENTO);
+                    if (retraso > 3 * CommonPry.DIASLONG) {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
+                    } else if (retraso > CommonPry.DIASLONG) {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
+                    } else {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
+                    }
+                }
+
+            }else{
+                card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
+            }
 
             btneditar.setVisibility(View.GONE);
 
@@ -1890,7 +1970,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     private void setAdaptadorProyectos(final AutoCompleteTextView autoCompleteTextView){
 
 
-        listaProyectos =  consulta.queryList(CAMPOS_PROYECTO,null,null);
+        listaProyectos =  ConsultaBD.queryList(CAMPOS_PROYECTO,null,null);
 
         autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
                 R.layout.item_list_proyecto,listaProyectos,CAMPOS_PROYECTO) {
@@ -1951,7 +2031,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     private void setAdaptadorClientes(final AutoCompleteTextView autoCompleteTextView) {
 
 
-        listaClientes = consulta.queryList(CAMPOS_CLIENTE, null, null);
+        listaClientes = ConsultaBD.queryList(CAMPOS_CLIENTE, null, null);
 
         autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
                 R.layout.item_list_cliente,listaClientes, CAMPOS_CLIENTE) {
@@ -1999,7 +2079,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                         finiEvento = JavaUtil.fechaALong(year, month, day);
                         String selectedDate = getDate(finiEvento);
                         fechaIni.setText(selectedDate);
-                        if (!tipoEvento.equals(CommonPry.TiposEvento.TIPOEVENTOEVENTO)){
+                        if (!tevento.equals(CommonPry.TiposEvento.TIPOEVENTOEVENTO)){
                             fechaFin.setText(selectedDate);
                         }
 

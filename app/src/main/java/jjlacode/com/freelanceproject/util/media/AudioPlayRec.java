@@ -117,6 +117,7 @@ public class AudioPlayRec implements MediaPlayer.OnCompletionListener, MediaPlay
         }else{
 
             btnRec.setVisibility(View.VISIBLE);
+            estado.setText(context.getString(R.string.listo_grabar));
 
         }
 
@@ -239,7 +240,6 @@ public class AudioPlayRec implements MediaPlayer.OnCompletionListener, MediaPlay
 
         }else if (reproduciendo){
             mp.stop();
-            mp.seekTo(0);
             leng = 0;
             reproduciendo = false;
             contador.stop();

@@ -31,7 +31,7 @@ import java.util.TimeZone;
 
 import jjlacode.com.freelanceproject.model.ProdProv;
 import jjlacode.com.freelanceproject.services.EventosReceiver;
-import jjlacode.com.freelanceproject.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.crud.ListaModelo;
@@ -120,8 +120,9 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         String PROYCOBROS = getAppContext().getString(R.string.proyectos_cobros);
         String HISTORICO = "Proyectos historico";
         String PROYHISTORICO = getAppContext().getString(R.string.proyectos_historico);
-        String AGENDA = "agenda";
-        String DIARIO = "diario";
+        String AGENDA = "Agenda";
+        String DIARIO = "Diario";
+        String TRABAJOS = "Trabajos";
         String INICIO = "Inicio";
         String EVENTO = "evento";
         String PERFIL = "perfil";
@@ -1257,7 +1258,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
 
         public static void actualizarTarea(String idtarea){
 
-            ListaModelo listaDetPartidas = new ListaModelo(CAMPOS_DETPARTIDA,DETPARTIDA_ID_DETPARTIDA,idtarea);
+            ListaModelo listaDetPartidas = new ListaModelo(CAMPOS_DETPARTIDA,DETPARTIDA_ID_DETPARTIDA,idtarea,null);
 
             double tiempo = 0;
             int cont = 0;

@@ -7,11 +7,13 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.android.AppActivity;
@@ -22,13 +24,16 @@ import jjlacode.com.freelanceproject.util.crud.ListaModelo;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.util.adapter.RVAdapter;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
+import jjlacode.com.freelanceproject.util.time.calendar.clases.CalendarioBase;
 import jjlacode.com.freelanceproject.util.time.calendar.clases.Day;
 import jjlacode.com.freelanceproject.util.time.calendar.views.OneCalendarView;
 
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.EVENTO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.TAREA;
 import static jjlacode.com.freelanceproject.CommonPry.TiposEvento.TIPOEVENTOTAREA;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.DIFERENTE;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.IGUAL;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.LISTA;
 import static jjlacode.com.freelanceproject.util.android.AppActivity.viewOnMapA;
 import static jjlacode.com.freelanceproject.CommonPry.TiposEvento.TIPOEVENTOCITA;
 import static jjlacode.com.freelanceproject.CommonPry.TiposEvento.TIPOEVENTOEMAIL;
@@ -43,112 +48,94 @@ import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NUEVOREGIST
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ORIGEN;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.SUBTITULO;
 
-public class Calendario extends FragmentBase implements ContratoPry.Tablas {
-
-
-    OneCalendarView calendarView;
-    RecyclerView rv;
-    ListaModelo lista;
-    long fecha;
-    String[] campos;
-    String campo;
-    int layoutItem;
-    private int positionOld;
+public class Calendario extends CalendarioBase {
 
     @Override
-    protected void setLayout() {
+    protected void setLayoutItem() {
 
-        layout = R.layout.calendario;
+        layoutItem = R.layout.item_list_evento_calendario;
 
     }
 
     @Override
-    protected void setInicio() {
+    protected boolean setIfLista(Modelo modelo) {
 
-        calendarView = view.findViewById(R.id.oneCalendar);
-        rv = view.findViewById(R.id.rveventocalendario);
-        layoutItem = R.layout.item_list_evento_calendario;
+        return ((!modelo.getString(EVENTO_TIPOEVENTO).equals(TIPOEVENTOTAREA)) ||
+                (modelo.getString(EVENTO_TIPOEVENTO).equals(TIPOEVENTOTAREA) &&
+                        modelo.getDouble(EVENTO_COMPLETADA) < 100));
+    }
+
+    @Override
+    protected boolean setIfListaHoy(Modelo modelo, long hoy) {
+
+        return ((JavaUtil.getDate(modelo.getLong(campo)).equals(JavaUtil.getDate(hoy))) ||
+                (modelo.getString(EVENTO_TIPOEVENTO).equals(TIPOEVENTOTAREA) &&
+                        modelo.getDouble(EVENTO_COMPLETADA) < 100));
+    }
+
+    @Override
+    protected void setCampos() {
+
         campos = CAMPOS_EVENTO;
         campo = EVENTO_FECHAINIEVENTO;
-        lista = new ListaModelo(campos);
 
+    }
 
-            long fechaHoy = JavaUtil.hoyFecha();
-            ListaModelo listaModelo = new ListaModelo(campos,EVENTO_TIPOEVENTO,
-                    TIPOEVENTOTAREA,null,DIFERENTE,null);
-            lista.clear();
+    @Override
+    protected void setTitulo() {
 
-            if (listaModelo.chech()) {
-                for (Modelo modelo : listaModelo.getLista()) {
+        titulo = R.string.calendario;
 
-                    System.out.println("fecha = " + JavaUtil.getDate(fechaHoy));
+    }
 
-                    if (JavaUtil.getDate(modelo.getLong(campo)).equals(JavaUtil.getDate(fechaHoy))) {
+    @Override
+    protected void setOnDayClick(Day day, int position) {
 
-                        lista.add(modelo);
-                        System.out.println("modelo = " + JavaUtil.getDate(modelo.getLong(campo)));
+    }
 
-                    }
-                }
-            }
+    @Override
+    protected void setOnDayLongClick(Day day, int position) {
 
-        RVAdapter adaptadorRV = new RVAdapter(new ViewHolderRV(view),
-                lista.getLista(),layoutItem, null);
-        rv.setAdapter(adaptadorRV);
+    }
 
-        calendarView.setLista(listaModelo);
-        calendarView.setCampo(campo);
+    @Override
+    protected void setNuevo(long fecha) {
 
-        calendarView.setOneCalendarClickListener(new OneCalendarView.OneCalendarClickListener() {
+        bundle = new Bundle();
+        bundle.putBoolean(NUEVOREGISTRO,true);
+        bundle.putString(ORIGEN,CALENDARIO);
+        bundle.putLong(FECHA,fecha);
+        bundle.putString(ACTUAL, EVENTO);
+        bundle.putString(ID,null);
+        bundle.putSerializable(LISTA,null);
+        bundle.putSerializable(MODELO, null);
+        icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
+    }
 
+    @Override
+    protected void setVerLista() {
 
-            @Override
-            public void dateOnClick(Day day, int position) {
+        bundle = new Bundle();
+        bundle.putString(ORIGEN,CALENDARIO);
+        bundle.putString(ACTUAL, EVENTO);
+        bundle.putString(ID,null);
+        bundle.putSerializable(MODELO, null);
+        icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
+    }
 
-                lista = day.getLista();
-                if (lista==null){
-                    lista = new ListaModelo(campos);
-                    lista.clear();
-                }
-                fecha = day.getDate().getTime();
-                System.out.println("fecha day= " + JavaUtil.getDate(fecha));
-                RVAdapter adaptadorRV = new RVAdapter(new ViewHolderRV(view),
-                        lista.getLista(),layoutItem, null);
-                rv.setAdapter(adaptadorRV);
+    @Override
+    protected void setOnPrevMonth() {
 
-                calendarView.removeDaySeleted(positionOld);
-                calendarView.addDaySelected(position);
-                positionOld = position;
-            }
+    }
 
-            @Override
-            public void dateOnLongClick(Day day, int position) {
+    @Override
+    protected void setOnNextMonth() {
 
-                bundle = new Bundle();
-                bundle.putBoolean(NUEVOREGISTRO,true);
-                bundle.putString(ORIGEN,CALENDARIO);
-                bundle.putLong(FECHA,day.getDate().getTime());
-                bundle.putString(ACTUAL, EVENTO);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
+    }
 
-            }
-        });
-
-        calendarView.setOnCalendarChangeListener(new OneCalendarView.OnCalendarChangeListener() {
-            @Override
-            public void prevMonth() {
-
-
-            }
-
-            @Override
-            public void nextMonth() {
-
-
-            }
-        });
-
-
+    @Override
+    protected TipoViewHolder setViewHolder(View view) {
+        return new ViewHolderRV(view);
     }
 
 
@@ -158,6 +145,7 @@ public class Calendario extends FragmentBase implements ContratoPry.Tablas {
         ProgressBar pbar;
         ImageView imagen;
         ImageButton ver;
+        CardView card;
 
         public ViewHolderRV(View itemView) {
             super(itemView);
@@ -173,6 +161,7 @@ public class Calendario extends FragmentBase implements ContratoPry.Tablas {
             horafin = itemView.findViewById(R.id.tvhfineventocalendario);
             fechafin = itemView.findViewById(R.id.tvffineventocalendario);
             fechaini = itemView.findViewById(R.id.tvfinieventocalendario);
+            card = itemView.findViewById(R.id.cardeventocalendario);
 
         }
 
@@ -205,15 +194,49 @@ public class Calendario extends FragmentBase implements ContratoPry.Tablas {
                 horafin.setVisibility(View.VISIBLE);
                 fechaini.setVisibility(View.VISIBLE);
             }
+            double completada = modelo.getDouble(EVENTO_COMPLETADA);
             descripcion.setText(modelo.getString(EVENTO_DESCRIPCION));
             hora.setText(modelo.getString(EVENTO_HORAINIEVENTOF));
             telefono.setText(modelo.getString(EVENTO_TELEFONO));
             lugar.setText(modelo.getString(EVENTO_LUGAR));
             email.setText(modelo.getString(EVENTO_EMAIL));
-            pbar.setProgress((int)modelo.getDouble(EVENTO_COMPLETADA));
+            pbar.setProgress((int)completada);
             horafin.setText(modelo.getString(EVENTO_HORAFINEVENTOF));
             fechafin.setText(modelo.getString(EVENTO_FECHAFINEVENTOF));
             fechaini.setText(modelo.getString(EVENTO_FECHAINIEVENTOF));
+
+            if (completada>0){
+                visible(pbar);
+            }else{
+                gone(pbar);
+            }
+
+            if (completada < 100) {
+
+                long retraso = JavaUtil.hoy() - modelo.getLong(EVENTO_FECHAINIEVENTO);
+
+                if (!tipoevento.equals(TIPOEVENTOTAREA)) {
+                    if (retraso > 3 * CommonPry.DIASLONG) {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
+                    } else if (retraso > CommonPry.DIASLONG) {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
+                    } else {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
+                    }//imgret.setImageResource(R.drawable.alert_box_v);}
+                }else {
+                    retraso = JavaUtil.hoy() - modelo.getLong(EVENTO_FECHAFINEVENTO);
+                    if (retraso > 3 * CommonPry.DIASLONG) {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
+                    } else if (retraso > CommonPry.DIASLONG) {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
+                    } else {
+                        card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
+                    }
+                }
+
+            }else{
+                card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
+            }
 
             imagen.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -232,12 +255,16 @@ public class Calendario extends FragmentBase implements ContratoPry.Tablas {
                     }else if (tipoevento.equals(TIPOEVENTOEMAIL)){
 
                         String path =null;
-                        if (modelo.getString(EVENTO_RUTAADJUNTO)!=null){
+                        if (modelo.getString(EVENTO_RUTAADJUNTO)!=null) {
                             path = modelo.getString(EVENTO_RUTAADJUNTO);
+                            AppActivity.enviarEmail(AppActivity.getAppContext(),
+                                    modelo.getString(EVENTO_EMAIL), modelo.getString(EVENTO_ASUNTO),
+                                    modelo.getString(EVENTO_MENSAJE), path);
+                        }else{
+                            AppActivity.enviarEmail(AppActivity.getAppContext(),
+                                    modelo.getString(EVENTO_EMAIL), modelo.getString(EVENTO_ASUNTO),
+                                    modelo.getString(EVENTO_MENSAJE));
                         }
-                        AppActivity.enviarEmail(AppActivity.getAppContext(),
-                                modelo.getString(EVENTO_EMAIL), modelo.getString(EVENTO_ASUNTO),
-                                modelo.getString(EVENTO_MENSAJE), path);
                     }
                 }
             });

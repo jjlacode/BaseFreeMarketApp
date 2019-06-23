@@ -258,7 +258,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
 
         setDato(campoTimeStamp,JavaUtil.hoy());
 
-        if (tablaCab!=null){
+        if (tablaCab!=null && modelo!=null){
             secuencia = modelo.getInt(campoSecuencia);
         }
 

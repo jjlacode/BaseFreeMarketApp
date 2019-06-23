@@ -1,32 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-    <jjlacode.com.freelanceproject.util.time.calendar.views.OneCalendarView
-        android:id="@+id/oneCalendar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+        <jjlacode.com.freelanceproject.util.time.calendar.views.OneCalendarView
+            android:id="@+id/oneCalendar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rveventocalendario"
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layoutManager="LinearLayoutManager"/>
+            android:orientation="horizontal">
 
-    </RelativeLayout>
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_nuevo_item_calendario"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/altobtnico"
+                android:layout_weight="1"
+                android:background="@drawable/boton_redondo_secondary"
+                android:src="@drawable/ic_evento_indigo"
+                android:visibility="gone" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_ver_lista_calendario"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/altobtnico"
+                android:layout_weight="1"
+                android:background="@drawable/boton_redondo_secondary"
+                android:src="@drawable/ic_lista_eventos_indigo"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvcalendario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="LinearLayoutManager" />
+
+        </RelativeLayout>
     </LinearLayout>
 
 </ScrollView>
