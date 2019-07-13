@@ -17,7 +17,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import jjlacode.com.freelanceproject.services.AutoArranque;
 import jjlacode.com.freelanceproject.settings.SettingsActivity;
-import jjlacode.com.freelanceproject.ui.FragmentAgenda;
+import jjlacode.com.freelanceproject.ui.FragmentInicio;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDEvento;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDPartidaProyecto;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDPartidaBase;
@@ -36,17 +36,16 @@ import jjlacode.com.freelanceproject.util.media.VisorPDFEmail;
 import static android.Manifest.permission.CALL_PHONE;
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.INTERNET;
+import static android.Manifest.permission.READ_CONTACTS;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.RECEIVE_BOOT_COMPLETED;
 import static android.Manifest.permission.RECORD_AUDIO;
+import static android.Manifest.permission.WRITE_CONTACTS;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class MainActivity extends MainActivityBase {
 
     private static final int PERIOD_MS = 5000;
-
-
-
 
     @Override
     protected void acciones() {
@@ -91,7 +90,7 @@ public class MainActivity extends MainActivityBase {
 
                 String idEvento = intent.getStringExtra(EXTRA_IDEVENTO);
                 bundle.putString(ACTUAL, intent.getStringExtra(EXTRA_ACTUAL));
-                bundle.putString(ID, idEvento);
+                bundle.putString(CAMPO_ID, idEvento);
                 NotificationManager notifyMgr = (NotificationManager)
                         AppActivity.getAppContext().getSystemService(NOTIFICATION_SERVICE);
                 notifyMgr.cancel(intent.getIntExtra(EXTRA_ID,0));
@@ -131,13 +130,13 @@ public class MainActivity extends MainActivityBase {
         // Handle navigation view item clicks here.
         int itemId = item.getItemId();
 
-        bundle.putString(ID, null);
+        bundle.putString(CAMPO_ID, null);
         bundle.putString(MODELO, null);
-        bundle.putInt(SECUENCIA, 0);
+        bundle.putInt(CAMPO_SECUENCIA, 0);
         bundle.putString(ORIGEN, INICIO);
         bundle.putString(ACTUAL, null);
         bundle.putString(ACTUALTEMP, null);
-        bundle.putBoolean(PERSISTENCIA,false);
+        bundle.putBoolean(PERSISTENCIA,true);
 
         if (itemId == R.id.nav_clientes) {
 
@@ -228,10 +227,10 @@ public class MainActivity extends MainActivityBase {
 
             case INICIO:
 
-                fab2.hide();
+                fab2.show();
                 fab.hide();
                 toolbar.setSubtitle(CommonPry.setNamefdef());
-                enviarBundleAFragment(bundle, new FragmentAgenda());
+                enviarBundleAFragment(bundle, new FragmentInicio());
                 break;
             case AMORTIZACION:
 
@@ -303,6 +302,8 @@ public class MainActivity extends MainActivityBase {
                 (shouldShowRequestPermissionRationale(RECORD_AUDIO))||
                 (shouldShowRequestPermissionRationale(INTERNET))||
                 (shouldShowRequestPermissionRationale(CAMERA))||
+                (shouldShowRequestPermissionRationale(WRITE_CONTACTS))||
+                (shouldShowRequestPermissionRationale(READ_CONTACTS))||
                 (shouldShowRequestPermissionRationale(CALL_PHONE))){
 
             AlertDialog.Builder dialogo = new AlertDialog.Builder(this);
@@ -315,7 +316,8 @@ public class MainActivity extends MainActivityBase {
 
                     requestPermissions(new String[]
                             {RECEIVE_BOOT_COMPLETED,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,
-                                    CAMERA,RECORD_AUDIO,INTERNET},100);
+                                    CAMERA,RECORD_AUDIO,INTERNET,READ_CONTACTS,
+                                    WRITE_CONTACTS,CALL_PHONE},100);
                 }
             });
             dialogo.show();
@@ -325,7 +327,8 @@ public class MainActivity extends MainActivityBase {
 
             requestPermissions(new String[]
                     {RECEIVE_BOOT_COMPLETED,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,
-                            CAMERA,RECORD_AUDIO,INTERNET},100);
+                            CAMERA,RECORD_AUDIO,INTERNET,READ_CONTACTS,
+                            WRITE_CONTACTS,CALL_PHONE},100);
         }
     }
 
@@ -333,12 +336,14 @@ public class MainActivity extends MainActivityBase {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if(requestCode==100 && grantResults.length==6 && (grantResults[0]==PackageManager.PERMISSION_GRANTED &&
+        if(requestCode==100 && grantResults.length==8 && (grantResults[0]==PackageManager.PERMISSION_GRANTED &&
                 grantResults[1]==PackageManager.PERMISSION_GRANTED &&
                 grantResults[2]==PackageManager.PERMISSION_GRANTED &&
                 grantResults[3]==PackageManager.PERMISSION_GRANTED &&
                 grantResults[4]==PackageManager.PERMISSION_GRANTED &&
-                grantResults[5]==PackageManager.PERMISSION_GRANTED)){
+                grantResults[5]==PackageManager.PERMISSION_GRANTED &&
+                grantResults[6]==PackageManager.PERMISSION_GRANTED &&
+                grantResults[7]==PackageManager.PERMISSION_GRANTED)){
 
             CommonPry.permiso = true;
 

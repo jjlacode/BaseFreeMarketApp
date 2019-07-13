@@ -45,10 +45,9 @@ public class EventosReceiver extends BroadcastReceiver implements CommonPry.Cons
                 CommonPry.notificationEvento(context, MainActivity.class, evento,EVENTO,
                         contnot, R.drawable.alert_box_r, "Aviso evento próximo a vencer",
                         contenido);
-                ConsultaBD consulta = new ConsultaBD();
                 ContentValues valores = new ContentValues();
-                consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_NOTIFICADO, 1);
-                consulta.updateRegistro(TABLA_EVENTO, evento.getString(EVENTO_ID_EVENTO), valores);
+                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_NOTIFICADO, 1);
+                ConsultaBD.updateRegistro(TABLA_EVENTO, evento.getString(EVENTO_ID_EVENTO), valores);
                 CRUDutil.setSharePreference(context, NOTIFICACIONES, CONTNOT, contnot + 1);
             }
         }else if (intent.getAction()!=null && intent.getExtras()!=null && intent.getAction().equals(ACCION_POSPONER)) {

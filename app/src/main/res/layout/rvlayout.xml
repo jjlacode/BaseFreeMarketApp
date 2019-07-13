@@ -17,6 +17,13 @@
             android:layout_weight="3"
             android:minHeight="30dp"
             app:srcCompat="@drawable/ic_search_black_24dp"/>
+        <ImageView
+            android:id="@+id/imgvoz"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:minHeight="30dp"
+            app:srcCompat="@drawable/ic_rec_indigo"/>
 
         <AutoCompleteTextView
             android:id="@+id/auto"
@@ -48,6 +55,11 @@
             android:minHeight="30dp"
             app:srcCompat="@drawable/ic_inicio_black_24dp"/>
     </LinearLayout>
+    <jjlacode.com.freelanceproject.util.animation.OneFrameLayout
+        android:id="@+id/frameanimation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#f1f1f1">
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
@@ -65,6 +77,7 @@
         app:layoutManager="LinearLayoutManager"/>
         </RelativeLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </jjlacode.com.freelanceproject.util.animation.OneFrameLayout>
 </LinearLayout>
 
 

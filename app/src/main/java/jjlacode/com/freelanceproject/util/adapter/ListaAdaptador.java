@@ -34,6 +34,10 @@ public abstract class ListaAdaptador extends BaseAdapter {
         return view;
     }
 
+    public int getLayoutItem(){
+        return R_layout_IdView;
+    }
+
     @Override
     public int getCount() {
         return entradas.size();

@@ -2,9 +2,13 @@ package jjlacode.com.freelanceproject.util.android;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.speech.RecognizerIntent;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -14,21 +18,45 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentActivity;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import jjlacode.com.freelanceproject.MainActivity;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 
 public class AndroidUtil extends AppCompatActivity {
 
+
+    public static void reconocimientoVoz(FragmentActivity activity, int code){
+
+        Intent intentActionRecognizeSpeech = new Intent(
+                RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        // Configura el Lenguaje (Español-México)
+        intentActionRecognizeSpeech.putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
+        intentActionRecognizeSpeech.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+        try {
+            activity.startActivityForResult(intentActionRecognizeSpeech,
+                    code);
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(activity.getBaseContext(),
+                    "Tú dispositivo no soporta el reconocimiento por voz",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
 
     public static void ocultarTeclado(Context context, View v){
 
@@ -70,27 +98,361 @@ public class AndroidUtil extends AppCompatActivity {
         notifyMgr.notify(id, builder.build());
     }
 
-    public static void bars(Context contexto, ProgressBar bar, ProgressBar bar2, double completada, TextView lcompletada,
-                        TextView trek, int color_ok, int color_acept, int color_notok){
+    public static void bars(Context contexto, ProgressBar bar, ProgressBar bar2, boolean inversa,
+                            int valorMax, int valorAcept, int valorNotOk, double completada,
+                            TextView lcompletada, TextView trek, int color_ok, int color_acept, int color_notok){
 
-        if (completada>100){
-            bar2.setVisibility(View.VISIBLE);
-            bar2.setProgress((int)completada-100);
+        if (bar2!=null) {
+            if (completada > valorMax) {
+                bar2.setVisibility(View.VISIBLE);
+                bar2.setProgress((int) completada - valorMax - ((int) ((completada - valorMax) / 99)));
+                bar2.setSecondaryProgress((int) completada - valorMax);
+            } else {
+                bar2.setVisibility(View.GONE);
+            }
+        }
+        if (completada>0){
+            bar.setVisibility(View.VISIBLE);
         }else{
-            bar2.setVisibility(View.GONE);
+            bar.setVisibility(View.GONE);
         }
-        bar.setProgress((int)completada);
-        if (completada<90){bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok,null));
-            trek.setTextColor(contexto.getResources().getColor(color_ok));
+        bar.setMax(valorMax);
+        bar.setProgress((int)completada-((int)(completada/99)));
+        bar.setSecondaryProgress((int)completada);
+
+        if (inversa) {
+            if (completada > valorAcept) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok, null));
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_ok));
+
+                }
+            } else if (completada < valorAcept && completada > valorNotOk) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_acept));
+                }
+            } else {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_notok));
+                }
+            }
+        } else {
+            if (completada < valorAcept) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok, null));
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_ok));
+
+                }
+            } else if (completada > valorAcept && completada < valorNotOk) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_acept));
+                }
+            } else {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_notok));
+                }
+            }
         }
-        else if (completada>90 && completada<120){bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept,null));
-            trek.setTextColor(contexto.getResources().getColor(color_acept));
+        if (lcompletada!=null) {
+
+            lcompletada.setText(String.format(Locale.getDefault(),
+                    "%s %s", JavaUtil.getDecimales(completada), "% completa"));
         }
-        else {bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok,null));
-            trek.setTextColor(contexto.getResources().getColor(color_notok));
+    }
+
+    public static void barsCircCard(Context contexto, ProgressBar bar, ProgressBar bar2, boolean inversa,
+                                    int valorMax, int valorAcept, int valorNotOk, double completada,
+                                    TextView lcompletada, TextView trek, int color_ok, int color_acept, int color_notok,
+                                CardView card, int color_ok_card, int color_acept_card, int color_notok_card){
+
+        if (bar2!=null) {
+            if (completada > valorMax) {
+                bar2.setVisibility(View.VISIBLE);
+                bar2.setProgress((int) completada - valorMax - ((int) ((completada - valorMax) / 99)));
+                bar2.setSecondaryProgress((int) completada - valorMax);
+
+            } else {
+                bar2.setVisibility(View.GONE);
+            }
         }
-        lcompletada.setText(String.format(Locale.getDefault(),
-                "%s %s", JavaUtil.getDecimales(completada),"% completa"));
+        if (completada>0){
+            bar.setVisibility(View.VISIBLE);
+        }else{
+            bar.setVisibility(View.GONE);
+        }
+        bar.setMax(valorMax);
+        bar.setProgress((int)completada-((int)(completada/99)));
+        bar.setSecondaryProgress((int)completada);
+
+        if (inversa) {
+            if (completada > valorAcept) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok_circ, null));
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_ok));
+                }
+                card.setCardBackgroundColor(contexto.getResources().getColor(color_ok_card));
+
+            } else if (completada < valorAcept && completada > valorNotOk) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept_circ, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept_circ, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_acept));
+                }
+                card.setCardBackgroundColor(contexto.getResources().getColor(color_acept_card));
+
+            } else {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok_circ, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok_circ, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_notok));
+                }
+                card.setCardBackgroundColor(contexto.getResources().getColor(color_notok_card));
+
+            }
+        } else {
+            if (completada < valorAcept) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok_circ, null));
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_ok));
+                }
+                card.setCardBackgroundColor(contexto.getResources().getColor(color_ok_card));
+
+            } else if (completada > valorAcept && completada < valorNotOk) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept_circ, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept_circ, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_acept));
+                }
+                card.setCardBackgroundColor(contexto.getResources().getColor(color_acept_card));
+
+            } else {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok_circ, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok_circ, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_notok));
+                }
+                card.setCardBackgroundColor(contexto.getResources().getColor(color_notok_card));
+
+            }
+        }
+        if (lcompletada!=null) {
+
+            lcompletada.setText(String.format(Locale.getDefault(),
+                    "%s %s", JavaUtil.getDecimales(completada), "% completa"));
+        }
+    }
+
+    public static void barsCirc(Context contexto, ProgressBar bar, ProgressBar bar2, boolean inversa, int valorMax, int valorAcept,
+                            int valorNotOk, double completada, TextView lcompletada,
+                            TextView trek, int color_ok, int color_acept, int color_notok){
+
+        if (bar2!=null) {
+            if (completada > valorMax) {
+                bar2.setVisibility(View.VISIBLE);
+                bar2.setProgress((int) completada - valorMax - ((int) ((completada - valorMax) / 99)));
+                bar2.setSecondaryProgress((int) completada - valorMax);
+            } else {
+                bar2.setVisibility(View.GONE);
+            }
+        }
+        if (completada>0){
+            bar.setVisibility(View.VISIBLE);
+        }else{
+            bar.setVisibility(View.GONE);
+        }
+        bar.setMax(valorMax);
+        bar.setProgress((int)completada-((int)(completada/99)));
+        bar.setSecondaryProgress((int)completada);
+
+        if (inversa) {
+            if (completada > valorAcept) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok_circ, null));
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_ok));
+                }
+            } else if (completada < valorAcept && completada > valorNotOk) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept_circ, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept_circ, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_acept));
+                }
+            } else {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok_circ, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok_circ, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_notok));
+                }
+            }
+        } else {
+            if (completada < valorAcept) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok_circ, null));
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_ok));
+                }
+            } else if (completada > valorAcept && completada < valorNotOk) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept_circ, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept_circ, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_acept));
+                }
+            } else {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok_circ, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok_circ, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_notok));
+                }
+            }
+        }
+        if (lcompletada!=null) {
+
+            lcompletada.setText(String.format(Locale.getDefault(),
+                    "%s %s", JavaUtil.getDecimales(completada), "% completa"));
+        }
+    }
+
+    public static void barsCard(Context contexto, ProgressBar bar, ProgressBar bar2, boolean inversa, int valorMax, int valorAcept,
+                                int valorNotOk, double completada, TextView lcompletada,
+                                TextView trek, int color_ok, int color_acept, int color_notok,
+                                CardView card, int color_ok_card, int color_acept_card, int color_notok_card){
+
+        if (bar2!=null) {
+            if (completada > valorMax) {
+                bar2.setVisibility(View.VISIBLE);
+                bar2.setProgress((int) completada - valorMax - ((int) ((completada - valorMax) / 99)));
+                bar2.setSecondaryProgress((int) completada - valorMax);
+
+            } else {
+                bar2.setVisibility(View.GONE);
+            }
+        }
+        if (completada>0){
+            bar.setVisibility(View.VISIBLE);
+        }else{
+            bar.setVisibility(View.GONE);
+        }
+        bar.setMax(valorMax);
+        bar.setProgress((int)completada-((int)(completada/99)));
+        bar.setSecondaryProgress((int)completada);
+
+        if (inversa) {
+            if (completada > valorAcept) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok, null));
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_ok));
+                }
+                card.setCardBackgroundColor(contexto.getResources().getColor(color_ok_card));
+
+            } else if (completada < valorAcept && completada > valorNotOk) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_acept));
+                }
+                card.setCardBackgroundColor(contexto.getResources().getColor(color_acept_card));
+
+            } else {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_notok));
+                }
+                card.setCardBackgroundColor(contexto.getResources().getColor(color_notok_card));
+
+            }
+        } else {
+            if (completada < valorAcept) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok, null));
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_ok));
+                }
+                card.setCardBackgroundColor(contexto.getResources().getColor(color_ok_card));
+
+            } else if (completada > valorAcept && completada < valorNotOk) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_acept));
+                }
+                card.setCardBackgroundColor(contexto.getResources().getColor(color_acept_card));
+
+            } else {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_notok));
+                }
+                card.setCardBackgroundColor(contexto.getResources().getColor(color_notok_card));
+
+            }
+        }
+        if (lcompletada!=null) {
+            lcompletada.setText(String.format(Locale.getDefault(),
+                    "%s %s", JavaUtil.getDecimales(completada), "% completa"));
+        }
     }
 
     public static boolean validateCardNumber(String cardNumber) {
@@ -148,76 +510,10 @@ public class AndroidUtil extends AppCompatActivity {
         return false;
     }
 
-    public class ScalableImageView extends AppCompatImageView {
 
-        boolean adjustViewBounds;
+    public static Uri getProviderUriFile(Context context, String path){
 
-        public ScalableImageView(Context context) {
-            super(context);
-        }
-
-        public ScalableImageView(Context context, AttributeSet attrs) {
-            super(context, attrs);
-        }
-
-        public ScalableImageView(Context context, AttributeSet attrs, int defStyleAttr) {
-            super(context, attrs, defStyleAttr);
-        }
-
-        @Override
-        public void setAdjustViewBounds(boolean adjustViewBounds) {
-            this.adjustViewBounds = adjustViewBounds;
-            super.setAdjustViewBounds(adjustViewBounds);
-        }
-
-        @Override
-        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            Drawable drawable = getDrawable();
-            if (drawable == null) {
-                super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-                return;
-            }
-
-            if (adjustViewBounds) {
-                int drawableWidth = drawable.getIntrinsicWidth();
-                int drawableHeight = drawable.getIntrinsicHeight();
-                int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-                int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-                int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-                int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-
-                if (heightMode == MeasureSpec.EXACTLY && widthMode != MeasureSpec.EXACTLY) {
-                    int height = heightSize;
-                    int width = height * drawableWidth / drawableHeight;
-                    if (isInScrollingContainer())
-                        setMeasuredDimension(width, height);
-                    else
-                        setMeasuredDimension(Math.min(width, widthSize), Math.min(height, heightSize));
-                } else if (widthMode == MeasureSpec.EXACTLY && heightMode != MeasureSpec.EXACTLY) {
-                    int width = widthSize;
-                    int height = width * drawableHeight / drawableWidth;
-                    if (isInScrollingContainer())
-                        setMeasuredDimension(width, height);
-                    else
-                        setMeasuredDimension(Math.min(width, widthSize), Math.min(height, heightSize));
-                } else {
-                    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-                }
-            } else {
-                super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-            }
-        }
-
-        private boolean isInScrollingContainer() {
-            ViewParent parent = getParent();
-            while (parent != null && parent instanceof ViewGroup) {
-                if (((ViewGroup) parent).shouldDelayChildPressedState()) {
-                    return true;
-                }
-                parent = parent.getParent();
-            }
-            return false;
-        }
+        return FileProvider.getUriForFile(context,"jjlacode.com.freelanceproject.provider",new File(path));
     }
 
 

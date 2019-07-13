@@ -130,7 +130,7 @@ public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.T
         nombre.setText(modelo.getString(GASTOFIJO_NOMBRE));
         descripcion.setText(modelo.getString(GASTOFIJO_DESCRIPCION));
         cantidad.setText(modelo.getString(GASTOFIJO_CANTIDAD));
-        importe.setText(modelo.getString(GASTOFIJO_IMPORTE));
+        importe.setText(modelo.getString(GASTOFIJO_PRECIO));
         anios.setText(modelo.getString(GASTOFIJO_ANYOS));
         meses.setText(modelo.getString(GASTOFIJO_MESES));
         dias.setText(modelo.getString(GASTOFIJO_DIAS));
@@ -141,7 +141,7 @@ public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.T
     @Override
     protected void setLayout() {
 
-        layoutCuerpo = R.layout.fragment_cud_gastofijo;
+        layoutCuerpo = R.layout.fragment_crud_gastofijo;
         layoutItem = R.layout.item_list_gastofijo;
 
     }
@@ -165,7 +165,7 @@ public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.T
         setDato(GASTOFIJO_NOMBRE, nombre.getText().toString());
         setDato(GASTOFIJO_DESCRIPCION, descripcion.getText().toString());
         setDato(GASTOFIJO_CANTIDAD, JavaUtil.comprobarDouble(cantidad.getText().toString()));
-        setDato(GASTOFIJO_IMPORTE, JavaUtil.comprobarDouble(importe.getText().toString()));
+        setDato(GASTOFIJO_PRECIO, JavaUtil.comprobarDouble(importe.getText().toString()));
         setDato(GASTOFIJO_ANYOS, JavaUtil.comprobarInteger(anios.getText().toString()));
         setDato(GASTOFIJO_MESES, JavaUtil.comprobarInteger(meses.getText().toString()));
         setDato(GASTOFIJO_DIAS, JavaUtil.comprobarInteger(dias.getText().toString()));
@@ -204,7 +204,7 @@ public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.T
             nombre.setText(modelo.getString(GASTOFIJO_NOMBRE));
             descripcion.setText(modelo.getString(GASTOFIJO_DESCRIPCION));
             cantidad.setText(modelo.getString(GASTOFIJO_CANTIDAD));
-            importe.setText(JavaUtil.formatoMonedaLocal(modelo.getDouble(GASTOFIJO_IMPORTE)));
+            importe.setText(JavaUtil.formatoMonedaLocal(modelo.getDouble(GASTOFIJO_PRECIO)));
             anios.setText(modelo.getString(GASTOFIJO_ANYOS));
             meses.setText(modelo.getString(GASTOFIJO_MESES));
             dias.setText(modelo.getString(GASTOFIJO_DIAS));
@@ -240,7 +240,7 @@ public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.T
             nombre.setText(entrada.get(posicion).getString(GASTOFIJO_NOMBRE));
             descripcion.setText(entrada.get(posicion).getString(GASTOFIJO_DESCRIPCION));
             cantidad.setText(entrada.get(posicion).getString(GASTOFIJO_CANTIDAD));
-            importe.setText(JavaUtil.formatoMonedaLocal(entrada.get(posicion).getDouble(GASTOFIJO_IMPORTE)));
+            importe.setText(JavaUtil.formatoMonedaLocal(entrada.get(posicion).getDouble(GASTOFIJO_PRECIO)));
             anios.setText(entrada.get(posicion).getString(GASTOFIJO_ANYOS));
             meses.setText(entrada.get(posicion).getString(GASTOFIJO_MESES));
             dias.setText(entrada.get(posicion).getString(GASTOFIJO_DIAS));

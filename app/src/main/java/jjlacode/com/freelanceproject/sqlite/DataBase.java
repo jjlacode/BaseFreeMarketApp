@@ -57,7 +57,7 @@ public class DataBase extends SQLiteOpenHelper
 
         ));
 
-        Log.d("db", "Creada tabla tabla");
+        Log.d("db", "Creada tablaModelo tablaModelo");
         cargarDatosTabla(db);
 
         String[] proyeccion = {TABLAS_TABLA};
@@ -90,7 +90,7 @@ public class DataBase extends SQLiteOpenHelper
 
             campos.close();
             db.execSQL(insert.toString());
-            Log.d("db", "Creada tabla "+tbl);
+            Log.d("db", "Creada tablaModelo "+tbl);
 
         }
         cursor.close();

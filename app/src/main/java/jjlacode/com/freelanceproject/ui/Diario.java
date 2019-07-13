@@ -1,5 +1,6 @@
 package jjlacode.com.freelanceproject.ui;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -7,54 +8,67 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 
+import java.util.ArrayList;
+
 import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.crud.ListaModelo;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.util.media.MediaUtil;
-import jjlacode.com.freelanceproject.util.time.calendar.clases.CalendarioBase;
-import jjlacode.com.freelanceproject.util.time.calendar.clases.Day;
+import jjlacode.com.freelanceproject.util.time.Day;
+import jjlacode.com.freelanceproject.util.time.ListaDays;
+import jjlacode.com.freelanceproject.util.time.TimeDateUtil;
+import jjlacode.com.freelanceproject.util.time.calendar.fragments.FragmentMes;
 
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.DIARIO;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.NOTA;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ACTUAL;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.FECHA;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ID;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.IDREL;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.MODELO;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NUEVOREGISTRO;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ORIGEN;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.SUBTITULO;
+public class Diario extends FragmentMes {
 
-public class Diario extends CalendarioBase {
+    @Override
+    protected ListaModelo setListaDia(long fecha) {
+
+        ListaModelo listaDia = new ListaModelo();
+        listabase = new ListaModelo(CAMPOS_DIARIO);
+
+        for (Modelo modelo : listabase.getLista()) {
+
+            if (modelo.getLong(CAMPO_CREATEREG)==fecha){
+
+                listaDia.addModelo(modelo);
+            }
+        }
+
+        return listaDia;
+    }
+
+    @Override
+    protected void setVerDia(long fecha, ListaModelo listaModelo) {
+
+        bundle = new Bundle();
+        bundle.putString(ORIGEN,DIARIO);
+        bundle.putString(ACTUAL, DIARIO);
+        bundle.putSerializable(LISTA,listaModelo);
+        bundle.putLong(FECHA,fecha);
+
+        icFragmentos.enviarBundleAFragment(bundle, new DiaCalDiario());
+    }
 
     @Override
     protected void setLayoutItem() {
 
-        layoutItem = R.layout.item_list_nota_diario;
+        layoutItem = R.layout.item_list_diario;
 
-    }
 
-    @Override
-    protected boolean setIfLista(Modelo modelo) {
 
-        return true;
-    }
-
-    @Override
-    protected boolean setIfListaHoy(Modelo modelo, long hoy) {
-
-        return JavaUtil.getDate(modelo.getLong(NOTA_FECHA)).equals(JavaUtil.getDate(hoy));
     }
 
     @Override
     protected void setCampos() {
 
-        campos = CAMPOS_NOTA;
-        campo = NOTA_FECHA;
+        campos = CAMPOS_DIARIO;
+        campo = DIARIO_CREATE;
     }
 
     @Override
@@ -76,22 +90,11 @@ public class Diario extends CalendarioBase {
     @Override
     protected void setNuevo(long fecha) {
 
-        bundle = new Bundle();
-        bundle.putBoolean(NUEVOREGISTRO,true);
-        bundle.putString(ORIGEN,DIARIO);
-        bundle.putLong(FECHA,fecha);
-        bundle.putString(ACTUAL, NOTA);
-        icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
-
     }
 
     @Override
-    protected void setVerLista() {
+    protected void setVerLista(ListaModelo listaModelo, ListaDays listaDays) {
 
-        bundle = new Bundle();
-        bundle.putString(ORIGEN,DIARIO);
-        bundle.putString(ACTUAL, NOTA);
-        icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
     }
 
     @Override
@@ -105,86 +108,60 @@ public class Diario extends CalendarioBase {
     }
 
     @Override
+    protected void setOnInicio() {
+
+        gone(nuevo);
+        gone(verLista);
+
+        setSinNuevo(true);
+        setSinLista(true);
+    }
+
+    @Override
     protected TipoViewHolder setViewHolder(View view) {
         return new ViewHolderRV(view);
+    }
+
+    @Override
+    protected ListaAdaptadorFiltroRV setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+        return new ListaAdaptadorFiltroRV(context,layoutItem,lista,campos);
     }
 
 
     public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder, CommonPry.TiposNota {
 
-        TextView descripcion, fechanota, rel;
+        TextView descripcion, fechaDiario, rel;
         ImageView imagen,ver;
         CardView card;
 
         public ViewHolderRV(View itemView) {
             super(itemView);
-            rel = itemView.findViewById(R.id.tvrelnotadiario);
-            descripcion = itemView.findViewById(R.id.tvdescnotadiario);
-            imagen = itemView.findViewById(R.id.imagennotadiario);
-            fechanota = itemView.findViewById(R.id.tvfechanotadiario);
-            ver = itemView.findViewById(R.id.btnvernotadiario);
-            card = itemView.findViewById(R.id.cardnotadiario);
+            rel = itemView.findViewById(R.id.tvreldiario);
+            descripcion = itemView.findViewById(R.id.tvdescdiario);
+            imagen = itemView.findViewById(R.id.imagendiario);
+            fechaDiario = itemView.findViewById(R.id.tvfechadiario);
+            ver = itemView.findViewById(R.id.btnverdiario);
+            card = itemView.findViewById(R.id.carddiario);
 
         }
 
         @Override
         public void bind(final Modelo modelo) {
 
-            descripcion.setText(modelo.getString(NOTA_TITULO));
-            fecha = modelo.getLong(NOTA_FECHA);
-            fechanota.setText(JavaUtil.getDateTime(fecha));
-            String tipo = modelo.getString(NOTA_TIPO);
-            rel.setText(modelo.getString(NOTA_NOMBREREL));
-            System.out.println("modelo = " + modelo.getString(NOTA_NOMBREREL));
-            if (modelo.getString(NOTA_NOMBREREL)!=null){
-                visible(rel);
-                card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
-            }else{
-                gone(rel);
-            }
+            descripcion.setText(modelo.getString(DIARIO_DESCRIPCION));
+            fecha = modelo.getLong(DIARIO_CREATE);
+            fechaDiario.setText(TimeDateUtil.getDateString(fecha));
+            rel.setText(modelo.getString(DIARIO_NOMBREREL));
+
             String path;
-            //imagenTarea.setVisibility(View.GONE);
-
-            if (tipo != null) {
-
-                switch (tipo) {
-
-                    case NOTATEXTO:
-
-                        imagen.setImageResource(R.drawable.ic_nota_texto_indigo);
-
-                        break;
-
-                    case NOTAAUDIO:
-
-                        imagen.setImageResource(R.drawable.ic_nota_audio_indigo);
-                        if (modelo.getString(NOTA_RUTA) != null) {
-                            path = modelo.getString(NOTA_RUTA);
-                        }
-
-                        break;
-
-                    case NOTAVIDEO:
-
-                        imagen.setImageResource(R.drawable.ic_nota_video_indigo);
-                        if (modelo.getString(NOTA_RUTA) != null) {
-                            path = modelo.getString(NOTA_RUTA);
-                        }
-
-                        break;
-
-                    case NOTAIMAGEN:
-
-                        if (modelo.getString(NOTA_RUTA) != null) {
-                            imagen.setVisibility(View.VISIBLE);
-                            path = modelo.getString(NOTA_RUTA);
-                            MediaUtil imagenUtil = new MediaUtil(AppActivity.getAppContext());
-                            imagenUtil.setImageUriCircle(path, imagen);
-                        } else {
-                            //imagenTarea.setVisibility(View.GONE);
-                            imagen.setImageResource(R.drawable.ic_nota_imagen_indigo);
-                        }
-                }
+            if (modelo.getString(DIARIO_RUTAFOTO) != null) {
+                imagen.setVisibility(View.VISIBLE);
+                path = modelo.getString(DIARIO_RUTAFOTO);
+                MediaUtil imagenUtil = new MediaUtil(AppActivity.getAppContext());
+                imagenUtil.setImageUriCircle(path, imagen);
+            } else {
+                //imagenTarea.setVisibility(View.GONE);
+                imagen.setImageResource(R.drawable.ic_nota_imagen_indigo);
             }
 
             ver.setOnClickListener(new View.OnClickListener() {
@@ -193,16 +170,25 @@ public class Diario extends CalendarioBase {
 
                     bundle = new Bundle();
                     bundle.putSerializable(MODELO, modelo);
-                    bundle.putString(ID,modelo.getString(NOTA_ID_NOTA));
+                    bundle.putString(CAMPO_ID,modelo.getString(DIARIO_ID_RELACIONADO));
                     bundle.putString(ORIGEN, DIARIO);
-                    if (modelo.getString(NOTA_ID_RELACIONADO)!=null){
-                        bundle.putString(IDREL, modelo.getString(NOTA_ID_RELACIONADO));
-                        bundle.putString(SUBTITULO,modelo.getString(NOTA_NOMBREREL));
-                    }else{
-                    bundle.putString(SUBTITULO, JavaUtil.getDate(fecha));
+                    String destinoRel = modelo.getString(DIARIO_REL);
+                    bundle.putString(ACTUAL, destinoRel);
+
+                    switch (destinoRel){
+
+                        case EVENTO :
+                            icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
+                            break;
+
+                        case PROYECTO :
+                            icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
+                            break;
+
+                        case CLIENTE :
+                            icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDCliente());
+
                     }
-                    bundle.putString(ACTUAL, NOTA);
-                    icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
 
                 }
             });
@@ -214,6 +200,47 @@ public class Diario extends CalendarioBase {
         @Override
         public BaseViewHolder holder(View view) {
             return new ViewHolderRV(view);
+        }
+    }
+
+    public class AdaptadorFiltroRV extends ListaAdaptadorFiltroRV{
+
+        public AdaptadorFiltroRV(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+            super(contexto, R_layout_IdView, entradas, campos);
+        }
+
+        @Override
+        protected void setEntradas(int posicion, View itemView, ArrayList<Modelo> entrada) {
+
+            TextView descripcion, fechaDiario, rel;
+            ImageView imagen,ver;
+            CardView card;
+
+            rel = itemView.findViewById(R.id.tvreldiario);
+            descripcion = itemView.findViewById(R.id.tvdescdiario);
+            imagen = itemView.findViewById(R.id.imagendiario);
+            fechaDiario = itemView.findViewById(R.id.tvfechadiario);
+            ver = itemView.findViewById(R.id.btnverdiario);
+            card = itemView.findViewById(R.id.carddiario);
+            gone(ver);
+
+            descripcion.setText(entrada.get(posicion).getString(DIARIO_DESCRIPCION));
+            fecha = entrada.get(posicion).getLong(DIARIO_CREATE);
+            fechaDiario.setText(TimeDateUtil.getDateString(fecha));
+            rel.setText(entrada.get(posicion).getString(DIARIO_NOMBREREL));
+
+            String path;
+            if (entrada.get(posicion).getString(DIARIO_RUTAFOTO) != null) {
+                imagen.setVisibility(View.VISIBLE);
+                path = entrada.get(posicion).getString(DIARIO_RUTAFOTO);
+                MediaUtil imagenUtil = new MediaUtil(AppActivity.getAppContext());
+                imagenUtil.setImageUriCircle(path, imagen);
+            } else {
+                //imagenTarea.setVisibility(View.GONE);
+                imagen.setImageResource(R.drawable.ic_nota_imagen_indigo);
+            }
+
+            super.setEntradas(posicion, itemView, entrada);
         }
     }
 }

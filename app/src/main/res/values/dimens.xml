@@ -4,13 +4,14 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">150dp</dimen>
-    <dimen name="fab_margin">14dp</dimen>
-    <dimen name="fab_margin2">20dp</dimen>
+    <dimen name="fab_margin">5dp</dimen>
+    <dimen name="fab_margin2">10dp</dimen>
     <dimen name="text_margin">14dp</dimen>
     <dimen name="min_hight_card_event">150dp</dimen>
     <dimen name="altobtn">45dp</dimen>
     <dimen name="contador">24sp</dimen>
     <dimen name="texto">18sp</dimen>
+    <dimen name="edit">65dp</dimen>
     <dimen name="texto_card">12sp</dimen>
     <dimen name="texto_boton">16sp</dimen>
     <dimen name="texto_doble">70dp</dimen>
@@ -22,6 +23,7 @@
     <dimen name="alto_layout_sbd">65dp</dimen>
     <dimen name="margen_sdb">10dp</dimen>
     <dimen name="margen_sdb_doble">20dp</dimen>
+    <dimen name="texto_card_tit">8sp</dimen>
     <integer name = "animation_duration" > 130 </integer>
 
 </resources>

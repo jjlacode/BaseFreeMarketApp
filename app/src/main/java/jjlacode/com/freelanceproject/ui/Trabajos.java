@@ -1,5 +1,6 @@
 package jjlacode.com.freelanceproject.ui;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -9,56 +10,65 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 
+import java.util.ArrayList;
+
 import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
-import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.crud.ListaModelo;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.util.media.MediaUtil;
-import jjlacode.com.freelanceproject.util.time.calendar.clases.CalendarioBase;
-import jjlacode.com.freelanceproject.util.time.calendar.clases.Day;
+import jjlacode.com.freelanceproject.util.time.Day;
+import jjlacode.com.freelanceproject.util.time.ListaDays;
+import jjlacode.com.freelanceproject.util.time.calendar.fragments.FragmentMes;
 
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.EVENTO;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.PROYECTO;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.TRABAJOS;
-import static jjlacode.com.freelanceproject.CommonPry.TiposEvento.TIPOEVENTOCITA;
-import static jjlacode.com.freelanceproject.CommonPry.TiposEvento.TIPOEVENTOEMAIL;
-import static jjlacode.com.freelanceproject.CommonPry.TiposEvento.TIPOEVENTOEVENTO;
-import static jjlacode.com.freelanceproject.CommonPry.TiposEvento.TIPOEVENTOLLAMADA;
-import static jjlacode.com.freelanceproject.CommonPry.TiposEvento.TIPOEVENTOTAREA;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ACTUAL;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.CALENDARIO;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.FECHA;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ID;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.LISTA;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.MODELO;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NUEVOREGISTRO;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ORIGEN;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.SUBTITULO;
-import static jjlacode.com.freelanceproject.util.android.AppActivity.viewOnMapA;
 
-public class Trabajos extends CalendarioBase implements CommonPry.TiposEstados {
+public class Trabajos extends FragmentMes {
+
+    @Override
+    protected ListaModelo setListaDia(long fecha) {
+
+        ListaModelo listaDia = new ListaModelo();
+        ListaModelo listatemp = new ListaModelo(CAMPOS_PROYECTO);
+        listabase = new ListaModelo();
+
+        for (Modelo modelo : listatemp.getLista()) {
+            if ((modelo.getInt(PROYECTO_TIPOESTADO) >= TNUEVOPRESUP) &&
+                    (modelo.getInt(PROYECTO_TIPOESTADO) < TPROYECTPENDCOBRO)){
+                listabase.addModelo(modelo);
+            }
+        }
+
+        for (Modelo modelo : listabase.getLista()) {
+
+            if (modelo.getLong(PROYECTO_FECHAENTREGAACORDADA)==fecha){
+
+                listaDia.addModelo(modelo);
+            }
+        }
+
+        return listaDia;
+    }
+
+    @Override
+    protected void setVerDia(long fecha, ListaModelo listaModelo) {
+
+        bundle = new Bundle();
+        bundle.putString(ORIGEN,TRABAJOS);
+        bundle.putString(ACTUAL, PROYECTO);
+        bundle.putSerializable(LISTA,listaModelo);
+        bundle.putLong(FECHA,fecha);
+
+        icFragmentos.enviarBundleAFragment(bundle, new DiaCalTrabajos());
+    }
 
     @Override
     protected void setLayoutItem() {
 
         layoutItem = R.layout.item_list_trabajos_en_curso;
 
-    }
-
-    @Override
-    protected boolean setIfLista(Modelo modelo) {
-
-        return ((modelo.getInt(PROYECTO_TIPOESTADO) >= TPRESUPACEPTADO) &&
-                (modelo.getInt(PROYECTO_TIPOESTADO) < TPROYECTPENDCOBRO));
-    }
-
-    @Override
-    protected boolean setIfListaHoy(Modelo modelo, long hoy) {
-
-        return (JavaUtil.getDate(modelo.getLong(campo)).equals(JavaUtil.getDate(hoy)));
     }
 
     @Override
@@ -94,19 +104,20 @@ public class Trabajos extends CalendarioBase implements CommonPry.TiposEstados {
         bundle.putString(ORIGEN,TRABAJOS);
         bundle.putLong(FECHA,fecha);
         bundle.putString(ACTUAL, PROYECTO);
-        bundle.putString(ID,null);
+        bundle.putString(CAMPO_ID,null);
         bundle.putSerializable(LISTA,null);
         bundle.putSerializable(MODELO, null);
         icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
     }
 
     @Override
-    protected void setVerLista() {
+    protected void setVerLista(ListaModelo listaModelo, ListaDays listaDays) {
 
         bundle = new Bundle();
         bundle.putString(ORIGEN,TRABAJOS);
         bundle.putString(ACTUAL, PROYECTO);
-        bundle.putString(ID,null);
+        bundle.putSerializable(LISTA,listaModelo);
+        bundle.putString(CAMPO_ID,null);
         bundle.putSerializable(MODELO, null);
         icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
     }
@@ -122,8 +133,18 @@ public class Trabajos extends CalendarioBase implements CommonPry.TiposEstados {
     }
 
     @Override
+    protected void setOnInicio() {
+
+    }
+
+    @Override
     protected TipoViewHolder setViewHolder(View view) {
         return new ViewHolderRV(view);
+    }
+
+    @Override
+    protected ListaAdaptadorFiltroRV setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+        return new ListaAdaptadorFiltroRV(context,layoutItem,lista,campos);
     }
 
 
@@ -185,7 +206,7 @@ public class Trabajos extends CalendarioBase implements CommonPry.TiposEstados {
 
                     bundle = new Bundle();
                     bundle.putSerializable(MODELO, modelo);
-                    bundle.putString(ID,modelo.getString(PROYECTO_ID_PROYECTO));
+                    bundle.putString(CAMPO_ID,modelo.getString(PROYECTO_ID_PROYECTO));
                     bundle.putString(ORIGEN, TRABAJOS);
                     bundle.putString(SUBTITULO, modelo.getString(PROYECTO_NOMBRE));
                     bundle.putString(ACTUAL, PROYECTO);

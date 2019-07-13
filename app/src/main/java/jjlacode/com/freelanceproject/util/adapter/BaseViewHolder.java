@@ -5,6 +5,9 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+
+import jjlacode.com.freelanceproject.util.crud.ListaModelo;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
 
 
@@ -20,8 +23,18 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
 
         }
 
+        public void bind(ListaModelo lista, int position){
+
+        }
+
+        public void bind(ArrayList<?> lista, int position){
+
+        }
+
         public Context getContext(){
             return itemView.getContext();
 
         }
+
+
 }

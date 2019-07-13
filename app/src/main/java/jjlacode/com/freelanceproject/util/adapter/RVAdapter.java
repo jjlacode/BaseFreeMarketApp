@@ -9,23 +9,47 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+import jjlacode.com.freelanceproject.util.crud.ListaModelo;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
 
-public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
-        implements View.OnClickListener{
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.LISTA;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.LISTAMODELO;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.MODELO;
 
-    protected ArrayList<Modelo> list;
+public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
+        implements View.OnClickListener, View.OnLongClickListener{
+
+    protected ArrayList list;
+    protected ListaModelo listaModelo;
     private View.OnClickListener listener;
-    private String namef;
+    private View.OnLongClickListener longClickListener;
+    private String tipoVH;
     private int layout;
     private TipoViewHolder tipoViewHolder;
 
-    public RVAdapter(TipoViewHolder tipoViewHolder,ArrayList<Modelo> list, int layout, String namef) {
+    public RVAdapter(TipoViewHolder tipoViewHolder,ArrayList<?> list, int layout) {
 
         this.list = list;
-        this.namef = namef;
+        this.tipoVH = LISTA;
+        if (list.size()>0 && list.get(0) instanceof Modelo){
+            tipoVH = MODELO;
+        }
         this.layout = layout;
         this.tipoViewHolder = tipoViewHolder;
+
+    }
+
+    public RVAdapter(TipoViewHolder tipoViewHolder, ListaModelo list, int layout) {
+
+        this.listaModelo = list;
+        this.list = new ArrayList();
+        for (ArrayList<Modelo> modeloArrayList : listaModelo) {
+            this.list.add(modeloArrayList.size());
+        }
+        this.tipoVH = LISTAMODELO;
+        this.layout = layout;
+        this.tipoViewHolder = tipoViewHolder;
+
     }
 
     @NonNull
@@ -35,6 +59,7 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
         final View view = LayoutInflater.from(parent.getContext()).inflate(layout, null, false);
 
         view.setOnClickListener(this);
+        view.setOnLongClickListener(this);
 
         return tipoViewHolder.holder(view);
 
@@ -43,14 +68,38 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
     @Override
     public void onBindViewHolder(@NonNull BaseViewHolder holder, int position) {
 
-        holder.bind(list.get(position));
+        if (tipoVH !=null && tipoVH.equals(LISTAMODELO)){
+
+            holder.bind(listaModelo,position);
+        }else if (tipoVH !=null && tipoVH.equals(LISTA)){
+
+            holder.bind(list,position);
+
+        }else if (tipoVH !=null && tipoVH.equals(MODELO)){
+
+            holder.bind((Modelo) list.get(position));
+        }else {
+
+            holder.bind(list,position);
+
+        }
+
     }
 
     /*
    Añade una lista completa de items
     */
-    public void addAll(ArrayList<Modelo> lista){
+    public void addAll(ArrayList<?> lista){
         list.addAll(lista);
+        notifyDataSetChanged();
+    }
+
+    public void addAll(ListaModelo lista){
+        listaModelo.addAll(lista);
+        this.list = new ArrayList();
+        for (ArrayList<Modelo> modeloArrayList : listaModelo) {
+            this.list.add(modeloArrayList.size());
+        }
         notifyDataSetChanged();
     }
 
@@ -58,7 +107,16 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
     Permite limpiar todos los elementos del recycler
      */
     public void clear(){
-        list.clear();
+
+        if (tipoVH !=null && tipoVH.equals(LISTAMODELO)) {
+
+            listaModelo.clear();
+            list.clear();
+
+        }else {
+
+            list.clear();
+        }
         notifyDataSetChanged();
     }
     public void setOnClickListener(View.OnClickListener listener) {
@@ -66,10 +124,24 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
         this.listener = listener;
     }
 
+    public void setOnLongClickListener(View.OnLongClickListener longClickListener){
+        this.longClickListener = longClickListener;
+    }
+
     @Override
     public int getItemCount() {
 
-        return list.size();
+        if (tipoVH !=null && tipoVH.equals(LISTAMODELO)){
+
+            if (listaModelo!=null) {
+                return listaModelo.size();
+            }
+
+        }else if (list!=null) {
+
+            return list.size();
+        }
+        return 0;
     }
 
     @Override
@@ -83,6 +155,14 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
     }
 
+    @Override
+    public boolean onLongClick(View view) {
 
+        if (longClickListener != null) {
 
+            longClickListener.onLongClick(view);
+            return true;
+        }
+        return false;
+    }
 }

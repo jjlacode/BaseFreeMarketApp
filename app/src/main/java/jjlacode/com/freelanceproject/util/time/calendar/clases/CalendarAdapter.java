@@ -7,11 +7,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.ArrayList;
 import java.util.Calendar;
-
 import jjlacode.com.freelanceproject.R;
+import jjlacode.com.freelanceproject.util.time.Day;
+import jjlacode.com.freelanceproject.util.time.ListaDays;
 
 /**
  * Created by DARWIN on 1/3/2017.
@@ -20,32 +19,63 @@ import jjlacode.com.freelanceproject.R;
 public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewDayHolder> {
 
     private Context context;
-    private ArrayList<Day> dias;
+    private ListaDays listaDias;
     private int textColorSelectedDay, backgroundColorSelectedDay;
+    private int textColorInicioDay, backgroundColorInicioDay;
+    private int textColorFinDay, backgroundColorFinDay;
+    private int textColorMultiDay, backgroundColorMultiDay;
+    private int textColorBuscaDay, backgroundColorBuscaDay;
 
-    public CalendarAdapter(Context context, ArrayList<Day> dias, int textColorSelectedDay, int backgroundColorSelectedDay) {
+
+    private int mes;
+
+    public CalendarAdapter(Context context, int mes, ListaDays listaDias, int textColorSelectedDay, int backgroundColorSelectedDay) {
         this.context = context;
-        this.dias = dias;
+        this.listaDias = listaDias;
         this.textColorSelectedDay = textColorSelectedDay;
         this.backgroundColorSelectedDay = backgroundColorSelectedDay;
+        this.textColorInicioDay = context.getResources().getColor(R.color.Color_contador_acept);
+        this.backgroundColorInicioDay = context.getResources().getColor(R.color.Color_contador_acept);
+        this.textColorFinDay = context.getResources().getColor(R.color.Color_contador_ok);
+        this.backgroundColorFinDay = context.getResources().getColor(R.color.Color_contador_ok);
+        this.textColorMultiDay = context.getResources().getColor(R.color.colorPrimaryDark);
+        this.backgroundColorMultiDay = context.getResources().getColor(R.color.colorPrimaryDark);
+        this.textColorBuscaDay = context.getResources().getColor(R.color.Color_busqueda);
+        this.backgroundColorBuscaDay = context.getResources().getColor(R.color.Color_busqueda);
+
+        this.mes = mes;
+        System.out.println("constructor adapter");
     }
 
     @Override
     public ViewDayHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_calendar, parent, false);
+
         return new ViewDayHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewDayHolder holder, final int position) {
 
-        final Day dia = dias.get(position);
+        final Day dia = listaDias.get(position);
         Calendar cal = dia.getDate();//Calendar.getInstance();
         //cal.setTime(dia.getDate());
         int nday = cal.get(Calendar.DAY_OF_MONTH);
         holder.dia.setText(nday + "");
 
-        if (dia.isSelected()) {
+        if (dia.isBusca()) {
+            holder.dia.setTextColor(textColorBuscaDay);
+            holder.itemView.setBackgroundColor(backgroundColorBuscaDay);
+        }else if (dia.isInicio()) {
+            holder.dia.setTextColor(textColorInicioDay);
+            holder.itemView.setBackgroundColor(backgroundColorInicioDay);
+        } else if (dia.isFin()) {
+            holder.dia.setTextColor(textColorFinDay);
+            holder.itemView.setBackgroundColor(backgroundColorFinDay);
+        }else if (dia.isMulti()) {
+            holder.dia.setTextColor(textColorMultiDay);
+            holder.itemView.setBackgroundColor(backgroundColorMultiDay);
+        }else if (dia.isSelected()) {
             holder.dia.setTextColor(textColorSelectedDay);
             holder.itemView.setBackgroundColor(backgroundColorSelectedDay);
         } else if (dia.isValid()) {
@@ -64,7 +94,6 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewDa
             }
         });
 
-
         holder.dia.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -78,14 +107,12 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewDa
 
     @Override
     public int getItemCount() {
-        return dias.size();
+        return listaDias.size();
     }
-
 
     public class ViewDayHolder extends RecyclerView.ViewHolder {
 
         Button dia;
-
 
         public ViewDayHolder(View itemView) {
             super(itemView);
@@ -112,7 +139,6 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewDa
          * @param day
          */
         void dayOnLongClik(Day day, int position);
-
 
     }
 

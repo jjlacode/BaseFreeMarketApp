@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.circularreveal.CircularRevealRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/carddetpartidat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
@@ -13,24 +14,24 @@
         android:layout_marginRight="5dp"
         card_view:cardBackgroundColor="#ECE6E6">
 
-        <LinearLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
 
-            <LinearLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <LinearLayout
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="2.5"
                     android:orientation="vertical">
 
-                    <ImageView
+                    <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/imgldetpartidat"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -38,50 +39,67 @@
                         android:adjustViewBounds="true"
                         card_view:srcCompat="@drawable/ic_add_a_photo_black_24dp" />
 
-                </LinearLayout>
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <LinearLayout
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/tvtipoldetpaetidat"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/tipo_detpartida"
-                        android:textSize="@dimen/texto" />
-
-                    <TextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvnomldetpartidat"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/nombre"
-                        android:textSize="@dimen/texto_card" />
+                        android:textSize="@dimen/texto" />
 
-                    <TextView
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvpartldetpaetidat"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/partida"
+                        android:textSize="@dimen/texto_card"
+                        android:textStyle="bold|italic" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvproydetpartidat"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/nombre"
-                        android:textStyle="bold|italic"
-                        android:textSize="@dimen/texto_card" />
+                        android:textSize="@dimen/texto_card"
+                        android:textStyle="bold|italic" />
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
 
 
-                </LinearLayout>
 
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2.5"
+                    android:orientation="vertical">
 
-            </LinearLayout>
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imgestadoldetpartidat"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        card_view:srcCompat="@drawable/ic_play_indigo" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvttotalldetpartidat"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -89,7 +107,7 @@
                     android:layout_weight="1"
                     android:textSize="@dimen/texto_card" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvcompletadaldetpartidat"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -99,7 +117,16 @@
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <ProgressBar
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvtrekldetpaetidat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/partida"
+                android:textSize="@dimen/texto"
+                android:textStyle="bold" />
+
+            <androidx.core.widget.ContentLoadingProgressBar
                 android:id="@+id/pbarldetpartidat"
                 style="@android:style/Widget.Holo.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
@@ -107,15 +134,15 @@
                 android:progressDrawable="@drawable/bar_ok"
                 android:visibility="gone" />
 
-            <ProgressBar
+            <androidx.core.widget.ContentLoadingProgressBar
                 android:id="@+id/pbar2ldetpartidat"
                 style="@android:style/Widget.Holo.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:progressDrawable="@drawable/bar_notok"
                 android:visibility="gone" />
-        </LinearLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.cardview.widget.CardView>
 
-</RelativeLayout>
+</com.google.android.material.circularreveal.CircularRevealRelativeLayout>

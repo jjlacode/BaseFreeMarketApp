@@ -1,5 +1,6 @@
 package jjlacode.com.freelanceproject.util.media;
 
+import android.net.Uri;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +15,7 @@ import jjlacode.com.freelanceproject.util.android.AppActivity;
 import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.util.android.FragmentBase;
 
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ACTUALTEMP;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ORIGEN;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.SUBTITULO;
 
@@ -44,7 +46,6 @@ public class VisorPDF extends FragmentBase {
     public void onResume() {
         super.onResume();
 
-        bundle = getArguments();
         if (bundle!=null) {
 
             uri = bundle.getString("uri","");
@@ -77,7 +78,7 @@ public class VisorPDF extends FragmentBase {
             @Override
             public void onClick(View v) {
 
-                bundle.putString(ORIGEN, bundle.getString(SUBTITULO));
+                bundle.putString(ACTUALTEMP, bundle.getString(SUBTITULO));
                 bundle.putString(SUBTITULO, CommonPry.setNamefdef());
                 icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDProyecto());
             }

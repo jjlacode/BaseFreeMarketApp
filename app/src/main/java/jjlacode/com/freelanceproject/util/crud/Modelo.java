@@ -9,7 +9,7 @@ import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.SECUENCIA;
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.CAMPO_SECUENCIA;
 
 public class Modelo implements Serializable {
 
@@ -24,6 +24,14 @@ public class Modelo implements Serializable {
     private int numcampos;
 
     private int campostabla;
+
+    private int posicionLista;
+
+    private int indiceLista;
+
+    private boolean enLista;
+
+    public Modelo (){}
 
     public Modelo(String tabla) {
 
@@ -65,8 +73,7 @@ public class Modelo implements Serializable {
 
     public Modelo (String[] campos, String id){
 
-        ConsultaBD consultaBD = new ConsultaBD();
-        Modelo modelo = consultaBD.queryObject(campos,id);
+        Modelo modelo = ConsultaBD.queryObject(campos,id);
         this.campos = campos;
         this.valores = modelo.getValores();
         estructura = campos;
@@ -77,8 +84,7 @@ public class Modelo implements Serializable {
 
     public Modelo (String[] campos, String id, int secuencia){
 
-        ConsultaBD consultaBD = new ConsultaBD();
-        Modelo modelo = consultaBD.queryObjectDetalle(campos,id,secuencia);
+        Modelo modelo = ConsultaBD.queryObjectDetalle(campos,id,secuencia);
         this.campos = campos;
         this.valores = modelo.getValores();
         estructura = campos;
@@ -89,8 +95,7 @@ public class Modelo implements Serializable {
 
     public Modelo (String[] campos, String id, String secuencia){
 
-        ConsultaBD consultaBD = new ConsultaBD();
-        Modelo modelo = consultaBD.queryObjectDetalle(campos,id,secuencia);
+        Modelo modelo = ConsultaBD.queryObjectDetalle(campos,id,secuencia);
         this.campos = campos;
         this.valores = modelo.getValores();
         estructura = campos;
@@ -155,7 +160,7 @@ public class Modelo implements Serializable {
     public boolean esDetalle(){
 
         for (int i = 0; i<numcampos;i++){
-            if (campos[i].equals(SECUENCIA)){
+            if (campos[i].equals(CAMPO_SECUENCIA)){
                 return true;
             }
         }
@@ -176,6 +181,10 @@ public class Modelo implements Serializable {
 
         return values;
 
+    }
+
+    public String getCampoID(){
+        return this.campos[2];
     }
 
     public String getCampos(String campo) {
@@ -352,6 +361,30 @@ public class Modelo implements Serializable {
                 }
             }
         }
+    }
+
+    public int getPosicionLista() {
+        return posicionLista;
+    }
+
+    public void setPosicionLista(int posicionLista) {
+        this.posicionLista = posicionLista;
+    }
+
+    public int getIndiceLista() {
+        return indiceLista;
+    }
+
+    public void setIndiceLista(int indiceLista) {
+        this.indiceLista = indiceLista;
+    }
+
+    public boolean isEnLista() {
+        return enLista;
+    }
+
+    public void setEnLista(boolean enLista) {
+        this.enLista = enLista;
     }
 
     public String[] getCampos() {

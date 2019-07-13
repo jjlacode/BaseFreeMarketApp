@@ -3,6 +3,7 @@
 
     <item android:state_pressed="false">
 <shape android:shape="rectangle">
+    <size android:height="@dimen/altobtnico"/>
     <solid android:color="@color/colorPrimary"/>
     <stroke android:width="3dp" android:color="@color/colorPrimaryDark"/>
 
@@ -17,6 +18,7 @@
 
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
+            <size android:height="@dimen/altobtnico"/>
             <solid android:color="@color/colorPrimaryDark"/>
             <stroke android:color="@color/colorPrimary"/>
 

@@ -28,15 +28,19 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"
         android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@color/colorAccent"
+        app:backgroundTint="@color/colorPrimary"
+        app:rippleColor="@color/colorAccent"
         app:srcCompat="@drawable/ic_add_verde_24dp" />
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|start"
-        android:layout_margin="@dimen/fab_margin2"
-        app:backgroundTint="@color/colorAccent"
-        app:srcCompat="@drawable/ic_save_verde_24dp" />
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:borderWidth="2dp"
+        app:rippleColor="@color/colorAccent"
+        android:tint="@color/colorPrimary"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:srcCompat="@drawable/ic_rec_indigo" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

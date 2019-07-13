@@ -21,7 +21,7 @@
     <string name="nuevoproyecto">New Project</string>
     <string name="estado">state</string>
     <string name="descripcion_tipo_cliente">Descryption</string>
-    <string name="projecto">Project</string>
+    <string name="proyecto">Project</string>
     <string name="fecha_entrada">Input date</string>
     <string name="fecha_acordada">Accord date</string>
     <string name="sinfecha">Date no stablished</string>
@@ -51,7 +51,6 @@
     <string name="prospectos">prospectos</string>
     <string name="presupuesto">presupuesto</string>
     <string name="presupuestos">presupuestos</string>
-    <string name="proyecto">proyecto</string>
     <string name="proyectos">proyectos</string>
     <string name="cobros">cobros</string>
     <string name="historico">historico</string>
@@ -276,6 +275,22 @@
     <string name="no_eventos_proximos">No hay eventos proximos</string>
     <string name="proyectos_en_curso">Proyectos en curso</string>
     <string name="nuevo_detalle_partida">Nuevo detalle de partida</string>
+    <string name="crear_nuevo">Crear nuevo</string>
+    <string name="nuevo_detalle_partida_base">Nuevo detalle partida base</string>
+    <string name="todos">Todos</string>
+    <string name="informes">Informes</string>
+    <string name="importe_total">Importe total proyectos</string>
+    <string name="horas_total">Horas totales</string>
+    <string name="total_prospectos">Nuevos prospectos</string>
+    <string name="total_clientes">Total nuevos clientes</string>
+    <string name="total_cli_inac">Total clientes inactivos periodo</string>
+    <string name="limpiar_formulario">Limpiar formulario</string>
+    <string name="tablas">tablas</string>
+    <string name="configuracion">Configuración</string>
+    <string name="nota_texto">Nota texto</string>
+    <string name="nota_audio">Nota_audio</string>
+    <string name="nota_video">Nota video</string>
+    <string name="nota_imagen">Nota imagen</string>
 
 
 </resources>

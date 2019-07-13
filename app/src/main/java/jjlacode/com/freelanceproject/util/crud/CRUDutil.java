@@ -8,7 +8,10 @@ import android.net.Uri;
 import java.util.ArrayList;
 import java.util.Set;
 
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
+
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.CAMPO_SECUENCIA;
 
 public class CRUDutil {
 
@@ -18,13 +21,13 @@ public class CRUDutil {
 
     public static ListaModelo clonaListaModelo(String[] campos,ListaModelo list){
         ListaModelo lista = new ListaModelo(campos);
-        lista.clearAddAll(list.getLista());
+        lista.clearAddAllLista(list.getLista());
         return lista;
     }
 
     public static ListaModelo clonaListaModelo(String[] campos, ArrayList<Modelo> list){
         ListaModelo lista = new ListaModelo(campos);
-        lista.clearAddAll(list);
+        lista.clearAddAllLista(list);
         return lista;
     }
 
@@ -55,61 +58,76 @@ public class CRUDutil {
 
     public static Modelo setModelo(String[] campos, String id){
 
-        return new ConsultaBD().queryObject(campos,id);
+        return ConsultaBD.queryObject(campos,id);
     }
 
     public static Modelo setModelo(String[] campos, String id, int secuencia){
 
-        return new ConsultaBD().queryObjectDetalle(campos,id,secuencia);
+        return ConsultaBD.queryObjectDetalle(campos,id,secuencia);
     }
 
     public static Modelo setModelo(String[] campos, String id, String secuencia){
-        return new ConsultaBD().queryObjectDetalle(campos,id,secuencia);
+        return ConsultaBD.queryObjectDetalle(campos,id,secuencia);
     }
 
     public static int actualizarRegistro(String tabla, String id, ContentValues valores){
 
-        return new ConsultaBD().updateRegistro(tabla, id, valores);
+        return ConsultaBD.updateRegistro(tabla, id, valores);
     }
 
     public static int actualizarRegistro(String tabla, String id, int secuencia, ContentValues valores){
 
-            return new ConsultaBD().updateRegistroDetalle(tabla, id, secuencia,valores);
+            return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia,valores);
+    }
+
+    public static int actualizarRegistro(Modelo modelo, ContentValues valores){
+
+        String tabla = modelo.getNombreTabla();
+        String id = modelo.getCampoID();
+
+        if (ContratoPry.getTabCab(tabla)!=null){
+
+            int secuencia = modelo.getInt(CAMPO_SECUENCIA);
+            return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia,valores);
+
+        }
+
+        return ConsultaBD.updateRegistro(tabla, id,valores);
     }
 
     public static int actualizarRegistro(String tabla, String id, String secuencia, ContentValues valores){
 
-        return new ConsultaBD().updateRegistroDetalle(tabla, id, secuencia,valores);
+        return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia,valores);
     }
 
     public static Uri crearRegistro(String tabla, ContentValues valores){
 
-            return new ConsultaBD().insertRegistro(tabla,valores);
+            return ConsultaBD.insertRegistro(tabla,valores);
     }
 
     public static Uri crearRegistro(String tabla, String[] campos, String tablacab, String id, ContentValues valores){
 
-        return new ConsultaBD().insertRegistroDetalle(campos,id,tablacab,valores);
+        return ConsultaBD.insertRegistroDetalle(campos,id,tablacab,valores);
     }
 
     public static String crearRegistroId(String tabla, ContentValues valores){
 
-        return new ConsultaBD().idInsertRegistro(tabla,valores);
+        return ConsultaBD.idInsertRegistro(tabla,valores);
     }
 
     public static int crearRegistroSec(String[] campos, String id, String tablaCab, ContentValues valores){
 
-        return new ConsultaBD().secInsertRegistroDetalle(campos,id,tablaCab,valores);
+        return ConsultaBD.secInsertRegistroDetalle(campos,id,tablaCab,valores);
     }
 
     public static int borrarRegistro(String tabla, String id ){
 
-        return new ConsultaBD().deleteRegistro(tabla, id);
+        return ConsultaBD.deleteRegistro(tabla, id);
     }
 
     public static int borrarRegistro(String tabla, String id, int secuencia){
 
-        return new ConsultaBD().deleteRegistroDetalle(tabla,id,secuencia);
+        return ConsultaBD.deleteRegistroDetalle(tabla,id,secuencia);
     }
 
     public static String getID(Modelo modelo, String campoID){

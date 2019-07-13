@@ -42,6 +42,8 @@ import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.templates.PresupuestoPDF;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.*;
+
 public class FragmentCRUDProyecto extends FragmentCRUD
         implements CommonPry.Constantes, ContratoPry.Tablas, CommonPry.Estados,
         CommonPry.TiposEstados {
@@ -66,7 +68,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private Button btnActualizar;
     private Button btnActualizar2;
     private ImageButton btncompartirPdf;
-    private Button btnVerPdf;
+    private ImageButton btnVerPdf;
     private ImageButton btnenviarPdf;
     private ImageButton btnVerEventos;
     private ImageView btnimgEstadoPry;
@@ -100,9 +102,16 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private Button btnhistorico;
 
     public String actualtemp;
+    private ImageButton btnNota;
+    private ImageButton btnVerNotas;
 
     public FragmentCRUDProyecto() {
         // Required empty public constructor
+    }
+
+    @Override
+    protected void setTAG() {
+        TAG = getClass().getSimpleName();
     }
 
     @Override
@@ -120,66 +129,11 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setLista() {
 
-        btnpresupuestos.setVisibility(View.VISIBLE);
-        btnproyectos.setVisibility(View.VISIBLE);
-        btncobros.setVisibility(View.VISIBLE);
-        btnhistorico.setVisibility(View.VISIBLE);
-
-        btnpresupuestos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Toast.makeText(getContext(),PRESUPUESTOS, Toast.LENGTH_SHORT).show();
-                actual = PRESUPUESTO;
-                activityBase.toolbar.setTitle(R.string.presupuestos);
-                actualtemp = actual;
-                    actualizarConsultas(listab);
-            }
-        });
-
-        btnproyectos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Toast.makeText(getContext(),PROYECTOS, Toast.LENGTH_SHORT).show();
-                actual = PROYECTO;
-                actualtemp = actual;
-                activityBase.toolbar.setTitle(R.string.proyectos);
-                actualizarConsultas(listab);
-            }
-        });
-
-        btncobros.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Toast.makeText(getContext(),PROYCOBROS, Toast.LENGTH_SHORT).show();
-                actual = COBROS;
-                actualtemp = PROYECTO;
-                activityBase.toolbar.setTitle(R.string.cobros);
-                actualizarConsultas(listab);
-            }
-        });
-
-        btnhistorico.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Toast.makeText(getContext(),PROYHISTORICO, Toast.LENGTH_SHORT).show();
-                actual = HISTORICO;
-                actualtemp = PROYECTO;
-                activityBase.toolbar.setTitle(R.string.historico);
-                actualizarConsultas(listab);
-            }
-        });
-
-        actualizarConsultas(listab);
-
-
+        actualizarConsultas();
 
     }
 
-    protected void actualizarConsultas(ListaModelo listab) {
+    protected void actualizarConsultas() {
 
         new CommonPry.Calculos.TareaActualizarProys().execute();
 
@@ -190,9 +144,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             lista = CRUDutil.clonaListaModelo(campos,listab);
         }
 
-        System.out.println("lista.size() = " + lista.size());
+        System.out.println("lista.sizeLista() = " + lista.sizeLista());
 
-        if (lista.chech()) {
+        if (lista.chechLista()) {
 
             ArrayList<Modelo> listatemp = new ArrayList<>();
 
@@ -238,10 +192,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             }
             System.out.println("listatemp = " + listatemp.size());
             lista = CRUDutil.clonaListaModelo(campos,listatemp);
-            System.out.println("lista final= " + lista.size());
+            System.out.println("lista final= " + lista.sizeLista());
 
-        setRv();
-        enviarAct();
+            enviarAct();
         }
 
     }
@@ -249,8 +202,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setLayout() {
 
-        layoutCuerpo = R.layout.fragment_cud_proyecto;
-        layoutCabecera = R.layout.cabacera_crud_proyecto;
+        layoutCuerpo = R.layout.fragment_crud_proyecto;
+        layoutCabecera = R.layout.cabecera_crud_proyecto;
         layoutItem = R.layout.item_list_proyecto;
 
     }
@@ -265,7 +218,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setBundle() {
 
-        if (bundle != null) {
 
             if (modelo !=null) {
                 id = CRUDutil.getID(modelo,campoID);
@@ -273,6 +225,10 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             }
             if (id !=null) {
                 new CommonPry.Calculos.TareaActualizaProy().execute(id);
+            }
+
+            if (actual==null){
+                actual=PROYECTO;
             }
 
             if (actual.equals(PRESUPUESTO)) {
@@ -295,16 +251,72 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 if (actualtemp==null) {
                     actualtemp = PROYECTO;
                 }
-            }
+            }else{
+                activityBase.toolbar.setTitle(R.string.proyectos);
+                if (actualtemp==null) {
+                    actualtemp = actual;
+                }
 
-        }
+            }
 
     }
 
     @Override
     protected void setAcciones() {
 
-            setLista();
+        btnpresupuestos.setVisibility(View.VISIBLE);
+        btnproyectos.setVisibility(View.VISIBLE);
+        btncobros.setVisibility(View.VISIBLE);
+        btnhistorico.setVisibility(View.VISIBLE);
+
+        btnpresupuestos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(getContext(),PRESUPUESTOS, Toast.LENGTH_SHORT).show();
+                actual = PRESUPUESTO;
+                activityBase.toolbar.setTitle(R.string.presupuestos);
+                actualtemp = actual;
+                selector();
+            }
+        });
+
+        btnproyectos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(getContext(),PROYECTOS, Toast.LENGTH_SHORT).show();
+                actual = PROYECTO;
+                actualtemp = actual;
+                activityBase.toolbar.setTitle(R.string.proyectos);
+                selector();
+            }
+        });
+
+        btncobros.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(getContext(),PROYCOBROS, Toast.LENGTH_SHORT).show();
+                actual = COBROS;
+                actualtemp = PROYECTO;
+                activityBase.toolbar.setTitle(R.string.cobros);
+                selector();
+            }
+        });
+
+        btnhistorico.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(getContext(),PROYHISTORICO, Toast.LENGTH_SHORT).show();
+                actual = HISTORICO;
+                actualtemp = PROYECTO;
+                activityBase.toolbar.setTitle(R.string.historico);
+                selector();
+            }
+        });
+
 
         btnVerPdf.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -313,7 +325,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 PresupuestoPDF presupuestoPDF = new PresupuestoPDF();
                 presupuestoPDF.setNombreArchivo(id);
                 presupuestoPDF.crearPdf(id,modelo.getString(PROYECTO_RUTAFOTO));
-                presupuestoPDF.verPDF(icFragmentos,bundle,getContext());
+                presupuestoPDF.verPDF(icFragmentos,bundle,contexto);
 
             }
         });
@@ -329,7 +341,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 PresupuestoPDF presupuestoPDF = new PresupuestoPDF();
                 presupuestoPDF.setNombreArchivo(id);
                 presupuestoPDF.crearPdf(id,modelo.getString(PROYECTO_RUTAFOTO));
-                presupuestoPDF.enviarPDFEmail(icFragmentos,getContext(),email,asunto,mensaje);
+                presupuestoPDF.enviarPDFEmail(icFragmentos,contexto,email,asunto,mensaje);
 
             }
         });
@@ -341,7 +353,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 PresupuestoPDF presupuestoPDF = new PresupuestoPDF();
                 presupuestoPDF.setNombreArchivo(id);
                 presupuestoPDF.crearPdf(id,modelo.getString(PROYECTO_RUTAFOTO));
-                presupuestoPDF.compartirPDF(icFragmentos,getContext());
+                presupuestoPDF.compartirPDF(icFragmentos,contexto);
 
             }
         });
@@ -351,7 +363,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             public void onClick(View v) {
 
                 update();
-                Modelo cliente = consulta.queryObject(CAMPOS_CLIENTE,idCliente);
+                Modelo cliente = queryObject(CAMPOS_CLIENTE,idCliente);
 
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_CLIENTE,cliente);
@@ -369,7 +381,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             public void onClick(View v) {
 
                 update();
-                Modelo cliente = consulta.queryObject(CAMPOS_CLIENTE,idCliente);
+                Modelo cliente = queryObject(CAMPOS_CLIENTE,idCliente);
 
                 bundle = new Bundle();
                 bundle.putSerializable(TABLA_CLIENTE,cliente);
@@ -393,8 +405,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 bundle.putString(ORIGEN,actualtemp);
                 bundle.putString(ACTUAL,PARTIDA);
                 bundle.putString(SUBTITULO, actualtemp);
-                bundle.putString(ID,id);
-                bundle.putInt(SECUENCIA,0);
+                bundle.putString(CAMPO_ID,id);
+                bundle.putInt(CAMPO_SECUENCIA,0);
                 bundle.putSerializable(MODELO,null);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDPartidaProyecto());
 
@@ -462,7 +474,101 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             }
         });
 
+        btnNota.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                enviarBundle();
+                bundle.putString(IDREL,modelo.getString(PROYECTO_ID_PROYECTO));
+                bundle.putString(SUBTITULO, modelo.getString(PROYECTO_NOMBRE));
+                bundle.putString(ORIGEN, PROYECTO);
+                bundle.putString(ACTUAL,NOTA);
+                bundle.putSerializable(MODELO,null);
+                bundle.putSerializable(LISTA,null);
+                bundle.putString(CAMPO_ID,null);
+                bundle.putBoolean(NUEVOREGISTRO,true);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
+            }
+        });
+
+        btnVerNotas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                enviarBundle();
+                bundle.putString(IDREL,modelo.getString(PROYECTO_ID_PROYECTO));
+                bundle.putString(SUBTITULO, modelo.getString(PROYECTO_NOMBRE));
+                bundle.putString(ORIGEN, PROYECTO);
+                bundle.putString(ACTUAL,NOTA);
+                bundle.putSerializable(LISTA,null);
+                bundle.putSerializable(MODELO,null);
+                bundle.putString(CAMPO_ID,null);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
+            }
+        });
+
+
+    }
+
+    @Override
+    protected void setOnLeftSwipe() {
+
+            switch (actual) {
+
+                case COBROS:
+                    Toast.makeText(getContext(), PROYHISTORICO, Toast.LENGTH_SHORT).show();
+                    actual = HISTORICO;
+                    activityBase.toolbar.setTitle(R.string.historico);
+                    actualtemp = PROYECTO;
+                    selector();
+                    break;
+
+                case PRESUPUESTO:
+                    Toast.makeText(getContext(),PROYECTOS, Toast.LENGTH_SHORT).show();
+                    actual = PROYECTO;
+                    actualtemp = actual;
+                    activityBase.toolbar.setTitle(R.string.proyectos);
+                    selector();
+                    break;
+                case PROYECTO:
+                    Toast.makeText(getContext(),PROYCOBROS, Toast.LENGTH_SHORT).show();
+                    actual = COBROS;
+                    actualtemp = PROYECTO;
+                    activityBase.toolbar.setTitle(R.string.cobros);
+                    selector();
+                    break;
+            }
+    }
+
+
+    @Override
+    protected void setOnRightSwipe() {
+
+        switch (actual) {
+
+            case PROYECTO:
+                Toast.makeText(getContext(), PRESUPUESTOS, Toast.LENGTH_SHORT).show();
+                actual = PRESUPUESTO;
+                activityBase.toolbar.setTitle(R.string.presupuestos);
+                actualtemp = actual;
+                selector();
+                break;
+
+            case COBROS:
+                Toast.makeText(getContext(),PROYECTOS, Toast.LENGTH_SHORT).show();
+                actual = PROYECTO;
+                actualtemp = actual;
+                activityBase.toolbar.setTitle(R.string.proyectos);
+                selector();
+                break;
+            case HISTORICO:
+                Toast.makeText(getContext(),PROYCOBROS, Toast.LENGTH_SHORT).show();
+                actual = COBROS;
+                actualtemp = PROYECTO;
+                activityBase.toolbar.setTitle(R.string.cobros);
+                selector();
+                break;
+        }
     }
 
     @Override
@@ -470,11 +576,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         tituloSingular = R.string.proyecto;
         tituloPlural = R.string.proyectos;
-        if (actualtemp.equals(PRESUPUESTO)) {
-            tituloNuevo = R.string.nuevo_presupuesto;
-        }else{
-            tituloNuevo = R.string.nuevo_proyecto;
-        }
+        tituloNuevo = R.string.nuevo_proyecto;
+
     }
 
 
@@ -504,8 +607,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         btnActualizar2 = (Button) ctrl(R.id.btnactualizar2);
         btnfechaacord = (ImageView) ctrl(R.id.btnfechaacord);
         btnfechaentrega = (ImageView) ctrl(R.id.btnfechaentrega);
-        btnVerPdf = (Button) ctrl(R.id.btnverpdfudpry);
-        btnVerPdf = (Button) ctrl(R.id.btnverpdfudpry);
+        btnVerPdf = (ImageButton) ctrl(R.id.btnverpdfudpry);
         btnenviarPdf = (ImageButton) ctrl(R.id.btnenviarpdfudpry);
         btncompartirPdf = (ImageButton) ctrl(R.id.btncompartirpdfudpry);
         btnpresupuestos = (Button) ctrl(R.id.btnpresuplpry);
@@ -513,13 +615,21 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         btncobros = (Button) ctrl(R.id.btnproycobroslpry);
         btnhistorico = (Button) ctrl(R.id.btnhistoricopry);
         btnVerEventos = (ImageButton) ctrl(R.id.btnvereventosudpry);
+        btnNota = (ImageButton) ctrl(R.id.btn_crearnota_proy);
+        btnVerNotas = (ImageButton) ctrl(R.id.btn_vernotas_proy);
 
         gone(btnpresupuestos);
         gone(btnproyectos);
         gone(btncobros);
         gone(btnhistorico);
 
-    }
+        if (actual==null){
+            actual=PROYECTO;
+            actualtemp=PROYECTO;
+
+        }
+
+        }
 
 
 
@@ -550,12 +660,20 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         importeCalculadoPry.setVisibility(View.VISIBLE);
         btnimgEstadoPry.setVisibility(View.VISIBLE);
         fechaEntradaPry.setVisibility(View.VISIBLE);
+        visible(btnNota);
 
         String seleccion = EVENTO_PROYECTOREL+" = '"+id+"'";
-        if (consulta.checkQueryList(CAMPOS_EVENTO,seleccion,null)){
+        if (checkQueryList(CAMPOS_EVENTO,seleccion,null)){
             btnVerEventos.setVisibility(View.VISIBLE);
         }else {
             btnVerEventos.setVisibility(View.GONE);
+        }
+
+        seleccion = NOTA_ID_RELACIONADO+" = '"+id+"'";
+        if (checkQueryList(CAMPOS_NOTA,seleccion,null)){
+            btnVerNotas.setVisibility(View.VISIBLE);
+        }else {
+            btnVerNotas.setVisibility(View.GONE);
         }
 
         /*
@@ -694,7 +812,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         setAdaptadorClientes(spClienteProyecto);
 
         if (idCliente!=null) {
-            Modelo cliente = consulta.queryObject(CAMPOS_CLIENTE, idCliente);
+            Modelo cliente = queryObject(CAMPOS_CLIENTE, idCliente);
             nombreCliente = cliente.getString(CLIENTE_NOMBRE);
             spClienteProyecto.setText(nombreCliente);
         }
@@ -722,6 +840,14 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     @Override
     protected void setNuevo() {
+
+        if (actualtemp.equals(PRESUPUESTO)) {
+            tituloNuevo = R.string.nuevo_presupuesto;
+        }else{
+            tituloNuevo = R.string.nuevo_proyecto;
+        }
+
+        activityBase.toolbar.setSubtitle(tituloNuevo);
 
         allGone();
         visible(imagenTipoClienteProyecto);
@@ -772,7 +898,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         System.out.println("idCliente = " + idCliente);
 
         if (idCliente!=null) {
-            Modelo cliente = consulta.queryObject(CAMPOS_CLIENTE, idCliente);
+            Modelo cliente = queryObject(CAMPOS_CLIENTE, idCliente);
             nombreCliente = cliente.getString(CLIENTE_NOMBRE);
             spClienteProyecto.setText(nombreCliente);
             nombrePry.setVisibility(View.VISIBLE);
@@ -825,21 +951,10 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     }
 
-    @Override
-    protected void setMaestroDetallePort() { maestroDetalleSeparados = true;}
-
-    @Override
-    protected void setMaestroDetalleLand() { maestroDetalleSeparados = false;}
-
-    @Override
-    protected void setMaestroDetalleTabletLand() { maestroDetalleSeparados = false;}
-
-    @Override
-    protected void setMaestroDetalleTabletPort() { maestroDetalleSeparados = false;}
 
     private void calculoTotales() {
 
-        ArrayList<Modelo> listaPartidas = consulta.queryListDetalle(CAMPOS_PARTIDA, id,TABLA_PROYECTO);
+        ArrayList<Modelo> listaPartidas = queryListDetalle(CAMPOS_PARTIDA, id,TABLA_PROYECTO);
 
         int x = 0;
         for (int i = 0; i < listaPartidas.size(); i++) {
@@ -870,7 +985,15 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         }
 
         if (idCliente!=null && idEstado!=null) {
-            return super.update();
+
+            if (super.update()) {
+                Log.d(TAG, "Registro actualizado");
+            return true;
+            }
+
+            Log.e(TAG, "Error al actualizar el registro");
+
+            return false;
         }
 
         return false;
@@ -886,7 +1009,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     private void comprobarEstado() {
 
-        Modelo proyecto = consulta.queryObject(CAMPOS_PROYECTO, id);
+        Modelo proyecto = queryObject(CAMPOS_PROYECTO, id);
 
 
         if (proyecto!=null && proyecto.getInt(PROYECTO_TIPOESTADO) > 0) {
@@ -925,7 +1048,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                     btnActualizar.setText(String.format("%s %s", convertir, PROYECTCOBRADO));
             }
 
-            estadoProyecto.setGravity(View.TEXT_ALIGNMENT_CENTER);
+            estadoProyecto.setGravedad(View.TEXT_ALIGNMENT_CENTER);
         }
 
         Log.d(TAG,"comprobarEstado");
@@ -934,7 +1057,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     private String getIdEstado(int tipoEstado){
 
-        ArrayList<Modelo> listaEstados = consulta.queryList(CAMPOS_ESTADO,null, null);
+        ArrayList<Modelo> listaEstados = queryList(CAMPOS_ESTADO,null, null);
 
         for (Modelo estado : listaEstados) {
 
@@ -949,7 +1072,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     private String getIdEstado(String descTipoEstado){
 
-        ArrayList<Modelo> listaEstados = consulta.queryList(CAMPOS_ESTADO,null, null);
+        ArrayList<Modelo> listaEstados = queryList(CAMPOS_ESTADO,null, null);
 
         for (Modelo estado : listaEstados) {
 
@@ -992,6 +1115,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
             estadoProyecto.setText(PRESUPACEPTADO);
             idEstado = idPresupAceptado;
+            actualizarVinculoPartidaBase();
 
         } else if (idEstado.equals(idPresupEnEspera) && fechaEntregaP == 0) {
 
@@ -1023,8 +1147,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         }
 
         valores = new ContentValues();
-        consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_ID_ESTADO,idEstado);
-        consulta.updateRegistro(TABLA_PROYECTO, id,valores);
+        putDato(valores,CAMPOS_PROYECTO,PROYECTO_ID_ESTADO,idEstado);
+        updateRegistro(TABLA_PROYECTO, id,valores);
+        CRUDutil.actualizarRegistro(modelo,valores);
 
         modificarEstadoPartidas(id,idEstado);
 
@@ -1032,36 +1157,57 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         new CommonPry.Calculos.TareaTipoCliente().execute(idCliente);
 
-        Log.e(TAG,"modificarEstado");
+        Log.d(TAG,"modificarEstado");
+    }
+
+    private void actualizarVinculoPartidaBase() {
+
+
+        ListaModelo listaPartidas = new ListaModelo(CAMPOS_PARTIDA,id,tabla,null,null);
+        int res = 0;
+
+        for (Modelo partida : listaPartidas.getLista()) {
+
+            String idpartidabase = partida.getString(PARTIDA_ID_PARTIDABASE);
+            if (idpartidabase!=null){
+
+                ContentValues values = new ContentValues();
+                values.putNull(PARTIDA_ID_PARTIDABASE);
+                res += CRUDutil.actualizarRegistro(partida,values);
+            }
+
+        }
+        Log.d(TAG,"Partidas base desvinculadas = " + res);
     }
 
     private void crearEventoPresupuesto() {
         Uri uri = generarPDF();
-        long fechaini = JavaUtil.sumaDiaMesAnio(JavaUtil.hoy());
-        long horaini = JavaUtil.sumaHoraMin(JavaUtil.hoy());
-        String asunto = "Presupuesto solicitado";
-        String mensaje = "Envio presupuesto solicitado por usted";
-        Modelo cliente = consulta.queryObject(CAMPOS_CLIENTE,idCliente);
-        valores = new ContentValues();
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_TIPOEVENTO, CommonPry.TiposEvento.TIPOEVENTOEMAIL);
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_DESCRIPCION,"Envío presupuesto a cliente");
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_EMAIL,cliente.getString(CLIENTE_EMAIL));
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO, fechaini);
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO, horaini+HORASLONG);
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF, JavaUtil.getDate(fechaini));
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF, JavaUtil.getTime(horaini+HORASLONG));
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_TIMESTAMP, JavaUtil.hoy());
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_ASUNTO, asunto);
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_MENSAJE, mensaje);
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_RUTAADJUNTO, String.valueOf(uri));
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_RUTAFOTO, modelo.getString(PROYECTO_RUTAFOTO));
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_PROYECTOREL, id);
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_CLIENTEREL, idCliente);
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMPROYECTOREL, modelo.getString(PROYECTO_NOMBRE));
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMCLIENTEREL, nombreCliente);
-        consulta.putDato(valores,CAMPOS_EVENTO,EVENTO_AVISO, 50*MINUTOSLONG);
+        if (uri!=null) {
+            long fechaini = JavaUtil.sumaDiaMesAnio(JavaUtil.hoy());
+            long horaini = JavaUtil.sumaHoraMin(JavaUtil.hoy());
+            String asunto = "Presupuesto solicitado";
+            String mensaje = "Envio presupuesto solicitado por usted";
+            Modelo cliente = queryObject(CAMPOS_CLIENTE, idCliente);
+            valores = new ContentValues();
+            putDato(valores, CAMPOS_EVENTO, EVENTO_TIPO, CommonPry.TiposEvento.TIPOEVENTOEMAIL);
+            putDato(valores, CAMPOS_EVENTO, EVENTO_DESCRIPCION, "Envío presupuesto a cliente");
+            putDato(valores, CAMPOS_EVENTO, EVENTO_EMAIL, cliente.getString(CLIENTE_EMAIL));
+            putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, fechaini);
+            putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, horaini + HORASLONG);
+            putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTOF, JavaUtil.getDate(fechaini));
+            putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTOF, JavaUtil.getTime(horaini + HORASLONG));
+            putDato(valores, CAMPOS_EVENTO, EVENTO_ASUNTO, asunto);
+            putDato(valores, CAMPOS_EVENTO, EVENTO_MENSAJE, mensaje);
+            putDato(valores, CAMPOS_EVENTO, EVENTO_RUTAADJUNTO, String.valueOf(uri));
+            putDato(valores, CAMPOS_EVENTO, EVENTO_RUTAFOTO, modelo.getString(PROYECTO_RUTAFOTO));
+            putDato(valores, CAMPOS_EVENTO, EVENTO_PROYECTOREL, id);
+            putDato(valores, CAMPOS_EVENTO, EVENTO_CLIENTEREL, idCliente);
+            putDato(valores, CAMPOS_EVENTO, EVENTO_NOMPROYECTOREL, modelo.getString(PROYECTO_NOMBRE));
+            putDato(valores, CAMPOS_EVENTO, EVENTO_NOMCLIENTEREL, nombreCliente);
+            putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, 50 * MINUTOSLONG);
 
-        consulta.insertRegistro(TABLA_EVENTO,valores);
+            insertRegistro(TABLA_EVENTO, valores);
+        }
     }
 
     private Uri generarPDF() {
@@ -1070,17 +1216,17 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         presupuestoPDF.setNombreArchivo(id);
         presupuestoPDF.crearPdf(id,modelo.getString(PROYECTO_RUTAFOTO));
         valores = new ContentValues();
-        consulta.putDato(valores,campos,PROYECTO_RUTAPDF,String.valueOf(presupuestoPDF.getFileUri()));
-        consulta.updateRegistro(tabla,id,valores);
+        putDato(valores,campos,PROYECTO_RUTAPDF,String.valueOf(presupuestoPDF.getFileUri(contexto)));
+        updateRegistro(tabla,id,valores);
 
-        return presupuestoPDF.getFileUri();
+        return presupuestoPDF.getFileUri(contexto);
     }
 
     private void modificarEstadoNoAceptado() {
 
         String idPresupNoAceptado;
 
-        ArrayList<Modelo> listaEstados = consulta.queryList(CAMPOS_ESTADO,null, null);
+        ArrayList<Modelo> listaEstados = queryList(CAMPOS_ESTADO,null, null);
 
         for (Modelo estado : listaEstados) {
 
@@ -1088,8 +1234,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
                 idPresupNoAceptado = estado.getString(ESTADO_ID_ESTADO);
                 ContentValues valores = new ContentValues();
-                consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_ID_ESTADO,idPresupNoAceptado);
-                consulta.updateRegistro(TABLA_PROYECTO, id,valores);
+                putDato(valores,CAMPOS_PROYECTO,PROYECTO_ID_ESTADO,idPresupNoAceptado);
+                updateRegistro(TABLA_PROYECTO, id,valores);
 
                 comprobarEstado();
                 break;
@@ -1104,8 +1250,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private void modificarEstadoPartidas(String idProyecto, String idEstado){
 
         valores = new ContentValues();
-        consulta.putDato(valores,CAMPOS_PARTIDA, PARTIDA_ID_ESTADO,idEstado);
-        consulta.updateRegistrosDetalle(TABLA_PARTIDA,idProyecto,TABLA_PROYECTO,valores,null);
+        putDato(valores,CAMPOS_PARTIDA, PARTIDA_ID_ESTADO,idEstado);
+        updateRegistrosDetalle(TABLA_PARTIDA,idProyecto,TABLA_PROYECTO,valores,null);
 
         Log.d(TAG,"modificarEstadoPartidas");
     }
@@ -1173,7 +1319,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
          */
 
-        objEstados = consulta.queryList(CAMPOS_ESTADO,seleccion,null);
+        objEstados = queryList(CAMPOS_ESTADO,seleccion,null);
 
         obtenerListaEstados();
     }
@@ -1192,7 +1338,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     private void setAdaptadorClientes(final AutoCompleteTextView autoCompleteTextView) {
 
-        listaClientes = consulta.queryList(CAMPOS_CLIENTE);
+        listaClientes = queryList(CAMPOS_CLIENTE);
 
         autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
                 R.layout.item_list_cliente,listaClientes,CAMPOS_CLIENTE) {
@@ -1283,7 +1429,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                         valores = new ContentValues();
                         setDato(PROYECTO_FECHAENTREGAACORDADA,fechaAcordada);
                         setDato(PROYECTO_FECHAENTREGAACORDADAF,selectedDate);
-                        consulta.updateRegistro(tabla,id,valores);
+                        updateRegistro(tabla,id,valores);
 
                             new CommonPry.Calculos.Tareafechas().execute();
 
@@ -1303,7 +1449,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                         valores = new ContentValues();
                         setDato(PROYECTO_FECHAENTREGAPRESUP,fechaEntregaP);
                         setDato(PROYECTO_FECHAENTREGAPRESUPF,selectedDate);
-                        consulta.updateRegistro(tabla,id,valores);
+                        updateRegistro(tabla,id,valores);
 
                             new CommonPry.Calculos.Tareafechas().execute();
 

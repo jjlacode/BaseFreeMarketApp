@@ -80,7 +80,7 @@ public class FragmentCRUDTarea extends FragmentCRUD implements CommonPry.Constan
                 bundle.putString(SUBTITULO, modelo.getString(TAREA_DESCRIPCION));
                 bundle.putString(ORIGEN, TAREA);
                 bundle.putSerializable(MODELO,null);
-                bundle.putString(ID,null);
+                bundle.putString(CAMPO_ID,null);
                 bundle.putBoolean(NUEVOREGISTRO,true);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
             }
@@ -95,7 +95,7 @@ public class FragmentCRUDTarea extends FragmentCRUD implements CommonPry.Constan
                 bundle.putString(SUBTITULO, modelo.getString(TAREA_DESCRIPCION));
                 bundle.putString(ORIGEN, TAREA);
                 bundle.putSerializable(MODELO,null);
-                bundle.putString(ID,null);
+                bundle.putString(CAMPO_ID,null);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
             }
         });
@@ -120,6 +120,15 @@ public class FragmentCRUDTarea extends FragmentCRUD implements CommonPry.Constan
         layoutCuerpo = R.layout.fragment_crud_tarea;
         layoutItem = R.layout.item_list_tarea;
 
+    }
+
+    @Override
+    protected boolean update() {
+        if (super.update()){
+            new CommonPry.Calculos.TareaSincronizarPartidasBase().execute();
+            return true;
+        }
+        return false;
     }
 
     @Override

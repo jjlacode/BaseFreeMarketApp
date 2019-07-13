@@ -1,187 +1,165 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
-    android:layout_height="wrap_content" android:orientation="vertical">
+<com.google.android.material.circularreveal.CircularRevealRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardlamort"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" android:layout_marginLeft="5dp"
-        android:layout_marginTop="5dp" android:layout_marginRight="5dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
         card_view:cardCornerRadius="10dp"
         card_view:cardBackgroundColor="#ECE6E6">
 
 
-        <LinearLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_margin="5dp">
 
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imglamort"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="2.5"
                     android:scaleType="fitStart"
                     android:adjustViewBounds="true"
-                    card_view:srcCompat="@drawable/ico_calendario_reloj" />
+                    card_view:srcCompat="@drawable/ic_add_a_photo_black_24dp" />
 
-            <LinearLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/tvnomlamort"
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="@string/nombre" />
-
-                <TextView
-                    android:id="@+id/tvdesclamort"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:minHeight="40dp"
-                    android:text="@string/descripcion" />
-
-            </LinearLayout>
-        </LinearLayout>
-
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
-                    <TextView
+                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                    android:id="@+id/tvnomlamort"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    card_view:activo="false"
+                    card_view:hint_text="@string/nombre" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imgver"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2.5"
+                        android:scaleType="fitStart"
+                        android:adjustViewBounds="true"
+                        card_view:srcCompat="@drawable/ic_ver_indigo" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.core.widget.NestedScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/texto_doble">
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                    android:id="@+id/tvdesclamort"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    card_view:activo="false"
+                    card_view:hint_text="@string/descripcion"
+                    card_view:tipo_dato="TEXTO|MULTI"/>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </androidx.core.widget.NestedScrollView>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                         android:id="@+id/tvcantlamort"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/cantidad" />
+                        card_view:activo="false"
+                        card_view:gravedad="centro"
+                        card_view:hint_text="@string/cantidad" />
 
-                    <TextView
-                        android:id="@+id/lcantlamort"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="left"
-                        android:text="@string/unidades" />
-
-                    <TextView
+                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                         android:id="@+id/tvimplamort"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/importe" />
+                        card_view:activo="false"
+                        card_view:hint_text="@string/importe" />
 
-                    <TextView
-                        android:id="@+id/limplamort"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="left"
-                        android:text="@string/importe" />
-                </LinearLayout>
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/lfechalamort"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/fecha_compra" />
-
-                    <TextView
+                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                         android:id="@+id/tvfechalamort"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/fecha_compra" />
-                </LinearLayout>
+                        card_view:activo="false"
+                        card_view:hint_text="@string/fecha_compra" />
 
-                <LinearLayout
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/lanioslamort"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/anios" />
-
-                    <TextView
-                        android:id="@+id/lmeseslamort"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/meses" />
-
-                    <TextView
-                        android:id="@+id/ldiaslamort"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/dias" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                    <TextView
+                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                         android:id="@+id/tvanioslamort"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        card_view:activo="false"
                         android:layout_weight="1"
-                        android:text="@string/anios" />
+                        card_view:hint_text="@string/anios" />
 
-                    <TextView
+                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                         android:id="@+id/tvmeseslamort"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/meses" />
+                        card_view:hint_text="@string/meses" />
 
-                    <TextView
+                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                         android:id="@+id/tvdiaslamort"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/dias" />
-                </LinearLayout>
+                        card_view:hint_text="@string/dias" />
 
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
-
-            <ProgressBar
+            <androidx.core.widget.ContentLoadingProgressBar
                 android:id="@+id/progressBarlamort"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-        </LinearLayout>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.cardview.widget.CardView>
 
-</RelativeLayout>
+</com.google.android.material.circularreveal.CircularRevealRelativeLayout>

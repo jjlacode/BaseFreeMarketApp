@@ -92,7 +92,7 @@ public abstract class ListaAdaptadorFiltro extends ArrayAdapter<Modelo> {
                     }
                     notifyDataSetChanged();
                 } else if (constraint == null) {
-                    // no filter, add entire original list back in
+                    // no filter, addModelo entire original list back in
                     entradasfiltro.addAll(entradas);
                     notifyDataSetInvalidated();
                 }

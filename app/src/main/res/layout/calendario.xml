@@ -10,10 +10,24 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+            android:id="@+id/buscarcalendario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
         <jjlacode.com.freelanceproject.util.time.calendar.views.OneCalendarView
             android:id="@+id/oneCalendar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_ver_dia_calendario"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/altobtnico"
+            android:background="@drawable/boton_redondo_secondary"
+            android:src="@drawable/ic_ver_indigo"
+            android:visibility="gone" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"

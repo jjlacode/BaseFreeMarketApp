@@ -15,7 +15,7 @@
     <string name="nuevoproyecto">Nuevo proyecto</string>
     <string name="estado">Estado</string>
     <string name="descripcion_tipo_cliente">Descripción</string>
-    <string name="projecto">Proyecto</string>
+    <string name="proyecto">Proyecto</string>
     <string name="fecha_entrada">Fecha entrada</string>
     <string name="fecha_acordada">Fecha acordada</string>
     <string name="sinfecha">Fecha no establecida</string>
@@ -44,7 +44,6 @@
     <string name="prospectos">Prospectos</string>
     <string name="presupuesto">Presupuesto</string>
     <string name="presupuestos">Presupuestos</string>
-    <string name="proyecto">proyecto</string>
     <string name="proyectos">Proyectos</string>
     <string name="cobros">Cobros</string>
     <string name="historico">Historico</string>
@@ -264,5 +263,15 @@
     <string name="no_eventos_proximos">No hay eventos proximos</string>
     <string name="proyectos_en_curso">Proyectos en curso</string>
     <string name="nuevo_detalle_partida">Nuevo detalle de partida</string>
+    <string name="crear_nuevo">Crear nuevo</string>
+    <string name="nuevo_detalle_partida_base">Nuevo detalle partida base</string>
+    <string name="todos">Todos</string>
+    <string name="informes">Informes</string>
+    <string name="importe_total">Importe total proyectos</string>
+    <string name="horas_total">Horas totales</string>
+    <string name="total_prospectos">Nuevos prospectos</string>
+    <string name="total_clientes">Total nuevos clientes</string>
+    <string name="total_cli_inac">Total clientes inactivos periodo</string>
+
 
 </resources>

@@ -2,4 +2,6 @@
 <resources>
     <bool name="esTablet">false</bool>
     <bool name="esLand">true</bool>
+    <integer name="cards">1</integer>
+
 </resources>

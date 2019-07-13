@@ -1,18 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/imgmaterial"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:scaleType="center"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:src="@drawable/ic_rec_indigo"
+            android:background="@drawable/boton_redondo_secondary"/>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/ti_material"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         app:boxBackgroundColor="@color/colorPrimary"
         app:hintTextColor="@color/colorAccent"
-        app:errorTextColor="@color/colorAccent"
-        >
+        app:errorTextColor="@color/colorAccent">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_material"
@@ -23,4 +40,6 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-</LinearLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

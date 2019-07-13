@@ -168,6 +168,31 @@
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btn_crearnota_cliente"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/boton_redondo_secondary"
+                        android:src="@drawable/ic_nueva_nota_indigo" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btn_vernotas_cliente"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/boton_redondo_secondary"
+                        android:src="@drawable/ic_lista_notas_indigo" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

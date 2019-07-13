@@ -4,18 +4,18 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
+import jjlacode.com.freelanceproject.util.android.AndroidUtil;
 import jjlacode.com.freelanceproject.util.android.AppActivity;
 import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
 import jjlacode.com.freelanceproject.util.time.DatePickerFragment;
 import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
 import jjlacode.com.freelanceproject.util.JavaUtil;
@@ -31,17 +31,17 @@ import static jjlacode.com.freelanceproject.CommonPry.setNamefdef;
 public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPry.Tablas {
 
 
-    private EditText nombre;
-    private EditText descripcion;
-    private EditText cantidad;
-    private EditText importe;
-    private EditText anios;
-    private EditText meses;
-    private EditText dias;
-    private TextView fecha;
+    private EditMaterial nombre;
+    private EditMaterial descripcion;
+    private EditMaterial cantidad;
+    private EditMaterial importe;
+    private EditMaterial anios;
+    private EditMaterial meses;
+    private EditMaterial dias;
+    private EditMaterial fecha;
 
     private long fechaCompra;
-    private ImageButton btnimgfecha;
+    private ImageView btnimgfecha;
     private ProgressBar bar;
 
     public FragmentCRUDAmortizacion() {
@@ -65,54 +65,24 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
 
     }
 
-    @Override
-    protected void setTablaCab() {
 
-        tablaCab = null;
-
-    }
-
-    @Override
-    protected void setContext() {
-
-        contexto = getContext();
-
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = CAMPOS_AMORTIZACION;
-
-    }
-
-    @Override
-    protected void setCampoID() {
-        campoID = AMORTIZACION_ID_AMORTIZACION;
-    }
-
-    @Override
-    protected void setBundle() {
-
-
-    }
 
     @Override
     protected void setDatos() {
 
-        id = modelo.getString(AMORTIZACION_ID_AMORTIZACION);
+        for (EditMaterial materialEdit : materialEdits) {
+            materialEdit.setFondo(getResources().getColor(R.color.Color_card_acept));
+        }
+
         nombre.setText(modelo.getString(AMORTIZACION_NOMBRE));
         descripcion.setText(modelo.getString(AMORTIZACION_DESCRIPCION));
         cantidad.setText(modelo.getString(AMORTIZACION_CANTIDAD));
-        importe.setText(modelo.getString(AMORTIZACION_IMPORTE));
+        importe.setText(modelo.getString(AMORTIZACION_PRECIO));
         fecha.setText(JavaUtil.getDate(modelo.getLong(AMORTIZACION_FECHACOMPRA)));
         fechaCompra = modelo.getLong(AMORTIZACION_FECHACOMPRA);
         anios.setText(modelo.getString(AMORTIZACION_ANYOS));
         meses.setText(modelo.getString(AMORTIZACION_MESES));
         dias.setText(modelo.getString(AMORTIZACION_DIAS));
-        if (modelo.getString(AMORTIZACION_RUTAFOTO)!=null) {
-            setImagenUriCircle(contexto,modelo.getString(AMORTIZACION_RUTAFOTO));
-        }
 
         long compra = modelo.getLong(AMORTIZACION_FECHACOMPRA);
         long amort = (modelo.getLong(AMORTIZACION_DIAS)*DIASLONG)+
@@ -144,12 +114,13 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
     protected void setTitulo() {
         tituloSingular = R.string.amortizacion;
         tituloPlural = R.string.amortizaciones;
+        tituloNuevo = R.string.nueva_amortizacion;
     }
 
     @Override
     protected void setLayout() {
 
-        layoutCuerpo = R.layout.fragment_cud_amortizacion;
+        layoutCuerpo = R.layout.fragment_crud_amortizacion;
         layoutItem = R.layout.item_list_amortizacion;
 
     }
@@ -157,51 +128,26 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
     @Override
     protected void setInicio() {
 
-        nombre = view.findViewById(R.id.etnomcudamort);
-        descripcion = view.findViewById(R.id.etdesccudamort);
-        cantidad = view.findViewById(R.id.etcantcudamort);
-        importe = view.findViewById(R.id.etimpcudamort);
-        fecha = view.findViewById(R.id.tvfechacudamort);
-        anios = view.findViewById(R.id.etanioscudamort);
-        meses = view.findViewById(R.id.etmesescudamort);
-        dias = view.findViewById(R.id.etdiascudamort);
-        imagen = view.findViewById(R.id.imgcudamort);
-        btnimgfecha = view.findViewById(R.id.btnimgfechacudamort);
-        bar = view.findViewById(R.id.progressBarcudamort);
+        nombre = (EditMaterial) ctrl(R.id.etnomcudamort);
+        descripcion = (EditMaterial) ctrl(R.id.etdesccudamort);
+        cantidad = (EditMaterial) ctrl(R.id.etcantcudamort);
+        importe = (EditMaterial) ctrl(R.id.etimpcudamort);
+        fecha = (EditMaterial) ctrl(R.id.tvfechacudamort);
+        anios = (EditMaterial) ctrl(R.id.etanioscudamort);
+        meses = (EditMaterial) ctrl(R.id.etmesescudamort);
+        dias = (EditMaterial) ctrl(R.id.etdiascudamort);
+        imagen = (ImageView) ctrl(R.id.imgcudamort);
+        btnimgfecha = (ImageView) ctrl(R.id.btnimgfechacudamort);
+        bar = (ProgressBar) ctrl(R.id.progressBarcudamort);
 
 
     }
 
-    @Override
-    protected void setLista() {
-
-    }
 
     @Override
     protected void setNuevo() {
 
-        path = null;
-        anios.setText(null);
-        meses.setText(null);
-        dias.setText(null);
-
-        activityBase.toolbar.setSubtitle(NUEVAAMORTIZACION);
-
     }
-
-    @Override
-    protected void setMaestroDetallePort() {
-        maestroDetalleSeparados = true;
-    }
-
-    @Override
-    protected void setMaestroDetalleLand() { maestroDetalleSeparados = false; }
-
-    @Override
-    protected void setMaestroDetalleTabletLand() { maestroDetalleSeparados = false; }
-
-    @Override
-    protected void setMaestroDetalleTabletPort() { maestroDetalleSeparados = false; }
 
     @Override
     protected boolean update() {
@@ -244,15 +190,15 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
     @Override
     protected void setContenedor() {
 
-        consulta.putDato(valores,CAMPOS_AMORTIZACION,AMORTIZACION_NOMBRE,nombre.getText().toString());
-        consulta.putDato(valores,CAMPOS_AMORTIZACION,AMORTIZACION_DESCRIPCION,descripcion.getText().toString());
-        consulta.putDato(valores,CAMPOS_AMORTIZACION,AMORTIZACION_CANTIDAD,JavaUtil.comprobarDouble(cantidad.getText().toString()));
-        consulta.putDato(valores,CAMPOS_AMORTIZACION,AMORTIZACION_IMPORTE,JavaUtil.comprobarDouble(importe.getText().toString()));
-        consulta.putDato(valores,CAMPOS_AMORTIZACION,AMORTIZACION_ANYOS,JavaUtil.comprobarInteger(anios.getText().toString()));
-        consulta.putDato(valores,CAMPOS_AMORTIZACION,AMORTIZACION_MESES,JavaUtil.comprobarInteger(meses.getText().toString()));
-        consulta.putDato(valores,CAMPOS_AMORTIZACION,AMORTIZACION_DIAS,JavaUtil.comprobarInteger(dias.getText().toString()));
-        consulta.putDato(valores,CAMPOS_AMORTIZACION,AMORTIZACION_FECHACOMPRA,fechaCompra);
-        consulta.putDato(valores, CAMPOS_AMORTIZACION, AMORTIZACION_RUTAFOTO, path);
+        setDato(AMORTIZACION_NOMBRE,nombre.getText().toString());
+        setDato(AMORTIZACION_DESCRIPCION,descripcion.getText().toString());
+        setDato(AMORTIZACION_CANTIDAD,JavaUtil.comprobarDouble(cantidad.getText().toString()));
+        setDato(AMORTIZACION_PRECIO,JavaUtil.comprobarDouble(importe.getText().toString()));
+        setDato(AMORTIZACION_ANYOS,JavaUtil.comprobarInteger(anios.getText().toString()));
+        setDato(AMORTIZACION_MESES,JavaUtil.comprobarInteger(meses.getText().toString()));
+        setDato(AMORTIZACION_DIAS,JavaUtil.comprobarInteger(dias.getText().toString()));
+        setDato(AMORTIZACION_FECHACOMPRA,fechaCompra);
+        setDato(AMORTIZACION_RUTAFOTO, path);
 
 
     }
@@ -282,7 +228,7 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
 
                     }
                 });
-        newFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
+        newFragment.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "datePicker");
     }
 
     public class AdaptadorFiltroRV extends ListaAdaptadorFiltroRV{
@@ -294,7 +240,7 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
         @Override
         protected void setEntradas(int posicion, View itemView, ArrayList<Modelo> entrada) {
 
-            TextView nombre,descripcion,cantidad,importe,fecha,anios,meses,dias;
+            EditMaterial nombre,descripcion,cantidad,importe,fecha,anios,meses,dias;
             ImageView imagen;
             CardView card;
             ProgressBar progressBar;
@@ -314,7 +260,7 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
             nombre.setText(entrada.get(posicion).getString(AMORTIZACION_NOMBRE));
             descripcion.setText(entrada.get(posicion).getString(AMORTIZACION_DESCRIPCION));
             cantidad.setText(entrada.get(posicion).getString(AMORTIZACION_CANTIDAD));
-            importe.setText(entrada.get(posicion).getString(AMORTIZACION_IMPORTE));
+            importe.setText(entrada.get(posicion).getString(AMORTIZACION_PRECIO));
             fecha.setText(JavaUtil.getDate(entrada.get(posicion).getLong(AMORTIZACION_FECHACOMPRA)));
             anios.setText(entrada.get(posicion).getString(AMORTIZACION_ANYOS));
             meses.setText(entrada.get(posicion).getString(AMORTIZACION_MESES));
@@ -339,11 +285,11 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
             if (res<30){
                 card.setCardBackgroundColor(
                         AppActivity.getAppContext().getResources().getColor(R.color.Color_card_notok));
-            }else if(res>=30 && res<60){
+            }else if(res<60){
 
                 card.setCardBackgroundColor(
                         AppActivity.getAppContext().getResources().getColor(R.color.Color_card_acept));
-            }else if(res>=60){
+            }else {
 
                 card.setCardBackgroundColor(
                         AppActivity.getAppContext().getResources().getColor(R.color.Color_card_ok));
@@ -355,21 +301,25 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
 
         public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
 
-        TextView nombre,descripcion,cantidad,importe,fecha,anios,meses,dias;
+        EditMaterial nombre,descripcion,cantidad,importe,fecha,anios,meses,dias;
         ImageView imagen;
         CardView card;
         ProgressBar progressBar;
+        ArrayList<EditMaterial> listaET;
 
         public ViewHolderRV(View itemView) {
             super(itemView);
-            nombre = itemView.findViewById(R.id.tvnomlamort);
-            descripcion = itemView.findViewById(R.id.tvdesclamort);
-            cantidad = itemView.findViewById(R.id.tvcantlamort);
-            importe = itemView.findViewById(R.id.tvimplamort);
-            fecha = itemView.findViewById(R.id.tvfechalamort);
-            anios = itemView.findViewById(R.id.tvanioslamort);
-            meses = itemView.findViewById(R.id.tvmeseslamort);
-            dias = itemView.findViewById(R.id.tvdiaslamort);
+
+            listaET = new ArrayList<>();
+
+            nombre = setEditMaterial(itemView,listaET,R.id.tvnomlamort);
+            descripcion = setEditMaterial(itemView,listaET,R.id.tvdesclamort);
+            cantidad = setEditMaterial(itemView,listaET,R.id.tvcantlamort);
+            importe = setEditMaterial(itemView,listaET,R.id.tvimplamort);
+            fecha = setEditMaterial(itemView,listaET,R.id.tvfechalamort);
+            anios = setEditMaterial(itemView,listaET,R.id.tvanioslamort);
+            meses = setEditMaterial(itemView,listaET,R.id.tvmeseslamort);
+            dias = setEditMaterial(itemView,listaET,R.id.tvdiaslamort);
             imagen = itemView.findViewById(R.id.imglamort);
             card = itemView.findViewById(R.id.cardlamort);
             progressBar = itemView.findViewById(R.id.progressBarlamort);
@@ -382,7 +332,7 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
             nombre.setText(modelo.getString(AMORTIZACION_NOMBRE));
             descripcion.setText(modelo.getString(AMORTIZACION_DESCRIPCION));
             cantidad.setText(modelo.getString(AMORTIZACION_CANTIDAD));
-            importe.setText(modelo.getString(AMORTIZACION_IMPORTE));
+            importe.setText(modelo.getString(AMORTIZACION_PRECIO));
             fecha.setText(JavaUtil.getDate(modelo.getLong(AMORTIZACION_FECHACOMPRA)));
             anios.setText(modelo.getString(AMORTIZACION_ANYOS));
             meses.setText(modelo.getString(AMORTIZACION_MESES));
@@ -404,17 +354,16 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
             long amortizado = JavaUtil.hoy()-compra;
             int res = (int) ((100/(double)(fechafin-compra))*amortizado);
             progressBar.setProgress(res);
-            if (res<30){
-                card.setCardBackgroundColor(
-                        AppActivity.getAppContext().getResources().getColor(R.color.Color_card_notok));
-            }else if(res>=30 && res<60){
+            AndroidUtil.barsCard(contexto,progressBar,null, true,100,60,30,
+                    res,null,null,0,0,0,
+                    card,R.color.Color_card_notok,R.color.Color_card_acept,R.color.Color_card_ok);
 
-                card.setCardBackgroundColor(
-                        AppActivity.getAppContext().getResources().getColor(R.color.Color_card_acept));
-            }else if(res>=60){
+            for (EditMaterial editMaterial : listaET) {
 
-                card.setCardBackgroundColor(
-                        AppActivity.getAppContext().getResources().getColor(R.color.Color_card_ok));
+                editMaterial.setFondo(card.getCardBackgroundColor().getDefaultColor());
+                editMaterial.setActivo(false);
+                editMaterial.setTextSize(getActivity());
+
             }
 
             super.bind(modelo);
@@ -422,7 +371,7 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
 
         @Override
         public BaseViewHolder holder(View view) {
-            return null;
+            return new ViewHolderRV(view);
         }
     }
 

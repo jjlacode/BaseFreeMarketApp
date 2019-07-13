@@ -110,7 +110,7 @@ public class AppFragments extends Fragment{
     }
 
     /**
-     * clear back stack go to first stack element
+     * clearLista back stack go to first stack element
      *
      * @param fm FragmentManager
      */

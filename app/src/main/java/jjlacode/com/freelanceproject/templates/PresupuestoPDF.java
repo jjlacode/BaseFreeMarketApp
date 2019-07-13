@@ -12,18 +12,15 @@ import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 
 public class PresupuestoPDF extends PdfUtils implements ContratoPry.Tablas {
 
-    private ConsultaBD consulta ;
 
     public PresupuestoPDF() {
-
-        consulta = new ConsultaBD();
 
     }
 
     public void crearPdf(String idProyecto, String rutalogo){
 
-        Modelo presupuesto = consulta.queryObject(CAMPOS_PROYECTO,idProyecto);
-        ArrayList<Modelo> listaPartidas = consulta.queryListDetalle(CAMPOS_PARTIDA,idProyecto,TABLA_PROYECTO);
+        Modelo presupuesto = ConsultaBD.queryObject(CAMPOS_PROYECTO,idProyecto);
+        ArrayList<Modelo> listaPartidas = ConsultaBD.queryListDetalle(CAMPOS_PARTIDA,idProyecto,TABLA_PROYECTO);
         abrirPdf(idProyecto);
         if (rutalogo!=null) {
             addImagen(rutalogo, ALINEACION_IZQUIERDA, 100, 100);

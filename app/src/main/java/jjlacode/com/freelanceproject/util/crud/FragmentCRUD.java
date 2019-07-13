@@ -1,23 +1,23 @@
 package jjlacode.com.freelanceproject.util.crud;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.os.SystemClock;
+import android.content.Intent;
+import android.speech.RecognizerIntent;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
-import android.widget.Chronometer;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -27,12 +27,13 @@ import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
 import jjlacode.com.freelanceproject.util.adapter.RVAdapter;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
-import jjlacode.com.freelanceproject.util.android.AndroidUtil;
+import jjlacode.com.freelanceproject.util.animation.OneFrameLayout;
+
+import static android.app.Activity.RESULT_OK;
 
 public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Constantes, CommonPry.Constantes {
 
-    protected LinearLayout frLista;
-    protected View viewRV;
+
     protected int layoutItem;
     protected RecyclerView rv;
     protected AutoCompleteTextView auto;
@@ -42,60 +43,31 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
     protected ImageView renovar;
     protected ImageView inicio;
     protected ImageView lupa;
+    protected ImageView voz;
     protected ListaAdaptadorFiltroRV adaptadorFiltroRV;
     protected RVAdapter adaptadorRV;
     protected SwipeRefreshLayout refreshLayout;
-
+    private OneFrameLayout frameAnimation;
 
     public FragmentCRUD() {
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container){
+        super.setOnCreateView(view,inflater,container);
+        Log.d(TAG, getMetodo());
 
-        view = inflater.inflate(R.layout.contenido, container, false);
-        land = getResources().getBoolean(R.bool.esLand);
-        tablet = getResources().getBoolean(R.bool.esTablet);
-        System.out.println("land = " + land);
-        System.out.println("tablet = " + tablet);
-
-        frPrincipal = view.findViewById(R.id.contenedor);
         frLista = view.findViewById(R.id.layout_rv);
-        frdetalle = view.findViewById(R.id.layout_detalle);
 
-        frPie = view.findViewById(R.id.layout_pie);
-        viewBotones = inflater.inflate(R.layout.btn_sdb,container,false);
         viewRV = inflater.inflate(R.layout.rvlayout,container,false);
-        viewCuerpo = inflater.inflate(layoutCuerpo,container,false);
-        frCabecera = view.findViewById(R.id.layout_cabecera);
-        if (layoutCabecera>0) {
-            viewCabecera = inflater.inflate(layoutCabecera, container,false);
-            if(viewCabecera.getParent() != null) {
-                ((ViewGroup)viewCabecera.getParent()).removeView(viewCabecera); // <- fix
-            }
-            if (viewCabecera!=null) {
-                frCabecera.addView(viewCabecera);
-            }
-        }
-        if(viewBotones.getParent() != null) {
-            ((ViewGroup)viewBotones.getParent()).removeView(viewBotones); // <- fix
-        }
         if(viewRV.getParent() != null) {
-            ((ViewGroup)viewRV.getParent()).removeView(viewRV); // <- fix
+            ((ViewGroup) viewRV.getParent()).removeView(viewRV); // <- fix
         }
-        if(viewCuerpo.getParent() != null) {
-            ((ViewGroup)viewCuerpo.getParent()).removeView(viewCuerpo); // <- fix
-        }
-
-
-        frdetalle.addView(viewCuerpo);
         frLista.addView(viewRV);
-        frPie.addView(viewBotones);
 
-        btnback = view.findViewById(R.id.btn_back);
-        btnsave = view.findViewById(R.id.btn_save);
-        btndelete = view.findViewById(R.id.btn_del);
+        //btnback = view.findViewById(R.id.btn_back);
+        //btnsave = view.findViewById(R.id.btn_save);
+        //btndelete = view.findViewById(R.id.btn_del);
         rv = view.findViewById(R.id.rv);
         refreshLayout = view.findViewById(R.id.swipeRefresh);
         auto = view.findViewById(R.id.auto);
@@ -103,6 +75,8 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
         renovar = view.findViewById(R.id.imgrenovar);
         inicio = view.findViewById(R.id.imginicio);
         lupa = view.findViewById(R.id.imgsearch);
+        voz = view.findViewById(R.id.imgvoz);
+        frameAnimation = view.findViewById(R.id.frameanimation);
         //btnsave.setVisibility(View.GONE);
         //btndelete.setTextColor(getResources().getColor(colorAccent));
 
@@ -113,21 +87,20 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
                 R.color.s4
         );
 
-        Chronometer timer = (Chronometer) view.findViewById(R.id.chronocrud);
-        setTimer(timer);
+    }
 
-        setInicio();
-
-        AndroidUtil.ocultarTeclado(activityBase, view);
-
-        return view;
+    @Override
+    protected void setLayout() {
+        layoutPie = R.layout.btn_sdb;
     }
 
     protected void selector(){
 
+        Log.d(TAG, getMetodo());
+
         maestroDetalle();
 
-        if (bundle.getBoolean(NUEVOREGISTRO)){
+        if (nuevo){
 
             if (tablaCab==null) {
                 id = null;
@@ -138,36 +111,15 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
             vaciarControles();
             path = null;
             setImagen();
-            if (maestroDetalleSeparados) {
-                if (layoutCabecera > 0) {
-                    frCabecera.setVisibility(View.GONE);
-                }
-                refreshLayout.setVisibility(View.GONE);
-                frdetalle.setVisibility(View.VISIBLE);
-                frPie.setVisibility(View.VISIBLE);
-            }
-            activityBase.fab.hide();
-            activityBase.fab2.hide();
             setNuevo();
-            btndelete.setVisibility(View.GONE);
-            bundle.putBoolean(NUEVOREGISTRO,false);
+            if (bundle!=null) {
+                bundle.putBoolean(NUEVOREGISTRO, false);
+            }
         }else if (modelo!=null) {
-
-            btndelete.setVisibility(View.VISIBLE);
 
             id = modelo.getString(campoID);
             if (tablaCab != null) {
-                secuencia = modelo.getInt(SECUENCIA);
-            }
-            if (maestroDetalleSeparados){
-                if (layoutCabecera>0) {
-                    frCabecera.setVisibility(View.GONE);
-                }
-                refreshLayout.setVisibility(View.GONE);
-                frdetalle.setVisibility(View.VISIBLE);
-                frPie.setVisibility(View.VISIBLE);
-                activityBase.fab.hide();
-                activityBase.fab2.hide();
+                secuencia = modelo.getInt(CAMPO_SECUENCIA);
             }
             datos();
 
@@ -177,24 +129,12 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
         }else if (id!=null  && (secuencia>0||tablaCab==null)) {
 
-            btndelete.setVisibility(View.VISIBLE);
-
             if (tablaCab != null) {
                 modelo = CRUDutil.setModelo(campos,id,secuencia);
             }else{
                 modelo = CRUDutil.setModelo(campos,id);
             }
 
-            if (maestroDetalleSeparados){
-                if (layoutCabecera>0) {
-                    frCabecera.setVisibility(View.GONE);
-                }
-                refreshLayout.setVisibility(View.GONE);
-                frdetalle.setVisibility(View.VISIBLE);
-                frPie.setVisibility(View.VISIBLE);
-                activityBase.fab.hide();
-                activityBase.fab2.hide();
-            }
             datos();
 
             if (subTitulo==null) {
@@ -202,18 +142,13 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
             }
 
         }else{
-                maestroDetalle();
-                btndelete.setVisibility(View.GONE);
-                activityBase.fab2.hide();
-                activityBase.fab.show();
-                listaRV();
+
             if (subTitulo==null) {
                 activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
             }
-                enviarAct();
         }
 
-
+        enviarAct();
 
         acciones();
 
@@ -222,34 +157,14 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
     @Override
     protected void acciones() {
         super.acciones();
+        Log.d(TAG, getMetodo());
 
         activityBase.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
 
-                modelo = null;
-                if (tablaCab==null) {
-                    id = null;
-                }
-                secuencia=0;
-                vaciarControles();
-                path=null;
-                setImagen();
-                maestroDetalle();
-                if (maestroDetalleSeparados){
-
-                    frCabecera.setVisibility(View.GONE);
-                    frLista.setVisibility(View.GONE);
-                    frdetalle.setVisibility(View.VISIBLE);
-                    frPie.setVisibility(View.VISIBLE);
-                    activityBase.fab.hide();
-                    activityBase.fab2.hide();
-
-                }
-                activityBase.toolbar.setSubtitle(tituloNuevo);
-
-                setNuevo();
+                onClickNuevo();
 
             }
         });
@@ -257,7 +172,7 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
         activityBase.fab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onUpdate();
+                reconocimientoVoz(RECOGNIZE_SPEECH_ACTIVITY);
             }
         });
 
@@ -271,7 +186,6 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
                             setLista();
 
                         }
-                        rv.setVisibility(View.VISIBLE);
                         setRv();
                         refreshLayout.setRefreshing(false);
                     }
@@ -284,7 +198,7 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
             public void onClick(View v) {
 
                 if (adaptadorFiltroRV.getLista()!=null){
-                    lista.clearAddAll(adaptadorFiltroRV.getLista());
+                    lista.clearAddAllLista(adaptadorFiltroRV.getLista());
                 }
 
                 setRv();
@@ -328,36 +242,83 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
             }
         });
 
+        voz.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                reconocimientoVoz(RECOGNIZE_SPEECH_ACTIVITY);
+            }
+        });
+
         auto.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                System.out.println("Auto before textChange");
+
 
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                if (id==null) {
-                    auto.setDropDownWidth(0);
-                }else{
-                    auto.setDropDownWidth(ancho);
-                }
-                if (adaptadorFiltroRV.getLista()!=null){
-                    lista.clearAddAll(adaptadorFiltroRV.getLista());
-                }
+                if (grabarVoz==null) {
+                    System.out.println("Auto textChange");
+                    System.out.println("s = " + s);
 
-                setRv();
+                    if (id == null) {
+                        auto.setDropDownWidth(0);
+                    } else {
+                        auto.setDropDownWidth(ancho);
+                    }
+                    if (adaptadorFiltroRV.getLista() != null) {
+                        lista.clearAddAllLista(adaptadorFiltroRV.getLista());
+                    }
+
+                    setRv();
+                }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
 
+                System.out.println("Auto after textChange");
+
+
             }
         });
+
+        frameAnimation.setOnSwipeListener(new OneFrameLayout.OnSwipeListener() {
+            @Override
+            public void rightSwipe() {
+                setOnRightSwipe();
+            }
+
+            @Override
+            public void leftSwipe() {
+                setOnLeftSwipe();
+            }
+        });
+
+    }
+
+    protected void onClickNuevo() {
+        nuevo = true;
+        selector();
+    }
+
+    protected void setOnRightSwipe(){
+        Log.d(TAG, getMetodo());
+
+    }
+
+    protected void setOnLeftSwipe(){
+        Log.d(TAG, getMetodo());
+
     }
 
     @Override
     protected boolean onUpdate(){
+        Log.d(TAG, getMetodo());
 
         if (update()) {
                 selector();
@@ -370,6 +331,8 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
     protected void listaRV(){
 
+        Log.d(TAG, getMetodo());
+
         if (listab==null) {
             if (tablaCab==null){
                 lista = CRUDutil.setListaModelo(campos);
@@ -381,7 +344,7 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
             lista = listab;
         }
 
-        if (!lista.chech() && !maestroDetalleSeparados){
+        if (!lista.chechLista() && !maestroDetalleSeparados){
             frdetalle.setVisibility(View.GONE);
         }else{
             frdetalle.setVisibility(View.VISIBLE);
@@ -389,13 +352,30 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
         setRv();
 
-
-
     }
 
     protected void setRv(){
 
-        adaptadorRV = new RVAdapter(setViewHolder(view),lista.getLista(), layoutItem, getString(tituloPlural));
+        Log.d(TAG, getMetodo());
+
+        RecyclerView.LayoutManager layoutManager = null;
+
+        //if (!tablet){
+        //    layoutManager = new LinearLayoutManager(contexto);
+        //}else{
+        System.out.println("ancho = " + (rv.getWidth()));
+        System.out.println("metrics = " + metrics.density);
+        System.out.println("land = " + land);
+        System.out.println("tablet = " + tablet);
+
+
+            int columnas = (int) (rv.getWidth()/(metrics.density*300));
+            if (columnas<1){columnas = 1;}
+            layoutManager = new GridLayoutManager(contexto,columnas);
+        //}
+
+        rv.setLayoutManager(layoutManager);
+        adaptadorRV = new RVAdapter(setViewHolder(view),lista.getLista(), layoutItem);
         rv.setAdapter(adaptadorRV);
 
         onSetAdapter(lista.getLista());
@@ -416,7 +396,7 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
         setOnItemClickAuto();
 
-        //if (lista.chech()) {
+        //if (lista.chechLista()) {
             rv.setVisibility(View.VISIBLE);
             auto.setVisibility(View.VISIBLE);
             buscar.setVisibility(View.VISIBLE);
@@ -431,21 +411,19 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
         if (listab==null) {
             inicio.setVisibility(View.GONE);
         }
-            //frlupa.setVisibility(View.GONE);
-        //}
-
-
 
     }
     protected abstract ListaAdaptadorFiltroRV setAdaptadorAuto
             (Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos);
 
     protected void setLista() {
+        Log.d(TAG, getMetodo());
 
     }
 
     protected void  maestroDetalle(){
 
+        Log.d(TAG, getMetodo());
 
         if(!land && !tablet){
 
@@ -469,6 +447,8 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
     protected void maestroDetallePort(){
 
+        Log.d(TAG, getMetodo());
+
         setMaestroDetallePort();
         if (maestroDetalleSeparados) {
             defectoMaestroDetalleSeparados();
@@ -480,15 +460,20 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
     protected void maestroDetalleLand(){
 
+        Log.d(TAG, getMetodo());
+
         setMaestroDetalleLand();
         if (maestroDetalleSeparados) {
             defectoMaestroDetalleSeparados();
         }else{
             defectoMaestroDetalleJuntos();
         }
+
     }
 
     protected void maestroDetalleTabletPort(){
+
+        Log.d(TAG, getMetodo());
 
         setMaestroDetalleTabletPort();
         if (maestroDetalleSeparados) {
@@ -497,9 +482,12 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
             defectoMaestroDetalleJuntos();
 
         }
+
     }
 
     protected void maestroDetalleTabletLand(){
+
+        Log.d(TAG, getMetodo());
 
         setMaestroDetalleTabletLand();
         if (maestroDetalleSeparados) {
@@ -512,14 +500,53 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
     protected void defectoMaestroDetalleSeparados(){
 
+        Log.d(TAG, getMetodo());
 
             if (layoutCabecera>0) {
-                frCabecera.setVisibility(View.VISIBLE);
+                visible(frCabecera);
             }
-            frLista.setVisibility(View.VISIBLE);
-            refreshLayout.setVisibility(View.VISIBLE);
-            frdetalle.setVisibility(View.GONE);
-            frPie.setVisibility(View.GONE);
+            visible(frLista);
+            visible(rv);
+            visible(refreshLayout);
+            gone(frdetalle);
+            gone(frPie);
+
+            if (nuevo){
+                if (layoutCabecera>0) {
+                    gone(frCabecera);
+                }
+                gone(frLista);
+                gone(rv);
+                gone(refreshLayout);
+                visible(frdetalle);
+                visible(frPie);
+                activityBase.fab.setSize(FloatingActionButton.SIZE_MINI);
+                activityBase.fab2.setSize(FloatingActionButton.SIZE_MINI);
+            }else if ( id!=null || modelo!=null){
+                if (layoutCabecera>0) {
+                    gone(frCabecera);
+                }
+                visible(frLista);
+                gone(rv);
+                gone(refreshLayout);
+                visible(frdetalle);
+                visible(frPie);
+                activityBase.fab.setSize(FloatingActionButton.SIZE_MINI);
+                activityBase.fab2.setSize(FloatingActionButton.SIZE_MINI);
+
+            }else{
+                activityBase.fab2.show();
+                activityBase.fab.show();
+                activityBase.fab.setSize(FloatingActionButton.SIZE_NORMAL);
+                activityBase.fab2.setSize(FloatingActionButton.SIZE_NORMAL);
+
+                if (grabarVoz==null) {
+                    listaRV();
+                    grabarVoz=null;
+                }
+                System.out.println("lista = " + lista.sizeLista());
+                System.out.println("grabarVoz = " + grabarVoz);
+            }
 
         setDefectoMaestroDetalleSeparados();
 
@@ -527,24 +554,34 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
     protected void setDefectoMaestroDetalleSeparados(){
 
+        Log.d(TAG, getMetodo());
+
     }
 
     protected void setDefectoMaestroDetalleJuntos(){
+
+        Log.d(TAG, getMetodo());
 
     }
 
     protected void defectoMaestroDetalleJuntos(){
 
-        frLista.setVisibility(View.VISIBLE);
-        frdetalle.setVisibility(View.VISIBLE);
-        frPie.setVisibility(View.VISIBLE);
-        refreshLayout.setVisibility(View.VISIBLE);
-        btnback.setVisibility(View.GONE);
+        Log.d(TAG, getMetodo());
+
+        visible(frLista);
+        visible(rv);
+        visible(refreshLayout);
+        visible(frdetalle);
+        visible(frPie);
         if (layoutCabecera>0) {
-            frCabecera.setVisibility(View.VISIBLE);
+            visible(frCabecera);
         }else{
-            frCabecera.setVisibility(View.GONE);
+            gone(frCabecera);
         }
+        activityBase.fab2.hide();
+        activityBase.fab.show();
+        visible(btndelete);
+        listaRV();
 
         setDefectoMaestroDetalleJuntos();
     }
@@ -568,6 +605,8 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
     protected void actualizarConsultasRV(){
 
+        Log.d(TAG, getMetodo());
+
         if (listab==null) {
             if (tablaCab!=null){
                 modelo = null;
@@ -587,47 +626,46 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
     protected void onClickRV(View v){
 
-            modelo = lista.getItem(rv.getChildAdapterPosition(v));
+        Log.d(TAG, getMetodo());
+
+        modelo = lista.getItem(rv.getChildAdapterPosition(v));
             id = modelo.getString(campoID);
 
             if (tablaCab != null) {
-                secuencia = modelo.getInt(SECUENCIA);
+                secuencia = modelo.getInt(CAMPO_SECUENCIA);
             }
-            if (maestroDetalleSeparados){
-                if (layoutCabecera>0) {
-                    frCabecera.setVisibility(View.GONE);
-                }
-                refreshLayout.setVisibility(View.GONE);
-                frdetalle.setVisibility(View.VISIBLE);
-                frPie.setVisibility(View.VISIBLE);
-                activityBase.fab.hide();
-                activityBase.fab2.hide();
+
+            if (id!=null) {
+                selector();
             }
-            selector();
 
             if (subTitulo==null) {
                 activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
             }
+
     }
 
     protected void onSetAdapter(ArrayList<Modelo> lista){
 
-        if (!maestroDetalleSeparados && lista != null && lista.size() > 0) {
+        Log.d(TAG, getMetodo());
+
+        if (!maestroDetalleSeparados && lista != null && lista.size() > 0 && id==null && !nuevo) {
 
                 modelo = lista.get(0);
 
                 if (tablaCab != null) {
-                    secuencia = lista.get(0).getInt(SECUENCIA);
+                    secuencia = lista.get(0).getInt(CAMPO_SECUENCIA);
                 } else {
                     id = lista.get(0).getString(campoID);
                 }
 
-                selector();
         }
 
     }
 
     protected void setOnItemClickAuto(){
+
+        Log.d(TAG, getMetodo());
 
         auto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -638,7 +676,7 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
                 if (modelo!=null) {
                     id = modelo.getString(campoID);
                     if (tablaCab != null) {
-                        secuencia = modelo.getInt(SECUENCIA);
+                        secuencia = modelo.getInt(CAMPO_SECUENCIA);
                     }
                 }
 
@@ -651,9 +689,95 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
     protected void cambiarFragment(){
 
+        Log.d(TAG, getMetodo());
+
         enviarBundle();
         setcambioFragment();
         listaRV();
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, getMetodo());
+
+        System.out.println("requestCode = " + requestCode);
+
+        if (resultCode == RESULT_OK) {
+
+            switch (requestCode) {
+
+                case RECOGNIZE_SPEECH_ACTIVITY:
+
+                    ArrayList<String> speech = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    grabarVoz = speech.get(0);
+                    String buscar = null;
+                    if (grabarVoz.length()>=7) {
+                        buscar = grabarVoz.substring(0, 7).toLowerCase();
+                    }
+                    if (grabarVoz.equals("renovar lista")) {
+                        actualizarConsultasRV();
+                        setRv();
+                        //auto.setText("");
+                    }else if (grabarVoz.equals("limpiar lista")) {
+                        actualizarConsultasRV();
+                        setRv();
+                        //auto.setText("");
+                    }else  if (grabarVoz.equals("lista completa")){
+                        if (tablaCab!=null){
+                            lista = CRUDutil.setListaModeloDetalle(campos,id,tablaCab);
+                            setLista();
+                        }else {
+                            lista = CRUDutil.setListaModelo(campos);
+                            setLista();
+                        }
+                        setRv();
+                        if (subTitulo==null) {
+                            activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+                        }
+                        //auto.setText("");
+                        enviarAct();
+                    }else if (buscar!= null && buscar.equals("buscar ")){
+                        grabarVoz = grabarVoz.substring(7);
+                        System.out.println("grabarVoz sub= " + grabarVoz);
+                        ListaModelo suggestion = new ListaModelo();
+                        if (grabarVoz != null) {
+
+                            for (Modelo item : lista.getLista()) {
+
+                                for (int i = 2; i < campos.length; i += 3) {
+
+                                    if (item.getString(campos[i]) != null && !item.getString(campos[i]).equals("")) {
+                                        if (item.getString(campos[i]).toLowerCase().contains(grabarVoz.toLowerCase())) {
+
+                                            suggestion.addModelo(item);
+                                        }
+                                    }
+                                }
+
+                            }
+
+                            System.out.println("suggestion = " + suggestion.sizeLista());
+                            listab = new ListaModelo(suggestion);
+                            System.out.println("listab = " + listab.sizeLista());
+                            actualizarConsultasRV();
+                            System.out.println("lista = " + lista.sizeLista());
+                            setRv();
+                            System.out.println("lista = " + lista.sizeLista());
+                            auto.setText(grabarVoz);
+                            auto.setSelection(grabarVoz.length());
+                            auto.setDropDownWidth(0);
+                            if (id!=null){
+                                auto.setDropDownWidth(ancho);
+                            }
+                            //grabarVoz=null;
+                        }
+                    }
+
+            }
+        }
     }
 
 }

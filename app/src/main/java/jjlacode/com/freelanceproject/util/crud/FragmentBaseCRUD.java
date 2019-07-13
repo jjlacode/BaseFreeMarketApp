@@ -5,29 +5,22 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Chronometer;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import java.io.IOException;
 
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.*;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.CommonPry;
-import jjlacode.com.freelanceproject.util.android.AndroidUtil;
 import jjlacode.com.freelanceproject.util.android.FragmentBase;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.media.MediaUtil;
@@ -46,26 +39,18 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     protected String idAOrigen;
     protected int secuencia;
     protected String tablaCab;
-    protected Context contexto;
     protected Modelo modelo;
     protected String campoID;
     protected String campoSecuencia;
     protected String campoImagen;
     protected String campoTimeStamp;
+    protected String campoCreate;
 
-    protected ConsultaBD consulta = new ConsultaBD();
     protected ContentValues valores;
     protected ListaModelo lista;
     protected ListaModelo listab;
-    protected String origen;
-    protected String actual;
-    protected String actualtemp;
-    protected String subTitulo;
     protected boolean nuevo;
 
-    protected ImageButton btnsave;
-    protected ImageButton btnback;
-    protected ImageButton btndelete;
     protected ImageView imagen;
 
 
@@ -77,72 +62,35 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     public FragmentBaseCRUD() {
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-        view = inflater.inflate(R.layout.contenido, container, false);
-        land = getResources().getBoolean(R.bool.esLand);
-        tablet = getResources().getBoolean(R.bool.esTablet);
-
-        frPrincipal = view.findViewById(R.id.contenedor);
-        frdetalle = view.findViewById(R.id.layout_detalle);
-
-        frPie = view.findViewById(R.id.layout_pie);
-        viewBotones = inflater.inflate(R.layout.btn_sdb,container,false);
-        viewCuerpo = inflater.inflate(layoutCuerpo,container,false);
-        frCabecera = view.findViewById(R.id.layout_cabecera);
-        if (layoutCabecera>0) {
-            viewCabecera = inflater.inflate(layoutCabecera, container,false);
-            if(viewCabecera.getParent() != null) {
-                ((ViewGroup)viewCabecera.getParent()).removeView(viewCabecera); // <- fix
-            }
-            if (viewCabecera!=null) {
-                frCabecera.addView(viewCabecera);
-            }
-        }
-        if(viewBotones.getParent() != null) {
-            ((ViewGroup)viewBotones.getParent()).removeView(viewBotones); // <- fix
-        }
-        if(viewCuerpo.getParent() != null) {
-            ((ViewGroup)viewCuerpo.getParent()).removeView(viewCuerpo); // <- fix
-        }
-
-
-        frdetalle.addView(viewCuerpo);
-        frPie.addView(viewBotones);
+    protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container){
+        super.setOnCreateView(view,inflater,container);
+        Log.d(TAG, getMetodo());
 
         btnback = view.findViewById(R.id.btn_back);
         btnsave = view.findViewById(R.id.btn_save);
         btndelete = view.findViewById(R.id.btn_del);
+        System.out.println("view = " + view);
+        gone(btndelete);
 
-        Chronometer timer = (Chronometer) view.findViewById(R.id.chronocrud);
-        setTimer(timer);
-
-        setInicio();
-
-        AndroidUtil.ocultarTeclado(activityBase, view);
-
-        return view;
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    protected void setLayoutCRUD() {
+        super.setLayoutCRUD();
+        Log.d(TAG, getMetodo());
 
-        SharedPreferences persistencia=getActivity().getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor=persistencia.edit();
-        editor.putString(ORIGEN, origen);
-        editor.putString(ACTUAL, actual);
-        editor.putString(ACTUALTEMP, actualtemp);
-        editor.putString(SUBTITULO, subTitulo);
-        editor.putString(ID,id);
-        editor.putInt(SECUENCIA,secuencia);
-        editor.apply();
+        layoutPie = R.layout.btn_sdb;
     }
 
 
+    @Override
+    protected void setTAG() {
+        TAG = getClass().getSimpleName();
+    }
+
     protected boolean onUpdate(){
+        Log.d(TAG, getMetodo());
 
         return false;
     }
@@ -151,6 +99,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
      * Carga el Bundle de entrada de la transisión entre Fragments ó Activity
      */
     protected void cargarBundle(){
+        Log.d(TAG, getMetodo());
 
         super.cargarBundle();
 
@@ -168,65 +117,88 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
             listab = (ListaModelo) bundle.getSerializable(LISTA);
             modelo = (Modelo) bundle.getSerializable(MODELO);
             if (id==null) {
-                id = bundle.getString(ID);
+                id = bundle.getString(CAMPO_ID);
             }
             if (secuencia==0) {
-                secuencia = bundle.getInt(SECUENCIA);
+                secuencia = bundle.getInt(CAMPO_SECUENCIA);
             }
 
         }
 
-        setBundle();
+        if (bundle!=null) {
+            setBundle();
+        }
     }
 
     protected void setTabla(){
+        Log.d(TAG, getMetodo());
 
     }
 
     protected void setTablaCab(){
+        Log.d(TAG, getMetodo());
 
         tablaCab = ContratoPry.getTabCab(tabla);
 
     }
 
-    protected void setContext(){
-
-        contexto = activityBase;
-
-    }
 
     protected void setCampos(){
+        Log.d(TAG, getMetodo());
 
         campos = ContratoPry.obtenerCampos(tabla);
 
     }
 
     protected void setCampoID(){
+        Log.d(TAG, getMetodo());
 
-            campoID = campos[2];
-            campoSecuencia = SECUENCIA;
+        campoID = campos[2];
+            campoSecuencia = CAMPO_SECUENCIA;
 
     }
 
     protected void setBundle(){
+        Log.d(TAG, getMetodo());
 
     }
 
     protected abstract void setDatos();
 
     protected void setAcciones(){
+        Log.d(TAG, getMetodo());
 
     }
 
     protected abstract void setTitulo();
 
     protected void datos(){
+        Log.d(TAG, getMetodo());
 
         setImagen();
-        setDatos();
+        try {
+            if (tablaCab==null) {
+
+                id = modelo.getString(campoID);
+                modelo = CRUDutil.setModelo(campos, id);
+
+            }else {
+
+                id = modelo.getString(campoID);
+                secuencia = modelo.getInt(campoSecuencia);
+                modelo = CRUDutil.setModelo(campos, id, secuencia);
+
+            }
+            setDatos();
+        }catch (Exception e) {
+
+            e.printStackTrace();
+
+        }
     }
 
     protected void setImagen(){
+        Log.d(TAG, getMetodo());
 
         try {
 
@@ -278,48 +250,96 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     }
 
     protected void acciones(){
+        Log.d(TAG, getMetodo());
+        super.acciones();
 
         setAcciones();
 
     }
 
     protected void enviarAct(){
+        Log.d(TAG, getMetodo());
 
-        icFragmentos.enviarBundleAActivity(bundle);
+            bundle = new Bundle();
+            bundle.putString(ORIGEN, origen);
+            bundle.putString(ACTUAL, actual);
+            bundle.putString(ACTUALTEMP, actualtemp);
+            bundle.putSerializable(MODELO, modelo);
+            bundle.putString(CAMPO_ID, id);
+            bundle.putString(SUBTITULO, subTitulo);
+            bundle.putInt(CAMPO_SECUENCIA, secuencia);
+            System.out.println("Enviando bundle a MainActivity");
+            icFragmentos.enviarBundleAActivity(bundle);
     }
 
     protected void enviarBundle(){
+        Log.d(TAG, getMetodo());
 
-        bundle.putString(ORIGEN, origen);
-        bundle.putString(ACTUAL,actual);
-        bundle.putString(ACTUALTEMP, actualtemp);
-        bundle.putSerializable(MODELO,modelo);
-        bundle.putString(ID,id);
-        bundle.putString(SUBTITULO,subTitulo);
-        bundle.putInt(SECUENCIA, secuencia);
+            bundle = new Bundle();
+            bundle.putString(ORIGEN, actual);
+            bundle.putString(ACTUAL, destino);
+            bundle.putString(ACTUALTEMP, actualtemp);
+            bundle.putSerializable(MODELO, modelo);
+            bundle.putString(CAMPO_ID, id);
+            bundle.putString(SUBTITULO, subTitulo);
+            bundle.putInt(CAMPO_SECUENCIA, secuencia);
 
     }
 
     @Override
+    public void onConfigurationChanged(Configuration myConfig) {
+        super.onConfigurationChanged(myConfig);
+        Log.d(TAG, getMetodo());
+
+        int orientation = getResources().getConfiguration().orientation;
+        SharedPreferences persistencia=getActivity().getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor=persistencia.edit();
+
+        switch(orientation ) {
+            case Configuration.ORIENTATION_LANDSCAPE:
+                // Con la orientación en horizontal actualizamos el adaptador
+                editor.putString(ORIGEN, origen);
+                editor.putString(ACTUAL, actual);
+                editor.putString(ACTUALTEMP, actualtemp);
+                editor.putString(SUBTITULO, subTitulo);
+                editor.putString(CAMPO_ID,id);
+                editor.putInt(CAMPO_SECUENCIA,secuencia);
+                editor.putBoolean(NUEVOREGISTRO,nuevo);
+                editor.apply();
+                break;
+            case Configuration.ORIENTATION_PORTRAIT:
+                // Con la orientación en vertical actualizamos el adaptador
+                editor.putString(ORIGEN, origen);
+                editor.putString(ACTUAL, actual);
+                editor.putString(ACTUALTEMP, actualtemp);
+                editor.putString(SUBTITULO, subTitulo);
+                editor.putString(CAMPO_ID,id);
+                editor.putInt(CAMPO_SECUENCIA,secuencia);
+                editor.putBoolean(NUEVOREGISTRO,nuevo);
+                editor.apply();
+                break;
+        }
+    }
+
+    @Override
     public void onResume() {
-
         super.onResume();
+        Log.d(TAG, getMetodo());
+        //cargarBundle();
 
-        cargarBundle();
-
-        if (bundle.containsKey(PERSISTENCIA) && bundle.getBoolean(PERSISTENCIA)) {
+        if (bundle!=null && bundle.containsKey(PERSISTENCIA) && bundle.getBoolean(PERSISTENCIA)) {
 
             SharedPreferences persistencia = getActivity().getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = persistencia.edit();
             if (id == null) {
-                id = persistencia.getString(ID, null);
+                id = persistencia.getString(CAMPO_ID, null);
             }
             if (secuencia == 0) {
-                secuencia = persistencia.getInt(SECUENCIA, 0);
+                secuencia = persistencia.getInt(CAMPO_SECUENCIA, 0);
             }
 
-            editor.putString(ID, null);
-            editor.putInt(SECUENCIA, 0);
+            editor.putString(CAMPO_ID, null);
+            editor.putInt(CAMPO_SECUENCIA, 0);
             editor.apply();
         }
 
@@ -330,9 +350,11 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
         setContext();
         setTitulo();
 
-        campoTimeStamp = TIMESTAMP;
+        campoTimeStamp = CAMPO_TIMESTAMP;
 
-        campoImagen = "rutafoto_"+ tabla;
+        campoCreate = CAMPO_CREATEREG;
+
+        campoImagen = CAMPO_RUTAFOTO;
 
         if (tablaCab==null && id!=null){
             modelo = CRUDutil.setModelo(campos,id);
@@ -348,12 +370,15 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
             activityBase.toolbar.setSubtitle(subTitulo);
         }
 
-        enviarBundle();
-        enviarAct();
+        if (bundle!=null) {
+            enviarBundle();
+            enviarAct();
+        }
 
     }
 
     protected void mostrarDialogoOpcionesImagen(final Context contexto) {
+        Log.d(TAG, getMetodo());
 
         final CharSequence[] opciones = {"Hacer foto desde cámara",
                 "Elegir de la galería", "Quitar foto","Cancelar"};
@@ -404,8 +429,10 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, getMetodo());
 
         mediaUtil = new MediaUtil(contexto);
+        System.out.println("requestCode = " + requestCode);
 
         if (resultCode == RESULT_OK) {
 
@@ -429,12 +456,15 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
                         path = mediaUtil.getPath(data.getData());
                     }
                     onUpdate();
+                    break;
+
 
             }
         }
     }
 
     protected void visibleSoloBtnBack() {
+        Log.d(TAG, getMetodo());
         visible(frPie);
         gone(btnsave);
         gone(btndelete);
@@ -442,6 +472,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     }
 
     protected void visibleSoloBtnSave() {
+        Log.d(TAG, getMetodo());
         visible(frPie);
         gone(btnback);
         gone(btndelete);
@@ -449,6 +480,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     }
 
     protected void visibleSoloBtnDel() {
+        Log.d(TAG, getMetodo());
         visible(frPie);
         gone(btnsave);
         gone(btnback);
@@ -456,6 +488,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     }
 
     protected void visibleBtnBackSave() {
+        Log.d(TAG, getMetodo());
         visible(frPie);
         visible(btnsave);
         gone(btndelete);
@@ -463,6 +496,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     }
 
     protected void visibleBtnSaveDel() {
+        Log.d(TAG, getMetodo());
         visible(frPie);
         gone(btnback);
         visible(btndelete);
@@ -470,6 +504,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     }
 
     protected void visiblePie() {
+        Log.d(TAG, getMetodo());
         visible(frPie);
         visible(btnsave);
         visible(btndelete);
@@ -477,27 +512,12 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     }
 
     protected void gonePie() {
+        Log.d(TAG, getMetodo());
         gone(frPie);
     }
 
     protected void imagenMediaPantalla(){
-
-        if (!land) {
-            imagen.setMinimumHeight((int) ((double) alto / 2));
-            imagen.setMinimumWidth(ancho);
-            imagen.setMaxHeight((int) ((double) alto / 2));
-            imagen.setMaxWidth(ancho);
-        }else{
-            imagen.setMinimumWidth((int) ((double) ancho / 2));
-            imagen.setMinimumHeight((int) ((double) alto / 2));
-            imagen.setMaxWidth((int) ((double) ancho / 2));
-            imagen.setMaxHeight((int) ((double) alto / 2));
-
-        }
-
-    }
-
-    protected void imagenMediaPantalla(ImageView imagen){
+        Log.d(TAG, getMetodo());
 
         if (!land) {
             imagen.setMinimumHeight((int) ((double) alto / 2));
@@ -515,6 +535,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     }
 
     protected void imagenPantalla(int falto, int fancho){
+        Log.d(TAG, getMetodo());
 
         if (!land) {
             imagen.setMinimumHeight((int) ((double) alto / falto));
@@ -531,22 +552,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
 
     }
 
-    protected void imagenPantalla(ImageView imagen, int falto, int fancho){
 
-        if (!land) {
-            imagen.setMinimumHeight((int) ((double) alto / falto));
-            imagen.setMinimumWidth((int) ((double)ancho/fancho));
-            imagen.setMaxHeight((int) ((double) alto / falto));
-            imagen.setMaxWidth((int) ((double)ancho/fancho));
-        }else{
-            imagen.setMinimumWidth((int) ((double) ancho / (falto+fancho)));
-            imagen.setMinimumHeight((int) ((double) alto / falto));
-            imagen.setMaxWidth((int) ((double) ancho / (falto+fancho)));
-            imagen.setMaxHeight((int) ((double) alto / falto));
-
-        }
-
-    }
 
     protected void setImagenUri(Context contexto, String rutaFoto){
 
@@ -732,73 +738,90 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
 
     protected void setDato(String campo, String valor){
 
-        consulta.putDato(valores,campos,campo,valor);
+        putDato(valores,campos,campo,valor);
     }
 
     protected void setDato(String campo, String valor, String tipo){
+        Log.d(TAG, getMetodo()+" "+campo);
+
 
         switch (tipo){
 
             case INT:
-                consulta.putDato(valores,campos,campo, JavaUtil.comprobarInteger(valor));
+                putDato(valores,campos,campo, JavaUtil.comprobarInteger(valor));
                 break;
             case LONG:
-                consulta.putDato(valores,campos,campo, JavaUtil.comprobarLong(valor));
+                putDato(valores,campos,campo, JavaUtil.comprobarLong(valor));
                 break;
             case DOUBLE:
-                consulta.putDato(valores,campos,campo, JavaUtil.comprobarDouble(valor));
+                putDato(valores,campos,campo, JavaUtil.comprobarDouble(valor));
                 break;
             case FLOAT:
-                consulta.putDato(valores,campos,campo, JavaUtil.comprobarFloat(valor));
+                putDato(valores,campos,campo, JavaUtil.comprobarFloat(valor));
                 break;
             case SHORT:
-                consulta.putDato(valores,campos,campo, JavaUtil.comprobarShort(valor));
+                putDato(valores,campos,campo, JavaUtil.comprobarShort(valor));
                 break;
             case NONNULL:
-                consulta.putDato(valores,campos,campo, JavaUtil.noNuloString(valor));
+                putDato(valores,campos,campo, JavaUtil.noNuloString(valor));
 
         }
     }
 
     protected void setDato(String campo, int valor){
 
-        consulta.putDato(valores,campos,campo,valor);
+        putDato(valores,campos,campo,valor);
     }
 
     protected void setDato(String campo, long valor){
 
-        consulta.putDato(valores,campos,campo,valor);
+        putDato(valores,campos,campo,valor);
     }
 
     protected void setDato(String campo, double valor){
 
-        consulta.putDato(valores,campos,campo,valor);
+        putDato(valores,campos,campo,valor);
     }
 
     protected void setDato(String campo, float valor){
 
-        consulta.putDato(valores,campos,campo,valor);
+        putDato(valores,campos,campo,valor);
     }
 
     protected void setDato(String campo, short valor){
 
-        consulta.putDato(valores,campos,campo,valor);
+        putDato(valores,campos,campo,valor);
     }
 
     protected boolean onDelete(){
+        Log.d(TAG, getMetodo());
         return true;
     }
 
     protected void mostrarDialogDelete(){
+        Log.d(TAG, getMetodo());
 
-        final CharSequence[] opciones = {getString(R.string.confirmar_borrado),getString(R.string.cancelar)};
+        String selDelete = null;
+
+        if (nuevo){
+            selDelete = getString(R.string.limpiar_formulario);
+
+        }else{
+            selDelete = getString(R.string.confirmar_borrado);
+        }
+
+        final CharSequence[] opciones = {selDelete,getString(R.string.cancelar)};
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(getString(R.string.borrar));
         builder.setItems(opciones, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                if (opciones[which].equals(getString(R.string.confirmar_borrado))){
+                if (opciones[which].equals(getString(R.string.limpiar_formulario))){
+
+                    onDelete();
+
+                }else if (opciones[which].equals(getString(R.string.confirmar_borrado))){
 
                     onDelete();
 
@@ -810,8 +833,5 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
         });
         builder.show();
     }
-
-
-
 
 }

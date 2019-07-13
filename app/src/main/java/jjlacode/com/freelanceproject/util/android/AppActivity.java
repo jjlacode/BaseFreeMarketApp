@@ -1,6 +1,7 @@
 package jjlacode.com.freelanceproject.util.android;
 
 import android.app.Application;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,11 +9,13 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Environment;
+import android.speech.RecognizerIntent;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +41,23 @@ public class AppActivity extends Application {
         return AppActivity.context;
     }
 
+    public static void reconocimientoVoz(MainActivityBase activityBase, String idioma, int code){
 
+        Intent intentActionRecognizeSpeech = new Intent(
+                RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        // Configura el Lenguaje (Español-México)
+        intentActionRecognizeSpeech.putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL, idioma);
+        try {
+            activityBase.startActivityForResult(intentActionRecognizeSpeech,
+                    code,null);
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(context,
+                    "Tú dispositivo no soporta el reconocimiento por voz",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+    
     public static void hacerLlamada(Context context, String phoneNo){
 
         if(!TextUtils.isEmpty(phoneNo)) {
@@ -171,22 +190,22 @@ public class AppActivity extends Application {
         }
     }
 
-    public static void enviarEmail(Context context, String direccion, String subject, String texto, String path){
+    public static void enviarEmail(Context context, String direccion, String subject, String texto, String path) {
 
-        Uri uri = Uri.fromFile(new File(path));
+        Uri uri = null;
+        if (path != null) {
+            Uri.fromFile(new File(path));
 
-        String[]dir = {direccion};
+        String[] dir = {direccion};
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setData(Uri.parse("mailto:"));
         if (!TextUtils.isEmpty(direccion)) {
-            intent.putExtra(Intent.EXTRA_EMAIL,dir);
-            intent.putExtra(Intent.EXTRA_SUBJECT,subject);
-            intent.putExtra(Intent.EXTRA_TEXT,texto);
+            intent.putExtra(Intent.EXTRA_EMAIL, dir);
+            intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            intent.putExtra(Intent.EXTRA_TEXT, texto);
             intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-            if (uri!=null) {
                 intent.setType("application/pdf");
                 intent.putExtra(Intent.EXTRA_STREAM, uri);
-            }
             try {
                 context.startActivity(Intent.createChooser(intent, "Send mail..."));
                 Log.e("Test email:", "Fin envio email");
@@ -194,8 +213,11 @@ public class AppActivity extends Application {
             } catch (android.content.ActivityNotFoundException ex) {
                 Toast.makeText(context, "No hay disponible ninguna app de email", Toast.LENGTH_SHORT).show();
             }
-        }else {
+        } else {
             Toast.makeText(context, "La dirección de email no es valida", Toast.LENGTH_SHORT).show();
+        }
+    }else{
+            enviarEmail(context,direccion,subject,texto);
         }
     }
 
@@ -274,10 +296,13 @@ public class AppActivity extends Application {
 
     public static void compartirPdf(String path){
 
-        Uri uri = Uri.fromFile(new File(path));
+        Uri uri = null;
+        if (path!=null) {
+            uri = Uri.fromFile(new File(path));
+        }
 
         Intent intent = new Intent(Intent.ACTION_SEND);
-        if (!TextUtils.isEmpty(path)) {
+        if (uri!=null && !TextUtils.isEmpty(path)) {
             intent.setType("application/pdf");
             intent.putExtra(Intent.EXTRA_STREAM, uri);
             try {
@@ -293,10 +318,13 @@ public class AppActivity extends Application {
 
     public static void compartir(String path, String tipo){
 
-            Uri uri = Uri.fromFile(new File(path));
+            Uri uri = null;
+            if (path!=null) {
+                uri = Uri.fromFile(new File(path));
+            }
 
             Intent intent = new Intent(Intent.ACTION_SEND);
-            if (!TextUtils.isEmpty(path)) {
+            if (uri!=null && !TextUtils.isEmpty(path)) {
                 intent.setType(tipo);
                 intent.putExtra(Intent.EXTRA_STREAM, uri);
                 try {

@@ -70,7 +70,7 @@ public class ListaAdaptadorFiltroRV extends ArrayAdapter<Modelo> {
 
                     for (Modelo item :entradas) {
 
-                        for (int i = 0; i < campos.length; i++) {
+                        for (int i = 2; i < campos.length; i+=3) {
 
 
                             if (item.getString(campos[i])!=null && !item.getString(campos[i]).equals("")) {
@@ -102,8 +102,10 @@ public class ListaAdaptadorFiltroRV extends ArrayAdapter<Modelo> {
                             entradasfiltro.add(item);
                     }
                     notifyDataSetChanged();
+                    System.out.println("results = " + results.count);
                 } else if (constraint == null) {
-                    // no filter, add entire original list back in
+                    // no filter, addModelo entire original list back in
+                    System.out.println("Cadena nula");
                     entradasfiltro.addAll(entradas);
                     notifyDataSetInvalidated();
                 }

@@ -187,7 +187,7 @@ public class copy {
         if (listaProyecto==null){
             return 0;
         }
-        return listaProyecto.size();
+        return listaProyecto.sizeLista();
     }
 
     @Override
@@ -252,7 +252,7 @@ public class copy {
         String PROYECTO_ID_PROYECTO = "id_proyecto";
 
         String TABLAS_ID_TABLA = "id_tabla";
-        String TABLAS_TABLA = "tabla";
+        String TABLAS_TABLA = "tablaModelo";
         String TABLAS_CAMPO = "campo";
         String TABLAS_PARAMETROS = "parametros";
 
@@ -281,43 +281,43 @@ public class copy {
         public static ArrayList<String[]> obtenerListaCampos(){
 
             ArrayList<String[]> listaCampos = new ArrayList<>();
-            listaCampos.add(Tablas.CAMPOS_PROYECTO);
+            listaCampos.addModelo(Tablas.CAMPOS_PROYECTO);
 
             return listaCampos;
         }
 
-        public static Uri obtenerUriContenido(String tabla){
+        public static Uri obtenerUriContenido(String tablaModelo){
 
-            return URI_BASE.buildUpon().appendPath(tabla).build();
+            return URI_BASE.buildUpon().appendPath(tablaModelo).build();
         }
 
-        public static Uri crearUriTabla(String id, String tabla){
+        public static Uri crearUriTabla(String id, String tablaModelo){
 
-            Uri URI_CONTENIDO = obtenerUriContenido(tabla);
+            Uri URI_CONTENIDO = obtenerUriContenido(tablaModelo);
 
             return URI_CONTENIDO.buildUpon().appendPath(id).build();
         }
 
-        public static Uri crearUriTablaDetalle(String id, String secuencia, String tabla) {
+        public static Uri crearUriTablaDetalle(String id, String secuencia, String tablaModelo) {
             // Uri de la forma 'gasto/:id#:secuencia'
-            Uri URI_CONTENIDO = obtenerUriContenido(tabla);
+            Uri URI_CONTENIDO = obtenerUriContenido(tablaModelo);
             return URI_CONTENIDO.buildUpon()
                     .appendPath(String.format("%s#%s", id, secuencia))
                     .build();
         }
 
-        public static Uri crearUriTablaDetalle(String id, int secuencia, String tabla) {
+        public static Uri crearUriTablaDetalle(String id, int secuencia, String tablaModelo) {
             // Uri de la forma 'gasto/:id#:secuencia'
-            Uri URI_CONTENIDO = obtenerUriContenido(tabla);
+            Uri URI_CONTENIDO = obtenerUriContenido(tablaModelo);
             return URI_CONTENIDO.buildUpon()
                     .appendPath(String.format("%s#%s", id, String.valueOf(secuencia)))
                     .build();
         }
 
-        public static Uri crearUriTablaDetalleId(String id, String tabla, String tablaCab){
+        public static Uri crearUriTablaDetalleId(String id, String tablaModelo, String tablaCab){
 
             Uri URI_CONTENIDO = obtenerUriContenido(tablaCab);
-            return URI_CONTENIDO.buildUpon().appendPath(id).appendPath(tabla).build();
+            return URI_CONTENIDO.buildUpon().appendPath(id).appendPath(tablaModelo).build();
 
         }
 
@@ -329,8 +329,8 @@ public class copy {
             return uri.getLastPathSegment().split("#");
         }
 
-        public static String generarIdTabla(String tabla){
-            return tabla + UUID.randomUUID().toString();
+        public static String generarIdTabla(String tablaModelo){
+            return tablaModelo + UUID.randomUUID().toString();
         }
 
         public static String obtenerIdTabla(Uri uri){
@@ -418,7 +418,7 @@ public class QueryDB implements Utilidades.Constantes {
 
                 if (insert[0]!=null) {
                     Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    list.addModelo(modelo);
                 }
             }
         }
@@ -477,7 +477,7 @@ public class QueryDB implements Utilidades.Constantes {
 
                 if (insert[0]!=null) {
                     Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    list.addModelo(modelo);
                 }
             }
         }
@@ -636,7 +636,7 @@ public class QueryDB implements Utilidades.Constantes {
 
             if (insert[0]!=null) {
                 Modelo modelo = new Modelo(campos, insert);
-                list.add(modelo);
+                list.addModelo(modelo);
             }
         }
         reg.close();
@@ -690,7 +690,7 @@ public class QueryDB implements Utilidades.Constantes {
 
             if (insert[0]!=null) {
                 Modelo modelo = new Modelo(campos, insert);
-                list.add(modelo);
+                list.addModelo(modelo);
             }
         }
         reg.close();
@@ -742,7 +742,7 @@ public class QueryDB implements Utilidades.Constantes {
 
             if (insert[0]!=null) {
                 Modelo modelo = new Modelo(campos, insert);
-                list.add(modelo);
+                list.addModelo(modelo);
             }
         }
         reg.close();
@@ -937,7 +937,7 @@ public class QueryDB implements Utilidades.Constantes {
 
                 if (insert[0]!=null) {
                     Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    list.addModelo(modelo);
                 }
             }
         }
@@ -1023,7 +1023,7 @@ public class QueryDB implements Utilidades.Constantes {
 
                 if (insert[0]!=null) {
                     Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    list.addModelo(modelo);
                 }
             }
         }
@@ -1109,7 +1109,7 @@ public class QueryDB implements Utilidades.Constantes {
 
                 if (insert[0]!=null) {
                     Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    list.addModelo(modelo);
                 }
             }
         }
@@ -1228,7 +1228,7 @@ public class QueryDB implements Utilidades.Constantes {
 
                 if (insert[0]!=null) {
                     Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    list.addModelo(modelo);
                 }
             }
         }
@@ -1314,7 +1314,7 @@ public class QueryDB implements Utilidades.Constantes {
 
                 if (insert[0]!=null) {
                     Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    list.addModelo(modelo);
                 }
             }
         }
@@ -1400,7 +1400,7 @@ public class QueryDB implements Utilidades.Constantes {
 
                 if (insert[0]!=null) {
                     Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    list.addModelo(modelo);
                 }
             }
         }
@@ -1471,7 +1471,7 @@ public class QueryDB implements Utilidades.Constantes {
 
                 if (insert[0]!=null) {
                     Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    list.addModelo(modelo);
                 }
             }
         }
@@ -1645,9 +1645,9 @@ public class QueryDB implements Utilidades.Constantes {
         }
     }
 
-    public static int updateRegistro(String tabla,String id,ContentValues valores){
+    public static int updateRegistro(String tablaModelo,String id,ContentValues valores){
 
-        return resolver.update(Contract.crearUriTabla(id, tabla)
+        return resolver.update(Contract.crearUriTabla(id, tablaModelo)
                 , valores, null, null);
 
     }
@@ -1664,36 +1664,36 @@ public class QueryDB implements Utilidades.Constantes {
 
     }
 
-    public static int updateRegistroDetalle(String tabla,String id, String secuencia,ContentValues valores){
+    public static int updateRegistroDetalle(String tablaModelo,String id, String secuencia,ContentValues valores){
 
-        return resolver.update(Contract.crearUriTablaDetalle(id,secuencia, tabla)
+        return resolver.update(Contract.crearUriTablaDetalle(id,secuencia, tablaModelo)
                 , valores, null, null);
 
     }
 
-    public static int updateRegistroDetalle(String tabla,String id, int secuencia,ContentValues valores){
+    public static int updateRegistroDetalle(String tablaModelo,String id, int secuencia,ContentValues valores){
 
-        return resolver.update(Contract.crearUriTablaDetalle(id,secuencia, tabla)
+        return resolver.update(Contract.crearUriTablaDetalle(id,secuencia, tablaModelo)
                 , valores, null, null);
 
     }
 
-    public static int updateRegistrosDetalle(String tabla,String id, String tablaCab, ContentValues valores,String seleccion){
+    public static int updateRegistrosDetalle(String tablaModelo,String id, String tablaCab, ContentValues valores,String seleccion){
 
-        return resolver.update(Contract.crearUriTablaDetalleId(id,tabla,tablaCab)
+        return resolver.update(Contract.crearUriTablaDetalleId(id,tablaModelo,tablaCab)
                 , valores, seleccion, null);
 
     }
 
-    public static int updateRegistros(String tabla,ContentValues valores,String seleccion){
+    public static int updateRegistros(String tablaModelo,ContentValues valores,String seleccion){
 
-        return resolver.update(Contract.obtenerUriContenido(tabla)
+        return resolver.update(Contract.obtenerUriContenido(tablaModelo)
                 , valores, seleccion, null);
 
     }
 
     public static int updateRegistros
-            (String tabla,ContentValues valores,String campo, String valor, String valor2,  int flag){
+            (String tablaModelo,ContentValues valores,String campo, String valor, String valor2,  int flag){
 
         String seleccion = null;
 
@@ -1721,13 +1721,13 @@ public class QueryDB implements Utilidades.Constantes {
                 seleccion = campo+" <= '"+valor+"'";
 
         }
-        return resolver.update(Contract.obtenerUriContenido(tabla)
+        return resolver.update(Contract.obtenerUriContenido(tablaModelo)
                 , valores, seleccion, null);
 
     }
 
     public static int updateRegistros
-            (String tabla,ContentValues valores,String campo, int valor, int valor2,  int flag){
+            (String tablaModelo,ContentValues valores,String campo, int valor, int valor2,  int flag){
 
         String seleccion = null;
 
@@ -1755,13 +1755,13 @@ public class QueryDB implements Utilidades.Constantes {
                 seleccion = campo+" <= '"+valor+"'";
 
         }
-        return resolver.update(Contract.obtenerUriContenido(tabla)
+        return resolver.update(Contract.obtenerUriContenido(tablaModelo)
                 , valores, seleccion, null);
 
     }
 
     public static int updateRegistros
-            (String tabla,ContentValues valores,String campo, long valor, long valor2,  int flag){
+            (String tablaModelo,ContentValues valores,String campo, long valor, long valor2,  int flag){
 
         String seleccion = null;
 
@@ -1789,13 +1789,13 @@ public class QueryDB implements Utilidades.Constantes {
                 seleccion = campo+" <= '"+valor+"'";
 
         }
-        return resolver.update(Contract.obtenerUriContenido(tabla)
+        return resolver.update(Contract.obtenerUriContenido(tablaModelo)
                 , valores, seleccion, null);
 
     }
 
     public static int updateRegistros
-            (String tabla,ContentValues valores,String campo, double valor, double valor2,  int flag){
+            (String tablaModelo,ContentValues valores,String campo, double valor, double valor2,  int flag){
 
         String seleccion = null;
 
@@ -1823,13 +1823,13 @@ public class QueryDB implements Utilidades.Constantes {
                 seleccion = campo+" <= '"+valor+"'";
 
         }
-        return resolver.update(Contract.obtenerUriContenido(tabla)
+        return resolver.update(Contract.obtenerUriContenido(tablaModelo)
                 , valores, seleccion, null);
 
     }
 
     public static int updateRegistros
-            (String tabla,ContentValues valores,String campo, float valor, float valor2,  int flag){
+            (String tablaModelo,ContentValues valores,String campo, float valor, float valor2,  int flag){
 
         String seleccion = null;
 
@@ -1857,13 +1857,13 @@ public class QueryDB implements Utilidades.Constantes {
                 seleccion = campo+" <= '"+valor+"'";
 
         }
-        return resolver.update(Contract.obtenerUriContenido(tabla)
+        return resolver.update(Contract.obtenerUriContenido(tablaModelo)
                 , valores, seleccion, null);
 
     }
 
     public static int updateRegistros
-            (String tabla,ContentValues valores,String campo, short valor, short valor2,  int flag){
+            (String tablaModelo,ContentValues valores,String campo, short valor, short valor2,  int flag){
 
         String seleccion = null;
 
@@ -1891,48 +1891,48 @@ public class QueryDB implements Utilidades.Constantes {
                 seleccion = campo+" <= '"+valor+"'";
 
         }
-        return resolver.update(Contract.obtenerUriContenido(tabla)
+        return resolver.update(Contract.obtenerUriContenido(tablaModelo)
                 , valores, seleccion, null);
 
     }
 
-    public static int deleteRegistro(String tabla,String id){
+    public static int deleteRegistro(String tablaModelo,String id){
 
-        return resolver.delete(Contract.crearUriTabla(id, tabla)
+        return resolver.delete(Contract.crearUriTabla(id, tablaModelo)
                 , null, null);
 
     }
 
-    public static int deleteRegistrosDetalle(String tabla,String id){
+    public static int deleteRegistrosDetalle(String tablaModelo,String id){
 
-        return resolver.delete(Contract.crearUriTabla(id, tabla)
+        return resolver.delete(Contract.crearUriTabla(id, tablaModelo)
                 , null, null);
 
     }
 
-    public static int deleteRegistroDetalle(String tabla,String id, int secuencia){
+    public static int deleteRegistroDetalle(String tablaModelo,String id, int secuencia){
 
-        return resolver.delete(Contract.crearUriTablaDetalle(id,secuencia, tabla)
+        return resolver.delete(Contract.crearUriTablaDetalle(id,secuencia, tablaModelo)
                 , null, null);
 
     }
 
-    public static int deleteRegistroDetalle(String tabla,String id, String secuencia){
+    public static int deleteRegistroDetalle(String tablaModelo,String id, String secuencia){
 
-        return resolver.delete(Contract.crearUriTablaDetalle(id,secuencia, tabla)
+        return resolver.delete(Contract.crearUriTablaDetalle(id,secuencia, tablaModelo)
                 , null, null);
 
     }
 
-    public static int deteteRegistros(String tabla,String seleccion){
+    public static int deteteRegistros(String tablaModelo,String seleccion){
 
-        return resolver.delete(Contract.obtenerUriContenido(tabla)
+        return resolver.delete(Contract.obtenerUriContenido(tablaModelo)
                 ,  seleccion, null);
 
     }
 
     public static int deleteRegistros
-            (String tabla,String campo, String valor, String valor2,  int flag){
+            (String tablaModelo,String campo, String valor, String valor2,  int flag){
 
         String seleccion = null;
 
@@ -1960,20 +1960,20 @@ public class QueryDB implements Utilidades.Constantes {
                 seleccion = campo+" <= '"+valor+"'";
 
         }
-        return resolver.delete(Contract.obtenerUriContenido(tabla)
+        return resolver.delete(Contract.obtenerUriContenido(tablaModelo)
                 , seleccion, null);
 
     }
 
-    public static Uri insertRegistro(String tabla,ContentValues valores){
+    public static Uri insertRegistro(String tablaModelo,ContentValues valores){
 
-        return resolver.insert(Contract.obtenerUriContenido(tabla), valores);
+        return resolver.insert(Contract.obtenerUriContenido(tablaModelo), valores);
 
     }
 
-    public static String idInsertRegistro(String tabla,ContentValues valores){
+    public static String idInsertRegistro(String tablaModelo,ContentValues valores){
 
-        Uri uri = resolver.insert(Contract.obtenerUriContenido(tabla), valores);
+        Uri uri = resolver.insert(Contract.obtenerUriContenido(tablaModelo), valores);
 
         return Contract.obtenerIdTabla(uri);
 
@@ -1985,8 +1985,8 @@ public class QueryDB implements Utilidades.Constantes {
 
         int secuencia = 0;
 
-        if (lista!=null && lista.size()>0) {
-            secuencia = lista.size() + 1;
+        if (lista!=null && lista.sizeLista()>0) {
+            secuencia = lista.sizeLista() + 1;
         }else{
             secuencia = 1;
         }
@@ -2031,7 +2031,7 @@ public class QueryDB implements Utilidades.Constantes {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
+        db.execSQL(String.format("CAMPO_CREATEREG TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
                         "%s TEXT NOT NULL UNIQUE," +
                         "%s TEXT NOT NULL," +
                         "%s TEXT NOT NULL," +
@@ -2045,7 +2045,7 @@ public class QueryDB implements Utilidades.Constantes {
 
         ));
 
-        Log.d("db", "Creada tabla tabla");
+        Log.d("db", "Creada tablaModelo tablaModelo");
         cargarDatosTabla(db);
 
         String[] proyeccion = {TABLAS_TABLA};
@@ -2059,7 +2059,7 @@ public class QueryDB implements Utilidades.Constantes {
             String tbl = cursor.getString(cursor.getColumnIndex(TABLAS_TABLA));
             String seleccion = TABLAS_TABLA + " = '" + tbl+"'";
 
-            insert = new StringBuilder(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT,", tbl, BaseColumns._ID));
+            insert = new StringBuilder(String.format("CAMPO_CREATEREG TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT,", tbl, BaseColumns._ID));
 
             Cursor campos = db.query(TABLA_TABLAS,null,seleccion,
                     null,null,null,null);
@@ -2078,7 +2078,7 @@ public class QueryDB implements Utilidades.Constantes {
 
             campos.close();
             db.execSQL(insert.toString());
-            Log.d("db", "Creada tabla "+tbl);
+            Log.d("db", "Creada tablaModelo "+tbl);
 
         }
         cursor.close();
@@ -2238,7 +2238,7 @@ public class QueryDB implements Utilidades.Constantes {
 
     private ContentValues matcherUri(Uri uri){
 
-        String tabla = null;
+        String tablaModelo = null;
         String idTabla = null;
         String setTablas = null;
         String proyeccion = null;
@@ -2251,7 +2251,7 @@ public class QueryDB implements Utilidades.Constantes {
 
             case PROYECTO:
                 // Generar Pk
-                tabla = TABLA_PROYECTO;
+                tablaModelo = TABLA_PROYECTO;
                 idTabla = PROYECTO_ID_PROYECTO;
                 setTablas = PROYECTO_JOIN_CLIENTE_Y_ESTADO;
                 proyeccion = proyProyecto;
@@ -2259,7 +2259,7 @@ public class QueryDB implements Utilidades.Constantes {
                 esDetalle = false;
                 break;
             case PROYECTO_ID:
-                tabla = TABLA_PROYECTO;
+                tablaModelo = TABLA_PROYECTO;
                 idTabla = PROYECTO_ID_PROYECTO;
                 setTablas = PROYECTO_JOIN_CLIENTE_Y_ESTADO;
                 proyeccion = proyProyecto;
@@ -2269,7 +2269,7 @@ public class QueryDB implements Utilidades.Constantes {
 
 
             case PROYECTO_ID_PARTIDA:
-                tabla = TABLA_PARTIDA;
+                tablaModelo = TABLA_PARTIDA;
                 setTablas = PARTIDAS_JOIN_ESTADO_JOIN_PROYECTO;
                 proyeccion = proyPartida;
                 idTabla = PARTIDA_ID_PROYECTO;
@@ -2279,7 +2279,7 @@ public class QueryDB implements Utilidades.Constantes {
                 break;
 
             case PARTIDA:
-                tabla = TABLA_PARTIDA;
+                tablaModelo = TABLA_PARTIDA;
                 setTablas = PARTIDAS_JOIN_ESTADO_JOIN_PROYECTO;
                 proyeccion = proyPartida;
                 idTabla = PARTIDA_ID_PROYECTO;
@@ -2289,7 +2289,7 @@ public class QueryDB implements Utilidades.Constantes {
                 break;
             case PARTIDA_ID:
 
-                tabla = TABLA_PARTIDA;
+                tablaModelo = TABLA_PARTIDA;
                 setTablas = PARTIDAS_JOIN_ESTADO_JOIN_PROYECTO;
                 proyeccion = proyPartida;
                 idTabla = PARTIDA_ID_PROYECTO;
@@ -2301,7 +2301,7 @@ public class QueryDB implements Utilidades.Constantes {
 
         }
 
-        values.put("tabla",tabla);
+        values.put("tablaModelo",tablaModelo);
         values.put("idTabla",idTabla);
         values.put("proyeccion", proyeccion);
         values.put("setTablas", setTablas);
@@ -2319,24 +2319,24 @@ public class QueryDB implements Utilidades.Constantes {
         ContentValues valores = matcherUri(uri);
 
         String secuencia= values.getAsString("secuencia");
-        String tabla = valores.getAsString("tabla");
+        String tablaModelo = valores.getAsString("tablaModelo");
         String idTabla = valores.getAsString("idTabla");
-        String id = generarIdTabla(tabla);
+        String id = generarIdTabla(tablaModelo);
 
         System.out.println("valores = " + valores);
 
 
-        if (tabla!=null){
+        if (tablaModelo!=null){
             if (secuencia == null) {
                 values.put(idTabla, id);
             }
-            db.insertOrThrow(tabla, null, values);
+            db.insertOrThrow(tablaModelo, null, values);
             notificarCambio(uri);
             if (secuencia != null) {
                 id= values.getAsString(idTabla);
-                return crearUriTablaDetalle(id, secuencia, tabla);
+                return crearUriTablaDetalle(id, secuencia, tablaModelo);
             }else {
-                return crearUriTabla(id, tabla);
+                return crearUriTabla(id, tablaModelo);
             }
         } else{
             throw new UnsupportedOperationException("Uri no soportada");
@@ -2363,7 +2363,7 @@ public class QueryDB implements Utilidades.Constantes {
         String[] ids = null;
         boolean esId = valores.getAsBoolean("esId");
         boolean esDetalle = valores.getAsBoolean("esDetalle");
-        String tabla = valores.getAsString("tabla");
+        String tablaModelo = valores.getAsString("tablaModelo");
 
         if (selection == null) {
 
@@ -2372,13 +2372,13 @@ public class QueryDB implements Utilidades.Constantes {
                 ids = obtenerIdTablaDetalle(uri);
                 String id = ids[0];
                 String secuencia = ids[1];
-                selection = tabla + "." +idTabla + " = '" + id + "' AND " +
+                selection = tablaModelo + "." +idTabla + " = '" + id + "' AND " +
                         "secuencia = '" + secuencia + "'";
 
             } else if (esDetalle) {
 
                 String id = Contract.obtenerIdTablaDetalleId(uri);
-                selection = tabla + "." + idTabla + " = '" + id + "'";
+                selection = tablaModelo + "." + idTabla + " = '" + id + "'";
 
             } else if (esId) {
 
@@ -2412,7 +2412,7 @@ public class QueryDB implements Utilidades.Constantes {
 
         ContentValues valores = matcherUri(uri);
 
-        String tabla = valores.getAsString("tabla");
+        String tablaModelo = valores.getAsString("tablaModelo");
         String idTabla = valores.getAsString("idTabla");
         boolean esId = valores.getAsBoolean("esId");
         boolean esDetalle = valores.getAsBoolean("esDetalle");
@@ -2429,7 +2429,7 @@ public class QueryDB implements Utilidades.Constantes {
             } else if (esDetalle && !esId){
 
                 id = obtenerIdTablaDetalleId(uri);
-                seleccion = tabla+"."+idTabla + " = '" + id + "'";
+                seleccion = tablaModelo+"."+idTabla + " = '" + id + "'";
 
             }else {
                 ids = obtenerIdTablaDetalle(uri);
@@ -2442,11 +2442,11 @@ public class QueryDB implements Utilidades.Constantes {
             seleccion = selection;
         }
 
-        if (tabla!=null) {
+        if (tablaModelo!=null) {
 
             notificarCambio(uri);
 
-            return db.update(tabla, values,
+            return db.update(tablaModelo, values,
                     seleccion ,
                     selectionArgs);
 
@@ -2464,7 +2464,7 @@ public class QueryDB implements Utilidades.Constantes {
 
         ContentValues valores = matcherUri(uri);
 
-        String tabla = valores.getAsString("tabla");
+        String tablaModelo = valores.getAsString("tablaModelo");
         String idTabla = valores.getAsString("idTabla");
         boolean esId = valores.getAsBoolean("esId");
         boolean esDetalle = valores.getAsBoolean("esDetalle");
@@ -2482,7 +2482,7 @@ public class QueryDB implements Utilidades.Constantes {
             } else if (esDetalle && !esId) {
 
                 id = obtenerIdTablaDetalleId(uri);
-                seleccion = tabla + "." + idTabla + " = '" + id + "'";
+                seleccion = tablaModelo + "." + idTabla + " = '" + id + "'";
 
             }else {
                 ids = obtenerIdTablaDetalle(uri);
@@ -2495,9 +2495,9 @@ public class QueryDB implements Utilidades.Constantes {
             seleccion = selection;
         }
 
-        if (tabla!=null) {
+        if (tablaModelo!=null) {
             notificarCambio(uri);
-            return db.delete(tabla,seleccion,
+            return db.delete(tablaModelo,seleccion,
                     selectionArgs);
         }else{
 
@@ -2563,7 +2563,7 @@ public class QueryDB implements Utilidades.Constantes {
                         getApplicationContext().deleteDatabase("freelanceproject.db");
                         if (preferences.contains("perfil_activo")) {
 
-                            editor.remove("perfil_activo");
+                            editor.removeModelo("perfil_activo");
                             editor.apply();
                         }
                         finish();
@@ -2578,7 +2578,7 @@ public class QueryDB implements Utilidades.Constantes {
 
                         if (preferences.contains("perfil_activo")) {
 
-                            editor.remove("perfil_activo");
+                            editor.removeModelo("perfil_activo");
                             editor.apply();
 
                         }
@@ -2616,10 +2616,10 @@ public class QueryDB implements Utilidades.Constantes {
         if (preferences.contains("perfil_activo")){
 
             SharedPreferences.Editor editor=preferences.edit();
-            editor.remove("perfil_activo");
+            editor.removeModelo("perfil_activo");
             editor.apply();
 
-            Log.d("inicio", "borrado perfil activo de preferencias");
+            Log.d("inicio", "borrado perfil setActivo de preferencias");
         }
         if (getDatabasePath("freelanceproject.db")!=null){
 

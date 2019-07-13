@@ -24,8 +24,8 @@ import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 
-import static jjlacode.com.freelanceproject.CommonPry.namesubdef;
 import static jjlacode.com.freelanceproject.CommonPry.setNamefdef;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.*;
 
 
 public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Constantes,
@@ -52,6 +52,8 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
     private Modelo proyecto;
     private ImageButton btnVerEventos;
     private String actualtemp;
+    private ImageButton btnNota;
+    private ImageButton btnVerNotas;
 
 
     public FragmentCRUDCliente() {
@@ -91,11 +93,41 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
 
     }
 
+    @Override
+    protected void setOnRightSwipe() {
+        super.setOnRightSwipe();
+        if (actualtemp.equals(PROSPECTO)){
+            actualtemp = CLIENTE;
+            activityBase.toolbar.setTitle(R.string.clientes);
+            enviarAct();
+            selector();
+        }
+    }
+
+    @Override
+    protected void setOnLeftSwipe() {
+        super.setOnLeftSwipe();
+        if (actualtemp.equals(CLIENTE)){
+            actualtemp = PROSPECTO;
+            activityBase.toolbar.setTitle(R.string.prospectos);
+            enviarAct();
+            selector();
+        }
+    }
+
+    @Override
+    protected void setImagen() {
+
+    }
 
     @Override
     protected void setNuevo() {
 
-        objTiposCli = consulta.queryList(CAMPOS_TIPOCLIENTE, null, null);
+        if (origen != null && ((origen.equals(PROYECTO)) || (origen.equals(PRESUPUESTO)))) {
+            visible(btnback);
+        }
+
+        objTiposCli = queryList(CAMPOS_TIPOCLIENTE, null, null);
 
         //btndelete.setVisibility(View.GONE);
         btnevento.setVisibility(View.GONE);
@@ -131,7 +163,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
             e.printStackTrace();
         }
         String seleccion = EVENTO_CLIENTEREL + " = '" + id + "'";
-        if (consulta.checkQueryList(CAMPOS_EVENTO, seleccion, null)) {
+        if (checkQueryList(CAMPOS_EVENTO, seleccion, null)) {
             btnVerEventos.setVisibility(View.VISIBLE);
         } else {
             btnVerEventos.setVisibility(View.GONE);
@@ -161,6 +193,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
 
         activityBase.toolbar.setSubtitle(modelo.getString(CLIENTE_NOMBRE));
         visible(btnevento);
+        visible(btnNota);
 
         nombreCliente.setText(modelo.getString(CLIENTE_NOMBRE));
         direccionCliente.setText(modelo.getString(CLIENTE_DIRECCION));
@@ -177,6 +210,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
                 || origen.equals(AGENDA))) {
 
             btndelete.setVisibility(View.GONE);
+            visible(btnback);
 
         } else {
 
@@ -195,12 +229,18 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
         }
 
         String seleccion = EVENTO_CLIENTEREL + " = '" + id + "'";
-        if (consulta.checkQueryList(CAMPOS_EVENTO, seleccion, null)) {
+        if (checkQueryList(CAMPOS_EVENTO, seleccion, null)) {
             btnVerEventos.setVisibility(View.VISIBLE);
         } else {
             btnVerEventos.setVisibility(View.GONE);
         }
 
+        seleccion = NOTA_ID_RELACIONADO+" = '"+id+"'";
+        if (checkQueryList(CAMPOS_NOTA,seleccion,null)){
+            btnVerNotas.setVisibility(View.VISIBLE);
+        }else {
+            btnVerNotas.setVisibility(View.GONE);
+        }
 
     }
 
@@ -283,6 +323,38 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
             }
         });
 
+        btnNota.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                enviarBundle();
+                bundle.putString(IDREL,modelo.getString(CLIENTE_ID_CLIENTE));
+                bundle.putString(SUBTITULO, modelo.getString(CLIENTE_NOMBRE));
+                bundle.putString(ORIGEN, CLIENTE);
+                bundle.putString(ACTUAL,NOTA);
+                bundle.putSerializable(MODELO,null);
+                bundle.putSerializable(LISTA,null);
+                bundle.putString(CAMPO_ID,null);
+                bundle.putBoolean(NUEVOREGISTRO,true);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
+            }
+        });
+
+        btnVerNotas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                enviarBundle();
+                bundle.putString(IDREL,modelo.getString(CLIENTE_ID_CLIENTE));
+                bundle.putString(SUBTITULO, modelo.getString(CLIENTE_NOMBRE));
+                bundle.putString(ORIGEN, CLIENTE);
+                bundle.putString(ACTUAL,NOTA);
+                bundle.putSerializable(LISTA,null);
+                bundle.putSerializable(MODELO,null);
+                bundle.putString(CAMPO_ID,null);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
+            }
+        });
 
     }
 
@@ -315,6 +387,10 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
         llamada = (ImageButton) ctrl(R.id.imgbtnteludcliente);
         mail = (ImageButton) ctrl(R.id.imgbtnmailudcliente);
         btnVerEventos = (ImageButton) ctrl(R.id.btnvereventoudcliente);
+        btnNota = (ImageButton) ctrl(R.id.btn_crearnota_cliente);
+        btnVerNotas = (ImageButton) ctrl(R.id.btn_vernotas_cliente);
+
+        nombreCliente.grabarEnable(true);
 
     }
 

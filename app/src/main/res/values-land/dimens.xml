@@ -11,5 +11,6 @@
     <dimen name="alto_layout_sbd">65dp</dimen>
     <dimen name="margen_sdb">10dp</dimen>
     <dimen name="margen_sdb_doble">20dp</dimen>
+    <dimen name="texto_card_tit">8sp</dimen>
 
 </resources>

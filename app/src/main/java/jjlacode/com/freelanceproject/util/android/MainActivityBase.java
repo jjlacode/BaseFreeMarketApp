@@ -6,11 +6,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -26,8 +26,6 @@ import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.crud.ListaModelo;
-import jjlacode.com.freelanceproject.util.crud.Modelo;
 
 public class MainActivityBase extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ICFragmentos,
@@ -38,23 +36,11 @@ public class MainActivityBase extends AppCompatActivity
     public FloatingActionButton fab;
     public FloatingActionButton fab2;
 
-    protected Modelo modelo;
-    protected String id;
-    protected int secuencia;
-    public boolean inicio;
-    protected ListaModelo lista;
     public Context context;
     protected boolean land;
     protected boolean tablet;
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (!inicio){
-            persitencia();
-        }
-    }
+    protected float sizeF;
+    private String TAG = getClass().getSimpleName();
 
     protected void persitencia(){
 
@@ -64,17 +50,16 @@ public class MainActivityBase extends AppCompatActivity
         bundle.putString(ORIGEN, persistencia.getString(ORIGEN,""));
         bundle.putString(ACTUAL, persistencia.getString(ACTUAL,""));
         bundle.putString(ACTUALTEMP, persistencia.getString(ACTUALTEMP,""));
-        bundle.putString(ID, persistencia.getString(ID,""));
-        bundle.putInt(SECUENCIA, persistencia.getInt(SECUENCIA,0));
-        recargarFragment();
-        System.out.println("persistencia");
+        bundle.putString(CAMPO_ID, persistencia.getString(CAMPO_ID,""));
+        bundle.putInt(CAMPO_SECUENCIA, persistencia.getInt(CAMPO_SECUENCIA,0));
 
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d(TAG,"on Create");
 
         land = getResources().getBoolean(R.bool.esLand);
         tablet = getResources().getBoolean(R.bool.esTablet);
@@ -82,22 +67,16 @@ public class MainActivityBase extends AppCompatActivity
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
         int ancho = metrics.widthPixels;
-        int alto = 100;
-        int pad = 10;
-        float sizef = 0f;
+        int alto = metrics.heightPixels;
         if (!land){
-            alto = (int) ((double)ancho/3);
-            pad = (int) ((double)ancho/10);
-            sizef = (float) ((double)ancho/100);
+            sizeF = (float) (((float)ancho*(float)alto)/(metrics.densityDpi*300));
         }else {
-            alto = (int) ((double)ancho/6);
-            pad = (int) ((double)ancho/20);
-            sizef = (float) ((double)ancho/100);
+            sizeF = (float) (((float)ancho*(float)alto)/(metrics.densityDpi*300));
         }
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
         if (savedInstanceState!=null){
-            bundle = savedInstanceState;
-            System.out.println("saveinstance");
+
+            persitencia();
 
         }else {
 
@@ -108,8 +87,6 @@ public class MainActivityBase extends AppCompatActivity
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        inicio = true;
 
         fab =  findViewById(R.id.fab);
         fab2 =  findViewById(R.id.fab2);
@@ -126,6 +103,7 @@ public class MainActivityBase extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setItemTextAppearance(R.style.TextAppearance_AppCompat_Menu);
 
     }
 
@@ -135,7 +113,7 @@ public class MainActivityBase extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        recargarFragment();
+        //recargarFragment();
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -163,9 +141,6 @@ public class MainActivityBase extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        id=null;
-        modelo=null;
-        secuencia=0;
         bundle = new Bundle();
 
         setOnNavigation(item);
@@ -183,7 +158,6 @@ public class MainActivityBase extends AppCompatActivity
     public void enviarBundleAFragment(Bundle bundle, Fragment myFragment) {
 
         myFragment.setArguments(bundle);
-        System.out.println("envia bundle a fragment = " + bundle);
 
         this.bundle = bundle;
 
@@ -251,15 +225,6 @@ public class MainActivityBase extends AppCompatActivity
     public void showSubTitle(String subTitle) {
 
         toolbar.setSubtitle(subTitle);
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-
-        outState = bundle;
-        super.onSaveInstanceState(outState);
-        System.out.println("guardado outstate");
-        System.out.println("outState = " + outState);
     }
 
     protected void recargarFragment(){

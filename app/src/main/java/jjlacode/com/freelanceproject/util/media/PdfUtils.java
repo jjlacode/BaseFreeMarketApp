@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import jjlacode.com.freelanceproject.util.android.AppActivity;
 import jjlacode.com.freelanceproject.util.android.FragmentBase;
 import jjlacode.com.freelanceproject.util.android.ICFragmentos;
 
@@ -93,9 +94,9 @@ public class PdfUtils extends FragmentBase {
 
     }
 
-    public Uri getFileUri(){
+    public Uri getFileUri(Context context){
 
-        buscarPDF();
+        buscarPDF(context);
         return fileUri;
     }
 
@@ -130,9 +131,9 @@ public class PdfUtils extends FragmentBase {
         return baseColor;
     }
 
-    protected  void verPDFAPP(Activity activity) {
+    protected  void verPDFAPP(Activity activity, Context context) {
         //Primero busca el archivo
-        buscarPDF();
+        buscarPDF(context);
         if(fPDF==1) {
             Uri uri= fileUri;//Uri.fromFile(archivoPDF);
             //Creo un Intent para inciar una nueva actividad, pero de otra APP
@@ -181,7 +182,7 @@ public class PdfUtils extends FragmentBase {
 
     public void verPDF(ICFragmentos icFragmentos, Bundle bundle, Context context) {
         //Primero busca el archivo
-        buscarPDF();
+        buscarPDF(context);
         if(fPDF==1) {
             //bundle = new Bundle();
             bundle.putString(SUBTITULO,bundle.getString(ORIGEN));
@@ -199,7 +200,7 @@ public class PdfUtils extends FragmentBase {
     public void enviarPDFEmail(ICFragmentos icFragmentos, Context context,
                                String email, String asunto, String texto) {
 
-        buscarPDF();
+        buscarPDF(context);
         if(fPDF==1) {
             bundle = new Bundle();
             bundle.putString("email",email);
@@ -220,7 +221,7 @@ public class PdfUtils extends FragmentBase {
 
     public void compartirPDF(ICFragmentos icFragmentos, Context context) {
 
-        buscarPDF();
+        buscarPDF(context);
         if(fPDF==1) {
             bundle = new Bundle();
             bundle.putString("uri", getUriArchivo().toString());
@@ -237,7 +238,7 @@ public class PdfUtils extends FragmentBase {
     }
 
 
-    public boolean buscarPDF() {
+    public boolean buscarPDF(Context context) {
         try{
             File carpeta = null;
             if (Environment.MEDIA_MOUNTED.equals(Environment
@@ -252,7 +253,7 @@ public class PdfUtils extends FragmentBase {
                 //Verifica si la carpeta existe
                 if (archivoPDF.exists()) {
                     fPDF = 1;     //La bandera esta activada para leer PDFs
-                    fileUri = FileProvider.getUriForFile(getContext(),"jjlacode.com.androidutils.provider",archivoPDF);
+                    fileUri = FileProvider.getUriForFile(context,"jjlacode.com.freelanceproject.provider",archivoPDF);
 
                     return true;
                 } else {
@@ -336,9 +337,9 @@ public class PdfUtils extends FragmentBase {
     }
 
 
-    public void addResource(int resource){
+    public void addResource(int resource, Context context){
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getContext().getResources(),
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),
                 resource);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
@@ -418,7 +419,7 @@ public class PdfUtils extends FragmentBase {
             documento.add(paragraph);
         } catch (DocumentException e) {
             e.printStackTrace();
-            Log.e("Crear tabla", e.toString());
+            Log.e("Crear tablaModelo", e.toString());
         }
     }
 
@@ -532,18 +533,18 @@ public class PdfUtils extends FragmentBase {
             documento.add(paragraph);
         } catch (DocumentException e) {
             e.printStackTrace();
-            Log.e("Crear tabla", e.toString());
+            Log.e("Crear tablaModelo", e.toString());
         }
     }
 
-    protected void visorPdf(Class clase){
+    protected void visorPdf(Class clase, Context context){
 
-        buscarPDF();
+        buscarPDF(context);
         if(fPDF==1) {
             Intent intent = new Intent(getContext(), clase);
             intent.putExtra("path", archivoPDF.getAbsolutePath());
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            getContext().startActivity(intent);
+            context.startActivity(intent);
             Toast.makeText(getContext(),"Si existe archivo PDF para LEER",Toast.LENGTH_LONG).show();
         }
         else
@@ -631,14 +632,11 @@ public class PdfUtils extends FragmentBase {
                             .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                     NOMBRE_DIRECTORIO);
 
-            if (ruta != null) {
                 if (!ruta.mkdirs()) {
                     if (!ruta.exists()) {
                         return null;
                     }
                 }
-            }
-        } else {
         }
 
         return ruta;

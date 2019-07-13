@@ -2008,6 +2008,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
 
     public static int updateRegistro(String tabla,String id,ContentValues valores){
 
+        valores.put(CAMPO_TIMESTAMP,JavaUtil.hoy());
 
         return resolver.update(crearUriTabla(id, tabla)
                 , valores, null, null);
@@ -2016,17 +2017,23 @@ public class ConsultaBD implements JavaUtil.Constantes {
 
     public int updateRegistro(Uri uri,ContentValues valores){
 
+        valores.put(CAMPO_TIMESTAMP,JavaUtil.hoy());
+
         return resolver.update(uri, valores, null, null);
 
     }
 
     public int updateRegistro(Uri uri,ContentValues valores, String seleccion){
 
+        valores.put(CAMPO_TIMESTAMP,JavaUtil.hoy());
+
         return resolver.update(uri, valores, seleccion, null);
 
     }
 
     public static int updateRegistroDetalle(String tabla,String id, String secuencia,ContentValues valores){
+
+        valores.put(CAMPO_TIMESTAMP,JavaUtil.hoy());
 
         return resolver.update(crearUriTablaDetalle(id,secuencia, tabla)
                 , valores, null, null);
@@ -2035,12 +2042,16 @@ public class ConsultaBD implements JavaUtil.Constantes {
 
     public static int updateRegistroDetalle(String tabla,String id, int secuencia,ContentValues valores){
 
+        valores.put(CAMPO_TIMESTAMP,JavaUtil.hoy());
+
         return resolver.update(crearUriTablaDetalle(id,secuencia, tabla)
                 , valores, null, null);
 
     }
 
     public static int updateRegistrosDetalle(String tabla,String id, String tablaCab, ContentValues valores,String seleccion){
+
+        valores.put(CAMPO_TIMESTAMP,JavaUtil.hoy());
 
         return resolver.update(crearUriTablaDetalleId(id,tabla,tablaCab)
                 , valores, seleccion, null);
@@ -2049,6 +2060,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
 
     public static int updateRegistros(String tabla,ContentValues valores,String seleccion){
 
+        valores.put(CAMPO_TIMESTAMP,JavaUtil.hoy());
+
         return resolver.update(obtenerUriContenido(tabla)
                 , valores, seleccion, null);
 
@@ -2056,6 +2069,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
 
     public static int updateRegistros
             (String tabla,ContentValues valores,String campo, String valor, String valor2,  int flag){
+
+        valores.put(CAMPO_TIMESTAMP,JavaUtil.hoy());
 
         String seleccion = null;
 
@@ -2091,6 +2106,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
     public static int updateRegistros
             (String tabla,ContentValues valores,String campo, int valor, int valor2,  int flag){
 
+        valores.put(CAMPO_TIMESTAMP,JavaUtil.hoy());
+
         String seleccion = null;
 
         switch (flag){
@@ -2124,6 +2141,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
 
     public static int updateRegistros
             (String tabla,ContentValues valores,String campo, long valor, long valor2,  int flag){
+
+        valores.put(CAMPO_TIMESTAMP,JavaUtil.hoy());
 
         String seleccion = null;
 
@@ -2159,6 +2178,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
     public static int updateRegistros
             (String tabla,ContentValues valores,String campo, double valor, double valor2,  int flag){
 
+        valores.put(CAMPO_TIMESTAMP,JavaUtil.hoy());
+
         String seleccion = null;
 
         switch (flag){
@@ -2193,6 +2214,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
     public static int updateRegistros
             (String tabla,ContentValues valores,String campo, float valor, float valor2,  int flag){
 
+        valores.put(CAMPO_TIMESTAMP,JavaUtil.hoy());
+
         String seleccion = null;
 
         switch (flag){
@@ -2226,6 +2249,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
 
     public static int updateRegistros
             (String tabla,ContentValues valores,String campo, short valor, short valor2,  int flag){
+
+        valores.put(CAMPO_TIMESTAMP,JavaUtil.hoy());
 
         String seleccion = null;
 
@@ -2329,19 +2354,32 @@ public class ConsultaBD implements JavaUtil.Constantes {
 
     public static Uri insertRegistro(String tabla,ContentValues valores){
 
+        valores.put(CAMPO_TIMESTAMP,JavaUtil.hoy());
+
         return resolver.insert(obtenerUriContenido(tabla), valores);
 
     }
 
     public static String idInsertRegistro(String tabla,ContentValues valores){
 
-        Uri uri = resolver.insert(obtenerUriContenido(tabla), valores);
+        valores.put(CAMPO_TIMESTAMP,JavaUtil.hoy());
+        Uri uri = null;
+        try {
+            uri = resolver.insert(obtenerUriContenido(tabla), valores);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
-        return obtenerIdTabla(uri);
+        if (uri!=null) {
+            return obtenerIdTabla(uri);
+        }
+        return ERROR;
 
     }
 
     public static Uri insertRegistroDetalle(String[] campos, String id, String tablaCab, ContentValues valores){
+
+        valores.put(CAMPO_TIMESTAMP,JavaUtil.hoy());
 
         ArrayList<Modelo> lista = queryListDetalle(campos,id,tablaCab,null,null);
 
@@ -2361,6 +2399,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
 
     public static int secInsertRegistroDetalle(String[] campos, String id, String tablaCab, ContentValues valores){
 
+        valores.put(CAMPO_TIMESTAMP,JavaUtil.hoy());
+
         ArrayList<Modelo> lista = queryListDetalle(campos,id,tablaCab,null,null);
 
         int secuencia = 0;
@@ -2371,7 +2411,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
             secuencia = 1;
         }
 
-        putDato(valores,campos,SECUENCIA,secuencia);
+        putDato(valores,campos, CAMPO_SECUENCIA,secuencia);
 
         Uri uri = resolver.insert(crearUriTablaDetalle(id,secuencia,campos[1]), valores);
 

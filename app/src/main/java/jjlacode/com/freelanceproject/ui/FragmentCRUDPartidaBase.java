@@ -48,6 +48,8 @@ import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.*;
+
 public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.Constantes,
         ContratoPry.Tablas, CommonPry.TiposDetPartida {
 
@@ -113,29 +115,9 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
     }
 
     @Override
-    protected void setMaestroDetallePort() { maestroDetalleSeparados = true;
-
-    }
-
-    @Override
-    protected void setMaestroDetalleLand() { maestroDetalleSeparados = false;
-
-    }
-
-    @Override
-    protected void setMaestroDetalleTabletLand() { maestroDetalleSeparados = false;
-
-    }
-
-    @Override
-    protected void setMaestroDetalleTabletPort() { maestroDetalleSeparados = false;
-
-    }
-
-    @Override
     protected void setLayout() {
 
-        layoutCuerpo = R.layout.fragment_ud_partidabase;
+        layoutCuerpo = R.layout.fragment_crud_partidabase;
         layoutItem = R.layout.item_list_partidabase;
     }
 
@@ -166,46 +148,19 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
     }
 
     @Override
-    protected void setTablaCab() {
-
-        tablaCab = null;
-
-    }
-
-    @Override
-    protected void setContext() {
-
-        contexto = getContext();
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = CAMPOS_PARTIDABASE;
-
-    }
-
-    @Override
-    protected void setCampoID() {
-
-        campoID = PARTIDABASE_ID_PARTIDABASE;
-
-    }
-
-    @Override
-    protected void setBundle() {
-
-    }
-
-    @Override
     protected void setDatos() {
 
         autoNombrePartida.setVisibility(View.GONE);
+        btnNuevoProd.setVisibility(View.GONE);
+        btnNuevaTarea.setVisibility(View.GONE);
         btnNuevoProdProv.setVisibility(View.GONE);
+        btnpart.setVisibility(View.GONE);
         nombrePartida.setVisibility(View.VISIBLE);
-        btnNuevaTarea.setVisibility(View.VISIBLE);
-        btnNuevoProd.setVisibility(View.VISIBLE);
-        btnpart.setVisibility(View.VISIBLE);
+        if (modelo.getString(PARTIDABASE_ID_PARTIDAORIGEN)==null) {
+            btnNuevaTarea.setVisibility(View.VISIBLE);
+            btnNuevoProd.setVisibility(View.VISIBLE);
+            btnpart.setVisibility(View.VISIBLE);
+        }
 
         CommonPry.Calculos.actualizarPartidaBase(id);
 
@@ -227,7 +182,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
 
         listaDetpartidas = new ListaModelo(CAMPOS_DETPARTIDABASE, id,TABLA_PARTIDABASE,null,null);
 
-        if (listaDetpartidas.chech()) {
+        if (listaDetpartidas.chechLista()) {
 
             rvdetalles.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -245,8 +200,8 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
                     bundle = new Bundle();
                     bundle.putSerializable(TABLA_PARTIDABASE, modelo);
                     bundle.putSerializable(MODELO, detpartidabase);
-                    bundle.putString(ID, detpartidabase.getString(DETPARTIDABASE_ID_PARTIDABASE));
-                    bundle.putInt(SECUENCIA, detpartidabase.getInt(DETPARTIDABASE_SECUENCIA));
+                    bundle.putString(CAMPO_ID, detpartidabase.getString(DETPARTIDABASE_ID_PARTIDABASE));
+                    bundle.putInt(CAMPO_SECUENCIA, detpartidabase.getInt(DETPARTIDABASE_SECUENCIA));
                     bundle.putString(ORIGEN, PARTIDABASE);
                     bundle.putString(TIPO, tipo);
                     icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaBase());
@@ -258,7 +213,6 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
 
             rvdetalles.setVisibility(View.GONE);
         }
-
 
     }
 
@@ -365,6 +319,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
 
         tituloSingular = R.string.partida_base;
         tituloPlural = R.string.partidas_base;
+        tituloNuevo = R.string.nueva_partidabase;
     }
 
     @Override
@@ -428,8 +383,8 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
                         valores.remove(PARTIDABASE_ID_PARTIDABASE);
                     }
 
-                    Uri uri = consulta.insertRegistro(TABLA_PARTIDABASE,valores);
-                    partidabase = consulta.queryObject(CAMPOS_PARTIDABASE,uri);
+                    Uri uri = insertRegistro(TABLA_PARTIDABASE,valores);
+                    partidabase = queryObject(CAMPOS_PARTIDABASE,uri);
                     id = partidabase.getString(PARTIDABASE_ID_PARTIDABASE);
 
                     autoNombrePartida.setText(partidabase.getString(PARTIDABASE_NOMBRE));
@@ -443,7 +398,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
 
                     if (clon.getNombreTabla().equals(TABLA_PARTIDA)) {
 
-                        ArrayList<Modelo> listaclon = consulta.queryListDetalle
+                        ArrayList<Modelo> listaclon = queryListDetalle
                                 (CAMPOS_DETPARTIDA,clon.getString(PARTIDA_ID_PARTIDA),TABLA_PARTIDA);
 
                         for (Modelo clonpart : listaclon) {
@@ -454,22 +409,22 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
                             setDato(DETPARTIDABASE_DESCRIPCION,clonpart.getString(DETPARTIDA_DESCRIPCION));
                             setDato(DETPARTIDABASE_BENEFICIO,clonpart.getString(DETPARTIDA_BENEFICIO));
                             setDato(DETPARTIDABASE_CANTIDAD,clonpart.getString(DETPARTIDA_CANTIDAD));
-                            setDato(DETPARTIDABASE_DESCUENTOPROV,clonpart.getString(DETPARTIDA_DESCUENTOPROV));
+                            setDato(DETPARTIDABASE_DESCUENTOPROVCAT,clonpart.getString(DETPARTIDA_DESCUENTOPROVCAT));
                             setDato(DETPARTIDABASE_PRECIO,clonpart.getString(DETPARTIDA_PRECIO));
                             setDato(DETPARTIDABASE_ID_DETPARTIDABASE,clonpart.getString(DETPARTIDA_ID_DETPARTIDA));
-                            setDato(DETPARTIDABASE_REFPROV,clonpart.getString(DETPARTIDA_REFPROV));
+                            setDato(DETPARTIDABASE_REFPROVCAT,clonpart.getString(DETPARTIDA_REFPROVCAT));
                             setDato(DETPARTIDABASE_TIEMPO,clonpart.getString(DETPARTIDA_TIEMPO));
                             setDato(DETPARTIDABASE_RUTAFOTO,clonpart.getString(DETPARTIDA_RUTAFOTO));
                             setDato(DETPARTIDABASE_TIPO,clonpart.getString(DETPARTIDA_TIPO));
                             valores.remove(DETPARTIDA_SECUENCIA);
 
-                            consulta.insertRegistroDetalle(CAMPOS_DETPARTIDABASE,id
+                            insertRegistroDetalle(CAMPOS_DETPARTIDABASE,id
                                     ,TABLA_PARTIDABASE,valores);
                         }
 
                     }else if (clon.getNombreTabla().equals(TABLA_PARTIDABASE)){
 
-                        ArrayList<Modelo> listaclon = consulta.queryListDetalle
+                        ArrayList<Modelo> listaclon = queryListDetalle
                                 (CAMPOS_DETPARTIDABASE,clon.getString(PARTIDABASE_ID_PARTIDABASE),TABLA_PARTIDABASE);
 
                         for (Modelo clonpart : listaclon) {
@@ -478,7 +433,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
                             valores.put(DETPARTIDABASE_ID_PARTIDABASE,id);
                             valores.remove(DETPARTIDABASE_SECUENCIA);
 
-                            consulta.insertRegistroDetalle(CAMPOS_DETPARTIDABASE,id
+                            insertRegistroDetalle(CAMPOS_DETPARTIDABASE,id
                                     ,TABLA_PARTIDABASE,valores);
                         }
                     }
@@ -509,7 +464,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
         @Override
         public DetpartidaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
 
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_detpartida, null, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_detpartidabase, null, false);
 
             view.setOnClickListener(this);
 
@@ -525,15 +480,15 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
         @Override
         public void onBindViewHolder(@NonNull DetpartidaViewHolder detpartidaViewHolder, int position) {
 
+            System.out.println("tipo detpartida = "+ listDetpartida.get(0).getString(DETPARTIDABASE_TIPO));
+
             String tipodetpartida = listDetpartida.get(position).getString(DETPARTIDABASE_TIPO);
             detpartidaViewHolder.tipo.setText(tipodetpartida.toUpperCase());
             detpartidaViewHolder.nombre.setText(listDetpartida.get(position).getString(DETPARTIDABASE_NOMBRE));
             detpartidaViewHolder.tiempo.setText(listDetpartida.get(position).getString(DETPARTIDABASE_TIEMPO));
-            detpartidaViewHolder.cantidad.setText(listDetpartida.get(position).getString(DETPARTIDABASE_CANTIDAD));
             if (listDetpartida.get(position).getString(DETPARTIDABASE_TIPO).equals(CommonPry.TiposDetPartida.TIPOTAREA)) {
                 detpartidaViewHolder.importe.setText(JavaUtil.formatoMonedaLocal(
-                        (listDetpartida.get(position).getDouble(DETPARTIDABASE_TIEMPO)*CommonPry.hora*
-                                listDetpartida.get(position).getDouble(DETPARTIDABASE_CANTIDAD))));
+                        (listDetpartida.get(position).getDouble(DETPARTIDABASE_TIEMPO)*CommonPry.hora)));
             }else{
                 detpartidaViewHolder.importe.setText(listDetpartida.get(position).getString(DETPARTIDABASE_PRECIO));
             }
@@ -578,21 +533,19 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
 
         class DetpartidaViewHolder extends RecyclerView.ViewHolder {
 
-            TextView tipo,nombre,ltiempo,lcantidad,limporte,tiempo,cantidad,importe;
+            TextView tipo,nombre,ltiempo,limporte,tiempo,importe;
             ImageView imagen;
 
             DetpartidaViewHolder(@NonNull View itemView) {
                 super(itemView);
 
-                tipo = itemView.findViewById(R.id.tvtipoldetpaetida);
-                nombre = itemView.findViewById(R.id.tvnomldetpartida);
-                ltiempo = itemView.findViewById(R.id.ltiempoldetpartida);
-                lcantidad = itemView.findViewById(R.id.lcantldetpartida);
-                limporte = itemView.findViewById(R.id.limpldetpartida);
-                tiempo = itemView.findViewById(R.id.tvtiempoldetpartida);
-                cantidad = itemView.findViewById(R.id.tvcantldetpartida);
-                importe = itemView.findViewById(R.id.tvimpldetpartida);
-                imagen = itemView.findViewById(R.id.imgldetpartida);
+                tipo = itemView.findViewById(R.id.tvtipoldetpaetidabase);
+                nombre = itemView.findViewById(R.id.tvnomldetpartidabase);
+                ltiempo = itemView.findViewById(R.id.ltiempoldetpartidabase);
+                limporte = itemView.findViewById(R.id.limpldetpartidabase);
+                tiempo = itemView.findViewById(R.id.tvtiempoldetpartidabase);
+                importe = itemView.findViewById(R.id.tvimpldetpartidabase);
+                imagen = itemView.findViewById(R.id.imgldetpartidabase);
 
 
             }
@@ -696,8 +649,8 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
         private void setAdaptadorAuto(AutoCompleteTextView autoCompleteTextView) {
 
         lista = CRUDutil.setListaModelo(campos);
-            ArrayList<Modelo> listaPartidasProy = consulta.queryList(CAMPOS_PARTIDA);
-            lista.addAll(listaPartidasProy);
+            ArrayList<Modelo> listaPartidasProy = queryList(CAMPOS_PARTIDA);
+            lista.addAllLista(listaPartidasProy);
 
             AdaptadorFiltroRVPartidas adaptadorPartida = new AdaptadorFiltroRVPartidas(contexto,
                     layoutItem,lista.getLista(),campos);
@@ -720,7 +673,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
             TextView importe = view.findViewById(R.id.tvimppartida);
 
             String tabla = entrada.get(posicion).getNombreTabla();
-            System.out.println("tabla = " + tabla);
+            System.out.println("tablaModelo = " + tabla);
 
             if (tabla.equals(TABLA_PARTIDA)) {
 
@@ -827,7 +780,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
                         for (Modelo item :entradas) {
 
                             String tabla = item.getNombreTabla();
-                            System.out.println("tabla = " + tabla);
+                            System.out.println("tablaModelo = " + tabla);
 
                             if (tabla.equals(TABLA_PARTIDABASE)){
 
@@ -882,7 +835,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
                         }
                         notifyDataSetChanged();
                     } else if (constraint == null) {
-                        // no filter, add entire original list back in
+                        // no filter, addModelo entire original list back in
                         entradasfiltro.addAll(entradas);
                         notifyDataSetInvalidated();
                     }

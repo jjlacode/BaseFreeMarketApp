@@ -190,7 +190,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     @Override
     protected void setLayout() {
 
-        layoutCuerpo = R.layout.fragment_cud_perfil;
+        layoutCuerpo = R.layout.fragment_crud_perfil;
         layoutItem = R.layout.item_list_perfil;
 
     }
@@ -254,7 +254,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
             super.delete();
             consulta.deleteRegistro(tabla, id);
         }else{
-            Toast.makeText(getContext(),"No se puede borrar el modelo activo", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(),"No se puede borrar el modelo setActivo", Toast.LENGTH_SHORT).show();
         }
 
         return true;

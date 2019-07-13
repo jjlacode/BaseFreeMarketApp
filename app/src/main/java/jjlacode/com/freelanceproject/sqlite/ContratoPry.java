@@ -5,24 +5,9 @@ import android.net.Uri;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.*;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.AMORTIZACION;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.CLIENTE;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.DETPARTIDA;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.DETPARTIDABASE;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.ESTADO;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.EVENTO;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.GASTOFIJO;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.NOTA;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.PARTIDA;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.PARTIDABASE;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.PEDIDOSPROV;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.PERFIL;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.PRODUCTO;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.PROYECTO;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.TAREA;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.TIPOCLIENTE;
 
 
 public class ContratoPry implements JavaUtil.Constantes {
@@ -55,242 +40,331 @@ public class ContratoPry implements JavaUtil.Constantes {
         String TABLA_PRODUCTO = PRODUCTO;
         String TABLA_GASTOFIJO = GASTOFIJO;
         String TABLA_EVENTO = EVENTO;
-        String TABLA_TABLAS = "tablas";
+        String TABLA_TABLAS = TABLAS;
         String TABLA_DETPARTIDA = DETPARTIDA;
         String TABLA_PARTIDABASE = PARTIDABASE;
         String TABLA_DETPARTIDABASE = DETPARTIDABASE;
-        String TABLA_PEDIDOSPROV = PEDIDOSPROV;
+        String TABLA_PROVEEDOR = PROVEEDOR;
+        String TABLA_PEDIDOPROVCAT = PEDIDOPROVCAT;
+        String TABLA_PEDIDOPROVEEDOR = PEDIDOPROVEEDOR;
+        String TABLA_DETPEDIDOPROVCAT = DETPEDIDOPROVCAT;
+        String TABLA_DETPEDIDOPROVEEDOR = DETPEDIDOPROVEEDOR;
         String TABLA_NOTA = NOTA;
+        String TABLA_DIARIO = DIARIO;
 
         //COLUMNAS--------------------------------------------------------
 
-        String PROYECTO_ID_PROYECTO = "id_proyecto";
-        String PROYECTO_ID_CLIENTE = "id_proyecto_cliente";
-        String PROYECTO_ID_ESTADO = "id_proyecto_estado";
-        String PROYECTO_NOMBRE = "nombre_proyecto";
-        String PROYECTO_DESCRIPCION = "descripcion";
-        String PROYECTO_FECHAENTRADA = "fechaentrada";
-        String PROYECTO_FECHAENTREGAPRESUP = "fechaentregapresup";
-        String PROYECTO_FECHAENTREGAACORDADA = "fechaentregaacordada";
-        String PROYECTO_FECHAENTREGACALCULADA = "fechaentregacalculada";
-        String PROYECTO_FECHAFINAL = "fechafinal";
-        String PROYECTO_FECHAENTRADAF = "fechaentradaf";
-        String PROYECTO_FECHAENTREGAPRESUPF = "fechaentregapresupf";
-        String PROYECTO_FECHAENTREGAACORDADAF = "fechaentregaacordadaf";
-        String PROYECTO_FECHAENTREGACALCULADAF = "fechaentregacalculadaf";
-        String PROYECTO_FECHAFINALF = "fechafinalf";
-        String PROYECTO_RETRASO = "retraso_proyecto";
-        String PROYECTO_IMPORTEPRESUPUESTO = "importepresupuesto";
-        String PROYECTO_IMPORTEFINAL = "importefinal";
-        String PROYECTO_COSTE = "coste_proyecto";
-        String PROYECTO_TIEMPO = "tiempo_proyecto";
-        String PROYECTO_RUTAFOTO = "rutafoto_proyecto";
-        String PROYECTO_RUTAPDF = "rutapdf_proyecto";
-        String PROYECTO_TOTCOMPLETADO = "totcomplet_proyecto";
-        String PROYECTO_TIMESTAMP = "timestamp";
+        String PROYECTO_ID_PROYECTO = CAMPO_ID +TABLA_PROYECTO;
+        String PROYECTO_ID_CLIENTE = CAMPO_ID +TABLA_CLIENTE+TABLA_PROYECTO;
+        String PROYECTO_ID_ESTADO = CAMPO_ID +TABLA_ESTADO+TABLA_PROYECTO;
+        String PROYECTO_NOMBRE = CAMPO_NOMBRE +TABLA_PROYECTO;
+        String PROYECTO_DESCRIPCION = CAMPO_DESCRIPCION +TABLA_PROYECTO;
+        String PROYECTO_FECHAENTRADA = "fechaentrada_"+TABLA_PROYECTO;
+        String PROYECTO_FECHAENTREGAPRESUP = "fechaentregapresup_"+TABLA_PROYECTO;
+        String PROYECTO_FECHAENTREGAACORDADA = "fechaentregaacordada_"+TABLA_PROYECTO;
+        String PROYECTO_FECHAENTREGACALCULADA = "fechaentregacalculada_"+TABLA_PROYECTO;
+        String PROYECTO_FECHAFINAL = "fechafinal_"+TABLA_PROYECTO;
+        String PROYECTO_FECHAENTRADAF = "fechaentradaf_"+TABLA_PROYECTO;
+        String PROYECTO_FECHAENTREGAPRESUPF = "fechaentregapresupf_"+TABLA_PROYECTO;
+        String PROYECTO_FECHAENTREGAACORDADAF = "fechaentregaacordadaf_"+TABLA_PROYECTO;
+        String PROYECTO_FECHAENTREGACALCULADAF = "fechaentregacalculadaf_"+TABLA_PROYECTO;
+        String PROYECTO_FECHAFINALF = "fechafinalf_"+TABLA_PROYECTO;
+        String PROYECTO_RETRASO = "retraso_proyecto_"+TABLA_PROYECTO;
+        String PROYECTO_IMPORTEPRESUPUESTO = "importepresupuesto_"+TABLA_PROYECTO;
+        String PROYECTO_IMPORTEFINAL = "importefinal_"+TABLA_PROYECTO;
+        String PROYECTO_COSTE = CAMPO_COSTE+TABLA_PROYECTO;
+        String PROYECTO_TIEMPO = CAMPO_TIEMPO+TABLA_PROYECTO;
+        String PROYECTO_RUTAFOTO = CAMPO_RUTAFOTO;
+        String PROYECTO_RUTAPDF = "rutapdf_"+TABLA_PROYECTO;
+        String PROYECTO_TOTCOMPLETADO = "totcomplet_"+TABLA_PROYECTO;
+        String PROYECTO_CREATE = CAMPO_CREATEREG;
+        String PROYECTO_TIMESTAMP = CAMPO_TIMESTAMP;
         //REFERENCIAS
-        String PROYECTO_CLIENTE_NOMBRE = "nombre_cliente";
-        String PROYECTO_CLIENTE_PESOTIPOCLI = "pesotipo_cliente";
-        String PROYECTO_DESCRIPCION_ESTADO = "descripcion_estado";
-        String PROYECTO_TIPOESTADO = "tipo_estado";
+        String PROYECTO_CLIENTE_NOMBRE = CAMPO_NOMBRE +TABLA_CLIENTE;
+        String PROYECTO_CLIENTE_PESOTIPOCLI = "pesotipo_"+TABLA_CLIENTE;
+        String PROYECTO_DESCRIPCION_ESTADO = CAMPO_DESCRIPCION +TABLA_ESTADO;
+        String PROYECTO_TIPOESTADO = CAMPO_TIPO+TABLA_ESTADO;
 
-        String CLIENTE_ID_CLIENTE = "id_cliente";
-        String CLIENTE_ID_TIPOCLIENTE = "id_cliente_tipocliente";
-        String CLIENTE_NOMBRE = "nombre_cliente";
-        String CLIENTE_DIRECCION = "direccion_cliente";
-        String CLIENTE_TELEFONO = "telefono_cliente";
-        String CLIENTE_EMAIL = "email_cliente";
-        String CLIENTE_CONTACTO = "contacto_cliente";
-        String CLIENTE_PESOTIPOCLI = "pesotipo_cliente";
-        String CLIENTE_TIMESTAMP = "timestamp";
+        String CLIENTE_ID_CLIENTE = CAMPO_ID +TABLA_CLIENTE;
+        String CLIENTE_ID_TIPOCLIENTE = CAMPO_ID +TABLA_TIPOCLIENTE+TABLA_CLIENTE;
+        String CLIENTE_NOMBRE = CAMPO_NOMBRE +TABLA_CLIENTE;
+        String CLIENTE_DIRECCION = CAMPO_DIRECCION+TABLA_CLIENTE;
+        String CLIENTE_TELEFONO = CAMPO_TELEFONO+TABLA_CLIENTE;
+        String CLIENTE_EMAIL = CAMPO_EMAIL+TABLA_CLIENTE;
+        String CLIENTE_CONTACTO = CAMPO_CONTACTO+TABLA_CLIENTE;
+        String CLIENTE_PESOTIPOCLI = "pesotipo_"+TABLA_CLIENTE;
+        String CLIENTE_ACTIVO = CAMPO_ACTIVO+TABLA_CLIENTE;
+        String CLIENTE_RUTAFOTO = CAMPO_RUTAFOTO;
+        String CLIENTE_CREATE = CAMPO_CREATEREG;
+        String CLIENTE_TIMESTAMP = CAMPO_TIMESTAMP;
         //REFERENCIAS
-        String CLIENTE_TIPOCLIENTEPESO = "peso";
-        String CLIENTE_DESCRIPCIONTIPOCLI = "descripcion_tipo_cliente";
+        String CLIENTE_TIPOCLIENTEPESO = "peso_"+TABLA_TIPOCLIENTE;
+        String CLIENTE_DESCRIPCIONTIPOCLI = CAMPO_DESCRIPCION +TABLA_TIPOCLIENTE;
 
-        String TIPOCLIENTE_ID_TIPOCLIENTE = "id_tipocliente";
-        String TIPOCLIENTE_DESCRIPCION = "descripcion_tipo_cliente";
-        String TIPOCLIENTE_PESO = "peso";
+        String TIPOCLIENTE_ID_TIPOCLIENTE = CAMPO_ID +TABLA_TIPOCLIENTE;
+        String TIPOCLIENTE_DESCRIPCION = CAMPO_DESCRIPCION +TABLA_TIPOCLIENTE;
+        String TIPOCLIENTE_PESO = "peso_"+TABLA_TIPOCLIENTE;
 
-        String ESTADO_ID_ESTADO = "id_estado";
-        String ESTADO_DESCRIPCION = "descripcion_estado";
-        String ESTADO_TIPOESTADO = "tipo_estado";
+        String ESTADO_ID_ESTADO = CAMPO_ID +TABLA_ESTADO;
+        String ESTADO_DESCRIPCION = CAMPO_DESCRIPCION +TABLA_ESTADO;
+        String ESTADO_TIPOESTADO = CAMPO_TIPO+TABLA_ESTADO;
 
-        String PARTIDA_ID_PROYECTO = "id_proyecto_partida";
-        String PARTIDA_ID_PARTIDA = "id_partida";
-        String PARTIDA_ID_PARTIDABASE = "partida_id_partidabase";
-        String PARTIDA_SECUENCIA = "secuencia";
-        String PARTIDA_ID_ESTADO = "id_estado_partida";
-        String PARTIDA_DESCRIPCION = "descripcion_partida";
-        String PARTIDA_NOMBRE = "nombre_partida";
-        String PARTIDA_CANTIDAD = "cantidad_partida";
-        String PARTIDA_TIEMPO = "tiempo_partida";
-        String PARTIDA_TIEMPOREAL = "tiemporeal_partida";
-        String PARTIDA_CONTADOR = "contador_partida";
-        String PARTIDA_PRECIOHORA = "preciohora_partida";
-        String PARTIDA_PRECIO = "precio_partida";
-        String PARTIDA_COSTE = "coste_partida";
-        String PARTIDA_COMPLETADA = "completada_partida";
-        String PARTIDA_COMPLETA = "completa_partida";
-        String PARTIDA_RUTAFOTO = "rutafoto_partida";
-        String PARTIDA_TIMESTAMP = "timestamp";
+        String PARTIDA_ID_PROYECTO = CAMPO_ID +TABLA_PARTIDA+TABLA_PROYECTO;
+        String PARTIDA_ID_PARTIDA = CAMPO_ID +TABLA_PARTIDA;
+        String PARTIDA_ID_PARTIDABASE = CAMPO_ID +TABLA_PARTIDA+TABLA_PARTIDABASE;
+        String PARTIDA_SECUENCIA = CAMPO_SECUENCIA;
+        String PARTIDA_ID_ESTADO = CAMPO_ID +TABLA_PARTIDA+TABLA_ESTADO;
+        String PARTIDA_DESCRIPCION = CAMPO_DESCRIPCION +TABLA_PARTIDA;
+        String PARTIDA_NOMBRE = CAMPO_NOMBRE +TABLA_PARTIDA;
+        String PARTIDA_CANTIDAD = CAMPO_CANTIDAD+TABLA_PARTIDA;
+        String PARTIDA_TIEMPO = CAMPO_TIEMPO+TABLA_PARTIDA;
+        String PARTIDA_TIEMPOREAL = "tiemporeal_"+TABLA_PARTIDA;
+        String PARTIDA_CONTADOR = "contador_"+TABLA_PARTIDA;
+        String PARTIDA_PRECIOHORA = "preciohora_"+TABLA_PARTIDA;
+        String PARTIDA_PRECIO = CAMPO_PRECIO+TABLA_PARTIDA;
+        String PARTIDA_COSTE = CAMPO_COSTE+TABLA_PARTIDA;
+        String PARTIDA_COMPLETADA = "completada_"+TABLA_PARTIDA;
+        String PARTIDA_COMPLETA = "completa_"+TABLA_PARTIDA;
+        String PARTIDA_RUTAFOTO = CAMPO_RUTAFOTO;
+        String PARTIDA_CREATE = CAMPO_CREATEREG;
+        String PARTIDA_TIMESTAMP = CAMPO_TIMESTAMP;
         //REFERENCIAS
-        String PARTIDA_PROYECTO_RETRASO = "retraso_proyecto";
-        String PARTIDA_TIPO_ESTADO = "tipo_estado";
+        String PARTIDA_PROYECTO_RETRASO = "retraso_proyecto_"+TABLA_PROYECTO;
+        String PARTIDA_TIPO_ESTADO = CAMPO_TIPO+TABLA_ESTADO;
 
 
-        String DETPARTIDA_ID_PARTIDA = "id_detpartida_partida";
-        String DETPARTIDA_SECUENCIA = "secuencia";
-        String DETPARTIDA_ID_DETPARTIDA = "id_detpartida";
-        String DETPARTIDA_DESCRIPCION = "descripcion_detpartida";
-        String DETPARTIDA_NOMBRE = "nombre_detpartida";
-        String DETPARTIDA_CANTIDAD = "cantidad_detpartida";
-        String DETPARTIDA_TIEMPO = "tiempo_detpartida";
-        String DETPARTIDA_TIEMPOREAL = "tiemporeal_detpartida";
-        String DETPARTIDA_CONTADOR = "contador_detpartida";
-        String DETPARTIDA_PAUSA = "pausa_detpartida";
-        String DETPARTIDA_COMPLETADA = "completada_partida";
-        String DETPARTIDA_COMPLETA = "completa_partida";
-        String DETPARTIDA_PRECIO = "precio_detpartida";
-        String DETPARTIDA_BENEFICIO = "beneficio_detpartida";
-        String DETPARTIDA_DESCUENTOPROV = "descuentoprov_detpartida";
-        String DETPARTIDA_RUTAFOTO = "rutafoto_detpartida";
-        String DETPARTIDA_REFPROV = "ref_prov_detpartida";
-        String DETPARTIDA_TIPO = "tipo_detpartida";
-        String DETPARTIDA_TIMESTAMP = "timestamp";
+        String DETPARTIDA_ID_PARTIDA = CAMPO_ID +TABLA_DETPARTIDA+TABLA_PARTIDA;
+        String DETPARTIDA_SECUENCIA = CAMPO_SECUENCIA;
+        String DETPARTIDA_ID_DETPARTIDA = CAMPO_ID +TABLA_DETPARTIDA;
+        String DETPARTIDA_DESCRIPCION = CAMPO_DESCRIPCION +TABLA_DETPARTIDA;
+        String DETPARTIDA_NOMBRE = CAMPO_NOMBRE +TABLA_DETPARTIDA;
+        String DETPARTIDA_CANTIDAD = CAMPO_CANTIDAD+TABLA_DETPARTIDA;
+        String DETPARTIDA_TIEMPO = CAMPO_TIEMPO+TABLA_DETPARTIDA;
+        String DETPARTIDA_TIEMPOREAL = "tiemporeal_"+TABLA_DETPARTIDA;
+        String DETPARTIDA_CONTADOR = "contador_"+TABLA_DETPARTIDA;
+        String DETPARTIDA_PAUSA = "pausa_"+TABLA_DETPARTIDA;
+        String DETPARTIDA_COMPLETADA = "completada_"+TABLA_DETPARTIDA;
+        String DETPARTIDA_COMPLETA = "completa_"+TABLA_DETPARTIDA;
+        String DETPARTIDA_PRECIO = CAMPO_PRECIO+TABLA_DETPARTIDA;
+        String DETPARTIDA_COSTE = CAMPO_COSTE+TABLA_DETPARTIDA;
+        String DETPARTIDA_BENEFICIO = CAMPO_BENEFICIO+TABLA_DETPARTIDA;
+        String DETPARTIDA_DESCUENTOPROVCAT = "descuento_prov_cat_"+TABLA_DETPARTIDA;
+        String DETPARTIDA_RUTAFOTO = CAMPO_RUTAFOTO;
+        String DETPARTIDA_REFPROVCAT = "ref_prov_cat_"+TABLA_DETPARTIDA;
+        String DETPARTIDA_DESCUENTOPROVEEDOR = "descuento_proveedor_"+TABLA_DETPARTIDA;
+        String DETPARTIDA_REFPROVEEDOR = "ref_proveedor_"+TABLA_DETPARTIDA;
+        String DETPARTIDA_TIPO = CAMPO_TIPO+TABLA_DETPARTIDA;
+        String DETPARTIDA_CREATE = CAMPO_CREATEREG;
+        String DETPARTIDA_TIMESTAMP = CAMPO_TIMESTAMP;
 
-        String PARTIDABASE_ID_PARTIDABASE = "id_partidabase";
-        String PARTIDABASE_ID_PARTIDAORIGEN = "partidabase_id_partidaorigen";
-        String PARTIDABASE_DESCRIPCION = "descripcion_partidabase";
-        String PARTIDABASE_NOMBRE = "nombre_partidabase";
-        String PARTIDABASE_TIEMPO = "tiempo_partidabase";
-        String PARTIDABASE_PRECIO = "precio_partidabase";
-        String PARTIDABASE_COSTE = "coste_partidabase";
-        String PARTIDABASE_RUTAFOTO = "rutafoto_partidabase";
-        String PARTIDABASE_TIMESTAMP = "timestamp";
+        String PARTIDABASE_ID_PARTIDABASE = CAMPO_ID+TABLA_PARTIDABASE;
+        String PARTIDABASE_ID_PARTIDAORIGEN = CAMPO_ID+"partidaorigen_"+TABLA_PARTIDABASE;
+        String PARTIDABASE_DESCRIPCION = CAMPO_DESCRIPCION+TABLA_PARTIDABASE;
+        String PARTIDABASE_NOMBRE = CAMPO_NOMBRE+TABLA_PARTIDABASE;
+        String PARTIDABASE_TIEMPO = CAMPO_TIEMPO+TABLA_PARTIDABASE;
+        String PARTIDABASE_PRECIO = CAMPO_PRECIO+TABLA_PARTIDABASE;
+        String PARTIDABASE_COSTE = CAMPO_COSTE+TABLA_PARTIDABASE;
+        String PARTIDABASE_RUTAFOTO = CAMPO_RUTAFOTO;
+        String PARTIDABASE_CREATE = CAMPO_CREATEREG;
+        String PARTIDABASE_TIMESTAMP = CAMPO_TIMESTAMP;
 
+        String DETPARTIDABASE_ID_PARTIDABASE = CAMPO_ID+TABLA_DETPARTIDABASE+TABLA_PARTIDABASE;
+        String DETPARTIDABASE_SECUENCIA = CAMPO_SECUENCIA;
+        String DETPARTIDABASE_ID_DETPARTIDABASE = CAMPO_ID+TABLA_DETPARTIDABASE;
+        String DETPARTIDABASE_DESCRIPCION = CAMPO_DESCRIPCION+TABLA_DETPARTIDABASE;
+        String DETPARTIDABASE_NOMBRE = CAMPO_NOMBRE+TABLA_DETPARTIDABASE;
+        String DETPARTIDABASE_CANTIDAD = CAMPO_CANTIDAD+TABLA_DETPARTIDABASE;
+        String DETPARTIDABASE_TIEMPO = CAMPO_TIEMPO+TABLA_DETPARTIDABASE;
+        String DETPARTIDABASE_PRECIO = CAMPO_PRECIO+TABLA_DETPARTIDABASE;
+        String DETPARTIDABASE_BENEFICIO = CAMPO_BENEFICIO+TABLA_DETPARTIDABASE;
+        String DETPARTIDABASE_DESCUENTOPROVCAT = "descuentoprov_"+TABLA_DETPARTIDABASE;
+        String DETPARTIDABASE_DESCUENTOPROVEEDOR = "descuentoproveedor_"+TABLA_DETPARTIDABASE;
+        String DETPARTIDABASE_RUTAFOTO = CAMPO_RUTAFOTO;
+        String DETPARTIDABASE_REFPROVCAT = "ref_prov_cat_"+TABLA_DETPARTIDABASE;
+        String DETPARTIDABASE_REFPROVEEDOR = "ref_proveedor_"+TABLA_DETPARTIDABASE;
+        String DETPARTIDABASE_TIPO = CAMPO_TIPO+TABLA_DETPARTIDABASE;
+        String DETPARTIDABASE_CREATE = CAMPO_CREATEREG;
+        String DETPARTIDABASE_TIMESTAMP = CAMPO_TIMESTAMP;
 
-        String DETPARTIDABASE_ID_PARTIDABASE = "id_detpartidabase_partidabase";
-        String DETPARTIDABASE_SECUENCIA = "secuencia";
-        String DETPARTIDABASE_ID_DETPARTIDABASE = "id_detpartidabase";
-        String DETPARTIDABASE_DESCRIPCION = "descripcion_detpartidabase";
-        String DETPARTIDABASE_NOMBRE = "nombre_detpartidabase";
-        String DETPARTIDABASE_CANTIDAD = "cantidad_detpartidabase";
-        String DETPARTIDABASE_TIEMPO = "tiempo_detpartidabase";
-        String DETPARTIDABASE_PRECIO = "precio_detpartidabase";
-        String DETPARTIDABASE_BENEFICIO = "beneficio_detpartidabase";
-        String DETPARTIDABASE_DESCUENTOPROV = "descuentoprov_detpartidabase";
-        String DETPARTIDABASE_RUTAFOTO = "rutafoto_detpartidabase";
-        String DETPARTIDABASE_REFPROV = "ref_prov_detpartidabase";
-        String DETPARTIDABASE_TIPO = "tipo_detpartidabase";
-        String DETPARTIDABASE_TIMESTAMP = "timestamp";
+        String TAREA_ID_TAREA = CAMPO_ID+TABLA_TAREA;
+        String TAREA_DESCRIPCION = CAMPO_DESCRIPCION+TABLA_TAREA;
+        String TAREA_NOMBRE = CAMPO_NOMBRE+TABLA_TAREA;
+        String TAREA_TIEMPO = CAMPO_TIEMPO+TABLA_TAREA;
+        String TAREA_RUTAFOTO = CAMPO_RUTAFOTO;
+        String TAREA_CREATE = CAMPO_CREATEREG;
+        String TAREA_TIMESTAMP = CAMPO_TIMESTAMP;
 
-        String TAREA_ID_TAREA = "id_tarea";
-        String TAREA_DESCRIPCION = "descripcion_tarea";
-        String TAREA_NOMBRE = "nombre_tarea";
-        String TAREA_TIEMPO = "tiempo_tarea";
-        String TAREA_RUTAFOTO = "rutafoto_tarea";
-        String TAREA_TIMESTAMP = "timestamp";
+        String PRODUCTO_ID_PRODUCTO = CAMPO_ID+TABLA_PRODUCTO;
+        String PRODUCTO_DESCRIPCION = CAMPO_DESCRIPCION+TABLA_PRODUCTO;
+        String PRODUCTO_NOMBRE = CAMPO_NOMBRE+TABLA_PRODUCTO;
+        String PRODUCTO_PRECIO = CAMPO_PRECIO+TABLA_PRODUCTO;
+        String PRODUCTO_RUTAFOTO = CAMPO_RUTAFOTO;
+        String PRODUCTO_CREATE = CAMPO_CREATEREG;
+        String PRODUCTO_TIMESTAMP = CAMPO_TIMESTAMP;
 
-        String PRODUCTO_ID_PRODUCTO = "id_producto";
-        String PRODUCTO_DESCRIPCION = "descripcion_producto";
-        String PRODUCTO_NOMBRE = "nombre_producto";
-        String PRODUCTO_IMPORTE = "importe_producto";
-        String PRODUCTO_RUTAFOTO = "rutafoto_producto";
-        String PRODUCTO_TIMESTAMP = "timestamp";
+        String PROVEEDOR_ID_PROVEEDOR = CAMPO_ID +TABLA_PROVEEDOR;
+        String PROVEEDOR_NOMBRE = CAMPO_NOMBRE +TABLA_CLIENTE;
+        String PROVEEDOR_DIRECCION = CAMPO_DIRECCION+TABLA_PROVEEDOR;
+        String PROVEEDOR_TELEFONO = CAMPO_TELEFONO+TABLA_PROVEEDOR;
+        String PROVEEDOR_EMAIL = CAMPO_EMAIL+TABLA_PROVEEDOR;
+        String PROVEEDOR_CONTACTO = CAMPO_CONTACTO+TABLA_PROVEEDOR;
+        String PROVEEDOR_ACTIVO = CAMPO_ACTIVO+TABLA_PROVEEDOR;
+        String PROVEEDOR_RUTAFOTO = CAMPO_RUTAFOTO;
+        String PROVEEDOR_CREATE = CAMPO_CREATEREG;
+        String PROVEEDOR_TIMESTAMP = CAMPO_TIMESTAMP;
 
-        String GASTOFIJO_ID_GASTOFIJO = "id_gastofijo";
-        String GASTOFIJO_NOMBRE = "nombre_gastofijo";
-        String GASTOFIJO_DESCRIPCION = "descripcion_gastofijo";
-        String GASTOFIJO_CANTIDAD = "cantidad_gastofijo";
-        String GASTOFIJO_IMPORTE = "importe_gastofijo";
-        String GASTOFIJO_ANYOS = "anyos_gastofijo";
-        String GASTOFIJO_MESES = "meses_gastofijo";
-        String GASTOFIJO_DIAS = "dias_gastofijo";
-        String GASTOFIJO_TIMESTAMP = "timestamp";
+        String GASTOFIJO_ID_GASTOFIJO = CAMPO_ID+TABLA_GASTOFIJO;
+        String GASTOFIJO_NOMBRE = CAMPO_NOMBRE+TABLA_GASTOFIJO;
+        String GASTOFIJO_DESCRIPCION = CAMPO_DESCRIPCION+TABLA_GASTOFIJO;
+        String GASTOFIJO_CANTIDAD = CAMPO_CANTIDAD+TABLA_GASTOFIJO;
+        String GASTOFIJO_PRECIO = CAMPO_PRECIO+TABLA_GASTOFIJO;
+        String GASTOFIJO_ANYOS = "anyos_"+TABLA_GASTOFIJO;
+        String GASTOFIJO_MESES = "meses_"+TABLA_GASTOFIJO;
+        String GASTOFIJO_DIAS = "dias_"+TABLA_GASTOFIJO;
+        String GASTOFIJO_RUTAFOTO = CAMPO_RUTAFOTO;
+        String GASTOFIJO_CREATE = CAMPO_CREATEREG;
+        String GASTOFIJO_TIMESTAMP = CAMPO_TIMESTAMP;
 
-        String PERFIL_ID_PERFIL = "id_perfil";
-        String PERFIL_NOMBRE = "nombre_perfil";
-        String PERFIL_DESCRIPCION = "descripcion_perfil";
-        String PERFIL_VACACIONES = "vacaciones";
-        String PERFIL_HORASLUNES = "hlunes";
-        String PERFIL_HORASMARTES = "hmartes";
-        String PERFIL_HORASMIERCOLES = "hmiercoles";
-        String PERFIL_HORASJUEVES = "hjueves";
-        String PERFIL_HORASVIERNES = "hviernes";
-        String PERFIL_HORASSABADO = "hsabado";
-        String PERFIL_HORASDOMINGO = "hdomingo";
-        String PERFIL_BENEFICIO = "beneficio_perfil";
-        String PERFIL_SUELDO = "sueldo";
-        String PERFIL_TIMESTAMP = "timestamp";
+        String PERFIL_ID_PERFIL = CAMPO_ID+TABLA_PERFIL;
+        String PERFIL_NOMBRE = CAMPO_NOMBRE+TABLA_PERFIL;
+        String PERFIL_DESCRIPCION = CAMPO_DESCRIPCION+TABLA_PERFIL;
+        String PERFIL_VACACIONES = "vacaciones_"+TABLA_PERFIL;
+        String PERFIL_HORASLUNES = "hlunes_"+TABLA_PERFIL;
+        String PERFIL_HORASMARTES = "hmartes_"+TABLA_PERFIL;
+        String PERFIL_HORASMIERCOLES = "hmiercoles_"+TABLA_PERFIL;
+        String PERFIL_HORASJUEVES = "hjueves_"+TABLA_PERFIL;
+        String PERFIL_HORASVIERNES = "hviernes_"+TABLA_PERFIL;
+        String PERFIL_HORASSABADO = "hsabado_"+TABLA_PERFIL;
+        String PERFIL_HORASDOMINGO = "hdomingo_"+TABLA_PERFIL;
+        String PERFIL_BENEFICIO = CAMPO_BENEFICIO+TABLA_PERFIL;
+        String PERFIL_SUELDO = "sueldo_"+TABLA_PERFIL;
+        String PERFIL_RUTAFOTO = CAMPO_RUTAFOTO;
+        String PERFIL_CREATE = CAMPO_CREATEREG;
+        String PERFIL_TIMESTAMP = CAMPO_TIMESTAMP;
 
-        String AMORTIZACION_ID_AMORTIZACION = "id_amortizacion";
-        String AMORTIZACION_NOMBRE = "nombre_amortizacion";
-        String AMORTIZACION_DESCRIPCION = "descripcion_amortizacion";
-        String AMORTIZACION_CANTIDAD = "cantidad_amortizacion";
-        String AMORTIZACION_FECHACOMPRA = "fecha_compra_amortizacion";
-        String AMORTIZACION_FECHACOMPRAF = "fecha_compra_amortizacionf";
-        String AMORTIZACION_IMPORTE = "importe_amortizacion";
-        String AMORTIZACION_ANYOS = "anyos_amortizacion";
-        String AMORTIZACION_MESES = "meses_amortizacion";
-        String AMORTIZACION_DIAS = "dias_amortizacion";
-        String AMORTIZACION_RUTAFOTO = "rutafoto_amortizacion";
-        String AMORTIZACION_TIMESTAMP = "timestamp";
+        String AMORTIZACION_ID_AMORTIZACION = CAMPO_ID+TABLA_AMORTIZACION;
+        String AMORTIZACION_NOMBRE = CAMPO_NOMBRE+TABLA_AMORTIZACION;
+        String AMORTIZACION_DESCRIPCION = CAMPO_DESCRIPCION+TABLA_AMORTIZACION;
+        String AMORTIZACION_CANTIDAD = CAMPO_CANTIDAD+TABLA_AMORTIZACION;
+        String AMORTIZACION_FECHACOMPRA = CAMPO_FECHA+TABLA_AMORTIZACION;
+        String AMORTIZACION_FECHACOMPRAF = CAMPO_FECHAF+TABLA_AMORTIZACION;
+        String AMORTIZACION_PRECIO = CAMPO_PRECIO+TABLA_AMORTIZACION;
+        String AMORTIZACION_ANYOS = "anyos_"+TABLA_AMORTIZACION;
+        String AMORTIZACION_MESES = "meses_"+TABLA_AMORTIZACION;
+        String AMORTIZACION_DIAS = "dias_"+TABLA_AMORTIZACION;
+        String AMORTIZACION_RUTAFOTO = CAMPO_RUTAFOTO;
+        String AMORTIZACION_CREATE = CAMPO_CREATEREG;
+        String AMORTIZACION_TIMESTAMP = CAMPO_TIMESTAMP;
 
-        String EVENTO_ID_EVENTO = "id_evento";
-        String EVENTO_IDMULTI = "id_multi";
-        String EVENTO_DESCRIPCION = "descripcion_evento";
-        String EVENTO_FECHAINIEVENTO = "fechainievento";
-        String EVENTO_FECHAFINEVENTO = "fechafinevento";
-        String EVENTO_HORAINIEVENTO = "horainievento";
-        String EVENTO_HORAFINEVENTO = "horafinevento";
-        String EVENTO_FECHAINIEVENTOF = "fechainieventof";
-        String EVENTO_FECHAFINEVENTOF = "fechafineventof";
-        String EVENTO_HORAINIEVENTOF = "horainieventof";
-        String EVENTO_HORAFINEVENTOF = "horafineventof";
-        String EVENTO_AVISO = "aviso_evento";
-        String EVENTO_NOTIFICADO = "notificado_evento";
-        String EVENTO_TELEFONO = "telefono_evento";
-        String EVENTO_LUGAR = "lugar_evento";
-        String EVENTO_EMAIL = "email_evento";
-        String EVENTO_ASUNTO = "asunto_evento";
-        String EVENTO_MENSAJE = "mensaje_evento";
-        String EVENTO_RUTAADJUNTO = "rutaadjunto_evento";
-        String EVENTO_PROYECTOREL = "proyectorel";
-        String EVENTO_NOMPROYECTOREL = "nomproyectorel";
-        String EVENTO_CLIENTEREL = "clienterel";
-        String EVENTO_NOMCLIENTEREL = "nomclienterel";
-        String EVENTO_TIPOEVENTO = "tipoevento";
-        String EVENTO_RUTAFOTO = "rutafoto_evento";
-        String EVENTO_COMPLETADA = "completada_evento";
-        String EVENTO_TIMESTAMP = "timestamp";
+        String EVENTO_ID_EVENTO = CAMPO_ID+TABLA_EVENTO;
+        String EVENTO_IDMULTI = "id_multi"+TABLA_EVENTO;
+        String EVENTO_DESCRIPCION = CAMPO_DESCRIPCION+TABLA_EVENTO;
+        String EVENTO_FECHAINIEVENTO = "fechaini_"+TABLA_EVENTO;
+        String EVENTO_FECHAFINEVENTO = "fechafin_"+TABLA_EVENTO;
+        String EVENTO_HORAINIEVENTO = "horaini_"+TABLA_EVENTO;
+        String EVENTO_HORAFINEVENTO = "horafin_"+TABLA_EVENTO;
+        String EVENTO_FECHAINIEVENTOF = "fechainif_"+TABLA_EVENTO;
+        String EVENTO_FECHAFINEVENTOF = "fechafinf_"+TABLA_EVENTO;
+        String EVENTO_HORAINIEVENTOF = "horainif_"+TABLA_EVENTO;
+        String EVENTO_HORAFINEVENTOF = "horafinf_"+TABLA_EVENTO;
+        String EVENTO_AVISO = "aviso_"+TABLA_EVENTO;
+        String EVENTO_NOTIFICADO = "notificado_"+TABLA_EVENTO;
+        String EVENTO_TELEFONO = CAMPO_TELEFONO+TABLA_EVENTO;
+        String EVENTO_DIRECCION = CAMPO_DIRECCION+TABLA_EVENTO;
+        String EVENTO_EMAIL = CAMPO_EMAIL+TABLA_EVENTO;
+        String EVENTO_ASUNTO = "asunto_"+TABLA_EVENTO;
+        String EVENTO_MENSAJE = "mensaje_"+TABLA_EVENTO;
+        String EVENTO_RUTAADJUNTO = "rutaadjunto_"+TABLA_EVENTO;
+        String EVENTO_PROYECTOREL = "proyectorel_"+TABLA_EVENTO;
+        String EVENTO_NOMPROYECTOREL = "nomproyectorel_"+TABLA_EVENTO;
+        String EVENTO_CLIENTEREL = "clienterel_"+TABLA_EVENTO;
+        String EVENTO_NOMCLIENTEREL = "nomclienterel_"+TABLA_EVENTO;
+        String EVENTO_TIPO = CAMPO_TIPO+TABLA_EVENTO;
+        String EVENTO_RUTAFOTO = CAMPO_RUTAFOTO;
+        String EVENTO_COMPLETADA = "completada_"+TABLA_EVENTO;
+        String EVENTO_CREATE = CAMPO_CREATEREG;
+        String EVENTO_TIMESTAMP = CAMPO_TIMESTAMP;
 
-        String PEDIDOPROV_ID_PEDIDOPROV = "id_pedidoprov";
-        String PEDIDOPROV_DESCRIPCION = "descripcion_pedidoprov";
-        String PEDIDOPROV_FECHA = "fecha_pedidoprov";
-        String PEDIDOPROV_FECHAF = "fechaf_pedidoprov";
-        String PEDIDOPROV_TIMESTAMP = "timestamp";
+        String PEDIDOPROVCAT_ID_PEDIDOPROVCAT = CAMPO_ID + TABLA_PEDIDOPROVCAT;
+        String PEDIDOPROVCAT_ID_PROYECTO = TABLA_PEDIDOPROVCAT +CAMPO_ID+TABLA_PROYECTO;
+        String PEDIDOPROVCAT_SECUENCIA = CAMPO_SECUENCIA;
+        String PEDIDOPROVCAT_ID_PROVCAT = TABLA_PEDIDOPROVCAT +CAMPO_ID+PROVCAT;
+        String PEDIDOPROVCAT_DESCRIPCION = CAMPO_DESCRIPCION + TABLA_PEDIDOPROVCAT;
+        String PEDIDOPROVCAT_FECHA = CAMPO_FECHA+ TABLA_PEDIDOPROVCAT;
+        String PEDIDOPROVCAT_FECHAF = CAMPO_FECHAF+ TABLA_PEDIDOPROVCAT;
+        String PEDIDOPROVCAT_SERVIDO = CAMPO_SERVIDO+ TABLA_PEDIDOPROVCAT;
+        String PEDIDOPROVCAT_CREATE = CAMPO_CREATEREG;
+        String PEDIDOPROVCAT_TIMESTAMP = CAMPO_TIMESTAMP;
 
-        String NOTA_ID_NOTA = "id_nota";
-        String NOTA_ID_RELACIONADO = "id_relacionado";
-        String NOTA_NOMBREREL = "nombre_rel_nota";
-        String NOTA_TITULO = "titulo_nota";
-        String NOTA_DESCRIPCION = "descripcion_nota";
-        String NOTA_RUTA = "rutanota";
-        String NOTA_TIPO = "tiponota";
-        String NOTA_FECHA = "fecha_nota";
-        String NOTA_FECHAF = "fecha_notaf";
-        String NOTA_TIMESTAMP = "timestamp";
+        String DETPEDIDOPROVCAT_ID_PEDIDOPROVCAT = CAMPO_ID+TABLA_DETPEDIDOPROVCAT+TABLA_PEDIDOPROVCAT;
+        String DETPEDIDOPROVCAT_SECUENCIA = CAMPO_SECUENCIA;
+        String DETPEDIDOPROVCAT_ID_PRODPROVCAT = CAMPO_ID+PRODPROVCAT+TABLA_DETPEDIDOPROVCAT;
+        String DETPEDIDOPROVCAT_REFERENCIA = CAMPO_REFERENCIA+TABLA_DETPEDIDOPROVCAT;
+        String DETPEDIDOPROVCAT_NOMBRE = CAMPO_NOMBRE+TABLA_DETPEDIDOPROVCAT;
+        String DETPEDIDOPROVCAT_CANTIDAD = CAMPO_CANTIDAD+TABLA_DETPEDIDOPROVCAT;
+        String DETPEDIDOPROVCAT_PRECIO = CAMPO_PRECIO+TABLA_DETPEDIDOPROVCAT;
+        String DETPEDIDOPROVCAT_SERVIDO = CAMPO_SERVIDO+TABLA_DETPEDIDOPROVCAT;
+        String DETPEDIDOPROVCAT_CREATE = CAMPO_CREATEREG;
+        String DETPEDIDOPROVCAT_TIMESTAMP = CAMPO_TIMESTAMP;
 
-        String TABLAS_ID_TABLA = "id_tabla";
-        String TABLAS_TABLA = "tabla";
-        String TABLAS_CAMPO = "campo";
-        String TABLAS_PARAMETROS = "parametros";
+        String PEDIDOPROVEEDOR_ID_PEDIDOPROVEEDOR = CAMPO_ID+TABLA_PEDIDOPROVEEDOR;
+        String PEDIDOPROVEEDOR_ID_PROYECTO = TABLA_PEDIDOPROVEEDOR+CAMPO_ID+TABLA_PROYECTO;
+        String PEDIDOPROVEEDOR_SECUENCIA = CAMPO_SECUENCIA;
+        String PEDIDOPROVEEDOR_ID_PROVEEDOR = TABLA_PEDIDOPROVEEDOR+CAMPO_ID+TABLA_PROVEEDOR;
+        String PEDIDOPROVEEDOR_DESCRIPCION = CAMPO_DESCRIPCION+TABLA_PEDIDOPROVEEDOR;
+        String PEDIDOPROVEEDOR_FECHA = CAMPO_FECHA+TABLA_PEDIDOPROVEEDOR;
+        String PEDIDOPROVEEDOR_FECHAF = CAMPO_FECHAF+TABLA_PEDIDOPROVEEDOR;
+        String PEDIDOPROVEEDOR_SERVIDO = CAMPO_SERVIDO+TABLA_PEDIDOPROVEEDOR;
+        String PEDIDOPROVEEDOR_CREATE = CAMPO_CREATEREG;
+        String PEDIDOPROVEEDOR_TIMESTAMP = CAMPO_TIMESTAMP;
+
+        String DETPEDIDOPROVEEDOR_ID_PEDIDOPROVEEDOR = CAMPO_ID+TABLA_DETPEDIDOPROVEEDOR+TABLA_PEDIDOPROVEEDOR;
+        String DETPEDIDOPROVEEDOR_SECUENCIA = CAMPO_SECUENCIA;
+        String DETPEDIDOPROVEEDOR_ID_PRODUCTO = CAMPO_ID+TABLA_PRODUCTO+TABLA_DETPEDIDOPROVEEDOR;
+        String DETPEDIDOPROVEEDOR_REFERENCIA = CAMPO_REFERENCIA+TABLA_DETPEDIDOPROVEEDOR;
+        String DETPEDIDOPROVEEDOR_NOMBRE = CAMPO_NOMBRE+TABLA_DETPEDIDOPROVEEDOR;
+        String DETPEDIDOPROVEEDOR_CANTIDAD = CAMPO_CANTIDAD+TABLA_DETPEDIDOPROVEEDOR;
+        String DETPEDIDOPROVEEDOR_PRECIO = CAMPO_PRECIO+TABLA_DETPEDIDOPROVEEDOR;
+        String DETPEDIDOPROVEEDOR_SERVIDO = CAMPO_SERVIDO+TABLA_DETPEDIDOPROVEEDOR;
+        String DETPEDIDOPROVEEDOR_CREATE = CAMPO_CREATEREG;
+        String DETPEDIDOPROVEEDOR_TIMESTAMP = CAMPO_TIMESTAMP;
+
+        String NOTA_ID_NOTA = CAMPO_ID+TABLA_NOTA;
+        String NOTA_ID_RELACIONADO = "id_relacionado_"+TABLA_NOTA;
+        String NOTA_NOMBREREL = "nombre_rel_"+TABLA_NOTA;
+        String NOTA_TITULO = "titulo_"+TABLA_NOTA;
+        String NOTA_DESCRIPCION = CAMPO_DESCRIPCION+TABLA_NOTA;
+        String NOTA_RUTAFOTO = CAMPO_RUTAFOTO;
+        String NOTA_TIPO = CAMPO_TIPO+TABLA_NOTA;
+        String NOTA_FECHA = CAMPO_FECHA+TABLA_NOTA;
+        String NOTA_FECHAF = CAMPO_FECHAF+TABLA_NOTA;
+        String NOTA_CREATE = CAMPO_CREATEREG;
+        String NOTA_TIMESTAMP = CAMPO_TIMESTAMP;
+
+        String DIARIO_ID_DIARIO = CAMPO_ID+TABLA_DIARIO;
+        String DIARIO_ID_RELACIONADO = "id_relacionado_"+TABLA_DIARIO;
+        String DIARIO_NOMBRE = CAMPO_NOMBRE+TABLA_DIARIO;
+        String DIARIO_DESCRIPCION = CAMPO_DESCRIPCION+TABLA_DIARIO;
+        String DIARIO_NOMBREREL = "nombre_rel_"+TABLA_DIARIO;
+        String DIARIO_REL = "rel_"+TABLA_DIARIO;
+        String DIARIO_RUTAFOTO = CAMPO_RUTAFOTO;
+        String DIARIO_CREATE = CAMPO_CREATEREG;
+        String DIARIO_TIMESTAMP = CAMPO_TIMESTAMP;
+
+        String TABLAS_ID_TABLA = CAMPO_ID+TABLA_TABLAS;
+        String TABLAS_TABLA = "tabla_"+TABLA_TABLAS;
+        String TABLAS_CAMPO = "campo_"+TABLA_TABLAS;
+        String TABLAS_PARAMETROS = "parametros_"+TABLA_TABLAS;
 
 
         //REFERENCIAS----------------------------------------------------------
 
         String ID_PROYECTO = String.format("REFERENCES %s(%s) ON DELETE CASCADE",
                 TABLA_PROYECTO, PROYECTO_ID_PROYECTO);
+        String ID_PEDIDOPROVCAT = String.format("REFERENCES %s(%s) ON DELETE CASCADE",
+                TABLA_PEDIDOPROVCAT, PEDIDOPROVCAT_ID_PEDIDOPROVCAT);
+        String ID_PEDIDOPROVEEDOR = String.format("REFERENCES %s(%s) ON DELETE CASCADE",
+                TABLA_PEDIDOPROVEEDOR, PEDIDOPROVEEDOR_ID_PEDIDOPROVEEDOR);
 
         String ID_CLIENTE = String.format("REFERENCES %s(%s)",
                 TABLA_CLIENTE, CLIENTE_ID_CLIENTE);
@@ -315,7 +389,7 @@ public class ContratoPry implements JavaUtil.Constantes {
 
         //CAMPOS----------------------------------------------------------------
 
-        String[] CAMPOS_PROYECTO = {"74", TABLA_PROYECTO,
+        String[] CAMPOS_PROYECTO = {"77", TABLA_PROYECTO,
                 PROYECTO_ID_PROYECTO, "TEXT NON NULL UNIQUE",STRING,
                 PROYECTO_ID_CLIENTE, String.format("TEXT NON NULL %s", ID_CLIENTE),STRING,
                 PROYECTO_ID_ESTADO, String.format("TEXT NON NULL %s", ID_ESTADO),STRING,
@@ -339,6 +413,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PROYECTO_RUTAFOTO, "TEXT ",STRING,
                 PROYECTO_RUTAPDF, "TEXT ",STRING,
                 PROYECTO_TOTCOMPLETADO, "INTEGER NON NULL DEFAULT 0",INT,
+                PROYECTO_CREATE, "INTEGER NON NULL DEFAULT 0",LONG,
                 PROYECTO_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG,
                 //Campos referencia
                 PROYECTO_CLIENTE_NOMBRE, NULL,STRING,
@@ -347,7 +422,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PROYECTO_TIPOESTADO, NULL,INT
         };
 
-        String[] CAMPOS_CLIENTE = {"29", TABLA_CLIENTE,
+        String[] CAMPOS_CLIENTE = {"38", TABLA_CLIENTE,
                 CLIENTE_ID_CLIENTE, "TEXT NON NULL UNIQUE",STRING,
                 CLIENTE_ID_TIPOCLIENTE, String.format("TEXT NON NULL %s", ID_TIPOCLIENTE),STRING,
                 CLIENTE_NOMBRE, "TEXT NON NULL",STRING,
@@ -355,7 +430,10 @@ public class ContratoPry implements JavaUtil.Constantes {
                 CLIENTE_TELEFONO, "TEXT",STRING,
                 CLIENTE_EMAIL, "TEXT",STRING,
                 CLIENTE_CONTACTO, "TEXT",STRING,
+                CLIENTE_RUTAFOTO, "TEXT",STRING,
                 CLIENTE_PESOTIPOCLI, "INTEGER NON NULL DEFAULT 0",INT,
+                CLIENTE_ACTIVO, "INTEGER NON NULL DEFAULT 0",LONG,
+                CLIENTE_CREATE, "INTEGER NON NULL DEFAULT 0",LONG,
                 CLIENTE_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG,
                 //Campos referencias
                 CLIENTE_TIPOCLIENTEPESO,"",INT,
@@ -374,7 +452,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 ESTADO_TIPOESTADO, "INTEGER NON NULL",INT
         };
 
-        String[] CAMPOS_PARTIDA = {"53", TABLA_PARTIDA,
+        String[] CAMPOS_PARTIDA = {"56", TABLA_PARTIDA,
                 PARTIDA_ID_PROYECTO, String.format("TEXT NON NULL %s", ID_PROYECTO),STRING,
                 PARTIDA_ID_PARTIDA, "TEXT NON NULL UNIQUE",STRING,
                 PARTIDA_ID_PARTIDABASE, "TEXT",STRING,
@@ -391,13 +469,14 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PARTIDA_COMPLETADA, "REAL NON NULL DEFAULT 0",DOUBLE,
                 PARTIDA_COMPLETA, "INTEGER NON NULL DEFAULT 0", INT,
                 PARTIDA_RUTAFOTO, "TEXT",STRING,
+                PARTIDA_CREATE, "INTEGER NON NULL DEFAULT 0",LONG,
                 PARTIDA_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG,
                 //Campos referencias
                 PARTIDA_PROYECTO_RETRASO, NULL,LONG,
                 PARTIDA_TIPO_ESTADO, NULL,INT
         };
 
-        String[] CAMPOS_DETPARTIDA = {"59", TABLA_DETPARTIDA,
+        String[] CAMPOS_DETPARTIDA = {"71", TABLA_DETPARTIDA,
                 DETPARTIDA_ID_PARTIDA, String.format("TEXT NON NULL %s", ID_PARTIDA),STRING,
                 DETPARTIDA_SECUENCIA, "INTEGER NON NULL",INT,
                 DETPARTIDA_ID_DETPARTIDA,"TEXT",STRING,
@@ -411,16 +490,20 @@ public class ContratoPry implements JavaUtil.Constantes {
                 DETPARTIDA_COMPLETADA, "REAL NON NULL DEFAULT 0",DOUBLE,
                 DETPARTIDA_COMPLETA, "INTEGER NON NULL DEFAULT 0", INT,
                 DETPARTIDA_PRECIO, "REAL NON NULL DEFAULT 0",DOUBLE,
+                DETPARTIDA_COSTE, "REAL NON NULL DEFAULT 0",DOUBLE,
                 DETPARTIDA_BENEFICIO, "REAL NON NULL DEFAULT 0",DOUBLE,
-                DETPARTIDA_DESCUENTOPROV, "REAL NON NULL DEFAULT 0",DOUBLE,
+                DETPARTIDA_DESCUENTOPROVCAT, "REAL NON NULL DEFAULT 0",DOUBLE,
+                DETPARTIDA_DESCUENTOPROVEEDOR, "REAL NON NULL DEFAULT 0",DOUBLE,
                 DETPARTIDA_RUTAFOTO,"TEXT",STRING,
-                DETPARTIDA_REFPROV,"TEXT",STRING,
+                DETPARTIDA_REFPROVCAT,"TEXT",STRING,
+                DETPARTIDA_REFPROVEEDOR,"TEXT",STRING,
                 DETPARTIDA_TIPO,"TEXT NON NULL",STRING,
-                DETPARTIDA_TIMESTAMP, "INTEGER NON NULL",LONG
+                DETPARTIDA_CREATE, "INTEGER NON NULL DEFAULT 0",LONG,
+                DETPARTIDA_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG
 
         };
 
-        String[] CAMPOS_PARTIDABASE = {"29", TABLA_PARTIDABASE,
+        String[] CAMPOS_PARTIDABASE = {"32", TABLA_PARTIDABASE,
                 PARTIDABASE_ID_PARTIDABASE, "TEXT NON NULL UNIQUE",STRING,
                 PARTIDABASE_ID_PARTIDAORIGEN, "TEXT NON NULL UNIQUE",STRING,
                 PARTIDABASE_DESCRIPCION, "TEXT NON NULL",STRING,
@@ -429,10 +512,11 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PARTIDABASE_PRECIO, "REAL NON NULL DEFAULT 0",DOUBLE,
                 PARTIDABASE_COSTE, "REAL NON NULL DEFAULT 0",DOUBLE,
                 PARTIDABASE_RUTAFOTO, "TEXT",STRING,
+                PARTIDABASE_CREATE, "INTEGER NON NULL DEFAULT 0",LONG,
                 PARTIDABASE_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG
         };
 
-        String[] CAMPOS_DETPARTIDABASE = {"44", TABLA_DETPARTIDABASE,
+        String[] CAMPOS_DETPARTIDABASE = {"53", TABLA_DETPARTIDABASE,
                 DETPARTIDABASE_ID_PARTIDABASE, String.format("TEXT NON NULL %s", ID_PARTIDABASE),STRING,
                 DETPARTIDABASE_SECUENCIA, "INTEGER NON NULL",INT,
                 DETPARTIDABASE_ID_DETPARTIDABASE,"TEXT",STRING,
@@ -442,46 +526,53 @@ public class ContratoPry implements JavaUtil.Constantes {
                 DETPARTIDABASE_TIEMPO, "REAL NON NULL DEFAULT 0",DOUBLE,
                 DETPARTIDABASE_PRECIO, "REAL NON NULL DEFAULT 0",DOUBLE,
                 DETPARTIDABASE_BENEFICIO, "REAL NON NULL DEFAULT 0",DOUBLE,
-                DETPARTIDABASE_DESCUENTOPROV, "REAL NON NULL DEFAULT 0",DOUBLE,
+                DETPARTIDABASE_DESCUENTOPROVCAT, "REAL NON NULL DEFAULT 0",DOUBLE,
+                DETPARTIDABASE_DESCUENTOPROVEEDOR, "REAL NON NULL DEFAULT 0",DOUBLE,
                 DETPARTIDABASE_RUTAFOTO,"TEXT",STRING,
-                DETPARTIDABASE_REFPROV,"TEXT",STRING,
+                DETPARTIDABASE_REFPROVCAT,"TEXT",STRING,
+                DETPARTIDABASE_REFPROVEEDOR,"TEXT",STRING,
                 DETPARTIDABASE_TIPO,"TEXT NON NULL",STRING,
-                DETPARTIDABASE_TIMESTAMP, "INTEGER NON NULL",LONG
+                DETPARTIDABASE_CREATE, "INTEGER NON NULL DEFAULT 0",LONG,
+                DETPARTIDABASE_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG
 
         };
 
-        String[] CAMPOS_TAREA = {"20", TABLA_TAREA,
+        String[] CAMPOS_TAREA = {"23", TABLA_TAREA,
                 TAREA_ID_TAREA, "TEXT NON NULL UNIQUE",STRING,
                 TAREA_DESCRIPCION, "TEXT NON NULL",STRING,
                 TAREA_NOMBRE, "TEXT NON NULL",STRING,
                 TAREA_RUTAFOTO, "TEXT",STRING,
                 TAREA_TIEMPO, "REAL NON NULL DEFAULT 0",DOUBLE,
+                TAREA_CREATE, "INTEGER NON NULL DEFAULT 0",LONG,
                 TAREA_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG
         };
 
 
-        String[] CAMPOS_PRODUCTO = {"20", TABLA_PRODUCTO,
+        String[] CAMPOS_PRODUCTO = {"23", TABLA_PRODUCTO,
                 PRODUCTO_ID_PRODUCTO, "TEXT NON NULL UNIQUE",STRING,
                 PRODUCTO_DESCRIPCION, "TEXT NON NULL",STRING,
                 PRODUCTO_NOMBRE, "TEXT NON NULL",STRING,
                 PRODUCTO_RUTAFOTO, "TEXT",STRING,
-                PRODUCTO_IMPORTE, "REAL NON NULL",DOUBLE,
+                PRODUCTO_PRECIO, "REAL NON NULL",DOUBLE,
+                PRODUCTO_CREATE, "INTEGER NON NULL DEFAULT 0",LONG,
                 PRODUCTO_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG
         };
 
-        String[] CAMPOS_GASTOFIJO = {"29", TABLA_GASTOFIJO,
+        String[] CAMPOS_GASTOFIJO = {"35", TABLA_GASTOFIJO,
                 GASTOFIJO_ID_GASTOFIJO, "TEXT NON NULL UNIQUE",STRING,
                 GASTOFIJO_NOMBRE, "TEXT NON NULL",STRING,
                 GASTOFIJO_DESCRIPCION, "TEXT NON NULL",STRING,
                 GASTOFIJO_CANTIDAD, "REAL NON NULL DEFAULT 0",DOUBLE,
-                GASTOFIJO_IMPORTE, "REAL NON NULL DEFAULT 0",DOUBLE,
+                GASTOFIJO_PRECIO, "REAL NON NULL DEFAULT 0",DOUBLE,
                 GASTOFIJO_ANYOS, "INTEGER NON NULL DEFAULT 0",INT,
                 GASTOFIJO_MESES, "INTEGER NON NULL DEFAULT 0",INT,
                 GASTOFIJO_DIAS, "INTEGER NON NULL DEFAULT 0",INT,
+                GASTOFIJO_RUTAFOTO, "TEXT",STRING,
+                GASTOFIJO_CREATE, "INTEGER NON NULL DEFAULT 0",LONG,
                 GASTOFIJO_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG
         };
 
-        String[] CAMPOS_PERFIL = {"44", TABLA_PERFIL,
+        String[] CAMPOS_PERFIL = {"50", TABLA_PERFIL,
                 PERFIL_ID_PERFIL, "TEXT NON NULL UNIQUE",STRING,
                 PERFIL_NOMBRE, "TEXT NON NULL",STRING,
                 PERFIL_DESCRIPCION, "TEXT NON NULL",STRING,
@@ -495,25 +586,28 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PERFIL_HORASDOMINGO, "INTEGER NON NULL DEFAULT 0",INT,
                 PERFIL_BENEFICIO, "REAL NON NULL DEFAULT 10",DOUBLE,
                 PERFIL_SUELDO, "REAL NON NULL DEFAULT 20000",DOUBLE,
+                PERFIL_RUTAFOTO, "TEXT",STRING,
+                PERFIL_CREATE, "INTEGER NON NULL DEFAULT 0",LONG,
                 PERFIL_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG
         };
 
-        String[] CAMPOS_AMORTIZACION = {"38", TABLA_AMORTIZACION,
+        String[] CAMPOS_AMORTIZACION = {"41", TABLA_AMORTIZACION,
                 AMORTIZACION_ID_AMORTIZACION, "TEXT NON NULL UNIQUE",STRING,
                 AMORTIZACION_NOMBRE, "TEXT NON NULL",STRING,
                 AMORTIZACION_DESCRIPCION, "TEXT NON NULL",STRING,
                 AMORTIZACION_CANTIDAD, "REAL NON NULL",DOUBLE,
                 AMORTIZACION_FECHACOMPRA, "INTEGER NON NULL DEFAULT 0",LONG,
                 AMORTIZACION_FECHACOMPRAF,"TEXT",STRING,
-                AMORTIZACION_IMPORTE, "REAL NON NULL DEFAULT 0",DOUBLE,
+                AMORTIZACION_PRECIO, "REAL NON NULL DEFAULT 0",DOUBLE,
                 AMORTIZACION_ANYOS, "INTEGER NON NULL DEFAULT 0",INT,
                 AMORTIZACION_MESES, "INTEGER NON NULL DEFAULT 0",INT,
                 AMORTIZACION_DIAS, "INTEGER NON NULL DEFAULT 0",INT,
                 AMORTIZACION_RUTAFOTO, "TEXT",STRING,
+                AMORTIZACION_CREATE, "INTEGER NON NULL DEFAULT 0",LONG,
                 AMORTIZACION_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG
         };
 
-        String[] CAMPOS_EVENTO = {"83", TABLA_EVENTO,
+        String[] CAMPOS_EVENTO = {"86", TABLA_EVENTO,
                 EVENTO_ID_EVENTO, "TEXT NON NULL UNIQUE",STRING,
                 EVENTO_IDMULTI, "TEXT NON NULL",STRING,
                 EVENTO_DESCRIPCION, "TEXT NON NULL",STRING,
@@ -528,7 +622,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 EVENTO_AVISO, "INTEGER NON NULL DEFAULT 0",LONG,
                 EVENTO_NOTIFICADO, "INTEGER NON NULL DEFAULT 0",INT,
                 EVENTO_TELEFONO, "TEXT",STRING,
-                EVENTO_LUGAR, "TEXT",STRING,
+                EVENTO_DIRECCION, "TEXT",STRING,
                 EVENTO_EMAIL, "TEXT",STRING,
                 EVENTO_ASUNTO, "TEXT",STRING,
                 EVENTO_MENSAJE, "TEXT",STRING,
@@ -537,32 +631,107 @@ public class ContratoPry implements JavaUtil.Constantes {
                 EVENTO_NOMPROYECTOREL, "TEXT",STRING,
                 EVENTO_CLIENTEREL, "TEXT",STRING,
                 EVENTO_NOMCLIENTEREL, "TEXT",STRING,
-                EVENTO_TIPOEVENTO, "TEXT NON NULL",STRING,
+                EVENTO_TIPO, "TEXT NON NULL",STRING,
                 EVENTO_RUTAFOTO, "TEXT",STRING,
                 EVENTO_COMPLETADA, "REAL NON NULL DEFAULT 0",DOUBLE,
-                EVENTO_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG,
+                EVENTO_CREATE, "INTEGER NON NULL DEFAULT 0",LONG,
+                EVENTO_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG
         };
 
-        String[] CAMPOS_PEDIDOPROV = {"17",TABLA_PEDIDOSPROV,
-                PEDIDOPROV_ID_PEDIDOPROV,"TEXT NON NULL UNIQUE",STRING,
-                PEDIDOPROV_DESCRIPCION,"TEXT NON NULL",STRING,
-                PEDIDOPROV_FECHA,"INTEGER NON NULL DEFAULT 0",LONG,
-                PEDIDOPROV_FECHAF,"TEXT",STRING,
-                PEDIDOPROV_TIMESTAMP,"INTEGER NON NULL DEFAULT 0",LONG,
-        };
 
-        String[] CAMPOS_NOTA = {"32",TABLA_NOTA,
+
+        String[] CAMPOS_NOTA = {"35",TABLA_NOTA,
                 NOTA_ID_NOTA,"TEXT NON NULL UNIQUE",STRING,
                 NOTA_ID_RELACIONADO,"TEXT",STRING,
                 NOTA_NOMBREREL,"TEXT",STRING,
                 NOTA_TITULO,"TEXT",STRING,
                 NOTA_DESCRIPCION,"TEXT",STRING,
-                NOTA_RUTA,"TEXT",STRING,
+                NOTA_RUTAFOTO,"TEXT",STRING,
                 NOTA_FECHA,"INTEGER NON NULL DEFAULT 0",LONG,
                 NOTA_FECHAF,"TEXT",STRING,
                 NOTA_TIPO,"TEXT",STRING,
+                NOTA_CREATE,"INTEGER NON NULL DEFAULT 0",LONG,
                 NOTA_TIMESTAMP,"INTEGER NON NULL DEFAULT 0",LONG
 
+        };
+
+        String[] CAMPOS_DIARIO = {"29",TABLA_DIARIO,
+                DIARIO_ID_DIARIO,"TEXT NON NULL UNIQUE",STRING,
+                DIARIO_ID_RELACIONADO,"TEXT NON NULL",STRING,
+                DIARIO_NOMBRE,"TEXT NON NULL",STRING,
+                DIARIO_NOMBREREL,"TEXT NON NULL",STRING,
+                DIARIO_DESCRIPCION,"TEXT NON NULL",STRING,
+                DIARIO_RUTAFOTO,"TEXT NON NULL",STRING,
+                DIARIO_REL,"TEXT NON NULL",STRING,
+                DIARIO_CREATE,"INTEGER NON NULL DEFAULT 0",LONG,
+                DIARIO_TIMESTAMP,"INTEGER NON NULL DEFAULT 0",LONG
+
+
+        };
+
+        String[] CAMPOS_PROVEEDOR = {"32", TABLA_PROVEEDOR,
+                PROVEEDOR_ID_PROVEEDOR, "TEXT NON NULL UNIQUE",STRING,
+                PROVEEDOR_NOMBRE, "TEXT NON NULL",STRING,
+                PROVEEDOR_DIRECCION, "TEXT",STRING,
+                PROVEEDOR_TELEFONO, "TEXT",STRING,
+                PROVEEDOR_EMAIL, "TEXT",STRING,
+                PROVEEDOR_CONTACTO, "TEXT",STRING,
+                PROVEEDOR_RUTAFOTO, "TEXT",STRING,
+                PROVEEDOR_ACTIVO, "INTEGER NON NULL DEFAULT 0",LONG,
+                PROVEEDOR_CREATE, "INTEGER NON NULL DEFAULT 0",LONG,
+                PROVEEDOR_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG
+        };
+
+        String[] CAMPOS_PEDIDOPROVCAT = {"32", TABLA_PEDIDOPROVCAT,
+                PEDIDOPROVCAT_ID_PROYECTO, String.format("TEXT NON NULL %s", ID_PROYECTO),STRING,
+                PEDIDOPROVCAT_SECUENCIA, "INTEGER NON NULL",INT,
+                PEDIDOPROVCAT_ID_PEDIDOPROVCAT,"TEXT NON NULL UNIQUE",STRING,
+                PEDIDOPROVCAT_ID_PROVCAT,"TEXT NON NULL",STRING,
+                PEDIDOPROVCAT_DESCRIPCION,"TEXT NON NULL",STRING,
+                PEDIDOPROVCAT_FECHA,"INTEGER NON NULL DEFAULT 0",LONG,
+                PEDIDOPROVCAT_FECHAF,"TEXT",STRING,
+                PEDIDOPROVCAT_SERVIDO,"INTEGER NON NULL DEFAULT 0",LONG,
+                PEDIDOPROVCAT_CREATE,"INTEGER NON NULL DEFAULT 0",LONG,
+                PEDIDOPROVCAT_TIMESTAMP,"INTEGER NON NULL DEFAULT 0",LONG
+        };
+
+        String[]  CAMPOS_DETPEDIDOPROVCAT = {"32",TABLA_DETPEDIDOPROVCAT,
+                DETPEDIDOPROVCAT_ID_PEDIDOPROVCAT,String.format("TEXT NON NULL %s", ID_PEDIDOPROVCAT),STRING,
+                DETPEDIDOPROVCAT_SECUENCIA, "INTEGER NON NULL",INT,
+                DETPEDIDOPROVCAT_ID_PRODPROVCAT,"TEXT NON NULL",STRING,
+                DETPEDIDOPROVCAT_REFERENCIA,"TEXT",STRING,
+                DETPEDIDOPROVCAT_NOMBRE,"TEXT NON NULL",STRING,
+                DETPEDIDOPROVCAT_CANTIDAD,"REAL NON NULL DEFAULT 0",DOUBLE,
+                DETPEDIDOPROVCAT_PRECIO,"REAL NON NULL DEFAULT 0",DOUBLE,
+                DETPEDIDOPROVCAT_SERVIDO,"INTEGER NON NULL DEFAULT 0",STRING,
+                DETPEDIDOPROVCAT_CREATE,"INTEGER NON NULL DEFAULT 0",LONG,
+                DETPEDIDOPROVCAT_TIMESTAMP,"INTEGER NON NULL DEFAULT 0",LONG
+        };
+
+        String[] CAMPOS_PEDIDOPROVEEDOR = {"32", TABLA_PEDIDOPROVEEDOR,
+                PEDIDOPROVEEDOR_ID_PROYECTO, String.format("TEXT NON NULL %s", ID_PROYECTO),STRING,
+                PEDIDOPROVEEDOR_SECUENCIA, "INTEGER NON NULL",INT,
+                PEDIDOPROVEEDOR_ID_PEDIDOPROVEEDOR,"TEXT NON NULL UNIQUE",STRING,
+                PEDIDOPROVEEDOR_ID_PROVEEDOR,"TEXT NON NULL",STRING,
+                PEDIDOPROVEEDOR_DESCRIPCION,"TEXT NON NULL",STRING,
+                PEDIDOPROVEEDOR_FECHA,"INTEGER NON NULL DEFAULT 0",LONG,
+                PEDIDOPROVEEDOR_FECHAF,"TEXT",STRING,
+                PEDIDOPROVEEDOR_SERVIDO,"INTEGER NON NULL DEFAULT 0",LONG,
+                PEDIDOPROVEEDOR_CREATE,"INTEGER NON NULL DEFAULT 0",LONG,
+                PEDIDOPROVEEDOR_TIMESTAMP,"INTEGER NON NULL DEFAULT 0",LONG
+        };
+
+        String[]  CAMPOS_DETPEDIDOPROVEEDOR = {"32",TABLA_DETPEDIDOPROVEEDOR,
+                DETPEDIDOPROVEEDOR_ID_PEDIDOPROVEEDOR,String.format("TEXT NON NULL %s", ID_PEDIDOPROVEEDOR),STRING,
+                DETPEDIDOPROVEEDOR_SECUENCIA, "INTEGER NON NULL",INT,
+                DETPEDIDOPROVEEDOR_ID_PRODUCTO,"TEXT NON NULL",STRING,
+                DETPEDIDOPROVEEDOR_REFERENCIA,"TEXT",STRING,
+                DETPEDIDOPROVEEDOR_NOMBRE,"TEXT NON NULL",STRING,
+                DETPEDIDOPROVEEDOR_CANTIDAD,"REAL NON NULL DEFAULT 0",DOUBLE,
+                DETPEDIDOPROVEEDOR_PRECIO,"REAL NON NULL DEFAULT 0",DOUBLE,
+                DETPEDIDOPROVEEDOR_SERVIDO,"INTEGER NON NULL DEFAULT 0",STRING,
+                DETPEDIDOPROVEEDOR_CREATE,"INTEGER NON NULL DEFAULT 0",LONG,
+                DETPEDIDOPROVEEDOR_TIMESTAMP,"INTEGER NON NULL DEFAULT 0",LONG
         };
 
     }
@@ -591,8 +760,13 @@ public class ContratoPry implements JavaUtil.Constantes {
         listaCampos.add(Tablas.CAMPOS_DETPARTIDA);
         listaCampos.add(Tablas.CAMPOS_PARTIDABASE);
         listaCampos.add(Tablas.CAMPOS_DETPARTIDABASE);
-        listaCampos.add(Tablas.CAMPOS_PEDIDOPROV);
+        listaCampos.add(Tablas.CAMPOS_PEDIDOPROVCAT);
         listaCampos.add(Tablas.CAMPOS_NOTA);
+        listaCampos.add(Tablas.CAMPOS_DIARIO);
+        listaCampos.add(Tablas.CAMPOS_PROVEEDOR);
+        listaCampos.add(Tablas.CAMPOS_PEDIDOPROVEEDOR);
+        listaCampos.add(Tablas.CAMPOS_DETPEDIDOPROVEEDOR);
+        listaCampos.add(Tablas.CAMPOS_DETPEDIDOPROVCAT);
 
         return listaCampos;
     }
@@ -625,6 +799,23 @@ public class ContratoPry implements JavaUtil.Constantes {
             case Tablas.TABLA_DETPARTIDABASE:
 
                 return Tablas.TABLA_PARTIDABASE;
+
+            case Tablas.TABLA_PEDIDOPROVCAT:
+
+                return Tablas.TABLA_PROYECTO;
+
+            case Tablas.TABLA_DETPEDIDOPROVCAT:
+
+                return Tablas.TABLA_PEDIDOPROVCAT;
+
+            case Tablas.TABLA_PEDIDOPROVEEDOR:
+
+                return Tablas.TABLA_PROYECTO;
+
+            case Tablas.TABLA_DETPEDIDOPROVEEDOR:
+
+                return Tablas.TABLA_PEDIDOPROVEEDOR;
+
         }
 
         return null;

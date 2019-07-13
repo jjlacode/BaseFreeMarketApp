@@ -796,7 +796,7 @@ public class MediaUtil {
                     // mVideoWidth+"/"+mVideoHeight);
                 }
             }
-            // Log.i("@@@", "setting size: " + width + 'x' + height);
+            // Log.i("@@@", "setting sizeLista: " + width + 'x' + height);
             setMeasuredDimension(width, height);
         }
     }

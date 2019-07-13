@@ -44,7 +44,7 @@ public class AdaptadorProducto extends RecyclerView.Adapter<AdaptadorProducto.Pr
     public void onBindViewHolder(@NonNull ProductoViewHolder productoViewHolder, int position) {
 
         productoViewHolder.descripcion.setText(listaProductos.get(position).getString(PRODUCTO_DESCRIPCION));
-        productoViewHolder.importe.setText(listaProductos.get(position).getString(PRODUCTO_IMPORTE));
+        productoViewHolder.importe.setText(listaProductos.get(position).getString(PRODUCTO_PRECIO));
         productoViewHolder.nombre.setText(listaProductos.get(position).getString(PRODUCTO_NOMBRE));
 
         if (listaProductos.get(position).getString(PRODUCTO_RUTAFOTO)!=null){

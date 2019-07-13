@@ -23,6 +23,7 @@
     <declare-styleable name="EditMaterial">
         <attr name="hint_text" format="string"/>
         <attr name="activo" format="boolean"/>
+        <attr name="fondo" format="integer"/>
         <attr name="tipo_dato" format="flags">
             <flag name="NUMERO" value="2"/>
             <flag name="TEXTO" value="1"/>

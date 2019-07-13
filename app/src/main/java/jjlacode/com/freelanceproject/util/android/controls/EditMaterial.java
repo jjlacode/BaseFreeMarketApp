@@ -5,23 +5,30 @@ import android.content.res.TypedArray;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.ImageButton;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import jjlacode.com.freelanceproject.MainActivity;
 import jjlacode.com.freelanceproject.R;
 
-public class EditMaterial extends LinearLayout {
+public class EditMaterial extends LinearLayoutCompat {
 
     private TextInputEditText editText;
     private TextInputLayout textInputLayout;
+    private ImageButton grabar;
     private AlCambiarListener listener;
-    private OnClick onClickListener;
+    private AudioATexto grabarListener;
+    private int posicion;
+    DisplayMetrics metrics = new DisplayMetrics();
 
     public EditMaterial(Context context) {
         super(context);
@@ -43,14 +50,6 @@ public class EditMaterial extends LinearLayout {
 
     }
 
-    public EditMaterial(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        inicializar();
-
-        setAtributos(attrs);
-
-    }
-
     private void inicializar() {
 
         String infService = Context.LAYOUT_INFLATER_SERVICE;
@@ -60,10 +59,12 @@ public class EditMaterial extends LinearLayout {
 
         editText = findViewById(R.id.et_material);
         textInputLayout = findViewById(R.id.ti_material);
+        grabar = findViewById(R.id.imgmaterial);
 
         asignarEventos();
 
     }
+
 
     private void setAtributos(AttributeSet attrs){
 
@@ -77,10 +78,13 @@ public class EditMaterial extends LinearLayout {
                 R.styleable.EditMaterial_gravedad,8388611);
         int tipoDato = a.getInt(
                 R.styleable.EditMaterial_tipo_dato,1);
+        int colorFondo = a.getInt(
+                R.styleable.EditMaterial_fondo,getContext().getResources().getColor(R.color.colorPrimary));
         boolean activo = a.getBoolean(
                 R.styleable.EditMaterial_activo,true);
 
         textInputLayout.setHint(textoHint);
+        textInputLayout.setBoxBackgroundColor(colorFondo);
         editText.setInputType(tipoDato);
         editText.setGravity(gravedad);
         editText.setEnabled(activo);
@@ -93,26 +97,18 @@ public class EditMaterial extends LinearLayout {
         this.listener = l;
     }
 
-    public void setOnClick(OnClick l) {this.onClickListener = l;}
+    public void setGrabarListener(AudioATexto grabarListener){
+        this.grabarListener = grabarListener;
+    }
 
     private void asignarEventos() {
-
-        textInputLayout.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (onClickListener!=null){
-                    onClickListener.onClick(v);
-                }
-            }
-        });
 
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
                 if (listener!=null) {
-                    listener.antesCambio(getText().toString());
+                    listener.antesCambio(s,start,count,after);
                 }
             }
 
@@ -120,7 +116,7 @@ public class EditMaterial extends LinearLayout {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
                 if (listener!=null) {
-                    listener.cambiando(getText().toString());
+                    listener.cambiando(s,start,before,count);
                 }
             }
 
@@ -128,38 +124,106 @@ public class EditMaterial extends LinearLayout {
             public void afterTextChanged(Editable s) {
 
                 if (listener!=null) {
-                    listener.despuesCambio(getText().toString());
+                    listener.despuesCambio(s);
                 }
+            }
+        });
+
+        grabar.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                grabarListener.onGrabar(view, posicion);
             }
         });
     }
 
+    public void setFondo(int colorFondo){
+        textInputLayout.setBoxBackgroundColor(colorFondo);
+
+    }
+
+    public void setPosicion(int posicion) {
+        this.posicion = posicion;
+    }
+
+    public int getPosicion() {
+        return posicion;
+    }
 
     public void setHint(String hint){
 
         textInputLayout.setHint(hint);
     }
 
+    public void grabarEnable(boolean enable){
+
+        if (enable) {
+            grabar.setVisibility(View.VISIBLE);
+        }else{
+            grabar.setVisibility(View.GONE);
+        }
+    }
+
     public void setText(String text){
         editText.setText(text);
+    }
+
+    public void setGravedad(int gravedad){
+        editText.setGravity(gravedad);
+    }
+
+    public void setTextSize(MainActivity activityCompat){
+
+        activityCompat.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+
+        boolean land = getResources().getBoolean(R.bool.esLand);
+        boolean tablet = getResources().getBoolean(R.bool.esTablet);
+        int ancho = metrics.widthPixels;
+        int alto = metrics.heightPixels;
+
+        float size = ((float) (alto*ancho)/(metrics.densityDpi*300));
+        editText.setTextSize(size);
+    }
+
+    public void setTextSize(FragmentActivity activityCompat){
+
+        activityCompat.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        boolean land = getResources().getBoolean(R.bool.esLand);
+        boolean tablet = getResources().getBoolean(R.bool.esTablet);
+        float ancho = metrics.widthPixels;
+        float alto = metrics.heightPixels;
+
+
+        float size = ((float) (alto*ancho)/(metrics.densityDpi*300));
+        editText.setTextSize(size);
     }
 
     public Editable getText(){
         return editText.getText();
     }
 
-    public void activo(boolean activo){
+    public void setActivo(boolean activo){
         editText.setEnabled(activo);
+    }
+
+    public boolean getActivo(){
+        return editText.isEnabled();
+    }
+
+    public interface AudioATexto {
+
+        void onGrabar(View view, int posicion);
     }
 
     public interface AlCambiarListener{
 
-        void antesCambio(String texto);
-        void despuesCambio(String texto);
-        void cambiando(String texto);
+        void antesCambio(CharSequence s, int start, int count, int after);
+        void cambiando(CharSequence s, int start, int before, int count);
+        void despuesCambio(Editable s);
+
     }
 
-    public interface OnClick{
-        void onClick(View v);
-    }
 }

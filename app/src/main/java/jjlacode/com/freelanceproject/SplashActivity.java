@@ -54,7 +54,7 @@ public class SplashActivity extends AppCompatActivity implements ContratoPry.Tab
                         getApplicationContext().deleteDatabase(BASEDATOS);
                         if (preferences.contains(PERFILACTIVO)) {
 
-                            editor.remove(PERFILACTIVO);
+                            editor.removeModelo(PERFILACTIVO);
                             editor.apply();
                         }
                         finish();
@@ -128,7 +128,7 @@ public class SplashActivity extends AppCompatActivity implements ContratoPry.Tab
             editor.remove(PERFILACTIVO);
             editor.apply();
 
-            Log.d("inicio", "borrado perfil activo de preferencias");
+            Log.d("inicio", "borrado perfil setActivo de preferencias");
         }
         if (getDatabasePath(BASEDATOS)!=null){
 

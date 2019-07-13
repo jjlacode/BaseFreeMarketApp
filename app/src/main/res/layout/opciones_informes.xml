@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/chtodos_informes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/todos"
+            android:layout_weight="1"/>
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/chcli_informes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/clientes"
+            android:layout_weight="1"/>
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/chpry_informes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/proyectos"
+            android:layout_weight="1"/>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</LinearLayout>

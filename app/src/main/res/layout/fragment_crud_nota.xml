@@ -9,56 +9,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/btn_texto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:scaleType="fitXY"
-                android:visibility="gone"
-                android:src="@drawable/ic_nota_texto_indigo"/>
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/btn_audio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:scaleType="fitXY"
-                android:visibility="gone"
-                android:src="@drawable/ic_nota_audio_indigo"/>
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/btn_video"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:scaleType="fitXY"
-                android:visibility="gone"
-                android:src="@drawable/ic_nota_video_indigo"/>
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/btn_imagen"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:scaleType="fitXY"
-                android:visibility="gone"
-                android:src="@drawable/ic_nota_imagen_indigo"/>
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvtiponota"
             android:layout_width="match_parent"

@@ -70,6 +70,28 @@ public class ProviderFreelanceProject extends ContentProvider
     public static final int NOTA = 137;
     public static final int NOTA_ID = 138;
 
+    public static final int DIARIO = 139;
+    public static final int DIARIO_ID = 140;
+
+    public static final int PEDIDOPROVCAT = 141;
+    public static final int PEDIDOPROVCAT_ID = 142;
+    public static final int PEDIDOPROVCAT_ID_DETPEDIDOPROVCAT = 143;
+
+    public static final int PEDIDOPROVEEDOR = 144;
+    public static final int PEDIDOPROVEEDOR_ID = 145;
+    public static final int PEDIDOPROVEEDOR_ID_DETPEDIDOPROVEEDOR = 146;
+
+    public static final int DETPEDIDOPROVCAT = 147;
+    public static final int DETPEDIDOPROVCAT_ID = 148;
+
+    public static final int DETPEDIDOPROVEEDOR = 149;
+    public static final int DETPEDIDOPROVEEDOR_ID = 150;
+
+    public static final int PROVEEDOR = 151;
+    public static final int PROVEEDOR_ID = 152;
+
+
+
     public static final String AUTORIDAD = AUTORIDAD_CONTENIDO;//"jjlacode.com.freelanceproject2";
 
     static {
@@ -123,6 +145,28 @@ public class ProviderFreelanceProject extends ContentProvider
 
         uriMatcher.addURI(AUTORIDAD, TABLA_NOTA, NOTA);
         uriMatcher.addURI(AUTORIDAD, TABLA_NOTA+"/*", NOTA_ID);
+
+        uriMatcher.addURI(AUTORIDAD, TABLA_DIARIO, DIARIO);
+        uriMatcher.addURI(AUTORIDAD, TABLA_DIARIO+"/*", DIARIO_ID);
+
+        uriMatcher.addURI(AUTORIDAD, TABLA_PEDIDOPROVCAT, PEDIDOPROVCAT);
+        uriMatcher.addURI(AUTORIDAD, TABLA_PEDIDOPROVCAT+"/*", PEDIDOPROVCAT_ID);
+        uriMatcher.addURI(AUTORIDAD, TABLA_PEDIDOPROVCAT+"/*/"+TABLA_DETPEDIDOPROVCAT, PEDIDOPROVCAT_ID_DETPEDIDOPROVCAT);
+
+        uriMatcher.addURI(AUTORIDAD, TABLA_PEDIDOPROVEEDOR, PEDIDOPROVEEDOR);
+        uriMatcher.addURI(AUTORIDAD, TABLA_PEDIDOPROVEEDOR+"/*", PEDIDOPROVEEDOR_ID);
+        uriMatcher.addURI(AUTORIDAD, TABLA_PEDIDOPROVEEDOR+"/*/"+TABLA_DETPEDIDOPROVEEDOR, PEDIDOPROVEEDOR_ID_DETPEDIDOPROVEEDOR);
+
+        uriMatcher.addURI(AUTORIDAD, TABLA_DETPEDIDOPROVCAT, DETPEDIDOPROVCAT);
+        uriMatcher.addURI(AUTORIDAD, TABLA_DETPEDIDOPROVCAT+"/*", DETPEDIDOPROVCAT_ID);
+
+        uriMatcher.addURI(AUTORIDAD, TABLA_DETPEDIDOPROVEEDOR, DETPEDIDOPROVEEDOR);
+        uriMatcher.addURI(AUTORIDAD, TABLA_DETPEDIDOPROVEEDOR+"/*", DETPEDIDOPROVEEDOR_ID);
+
+        uriMatcher.addURI(AUTORIDAD, TABLA_PROVEEDOR, PROVEEDOR);
+        uriMatcher.addURI(AUTORIDAD, TABLA_PROVEEDOR+"/*", PROVEEDOR_ID);
+
+
     }
 
     private static final String PROYECTO_JOIN_CLIENTE_Y_ESTADO=
@@ -256,6 +300,30 @@ public class ProviderFreelanceProject extends ContentProvider
                 return generarMime(TABLA_NOTA);
             case NOTA_ID:
                 return generarMimeItem(TABLA_NOTA);
+            case DIARIO:
+                return generarMime(TABLA_DIARIO);
+            case DIARIO_ID:
+                return generarMimeItem(TABLA_DIARIO);
+            case PROVEEDOR:
+                return generarMime(TABLA_PROVEEDOR);
+            case PROVEEDOR_ID:
+                return generarMimeItem(TABLA_PROVEEDOR);
+            case PEDIDOPROVCAT:
+                return generarMime(TABLA_PEDIDOPROVCAT);
+            case PEDIDOPROVCAT_ID:
+                return generarMimeItem(TABLA_PEDIDOPROVCAT);
+            case DETPEDIDOPROVCAT:
+                return generarMime(TABLA_DETPEDIDOPROVCAT);
+            case DETPEDIDOPROVCAT_ID:
+                return generarMimeItem(TABLA_DETPEDIDOPROVCAT);
+            case PEDIDOPROVEEDOR:
+                return generarMime(TABLA_PEDIDOPROVEEDOR);
+            case PEDIDOPROVEEDOR_ID:
+                return generarMimeItem(TABLA_PEDIDOPROVEEDOR);
+            case DETPEDIDOPROVEEDOR:
+                return generarMime(TABLA_DETPEDIDOPROVEEDOR);
+            case DETPEDIDOPROVEEDOR_ID:
+                return generarMimeItem(TABLA_DETPEDIDOPROVEEDOR);
             default:
                 throw new UnsupportedOperationException("Uri desconocida =>" + uri);
         }
@@ -596,10 +664,147 @@ public class ProviderFreelanceProject extends ContentProvider
                 proyeccion = tabla+".*";
                 esId = true;
                 esDetalle = false;
+                break;
+
+            case DIARIO:
+                // Generar Pk
+                tabla = TABLA_DIARIO;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = DIARIO_ID_DIARIO;
+                esId = false;
+                esDetalle = false;
+                break;
+
+            case DIARIO_ID:
+
+                tabla = TABLA_DIARIO;
+                idTabla = DIARIO_ID_DIARIO;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                esId = true;
+                esDetalle = false;
+                break;
+
+            case PEDIDOPROVCAT:
+                tabla = TABLA_PEDIDOPROVCAT;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = PEDIDOPROVCAT_ID_PROYECTO;
+                esDetalle = false;
+                esId = false;
+                break;
+
+            case PEDIDOPROVCAT_ID:
+
+                tabla = TABLA_PEDIDOPROVCAT;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = PEDIDOPROVCAT_ID_PROYECTO;
+                esDetalle = true;
+                esId = true;
+                break;
+
+            case PEDIDOPROVCAT_ID_DETPEDIDOPROVCAT:
+
+                tabla = TABLA_DETPEDIDOPROVCAT;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = DETPEDIDOPROVCAT_ID_PEDIDOPROVCAT;
+                esDetalle = true;
+                esId = false;
+                break;
+
+            case DETPEDIDOPROVCAT:
+                tabla = TABLA_DETPEDIDOPROVCAT;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = DETPEDIDOPROVCAT_ID_PEDIDOPROVCAT;
+                esId = false;
+                esDetalle = false;
+                break;
+
+            case DETPEDIDOPROVCAT_ID:
+
+                tabla = TABLA_DETPEDIDOPROVCAT;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = DETPEDIDOPROVCAT_ID_PEDIDOPROVCAT;
+                esDetalle = true;
+                esId = true;
+                break;
+
+            case PEDIDOPROVEEDOR:
+                tabla = TABLA_PEDIDOPROVEEDOR;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = PEDIDOPROVEEDOR_ID_PROYECTO;
+                esDetalle = false;
+                esId = false;
+                break;
+
+            case PEDIDOPROVEEDOR_ID:
+
+                tabla = TABLA_PEDIDOPROVEEDOR;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = PEDIDOPROVEEDOR_ID_PROYECTO;
+                esDetalle = true;
+                esId = true;
+                break;
+
+            case PEDIDOPROVEEDOR_ID_DETPEDIDOPROVEEDOR:
+
+                tabla = TABLA_DETPEDIDOPROVEEDOR;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = DETPEDIDOPROVEEDOR_ID_PEDIDOPROVEEDOR;
+                esDetalle = true;
+                esId = false;
+                break;
+
+            case DETPEDIDOPROVEEDOR:
+                tabla = TABLA_DETPEDIDOPROVEEDOR;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = DETPEDIDOPROVEEDOR_ID_PEDIDOPROVEEDOR;
+                esId = false;
+                esDetalle = false;
+                break;
+
+            case DETPEDIDOPROVEEDOR_ID:
+
+                tabla = TABLA_DETPEDIDOPROVEEDOR;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = DETPEDIDOPROVEEDOR_ID_PEDIDOPROVEEDOR;
+                esDetalle = true;
+                esId = true;
+                break;
+
+            case PROVEEDOR:
+                // Generar Pk
+                tabla = TABLA_PROVEEDOR;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = PROVEEDOR_ID_PROVEEDOR;
+                esId = false;
+                esDetalle = false;
+                break;
+
+            case PROVEEDOR_ID:
+
+                tabla = TABLA_PROVEEDOR;
+                setTablas = tabla;
+                proyeccion = tabla+".*";
+                idTabla = PROVEEDOR_ID_PROVEEDOR;
+                esId = true;
+                esDetalle = false;
+                break;
 
         }
 
-        values.put("tabla",tabla);
+        values.put("tablaModelo",tabla);
         values.put("idTabla",idTabla);
         values.put("proyeccion", proyeccion);
         values.put("setTablas", setTablas);
@@ -618,7 +823,7 @@ public class ProviderFreelanceProject extends ContentProvider
         ContentValues valores = matcherUri(uri);
 
         String secuencia= values.getAsString("secuencia");
-        String tabla = valores.getAsString("tabla");
+        String tabla = valores.getAsString("tablaModelo");
         String idTabla = valores.getAsString("idTabla");
         String id = generarIdTabla(tabla);
 
@@ -663,7 +868,7 @@ public class ProviderFreelanceProject extends ContentProvider
         String[] ids = null;
         boolean esId = valores.getAsBoolean("esId");
         boolean esDetalle = valores.getAsBoolean("esDetalle");
-        String tabla = valores.getAsString("tabla");
+        String tabla = valores.getAsString("tablaModelo");
 
         if (selection == null) {
 
@@ -715,7 +920,7 @@ public class ProviderFreelanceProject extends ContentProvider
 
         ContentValues valores = matcherUri(uri);
 
-        String tabla = valores.getAsString("tabla");
+        String tabla = valores.getAsString("tablaModelo");
         String idTabla = valores.getAsString("idTabla");
         boolean esId = valores.getAsBoolean("esId");
         boolean esDetalle = valores.getAsBoolean("esDetalle");
@@ -767,7 +972,7 @@ public class ProviderFreelanceProject extends ContentProvider
 
         ContentValues valores = matcherUri(uri);
 
-        String tabla = valores.getAsString("tabla");
+        String tabla = valores.getAsString("tablaModelo");
         String idTabla = valores.getAsString("idTabla");
         boolean esId = valores.getAsBoolean("esId");
         boolean esDetalle = valores.getAsBoolean("esDetalle");
