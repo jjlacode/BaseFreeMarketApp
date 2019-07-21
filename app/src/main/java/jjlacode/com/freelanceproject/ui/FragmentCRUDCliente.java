@@ -61,12 +61,6 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
     protected TipoViewHolder setViewHolder(View view) {
 
         return new ViewHolderRV(view);
@@ -253,7 +247,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
             public void onClick(View v) {
 
                 bundle = new Bundle();
-                bundle.putSerializable(TABLA_CLIENTE, modelo);
+                bundle.putSerializable(CLIENTE, modelo);
                 bundle.putBoolean(NUEVOREGISTRO, true);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
             }
@@ -264,9 +258,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
             public void onClick(View v) {
 
                 bundle = new Bundle();
-                //bundle.putSerializable(TABLA_CLIENTE, modelo);
                 bundle.putSerializable(LISTA, new ListaModelo(CAMPOS_EVENTO, EVENTO_CLIENTEREL, id, null, IGUAL, null));
-                //bundle.putString(IDREL,id);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
             }
         });
@@ -327,15 +319,10 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
             @Override
             public void onClick(View v) {
 
-                enviarBundle();
+                bundle = new Bundle();
                 bundle.putString(IDREL,modelo.getString(CLIENTE_ID_CLIENTE));
                 bundle.putString(SUBTITULO, modelo.getString(CLIENTE_NOMBRE));
                 bundle.putString(ORIGEN, CLIENTE);
-                bundle.putString(ACTUAL,NOTA);
-                bundle.putSerializable(MODELO,null);
-                bundle.putSerializable(LISTA,null);
-                bundle.putString(CAMPO_ID,null);
-                bundle.putBoolean(NUEVOREGISTRO,true);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
             }
         });
@@ -362,6 +349,9 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
     protected void setTitulo() {
         tituloSingular = R.string.cliente;
         tituloPlural = R.string.clientes;
+        if (actualtemp==null){
+            actualtemp=PROSPECTO;
+        }
         if (actualtemp.equals(PROSPECTO)){
             tituloNuevo = R.string.nuevo_prospecto;
         }else {
@@ -417,18 +407,24 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
     }
 
     @Override
-    protected void setcambioFragment() {
+    protected boolean onBack() {
 
-        if (origen != null && ((origen.equals(PROYECTO)) || (origen.equals(PRESUPUESTO)))) {
-
+        if (origen != null && (origen.equals(PROYECTO) || origen.equals(PRESUPUESTO))) {
             bundle = new Bundle();
             bundle.putString(ORIGEN, actualtemp);
-            bundle.putString(CLIENTE, idAOrigen);
+            bundle.putString(CLIENTE,id);
             bundle.putString(ACTUAL, origen);
+            bundle.putString(ACTUALTEMP, origen);
             bundle.putBoolean(NUEVOREGISTRO, true);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
-
+        }else {
+            super.onBack();
         }
+        return true;
+    }
+
+    @Override
+    protected void setcambioFragment() {
 
         subTitulo = setNamefdef();
         activityBase.toolbar.setSubtitle(subTitulo);

@@ -83,7 +83,8 @@ public class CRUDutil {
     public static int actualizarRegistro(Modelo modelo, ContentValues valores){
 
         String tabla = modelo.getNombreTabla();
-        String id = modelo.getCampoID();
+        System.out.println("tabla = " + tabla);
+        String id = modelo.getString(modelo.getCampoID());
 
         if (ContratoPry.getTabCab(tabla)!=null){
 
@@ -91,7 +92,7 @@ public class CRUDutil {
             return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia,valores);
 
         }
-
+        System.out.println("id = " + id);
         return ConsultaBD.updateRegistro(tabla, id,valores);
     }
 

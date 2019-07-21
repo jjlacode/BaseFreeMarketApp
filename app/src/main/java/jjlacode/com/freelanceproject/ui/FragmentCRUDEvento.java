@@ -118,10 +118,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     private CheckBox completada;
     private Modelo proyecto;
     private Modelo cliente;
-    private ArrayList<String> listaTiposEvento;
-    private AdaptadorFiltroRV adaptadorFiltroRV;
     private int notificado;
-    private boolean esLista;
 
 
     public FragmentCRUDEvento() {
@@ -700,7 +697,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
             relCli.setChecked(true);
             activityBase.toolbar.setSubtitle(subTitulo +" - "+cliente.getString(CLIENTE_NOMBRE));
 
-        }else if (proyecto!=null) {
+        }
+        if (proyecto!=null) {
 
             idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
             relProy.setChecked(true);
@@ -1414,39 +1412,42 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     protected void setcambioFragment() {
 
 
-        if (esLista) {
-
-            if (origen.equals(PRESUPUESTO) || origen.equals(PROYECTO)) {
+        switch (origen) {
+            case PRESUPUESTO:
+            case PROYECTO:
 
                 bundle.putSerializable(MODELO, proyecto);
+                bundle.putString(CAMPO_ID, proyecto.getString(PROYECTO_ID_PROYECTO));
                 bundle.putString(ACTUAL, origen);
 
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
 
-            } else if (origen.equals(CLIENTE) || origen.equals(PROSPECTO)) {
+                break;
+            case CLIENTE:
+            case PROSPECTO:
 
                 bundle.putSerializable(MODELO, cliente);
                 bundle.putString(ACTUAL, origen);
 
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDCliente());
 
-            }
-        }
+                break;
+            case CALENDARIO:
 
-            if (origen.equals(CALENDARIO)) {
-
-                bundle.putString(ACTUAL,origen);
+                bundle.putString(ACTUAL, origen);
 
                 icFragmentos.enviarBundleAFragment(bundle, new CalendarioEventos());
 
-            }else {
+                break;
+            default:
+
                 activityBase.toolbar.setSubtitle(setNamefdef());
                 idCliente = null;
                 idProyecto = null;
                 idMulti = null;
-                esLista = true;
 
-            }
+                break;
+        }
 
     }
 

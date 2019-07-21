@@ -291,6 +291,10 @@
     <string name="nota_audio">Nota_audio</string>
     <string name="nota_video">Nota video</string>
     <string name="nota_imagen">Nota imagen</string>
+    <string name="cantidad_partida">Cantidad partida</string>
+    <string name="no_app_pdf">No existe una aplicación para abrir el PDF</string>
+    <string name="visualiza_pdf">Visualizando documento</string>
+    <string name="num_tel_invalido">El numero de telefono no es valido</string>
 
 
 </resources>

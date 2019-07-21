@@ -4,40 +4,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".VisorPDFEmail">
+    android:orientation="vertical">
 
-    <EditText
+    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/etemailvisor"
-        android:hint="@string/email"/>
-    <EditText
+        app:hint_text="@string/email"/>
+    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/etasuntovisor"
-        android:hint="@string/asunto"/>
+        app:hint_text="@string/asunto"/>
 
-    <EditText
+    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
         android:id="@+id/ettextovisor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/texto_mensaje"
-        android:inputType="textMultiLine"
+        app:hint_text="@string/texto_mensaje"
+        app:tipo_dato="TEXTO|MULTI"
         android:minHeight="60dp" />
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnenviarvisor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/boton_redondo_primary"
-        android:textColor="@color/Color_texto_titulos"
+        android:textColor="@color/colorPrimary"
         android:text="@string/enviar_pdf"/>
 
-
-    <!--Visor del PDF apartir del Gradle configurado -->
-    <com.github.barteksc.pdfviewer.PDFView
-        android:id="@+id/pdfVisoremail"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 
 </LinearLayout>

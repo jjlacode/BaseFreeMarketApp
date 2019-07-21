@@ -23,6 +23,7 @@ import jjlacode.com.freelanceproject.util.crud.ListaModelo;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.util.time.Day;
 import jjlacode.com.freelanceproject.util.time.ListaDays;
+import jjlacode.com.freelanceproject.util.time.TimeDateUtil;
 import jjlacode.com.freelanceproject.util.time.calendar.fragments.FragmentMes;
 
 import static jjlacode.com.freelanceproject.CommonPry.TiposEvento.TIPOEVENTOCITA;
@@ -57,7 +58,8 @@ public class CalendarioEventos extends FragmentMes {
         if (listatemp!=null) {
             for (Modelo modelo : listatemp.getLista()) {
 
-                if (modelo.getLong(EVENTO_FECHAINIEVENTO) == fecha) {
+                if (TimeDateUtil.getDateString(modelo.getLong(EVENTO_FECHAINIEVENTO))
+                        .equals(TimeDateUtil.getDateString(fecha))) {
 
                     listaDia.addModelo(modelo);
                 }

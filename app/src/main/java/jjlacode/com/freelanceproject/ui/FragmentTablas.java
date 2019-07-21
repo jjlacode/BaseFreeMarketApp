@@ -131,7 +131,7 @@ public class FragmentTablas extends FragmentGrid {
             destino = TAREA;
             enviarBundle();
 
-            icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDTarea());
+            icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDTrabajo());
 
         }else if (nombre.equals(home)){
 

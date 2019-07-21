@@ -100,7 +100,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
         allGone();
 
         imagenPantalla(recVideo,4,2);
-        imagenPantalla(playVideo,8,4);
+        imagenPantalla(playVideo,4,2);
 
         switch (tipoNota){
 
@@ -261,7 +261,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constant
                         visible(titulo);
                         visible(btncompartir);
                         visible(descripcion);
-                        imagenPantalla(playVideo,4,2);
+                        imagenPantalla(playVideo,2,1);
 
                     }
 

@@ -36,7 +36,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     protected String tabla;
     protected String[] campos;
     protected String id;
-    protected String idAOrigen;
     protected int secuencia;
     protected String tablaCab;
     protected Modelo modelo;
@@ -81,6 +80,21 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
         Log.d(TAG, getMetodo());
 
         layoutPie = R.layout.btn_sdb;
+        setTabla();
+        setTablaCab();
+        setCampos();
+        setCampoID();
+        setContext();
+        setTitulo();
+
+        campoTimeStamp = CAMPO_TIMESTAMP;
+
+        campoCreate = CAMPO_CREATEREG;
+
+        campoImagen = CAMPO_RUTAFOTO;
+
+
+
     }
 
 
@@ -343,32 +357,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
             editor.apply();
         }
 
-        setTabla();
-        setTablaCab();
-        setCampos();
-        setCampoID();
-        setContext();
-        setTitulo();
-
-        campoTimeStamp = CAMPO_TIMESTAMP;
-
-        campoCreate = CAMPO_CREATEREG;
-
-        campoImagen = CAMPO_RUTAFOTO;
-
-        if (tablaCab==null && id!=null){
-            modelo = CRUDutil.setModelo(campos,id);
-        }
-        else if (id!=null && secuencia>0){
-            modelo = CRUDutil.setModelo(campos,id,secuencia);
-        }
-
-        if (tituloPlural>0) {
-            activityBase.toolbar.setTitle(tituloPlural);
-        }
-        if (subTitulo!=null) {
-            activityBase.toolbar.setSubtitle(subTitulo);
-        }
 
         if (bundle!=null) {
             enviarBundle();

@@ -272,6 +272,10 @@
     <string name="total_prospectos">Nuevos prospectos</string>
     <string name="total_clientes">Total nuevos clientes</string>
     <string name="total_cli_inac">Total clientes inactivos periodo</string>
+    <string name="cantidad_partida">Cantidad partida</string>
+    <string name="no_app_pdf">No existe una aplicación para abrir el PDF</string>
+    <string name="visualiza_pdf">Visualizando documento</string>
+    <string name="num_tel_invalido">El numero de telefono no es valido</string>
 
 
 </resources>

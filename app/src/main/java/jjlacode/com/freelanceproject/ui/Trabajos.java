@@ -22,6 +22,7 @@ import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.util.media.MediaUtil;
 import jjlacode.com.freelanceproject.util.time.Day;
 import jjlacode.com.freelanceproject.util.time.ListaDays;
+import jjlacode.com.freelanceproject.util.time.TimeDateUtil;
 import jjlacode.com.freelanceproject.util.time.calendar.fragments.FragmentMes;
 
 
@@ -43,7 +44,8 @@ public class Trabajos extends FragmentMes {
 
         for (Modelo modelo : listabase.getLista()) {
 
-            if (modelo.getLong(PROYECTO_FECHAENTREGAACORDADA)==fecha){
+            if (TimeDateUtil.getDateString(modelo.getLong(PROYECTO_FECHAENTREGAACORDADA))
+                    .equals(TimeDateUtil.getDateString(fecha))){
 
                 listaDia.addModelo(modelo);
             }
@@ -77,6 +79,12 @@ public class Trabajos extends FragmentMes {
         campos = CAMPOS_PROYECTO;
         campo = PROYECTO_FECHAENTREGAACORDADA;
 
+    }
+
+    @Override
+    protected void setOnCreate() {
+        super.setOnCreate();
+        setSinDia(true);
     }
 
     @Override

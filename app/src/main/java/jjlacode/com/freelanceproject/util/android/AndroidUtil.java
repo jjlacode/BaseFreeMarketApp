@@ -36,6 +36,7 @@ import java.util.Locale;
 import jjlacode.com.freelanceproject.MainActivity;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
 
 public class AndroidUtil extends AppCompatActivity {
 
@@ -101,6 +102,90 @@ public class AndroidUtil extends AppCompatActivity {
     public static void bars(Context contexto, ProgressBar bar, ProgressBar bar2, boolean inversa,
                             int valorMax, int valorAcept, int valorNotOk, double completada,
                             TextView lcompletada, TextView trek, int color_ok, int color_acept, int color_notok){
+
+        if (bar2!=null) {
+            if (completada > valorMax) {
+                bar2.setVisibility(View.VISIBLE);
+                bar2.setProgress((int) completada - valorMax - ((int) ((completada - valorMax) / 99)));
+                bar2.setSecondaryProgress((int) completada - valorMax);
+            } else {
+                bar2.setVisibility(View.GONE);
+            }
+        }
+        if (completada>0){
+            bar.setVisibility(View.VISIBLE);
+        }else{
+            bar.setVisibility(View.GONE);
+        }
+        bar.setMax(valorMax);
+        bar.setProgress((int)completada-((int)(completada/99)));
+        bar.setSecondaryProgress((int)completada);
+
+        if (inversa) {
+            if (completada > valorAcept) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok, null));
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_ok));
+
+                }
+            } else if (completada < valorAcept && completada > valorNotOk) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_acept));
+                }
+            } else {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_notok));
+                }
+            }
+        } else {
+            if (completada < valorAcept) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok, null));
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_ok));
+
+                }
+            } else if (completada > valorAcept && completada < valorNotOk) {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_acept));
+                }
+            } else {
+                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                if (bar2 != null) {
+                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                }
+                if (trek != null) {
+
+                    trek.setTextColor(contexto.getResources().getColor(color_notok));
+                }
+            }
+        }
+        if (lcompletada!=null) {
+
+            lcompletada.setText(String.format(Locale.getDefault(),
+                    "%s %s", JavaUtil.getDecimales(completada), "% completa"));
+        }
+    }
+
+    public static void bars(Context contexto, ProgressBar bar, ProgressBar bar2, boolean inversa,
+                            int valorMax, int valorAcept, int valorNotOk, double completada,
+                            EditMaterial lcompletada, TextView trek, int color_ok, int color_acept, int color_notok){
 
         if (bar2!=null) {
             if (completada > valorMax) {

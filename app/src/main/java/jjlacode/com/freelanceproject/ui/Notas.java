@@ -22,6 +22,7 @@ import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.util.media.MediaUtil;
 import jjlacode.com.freelanceproject.util.time.Day;
 import jjlacode.com.freelanceproject.util.time.ListaDays;
+import jjlacode.com.freelanceproject.util.time.TimeDateUtil;
 import jjlacode.com.freelanceproject.util.time.calendar.fragments.FragmentMes;
 
 public class Notas extends FragmentMes {
@@ -39,12 +40,11 @@ public class Notas extends FragmentMes {
 
         for (Modelo modelo : listaCompleta.getLista()) {
 
-            if (modelo.getLong(NOTA_FECHA)==fecha){
+            if (TimeDateUtil.getDateString(modelo.getLong(NOTA_FECHA)).equals(TimeDateUtil.getDateString(fecha))){
 
                 listaDia.addModelo(modelo);
             }
         }
-
         return listaDia;
     }
 
@@ -77,7 +77,7 @@ public class Notas extends FragmentMes {
     @Override
     protected void setTitulo() {
 
-        titulo = R.string.diario;
+        titulo = R.string.notas;
     }
 
     @Override

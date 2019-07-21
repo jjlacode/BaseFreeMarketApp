@@ -28,7 +28,7 @@ public class AdaptadorTareas extends RecyclerView.Adapter<AdaptadorTareas.TareaV
     @Override
     public TareaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
 
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_tarea,null,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_trabajo,null,false);
 
         view.setOnClickListener(this);
 
@@ -43,12 +43,12 @@ public class AdaptadorTareas extends RecyclerView.Adapter<AdaptadorTareas.TareaV
     @Override
     public void onBindViewHolder(@NonNull TareaViewHolder tareaViewHolder, int position) {
 
-        tareaViewHolder.descripcion.setText(listaTareas.get(position).getCampos(TAREA_DESCRIPCION));
-        tareaViewHolder.tiempo.setText(listaTareas.get(position).getCampos(TAREA_TIEMPO));
-        tareaViewHolder.nombre.setText(listaTareas.get(position).getString(TAREA_NOMBRE));
-        if (listaTareas.get(position).getString(TAREA_RUTAFOTO)!=null){
+        tareaViewHolder.descripcion.setText(listaTareas.get(position).getCampos(TRABAJO_DESCRIPCION));
+        tareaViewHolder.tiempo.setText(listaTareas.get(position).getCampos(TRABAJO_TIEMPO));
+        tareaViewHolder.nombre.setText(listaTareas.get(position).getString(TRABAJO_NOMBRE));
+        if (listaTareas.get(position).getString(TRABAJO_RUTAFOTO)!=null){
 
-            tareaViewHolder.imagen.setImageURI(listaTareas.get(position).getUri(TAREA_RUTAFOTO));
+            tareaViewHolder.imagen.setImageURI(listaTareas.get(position).getUri(TRABAJO_RUTAFOTO));
         }
 
     }

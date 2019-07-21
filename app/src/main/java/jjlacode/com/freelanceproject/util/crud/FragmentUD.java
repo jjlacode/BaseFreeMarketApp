@@ -15,7 +15,9 @@ public abstract class FragmentUD extends FragmentBaseCRUD {
     public FragmentUD() {
     }
 
-    protected abstract void update();
+    protected boolean update(){
+        return false;
+    }
 
     protected abstract void delete();
 

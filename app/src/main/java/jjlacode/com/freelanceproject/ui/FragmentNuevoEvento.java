@@ -92,24 +92,13 @@ public class FragmentNuevoEvento extends FragmentGrid {
         }else if (nombre.equals(volver)){
 
             bundle = new Bundle();
-            bundle.putString(ORIGEN, EVENTO);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
 
         }
 
         if (tipoEvento!=null) {
-            bundle = new Bundle();
             bundle.putString(TIPO, tipoEvento);
-            bundle.putString(ORIGEN, origen);
-            if (origen!=null && origen.equals(CALENDARIO)){
-                bundle.putString(ORIGEN,CALENDARIO);
-                bundle.putLong(FECHA,fecha);
-                bundle.putString(ACTUAL, EVENTO);
-                if (hora>=0){
-                    bundle.putLong(HORACAL,hora);
-                }
-
-            }
+            bundle.putString(ACTUAL, EVENTO);
             bundle.putBoolean(NUEVOREGISTRO, true);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
         }

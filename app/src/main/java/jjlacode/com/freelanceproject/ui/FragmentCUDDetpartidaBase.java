@@ -155,7 +155,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                     if (lista!=null && lista.sizeLista()>0) {
 
                         for (Modelo tarea : lista) {
-                            if (tarea.getString(TAREA_NOMBRE).equals(nombre.getText().toString())) {
+                            if (tarea.getString(TRABAJO_NOMBRE).equals(nombre.getText().toString())) {
                                 Toast.makeText(getContext(), "La tarea ya existe", Toast.LENGTH_SHORT).show();
                                 cont++;
                             }
@@ -166,12 +166,12 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                         try {
                             valores = new ContentValues();
 
-                            consulta.putDato(valores,CAMPOS_TAREA,TAREA_DESCRIPCION,descripcion.getText().toString());
-                            consulta.putDato(valores,CAMPOS_TAREA,TAREA_TIEMPO,tiempo.getText().toString());
-                            consulta.putDato(valores,CAMPOS_TAREA,TAREA_NOMBRE,nombre.getText().toString());
-                            consulta.putDato(valores,CAMPOS_TAREA,TAREA_RUTAFOTO,path);
+                            consulta.putDato(valores,CAMPOS_TRABAJO,TRABAJO_DESCRIPCION,descripcion.getText().toString());
+                            consulta.putDato(valores,CAMPOS_TRABAJO,TRABAJO_TIEMPO,tiempo.getText().toString());
+                            consulta.putDato(valores,CAMPOS_TRABAJO,TRABAJO_NOMBRE,nombre.getText().toString());
+                            consulta.putDato(valores,CAMPOS_TRABAJO,TRABAJO_RUTAFOTO,path);
 
-                            consulta.insertRegistro(TABLA_TAREA,valores);
+                            consulta.insertRegistro(TABLA_TRABAJO,valores);
 
                             Toast.makeText(getContext(), "Nueva tarea guardada", Toast.LENGTH_SHORT).show();
 
@@ -236,16 +236,16 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                 switch (tipo) {
 
 
-                    case TIPOTAREA:
+                    case TIPOTRABAJO:
 
                         Modelo tarea = (Modelo) nombre.getAdapter().getItem(position);
-                        iddet = tarea.getString(TAREA_ID_TAREA);
+                        iddet = tarea.getString(TRABAJO_ID_TRABAJO);
                         System.out.println("id = " + iddet);
-                        nombre.setText(tarea.getString(TAREA_NOMBRE));
-                        descripcion.setText(tarea.getString(TAREA_DESCRIPCION));
-                        tiempo.setText(tarea.getString(TAREA_TIEMPO));
-                        if (tarea.getString(TAREA_RUTAFOTO) != null) {
-                            setImagenUri(contexto,tarea.getString(TAREA_RUTAFOTO));
+                        nombre.setText(tarea.getString(TRABAJO_NOMBRE));
+                        descripcion.setText(tarea.getString(TRABAJO_DESCRIPCION));
+                        tiempo.setText(tarea.getString(TRABAJO_TIEMPO));
+                        if (tarea.getString(TRABAJO_RUTAFOTO) != null) {
+                            setImagenUri(contexto,tarea.getString(TRABAJO_RUTAFOTO));
                         }
 
                         break;
@@ -340,25 +340,25 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
         switch (tipo) {
 
-            case TIPOTAREA:
+            case TIPOTRABAJO:
 
                 tiempo.setVisibility(View.VISIBLE);
-                lista = queryList(CAMPOS_TAREA);
+                lista = queryList(CAMPOS_TRABAJO);
                 AdaptadorTareas adaptadorTareas = new AdaptadorTareas(lista);
                 rvDetpartida.setAdapter(adaptadorTareas);
                 adaptadorTareas.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         iddet = lista.get(rvDetpartida.getChildAdapterPosition(v))
-                                .getString(TAREA_ID_TAREA);
+                                .getString(TRABAJO_ID_TRABAJO);
                         System.out.println("id = " + iddet);
-                        Modelo tarea = queryObject(CAMPOS_TAREA, iddet);
-                        nombre.setText(tarea.getString(TAREA_NOMBRE));
-                        descripcion.setText(tarea.getString(TAREA_DESCRIPCION));
-                        tiempo.setText(tarea.getString(TAREA_TIEMPO));
+                        Modelo tarea = queryObject(CAMPOS_TRABAJO, iddet);
+                        nombre.setText(tarea.getString(TRABAJO_NOMBRE));
+                        descripcion.setText(tarea.getString(TRABAJO_DESCRIPCION));
+                        tiempo.setText(tarea.getString(TRABAJO_TIEMPO));
 
-                        if (tarea.getString(TAREA_RUTAFOTO) != null) {
-                            path = tarea.getString(TAREA_RUTAFOTO);
+                        if (tarea.getString(TRABAJO_RUTAFOTO) != null) {
+                            path = tarea.getString(TRABAJO_RUTAFOTO);
                             setImagenUri(contexto,path);
 
                         }
@@ -521,16 +521,16 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
             ContentValues valorestarea = new ContentValues();
 
-            putDato(valorestarea, CAMPOS_TAREA, TAREA_DESCRIPCION, descripcion.getText().toString());
-            putDato(valorestarea, CAMPOS_TAREA, TAREA_TIEMPO, tiempo.getText().toString());
-            putDato(valorestarea, CAMPOS_TAREA, TAREA_NOMBRE, nombre.getText().toString());
-            putDato(valorestarea, CAMPOS_TAREA, TAREA_RUTAFOTO, path);
+            putDato(valorestarea, CAMPOS_TRABAJO, TRABAJO_DESCRIPCION, descripcion.getText().toString());
+            putDato(valorestarea, CAMPOS_TRABAJO, TRABAJO_TIEMPO, tiempo.getText().toString());
+            putDato(valorestarea, CAMPOS_TRABAJO, TRABAJO_NOMBRE, nombre.getText().toString());
+            putDato(valorestarea, CAMPOS_TRABAJO, TRABAJO_RUTAFOTO, path);
 
             if (lista != null && lista.size() > 0) {
 
                 for (Modelo tarea : lista) {
-                    if (tarea.getString(TAREA_NOMBRE).equals(nombre.getText().toString())) {
-                        updateRegistro(TABLA_TAREA, tarea.getString(TAREA_ID_TAREA), valorestarea);
+                    if (tarea.getString(TRABAJO_NOMBRE).equals(nombre.getText().toString())) {
+                        updateRegistro(TABLA_TRABAJO, tarea.getString(TRABAJO_ID_TRABAJO), valorestarea);
                         Toast.makeText(getContext(), "tarea actualizada", Toast.LENGTH_SHORT).show();
                         cont++;
                     }
@@ -540,7 +540,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
                 try {
 
-                    iddet = idInsertRegistro(TABLA_TAREA, valorestarea);
+                    iddet = idInsertRegistro(TABLA_TRABAJO, valorestarea);
 
                     Toast.makeText(getContext(), "Nueva tarea guardada", Toast.LENGTH_SHORT).show();
 
@@ -622,7 +622,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
         switch (tipo) {
 
-            case TIPOTAREA:
+            case TIPOTRABAJO:
 
                 nuevaTarea();
                 setDato(DETPARTIDABASE_TIEMPO, tiempo.getText().toString());
@@ -685,9 +685,9 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
         switch (tipo) {
 
-            case TIPOTAREA:
+            case TIPOTRABAJO:
                 autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
-                        R.layout.item_list_tarea, lista, CAMPOS_TAREA) {
+                        R.layout.item_list_trabajo, lista, CAMPOS_TRABAJO) {
 
                     @Override
                     public void onEntrada(Modelo entrada, View view) {
@@ -698,12 +698,12 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                         TextView tiempoTarea = view.findViewById(R.id.tvtiempoltareas);
 
 
-                        nombreTarea.setText(entrada.getString(TAREA_NOMBRE));
-                        descTarea.setText(entrada.getString(TAREA_DESCRIPCION));
-                        tiempoTarea.setText(entrada.getString(TAREA_TIEMPO));
+                        nombreTarea.setText(entrada.getString(TRABAJO_NOMBRE));
+                        descTarea.setText(entrada.getString(TRABAJO_DESCRIPCION));
+                        tiempoTarea.setText(entrada.getString(TRABAJO_TIEMPO));
 
-                        if (entrada.getString(TAREA_RUTAFOTO) != null) {
-                            setImagenUri(contexto,entrada.getString(TAREA_RUTAFOTO),imagenTarea);
+                        if (entrada.getString(TRABAJO_RUTAFOTO) != null) {
+                            setImagenUri(contexto,entrada.getString(TRABAJO_RUTAFOTO),imagenTarea);
                         }
 
                     }
@@ -881,7 +881,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
         @Override
         public TareaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
 
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_tarea_detpartida,null,false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_trabajo_detpartida,null,false);
 
             view.setOnClickListener(this);
 
@@ -896,11 +896,11 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
         @Override
         public void onBindViewHolder(@NonNull TareaViewHolder tareaViewHolder, int position) {
 
-            tareaViewHolder.tiempo.setText(listaTareas.get(position).getCampos(TAREA_TIEMPO));
-            tareaViewHolder.nombre.setText(listaTareas.get(position).getString(TAREA_NOMBRE));
-            if (listaTareas.get(position).getString(TAREA_RUTAFOTO)!=null){
+            tareaViewHolder.tiempo.setText(listaTareas.get(position).getCampos(TRABAJO_TIEMPO));
+            tareaViewHolder.nombre.setText(listaTareas.get(position).getString(TRABAJO_NOMBRE));
+            if (listaTareas.get(position).getString(TRABAJO_RUTAFOTO)!=null){
 
-                tareaViewHolder.imagen.setImageURI(listaTareas.get(position).getUri(TAREA_RUTAFOTO));
+                tareaViewHolder.imagen.setImageURI(listaTareas.get(position).getUri(TRABAJO_RUTAFOTO));
             }
 
         }

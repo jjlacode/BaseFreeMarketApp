@@ -145,6 +145,11 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
         year = getCurrentYear();
         currentDay = getCurrentDayMonth();
 
+        setOnCreate();
+
+    }
+
+    protected void setOnCreate(){
 
     }
 
@@ -421,7 +426,7 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
                     if (!sinNuevo) {
                         visible(nuevo);
                     }
-                    if (!sinLista) {
+                    if (!sinDia) {
                         visible(verDia);
                     }
                 } else if (seleccionados > 1) {
@@ -749,20 +754,34 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
 
     private void removerTodo(){
 
-        for (Day day : listaSeleccionadosMulti) {
-            System.out.println("mes lista "+day.getMonth()+" mes actual "+month);
-            if (day.getMonth() == month) {
-                removeItemSelected(day.getPosicionCal());
-                System.out.println("day position cal = " + day.getPosicionCal());
+        if (nn(listaSeleccionadosMulti)) {
+            for (Day day : listaSeleccionadosMulti) {
+                System.out.println("mes lista " + day.getMonth() + " mes actual " + month);
+                if (day.getMonth() == month) {
+                    removeItemSelected(day.getPosicionCal());
+                    System.out.println("day position cal = " + day.getPosicionCal());
+                }
             }
+            listaSeleccionadosMulti.clear();
         }
-        listaModeloFinal.clearLista();
-        listaSeleccionadosFinal.clear();
-        listaModeloSimple.clearLista();
-        listaModeloMulti.clearLista();
-        listaSeleccionadosSimple.clear();
-        listaSeleccionadosMulti.clear();
-        adaptadorRV.clear();
+        if (nn(listaModeloFinal)) {
+            listaModeloFinal.clearLista();
+        }
+        if (nn(listaSeleccionadosFinal)) {
+            listaSeleccionadosFinal.clear();
+        }
+        if (nn(listaModeloSimple)) {
+            listaModeloSimple.clearLista();
+        }
+        if (nn(listaModeloMulti)) {
+            listaModeloMulti.clearLista();
+        }
+        if (nn(listaSeleccionadosSimple)) {
+            listaSeleccionadosSimple.clear();
+        }
+        if (nn(adaptadorRV)) {
+            adaptadorRV.clear();
+        }
 
     }
 

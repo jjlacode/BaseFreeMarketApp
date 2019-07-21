@@ -22,13 +22,13 @@ import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 
 
-public class FragmentCRUDTarea extends FragmentCRUD implements CommonPry.Constantes, ContratoPry.Tablas {
+public class FragmentCRUDTrabajo extends FragmentCRUD implements CommonPry.Constantes, ContratoPry.Tablas {
 
     private EditMaterial tiempo, nombre, descripcion;
     private ImageButton btnNota;
     private ImageButton btnVerNotas;
 
-    public FragmentCRUDTarea() {
+    public FragmentCRUDTrabajo() {
         // Required empty public constructor
     }
 
@@ -45,7 +45,7 @@ public class FragmentCRUDTarea extends FragmentCRUD implements CommonPry.Constan
     @Override
     protected void setTabla() {
 
-        tabla = TABLA_TAREA;
+        tabla = TABLA_TRABAJO;
 
     }
 
@@ -62,9 +62,9 @@ public class FragmentCRUDTarea extends FragmentCRUD implements CommonPry.Constan
     protected void setDatos() {
 
         imagenPantalla(3,2);
-        nombre.setText(modelo.getString(TAREA_NOMBRE));
-        descripcion.setText(modelo.getString(TAREA_DESCRIPCION));
-        tiempo.setText(modelo.getString(TAREA_TIEMPO));
+        nombre.setText(modelo.getString(TRABAJO_NOMBRE));
+        descripcion.setText(modelo.getString(TRABAJO_DESCRIPCION));
+        tiempo.setText(modelo.getString(TRABAJO_TIEMPO));
 
     }
 
@@ -77,7 +77,7 @@ public class FragmentCRUDTarea extends FragmentCRUD implements CommonPry.Constan
 
                 enviarBundle();
                 bundle.putString(IDREL,modelo.getString(campoID));
-                bundle.putString(SUBTITULO, modelo.getString(TAREA_DESCRIPCION));
+                bundle.putString(SUBTITULO, modelo.getString(TRABAJO_DESCRIPCION));
                 bundle.putString(ORIGEN, TAREA);
                 bundle.putSerializable(MODELO,null);
                 bundle.putString(CAMPO_ID,null);
@@ -92,7 +92,7 @@ public class FragmentCRUDTarea extends FragmentCRUD implements CommonPry.Constan
 
                 enviarBundle();
                 bundle.putString(IDREL,modelo.getString(campoID));
-                bundle.putString(SUBTITULO, modelo.getString(TAREA_DESCRIPCION));
+                bundle.putString(SUBTITULO, modelo.getString(TRABAJO_DESCRIPCION));
                 bundle.putString(ORIGEN, TAREA);
                 bundle.putSerializable(MODELO,null);
                 bundle.putString(CAMPO_ID,null);
@@ -117,8 +117,8 @@ public class FragmentCRUDTarea extends FragmentCRUD implements CommonPry.Constan
     @Override
     protected void setLayout() {
 
-        layoutCuerpo = R.layout.fragment_crud_tarea;
-        layoutItem = R.layout.item_list_tarea;
+        layoutCuerpo = R.layout.fragment_crud_trabajo;
+        layoutItem = R.layout.item_list_trabajo;
 
     }
 
@@ -134,10 +134,10 @@ public class FragmentCRUDTarea extends FragmentCRUD implements CommonPry.Constan
     @Override
     protected void setContenedor() {
 
-        setDato(TAREA_NOMBRE,nombre.getText().toString());
-        setDato(TAREA_DESCRIPCION,descripcion.getText().toString());
-        setDato(TAREA_TIEMPO,tiempo.getText().toString(),DOUBLE);
-        setDato(TAREA_RUTAFOTO,path);
+        setDato(TRABAJO_NOMBRE,nombre.getText().toString());
+        setDato(TRABAJO_DESCRIPCION,descripcion.getText().toString());
+        setDato(TRABAJO_TIEMPO,tiempo.getText().toString(),DOUBLE);
+        setDato(TRABAJO_RUTAFOTO,path);
 
     }
 
@@ -158,10 +158,10 @@ public class FragmentCRUDTarea extends FragmentCRUD implements CommonPry.Constan
             nombre = itemView.findViewById(R.id.tvnomltarea);
             descripcion = itemView.findViewById(R.id.tvdescripcionltareas);
 
-            tiempo.setText(JavaUtil.getDecimales(entrada.get(posicion).getDouble(TAREA_TIEMPO)));
-            nombre.setText(entrada.get(posicion).getString(TAREA_NOMBRE));
-            descripcion.setText(entrada.get(posicion).getString(TAREA_DESCRIPCION));
-            String path = entrada.get(posicion).getString(TAREA_RUTAFOTO);
+            tiempo.setText(JavaUtil.getDecimales(entrada.get(posicion).getDouble(TRABAJO_TIEMPO)));
+            nombre.setText(entrada.get(posicion).getString(TRABAJO_NOMBRE));
+            descripcion.setText(entrada.get(posicion).getString(TRABAJO_DESCRIPCION));
+            String path = entrada.get(posicion).getString(TRABAJO_RUTAFOTO);
             if (path!=null){
                 new MediaUtil(contexto).setImageUriCircle(path,imagenTarea);
             }
@@ -188,11 +188,11 @@ public class FragmentCRUDTarea extends FragmentCRUD implements CommonPry.Constan
         @Override
         public void bind(Modelo modelo) {
 
-            tiempo.setText(JavaUtil.getDecimales(modelo.getDouble(TAREA_TIEMPO)));
-            nombre.setText(modelo.getString(TAREA_NOMBRE));
-            descripcion.setText(modelo.getString(TAREA_DESCRIPCION));
-            if (modelo.getString(TAREA_RUTAFOTO)!=null){
-                new MediaUtil(contexto).setImageUriCircle(modelo.getString(TAREA_RUTAFOTO), imagenTarea);
+            tiempo.setText(JavaUtil.getDecimales(modelo.getDouble(TRABAJO_TIEMPO)));
+            nombre.setText(modelo.getString(TRABAJO_NOMBRE));
+            descripcion.setText(modelo.getString(TRABAJO_DESCRIPCION));
+            if (modelo.getString(TRABAJO_RUTAFOTO)!=null){
+                new MediaUtil(contexto).setImageUriCircle(modelo.getString(TRABAJO_RUTAFOTO), imagenTarea);
             }
 
             super.bind(modelo);

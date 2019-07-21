@@ -36,7 +36,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="2.5"
                 android:adjustViewBounds="true"
-                android:src="@drawable/ico_calendario_reloj" />
+                android:src="@drawable/ic_add_a_photo_black_24dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -44,46 +44,88 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
+                <LinearLayout
+                    android:id="@+id/layout_autocatdetpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
                 <AutoCompleteTextView
                     android:id="@+id/autocat"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:background="@drawable/cuadro_texto"
-                    android:textSize="@dimen/texto"
                     android:hint="@string/categoria"/>
+                <ImageView
+                    android:id="@+id/autocatsearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="5"
+                    android:src="@drawable/ic_search_black_24dp" />
+                </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/layout_autoprovdetpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
                 <AutoCompleteTextView
                     android:id="@+id/autoprov"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/cuadro_texto"
-                    android:textSize="@dimen/texto"
+                    android:layout_weight="1"
                     android:hint="@string/proveedor"/>
+                    <ImageView
+                        android:id="@+id/autoprovsearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="5"
+                        android:src="@drawable/ic_search_black_24dp" />
+                </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/layout_autonomdetpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
                 <AutoCompleteTextView
-                    android:id="@+id/etnomcdetpartida"
+                    android:id="@+id/autonomdetpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:background="@drawable/cuadro_texto"
-                    android:textSize="@dimen/texto"
                     android:hint="@string/nombre" />
+                <ImageView
+                    android:id="@+id/autonomdetpartsearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="5"
+                    android:src="@drawable/ic_search_black_24dp" />
+            </LinearLayout>
 
-                <TextView
+                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                    android:id="@+id/etnombredetpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint_text="@string/nombre" />
+
+                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/tvrefprovcdetpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/texto"
-                    android:text="@string/referencia_proveedor" />
+                    app:hint_text="@string/referencia_proveedor" />
 
-                <EditText
+                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/etdesccdetpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="@string/descripcion"
-                    android:textSize="@dimen/texto"
-                    android:background="@drawable/cuadro_texto"
-                    android:inputType="textMultiLine|text" />
+                    app:hint_text="@string/descripcion"
+                    app:tipo_dato="TEXTO|MULTI" />
+
             </LinearLayout>
         </LinearLayout>
 
@@ -92,66 +134,45 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/cantidaddetpartida"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="@dimen/texto"
-                android:text="@string/cantidad"/>
-
-            <TextView
-                android:id="@+id/ltiempodetpartida"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="@dimen/texto"
-                android:text="@string/tiempo_detpartida"/>
-
-            <EditText
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/ettiempocdetpartida"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="10"
-                android:hint="@string/tiempo"
-                android:textSize="@dimen/texto"
-                android:gravity="center"
-                android:background="@drawable/cuadro_texto"
-                android:inputType="numberDecimal" />
+                app:hint_text="@string/tiempo"
+                app:gravedad="centro"
+                app:tipo_dato="NUMERO|DECIMAL"/>
 
-            <EditText
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etpreciocdetpartida"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="10"
-                android:hint="@string/importe"
-                android:textSize="@dimen/texto"
-                android:background="@drawable/cuadro_texto"
-                android:inputType="numberDecimal" />
+                app:hint_text="@string/importe"
+                app:tipo_dato="NUMERO|DECIMAL"/>
 
-            <EditText
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etcantcdetpartida"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="10"
-                android:hint="@string/cantidad"
-                android:textSize="@dimen/texto"
-                android:background="@drawable/cuadro_texto"
-                android:inputType="numberDecimal" />
-
-            <EditText
-                android:id="@+id/etdescprovcdetpartida"
+                app:hint_text="@string/cantidad"
+                app:tipo_dato="NUMERO|DECIMAL" />
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                android:id="@+id/etcanttotpartida"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="10"
-                android:textSize="@dimen/texto"
-                android:hint="@string/descuento_proveedor"
-                android:background="@drawable/cuadro_texto"
-                android:inputType="numberDecimal" />
+                app:hint_text="@string/cantidad_partida"
+                app:tipo_dato="NUMERO|DECIMAL" />
+
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                android:id="@+id/etporcdesprovcdetpartida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:hint_text="@string/descuento_proveedor"
+                app:tipo_dato="NUMERO|DECIMAL" />
 
         </LinearLayout>
 
@@ -163,16 +184,13 @@
                 android:gravity="center"/>
 
 
-            <EditText
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etcompletadadetpartida"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:textSize="@dimen/texto"
-                android:gravity="center"
-                android:background="@drawable/cuadro_texto"
-                android:hint="@string/completada"
-                android:inputType="number" />
+                app:gravedad="centro"
+                app:hint_text="@string/completada"
+                app:tipo_dato="NUMERO" />
 
         <ProgressBar
             android:id="@+id/progressBardetpartida"
@@ -249,7 +267,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvcdetpartida"

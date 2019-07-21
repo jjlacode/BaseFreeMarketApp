@@ -97,6 +97,7 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
     protected void selector(){
 
         Log.d(TAG, getMetodo());
+        System.out.println("id = " + id);
 
         maestroDetalle();
 
@@ -158,23 +159,6 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
     protected void acciones() {
         super.acciones();
         Log.d(TAG, getMetodo());
-
-        activityBase.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-                onClickNuevo();
-
-            }
-        });
-
-        activityBase.fab2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reconocimientoVoz(RECOGNIZE_SPEECH_ACTIVITY);
-            }
-        });
 
         refreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
@@ -301,10 +285,6 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
     }
 
-    protected void onClickNuevo() {
-        nuevo = true;
-        selector();
-    }
 
     protected void setOnRightSwipe(){
         Log.d(TAG, getMetodo());
@@ -344,6 +324,7 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
             lista = listab;
         }
 
+
         if (!lista.chechLista() && !maestroDetalleSeparados){
             frdetalle.setVisibility(View.GONE);
         }else{
@@ -351,7 +332,6 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
         }
 
         setRv();
-
     }
 
     protected void setRv(){
@@ -360,19 +340,9 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
         RecyclerView.LayoutManager layoutManager = null;
 
-        //if (!tablet){
-        //    layoutManager = new LinearLayoutManager(contexto);
-        //}else{
-        System.out.println("ancho = " + (rv.getWidth()));
-        System.out.println("metrics = " + metrics.density);
-        System.out.println("land = " + land);
-        System.out.println("tablet = " + tablet);
-
-
             int columnas = (int) (rv.getWidth()/(metrics.density*300));
             if (columnas<1){columnas = 1;}
             layoutManager = new GridLayoutManager(contexto,columnas);
-        //}
 
         rv.setLayoutManager(layoutManager);
         adaptadorRV = new RVAdapter(setViewHolder(view),lista.getLista(), layoutItem);
@@ -522,7 +492,7 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
                 visible(frPie);
                 activityBase.fab.setSize(FloatingActionButton.SIZE_MINI);
                 activityBase.fab2.setSize(FloatingActionButton.SIZE_MINI);
-            }else if ( id!=null || modelo!=null){
+            }else if ( (id!=null && secuencia>0) || (id!=null && tablaCab==null)){
                 if (layoutCabecera>0) {
                     gone(frCabecera);
                 }
@@ -544,8 +514,6 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
                     listaRV();
                     grabarVoz=null;
                 }
-                System.out.println("lista = " + lista.sizeLista());
-                System.out.println("grabarVoz = " + grabarVoz);
             }
 
         setDefectoMaestroDetalleSeparados();
@@ -685,6 +653,14 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
             }
         });
 
+    }
+
+    @Override
+    protected boolean onBack() {
+        super.onBack();
+
+        activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+        return true;
     }
 
     protected void cambiarFragment(){

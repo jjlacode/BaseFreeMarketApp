@@ -51,8 +51,8 @@ public class ProviderFreelanceProject extends ContentProvider
     public static final int PRODUCTO = 123;
     public static final int PRODUCTO_ID = 124;
 
-    public static final int TAREA = 125;
-    public static final int TAREA_ID = 126;
+    public static final int TRABAJO = 125;
+    public static final int TRABAJO_ID = 126;
 
     public static final int EVENTO = 127;
     public static final int EVENTO_ID = 128;
@@ -137,8 +137,8 @@ public class ProviderFreelanceProject extends ContentProvider
         uriMatcher.addURI(AUTORIDAD, TABLA_PRODUCTO, PRODUCTO);
         uriMatcher.addURI(AUTORIDAD, TABLA_PRODUCTO+"/*", PRODUCTO_ID);
 
-        uriMatcher.addURI(AUTORIDAD, TABLA_TAREA, TAREA);
-        uriMatcher.addURI(AUTORIDAD, TABLA_TAREA+"/*", TAREA_ID);
+        uriMatcher.addURI(AUTORIDAD, TABLA_TRABAJO, TRABAJO);
+        uriMatcher.addURI(AUTORIDAD, TABLA_TRABAJO +"/*", TRABAJO_ID);
 
         uriMatcher.addURI(AUTORIDAD, TABLA_EVENTO, EVENTO);
         uriMatcher.addURI(AUTORIDAD, TABLA_EVENTO+"/*", EVENTO_ID);
@@ -288,10 +288,10 @@ public class ProviderFreelanceProject extends ContentProvider
                 return generarMime(TABLA_PRODUCTO);
             case PRODUCTO_ID:
                 return generarMimeItem(TABLA_PRODUCTO);
-            case TAREA:
-                return generarMime(TABLA_TAREA);
-            case TAREA_ID:
-                return generarMimeItem(TABLA_TAREA);
+            case TRABAJO:
+                return generarMime(TABLA_TRABAJO);
+            case TRABAJO_ID:
+                return generarMimeItem(TABLA_TRABAJO);
             case EVENTO:
                 return generarMime(TABLA_EVENTO);
             case EVENTO_ID:
@@ -606,20 +606,20 @@ public class ProviderFreelanceProject extends ContentProvider
                 esDetalle = false;
                 break;
 
-            case TAREA:
+            case TRABAJO:
                 // Generar Pk
-                tabla = TABLA_TAREA;
+                tabla = TABLA_TRABAJO;
                 setTablas = tabla;
                 proyeccion = tabla+".*";
-                idTabla = TAREA_ID_TAREA;
+                idTabla = TRABAJO_ID_TRABAJO;
                 esId = false;
                 esDetalle = false;
                 break;
 
-            case TAREA_ID:
+            case TRABAJO_ID:
 
-                tabla = TABLA_TAREA;
-                idTabla = TAREA_ID_TAREA;
+                tabla = TABLA_TRABAJO;
+                idTabla = TRABAJO_ID_TRABAJO;
                 setTablas = tabla;
                 proyeccion = tabla+".*";
                 esId = true;

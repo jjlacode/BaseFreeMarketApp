@@ -1,5 +1,6 @@
 package jjlacode.com.freelanceproject.util.media;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,20 +12,18 @@ import java.io.File;
 
 import jjlacode.com.freelanceproject.util.android.AppActivity;
 import jjlacode.com.freelanceproject.util.android.FragmentBase;
+import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
 
 public class VisorPDFEmail extends FragmentBase {
 
-    private PDFView VisorPDF;
-    private File archivoPDF;
-    private EditText emailDir;
-    private EditText asunto;
-    private EditText textoEmail;
+    private EditMaterial emailDir;
+    private EditMaterial asunto;
+    private EditMaterial textoEmail;
     private Button enviaremail;
     private String uri;
     private String emailcli;
     private String asuntocli;
     private String textocli;
-    private Bundle bundle;
 
     @Override
     protected void setLayout() {
@@ -35,7 +34,6 @@ public class VisorPDFEmail extends FragmentBase {
     @Override
     protected void setInicio() {
 
-        VisorPDF = (PDFView) view.findViewById(jjlacode.com.freelanceproject.R.id.pdfVisoremail);
         emailDir = view.findViewById(jjlacode.com.freelanceproject.R.id.etemailvisor);
         asunto = view.findViewById(jjlacode.com.freelanceproject.R.id.etasuntovisor);
         textoEmail = view.findViewById(jjlacode.com.freelanceproject.R.id.ettextovisor);
@@ -47,30 +45,19 @@ public class VisorPDFEmail extends FragmentBase {
     public void onResume() {
         super.onResume();
 
-        bundle = getArguments();
+        Bundle bundle = getArguments();
 
-        if (bundle!=null) {
+        if (bundle !=null) {
 
             emailcli = bundle.getString("email","");
             asuntocli = bundle.getString("asunto","");
             textocli = bundle.getString("texto","");
-            uri = bundle.getString("uri", "");
-            archivoPDF = new File(bundle.getString("path", ""));
+            uri = bundle.getString("path", "");
         }
 
         emailDir.setText(emailcli);
         asunto.setText(asuntocli);
         textoEmail.setText(textocli);
-
-        if (bundle != null) {
-
-            VisorPDF.fromFile(archivoPDF)
-                    .enableSwipe(true)         //Deslizar página
-                    .swipeHorizontal(false)    //Deslizamiento vertical de páginas
-                    .enableDoubletap(true)     //Hago zoom con doble click
-                    .enableAntialiasing(true)  //Mejor visualización
-                    .load();
-        }
 
         enviaremail.setOnClickListener(new View.OnClickListener() {
             @Override

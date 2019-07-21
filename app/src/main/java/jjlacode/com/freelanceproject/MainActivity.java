@@ -22,7 +22,7 @@ import jjlacode.com.freelanceproject.ui.FragmentCRUDEvento;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDPartidaProyecto;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDPartidaBase;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDProducto;
-import jjlacode.com.freelanceproject.ui.FragmentCRUDTarea;
+import jjlacode.com.freelanceproject.ui.FragmentCRUDTrabajo;
 import jjlacode.com.freelanceproject.util.android.AppActivity;
 import jjlacode.com.freelanceproject.util.android.MainActivityBase;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDAmortizacion;
@@ -30,7 +30,6 @@ import jjlacode.com.freelanceproject.ui.FragmentCRUDCliente;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDGastoFijo;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDPerfil;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDProyecto;
-import jjlacode.com.freelanceproject.util.media.VisorPDF;
 import jjlacode.com.freelanceproject.util.media.VisorPDFEmail;
 
 import static android.Manifest.permission.CALL_PHONE;
@@ -259,12 +258,8 @@ public class MainActivity extends MainActivityBase {
                 enviarBundleAFragment(bundle, new VisorPDFEmail());
                 break;
 
-            case VISORPDF:
-                enviarBundleAFragment(bundle, new VisorPDF());
-                break;
-
             case TAREA:
-                enviarBundleAFragment(bundle, new FragmentCRUDTarea());
+                enviarBundleAFragment(bundle, new FragmentCRUDTrabajo());
                 break;
 
             case PRODUCTO:

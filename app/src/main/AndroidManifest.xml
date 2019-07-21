@@ -25,13 +25,13 @@
         <activity android:name=".util.android.MainActivityBase" />
         <provider
             android:name=".sqlite.ProviderFreelanceProject"
-            android:authorities="jjlacode.com.freelanceproject"
+            android:authorities="${applicationId}"
             android:enabled="true"
             android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="jjlacode.com.freelanceproject.provider"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

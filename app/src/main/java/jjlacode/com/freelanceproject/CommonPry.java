@@ -35,6 +35,7 @@ import jjlacode.com.freelanceproject.services.EventosReceiver;
 import jjlacode.com.freelanceproject.ui.CalendarioEventos;
 import jjlacode.com.freelanceproject.ui.FragmentInicio;
 import jjlacode.com.freelanceproject.ui.FragmentNuevoEvento;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
 import jjlacode.com.freelanceproject.util.android.ICFragmentos;
 import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
@@ -48,6 +49,10 @@ import static android.content.Intent.EXTRA_SUBJECT;
 import static android.content.Intent.EXTRA_TEXT;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.INICIO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PARTIDA;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PRODPROVCAT;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PRODUCTO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.TRABAJO;
 import static jjlacode.com.freelanceproject.util.android.AppActivity.getAppContext;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.ACCION_CANCELAR;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.ACCION_POSPONER;
@@ -55,6 +60,7 @@ import static jjlacode.com.freelanceproject.CommonPry.Constantes.ACCION_VER;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.EXTRA_ACTUAL;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.EXTRA_ID;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.EXTRA_IDEVENTO;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryList;
 
 
 public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
@@ -141,6 +147,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         String PERFIL = "perfil";
         String NOTA = "nota";
         String NOTAS = "notas";
+        String TRABAJO = "trabajo";
         String AMORTIZACION = "amortizacion";
         String GASTOSFIJOS = "gastos fijos";
         String PROVEEDOR = "proveedor";
@@ -211,10 +218,10 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
 
     public interface TiposDetPartida{
 
-        String TIPOTAREA = "tarea";
-        String TIPOPRODUCTO = "producto";
-        String TIPOPRODUCTOPROV = "productoprov";
-        String TIPOPARTIDA = "partida";
+        String TIPOTRABAJO = TRABAJO;
+        String TIPOPRODUCTO = PRODUCTO;
+        String TIPOPRODUCTOPROV = PRODPROVCAT;
+        String TIPOPARTIDA = PARTIDA;
     }
 
     public interface TiposNota{
@@ -480,8 +487,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
                 intentmail.putExtra(EXTRA_TEXT,evento.getString(EVENTO_MENSAJE));
                 if (evento.getString(EVENTO_RUTAADJUNTO)!=null) {
                     intentmail.setType("application/pdf");
-                    intentmail.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(
-                            new File(evento.getString(EVENTO_RUTAADJUNTO))));
+                    intentmail.putExtra(Intent.EXTRA_STREAM, Uri.parse(evento.getString(EVENTO_RUTAADJUNTO)));
                 }
                 if (intentmail.resolveActivity(contexto.getPackageManager()) == null){
                     Toast.makeText(contexto, "No hay disponible ninguna app de email", Toast.LENGTH_SHORT).show();
@@ -678,6 +684,21 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         long fechahoy = calendar.getTimeInMillis();
         return fechahoy + (totaldias*24*60*60*1000);
 
+    }
+
+    public static int getTipoEstado(String idEstado){
+
+        ArrayList<Modelo> listaEstados = queryList(CAMPOS_ESTADO,null, null);
+
+        for (Modelo estado : listaEstados) {
+
+            if (estado.getString(ESTADO_ID_ESTADO).equals(idEstado)){
+
+                return estado.getInt(ESTADO_TIPOESTADO);
+            }
+
+        }
+        return -1;
     }
 
     public static class Calculos implements  Constantes, TiposDetPartida{
@@ -990,17 +1011,17 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
 
                     switch (tipo) {
 
-                        case TIPOTAREA:
+                        case TIPOTRABAJO:
 
-                            Modelo tarea = ConsultaBD.queryObject(CAMPOS_TAREA, id);
+                            Modelo tarea = ConsultaBD.queryObject(CAMPOS_TRABAJO, id);
 
-                            if (tarea != null && tarea.getLong(TAREA_TIMESTAMP)>detPartida.getLong(DETPARTIDABASE_TIMESTAMP)) {
+                            if (tarea != null && tarea.getLong(TRABAJO_TIMESTAMP)>detPartida.getLong(DETPARTIDABASE_TIMESTAMP)) {
 
                                 valores = new ContentValues();
-                                ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_DESCRIPCION, tarea.getString(TAREA_DESCRIPCION));
-                                ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_NOMBRE, tarea.getString(TAREA_NOMBRE));
-                                ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_TIEMPO, tarea.getString(TAREA_TIEMPO));
-                                ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_RUTAFOTO, tarea.getString(TAREA_RUTAFOTO));
+                                ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_DESCRIPCION, tarea.getString(TRABAJO_DESCRIPCION));
+                                ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_NOMBRE, tarea.getString(TRABAJO_NOMBRE));
+                                ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_TIEMPO, tarea.getString(TRABAJO_TIEMPO));
+                                ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_RUTAFOTO, tarea.getString(TRABAJO_RUTAFOTO));
 
                                 ConsultaBD.updateRegistroDetalle(TABLA_DETPARTIDABASE, detPartida.getString(DETPARTIDABASE_ID_PARTIDABASE), detPartida.getInt(DETPARTIDA_SECUENCIA), valores);
                             }
@@ -1226,7 +1247,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
 
         public static void actualizarPresupuesto(String idProyecto){
 
-            ArrayList<Modelo> listaPartidas = consulta.queryListDetalle(CAMPOS_PARTIDA,idProyecto,TABLA_PROYECTO);
+            ArrayList<Modelo> listaPartidas = ConsultaBD.queryListDetalle(CAMPOS_PARTIDA,idProyecto,TABLA_PROYECTO);
 
             double totalTiempo= 0;
             double totalPrecio= 0;
@@ -1244,23 +1265,29 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
 
             totcompletada = (int) (Math.round(((double) totcompletada) / listaPartidas.size()));
             ContentValues valores = new ContentValues();
-            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_TIEMPO,totalTiempo);
-            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_IMPORTEPRESUPUESTO,totalPrecio);
-            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_COSTE,totalcoste);
-            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_TOTCOMPLETADO,totcompletada);
+            ConsultaBD.putDato(valores,CAMPOS_PROYECTO,PROYECTO_TIEMPO,totalTiempo);
+            ConsultaBD.putDato(valores,CAMPOS_PROYECTO,PROYECTO_IMPORTEPRESUPUESTO,totalPrecio);
+            ConsultaBD.putDato(valores,CAMPOS_PROYECTO,PROYECTO_COSTE,totalcoste);
+            ConsultaBD.putDato(valores,CAMPOS_PROYECTO,PROYECTO_TOTCOMPLETADO,totcompletada);
 
-            consulta.updateRegistro(TABLA_PROYECTO,idProyecto,valores);
+            ConsultaBD.updateRegistro(TABLA_PROYECTO,idProyecto,valores);
 
         }
 
         public static void actualizarPresupuesto(){
 
-            ArrayList<Modelo> listaProy = consulta.queryList(CAMPOS_PROYECTO);
+            ArrayList<Modelo> listaProy = queryList(CAMPOS_PROYECTO);
 
             for (Modelo proy : listaProy) {
                 String idProyecto = proy.getString(PROYECTO_ID_PROYECTO);
 
-                ArrayList<Modelo> listaPartidas = consulta.queryListDetalle(CAMPOS_PARTIDA, idProyecto, TABLA_PROYECTO);
+                ArrayList<Modelo> listaPartidasact = ConsultaBD.queryListDetalle(CAMPOS_PARTIDA, idProyecto, TABLA_PROYECTO);
+
+                for (Modelo itemPartida : listaPartidasact) {
+                    actualizarPartidaProyecto(itemPartida.getString(PARTIDA_ID_PARTIDA));
+                }
+
+                ArrayList<Modelo> listaPartidas = ConsultaBD.queryListDetalle(CAMPOS_PARTIDA, idProyecto, TABLA_PROYECTO);
 
                 double totalTiempo = 0;
                 double totalPrecio = 0;
@@ -1278,12 +1305,12 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
 
                 totcompletada = (int) (Math.round(((double) totcompletada) / listaPartidas.size()));
                 ContentValues valores = new ContentValues();
-                consulta.putDato(valores, CAMPOS_PROYECTO, PROYECTO_TIEMPO, totalTiempo);
-                consulta.putDato(valores, CAMPOS_PROYECTO, PROYECTO_IMPORTEPRESUPUESTO, totalPrecio);
-                consulta.putDato(valores, CAMPOS_PROYECTO,PROYECTO_COSTE,totalcoste);
-                consulta.putDato(valores, CAMPOS_PROYECTO, PROYECTO_TOTCOMPLETADO, totcompletada);
+                ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_TIEMPO, totalTiempo);
+                ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_IMPORTEPRESUPUESTO, totalPrecio);
+                ConsultaBD.putDato(valores, CAMPOS_PROYECTO,PROYECTO_COSTE,totalcoste);
+                ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_TOTCOMPLETADO, totcompletada);
 
-                int i = consulta.updateRegistro(TABLA_PROYECTO, idProyecto, valores);
+                int i = ConsultaBD.updateRegistro(TABLA_PROYECTO, idProyecto, valores);
                 System.out.println("Proys actualizados = " + i);
             }
 
@@ -1297,7 +1324,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
             double tiemporeal = 0;
             double mediaTiempo = 0;
             int cont = 0;
-            Modelo tarea = ConsultaBD.queryObject(CAMPOS_TAREA,idtarea);
+            Modelo tarea = ConsultaBD.queryObject(CAMPOS_TRABAJO,idtarea);
 
             for (Modelo detPartida : listaDetPartidas.getLista()) {
 
@@ -1312,15 +1339,15 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
 
                 ContentValues valores = new ContentValues();
                 mediaTiempo = tiempo/cont;
-                ConsultaBD.putDato(valores,CAMPOS_TAREA,TAREA_TIEMPO,mediaTiempo);
-                ConsultaBD.updateRegistro(TABLA_TAREA,idtarea,valores);
+                ConsultaBD.putDato(valores, CAMPOS_TRABAJO, TRABAJO_TIEMPO,mediaTiempo);
+                ConsultaBD.updateRegistro(TABLA_TRABAJO,idtarea,valores);
                 return mediaTiempo;
             }else if (cont>0){
                 mediaTiempo = tiempo/cont;
                 return mediaTiempo;
             }
             if (tarea!=null) {
-                return tarea.getDouble(TAREA_TIEMPO);
+                return tarea.getDouble(TRABAJO_TIEMPO);
             }
             return 0;
         }

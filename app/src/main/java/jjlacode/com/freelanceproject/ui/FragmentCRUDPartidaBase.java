@@ -94,6 +94,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
         btnNuevaTarea.setVisibility(View.GONE);
         btnNuevoProdProv.setVisibility(View.GONE);
         btnpart.setVisibility(View.GONE);
+        visible(btndelete);
 
 
     }
@@ -101,6 +102,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
     @Override
     protected void setLista() {
 
+        lista = new ListaModelo(campos);
         setAdaptadorAuto(autoNombrePartida);
 
         autoNombrePartida.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -111,6 +113,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
                 mostrarDialogoClonarPartidabase(partidaclon);
             }
         });
+
 
     }
 
@@ -156,6 +159,8 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
         btnNuevoProdProv.setVisibility(View.GONE);
         btnpart.setVisibility(View.GONE);
         nombrePartida.setVisibility(View.VISIBLE);
+        visible(btndelete);
+
         if (modelo.getString(PARTIDABASE_ID_PARTIDAORIGEN)==null) {
             btnNuevaTarea.setVisibility(View.VISIBLE);
             btnNuevoProd.setVisibility(View.VISIBLE);
@@ -229,7 +234,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
                 bundle.putSerializable(TABLA_PARTIDABASE, modelo);
                 bundle.putString(ORIGEN, PARTIDABASE);
                 bundle.putString(SUBTITULO,getString(R.string.nueva_tarea));
-                bundle.putString(TIPO, TIPOTAREA);
+                bundle.putString(TIPO, TIPOTRABAJO);
                 bundle.putBoolean(NUEVOREGISTRO,true);
                 icFragmentos.enviarBundleAFragment(bundle,new FragmentCUDDetpartidaBase());
 
@@ -486,7 +491,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
             detpartidaViewHolder.tipo.setText(tipodetpartida.toUpperCase());
             detpartidaViewHolder.nombre.setText(listDetpartida.get(position).getString(DETPARTIDABASE_NOMBRE));
             detpartidaViewHolder.tiempo.setText(listDetpartida.get(position).getString(DETPARTIDABASE_TIEMPO));
-            if (listDetpartida.get(position).getString(DETPARTIDABASE_TIPO).equals(CommonPry.TiposDetPartida.TIPOTAREA)) {
+            if (listDetpartida.get(position).getString(DETPARTIDABASE_TIPO).equals(CommonPry.TiposDetPartida.TIPOTRABAJO)) {
                 detpartidaViewHolder.importe.setText(JavaUtil.formatoMonedaLocal(
                         (listDetpartida.get(position).getDouble(DETPARTIDABASE_TIEMPO)*CommonPry.hora)));
             }else{
@@ -505,7 +510,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
                 }
             }
 
-            if (!tipodetpartida.equals(TIPOTAREA)){
+            if (!tipodetpartida.equals(TIPOTRABAJO)){
 
                 detpartidaViewHolder.ltiempo.setVisibility(View.GONE);
                 detpartidaViewHolder.tiempo.setVisibility(View.GONE);
@@ -580,7 +585,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
             nombre.setText(modelo.getString(DETPARTIDABASE_NOMBRE));
             tiempo.setText(modelo.getString(DETPARTIDABASE_TIEMPO));
             cantidad.setText(modelo.getString(DETPARTIDABASE_CANTIDAD));
-            if (modelo.getString(DETPARTIDABASE_TIPO).equals(CommonPry.TiposDetPartida.TIPOTAREA)) {
+            if (modelo.getString(DETPARTIDABASE_TIPO).equals(CommonPry.TiposDetPartida.TIPOTRABAJO)) {
                 importe.setText(JavaUtil.formatoMonedaLocal(
                         (modelo.getDouble(DETPARTIDABASE_TIEMPO)*CommonPry.hora*
                                 modelo.getDouble(DETPARTIDABASE_CANTIDAD))));
@@ -596,7 +601,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
                 }
             }
 
-            if (!tipodetpartida.equals(TIPOTAREA)){
+            if (!tipodetpartida.equals(TIPOTRABAJO)){
 
                 ltiempo.setVisibility(View.GONE);
                 tiempo.setVisibility(View.GONE);
@@ -648,7 +653,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
 
         private void setAdaptadorAuto(AutoCompleteTextView autoCompleteTextView) {
 
-        lista = CRUDutil.setListaModelo(campos);
+        ListaModelo lista = CRUDutil.setListaModelo(campos);
             ArrayList<Modelo> listaPartidasProy = queryList(CAMPOS_PARTIDA);
             lista.addAllLista(listaPartidasProy);
 

@@ -48,46 +48,25 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
             vaciarControles();
             path = null;
             setNuevo();
-            btndelete.setVisibility(View.GONE);
-            activityBase.fab.hide();
-            activityBase.fab2.hide();
+            setImagen();
         }else{
-            btndelete.setVisibility(View.VISIBLE);
             datos();
         }
-
-        activityBase.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, getMetodo());
-
-                id=null;
-                modelo = null;
-                secuencia=0;
-                activityBase.toolbar.setSubtitle(tituloNuevo);
-                vaciarControles();
-                setNuevo();
-                btndelete.setVisibility(View.GONE);
-                activityBase.fab.hide();
-                activityBase.fab2.hide();
-
-            }
-        });
-
-        activityBase.fab2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, getMetodo());
-
-                activityBase.fab2.hide();
-                activityBase.fab.show();
-                onUpdate();
-            }
-        });
 
         acciones();
 
     }
+
+    protected void onClickNuevo() {
+        nuevo = true;
+        setOnClickNuevo();
+        selector();
+    }
+
+    protected void setOnClickNuevo() {
+
+    }
+
 
     @Override
     protected void setOnLeftSwipeCuerpo() {
@@ -236,6 +215,23 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
             }
         });
 
+        activityBase.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                onClickNuevo();
+
+            }
+        });
+
+        activityBase.fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reconocimientoVoz(RECOGNIZE_SPEECH_ACTIVITY);
+            }
+        });
+
         if (permiso) {
             if (imagen!=null) {
                 imagen.setOnClickListener(new View.OnClickListener() {
@@ -281,36 +277,39 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
     protected boolean registrar() {
         Log.d(TAG, getMetodo());
 
-        valores = new ContentValues();
+        //valores = new ContentValues();
 
-        setDato(CAMPO_TIMESTAMP, TimeDateUtil.getDateLong(new GregorianCalendar()));
+        //setDato(CAMPO_TIMESTAMP, TimeDateUtil.getDateLong(new GregorianCalendar()));
         setDato(CAMPO_CREATEREG,TimeDateUtil.getDateLong(new GregorianCalendar()));
-        setContenedor();
+        //setContenedor();
 
-        if (tablaCab != null && secuencia == 0 && modelo == null) {
+        try {
 
-            secuencia = ConsultaBD.secInsertRegistroDetalle(campos, id, tablaCab, valores);
+            if (tablaCab != null) {
 
-            modelo = ConsultaBD.queryObjectDetalle(campos, id, secuencia);
+                secuencia = ConsultaBD.secInsertRegistroDetalle(campos, id, tablaCab, valores);
 
-            Toast.makeText(getContext(), "Registro detalle creado", Toast.LENGTH_SHORT).show();
-            nuevo = false;
-            return true;
+                modelo = ConsultaBD.queryObjectDetalle(campos, id, secuencia);
 
-        } else if (id == null && modelo == null) {
+                Toast.makeText(getContext(), "Registro detalle creado", Toast.LENGTH_SHORT).show();
+                nuevo = false;
+                return true;
 
-            id = ConsultaBD.idInsertRegistro(tabla, valores);
-            modelo = ConsultaBD.queryObject(campos, id);
-            idAOrigen = id;
+            } else {
 
-            Toast.makeText(getContext(), "Registro creado", Toast.LENGTH_SHORT).show();
-            nuevo = false;
-            return true;
+                id = ConsultaBD.idInsertRegistro(tabla, valores);
+                modelo = ConsultaBD.queryObject(campos, id);
 
+                Toast.makeText(getContext(), "Registro creado", Toast.LENGTH_SHORT).show();
+                nuevo = false;
+                return true;
+
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Error al crear registro", Toast.LENGTH_SHORT).show();
+            return false;
         }
-
-        Toast.makeText(getContext(), "Error al crear registro", Toast.LENGTH_SHORT).show();
-        return false;
     }
 
     protected abstract void setContenedor();

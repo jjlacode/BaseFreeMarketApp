@@ -635,29 +635,30 @@ public abstract class FragmentBase extends Fragment {
         bundle.putBoolean(key, bool);
     }
 
-    protected void getBundle(String key, int defValue){
-        bundle.getInt(key, defValue);
+    protected int getIntBundle(String key, int defValue){
+        return bundle.getInt(key, defValue);
     }
 
-    protected void getBundle(String key, long defValue){
-        bundle.getLong(key, defValue);
+    protected long getLongBundle(String key, long defValue){
+        return bundle.getLong(key, defValue);
     }
 
-    protected void getBundle(String key, double defValue){
-        bundle.getDouble(key, defValue);
+    protected double getDoubleBundle(String key, double defValue){
+        return bundle.getDouble(key, defValue);
     }
 
-    protected void getBundle(String key, boolean defValue){
-        bundle.getBoolean(key, defValue);
+    protected boolean getBooleanBundle(String key, boolean defValue){
+        return bundle.getBoolean(key, defValue);
     }
 
-    protected void getBundle(String key, String defValue){
-        bundle.getString(key, defValue);
+    protected String getStringBundle(String key, String defValue){
+        return bundle.getString(key, defValue);
     }
 
-    protected void getBundleSerial(String key){
-        bundle.getSerializable(key);
+    protected Serializable getBundleSerial(String key){
+        return bundle.getSerializable(key);
     }
+
 
     /*
     protected void setControl(TextView textView, int recurso){
@@ -782,6 +783,7 @@ public abstract class FragmentBase extends Fragment {
                 RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
         intentActionRecognizeSpeech.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
         try {
+            update();
             startActivityForResult(intentActionRecognizeSpeech,
                     code,null);
         } catch (ActivityNotFoundException a) {
@@ -789,6 +791,10 @@ public abstract class FragmentBase extends Fragment {
                     "Tú dispositivo no soporta el reconocimiento por voz",
                     Toast.LENGTH_SHORT).show();
         }
+    }
+
+    protected boolean update() {
+        return false;
     }
 
     protected boolean sensorProximidad(){
@@ -945,5 +951,11 @@ public abstract class FragmentBase extends Fragment {
 
 protected void alCambiarCampos(){
 
+}
+protected boolean nn(Object object){
+        if (object!=null){
+            return true;
+        }
+        return false;
 }
 }

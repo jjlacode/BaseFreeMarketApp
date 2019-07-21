@@ -88,6 +88,7 @@ public class PdfUtils extends FragmentBase {
     protected final int VERDE = 5;
     protected final int MAGENTA = 6;
     protected Uri fileUri;
+    protected String path;
 
 
     protected  PdfUtils() {
@@ -96,8 +97,12 @@ public class PdfUtils extends FragmentBase {
 
     public Uri getFileUri(Context context){
 
-        buscarPDF(context);
+        buscarPDF();
         return fileUri;
+    }
+
+    public String getPath(){
+        return path;
     }
 
     protected void setFuente(String fontname, float size, int style, int color){
@@ -131,22 +136,25 @@ public class PdfUtils extends FragmentBase {
         return baseColor;
     }
 
-    protected  void verPDFAPP(Activity activity, Context context) {
+    protected  void verPDFAPP( Context context) {
         //Primero busca el archivo
-        buscarPDF(context);
+        buscarPDF();
         if(fPDF==1) {
             Uri uri= fileUri;//Uri.fromFile(archivoPDF);
             //Creo un Intent para inciar una nueva actividad, pero de otra APP
             Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.setDataAndType(uri, "applicacion/PDF");
             //Try catch ´por si no existe una APP en el dispositivo
             try{
-                activity.startActivity(intent);
+                startActivity(intent);
             }catch (ActivityNotFoundException e){
-                activity.startActivity(new Intent(Intent.ACTION_VIEW,
+                startActivity(new Intent(Intent.ACTION_VIEW,
                         Uri.parse("market://details?id=cn.wps.moffice_eng&hl=es")));
                 //Mensaje en un Toast para que se visualize el posible error
-                Toast.makeText(activity.getApplicationContext(),
+                Toast.makeText(AppActivity.getAppContext(),
                         "No hay una APP para ver PDFs", Toast.LENGTH_LONG).show();
                 Log.e("verPDFAPP",e.toString());
             }
@@ -172,41 +180,26 @@ public class PdfUtils extends FragmentBase {
 
     public Uri getUriArchivo(){
 
-        return Uri.fromFile(archivoPDF);
+        return AppActivity.getUriFromFile(archivoPDF);
     }
 
     public String getRutaArchivo(){
 
-        return archivoPDF.getPath();
+        buscarPDF();
+
+        return path;
     }
 
-    public void verPDF(ICFragmentos icFragmentos, Bundle bundle, Context context) {
-        //Primero busca el archivo
-        buscarPDF(context);
-        if(fPDF==1) {
-            //bundle = new Bundle();
-            bundle.putString(SUBTITULO,bundle.getString(ORIGEN));
-            bundle.putString("path", archivoPDF.getAbsolutePath());
-            bundle.putString(ACTUAL,VISORPDF);
-            icFragmentos.enviarBundleAFragment(bundle, new VisorPDF());
-            Toast.makeText(context,"Si existe archivo PDF para LEER",Toast.LENGTH_LONG).show();
-        }
-        else
-        if(fPDF==0){
-            Toast.makeText(context,"No existe archivo PDF para LEER",Toast.LENGTH_LONG).show();
-        }
-    }
 
     public void enviarPDFEmail(ICFragmentos icFragmentos, Context context,
                                String email, String asunto, String texto) {
 
-        buscarPDF(context);
+        buscarPDF();
         if(fPDF==1) {
             bundle = new Bundle();
             bundle.putString("email",email);
             bundle.putString("asunto",asunto);
             bundle.putString("texto",texto);
-            bundle.putString("uri", getUriArchivo().toString());
             bundle.putString("path", archivoPDF.getAbsolutePath());
             bundle.putString(ACTUAL,VISORPDFMAIL);
             icFragmentos.enviarBundleAFragment(bundle, new VisorPDFEmail());
@@ -219,26 +212,28 @@ public class PdfUtils extends FragmentBase {
 
     }
 
-    public void compartirPDF(ICFragmentos icFragmentos, Context context) {
+    public void enviarPDFEmail(ICFragmentos icFragmentos, Context context, String path,
+                               String email, String asunto, String texto) {
 
-        buscarPDF(context);
+        buscarPDF(path);
         if(fPDF==1) {
             bundle = new Bundle();
-            bundle.putString("uri", getUriArchivo().toString());
+            bundle.putString("email",email);
+            bundle.putString("asunto",asunto);
+            bundle.putString("texto",texto);
             bundle.putString("path", archivoPDF.getAbsolutePath());
-            bundle.putString(ORIGEN,"visor pdf - compartir");
-            icFragmentos.enviarBundleAFragment(bundle, new VisorPDF());
-            Toast.makeText(context,"Si existe archivo PDF para compartir",Toast.LENGTH_LONG).show();
+            bundle.putString(ACTUAL,VISORPDFMAIL);
+            icFragmentos.enviarBundleAFragment(bundle, new VisorPDFEmail());
+            Toast.makeText(context,"Si existe archivo PDF para Enviar",Toast.LENGTH_LONG).show();
         }
         else
         if(fPDF==0){
-            Toast.makeText(context,"No existe archivo PDF para compartir",Toast.LENGTH_LONG).show();
+            Toast.makeText(context,"No existe archivo PDF para Enviar",Toast.LENGTH_LONG).show();
         }
 
     }
 
-
-    public boolean buscarPDF(Context context) {
+    public boolean buscarPDF() {
         try{
             File carpeta = null;
             if (Environment.MEDIA_MOUNTED.equals(Environment
@@ -253,8 +248,9 @@ public class PdfUtils extends FragmentBase {
                 //Verifica si la carpeta existe
                 if (archivoPDF.exists()) {
                     fPDF = 1;     //La bandera esta activada para leer PDFs
-                    fileUri = FileProvider.getUriForFile(context,"jjlacode.com.freelanceproject.provider",archivoPDF);
-
+                    fileUri = AppActivity.getUriFromFile(archivoPDF);
+                    path = archivoPDF.getPath();
+                    System.out.println("path = " + path);
                     return true;
                 } else {
                     fPDF = 0;     //La bandera está desactivada para leer los PDFs
@@ -269,6 +265,27 @@ public class PdfUtils extends FragmentBase {
         return false;
     }
 
+    public boolean buscarPDF(String path) {
+        try{
+
+                archivoPDF = new File(path);
+                //Verifica si la carpeta existe
+                if (archivoPDF.exists()) {
+                    fPDF = 1;     //La bandera esta activada para leer PDFs
+                    fileUri = AppActivity.getUriFromFile(archivoPDF);
+                    this.path = archivoPDF.getAbsolutePath();
+                    return true;
+                } else {
+                    fPDF = 0;     //La bandera está desactivada para leer los PDFs
+                }
+
+        }catch (Exception e){
+            //Mensaje que me dirá si hay errores
+            Log.e(ETIQUETA_ERROR,e.toString());
+        }
+
+        return false;
+    }
 
     public boolean abrirPdf(String nombrePdf){
 
@@ -419,7 +436,7 @@ public class PdfUtils extends FragmentBase {
             documento.add(paragraph);
         } catch (DocumentException e) {
             e.printStackTrace();
-            Log.e("Crear tablaModelo", e.toString());
+            Log.e("Crear tabla", e.toString());
         }
     }
 
@@ -533,13 +550,13 @@ public class PdfUtils extends FragmentBase {
             documento.add(paragraph);
         } catch (DocumentException e) {
             e.printStackTrace();
-            Log.e("Crear tablaModelo", e.toString());
+            Log.e("Crear tabla", e.toString());
         }
     }
 
     protected void visorPdf(Class clase, Context context){
 
-        buscarPDF(context);
+        buscarPDF();
         if(fPDF==1) {
             Intent intent = new Intent(getContext(), clase);
             intent.putExtra("path", archivoPDF.getAbsolutePath());

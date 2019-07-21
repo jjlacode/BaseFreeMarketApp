@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,15 +27,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import jjlacode.com.freelanceproject.R;
+
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class AppActivity extends Application {
 
     private static Context context;
+    private static String FILEPROVIDER;
 
     public void onCreate() {
         super.onCreate();
         AppActivity.context = getApplicationContext();
+        FILEPROVIDER = getPackage()+".provider";
     }
 
     public static Context getAppContext() {
@@ -57,6 +62,49 @@ public class AppActivity extends Application {
                     Toast.LENGTH_SHORT).show();
         }
     }
+
+    public static void mostrarPDF(String rutaPdf) {
+
+        Toast.makeText(context, R.string.visualiza_pdf, Toast.LENGTH_LONG).show();
+
+        if (rutaPdf!=null) {
+            File file = new File(rutaPdf);
+            Uri uri = AppActivity.getUriFromFile(file);
+
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setDataAndType(uri, "application/pdf");
+
+            try {
+                context.startActivity(intent);
+            } catch (ActivityNotFoundException e) {
+                Toast.makeText(context, R.string.no_app_pdf, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public static Uri getUriFromFile(File arch){
+        FILEPROVIDER = getPackage()+".provider";
+        return FileProvider.getUriForFile(context, FILEPROVIDER, arch);
+
+    }
+
+    public static Uri getUriFromFile(String path){
+        File arch = new File(path);
+        FILEPROVIDER = getPackage()+".provider";
+        return FileProvider.getUriForFile(context, FILEPROVIDER, arch);
+
+    }
+
+    public static String getPackage(){
+        return context.getPackageName();
+    }
+
+    public static String getFileProvider(){
+        return FILEPROVIDER;
+    }
     
     public static void hacerLlamada(Context context, String phoneNo){
 
@@ -66,7 +114,7 @@ public class AppActivity extends Application {
             intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
         }else {
-            Toast.makeText(context, "El numero no es valido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.num_tel_invalido, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -192,9 +240,10 @@ public class AppActivity extends Application {
 
     public static void enviarEmail(Context context, String direccion, String subject, String texto, String path) {
 
-        Uri uri = null;
+        Uri uri;
         if (path != null) {
-            Uri.fromFile(new File(path));
+            File file = new File(path);
+            uri = AppActivity.getUriFromFile(file);
 
         String[] dir = {direccion};
         Intent intent = new Intent(Intent.ACTION_SEND);
@@ -204,7 +253,9 @@ public class AppActivity extends Application {
             intent.putExtra(Intent.EXTRA_SUBJECT, subject);
             intent.putExtra(Intent.EXTRA_TEXT, texto);
             intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-                intent.setType("application/pdf");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            intent.setType("application/pdf");
                 intent.putExtra(Intent.EXTRA_STREAM, uri);
             try {
                 context.startActivity(Intent.createChooser(intent, "Send mail..."));
@@ -234,6 +285,8 @@ public class AppActivity extends Application {
             if (uriPdf!=null) {
                 intent.setType("application/pdf");
                 intent.putExtra(Intent.EXTRA_STREAM, uriPdf);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
             }
             try {
                 context.startActivity(Intent.createChooser(intent, "Send mail..."));
@@ -259,6 +312,8 @@ public class AppActivity extends Application {
             intent.putExtra(Intent.EXTRA_TEXT,texto);
             intent.setType("application/pdf");
             intent.putExtra(Intent.EXTRA_STREAM, uriPdf);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
             try {
                 context.startActivity(Intent.createChooser(intent, "Send mail..."));
                 Log.e("Test email:", "Fin envio email");
@@ -282,6 +337,8 @@ public class AppActivity extends Application {
             intent.putExtra(Intent.EXTRA_TEXT,texto);
             intent.setType("application/pdf");
             intent.putExtra(Intent.EXTRA_STREAM, uriPdf);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
             try {
                 context.startActivity(Intent.createChooser(intent, "Send mail..."));
                 Log.e("Test email:", "Fin envio email");
@@ -298,13 +355,16 @@ public class AppActivity extends Application {
 
         Uri uri = null;
         if (path!=null) {
-            uri = Uri.fromFile(new File(path));
+            File file = new File(path);
+            uri = AppActivity.getUriFromFile(file);
         }
 
         Intent intent = new Intent(Intent.ACTION_SEND);
         if (uri!=null && !TextUtils.isEmpty(path)) {
             intent.setType("application/pdf");
             intent.putExtra(Intent.EXTRA_STREAM, uri);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
             try {
                 context.startActivity(Intent.createChooser(intent, "Compartiendo..."));
 
@@ -320,13 +380,16 @@ public class AppActivity extends Application {
 
             Uri uri = null;
             if (path!=null) {
-                uri = Uri.fromFile(new File(path));
+                File file = new File(path);
+                uri = AppActivity.getUriFromFile(file);
             }
 
             Intent intent = new Intent(Intent.ACTION_SEND);
             if (uri!=null && !TextUtils.isEmpty(path)) {
                 intent.setType(tipo);
                 intent.putExtra(Intent.EXTRA_STREAM, uri);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
                 try {
                     context.startActivity(Intent.createChooser(intent, "Compartiendo..."));
 

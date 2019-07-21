@@ -318,10 +318,7 @@ public class MediaUtil {
         StorageReference storageRef = storage.getReference();
         StorageReference spaceRef = storageRef.child(rutafoto);
         System.out.println("spaceRef = " + spaceRef);
-        GlideApp.with(context)
-                .load(spaceRef)
-                .apply(options)
-                .into(imagen);
+        Glide.with(context).load(spaceRef).apply(options).into(imagen);
 
     }
 

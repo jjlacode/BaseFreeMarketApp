@@ -36,7 +36,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         String TABLA_PARTIDA = PARTIDA;
         String TABLA_PERFIL = PERFIL;
         String TABLA_AMORTIZACION = AMORTIZACION;
-        String TABLA_TAREA = TAREA;
+        String TABLA_TRABAJO = TRABAJO;
         String TABLA_PRODUCTO = PRODUCTO;
         String TABLA_GASTOFIJO = GASTOFIJO;
         String TABLA_EVENTO = EVENTO;
@@ -186,13 +186,13 @@ public class ContratoPry implements JavaUtil.Constantes {
         String DETPARTIDABASE_CREATE = CAMPO_CREATEREG;
         String DETPARTIDABASE_TIMESTAMP = CAMPO_TIMESTAMP;
 
-        String TAREA_ID_TAREA = CAMPO_ID+TABLA_TAREA;
-        String TAREA_DESCRIPCION = CAMPO_DESCRIPCION+TABLA_TAREA;
-        String TAREA_NOMBRE = CAMPO_NOMBRE+TABLA_TAREA;
-        String TAREA_TIEMPO = CAMPO_TIEMPO+TABLA_TAREA;
-        String TAREA_RUTAFOTO = CAMPO_RUTAFOTO;
-        String TAREA_CREATE = CAMPO_CREATEREG;
-        String TAREA_TIMESTAMP = CAMPO_TIMESTAMP;
+        String TRABAJO_ID_TRABAJO = CAMPO_ID+ TABLA_TRABAJO;
+        String TRABAJO_DESCRIPCION = CAMPO_DESCRIPCION+ TABLA_TRABAJO;
+        String TRABAJO_NOMBRE = CAMPO_NOMBRE+ TABLA_TRABAJO;
+        String TRABAJO_TIEMPO = CAMPO_TIEMPO+ TABLA_TRABAJO;
+        String TRABAJO_RUTAFOTO = CAMPO_RUTAFOTO;
+        String TRABAJO_CREATE = CAMPO_CREATEREG;
+        String TRABAJO_TIMESTAMP = CAMPO_TIMESTAMP;
 
         String PRODUCTO_ID_PRODUCTO = CAMPO_ID+TABLA_PRODUCTO;
         String PRODUCTO_DESCRIPCION = CAMPO_DESCRIPCION+TABLA_PRODUCTO;
@@ -378,8 +378,8 @@ public class ContratoPry implements JavaUtil.Constantes {
         String ID_PRODUCTO = String.format("REFERENCES %s(%s)",
                 TABLA_PRODUCTO, PRODUCTO_ID_PRODUCTO);
 
-        String ID_TAREA = String.format("REFERENCES %s(%s)",
-                TABLA_TAREA, TAREA_ID_TAREA);
+        String ID_TRABAJO = String.format("REFERENCES %s(%s)",
+                TABLA_TRABAJO, TRABAJO_ID_TRABAJO);
 
         String ID_PARTIDA = String.format("REFERENCES %s(%s) ON DELETE CASCADE",
                 TABLA_PARTIDA, PARTIDA_ID_PARTIDA);
@@ -537,14 +537,14 @@ public class ContratoPry implements JavaUtil.Constantes {
 
         };
 
-        String[] CAMPOS_TAREA = {"23", TABLA_TAREA,
-                TAREA_ID_TAREA, "TEXT NON NULL UNIQUE",STRING,
-                TAREA_DESCRIPCION, "TEXT NON NULL",STRING,
-                TAREA_NOMBRE, "TEXT NON NULL",STRING,
-                TAREA_RUTAFOTO, "TEXT",STRING,
-                TAREA_TIEMPO, "REAL NON NULL DEFAULT 0",DOUBLE,
-                TAREA_CREATE, "INTEGER NON NULL DEFAULT 0",LONG,
-                TAREA_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG
+        String[] CAMPOS_TRABAJO = {"23", TABLA_TRABAJO,
+                TRABAJO_ID_TRABAJO, "TEXT NON NULL UNIQUE",STRING,
+                TRABAJO_DESCRIPCION, "TEXT NON NULL",STRING,
+                TRABAJO_NOMBRE, "TEXT NON NULL",STRING,
+                TRABAJO_RUTAFOTO, "TEXT",STRING,
+                TRABAJO_TIEMPO, "REAL NON NULL DEFAULT 0",DOUBLE,
+                TRABAJO_CREATE, "INTEGER NON NULL DEFAULT 0",LONG,
+                TRABAJO_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG
         };
 
 
@@ -752,7 +752,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         listaCampos.add(Tablas.CAMPOS_ESTADO);
         listaCampos.add(Tablas.CAMPOS_EVENTO);
         listaCampos.add(Tablas.CAMPOS_PARTIDA);
-        listaCampos.add(Tablas.CAMPOS_TAREA);
+        listaCampos.add(Tablas.CAMPOS_TRABAJO);
         listaCampos.add(Tablas.CAMPOS_PRODUCTO);
         listaCampos.add(Tablas.CAMPOS_GASTOFIJO);
         listaCampos.add(Tablas.CAMPOS_AMORTIZACION);

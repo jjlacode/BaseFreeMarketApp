@@ -84,18 +84,10 @@ public class FragmentNuevaNota extends FragmentGrid implements CommonPry.TiposNo
 
         }
         if (tipoNota!=null) {
-            bundle = new Bundle();
             bundle.putString(TIPO, tipoNota);
-            bundle.putString(ORIGEN, origen);
-            if (origen!=null && origen.equals(NOTAS)){
-                bundle.putString(ORIGEN,NOTAS);
-                bundle.putLong(FECHA,fecha);
-                bundle.putString(ACTUAL, NOTA);
-                if (hora>=0){
-                    bundle.putLong(HORACAL,hora);
-                }
+            bundle.putString(ACTUAL, NOTA);
 
-            }else if (origen==null){
+            if (origen==null){
                 bundle.putString(ORIGEN, NUEVOREGISTRO);
             }
             bundle.putBoolean(NUEVOREGISTRO, true);
