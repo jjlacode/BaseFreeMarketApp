@@ -508,12 +508,14 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
                         ListaDays listadias = TimeDateUtil.listaDias(cini,cfin);
 
                         for (Day dia : listadias) {
-                            if (dia.getLista()!=null){
-                                for (Modelo modelo : dia.getLista()) {
+                            ListaModelo lista = setListaDia(dia.getFechaLong());
+                            if (lista.getLista() != null) {
+                                for (Modelo modelo : lista.getLista()) {
                                     listaModeloMulti.addModelo(modelo);
                                 }
                             }
                         }
+
                     }
                 }
 
@@ -630,6 +632,17 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
                     }
                 }
 
+                if (tipoRV != null && tipoRV.equals(LISTA)) {
+
+                    adaptadorRV = new RVAdapter(setViewHolder(view),
+                            listaModeloFinal, layoutItem);
+
+                } else {
+
+                    adaptadorRV = new RVAdapter(setViewHolder(view),
+                            listaModeloFinal.getLista(), layoutItem);
+                }
+                rv.setAdapter(adaptadorRV);
 
                 setOnDayLongClick(day, position);
             }
@@ -756,10 +769,8 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
 
         if (nn(listaSeleccionadosMulti)) {
             for (Day day : listaSeleccionadosMulti) {
-                System.out.println("mes lista " + day.getMonth() + " mes actual " + month);
                 if (day.getMonth() == month) {
                     removeItemSelected(day.getPosicionCal());
-                    System.out.println("day position cal = " + day.getPosicionCal());
                 }
             }
             listaSeleccionadosMulti.clear();
@@ -825,6 +836,7 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
 
     private void alCambiarMes() {
 
+        seleccionados = 0;
         listaModeloMulti = new ListaModelo();
         listaSeleccionadosMulti = new ListaDays();
 
@@ -840,8 +852,9 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
                 ListaDays listadias = TimeDateUtil.listaDias(cini,cfin);
 
                 for (Day dia : listadias) {
-                    if (dia.getLista()!=null){
-                        for (Modelo modelo : dia.getLista()) {
+                    ListaModelo lista = setListaDia(dia.getFechaLong());
+                    if (lista.getLista() != null) {
+                        for (Modelo modelo : lista.getLista()) {
                             listaModeloMulti.addModelo(modelo);
                         }
                     }
@@ -877,6 +890,7 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
                         dia.setMulti(true);
                     }
                     listaSeleccionadosMulti.add(dia);
+                    seleccionados++;
 
                 }
 
@@ -885,10 +899,9 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
         }
 
         listaModeloFinal = new ListaModelo();
-        listaModeloFinal.addAllLista(listaModeloSimple);
-
+        listaModeloFinal.addAllLista(listaModeloSimple.getLista());
         if (listaModeloMulti != null) {
-            listaModeloFinal.addAllLista(listaModeloMulti);
+            listaModeloFinal.addAllLista(listaModeloMulti.getLista());
         }
 
         listaSeleccionadosFinal = new ListaDays();
