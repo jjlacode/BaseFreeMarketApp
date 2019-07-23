@@ -178,6 +178,10 @@ public class Day {
         return fechaLong;
     }
 
+    public long getSoloFechaLong() {
+        return TimeDateUtil.soloFecha(fechaLong);
+    }
+
     public Date getFechaDate() {
         return fechaDate;
     }

@@ -48,27 +48,41 @@ public class CalendarioEventos extends FragmentMes {
         ListaModelo listaCompleta = new ListaModelo(CAMPOS_EVENTO);
 
         for (Modelo modelo : listaCompleta.getLista()) {
-            if ((!modelo.getString(EVENTO_TIPO).equals(TIPOEVENTOTAREA)) ||
-                    (modelo.getString(EVENTO_TIPO).equals(TIPOEVENTOTAREA) &&
-                            modelo.getDouble(EVENTO_COMPLETADA) < 100)){
+            if (!modelo.getString(EVENTO_TIPO).equals(TIPOEVENTOTAREA)) {
                 listatemp.addModelo(modelo);
             }
         }
 
-        if (listatemp!=null) {
-            for (Modelo modelo : listatemp.getLista()) {
+        for (Modelo modelo : listatemp.getLista()) {
 
-                if (TimeDateUtil.getDateString(modelo.getLong(EVENTO_FECHAINIEVENTO))
-                        .equals(TimeDateUtil.getDateString(fecha))) {
+            if (TimeDateUtil.getDateString(modelo.getLong(EVENTO_FECHAINIEVENTO))
+                    .equals(TimeDateUtil.getDateString(fecha))) {
 
-                    listaDia.addModelo(modelo);
-                }
+                listaDia.addModelo(modelo);
             }
         }
 
         return listaDia;
 
     }
+
+    @Override
+    protected ListaModelo setListaFija() {
+
+        ListaModelo listaDia = new ListaModelo();
+        ListaModelo listaCompleta = new ListaModelo(CAMPOS_EVENTO);
+
+        for (Modelo modelo : listaCompleta.getLista()) {
+            if (modelo.getString(EVENTO_TIPO).equals(TIPOEVENTOTAREA) &&
+                    modelo.getDouble(EVENTO_COMPLETADA) < 100) {
+                listaDia.addModelo(modelo);
+            }
+        }
+
+        return listaDia;
+
+    }
+
     @Override
     protected void setVerDia(long fecha, ListaModelo listaModelo) {
 
@@ -205,7 +219,7 @@ public class CalendarioEventos extends FragmentMes {
             lugar.setVisibility(View.GONE);
             email.setVisibility(View.GONE);
             fechafin.setVisibility(View.GONE);
-            fechaini.setVisibility(View.GONE);
+            //fechaini.setVisibility(View.GONE);
             horafin.setVisibility(View.GONE);
 
             if (tipoevento.equals(TIPOEVENTOCITA)){
@@ -308,10 +322,25 @@ public class CalendarioEventos extends FragmentMes {
             lugar.setVisibility(View.GONE);
             email.setVisibility(View.GONE);
             fechafin.setVisibility(View.GONE);
-            fechaini.setVisibility(View.GONE);
             horafin.setVisibility(View.GONE);
 
-            if (tipoevento.equals(TIPOEVENTOCITA)){
+            double completada = modelo.getDouble(EVENTO_COMPLETADA);
+            descripcion.setText(modelo.getString(EVENTO_DESCRIPCION));
+            hora.setText(modelo.getString(EVENTO_HORAINIEVENTOF));
+            telefono.setText(modelo.getString(EVENTO_TELEFONO));
+            lugar.setText(modelo.getString(EVENTO_DIRECCION));
+            email.setText(modelo.getString(EVENTO_EMAIL));
+            pbar.setProgress((int) completada);
+            horafin.setText(modelo.getString(EVENTO_HORAFINEVENTOF));
+            fechafin.setText(modelo.getString(EVENTO_FECHAFINEVENTOF));
+            fechaini.setText(modelo.getString(EVENTO_FECHAINIEVENTOF));
+
+            if (tipoevento.equals(TIPOEVENTOTAREA)) {
+                imagen.setImageResource(R.drawable.ic_tareas_indigo);
+                fechafin.setVisibility(View.VISIBLE);
+                horafin.setVisibility(View.VISIBLE);
+                fechaini.setVisibility(View.GONE);
+            } else if (tipoevento.equals(TIPOEVENTOCITA)) {
                 imagen.setImageResource(R.drawable.ic_place_black_24dp);
                 lugar.setVisibility(View.VISIBLE);
             }
@@ -329,16 +358,6 @@ public class CalendarioEventos extends FragmentMes {
                 horafin.setVisibility(View.VISIBLE);
                 fechaini.setVisibility(View.VISIBLE);
             }
-            double completada = modelo.getDouble(EVENTO_COMPLETADA);
-            descripcion.setText(modelo.getString(EVENTO_DESCRIPCION));
-            hora.setText(modelo.getString(EVENTO_HORAINIEVENTOF));
-            telefono.setText(modelo.getString(EVENTO_TELEFONO));
-            lugar.setText(modelo.getString(EVENTO_DIRECCION));
-            email.setText(modelo.getString(EVENTO_EMAIL));
-            pbar.setProgress((int)completada);
-            horafin.setText(modelo.getString(EVENTO_HORAFINEVENTOF));
-            fechafin.setText(modelo.getString(EVENTO_FECHAFINEVENTOF));
-            fechaini.setText(modelo.getString(EVENTO_FECHAINIEVENTOF));
 
             if (completada>0){
                 visible(pbar);

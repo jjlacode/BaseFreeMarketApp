@@ -6,14 +6,12 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
+import android.os.LocaleList;
 import android.speech.RecognizerIntent;
 import android.text.TextUtils;
-import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -21,7 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatImageView;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
@@ -33,7 +30,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import jjlacode.com.freelanceproject.MainActivity;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
@@ -56,6 +52,14 @@ public class AndroidUtil extends AppCompatActivity {
             Toast.makeText(activity.getBaseContext(),
                     "Tú dispositivo no soporta el reconocimiento por voz",
                     Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static String getSystemLocale() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return LocaleList.getDefault().get(0).getLanguage();
+        } else {
+            return Locale.getDefault().getLanguage();
         }
     }
 

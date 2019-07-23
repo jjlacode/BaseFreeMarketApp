@@ -79,7 +79,6 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
     int textColorSelectedDay = Color.parseColor("#D81B60");
     int textColorCurrentDayDay = Color.parseColor("#000000");
     int backgroundColorSelectedDay = Color.parseColor("#D81B60");
-    int calendarLanguage = 0;
 
     private ListaModelo lista;
     protected long fecha;
@@ -134,6 +133,7 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
     protected int layoutOpciones;
     private View viewOpciones;
     private LinearLayoutCompat frOpciones;
+    private int lenguaje;
 
 
     @Override
@@ -193,13 +193,32 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
         buttonUp = (ImageButton) ctrl(R.id.imageButtonUp);
         textViewMY = (TextView) ctrl(R.id.textMY);
 
-        textViewD = (TextView) ctrl(R.id.textD);
-        textViewL = (TextView) ctrl(R.id.textL);
-        textViewM = (TextView) ctrl(R.id.textM);
-        textViewX = (TextView) ctrl(R.id.textX);
-        textViewJ = (TextView) ctrl(R.id.textJ);
-        textViewV = (TextView) ctrl(R.id.textV);
-        textViewS = (TextView) ctrl(R.id.textS);
+        textViewL = (TextView) ctrl(R.id.textD);
+        textViewM = (TextView) ctrl(R.id.textL);
+        textViewX = (TextView) ctrl(R.id.textM);
+        textViewJ = (TextView) ctrl(R.id.textX);
+        textViewV = (TextView) ctrl(R.id.textJ);
+        textViewS = (TextView) ctrl(R.id.textV);
+        textViewD = (TextView) ctrl(R.id.textS);
+
+        String locales = AndroidUtil.getSystemLocale();
+
+        if (locales.equals("en")) {
+
+            lenguaje = 1;
+            textViewD = (TextView) ctrl(R.id.textD);
+            textViewL = (TextView) ctrl(R.id.textL);
+            textViewM = (TextView) ctrl(R.id.textM);
+            textViewX = (TextView) ctrl(R.id.textX);
+            textViewJ = (TextView) ctrl(R.id.textJ);
+            textViewV = (TextView) ctrl(R.id.textV);
+            textViewS = (TextView) ctrl(R.id.textS);
+
+        } else if (locales.equals("pt")) {
+            lenguaje = 2;
+        }
+
+        setLanguage(lenguaje);
 
         textViewMY.setTextColor(textColorMonthAndYear);
 
@@ -253,16 +272,16 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
         month = c.get(Calendar.MONTH);
         year = c.get(Calendar.YEAR);
         activityBase.toolbar.setSubtitle(JavaUtil.getDate(fechaHoy));
-        listabase = new ListaModelo();
 
         listaTotal = getlistaTotal();
 
         lista = setListaDia(fechaHoy);
-
-
+        lista.addAllLista(setListaFija().getLista());
 
         if (campos==null){
             campos = new String[]{"","", CAMPO_CREATEREG};
+        } else {
+            listabase = new ListaModelo(campos);
         }
         adaptadorFiltroRV = setAdaptadorAuto(getContext(), layoutItem,listabase.getLista(),campos);
 
@@ -394,6 +413,11 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
 
                 if (listaModeloMulti != null) {
                     listaModeloFinal.addAllLista(listaModeloMulti.getLista());
+                }
+
+                ListaModelo listaFija = setListaFija();
+                for (Modelo modelo : listaFija.getLista()) {
+                    listaModeloFinal.addModelo(modelo);
                 }
 
                 listaSeleccionadosFinal = new ListaDays();
@@ -904,6 +928,12 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
             listaModeloFinal.addAllLista(listaModeloMulti.getLista());
         }
 
+        ListaModelo listaFija = setListaFija();
+        for (Modelo modelo : listaFija.getLista()) {
+            listaModeloFinal.addModelo(modelo);
+        }
+
+
         listaSeleccionadosFinal = new ListaDays();
         listaSeleccionadosFinal.addAll(listaSeleccionadosSimple);
 
@@ -1030,6 +1060,10 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
         this.sinDia = sinDia;
     }
 
+    protected ListaModelo setListaFija() {
+        return new ListaModelo();
+    }
+
     protected abstract ListaModelo setListaDia(long fecha);
 
     protected abstract void setVerDia(long fecha, ListaModelo listaModelo);
@@ -1076,23 +1110,55 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
 
         int blankSpaces = 0;
         switch (nameFirstDay) {
+
+            case "Sunday":
+                if (lenguaje == 1) {
+                    blankSpaces = 0;
+                } else {
+                    blankSpaces = 6;
+                }
+                break;
             case "Monday":
-                blankSpaces = 1;
+                if (lenguaje == 1) {
+                    blankSpaces = 1;
+                } else {
+                    blankSpaces = 0;
+                }
                 break;
             case "Tuesday":
-                blankSpaces = 2;
+                if (lenguaje == 1) {
+                    blankSpaces = 2;
+                } else {
+                    blankSpaces = 1;
+                }
                 break;
             case "Wednesday":
-                blankSpaces = 3;
+                if (lenguaje == 1) {
+                    blankSpaces = 3;
+                } else {
+                    blankSpaces = 2;
+                }
                 break;
             case "Thursday":
-                blankSpaces = 4;
+                if (lenguaje == 1) {
+                    blankSpaces = 4;
+                } else {
+                    blankSpaces = 3;
+                }
                 break;
             case "Friday":
-                blankSpaces = 5;
+                if (lenguaje == 1) {
+                    blankSpaces = 5;
+                } else {
+                    blankSpaces = 4;
+                }
                 break;
             case "Saturday":
-                blankSpaces = 6;
+                if (lenguaje == 1) {
+                    blankSpaces = 6;
+                } else {
+                    blankSpaces = 5;
+                }
                 break;
         }
 
@@ -1137,12 +1203,8 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
             calendar.setTimeInMillis(fecha);
 
 
-            if (lista.sizeLista()>0  && this.currentDay != i) {
-                System.out.println("listaDia = " + lista.sizeLista());
-
-                days.add(new Day(calendar, context.getResources().getColor(R.color.Color_card_notok),R.color.Color_card_notok, lista.getLista(),squares));
-            }else if (lista.sizeLista()>0  && hoy.get(Calendar.YEAR) == year && hoy.get(Calendar.MONTH) == month && this.currentDay == i) {
-                days.add(new Day(calendar, context.getResources().getColor(R.color.Color_card_ok), currentDayBackgroundColor,lista.getLista(),squares));
+            if (lista.sizeLista() > 0) {
+                days.add(new Day(calendar, context.getResources().getColor(R.color.Color_card_notok), context.getResources().getColor(R.color.Color_card_notok), lista.getLista(), squares));
             }else if (hoy.get(Calendar.YEAR) == year && hoy.get(Calendar.MONTH) == month && this.currentDay == i) {
                 days.add(new Day(calendar, textColorCurrentDayDay, currentDayBackgroundColor,squares));
             } else {
@@ -1179,24 +1241,26 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
         if (buscando){
 
             Day day = new Day(cbusca);
-            for (Day listaDay : days) {
-                if (listaDay.getFechaLong()==day.getFechaLong()){
-                    day = listaDay;
-                }
-            }
+            ListaModelo listaBusca = setListaDia(day.getFechaLong());
 
-            if (day.getLista()!=null){
+            if (listaBusca != null) {
 
-                for (Modelo modelo : day.getLista()) {
+                for (Modelo modelo : listaBusca.getLista()) {
 
                     listaModeloSimple.addModelo(modelo);
                 }
             }
 
-            day.setBusca(true);
-            addItemSelected(day.getPosicionCal());
-            listaSeleccionadosSimple.add(day);
-            day.setPosicionListaSimple(listaSeleccionadosSimple.indexOf(day));
+            for (Day day1 : days) {
+
+                if (day1.getFechaLong() == day.getSoloFechaLong()) {
+                    day1.setBusca(true);
+                    addItemSelected(day1.getPosicionCal());
+                    listaSeleccionadosSimple.add(day1);
+                    day1.setPosicionListaSimple(listaSeleccionadosSimple.indexOf(day1));
+                    break;
+                }
+            }
 
             if (tipoRV!=null && tipoRV.equals(LISTA)){
 
@@ -1223,16 +1287,21 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
 
         onDayClickListener.onCreateCal(days);
 
-        setLanguage(calendarLanguage);
+        String locales = AndroidUtil.getSystemLocale();
 
-        //calendarAdapter = new CalendarAdapter(context, month, days,textColorSelectedDay , backgroundColorSelectedDay );
-        //calendarAdapter.setDayOnClickListener(this);
+        if (locales.equals("en")) {
+
+            lenguaje = 1;
+
+        } else if (locales.equals("pt")) {
+
+            lenguaje = 2;
+        }
+
+        setLanguage(lenguaje);
+
         rvAdapter = new RVAdapter(new ViewHolderRV(view),days,R.layout.item_calendar);
-
-        //recyclerViewDays.setAdapter(calendarAdapter);
         recyclerViewDays.setAdapter(rvAdapter);
-
-
         onDayClickListener.onAdapterAttach();
     }
 
@@ -1255,26 +1324,57 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
 
                 int blankSpaces = 0;
                 switch (nameFirstDay) {
+
+                    case "Sunday":
+                        if (lenguaje == 1) {
+                            blankSpaces = 0;
+                        } else {
+                            blankSpaces = 6;
+                        }
+                        break;
                     case "Monday":
-                        blankSpaces = 1;
+                        if (lenguaje == 1) {
+                            blankSpaces = 1;
+                        } else {
+                            blankSpaces = 0;
+                        }
                         break;
                     case "Tuesday":
-                        blankSpaces = 2;
+                        if (lenguaje == 1) {
+                            blankSpaces = 2;
+                        } else {
+                            blankSpaces = 1;
+                        }
                         break;
                     case "Wednesday":
-                        blankSpaces = 3;
+                        if (lenguaje == 1) {
+                            blankSpaces = 3;
+                        } else {
+                            blankSpaces = 2;
+                        }
                         break;
                     case "Thursday":
-                        blankSpaces = 4;
+                        if (lenguaje == 1) {
+                            blankSpaces = 4;
+                        } else {
+                            blankSpaces = 3;
+                        }
                         break;
                     case "Friday":
-                        blankSpaces = 5;
+                        if (lenguaje == 1) {
+                            blankSpaces = 5;
+                        } else {
+                            blankSpaces = 4;
+                        }
                         break;
                     case "Saturday":
-                        blankSpaces = 6;
+                        if (lenguaje == 1) {
+                            blankSpaces = 6;
+                        } else {
+                            blankSpaces = 5;
+                        }
                         break;
                 }
-
                 int squares = 0;
 
                 if (blankSpaces > 0) {
@@ -1485,8 +1585,6 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
      */
     public void addItemSelected(int position) {
         days.get(position).setSelected(true);
-        //calendarAdapter.notifyItemChanged(position);
-        //calendarAdapter.notifyDataSetChanged();
         rvAdapter.notifyItemChanged(position);
         rvAdapter.notifyDataSetChanged();
     }
@@ -1499,8 +1597,6 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
      */
     public void removeItemSelected(int position) {
         days.get(position).setSelected(false);
-        //calendarAdapter.notifyItemChanged(position);
-        //calendarAdapter.notifyDataSetChanged();
         rvAdapter.notifyItemChanged(position);
         rvAdapter.notifyDataSetChanged();
     }
@@ -1515,6 +1611,9 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
 
 
     public void setLanguage(int language) {
+
+        System.out.println("language = " + language);
+
         if (language == 1) {//si el idioma es el ingles
             textViewL.setText("M");
             textViewM.setText("T");
@@ -1537,7 +1636,7 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
             noviembre = "November";
             diciembre = "December";
 
-        } if (language == 2) {//si el idioma es el ingles
+        } else if (language == 2) {//si el idioma es el portugues
             textViewL.setText("S");
             textViewM.setText("T");
             textViewX.setText("Q");
@@ -1721,6 +1820,7 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
             //cal.setTime(dia.getDate());
             int nday = cal.get(Calendar.DAY_OF_MONTH);
             btnDia.setText(nday + "");
+            btnDia.setTextSize(sizeText);
 
             if (dia.isBusca()) {
                 btnDia.setTextColor(textColorBuscaDay);
@@ -1743,6 +1843,11 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
             } else {
                 btnDia.setTextColor(dia.getTextColorNV());
                 itemView.setBackgroundColor(dia.getBackgroundColorNV());
+            }
+
+            if (dia.getFechaLong() == TimeDateUtil.soloFecha(JavaUtil.hoy())) {
+                btnDia.setBackgroundColor(context.getResources().getColor(R.color.colorPrimaryDark));
+                btnDia.setTextColor(context.getResources().getColor(R.color.colorPrimary));
             }
 
             btnDia.setOnClickListener(new View.OnClickListener() {
