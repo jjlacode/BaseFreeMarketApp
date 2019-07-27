@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,18 +17,24 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AlertDialog;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import jjlacode.com.freelanceproject.R;
-import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.*;
-import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.CommonPry;
-import jjlacode.com.freelanceproject.util.android.FragmentBase;
+import jjlacode.com.freelanceproject.R;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.android.AndroidUtil;
+import jjlacode.com.freelanceproject.util.android.FragmentBase;
+import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
 import jjlacode.com.freelanceproject.util.media.MediaUtil;
+import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
 
 import static android.app.Activity.RESULT_OK;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.putDato;
 
-public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.Constantes {
+public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoPry.Tablas, CommonPry.Constantes {
 
 
     protected int tituloPlural;
@@ -57,6 +64,9 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     protected MediaUtil mediaUtil = new MediaUtil(contexto);
     final protected int COD_FOTO = 10;
     final protected int COD_SELECCIONA = 20;
+    protected boolean back;
+    private int secuenciatemp;
+    private String idtemp;
 
     public FragmentBaseCRUD() {
     }
@@ -70,7 +80,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
         btnsave = view.findViewById(R.id.btn_save);
         btndelete = view.findViewById(R.id.btn_del);
         System.out.println("view = " + view);
-        gone(btndelete);
 
     }
 
@@ -132,9 +141,11 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
             modelo = (Modelo) bundle.getSerializable(MODELO);
             if (id==null) {
                 id = bundle.getString(CAMPO_ID);
+                idtemp = id;
             }
             if (secuencia==0) {
                 secuencia = bundle.getInt(CAMPO_SECUENCIA);
+                secuenciatemp = secuencia;
             }
 
         }
@@ -214,13 +225,14 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
     protected void setImagen(){
         Log.d(TAG, getMetodo());
 
+
         try {
 
-            if (modelo==null && id!=null){
+            if (modelo == null && id != null) {
                 modelo = CRUDutil.setModelo(campos, id);
             }
 
-            if (modelo!=null && modelo.getString(campoImagen) != null) {
+            if (modelo != null && modelo.getString(campoImagen) != null) {
 
                 path = modelo.getString(campoImagen);
 
@@ -230,18 +242,18 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
 
                 setImagenUri(contexto, path);
 
-            }else {
+            } else {
 
                 try {
 
                     imagen.setImageResource(R.drawable.ic_add_a_photo_black_24dp);
 
-                }catch (Exception er){
+                } catch (Exception er) {
                     er.printStackTrace();
                 }
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
 
             e.printStackTrace();
 
@@ -249,26 +261,102 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements JavaUtil.
 
                 setImagenUri(contexto, path);
 
-            }else {
+            } else {
 
                 try {
 
                     imagen.setImageResource(R.drawable.ic_add_a_photo_black_24dp);
 
-                }catch (Exception er){
+                } catch (Exception er) {
                     er.printStackTrace();
                 }
             }
         }
-
     }
 
     protected void acciones(){
         Log.d(TAG, getMetodo());
         super.acciones();
 
+        for (final EditMaterial editMaterial : materialEdits) {
+            editMaterial.setCambioFocoListener(new EditMaterial.CambioFocoEdit() {
+                @Override
+                public void alPerderFoco(View view) {
+                    alCambiarCampos(editMaterial);
+                    if (editMaterial.getNextFocusDownId() == 0) {
+                        AndroidUtil.ocultarTeclado(contexto, view);
+                    }
+                }
+
+                @Override
+                public void alRecibirFoco(View view) {
+                    editMaterial.finalTexto();
+                }
+            });
+
+            editMaterial.setAlCambiarListener(new EditMaterial.AlCambiarListener() {
+                @Override
+                public void antesCambio(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void cambiando(CharSequence s, int start, int before, int count) {
+
+                    if (timer != null) {
+                        timer.cancel();
+                    }
+                }
+
+                @Override
+                public void despuesCambio(Editable s) {
+                    timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            if ((id != null && (tablaCab == null || secuencia > 0)) || back) {
+                                guardarEdit(editMaterial);
+                            }
+                        }
+                    }, 1000);
+                }
+            });
+        }
+
         setAcciones();
 
+    }
+
+    @Override
+    protected void alCambiarCampos(EditMaterial editMaterial) {
+        super.alCambiarCampos(editMaterial);
+
+        if ((id != null && (tablaCab == null || secuencia > 0)) || back) {
+            guardarEdit(editMaterial);
+        } else {
+            if (!back) {
+                update();
+                if (id != null && (tablaCab == null || secuencia > 0)) {
+                    guardarEdit(editMaterial);
+                }
+            }
+        }
+    }
+
+    protected void guardarEdit(EditMaterial editMaterial) {
+        for (Object o : camposEdit) {
+            if (((Map) o).get("materialEdit") == editMaterial) {
+                valores = new ContentValues();
+                valores.put((String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
+                if (secuencia > 0) {
+                    int i = ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+                    System.out.println("guardados = " + i);
+                } else {
+                    int x = ConsultaBD.updateRegistro(tabla, id, valores);
+                    System.out.println("guardados = " + x);
+                }
+            }
+        }
     }
 
     protected void enviarAct(){

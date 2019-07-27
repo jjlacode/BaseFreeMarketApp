@@ -35,6 +35,9 @@ import androidx.fragment.app.Fragment;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Timer;
 
 import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.MainActivity;
@@ -45,14 +48,8 @@ import jjlacode.com.freelanceproject.util.animation.OneFrameLayout;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.SENSOR_SERVICE;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ACTUAL;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ACTUALTEMP;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.MODELO;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ORIGEN;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.PERSISTENCIA;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.SUBTITULO;
 
-public abstract class FragmentBase extends Fragment {
+public abstract class FragmentBase extends Fragment implements JavaUtil.Constantes {
 
     protected String TAG;
     protected View view;
@@ -118,6 +115,8 @@ public abstract class FragmentBase extends Fragment {
     private SensorEventListener sensorLuzListener;
     private boolean listenerSensorLuz;
     private float valorLuz;
+    protected ArrayList camposEdit;
+    protected Timer timer;
 
 
     @Override
@@ -145,6 +144,7 @@ public abstract class FragmentBase extends Fragment {
         materialEdits = new ArrayList<>();
         vistas = new ArrayList<>();
         recursos = new ArrayList<>();
+        camposEdit = new ArrayList();
         TAG = getClass().getSimpleName();
 
         super.onCreate(savedInstanceState);
@@ -234,11 +234,6 @@ public abstract class FragmentBase extends Fragment {
         setInicio();
 
         setSizeTextControles(sizeText);
-        /*
-        for (EditMaterial materialEdit : materialEdits) {
-            materialEdit.setTextSize(getActivity());
-        }
-        */
 
         AndroidUtil.ocultarTeclado(activityBase, view);
 
@@ -384,6 +379,7 @@ public abstract class FragmentBase extends Fragment {
             }
         }
 
+
     }
 
     protected void enviarAct(){
@@ -459,6 +455,7 @@ public abstract class FragmentBase extends Fragment {
     protected View ctrl(int recurso){
 
         View vista = view.findViewById(recurso);
+        vista.setFocusable(false);
         vistas.add(vista);
         if (vista instanceof EditMaterial){
             materialEdits.add((EditMaterial) vista);
@@ -467,6 +464,25 @@ public abstract class FragmentBase extends Fragment {
         return vista;
 
     }
+
+    protected View ctrl(int recurso, String campoEdit) {
+
+        View vista = view.findViewById(recurso);
+        vistas.add(vista);
+        if (vista instanceof EditMaterial) {
+            vista.setFocusable(true);
+            materialEdits.add((EditMaterial) vista);
+            Map mapaCtrl = new HashMap();
+            mapaCtrl.put("materialEdit", vista);
+            mapaCtrl.put("campoEdit", campoEdit);
+            camposEdit.add(mapaCtrl);
+
+        }
+        recursos.add(recurso);
+        return vista;
+
+    }
+
 
     protected View ctrl(View v, int recurso, ArrayList<View> vistas,
                         ArrayList<EditMaterial> controles, ArrayList<Integer> recursos){
@@ -508,16 +524,16 @@ public abstract class FragmentBase extends Fragment {
         System.out.println("onTick base");
     }
 
-    protected void setTimer(Chronometer timer){
+    protected void setTimerEdit(Chronometer timerEdit) {
 
-        timerg = timer;
+        timerg = timerEdit;
         System.out.println("Set Timer base");
     }
 
     protected void startTimer(){
 
         timerg.start();
-        System.out.println("Start timer");
+        System.out.println("Start timerEdit");
         onTimer = true;
         isOnTimer();
     }
@@ -526,7 +542,7 @@ public abstract class FragmentBase extends Fragment {
 
         if (onTimer) {
             timerg.stop();
-            System.out.println("Stop timer");
+            System.out.println("Stop timerEdit");
             onTimer = false;
             isOnTimer();
         }
@@ -658,90 +674,6 @@ public abstract class FragmentBase extends Fragment {
     protected Serializable getBundleSerial(String key){
         return bundle.getSerializable(key);
     }
-
-
-    /*
-    protected void setControl(TextView textView, int recurso){
-        textView = view.findViewById(recurso);
-    }
-
-    protected void setControl(EditText editText, int recurso){
-        editText = view.findViewById(recurso);
-    }
-
-    protected void setControl(EditMaterial editMaterial, int recurso){
-        editMaterial = view.findViewById(recurso);
-    }
-
-    protected void setControl(Spinner spinner, int recurso){
-        spinner = view.findViewById(recurso);
-    }
-
-    protected boolean setControl(Button button, int recurso){
-        return button == view.findViewById(recurso);
-    }
-
-    protected void setControl(ImageButton imageButton, int recurso){
-        imageButton = view.findViewById(recurso);
-    }
-
-    protected void setControl(ImageView imageView, int recurso){
-        imageView = view.findViewById(recurso);
-    }
-
-    protected void setControl(CardView cardView, int recurso){
-        cardView = view.findViewById(recurso);
-    }
-
-    protected void setControl(RecyclerView recyclerView, int recurso){
-        recyclerView = view.findViewById(recurso);
-    }
-
-    protected void setControl(AutoCompleteTextView autoCompleteTextView, int recurso){
-        autoCompleteTextView = view.findViewById(recurso);
-    }
-
-    protected void setControl(LinearLayout linearLayout, int recurso){
-        linearLayout = view.findViewById(recurso);
-    }
-
-    protected void setControl(FrameLayout frameLayout, int recurso){
-        frameLayout = view.findViewById(recurso);
-    }
-
-    protected void setControl(CoordinatorLayout coordinatorLayout, int recurso){
-        coordinatorLayout = view.findViewById(recurso);
-    }
-
-    protected void setControl(TabLayout tabLayout, int recurso){
-        tabLayout = view.findViewById(recurso);
-    }
-
-    protected void setControl(GridLayout gridLayout, int recurso){
-        gridLayout = view.findViewById(recurso);
-    }
-
-    protected void setControl(GridView gridView, int recurso){
-        gridView = view.findViewById(recurso);
-    }
-
-    protected void setControl(ProgressBar progressBar, int recurso){
-        progressBar = view.findViewById(recurso);
-    }
-
-    protected void setControl(CheckBox checkBox, int recurso){
-        checkBox = view.findViewById(recurso);
-    }
-
-    protected void setControl(RadioButton radioButton, int recurso){
-        radioButton = view.findViewById(recurso);
-    }
-
-    protected void setControl(RadioGroup radioGroup, int recurso){
-        radioGroup = view.findViewById(recurso);
-    }
-
-    */
 
     protected void gone(View view){
 
@@ -940,7 +872,7 @@ public abstract class FragmentBase extends Fragment {
                     grabarVoz = strSpeech2Text;
 
                     materialEdit.setText(grabarVoz);
-                    alCambiarCampos();
+                    alCambiarCampos(materialEdit);
                     break;
 
                 }
@@ -949,7 +881,8 @@ public abstract class FragmentBase extends Fragment {
         }
     }
 
-protected void alCambiarCampos(){
+    protected void alCambiarCampos(EditMaterial editMaterial) {
+
 
 }
 protected boolean nn(Object object){

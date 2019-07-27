@@ -21,9 +21,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
-import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.CommonPry;
-import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
 import jjlacode.com.freelanceproject.util.adapter.RVAdapter;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
@@ -31,7 +30,7 @@ import jjlacode.com.freelanceproject.util.animation.OneFrameLayout;
 
 import static android.app.Activity.RESULT_OK;
 
-public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Constantes, CommonPry.Constantes {
+public abstract class FragmentCRUD extends FragmentCUD {
 
 
     protected int layoutItem;
@@ -65,9 +64,6 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
         }
         frLista.addView(viewRV);
 
-        //btnback = view.findViewById(R.id.btn_back);
-        //btnsave = view.findViewById(R.id.btn_save);
-        //btndelete = view.findViewById(R.id.btn_del);
         rv = view.findViewById(R.id.rv);
         refreshLayout = view.findViewById(R.id.swipeRefresh);
         auto = view.findViewById(R.id.auto);
@@ -77,8 +73,6 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
         lupa = view.findViewById(R.id.imgsearch);
         voz = view.findViewById(R.id.imgvoz);
         frameAnimation = view.findViewById(R.id.frameanimation);
-        //btnsave.setVisibility(View.GONE);
-        //btndelete.setTextColor(getResources().getColor(colorAccent));
 
         refreshLayout.setColorSchemeResources(
                 R.color.s1,
@@ -144,9 +138,11 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
         }else{
 
+            back = false;
             if (subTitulo==null) {
                 activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
             }
+
         }
 
         enviarAct();
@@ -282,6 +278,7 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
                 setOnLeftSwipe();
             }
         });
+
 
     }
 
@@ -655,9 +652,46 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
     }
 
+    protected boolean onDelete() {
+        Log.d(TAG, getMetodo());
+
+        if ((id == null && tablaCab == null) || (tablaCab != null && secuencia == 0)) {
+            selector();
+        } else {
+            if (delete()) {
+
+                modelo = null;
+                if (tablaCab == null) {
+                    id = null;
+                }
+                secuencia = 0;
+                selector();
+                cambiarFragment();
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
     @Override
     protected boolean onBack() {
-        super.onBack();
+
+        back = true;
+
+        if (id != null && (tablaCab == null || secuencia > 0)) {
+            update();
+        }
+        modelo = null;
+        if (tablaCab == null) {
+            id = null;
+        }
+        secuencia = 0;
+        nuevo = false;
+        cambiarFragment();
+        selector();
 
         activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
         return true;
@@ -682,76 +716,72 @@ public abstract class FragmentCRUD extends FragmentCUD implements JavaUtil.Const
 
         if (resultCode == RESULT_OK) {
 
-            switch (requestCode) {
-
-                case RECOGNIZE_SPEECH_ACTIVITY:
-
-                    ArrayList<String> speech = data
-                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    grabarVoz = speech.get(0);
-                    String buscar = null;
-                    if (grabarVoz.length()>=7) {
-                        buscar = grabarVoz.substring(0, 7).toLowerCase();
+            if (requestCode == RECOGNIZE_SPEECH_ACTIVITY) {
+                ArrayList<String> speech = data
+                        .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                grabarVoz = speech.get(0);
+                String buscar = null;
+                if (grabarVoz.length() >= 7) {
+                    buscar = grabarVoz.substring(0, 7).toLowerCase();
+                }
+                if (grabarVoz.equals("renovar lista")) {
+                    actualizarConsultasRV();
+                    setRv();
+                    //auto.setText("");
+                } else if (grabarVoz.equals("limpiar lista")) {
+                    actualizarConsultasRV();
+                    setRv();
+                    //auto.setText("");
+                } else if (grabarVoz.equals("lista completa")) {
+                    if (tablaCab != null) {
+                        lista = CRUDutil.setListaModeloDetalle(campos, id, tablaCab);
+                        setLista();
+                    } else {
+                        lista = CRUDutil.setListaModelo(campos);
+                        setLista();
                     }
-                    if (grabarVoz.equals("renovar lista")) {
-                        actualizarConsultasRV();
-                        setRv();
-                        //auto.setText("");
-                    }else if (grabarVoz.equals("limpiar lista")) {
-                        actualizarConsultasRV();
-                        setRv();
-                        //auto.setText("");
-                    }else  if (grabarVoz.equals("lista completa")){
-                        if (tablaCab!=null){
-                            lista = CRUDutil.setListaModeloDetalle(campos,id,tablaCab);
-                            setLista();
-                        }else {
-                            lista = CRUDutil.setListaModelo(campos);
-                            setLista();
-                        }
-                        setRv();
-                        if (subTitulo==null) {
-                            activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
-                        }
-                        //auto.setText("");
-                        enviarAct();
-                    }else if (buscar!= null && buscar.equals("buscar ")){
-                        grabarVoz = grabarVoz.substring(7);
-                        System.out.println("grabarVoz sub= " + grabarVoz);
-                        ListaModelo suggestion = new ListaModelo();
-                        if (grabarVoz != null) {
+                    setRv();
+                    if (subTitulo == null) {
+                        activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+                    }
+                    //auto.setText("");
+                    enviarAct();
+                } else if (buscar != null && buscar.equals("buscar ")) {
+                    grabarVoz = grabarVoz.substring(7);
+                    System.out.println("grabarVoz sub= " + grabarVoz);
+                    ListaModelo suggestion = new ListaModelo();
+                    if (grabarVoz != null) {
 
-                            for (Modelo item : lista.getLista()) {
+                        for (Modelo item : lista.getLista()) {
 
-                                for (int i = 2; i < campos.length; i += 3) {
+                            for (int i = 2; i < campos.length; i += 3) {
 
-                                    if (item.getString(campos[i]) != null && !item.getString(campos[i]).equals("")) {
-                                        if (item.getString(campos[i]).toLowerCase().contains(grabarVoz.toLowerCase())) {
+                                if (item.getString(campos[i]) != null && !item.getString(campos[i]).equals("")) {
+                                    if (item.getString(campos[i]).toLowerCase().contains(grabarVoz.toLowerCase())) {
 
-                                            suggestion.addModelo(item);
-                                        }
+                                        suggestion.addModelo(item);
                                     }
                                 }
-
                             }
 
-                            System.out.println("suggestion = " + suggestion.sizeLista());
-                            listab = new ListaModelo(suggestion);
-                            System.out.println("listab = " + listab.sizeLista());
-                            actualizarConsultasRV();
-                            System.out.println("lista = " + lista.sizeLista());
-                            setRv();
-                            System.out.println("lista = " + lista.sizeLista());
-                            auto.setText(grabarVoz);
-                            auto.setSelection(grabarVoz.length());
-                            auto.setDropDownWidth(0);
-                            if (id!=null){
-                                auto.setDropDownWidth(ancho);
-                            }
-                            //grabarVoz=null;
                         }
-                    }
 
+                        System.out.println("suggestion = " + suggestion.sizeLista());
+                        listab = new ListaModelo(suggestion);
+                        System.out.println("listab = " + listab.sizeLista());
+                        actualizarConsultasRV();
+                        System.out.println("lista = " + lista.sizeLista());
+                        setRv();
+                        System.out.println("lista = " + lista.sizeLista());
+                        auto.setText(grabarVoz);
+                        auto.setSelection(grabarVoz.length());
+                        auto.setDropDownWidth(0);
+                        if (id != null) {
+                            auto.setDropDownWidth(ancho);
+                        }
+                        //grabarVoz=null;
+                    }
+                }
             }
         }
     }

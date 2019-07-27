@@ -40,7 +40,7 @@
         app:borderWidth="2dp"
         app:rippleColor="@color/colorAccent"
         android:tint="@color/colorPrimary"
-        app:backgroundTint="@color/colorPrimaryDark"
+        app:backgroundTint="@color/colorSecondaryDark"
         app:srcCompat="@drawable/ic_rec_indigo" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

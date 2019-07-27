@@ -4,8 +4,10 @@ import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,26 +26,34 @@ import androidx.appcompat.app.AlertDialog;
 
 import java.util.ArrayList;
 
-import jjlacode.com.freelanceproject.util.android.AppActivity;
-import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
-import jjlacode.com.freelanceproject.util.crud.CRUDutil;
-import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
-import jjlacode.com.freelanceproject.util.time.DatePickerFragment;
-import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
-import jjlacode.com.freelanceproject.util.media.MediaUtil;
-import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltro;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
-import jjlacode.com.freelanceproject.util.crud.ListaModelo;
-import jjlacode.com.freelanceproject.util.crud.Modelo;
+import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.templates.PresupuestoPDF;
+import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltro;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
+import jjlacode.com.freelanceproject.util.crud.CRUDutil;
+import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
+import jjlacode.com.freelanceproject.util.crud.ListaModelo;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
+import jjlacode.com.freelanceproject.util.media.MediaUtil;
+import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.util.time.DatePickerFragment;
 
-import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.*;
+import static android.app.Activity.RESULT_OK;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.checkQueryList;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.insertRegistro;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.putDato;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryList;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryListDetalle;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryObject;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.updateRegistro;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.updateRegistrosDetalle;
 
 public class FragmentCRUDProyecto extends FragmentCRUD
         implements CommonPry.Constantes, ContratoPry.Tablas, CommonPry.Estados,
@@ -376,17 +386,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             @Override
             public void onClick(View v) {
 
-                update();
-                Modelo cliente = queryObject(CAMPOS_CLIENTE,idCliente);
-
-                bundle = new Bundle();
-                bundle.putSerializable(CLIENTE,cliente);
-                bundle.putSerializable(PROYECTO, modelo);
-                bundle.putString(SUBTITULO, actualtemp);
-                bundle.putString(ORIGEN, actualtemp);
-                bundle.putBoolean(NUEVOREGISTRO, true);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevoEvento());
-                bundle = null;
+                nuevoEvento();
             }
         });
 
@@ -394,17 +394,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             @Override
             public void onClick(View v) {
 
-                update();
-                Modelo cliente = queryObject(CAMPOS_CLIENTE,idCliente);
-
-                bundle = new Bundle();
-                bundle.putSerializable(CLIENTE,cliente);
-                bundle.putSerializable(PROYECTO, modelo);
-                bundle.putString(SUBTITULO, actualtemp);
-                bundle.putString(ORIGEN, actualtemp);
-                bundle.putSerializable(LISTA,new ListaModelo(CAMPOS_EVENTO,EVENTO_PROYECTOREL, id,null,IGUAL,null));
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
-                bundle = null;
+                verEventos();
             }
         });
 
@@ -412,17 +402,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             @Override
             public void onClick(View v) {
 
-                update();
-                //lista = new ListaModelo(CAMPOS_PARTIDA,id,tabla,null,null);
-                //bundle.putSerializable(LISTA,lista);
-                bundle.putSerializable(PROYECTO,modelo);
-                bundle.putString(ORIGEN,actualtemp);
-                bundle.putString(ACTUAL,PARTIDA);
-                bundle.putString(SUBTITULO, actualtemp);
-                bundle.putString(CAMPO_ID,id);
-                bundle.putInt(CAMPO_SECUENCIA,0);
-                bundle.putSerializable(MODELO,null);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDPartidaProyecto());
+                verPartidas();
 
             }
         });
@@ -461,12 +441,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             @Override
             public void onClick(View v) {
 
-                    //mostrarDialogoTipoCliente();
-                bundle = new Bundle();
-                bundle.putBoolean(NUEVOREGISTRO,true);
-                bundle.putString(ACTUAL,PROSPECTO);
-                bundle.putString(ORIGEN, actualtemp);
-                icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDCliente());
+                nuevoCliente();
             }
         });
 
@@ -492,11 +467,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             @Override
             public void onClick(View v) {
 
-                bundle = new Bundle();
-                bundle.putString(IDREL,modelo.getString(PROYECTO_ID_PROYECTO));
-                bundle.putString(SUBTITULO, modelo.getString(PROYECTO_NOMBRE));
-                bundle.putString(ORIGEN, PROYECTO);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevaNota());
+                nuevaNota();
             }
         });
 
@@ -504,19 +475,80 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             @Override
             public void onClick(View v) {
 
-                enviarBundle();
-                bundle.putString(IDREL,modelo.getString(PROYECTO_ID_PROYECTO));
-                bundle.putString(SUBTITULO, modelo.getString(PROYECTO_NOMBRE));
-                bundle.putString(ORIGEN, PROYECTO);
-                bundle.putString(ACTUAL,NOTA);
-                bundle.putSerializable(LISTA,null);
-                bundle.putSerializable(MODELO,null);
-                bundle.putString(CAMPO_ID,null);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
+                verNotas();
             }
         });
 
 
+    }
+
+    private void nuevoCliente() {
+        //mostrarDialogoTipoCliente();
+        bundle = new Bundle();
+        bundle.putBoolean(NUEVOREGISTRO, true);
+        bundle.putString(ACTUAL, PROSPECTO);
+        bundle.putString(ORIGEN, actualtemp);
+        icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDCliente());
+    }
+
+    private void nuevoEvento() {
+        update();
+        Modelo cliente = queryObject(CAMPOS_CLIENTE, idCliente);
+
+        bundle = new Bundle();
+        bundle.putSerializable(CLIENTE, cliente);
+        bundle.putSerializable(PROYECTO, modelo);
+        bundle.putString(SUBTITULO, actualtemp);
+        bundle.putString(ORIGEN, actualtemp);
+        bundle.putBoolean(NUEVOREGISTRO, true);
+        icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevoEvento());
+        bundle = null;
+    }
+
+    private void verEventos() {
+        update();
+        Modelo cliente = queryObject(CAMPOS_CLIENTE, idCliente);
+
+        bundle = new Bundle();
+        bundle.putSerializable(CLIENTE, cliente);
+        bundle.putSerializable(PROYECTO, modelo);
+        bundle.putString(SUBTITULO, actualtemp);
+        bundle.putString(ORIGEN, actualtemp);
+        bundle.putSerializable(LISTA, new ListaModelo(CAMPOS_EVENTO, EVENTO_PROYECTOREL, id, null, IGUAL, null));
+        icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
+        bundle = null;
+    }
+
+    private void verNotas() {
+        enviarBundle();
+        bundle.putString(IDREL, modelo.getString(PROYECTO_ID_PROYECTO));
+        bundle.putString(SUBTITULO, modelo.getString(PROYECTO_NOMBRE));
+        bundle.putString(ORIGEN, PROYECTO);
+        bundle.putString(ACTUAL, NOTA);
+        bundle.putSerializable(LISTA, null);
+        bundle.putSerializable(MODELO, null);
+        bundle.putString(CAMPO_ID, null);
+        icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
+    }
+
+    private void nuevaNota() {
+        bundle = new Bundle();
+        bundle.putString(IDREL, modelo.getString(PROYECTO_ID_PROYECTO));
+        bundle.putString(SUBTITULO, modelo.getString(PROYECTO_NOMBRE));
+        bundle.putString(ORIGEN, PROYECTO);
+        icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevaNota());
+    }
+
+    private void verPartidas() {
+        update();
+        bundle.putSerializable(PROYECTO, modelo);
+        bundle.putString(ORIGEN, actualtemp);
+        bundle.putString(ACTUAL, PARTIDA);
+        bundle.putString(SUBTITULO, actualtemp);
+        bundle.putString(CAMPO_ID, id);
+        bundle.putInt(CAMPO_SECUENCIA, 0);
+        bundle.putSerializable(MODELO, null);
+        icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDPartidaProyecto());
     }
 
     @Override
@@ -596,8 +628,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         imagen = (ImageView) ctrl(R.id.imudpry);
         imagenTipoClienteProyecto = (ImageView) ctrl(R.id.imgbtntipocliudpry);
         btnimgEstadoPry = (ImageView) ctrl(R.id.imgbtnestudpry);
-        nombrePry = (EditMaterial) ctrl(R.id.etnomudpry);
-        descripcionPry = (EditMaterial) ctrl(R.id.etdescudpry);
+        nombrePry = (EditMaterial) ctrl(R.id.etnomudpry, PROYECTO_NOMBRE);
+        descripcionPry = (EditMaterial) ctrl(R.id.etdescudpry, PROYECTO_DESCRIPCION);
         spClienteProyecto = (AutoCompleteTextView) ctrl(R.id.sptipocliudpry);
         spEstadoProyecto = (Spinner) ctrl(R.id.spestudpry);
         estadoProyecto = (EditMaterial) ctrl(R.id.tvestudproy);
@@ -1451,6 +1483,83 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         });
         builder.show();
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, getMetodo());
+
+        System.out.println("requestCode = " + requestCode);
+
+        if (resultCode == RESULT_OK) {
+
+            switch (requestCode) {
+
+                case RECOGNIZE_SPEECH_ACTIVITY:
+
+                    ArrayList<String> speech = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    grabarVoz = speech.get(0);
+
+                    if (grabarVoz.equals("partidas")) {
+
+                        verPartidas();
+
+                    } else if (grabarVoz.equals("presupuestos")) {
+
+                        Toast.makeText(getContext(), PRESUPUESTOS, Toast.LENGTH_SHORT).show();
+                        actual = PRESUPUESTO;
+                        activityBase.toolbar.setTitle(R.string.presupuestos);
+                        actualtemp = actual;
+                        selector();
+
+                    } else if (grabarVoz.equals("proyectos")) {
+
+                        Toast.makeText(getContext(), PROYECTOS, Toast.LENGTH_SHORT).show();
+                        actual = PROYECTO;
+                        activityBase.toolbar.setTitle(R.string.proyectos);
+                        actualtemp = actual;
+                        selector();
+
+                    } else if (grabarVoz.equals("cobros")) {
+
+                        Toast.makeText(getContext(), PROYCOBROS, Toast.LENGTH_SHORT).show();
+                        actual = COBROS;
+                        actualtemp = PROYECTO;
+                        activityBase.toolbar.setTitle(R.string.cobros);
+                        selector();
+
+                    } else if (grabarVoz.equals("historico")) {
+
+                        Toast.makeText(getContext(), PROYHISTORICO, Toast.LENGTH_SHORT).show();
+                        actual = HISTORICO;
+                        activityBase.toolbar.setTitle(R.string.historico);
+                        actualtemp = PROYECTO;
+                        selector();
+
+                    } else if (grabarVoz.equals("garantias")) {
+
+                    } else if (grabarVoz.equals("nuevo evento")) {
+
+                        nuevoEvento();
+                    } else if (grabarVoz.equals("ver eventos")) {
+
+                        verEventos();
+                    } else if (grabarVoz.equals("nueva nota")) {
+
+                        nuevaNota();
+                    } else if (grabarVoz.equals("ver notas")) {
+
+                        verNotas();
+                    } else if (grabarVoz.equals("nuevo cliente") || grabarVoz.equals("nuevo prospecto")) {
+
+                        nuevoCliente();
+                    }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
+
 
 
     private void showDatePickerDialogAcordada() {

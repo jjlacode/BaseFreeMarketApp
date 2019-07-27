@@ -5,7 +5,7 @@
 <shape android:shape="rectangle">
     <size android:height="@dimen/altobtnico"/>
     <solid android:color="@color/colorPrimary"/>
-    <stroke android:width="3dp" android:color="@color/colorPrimaryDark"/>
+    <stroke android:width="3dp" android:color="@color/colorSecondaryDark" />
 
     <padding android:left="1dp"
         android:top="4dp"
@@ -19,7 +19,7 @@
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
             <size android:height="@dimen/altobtnico"/>
-            <solid android:color="@color/colorPrimaryDark"/>
+            <solid android:color="@color/colorSecondaryDark" />
             <stroke android:color="@color/colorPrimary"/>
 
             <padding android:left="1dp"

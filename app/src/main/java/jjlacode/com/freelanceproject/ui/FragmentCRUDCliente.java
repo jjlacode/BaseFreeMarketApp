@@ -1,31 +1,40 @@
 package jjlacode.com.freelanceproject.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.cardview.widget.CardView;
 
 import java.util.ArrayList;
 
-import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.R;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
+import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
 import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
 import jjlacode.com.freelanceproject.util.crud.CRUDutil;
 import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
 import jjlacode.com.freelanceproject.util.crud.ListaModelo;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
-import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.CommonPry;
-import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 
+import static android.app.Activity.RESULT_OK;
 import static jjlacode.com.freelanceproject.CommonPry.setNamefdef;
-import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.*;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.checkQueryList;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryList;
 
 
 public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Constantes,
@@ -44,9 +53,10 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
     private ImageButton mail;
     private Button btnclientes;
     private Button btnprospectos;
+    private CheckBox activo;
     private String idTipoCliente = null;
     private ArrayList<Modelo> objTiposCli;
-
+    private long fechaInactivo;
 
     int peso;
     private Modelo proyecto;
@@ -198,6 +208,12 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
         id = modelo.getString(CLIENTE_ID_CLIENTE);
         tipoCliente.setText(modelo.getString(CLIENTE_DESCRIPCIONTIPOCLI));
         peso = modelo.getInt(CLIENTE_PESOTIPOCLI);
+        fechaInactivo = modelo.getLong(CLIENTE_ACTIVO);
+        if (fechaInactivo > 0) {
+            activo.setChecked(true);
+        } else {
+            activo.setChecked(false);
+        }
 
 
         if (origen != null && (origen.equals(PROYECTO) || origen.equals(PRESUPUESTO)
@@ -249,7 +265,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
                 bundle = new Bundle();
                 bundle.putSerializable(CLIENTE, modelo);
                 bundle.putBoolean(NUEVOREGISTRO, true);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevoEvento());
             }
         });
 
@@ -323,7 +339,11 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
                 bundle.putString(IDREL,modelo.getString(CLIENTE_ID_CLIENTE));
                 bundle.putString(SUBTITULO, modelo.getString(CLIENTE_NOMBRE));
                 bundle.putString(ORIGEN, CLIENTE);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
+                bundle.putSerializable(MODELO, null);
+                bundle.putSerializable(LISTA, null);
+                bundle.putString(CAMPO_ID, null);
+                bundle.putBoolean(NUEVOREGISTRO, true);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevaNota());
             }
         });
 
@@ -340,6 +360,17 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
                 bundle.putSerializable(MODELO,null);
                 bundle.putString(CAMPO_ID,null);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
+            }
+        });
+
+        activo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    fechaInactivo = JavaUtil.hoy();
+                } else {
+                    fechaInactivo = 0;
+                }
             }
         });
 
@@ -365,11 +396,11 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
 
         btnclientes = (Button) ctrl(R.id.btnclientes);
         btnprospectos = (Button) ctrl(R.id.btnprospectos);
-        nombreCliente = (EditMaterial) ctrl(R.id.etnombreudcliente);
-        direccionCliente = (EditMaterial) ctrl(R.id.etdirudcliente);
-        telefonoCliente = (EditMaterial) ctrl(R.id.etteludcliente);
-        emailCliente = (EditMaterial) ctrl(R.id.etemailudcliente);
-        contactoCliente = (EditMaterial) ctrl(R.id.etcontudcliente);
+        nombreCliente = (EditMaterial) ctrl(R.id.etnombreudcliente, CLIENTE_NOMBRE);
+        direccionCliente = (EditMaterial) ctrl(R.id.etdirudcliente, CLIENTE_DIRECCION);
+        telefonoCliente = (EditMaterial) ctrl(R.id.etteludcliente, CLIENTE_TELEFONO);
+        emailCliente = (EditMaterial) ctrl(R.id.etemailudcliente, CLIENTE_EMAIL);
+        contactoCliente = (EditMaterial) ctrl(R.id.etcontudcliente, CLIENTE_CONTACTO);
         btnevento = (ImageButton) ctrl(R.id.btneventoudcliente);
         tipoCliente = (TextView) ctrl(R.id.tvtipoudcliente);
         imagen = (ImageView) ctrl(R.id.imgudcliente);
@@ -379,8 +410,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
         btnVerEventos = (ImageButton) ctrl(R.id.btnvereventoudcliente);
         btnNota = (ImageButton) ctrl(R.id.btn_crearnota_cliente);
         btnVerNotas = (ImageButton) ctrl(R.id.btn_vernotas_cliente);
-
-        nombreCliente.grabarEnable(true);
+        activo = (CheckBox) ctrl(R.id.chactivocliente);
 
     }
 
@@ -396,13 +426,14 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
     @Override
     protected void setContenedor() {
 
-        setDato(CLIENTE_NOMBRE, nombreCliente.getText().toString());
-        setDato(CLIENTE_DIRECCION, direccionCliente.getText().toString());
-        setDato(CLIENTE_TELEFONO, telefonoCliente.getText().toString());
-        setDato(CLIENTE_EMAIL, emailCliente.getText().toString());
-        setDato(CLIENTE_CONTACTO, contactoCliente.getText().toString());
+        //setDato(CLIENTE_NOMBRE, nombreCliente.getText().toString());
+        //setDato(CLIENTE_DIRECCION, direccionCliente.getText().toString());
+        //setDato(CLIENTE_TELEFONO, telefonoCliente.getText().toString());
+        //setDato(CLIENTE_EMAIL, emailCliente.getText().toString());
+        //setDato(CLIENTE_CONTACTO, contactoCliente.getText().toString());
         setDato(CLIENTE_ID_TIPOCLIENTE, idTipoCliente);
         setDato(CLIENTE_PESOTIPOCLI, peso);
+        setDato(CLIENTE_ACTIVO, fechaInactivo);
 
     }
 
@@ -421,6 +452,47 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
             super.onBack();
         }
         return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, getMetodo());
+
+        System.out.println("requestCode = " + requestCode);
+
+        if (resultCode == RESULT_OK) {
+
+            switch (requestCode) {
+
+                case RECOGNIZE_SPEECH_ACTIVITY:
+
+                    ArrayList<String> speech = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    grabarVoz = speech.get(0);
+
+                    if (grabarVoz.equals("mapa") || grabarVoz.equals("direccion")) {
+
+                        if (!direccionCliente.getText().toString().equals("")) {
+
+                            AppActivity.viewOnMapA(contexto, direccionCliente.getText().toString());
+
+                        }
+                    } else if (grabarVoz.equals("email") || grabarVoz.equals("imeil") || grabarVoz.equals("correo")) {
+
+                        if (!emailCliente.getText().toString().equals("")) {
+                            AppActivity.enviarEmail(getContext(), emailCliente.getText().toString());
+                        }
+                    } else if (grabarVoz.equals("llamar") || grabarVoz.equals("llamada")) {
+
+                        if (!telefonoCliente.getText().toString().equals("")) {
+                            AppActivity.hacerLlamada(AppActivity.getAppContext()
+                                    , telefonoCliente.getText().toString());
+                        }
+                    }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+
     }
 
     @Override
@@ -470,6 +542,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
 
         TextView nombre, direccion, telefono, email, contacto;
         ImageView imagen;
+        CardView card;
 
         public ViewHolderRV(View itemView) {
             super(itemView);
@@ -479,6 +552,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
             email = itemView.findViewById(R.id.tvemailclilcliente);
             contacto = itemView.findViewById(R.id.tvcontacclilcliente);
             imagen = itemView.findViewById(R.id.imgclilcliente);
+            card = itemView.findViewById(R.id.cardcliente);
         }
 
         @Override
@@ -498,6 +572,12 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
                 imagen.setImageResource(R.drawable.clienter);
             } else {
                 imagen.setImageResource(R.drawable.cliente);
+            }
+
+            if (modelo.getLong(CLIENTE_ACTIVO) > 0) {
+                card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
+            } else {
+                card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_defecto));
             }
 
             super.bind(modelo);

@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.LocaleList;
 import android.speech.RecognizerIntent;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -606,4 +607,13 @@ public class AndroidUtil extends AppCompatActivity {
     }
 
 
+    public static float getSizeTextProp(DisplayMetrics metrics) {
+
+        float densidad = metrics.density;
+        int ancho = (int) (metrics.widthPixels / densidad);
+        int alto = (int) (metrics.heightPixels / densidad);
+        int densidadDpi = (int) (metrics.densityDpi);
+
+        return ((float) (ancho + alto + densidadDpi) / (100));
+    }
 }

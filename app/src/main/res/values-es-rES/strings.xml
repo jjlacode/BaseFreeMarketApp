@@ -276,6 +276,10 @@
     <string name="no_app_pdf">No existe una aplicación para abrir el PDF</string>
     <string name="visualiza_pdf">Visualizando documento</string>
     <string name="num_tel_invalido">El numero de telefono no es valido</string>
+    <string name="buscar_trabajo">Buscar  trabajo</string>
+    <string name="nuevo_trabajo">Nuevo trabajo</string>
+    <string name="inactivo">Inactivo</string>
+    <string name="proveedores">proveedores</string>
 
 
 </resources>

@@ -23,22 +23,30 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
-import jjlacode.com.freelanceproject.util.crud.FragmentCUD;
+import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.R;
+import jjlacode.com.freelanceproject.model.Categorias;
+import jjlacode.com.freelanceproject.model.ProdProv;
+import jjlacode.com.freelanceproject.model.Proveedores;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltro;
+import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
+import jjlacode.com.freelanceproject.util.crud.FragmentCUD;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
-import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.model.ProdProv;
-import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.util.media.MediaUtil;
 
-import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.*;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.idInsertRegistro;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.putDato;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryList;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryObject;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.updateRegistro;
 
 public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.Constantes,
         ContratoPry.Tablas, CommonPry.TiposDetPartida{
@@ -46,9 +54,9 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
     private EditMaterial descripcion;
     private EditMaterial precio;
     private EditMaterial descProv;
-    private TextView refprov;
+    private TextView refProv;
     private TextView tipoDetPartida;
-    private AutoCompleteTextView nombre;
+    private AutoCompleteTextView autoNombre;
     private EditMaterial tiempo;
     private RecyclerView rvDetpartida;
     private String tipo;
@@ -56,11 +64,16 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
     private ArrayList<Modelo> lista;
 
     private ArrayList<ProdProv> listaProdProv;
-    private AdaptadorProdProv mAdapter;
     private AutoCompleteTextView autoCat;
     private AutoCompleteTextView autoProv;
     private String iddet;
     private double pvp;
+    private ArrayList<Proveedores> listaProv;
+    private ArrayList<Categorias> listaCat;
+    private String proveedor = TODOS;
+    private String categoria = TODAS;
+    private DatabaseReference dbProductos;
+    private Query query;
 
     public FragmentCUDDetpartidaBase() {
         // Required empty public constructor
@@ -69,7 +82,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
     @Override
     protected void setNuevo() {
 
-        refprov.setVisibility(View.GONE);
+        refProv.setVisibility(View.GONE);
         precio.setVisibility(View.GONE);
         tiempo.setVisibility(View.GONE);
         descProv.setVisibility(View.GONE);
@@ -86,7 +99,6 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
         tabla = TABLA_DETPARTIDABASE;
 
     }
-
 
     @Override
     protected void setBundle() {
@@ -110,20 +122,20 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
             btndelete.setVisibility(View.VISIBLE);
             tipo = modelo.getString(DETPARTIDABASE_TIPO);
-            nombre.setText(modelo.getString(DETPARTIDABASE_NOMBRE));
+            autoNombre.setText(modelo.getString(DETPARTIDABASE_NOMBRE));
             descripcion.setText(modelo.getString(DETPARTIDABASE_DESCRIPCION));
             pvp = modelo.getDouble(DETPARTIDABASE_TIEMPO);
             precio.setText(JavaUtil.formatoMonedaLocal(pvp * CommonPry.hora));
             tiempo.setText(modelo.getString(DETPARTIDABASE_TIEMPO));
             descProv.setText(modelo.getString(DETPARTIDABASE_DESCUENTOPROVCAT));
-            refprov.setText(modelo.getString(DETPARTIDABASE_REFPROVCAT));
+            refProv.setText(modelo.getString(DETPARTIDABASE_REFPROVCAT));
             if (modelo.getString(DETPARTIDABASE_RUTAFOTO)!=null){
                 path = modelo.getString(DETPARTIDABASE_RUTAFOTO);
                 setImagenUri(contexto,path);
             }
 
-            nombre.setThreshold(50);
-            gone(refprov);
+            autoNombre.setThreshold(3);
+            gone(refProv);
             gone(descProv);
             gone(autoCat);
             gone(autoProv);
@@ -140,96 +152,10 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
         tipoDetPartida.setText(tipo.toUpperCase());
 
         rv();
-        setAdaptadorAuto(nombre);
+        setAdaptadorAuto(autoNombre);
 
 
-        /*
-        btnNuevaTarea.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (descripcion.getText()!=null && tiempo.getText()!=null && nombre.getText()!=null){
-
-                    int cont = 0;
-
-                    if (lista!=null && lista.sizeLista()>0) {
-
-                        for (Modelo tarea : lista) {
-                            if (tarea.getString(TRABAJO_NOMBRE).equals(nombre.getText().toString())) {
-                                Toast.makeText(getContext(), "La tarea ya existe", Toast.LENGTH_SHORT).show();
-                                cont++;
-                            }
-                        }
-                    }
-                    if (cont == 0) {
-
-                        try {
-                            valores = new ContentValues();
-
-                            consulta.putDato(valores,CAMPOS_TRABAJO,TRABAJO_DESCRIPCION,descripcion.getText().toString());
-                            consulta.putDato(valores,CAMPOS_TRABAJO,TRABAJO_TIEMPO,tiempo.getText().toString());
-                            consulta.putDato(valores,CAMPOS_TRABAJO,TRABAJO_NOMBRE,nombre.getText().toString());
-                            consulta.putDato(valores,CAMPOS_TRABAJO,TRABAJO_RUTAFOTO,path);
-
-                            consulta.insertRegistro(TABLA_TRABAJO,valores);
-
-                            Toast.makeText(getContext(), "Nueva tarea guardada", Toast.LENGTH_SHORT).show();
-
-                            rv();
-
-                        } catch (Exception e) {
-                            Toast.makeText(getContext(), "Error al guardar tarea", Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-                }
-            }
-        });
-
-        btnNuevoProd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (descripcion.getText()!=null && precio.getText()!=null && nombre.getText()!=null){
-
-                    int cont = 0;
-
-                    if (lista!=null && lista.sizeLista()>0) {
-
-                        for (Modelo producto : lista) {
-                            if (producto.getString(PRODUCTO_NOMBRE).equals(nombre.getText().toString())) {
-                                Toast.makeText(getContext(), "El producto ya existe", Toast.LENGTH_SHORT).show();
-                                cont++;
-                            }
-                        }
-                    }
-                    if (cont == 0) {
-
-                        try {
-                            valores = new ContentValues();
-
-                            consulta.putDato(valores,CAMPOS_PRODUCTO,PRODUCTO_DESCRIPCION,descripcion.getText().toString());
-                            consulta.putDato(valores,CAMPOS_PRODUCTO,PRODUCTO_PRECIO,precio.getText().toString());
-                            consulta.putDato(valores,CAMPOS_PRODUCTO,PRODUCTO_NOMBRE,nombre.getText().toString());
-                            consulta.putDato(valores,CAMPOS_PRODUCTO,PRODUCTO_RUTAFOTO,path);
-
-                            consulta.insertRegistro(TABLA_PRODUCTO,valores);
-
-                            Toast.makeText(getContext(), "Nuevo producto guardado", Toast.LENGTH_SHORT).show();
-
-                            rv();
-
-                        } catch (Exception e) {
-                            Toast.makeText(getContext(), "Error al guardar producto", Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-                }
-            }
-        });
-        */
-
-        nombre.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        autoNombre.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
@@ -238,10 +164,10 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
                     case TIPOTRABAJO:
 
-                        Modelo tarea = (Modelo) nombre.getAdapter().getItem(position);
+                        Modelo tarea = (Modelo) autoNombre.getAdapter().getItem(position);
                         iddet = tarea.getString(TRABAJO_ID_TRABAJO);
                         System.out.println("id = " + iddet);
-                        nombre.setText(tarea.getString(TRABAJO_NOMBRE));
+                        autoNombre.setText(tarea.getString(TRABAJO_NOMBRE));
                         descripcion.setText(tarea.getString(TRABAJO_DESCRIPCION));
                         tiempo.setText(tarea.getString(TRABAJO_TIEMPO));
                         if (tarea.getString(TRABAJO_RUTAFOTO) != null) {
@@ -252,10 +178,10 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
                     case TIPOPRODUCTO:
 
-                        Modelo producto = (Modelo) nombre.getAdapter().getItem(position);
+                        Modelo producto = (Modelo) autoNombre.getAdapter().getItem(position);
                         iddet = producto.getString(PRODUCTO_ID_PRODUCTO);
                         System.out.println("id = " + iddet);
-                        nombre.setText(producto.getString(PRODUCTO_NOMBRE));
+                        autoNombre.setText(producto.getString(PRODUCTO_NOMBRE));
                         descripcion.setText(producto.getString(PRODUCTO_DESCRIPCION));
                         precio.setText(producto.getString(PRODUCTO_PRECIO));
                         if (producto.getString(PRODUCTO_RUTAFOTO) != null) {
@@ -266,32 +192,19 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
                     case TIPOPRODUCTOPROV:
 
-                        ProdProv prodprov = (ProdProv) nombre.getAdapter().getItem(position);
+                        ProdProv prodprov = (ProdProv) autoNombre.getAdapter().getItem(position);
                         iddet = prodprov.getId();
                         System.out.println("id = " + iddet);
-                        nombre.setText(prodprov.getNombre());
+                        autoNombre.setText(prodprov.getNombre());
                         descripcion.setText(prodprov.getDescripcion());
                         precio.setText(String.valueOf(prodprov.getPrecio()));
-                        refprov.setText(prodprov.getRefprov());
+                        refProv.setText(prodprov.getRefprov());
                         if (prodprov.getRutafoto() != null) {
                             setImagenFireStoreCircle(contexto,prodprov.getRutafoto(),imagen);
 
                         }
 
                         break;
-
-                    case TIPOPARTIDA:
-
-                        Modelo partida = (Modelo) nombre.getAdapter().getItem(position);
-                        iddet = partida.getString(PARTIDABASE_ID_PARTIDABASE);
-                        System.out.println("id = " + iddet);
-                        nombre.setText(partida.getString(PARTIDABASE_NOMBRE));
-                        descripcion.setText(partida.getString(PARTIDABASE_DESCRIPCION));
-                        precio.setText(partida.getString(PARTIDABASE_PRECIO));
-                        tiempo.setText(partida.getString(PARTIDABASE_TIEMPO));
-                        if (partida.getString(PARTIDABASE_RUTAFOTO) != null) {
-                            setImagenUri(contexto,partida.getString(PARTIDABASE_RUTAFOTO));
-                        }
 
 
                 }
@@ -323,10 +236,10 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
         rvDetpartida = (RecyclerView) ctrl(R.id.rvcdetpartidabase);
         descripcion = (EditMaterial) ctrl(R.id.etdesccdetpartidabase);
         precio = (EditMaterial) ctrl(R.id.etpreciocdetpartidabase);
-        nombre = (AutoCompleteTextView) ctrl(R.id.etnomcdetpartidabase);
+        autoNombre = (AutoCompleteTextView) ctrl(R.id.etnomcdetpartidabase);
         tiempo = (EditMaterial) ctrl(R.id.ettiempocdetpartidabase);
         imagen = (ImageView) ctrl(R.id.imgcdetpartidabase);
-        refprov = (TextView) ctrl(R.id.tvrefprovcdetpartidabase);
+        refProv = (TextView) ctrl(R.id.tvrefprovcdetpartidabase);
         descProv = (EditMaterial) ctrl(R.id.etdescprovcdetpartidabase);
         tipoDetPartida = (TextView) ctrl(R.id.tvtipocdetpartidabase);
         autoCat = (AutoCompleteTextView) ctrl(R.id.autocatbase);
@@ -353,7 +266,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                                 .getString(TRABAJO_ID_TRABAJO);
                         System.out.println("id = " + iddet);
                         Modelo tarea = queryObject(CAMPOS_TRABAJO, iddet);
-                        nombre.setText(tarea.getString(TRABAJO_NOMBRE));
+                        autoNombre.setText(tarea.getString(TRABAJO_NOMBRE));
                         descripcion.setText(tarea.getString(TRABAJO_DESCRIPCION));
                         tiempo.setText(tarea.getString(TRABAJO_TIEMPO));
 
@@ -379,7 +292,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
                                 .getString(PRODUCTO_ID_PRODUCTO);
                         System.out.println("id = " + iddet);
                         Modelo producto = queryObject(CAMPOS_PRODUCTO, iddet);
-                        nombre.setText(producto.getString(PRODUCTO_NOMBRE));
+                        autoNombre.setText(producto.getString(PRODUCTO_NOMBRE));
                         descripcion.setText(producto.getString(PRODUCTO_DESCRIPCION));
                         precio.setText(producto.getString(PRODUCTO_PRECIO));
 
@@ -394,128 +307,99 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
                 break;
 
-            case TIPOPARTIDA:
-
-                precio.setVisibility(View.VISIBLE);
-                tiempo.setVisibility(View.VISIBLE);
-                lista = queryList(CAMPOS_PARTIDABASE);
-                AdaptadorPartidaBase adaptadorPartidaBase = new AdaptadorPartidaBase(lista);
-                rvDetpartida.setAdapter(adaptadorPartidaBase);
-                adaptadorPartidaBase.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        iddet = lista.get(rvDetpartida.getChildAdapterPosition(v))
-                                .getString(PARTIDABASE_ID_PARTIDABASE);
-                        System.out.println("id = " + iddet);
-                        Modelo partida = lista.get(rvDetpartida.getChildAdapterPosition(v));
-                        nombre.setText(partida.getString(PARTIDABASE_NOMBRE));
-                        descripcion.setText(partida.getString(PARTIDABASE_DESCRIPCION));
-                        precio.setText(partida.getString(PARTIDABASE_PRECIO));
-                        tiempo.setText(partida.getString(PARTIDABASE_TIEMPO));
-
-                        if (partida.getString(PARTIDABASE_RUTAFOTO) != null) {
-                            path = partida.getString(PARTIDABASE_RUTAFOTO);
-                            setImagenUri(contexto,path);
-
-                        }
-
-                    }
-                });
-
-                break;
 
             case TIPOPRODUCTOPROV:
 
                 precio.setVisibility(View.VISIBLE);
-                refprov.setVisibility(View.VISIBLE);
+                refProv.setVisibility(View.VISIBLE);
                 descProv.setVisibility(View.VISIBLE);
                 autoCat.setVisibility(View.VISIBLE);
                 autoProv.setVisibility(View.VISIBLE);
 
                 listaProdProv = new ArrayList<>();
 
-                DatabaseReference dbProveedor =
-                        FirebaseDatabase.getInstance().getReference()
-                                .child("productos");
+                dbProductos =
+                        FirebaseDatabase.getInstance().getReference();
 
-                ValueEventListener eventListener = new ValueEventListener() {
+                query = dbProductos.child("productos");
+
+
+                ValueEventListener eventListenerProd = new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
-                        for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
                             ProdProv prodProv = ds.getValue(ProdProv.class);
                             prodProv.setId(ds.getRef().getKey());
-
                             listaProdProv.add(prodProv);
                         }
+                        ArrayList<ProdProv> prodProvtemp = new ArrayList<>();
+
+                        for (ProdProv prodProv : listaProdProv) {
+
+                            //if ((prodProv.getCategoria().equals(categoria) || categoria.equals(TODAS)) &&
+                            //        (prodProv.getProveedor().equals(proveedor)) || proveedor.equals(TODOS)) {
+                            prodProvtemp.add(prodProv);
+                            //}
+
+                        }
+                        System.out.println("lista provtmp: " + prodProvtemp.size());
+
+                        listaProdProv.clear();
+                        listaProdProv.addAll(prodProvtemp);
+                        prodProvtemp.clear();
+
+                        System.out.println("lista prov: " + listaProdProv.size());
+                        AdaptadorProveedor provAdapter = new AdaptadorProveedor(listaProdProv);
+
+                        rvDetpartida.setLayoutManager(new LinearLayoutManager(getContext()));
+                        rvDetpartida.setHasFixedSize(true);
+
+                        rvDetpartida.setAdapter(provAdapter);
+
+                        provAdapter.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                int i = rvDetpartida.getChildViewHolder(v).getAdapterPosition();
+                                iddet = listaProdProv.get(i).getId();
+
+                                refProv.setText(listaProdProv.get(i).getRefprov());
+                                autoNombre.setText(listaProdProv.get(i).getNombre());
+                                descripcion.setText(listaProdProv.get(i).getDescripcion());
+                                precio.setText(String.valueOf(listaProdProv.get(i).getPrecio()));
+
+                                path = listaProdProv.get(i).getRutafoto();
+                                if (path != null) {
+                                    setImagenFireStoreCircle(contexto, path, imagen);
+                                }
+
+
+                            }
+                        });
+
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
                     }
+
                 };
 
-                dbProveedor.addValueEventListener(eventListener);
-
-
-                FirebaseRecyclerOptions<ProdProv> options =
-                        new FirebaseRecyclerOptions.Builder<ProdProv>()
-                                .setQuery(dbProveedor, ProdProv.class)
-                                .build();
-
-                mAdapter = new AdaptadorProdProv(options);
-
-                rvDetpartida.setAdapter(mAdapter);
-
-                mAdapter.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        AdaptadorProdProv.ProdProvHolder holder = (AdaptadorProdProv.ProdProvHolder) rvDetpartida.getChildViewHolder(v);
-
-                        int i = rvDetpartida.getChildViewHolder(v).getAdapterPosition();
-                        ProdProv prodProv = holder.getItem();
-
-                        iddet = listaProdProv.get(i).getId();
-                        System.out.println("id = " + iddet);
-                        refprov.setText(prodProv.getRefprov());
-                        nombre.setText(prodProv.getNombre());
-                        descripcion.setText(prodProv.getDescripcion());
-                        precio.setText(String.valueOf(prodProv.getPrecio()));
-
-                        path = prodProv.getRutafoto();
-
-                        setImagenFireStoreCircle(contexto,path,imagen);
-                    }
-                });
+                query.addValueEventListener(eventListenerProd);
 
 
         }
+
 
     }
 
     //Start Listening Adapter
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (mAdapter!=null) {
-            mAdapter.startListening();
-        }
-    }
-
-    //Stop Listening Adapter
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAdapter!=null) {
-            mAdapter.stopListening();
-        }
-    }
 
     private void nuevaTarea() {
 
-        if (descripcion.getText() != null && tiempo.getText() != null && nombre.getText() != null) {
+        if (descripcion.getText() != null && tiempo.getText() != null && autoNombre.getText() != null) {
 
             int cont = 0;
 
@@ -523,13 +407,13 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
             putDato(valorestarea, CAMPOS_TRABAJO, TRABAJO_DESCRIPCION, descripcion.getText().toString());
             putDato(valorestarea, CAMPOS_TRABAJO, TRABAJO_TIEMPO, tiempo.getText().toString());
-            putDato(valorestarea, CAMPOS_TRABAJO, TRABAJO_NOMBRE, nombre.getText().toString());
+            putDato(valorestarea, CAMPOS_TRABAJO, TRABAJO_NOMBRE, autoNombre.getText().toString());
             putDato(valorestarea, CAMPOS_TRABAJO, TRABAJO_RUTAFOTO, path);
 
             if (lista != null && lista.size() > 0) {
 
                 for (Modelo tarea : lista) {
-                    if (tarea.getString(TRABAJO_NOMBRE).equals(nombre.getText().toString())) {
+                    if (tarea.getString(TRABAJO_NOMBRE).equals(autoNombre.getText().toString())) {
                         updateRegistro(TABLA_TRABAJO, tarea.getString(TRABAJO_ID_TRABAJO), valorestarea);
                         Toast.makeText(getContext(), "tarea actualizada", Toast.LENGTH_SHORT).show();
                         cont++;
@@ -556,7 +440,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
     private void nuevoProducto() {
 
-        if (descripcion.getText() != null && precio.getText() != null && nombre.getText() != null) {
+        if (descripcion.getText() != null && precio.getText() != null && autoNombre.getText() != null) {
 
             int cont = 0;
 
@@ -564,13 +448,13 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
             putDato(valoresprod, CAMPOS_PRODUCTO, PRODUCTO_DESCRIPCION, descripcion.getText().toString());
             putDato(valoresprod, CAMPOS_PRODUCTO, PRODUCTO_PRECIO, precio.getText().toString());
-            putDato(valoresprod, CAMPOS_PRODUCTO, PRODUCTO_NOMBRE, nombre.getText().toString());
+            putDato(valoresprod, CAMPOS_PRODUCTO, PRODUCTO_NOMBRE, autoNombre.getText().toString());
             putDato(valoresprod, CAMPOS_PRODUCTO, PRODUCTO_RUTAFOTO, path);
 
             if (lista != null && lista.size() > 0) {
 
                 for (Modelo producto : lista) {
-                    if (producto.getString(PRODUCTO_NOMBRE).equals(nombre.getText().toString())) {
+                    if (producto.getString(PRODUCTO_NOMBRE).equals(autoNombre.getText().toString())) {
                         updateRegistro(TABLA_PRODUCTO, producto.getString(PRODUCTO_ID_PRODUCTO), valoresprod);
                         Toast.makeText(getContext(), "producto actualizdo", Toast.LENGTH_SHORT).show();
                         cont++;
@@ -612,7 +496,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
     @Override
     protected void setContenedor() {
 
-        setDato(DETPARTIDABASE_NOMBRE, nombre.getText().toString());
+        setDato(DETPARTIDABASE_NOMBRE, autoNombre.getText().toString());
         setDato(DETPARTIDABASE_DESCRIPCION, descripcion.getText().toString());
         setDato(DETPARTIDABASE_CANTIDAD, 1);
         setDato(DETPARTIDABASE_RUTAFOTO, path);
@@ -636,18 +520,12 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
                 break;
 
-            case TIPOPARTIDA:
-
-                setDato(DETPARTIDABASE_TIEMPO, tiempo.getText().toString());
-                setDato(DETPARTIDABASE_PRECIO, precio.getText().toString());
-
-                break;
 
             case TIPOPRODUCTOPROV:
 
                 setDato(DETPARTIDABASE_PRECIO, precio.getText().toString());
                 setDato(DETPARTIDABASE_DESCUENTOPROVCAT, descProv.getText().toString());
-                setDato(DETPARTIDABASE_REFPROVCAT, refprov.getText().toString());
+                setDato(DETPARTIDABASE_REFPROVCAT, refProv.getText().toString());
 
 
         }
@@ -658,10 +536,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
         partidabase = queryObject(CAMPOS_PARTIDABASE,id);
 
-        String idclon = partidabase.getString(PARTIDABASE_ID_PARTIDAORIGEN);
-        if (idclon==null) {
             super.update();
-        }
 
         CommonPry.Calculos.actualizarPartidaBase(id);
         partidabase = queryObject(CAMPOS_PARTIDABASE,id);
@@ -738,32 +613,6 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
                 break;
 
-            case TIPOPARTIDA:
-
-                autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
-                        R.layout.item_list_partidabase, lista, CAMPOS_PARTIDABASE) {
-
-                    @Override
-                    public void onEntrada(Modelo entrada, View view) {
-
-                        ImageView imagen = view.findViewById(R.id.imglpartidabase);
-                        TextView descripcion = view.findViewById(R.id.tvdescripcionpartidabase);
-                        TextView importe = view.findViewById(R.id.tvimppartidabase);
-
-
-                        nombre.setText(entrada.getString(PARTIDABASE_NOMBRE));
-                        descripcion.setText(entrada.getString(PARTIDABASE_DESCRIPCION));
-                        importe.setText(entrada.getString(PARTIDABASE_PRECIO));
-
-                        if (entrada.getString(PARTIDABASE_RUTAFOTO) != null) {
-                            setImagenUri(contexto,entrada.getString(PARTIDABASE_RUTAFOTO));
-                        }
-
-                    }
-                });
-
-                break;
-
 
             case TIPOPRODUCTOPROV:
 
@@ -799,6 +648,323 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
         }
 
     }
+
+    private void setAdaptadorAutoCat() {
+
+        listaCat = new ArrayList<>();
+
+        DatabaseReference dbCategorias =
+                FirebaseDatabase.getInstance().getReference()
+                        .child("categorias");
+
+        ValueEventListener eventListenerCat = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Categorias categoria = ds.getValue(Categorias.class);
+                    categoria.setId(ds.getRef().getKey());
+                    listaCat.add(categoria);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        dbCategorias.addValueEventListener(eventListenerCat);
+
+
+        ListaAdaptadorFiltroCat adapterCat = new ListaAdaptadorFiltroCat
+                (contexto, R.layout.item_list_categoria, listaCat);
+
+        autoCat.setAdapter(adapterCat);
+
+        autoCat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                categoria = listaCat.get(position).getNombre();
+                autoCat.setText(categoria);
+                rv();
+
+            }
+        });
+
+    }
+
+    private void setAdaptadorAutoProv() {
+
+        listaProv = new ArrayList<>();
+
+        DatabaseReference dbProveedor =
+                FirebaseDatabase.getInstance().getReference()
+                        .child("proveedores");
+
+        ValueEventListener eventListenerProv = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Proveedores proveedor = ds.getValue(Proveedores.class);
+                    proveedor.setId(ds.getRef().getKey());
+                    listaProv.add(proveedor);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        dbProveedor.addValueEventListener(eventListenerProv);
+
+
+        ListaAdaptadorFiltroProv adapterProv = new ListaAdaptadorFiltroProv
+                (contexto, R.layout.item_list_proveedorcat, listaProv);
+
+        autoProv.setAdapter(adapterProv);
+
+        autoProv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+
+                proveedor = listaProv.get(position).getNombre();
+                autoProv.setText(proveedor);
+                rv();
+            }
+        });
+    }
+
+    public class ListaAdaptadorFiltroProv extends ArrayAdapter<Proveedores> {
+
+        private ArrayList<Proveedores> entradas;
+        private ArrayList<Proveedores> entradasfiltro;
+        private int R_layout_IdView;
+        private Context contexto;
+
+        ListaAdaptadorFiltroProv(Context contexto, int R_layout_IdView, ArrayList<Proveedores> entradas) {
+            super(contexto, R_layout_IdView, entradas);
+            this.contexto = contexto;
+            this.entradas = entradas;
+            this.entradasfiltro = new ArrayList<>(entradas);
+            this.R_layout_IdView = R_layout_IdView;
+        }
+
+        @Override
+        public View getView(int position, View view, ViewGroup pariente) {
+            if (view == null) {
+                LayoutInflater vi = (LayoutInflater) contexto.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                view = vi.inflate(R_layout_IdView, null);
+            }
+
+            TextView nombre, descripcion, direccion;
+            ImageView imagenProv;
+
+            nombre = view.findViewById(R.id.tvnomproveedor);
+            descripcion = view.findViewById(R.id.tvdescproveedor);
+            direccion = view.findViewById(R.id.tvdirproveedor);
+            imagenProv = view.findViewById(R.id.imagenproveedor);
+
+            nombre.setText(entradasfiltro.get(position).getNombre());
+            descripcion.setText(entradasfiltro.get(position).getDescripcion());
+            direccion.setText(entradasfiltro.get(position).getDireccion());
+            String pathprov = entradasfiltro.get(position).getRutafoto();
+            if (pathprov != null) {
+                setImagenFireStoreCircle(contexto, pathprov, imagenProv);
+            }
+
+
+            return view;
+        }
+
+        @Override
+        public int getCount() {
+            return entradasfiltro.size();
+        }
+
+
+        @NonNull
+        @Override
+        public Filter getFilter() {
+
+            Filter filter;
+            filter = new Filter() {
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+
+                    FilterResults results = new FilterResults();
+                    List<Proveedores> suggestion = new ArrayList<>();
+                    if (constraint != null) {
+
+                        for (Proveedores item : entradas) {
+
+                            if (item.getNombre().toLowerCase().contains(constraint.toString().toLowerCase())) {
+
+                                suggestion.add(item);
+                            } else if (item.getDescripcion().toLowerCase().contains(constraint.toString().toLowerCase())) {
+
+                                suggestion.add(item);
+                            }
+
+
+                        }
+                        // Query the autocomplete API for the entered constraint
+                        // Results
+                        results.values = suggestion;
+                        results.count = suggestion.size();
+                    }
+                    return results;
+                }
+
+                @SuppressWarnings("unchecked")
+                @Override
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+
+                    entradasfiltro.clear();
+
+                    if (results != null && results.count > 0) {
+                        for (Proveedores item : (List<Proveedores>) results.values) {
+                            entradasfiltro.add(item);
+                        }
+                        notifyDataSetChanged();
+                    } else if (constraint == null) {
+                        // no filter, addModelo entire original list back in
+                        entradasfiltro.addAll(entradas);
+                        notifyDataSetInvalidated();
+                    }
+                }
+            };
+            return filter;
+        }
+
+        @Override
+        public Proveedores getItem(int posicion) {
+            return entradasfiltro.get(posicion);
+        }
+
+        @Override
+        public long getItemId(int posicion) {
+            return posicion;
+        }
+
+    }
+
+    public class ListaAdaptadorFiltroCat extends ArrayAdapter<Categorias> {
+
+        private ArrayList<Categorias> entradas;
+        private ArrayList<Categorias> entradasfiltro;
+        private int R_layout_IdView;
+        private Context contexto;
+
+        ListaAdaptadorFiltroCat(Context contexto, int R_layout_IdView, ArrayList<Categorias> entradas) {
+            super(contexto, R_layout_IdView, entradas);
+            this.contexto = contexto;
+            this.entradas = entradas;
+            this.entradasfiltro = new ArrayList<>(entradas);
+            this.R_layout_IdView = R_layout_IdView;
+        }
+
+        @Override
+        public View getView(int position, View view, ViewGroup pariente) {
+            if (view == null) {
+                LayoutInflater vi = (LayoutInflater) contexto.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                view = vi.inflate(R_layout_IdView, null);
+            }
+
+            TextView nombre, descripcion;
+            ImageView imagencat;
+
+            nombre = view.findViewById(R.id.tvnomcat);
+            descripcion = view.findViewById(R.id.tvdesccat);
+            imagencat = view.findViewById(R.id.imagencat);
+
+            nombre.setText(entradasfiltro.get(position).getNombre());
+            descripcion.setText(entradasfiltro.get(position).getDescripcion());
+
+            String pathcat = entradasfiltro.get(position).getRutafoto();
+            if (pathcat != null) {
+                setImagenFireStoreCircle(contexto, pathcat, imagencat);
+            }
+            return view;
+        }
+
+        @Override
+        public int getCount() {
+            return entradasfiltro.size();
+        }
+
+
+        @NonNull
+        @Override
+        public Filter getFilter() {
+
+            Filter filter;
+            filter = new Filter() {
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+
+                    FilterResults results = new FilterResults();
+                    List<Categorias> suggestion = new ArrayList<>();
+                    if (constraint != null) {
+
+                        for (Categorias item : entradas) {
+
+                            if (item.getNombre().toLowerCase().contains(constraint.toString().toLowerCase())) {
+
+                                suggestion.add(item);
+                            } else if (item.getDescripcion().toLowerCase().contains(constraint.toString().toLowerCase())) {
+
+                                suggestion.add(item);
+                            }
+
+
+                        }
+                        // Query the autocomplete API for the entered constraint
+                        // Results
+                        results.values = suggestion;
+                        results.count = suggestion.size();
+                    }
+                    return results;
+                }
+
+                @SuppressWarnings("unchecked")
+                @Override
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+
+                    entradasfiltro.clear();
+
+                    if (results != null && results.count > 0) {
+                        for (Categorias item : (List<Categorias>) results.values) {
+                            entradasfiltro.add(item);
+                        }
+                        notifyDataSetChanged();
+                    } else if (constraint == null) {
+                        // no filter, addModelo entire original list back in
+                        entradasfiltro.addAll(entradas);
+                        notifyDataSetInvalidated();
+                    }
+                }
+            };
+            return filter;
+        }
+
+        @Override
+        public Categorias getItem(int posicion) {
+            return entradasfiltro.get(posicion);
+        }
+
+        @Override
+        public long getItemId(int posicion) {
+            return posicion;
+        }
+
+    }
+
 
     public class AdaptadorProducto extends RecyclerView.Adapter<AdaptadorProducto.ProductoViewHolder>
             implements View.OnClickListener, ContratoPry.Tablas {
@@ -936,27 +1102,19 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
         }
     }
 
-    public static class AdaptadorPartidaBase extends RecyclerView.Adapter<AdaptadorPartidaBase.PartidaViewHolder>
-            implements View.OnClickListener, CommonPry.Constantes, ContratoPry.Tablas {
+    public class AdaptadorProveedor extends RecyclerView.Adapter<AdaptadorProveedor.ViewHolder>
+            implements View.OnClickListener, ContratoPry.Tablas {
 
-        ArrayList<Modelo> listaPartidas;
-        private View.OnClickListener listener;
+        View.OnClickListener listener;
+        ArrayList<ProdProv> lista;
 
-        public AdaptadorPartidaBase(ArrayList<Modelo> listaPartidas){
-
-            this.listaPartidas=listaPartidas;
+        public AdaptadorProveedor(ArrayList<ProdProv> lista) {
+            this.lista = lista;
         }
 
-        @NonNull
         @Override
-        public PartidaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int ViewType) {
+        public void onClick(View v) {
 
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list_partidabase,null,false);
-
-            view.setOnClickListener(this);
-
-
-            return new PartidaViewHolder(view);
         }
 
         public void setOnClickListener(View.OnClickListener listener) {
@@ -964,58 +1122,59 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
             this.listener = listener;
         }
 
+        @NonNull
         @Override
-        public void onBindViewHolder(@NonNull PartidaViewHolder partidaViewHolder, int position) {
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-            partidaViewHolder.descripcionPartida.setText(listaPartidas.get(position).getCampos(PARTIDABASE_DESCRIPCION));
-            partidaViewHolder.tiempoPartida.setText(listaPartidas.get(position).getCampos(PARTIDABASE_TIEMPO));
-            partidaViewHolder.importePartida.setText(JavaUtil.formatoMonedaLocal(listaPartidas.get(position).getDouble(PARTIDABASE_PRECIO)));
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_list_prodprov, null, false);
 
-            if (listaPartidas.get(position).getString(PARTIDABASE_RUTAFOTO)!=null){
+            view.setOnClickListener(this);
+            return new ViewHolder(view);
+        }
 
-                partidaViewHolder.imagenPartida.setImageURI(listaPartidas.get(position).getUri(PARTIDABASE_RUTAFOTO));
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
+            holder.refprov.setText(lista.get(position).getRefprov());
+            holder.nombre.setText(lista.get(position).getNombre());
+            holder.descripcion.setText(lista.get(position).getDescripcion());
+            holder.precio.setText(String.valueOf(lista.get(position).getPrecio()));
+            if (lista.get(position).getRutafoto() != null) {
+
+                MediaUtil imagenUtil = new MediaUtil(contexto);
+                imagenUtil.setImageFireStoreCircle(lista.get(position).getRutafoto(), holder.imagenProv);
             }
-
-
-            System.out.println("listaPartidas: "+ listaPartidas.size() + " registros");
-
         }
 
         @Override
         public int getItemCount() {
-            return listaPartidas.size();
-        }
-
-        @Override
-        public void onClick(View v) {
-
-            if (listener!= null){
-
-                listener.onClick(v);
-
-
+            if (lista != null) {
+                return lista.size();
             }
-
-
+            return 0;
         }
 
-        public class PartidaViewHolder extends RecyclerView.ViewHolder{
+        public class ViewHolder extends RecyclerView.ViewHolder {
 
-            ImageView imagenPartida;
-            TextView descripcionPartida,tiempoPartida,importePartida;
+            private TextView refprov, nombre, descripcion, precio;
+            private ImageView imagenProv;
+            private String path;
 
-            public PartidaViewHolder(@NonNull View itemView) {
+            public ViewHolder(@NonNull View itemView) {
                 super(itemView);
 
-                imagenPartida = itemView.findViewById(R.id.imglpartidabase);
-                descripcionPartida = itemView.findViewById(R.id.tvdescripcionpartidabase);
-                tiempoPartida = itemView.findViewById(R.id.tvtiempopartidabase);
-                importePartida = itemView.findViewById(R.id.tvimppartidabase);
+                refprov = itemView.findViewById(R.id.tvrefprov);
+                nombre = itemView.findViewById(R.id.tvnomprov);
+                descripcion = itemView.findViewById(R.id.tvdescprov);
+                precio = itemView.findViewById(R.id.tvprecioprov);
+                imagenProv = itemView.findViewById(R.id.imagenprov);
 
             }
-
         }
+
     }
+
 
     public class AdaptadorProdProv extends FirebaseRecyclerAdapter<ProdProv, AdaptadorProdProv.ProdProvHolder>
             implements View.OnClickListener{

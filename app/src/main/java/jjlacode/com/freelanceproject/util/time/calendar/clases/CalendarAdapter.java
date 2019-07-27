@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.Calendar;
+
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.util.time.Day;
 import jjlacode.com.freelanceproject.util.time.ListaDays;
@@ -38,8 +40,8 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewDa
         this.backgroundColorInicioDay = context.getResources().getColor(R.color.Color_contador_acept);
         this.textColorFinDay = context.getResources().getColor(R.color.Color_contador_ok);
         this.backgroundColorFinDay = context.getResources().getColor(R.color.Color_contador_ok);
-        this.textColorMultiDay = context.getResources().getColor(R.color.colorPrimaryDark);
-        this.backgroundColorMultiDay = context.getResources().getColor(R.color.colorPrimaryDark);
+        this.textColorMultiDay = context.getResources().getColor(R.color.colorSecondaryDark);
+        this.backgroundColorMultiDay = context.getResources().getColor(R.color.colorSecondaryDark);
         this.textColorBuscaDay = context.getResources().getColor(R.color.Color_busqueda);
         this.backgroundColorBuscaDay = context.getResources().getColor(R.color.Color_busqueda);
 

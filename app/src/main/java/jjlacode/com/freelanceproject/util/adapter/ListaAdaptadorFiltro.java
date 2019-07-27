@@ -46,6 +46,10 @@ public abstract class ListaAdaptadorFiltro extends ArrayAdapter<Modelo> {
         return entradasfiltro.size();
     }
 
+    public ArrayList<Modelo> getLista() {
+        return entradasfiltro;
+    }
+
 
     @NonNull
     @Override

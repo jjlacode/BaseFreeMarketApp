@@ -3,7 +3,8 @@ package jjlacode.com.freelanceproject.ui;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,14 +23,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,28 +38,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.model.Categorias;
+import jjlacode.com.freelanceproject.model.ProdProv;
 import jjlacode.com.freelanceproject.model.Proveedores;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
+import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltro;
 import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 import jjlacode.com.freelanceproject.util.android.AndroidUtil;
 import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
 import jjlacode.com.freelanceproject.util.crud.CRUDutil;
 import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
-import jjlacode.com.freelanceproject.util.media.MediaUtil;
-import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltro;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
-import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.model.ProdProv;
-import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.util.media.MediaUtil;
 
 import static jjlacode.com.freelanceproject.util.JavaUtil.hoy;
-import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.*;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.idInsertRegistro;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.putDato;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryList;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryObject;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryObjectDetalle;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.updateRegistro;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.updateRegistroDetalle;
 
-public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Constantes,
+public class FragmentCUDDetpartidaProducto extends FragmentCRUD implements CommonPry.Constantes,
         ContratoPry.Tablas, CommonPry.TiposDetPartida, CommonPry.TiposEstados {
 
     private EditMaterial descripcion;
@@ -115,14 +118,18 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
     private double cantidadTotal;
     private CheckBox partida_completada;
     private boolean trekOnpausa;
-    private AdaptadorProdProv mAdapter;
     private EditMaterial cantidadPartida;
     private EditMaterial nombre;
     private DatabaseReference dbProductos;
     private Query query;
+    private ListaAdaptadorFiltroCat adapterCat;
+    private ListaAdaptadorFiltroProv adapterProv;
+    private ListaAdaptadorFiltroProdProv adapteProdProv;
+    private ArrayList<ProdProv> listaRvProdProv;
+    private ArrayList<ProdProv> listaProdProvCompleta;
 
 
-    public FragmentCUDDetpartida() {
+    public FragmentCUDDetpartidaProducto() {
         // Required empty public constructor
     }
 
@@ -150,7 +157,7 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
         visible(rvDetpartida);
         tipoDetPartida.setText(tipo.toUpperCase());
 
-        switch (tipo){
+        switch (tipo) {
 
             case TIPOTRABAJO:
 
@@ -202,8 +209,8 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
             idProyecto_Partida = partida.getString(PARTIDA_ID_PROYECTO);
         }
         tipo = bundle.getString(TIPO);
-        if (origen.equals(INICIO)){
-            if (!isOnTimer()){
+        if (origen.equals(INICIO)) {
+            if (!isOnTimer()) {
                 startTimer();
             }
         }
@@ -239,7 +246,7 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
                 String asText = JavaUtil.relojContador(countUp);
                 trek.setText(String.format(Locale.getDefault(), "%s", asText));
                 completada = (((tiemporeal * 100) / tiempo) + ((countUp * 100) / tiempo));
-                AndroidUtil.bars(contexto, progressBarPartida, progressBarPartida2, false,100, 90, 120, completada,
+                AndroidUtil.bars(contexto, progressBarPartida, progressBarPartida2, false, 100, 90, 120, completada,
                         completadaPartida, trek, R.color.Color_contador_ok, R.color.Color_contador_acept,
                         R.color.Color_contador_notok);
 
@@ -256,12 +263,12 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
     @Override
     protected void setDatos() {
 
-        if (isOnTimer()){
+        if (isOnTimer()) {
             stopTimer();
             timer.stop();
         }
 
-        modelo = CRUDutil.setModelo(campos,id,secuencia);
+        modelo = CRUDutil.setModelo(campos, id, secuencia);
 
         allGone();
         tipo = modelo.getString(DETPARTIDA_TIPO);
@@ -283,7 +290,7 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
         visible(precio);
 
         //Visualizamos campos dependiendo del tipo de detalle
-        switch (tipo){
+        switch (tipo) {
 
             case TIPOTRABAJO:
 
@@ -300,7 +307,7 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
                         JavaUtil.getDecimales(tiempo / 3600), getString(R.string.horas)));
                 cantidadPartida.setText(String.format(Locale.getDefault(),
                         "%s %s", JavaUtil.getDecimales(cantidadTotal), getString(R.string.cant)));
-                AndroidUtil.bars(contexto, progressBarPartida, progressBarPartida2, false,100,90, 120, completada,
+                AndroidUtil.bars(contexto, progressBarPartida, progressBarPartida2, false, 100, 90, 120, completada,
                         completadaPartida, trek, R.color.Color_contador_ok, R.color.Color_contador_acept,
                         R.color.Color_contador_notok);
 
@@ -379,11 +386,14 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
                 break;
             case TIPOPRODUCTOPROV:
 
-                visible(cantidad);
                 visible(refProv);
+                visible(precio);
+                visible(cantidad);
                 visible(descProv);
-                visible(lyAutoCat);
-                visible(lyAutoProv);
+                gone(lyAutoCat);
+                gone(lyAutoProv);
+                gone(lyAutoNombre);
+                gone(rvDetpartida);
                 break;
             case TIPOPARTIDA:
 
@@ -416,7 +426,7 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
             setRv();
             System.out.println("onTick");
 
-        }else if (onTick) {
+        } else if (onTick) {
 
             super.setOnCronometro(arg0);
         }
@@ -428,9 +438,6 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
 
         if (tipo != null) {
             rv();
-            if (mAdapter!=null) {
-                mAdapter.startListening();
-            }
 
             setAdaptadorAuto(autoNombre);
 
@@ -535,10 +542,10 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
                         putDato(valores, campos, DETPARTIDA_CONTADOR, 0);
                         long pausa = modelo.getLong(DETPARTIDA_PAUSA);
 
-                        if (pausa>0) {
+                        if (pausa > 0) {
                             contador = modelo.getLong(DETPARTIDA_CONTADOR);
                             pausa = modelo.getLong(DETPARTIDA_PAUSA);
-                            long contadortemp = contador +(hoy() - (pausa));
+                            long contadortemp = contador + (hoy() - (pausa));
                             putDato(valores, campos, DETPARTIDA_PAUSA, 0);
                             putDato(valores, campos, DETPARTIDA_CONTADOR, contadortemp);
                             trekOnpausa = false;
@@ -583,7 +590,7 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
                         modelo = CRUDutil.setModelo(campos, id, secuencia);
                         contador = modelo.getLong(DETPARTIDA_CONTADOR);
                         long pausa = modelo.getLong(DETPARTIDA_PAUSA);
-                        long contadortemp = contador +(hoy() - (pausa));
+                        long contadortemp = contador + (hoy() - (pausa));
                         valores = new ContentValues();
                         putDato(valores, campos, DETPARTIDA_PAUSA, 0);
                         putDato(valores, campos, DETPARTIDA_CONTADOR, contadortemp);
@@ -627,7 +634,7 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
                     String asText = JavaUtil.relojContador(countUp);
                     trek.setText(String.format(Locale.getDefault(), "%s", asText));
                     completada = (((tiemporeal * 100) / tiempo) + ((countUp * 100) / tiempo));
-                    AndroidUtil.bars(contexto, progressBarPartida, progressBarPartida2, false,100,90, 120, completada,
+                    AndroidUtil.bars(contexto, progressBarPartida, progressBarPartida2, false, 100, 90, 120, completada,
                             completadaPartida, trek, R.color.Color_contador_ok, R.color.Color_contador_acept,
                             R.color.Color_contador_notok);
 
@@ -667,6 +674,212 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
             });
         }
 
+        autoCat.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+
+
+            }
+        });
+
+        autoCat.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+                if (tipo.equals(TIPOPRODUCTOPROV)) {
+
+                    listaProdProv = new ArrayList<>(listaProdProvCompleta);
+
+                    ArrayList<ProdProv> prodProvtemp = new ArrayList<>();
+
+                    System.out.println("categoria = " + categoria);
+                    System.out.println("proveedor = " + proveedor);
+                    for (ProdProv prodProv : listaProdProv) {
+
+                        System.out.println("prodProv cat= " + prodProv.getCategoria());
+                        System.out.println("prodProv prov= " + prodProv.getProveedor());
+                        if ((prodProv.getCategoria().equals(categoria) ||
+                                categoria.equals(TODAS) || categoria.equals("")) &&
+                                (prodProv.getProveedor().equals(proveedor) ||
+                                        proveedor.equals(TODOS) || proveedor.equals(""))) {
+                            prodProvtemp.add(prodProv);
+                        }
+
+                    }
+                    System.out.println("lista provtmp: " + prodProvtemp.size());
+
+                    listaProdProv.clear();
+                    listaProdProv.addAll(prodProvtemp);
+                    prodProvtemp.clear();
+
+                    System.out.println("lista prov: " + listaProdProv.size());
+                    adapteProdProv = new ListaAdaptadorFiltroProdProv(getContext(),
+                            R.layout.item_list_prodprov, listaProdProv) {
+                        @Override
+                        public void onEntrada(ProdProv entrada, View view) {
+
+                            ImageView imagen = view.findViewById(R.id.imagenprov);
+                            TextView nombre = view.findViewById(R.id.tvnomprov);
+                            TextView descripcion = view.findViewById(R.id.tvdescprov);
+                            TextView importe = view.findViewById(R.id.tvprecioprov);
+                            TextView refProv = view.findViewById(R.id.tvrefprov);
+
+                            nombre.setText(entrada.getNombre());
+                            descripcion.setText(entrada.getDescripcion());
+                            importe.setText(String.valueOf(entrada.getPrecio()));
+                            refProv.setText(entrada.getRefprov());
+                            String rutafoto = entrada.getRutafoto();
+
+                            if (entrada.getRutafoto() != null) {
+
+                                setImagenFireStoreCircle(contexto, rutafoto, imagen);
+                                //FirebaseStorage storage = FirebaseStorage.getInstance();
+                                //StorageReference storageRef = storage.getReference();
+                                //StorageReference spaceRef = storageRef.child(rutafoto);
+                                //GlideApp.with(getContext())
+                                //        .load(spaceRef)
+                                //        .into(imagenTarea);
+                            }
+
+                        }
+                    };
+
+                    autoNombre.setAdapter(adapteProdProv);
+                    autoNombre.setThreshold(50);
+                    if (adapteProdProv.getLista() != null) {
+                        listaRvProdProv = new ArrayList<>();
+                        listaRvProdProv.clear();
+                        listaRvProdProv.addAll(adapteProdProv.getLista());
+                    }
+                    rv();
+                }
+            }
+        });
+
+        autoProv.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+
+            }
+        });
+
+        autoProv.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+                if (tipo.equals(TIPOPRODUCTOPROV)) {
+
+                    listaProdProv = new ArrayList<>(listaProdProvCompleta);
+
+                    ArrayList<ProdProv> prodProvtemp = new ArrayList<>();
+
+                    System.out.println("categoria = " + categoria);
+                    System.out.println("proveedor = " + proveedor);
+                    for (ProdProv prodProv : listaProdProv) {
+
+                        if ((prodProv.getCategoria().equals(categoria) ||
+                                categoria.equals(TODAS) || categoria.equals("")) &&
+                                (prodProv.getProveedor().equals(proveedor) ||
+                                        proveedor.equals(TODOS) || proveedor.equals(""))) {
+                            prodProvtemp.add(prodProv);
+                        }
+
+                    }
+                    System.out.println("lista provtmp: " + prodProvtemp.size());
+
+                    listaProdProv.clear();
+                    listaProdProv.addAll(prodProvtemp);
+                    prodProvtemp.clear();
+
+                    System.out.println("lista prov: " + listaProdProv.size());
+                    adapteProdProv = new ListaAdaptadorFiltroProdProv(getContext(),
+                            R.layout.item_list_prodprov, listaProdProv) {
+                        @Override
+                        public void onEntrada(ProdProv entrada, View view) {
+
+                            ImageView imagen = view.findViewById(R.id.imagenprov);
+                            TextView nombre = view.findViewById(R.id.tvnomprov);
+                            TextView descripcion = view.findViewById(R.id.tvdescprov);
+                            TextView importe = view.findViewById(R.id.tvprecioprov);
+                            TextView refProv = view.findViewById(R.id.tvrefprov);
+
+                            nombre.setText(entrada.getNombre());
+                            descripcion.setText(entrada.getDescripcion());
+                            importe.setText(String.valueOf(entrada.getPrecio()));
+                            refProv.setText(entrada.getRefprov());
+                            String rutafoto = entrada.getRutafoto();
+
+                            if (entrada.getRutafoto() != null) {
+
+                                setImagenFireStoreCircle(contexto, rutafoto, imagen);
+                                //FirebaseStorage storage = FirebaseStorage.getInstance();
+                                //StorageReference storageRef = storage.getReference();
+                                //StorageReference spaceRef = storageRef.child(rutafoto);
+                                //GlideApp.with(getContext())
+                                //        .load(spaceRef)
+                                //        .into(imagenTarea);
+                            }
+
+                        }
+                    };
+
+                    autoNombre.setAdapter(adapteProdProv);
+                    autoNombre.setThreshold(50);
+                    if (adapteProdProv.getLista() != null) {
+                        listaRvProdProv = new ArrayList<>();
+                        listaRvProdProv.clear();
+                        listaRvProdProv.addAll(adapteProdProv.getLista());
+                    }
+                    rv();
+                }
+            }
+        });
+
+        autoNombre.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+                if (tipo.equals(TIPOPRODUCTOPROV)) {
+                    autoNombre.setThreshold(50);
+                    if (adapteProdProv.getLista() != null) {
+                        listaRvProdProv = new ArrayList<>();
+                        listaRvProdProv.clear();
+                        listaRvProdProv.addAll(adapteProdProv.getLista());
+                    }
+                    rv();
+                }
+            }
+        });
     }
 
     private void nuevaTarea() {
@@ -805,181 +1018,148 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
 
     private void rv() {
 
-        mediaUtil = new MediaUtil(contexto);
+        if (secuencia == 0) {
 
-        switch (tipo) {
+            mediaUtil = new MediaUtil(contexto);
 
-            case TIPOTRABAJO:
+            switch (tipo) {
 
-                rvDetpartida.setLayoutManager(new LinearLayoutManager(getContext()));
-                rvDetpartida.setHasFixedSize(true);
+                case TIPOTRABAJO:
 
-                lista = queryList(CAMPOS_TRABAJO);
-                AdaptadorTareas adaptadorTareas = new AdaptadorTareas(lista);
-                rvDetpartida.setAdapter(adaptadorTareas);
-                adaptadorTareas.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        idDetPartida = lista.get(rvDetpartida.getChildAdapterPosition(v))
-                                .getString(TRABAJO_ID_TRABAJO);
-                        Modelo tarea = queryObject(CAMPOS_TRABAJO, idDetPartida);
-                        nombre.setText(tarea.getString(TRABAJO_NOMBRE));
-                        descripcion.setText(tarea.getString(TRABAJO_DESCRIPCION));
-                        tiempoDet.setText(tarea.getString(TRABAJO_TIEMPO));
-                        if (tarea.getString(TRABAJO_RUTAFOTO) != null) {
-                            path = tarea.getString(TRABAJO_RUTAFOTO);
-                            mediaUtil.setImageUriCircle(path, imagen);
-                        }
-                    }
-                });
-                break;
+                    rvDetpartida.setLayoutManager(new LinearLayoutManager(getContext()));
+                    rvDetpartida.setHasFixedSize(true);
 
-            case TIPOPRODUCTO:
-
-                rvDetpartida.setLayoutManager(new LinearLayoutManager(getContext()));
-                rvDetpartida.setHasFixedSize(true);
-
-                lista = queryList(CAMPOS_PRODUCTO);
-                AdaptadorProducto adaptadorProducto = new AdaptadorProducto(lista);
-                rvDetpartida.setAdapter(adaptadorProducto);
-                adaptadorProducto.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        idDetPartida = lista.get(rvDetpartida.getChildAdapterPosition(v))
-                                .getString(PRODUCTO_ID_PRODUCTO);
-                        Modelo producto = queryObject(CAMPOS_PRODUCTO, idDetPartida);
-                        nombre.setText(producto.getString(PRODUCTO_NOMBRE));
-                        descripcion.setText(producto.getString(PRODUCTO_DESCRIPCION));
-                        precio.setText(producto.getString(PRODUCTO_PRECIO));
-
-                        if (producto.getString(PRODUCTO_RUTAFOTO) != null) {
-                            path = producto.getString(PRODUCTO_RUTAFOTO);
-                            mediaUtil.setImageUriCircle(path, imagen);
-                        }
-
-                    }
-                });
-
-                break;
-
-            case TIPOPARTIDA:
-
-                rvDetpartida.setLayoutManager(new LinearLayoutManager(getContext()));
-                rvDetpartida.setHasFixedSize(true);
-                lista = queryList(CAMPOS_PARTIDABASE);
-                AdaptadorPartida adaptadorPartida = new AdaptadorPartida(lista);
-                rvDetpartida.setAdapter(adaptadorPartida);
-                adaptadorPartida.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        idDetPartida = lista.get(rvDetpartida.getChildAdapterPosition(v))
-                                .getString(PARTIDABASE_ID_PARTIDABASE);
-                        Modelo partidabase = lista.get(rvDetpartida.getChildAdapterPosition(v));
-                        nombre.setText(partidabase.getString(PARTIDABASE_NOMBRE));
-                        descripcion.setText(partidabase.getString(PARTIDABASE_DESCRIPCION));
-                        precio.setText(partidabase.getString(PARTIDABASE_PRECIO));
-
-                        if (partidabase.getString(PARTIDABASE_RUTAFOTO) != null) {
-                            path = partidabase.getString(PARTIDABASE_RUTAFOTO);
-                            mediaUtil.setImageUriCircle(path, imagen);
-                        }
-
-                    }
-                });
-
-                break;
-
-            case TIPOPRODUCTOPROV:
-
-
-                listaProdProv = new ArrayList<>();
-
-                dbProductos =
-                        FirebaseDatabase.getInstance().getReference();
-
-                query = dbProductos.child("productos");
-
-
-
-                ValueEventListener eventListenerProd = new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-
-                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                            ProdProv prodProv = ds.getValue(ProdProv.class);
-                            prodProv.setId(ds.getRef().getKey());
-                            listaProdProv.add(prodProv);
-                        }
-                        ArrayList<ProdProv> prodProvtemp = new ArrayList<>();
-
-                        for (ProdProv prodProv : listaProdProv) {
-
-                            //if ((prodProv.getCategoria().equals(categoria) || categoria.equals(TODAS)) &&
-                            //        (prodProv.getProveedor().equals(proveedor)) || proveedor.equals(TODOS)) {
-                            prodProvtemp.add(prodProv);
-                            //}
-
-                        }
-                        System.out.println("lista provtmp: " + prodProvtemp.size());
-
-                        listaProdProv.clear();
-                        listaProdProv.addAll(prodProvtemp);
-                        prodProvtemp.clear();
-
-                        System.out.println("lista prov: " + listaProdProv.size());
-                        AdaptadorProveedor provAdapter = new AdaptadorProveedor(listaProdProv);
-
-                        rvDetpartida.setLayoutManager(new LinearLayoutManager(getContext()));
-                        rvDetpartida.setHasFixedSize(true);
-
-                        rvDetpartida.setAdapter(provAdapter);
-
-                        provAdapter.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-                                int i = rvDetpartida.getChildViewHolder(v).getAdapterPosition();
-                                idDetPartida = listaProdProv.get(i).getId();
-                                System.out.println("idDetPartida = " + idDetPartida);
-
-                                refProv.setText(listaProdProv.get(i).getRefprov());
-                                autoNombre.setText(listaProdProv.get(i).getNombre());
-                                descripcion.setText(listaProdProv.get(i).getDescripcion());
-                                precio.setText(String.valueOf(listaProdProv.get(i).getPrecio()));
-
-                                path = listaProdProv.get(i).getRutafoto();
-                                if (path != null) {
-                                    setImagenFireStoreCircle(contexto, path, imagen);
-                                }
-
-
+                    lista = queryList(CAMPOS_TRABAJO);
+                    AdaptadorTareas adaptadorTareas = new AdaptadorTareas(lista);
+                    rvDetpartida.setAdapter(adaptadorTareas);
+                    adaptadorTareas.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            idDetPartida = lista.get(rvDetpartida.getChildAdapterPosition(v))
+                                    .getString(TRABAJO_ID_TRABAJO);
+                            Modelo tarea = queryObject(CAMPOS_TRABAJO, idDetPartida);
+                            nombre.setText(tarea.getString(TRABAJO_NOMBRE));
+                            descripcion.setText(tarea.getString(TRABAJO_DESCRIPCION));
+                            tiempoDet.setText(tarea.getString(TRABAJO_TIEMPO));
+                            if (tarea.getString(TRABAJO_RUTAFOTO) != null) {
+                                path = tarea.getString(TRABAJO_RUTAFOTO);
+                                mediaUtil.setImageUriCircle(path, imagen);
                             }
-                        });
+                        }
+                    });
+                    break;
 
-                    }
+                case TIPOPRODUCTO:
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    rvDetpartida.setLayoutManager(new LinearLayoutManager(getContext()));
+                    rvDetpartida.setHasFixedSize(true);
 
-                    }
+                    lista = queryList(CAMPOS_PRODUCTO);
+                    AdaptadorProducto adaptadorProducto = new AdaptadorProducto(lista);
+                    rvDetpartida.setAdapter(adaptadorProducto);
+                    adaptadorProducto.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            idDetPartida = lista.get(rvDetpartida.getChildAdapterPosition(v))
+                                    .getString(PRODUCTO_ID_PRODUCTO);
+                            Modelo producto = queryObject(CAMPOS_PRODUCTO, idDetPartida);
+                            nombre.setText(producto.getString(PRODUCTO_NOMBRE));
+                            descripcion.setText(producto.getString(PRODUCTO_DESCRIPCION));
+                            precio.setText(producto.getString(PRODUCTO_PRECIO));
 
-                };
+                            if (producto.getString(PRODUCTO_RUTAFOTO) != null) {
+                                path = producto.getString(PRODUCTO_RUTAFOTO);
+                                mediaUtil.setImageUriCircle(path, imagen);
+                            }
 
-                query.addValueEventListener(eventListenerProd);
+                        }
+                    });
+
+                    break;
+
+                case TIPOPARTIDA:
+
+                    rvDetpartida.setLayoutManager(new LinearLayoutManager(getContext()));
+                    rvDetpartida.setHasFixedSize(true);
+                    lista = queryList(CAMPOS_PARTIDABASE);
+                    AdaptadorPartida adaptadorPartida = new AdaptadorPartida(lista);
+                    rvDetpartida.setAdapter(adaptadorPartida);
+                    adaptadorPartida.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            idDetPartida = lista.get(rvDetpartida.getChildAdapterPosition(v))
+                                    .getString(PARTIDABASE_ID_PARTIDABASE);
+                            Modelo partidabase = lista.get(rvDetpartida.getChildAdapterPosition(v));
+                            nombre.setText(partidabase.getString(PARTIDABASE_NOMBRE));
+                            descripcion.setText(partidabase.getString(PARTIDABASE_DESCRIPCION));
+                            precio.setText(partidabase.getString(PARTIDABASE_PRECIO));
+
+                            if (partidabase.getString(PARTIDABASE_RUTAFOTO) != null) {
+                                path = partidabase.getString(PARTIDABASE_RUTAFOTO);
+                                mediaUtil.setImageUriCircle(path, imagen);
+                            }
+
+                        }
+                    });
+
+                    break;
+
+                case TIPOPRODUCTOPROV:
+
+                    gone(refProv);
+                    gone(nombre);
+                    gone(descripcion);
+                    gone(precio);
+                    gone(cantidad);
+                    gone(descProv);
 
 
+                    AdaptadorProveedor provAdapter = new AdaptadorProveedor(listaRvProdProv);
+
+                    rvDetpartida.setLayoutManager(new LinearLayoutManager(getContext()));
+                    rvDetpartida.setHasFixedSize(true);
+
+                    rvDetpartida.setAdapter(provAdapter);
+
+                    provAdapter.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            int i = rvDetpartida.getChildViewHolder(v).getAdapterPosition();
+                            idDetPartida = listaRvProdProv.get(i).getId();
+                            System.out.println("idDetPartida = " + idDetPartida);
+
+                            visible(refProv);
+                            visible(nombre);
+                            visible(descripcion);
+                            visible(precio);
+                            visible(cantidad);
+                            visible(descProv);
+                            visible(imagen);
+                            //gone(autoCat);
+                            gone(lyAutoCat);
+                            gone(lyAutoProv);
+                            gone(lyAutoNombre);
+                            //gone(autoProv);
+                            //gone(autoNombre);
+                            gone(rvDetpartida);
+                            refProv.setText(listaRvProdProv.get(i).getRefprov());
+                            nombre.setText(listaRvProdProv.get(i).getNombre());
+                            descripcion.setText(listaRvProdProv.get(i).getDescripcion());
+                            precio.setText(String.valueOf(listaRvProdProv.get(i).getPrecio()));
+
+                            path = listaRvProdProv.get(i).getRutafoto();
+                            if (path != null) {
+                                setImagenFireStoreCircle(contexto, path, imagen);
+                            }
+
+
+                        }
+                    });
+
+            }
         }
 
-    }
-
-
-    //Stop Listening Adapter
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAdapter!=null) {
-            mAdapter.stopListening();
-        }
     }
 
 
@@ -1079,6 +1259,12 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
     }
 
     @Override
+    protected boolean onBack() {
+        tipo = null;
+        return super.onBack();
+    }
+
+    @Override
     protected void setcambioFragment() {
 
         if (origen.equals(PARTIDA)) {
@@ -1087,14 +1273,14 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
             partida = queryObjectDetalle(CAMPOS_PARTIDA, idProyecto_Partida, secuenciaPartida);
             bundle.putSerializable(MODELO, partida);
             bundle.putSerializable(PROYECTO, proyecto);
-            bundle.putString(TIPO, tipo);
+            //bundle.putString(TIPO, tipo);
             bundle.putString(ORIGEN, DETPARTIDA);
             bundle.putString(SUBTITULO, subTitulo);
             bundle.putString(CAMPO_ID, idProyecto_Partida);
             bundle.putInt(CAMPO_SECUENCIA, secuenciaPartida);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDPartidaProyecto());
             bundle = null;
-        }else if (origen.equals(INICIO)){
+        } else if (origen.equals(INICIO)) {
             startTimer();
         }
 
@@ -1173,7 +1359,7 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
                         TextView importe = view.findViewById(R.id.tvimppartidabase);
 
 
-                        autoNombre.setText(entrada.getString(PARTIDABASE_NOMBRE));
+                        //autoNombre.setText(entrada.getString(PARTIDABASE_NOMBRE));
                         descripcion.setText(entrada.getString(PARTIDABASE_DESCRIPCION));
                         importe.setText(entrada.getString(PARTIDABASE_PRECIO));
 
@@ -1188,8 +1374,40 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
 
             case TIPOPRODUCTOPROV:
 
-                autoCompleteTextView.setAdapter(new ListaAdaptadorFiltroProdProv(getContext(),
-                        R.layout.item_list_prodprov, listaProdProv) {
+                listaProdProvCompleta = new ArrayList<>();
+
+                dbProductos =
+                        FirebaseDatabase.getInstance().getReference();
+
+                query = dbProductos.child("productos");
+
+
+                ValueEventListener eventListenerProd = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                            ProdProv prodProv = ds.getValue(ProdProv.class);
+                            prodProv.setId(ds.getRef().getKey());
+                            listaProdProvCompleta.add(prodProv);
+                        }
+
+                        System.out.println("lista prov: " + listaProdProvCompleta.size());
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+
+                };
+
+                query.addValueEventListener(eventListenerProd);
+
+
+                adapteProdProv = new ListaAdaptadorFiltroProdProv(getContext(),
+                        R.layout.item_list_prodprov, listaProdProvCompleta) {
                     @Override
                     public void onEntrada(ProdProv entrada, View view) {
 
@@ -1217,7 +1435,9 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
                         }
 
                     }
-                });
+                };
+
+                autoNombre.setAdapter(adapteProdProv);
 
 
                 break;
@@ -1255,7 +1475,7 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
         dbCategorias.addValueEventListener(eventListenerCat);
 
 
-        ListaAdaptadorFiltroCat adapterCat = new ListaAdaptadorFiltroCat
+        adapterCat = new ListaAdaptadorFiltroCat
                 (contexto, R.layout.item_list_categoria, listaCat);
 
         autoCat.setAdapter(adapterCat);
@@ -1264,7 +1484,7 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                categoria = listaCat.get(position).getNombre();
+                categoria = adapterCat.getItem(position).getNombre();//listaCat.get(position).getNombre();
                 autoCat.setText(categoria);
                 rv();
 
@@ -1301,8 +1521,8 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
         dbProveedor.addValueEventListener(eventListenerProv);
 
 
-        ListaAdaptadorFiltroProv adapterProv = new ListaAdaptadorFiltroProv
-                (contexto, R.layout.item_list_proveedor, listaProv);
+        adapterProv = new ListaAdaptadorFiltroProv
+                (contexto, R.layout.item_list_proveedorcat, listaProv);
 
         autoProv.setAdapter(adapterProv);
 
@@ -1311,7 +1531,7 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 
-                proveedor = listaProv.get(position).getNombre();
+                proveedor = adapterProv.getItem(position).getNombre();//listaProv.get(position).getNombre();
                 autoProv.setText(proveedor);
                 rv();
             }
@@ -1399,116 +1619,6 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
         }
     }
 
-    public class AdaptadorProdProv extends FirebaseRecyclerAdapter<ProdProv, AdaptadorProdProv.ProdProvHolder>
-            implements View.OnClickListener {
-
-        View.OnClickListener listener;
-
-        public AdaptadorProdProv(@NonNull FirebaseRecyclerOptions<ProdProv> options) {
-            super(options);
-        }
-
-        public void setOnClickListener(View.OnClickListener listener) {
-
-            this.listener = listener;
-        }
-
-        @NonNull
-        @Override
-        public ProdProvHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_list_prodprov, parent, false);
-
-            view.setOnClickListener(this);
-            return new ProdProvHolder(view);
-        }
-
-        @Override
-        protected void onBindViewHolder(@NonNull ProdProvHolder prodProvHolder, int i, @NonNull ProdProv prodProv) {
-
-            prodProvHolder.setRefprov(prodProv.getRefprov());
-            prodProvHolder.setNombre(prodProv.getNombre());
-            prodProvHolder.setDescripcion(prodProv.getDescripcion());
-            prodProvHolder.setPrecio(prodProv.getPrecio());
-            prodProvHolder.setRutafoto(prodProv.getRutafoto());
-
-
-        }
-
-        @Override
-        public void onError(@NonNull DatabaseError error) {
-            super.onError(error);
-            Log.e(TAG, error.toString());
-        }
-
-        @Override
-        public void onClick(View v) {
-
-            if (listener != null) {
-
-                listener.onClick(v);
-            }
-
-        }
-
-        public class ProdProvHolder extends RecyclerView.ViewHolder {
-
-            private View mView;
-            private TextView refprov, nombre, descripcion, precio;
-            private ImageView imagen;
-            private String path;
-
-            public ProdProvHolder(View itemView) {
-                super(itemView);
-                mView = itemView;
-            }
-
-            public ProdProv getItem() {
-
-                ProdProv prodProv = new ProdProv();
-                prodProv.setRefprov(refprov.getText().toString());
-                prodProv.setNombre(nombre.getText().toString());
-                prodProv.setDescripcion(descripcion.getText().toString());
-                prodProv.setPrecio(JavaUtil.comprobarDouble(precio.getText().toString()));
-                prodProv.setRutafoto(path);
-
-                return prodProv;
-
-            }
-
-            public void setRefprov(String refprov) {
-                this.refprov = mView.findViewById(R.id.tvrefprov);
-                this.refprov.setText(refprov);
-            }
-
-            public void setNombre(String nombre) {
-                this.nombre = mView.findViewById(R.id.tvnomprov);
-                this.nombre.setText(nombre);
-            }
-
-            public void setDescripcion(String descripcion) {
-                this.descripcion = mView.findViewById(R.id.tvdescprov);
-                this.descripcion.setText(descripcion);
-            }
-
-            public void setPrecio(double precio) {
-                this.precio = mView.findViewById(R.id.tvprecioprov);
-                this.precio.setText(JavaUtil.formatoMonedaLocal(precio));
-            }
-
-            public void setRutafoto(String rutafoto) {
-                //FirebaseStorage storage = FirebaseStorage.getInstance();
-                //StorageReference storageRef = storage.getReference();
-                //StorageReference spaceRef = storageRef.child(rutafoto);
-                mediaUtil = new MediaUtil(getContext());
-                imagen = mView.findViewById(R.id.imagenprov);
-                setImagenFireStoreCircle(contexto, rutafoto, imagen);
-                path = rutafoto;
-            }
-        }
-    }
-
 
     public class AdaptadorProveedor extends RecyclerView.Adapter<AdaptadorProveedor.ViewHolder>
             implements View.OnClickListener, ContratoPry.Tablas {
@@ -1522,6 +1632,9 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
 
         @Override
         public void onClick(View v) {
+            if (listener != null) {
+                listener.onClick(v);
+            }
 
         }
 
@@ -1753,6 +1866,11 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
             return entradasfiltro.size();
         }
 
+        public ArrayList<ProdProv> getLista() {
+
+            return entradasfiltro;
+        }
+
 
         @NonNull
         @Override
@@ -1769,13 +1887,13 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
 
                         for (ProdProv item : entradas) {
 
-                            if (item.getNombre().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                            if (item.getNombre() != null && item.getNombre().toLowerCase().contains(constraint.toString().toLowerCase())) {
 
                                 suggestion.add(item);
-                            } else if (item.getDescripcion().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                            } else if (item.getDescripcion() != null && item.getDescripcion().toLowerCase().contains(constraint.toString().toLowerCase())) {
 
                                 suggestion.add(item);
-                            } else if (item.getRefprov().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                            } else if (item.getRefprov() != null && item.getRefprov().toLowerCase().contains(constraint.toString().toLowerCase())) {
 
                                 suggestion.add(item);
                             }
@@ -1893,10 +2011,10 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
 
                         for (Proveedores item : entradas) {
 
-                            if (item.getNombre().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                            if ((item.getNombre() != null) && item.getNombre().toLowerCase().contains(constraint.toString().toLowerCase())) {
 
                                 suggestion.add(item);
-                            } else if (item.getDescripcion().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                            } else if ((item.getDescripcion() != null) && item.getDescripcion().toLowerCase().contains(constraint.toString().toLowerCase())) {
 
                                 suggestion.add(item);
                             }
@@ -2004,10 +2122,10 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
 
                         for (Categorias item : entradas) {
 
-                            if (item.getNombre().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                            if (item.getNombre() != null && item.getNombre().toLowerCase().contains(constraint.toString().toLowerCase())) {
 
                                 suggestion.add(item);
-                            } else if (item.getDescripcion().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                            } else if (item.getDescripcion() != null && item.getDescripcion().toLowerCase().contains(constraint.toString().toLowerCase())) {
 
                                 suggestion.add(item);
                             }
@@ -2135,7 +2253,7 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
 
             String id = modelo.getString(DETPARTIDA_ID_PARTIDA);
             int secuencia = modelo.getInt(DETPARTIDA_SECUENCIA);
-            modelo = queryObjectDetalle(CAMPOS_DETPARTIDA,id,secuencia);
+            modelo = queryObjectDetalle(CAMPOS_DETPARTIDA, id, secuencia);
 
             nombre.setText(modelo.getString(DETPARTIDA_NOMBRE));
 
@@ -2158,22 +2276,22 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
             proy.setText(proyecto.getString(PROYECTO_NOMBRE));
             long contador = modelo.getLong(DETPARTIDA_CONTADOR);
             long pausa = modelo.getLong(DETPARTIDA_PAUSA);
-            if (pausa>0){
+            if (pausa > 0) {
                 ahora = pausa;
                 imgEstado.setImageResource(R.drawable.ic_pausa_indigo);
-            }else if (contador>0){
+            } else if (contador > 0) {
                 imgEstado.setImageResource(R.drawable.ic_play_indigo);
-            }else{
+            } else {
                 contador = ahora;
                 imgEstado.setImageResource(R.drawable.ic_stop_indigo);
             }
 
-            double count = ((double) (ahora-contador))/1000;
+            double count = ((double) (ahora - contador)) / 1000;
 
 
             double completada = (((tiemporeal * 100) / tiempodet) + ((count * 100) / tiempodet));
 
-            String asText = JavaUtil.relojContador((ahora-contador)/1000);
+            String asText = JavaUtil.relojContador((ahora - contador) / 1000);
             treking.setText(String.format(Locale.getDefault(), "%s", asText));
 
             ttiempo.setText(String.format(Locale.getDefault(),
@@ -2184,9 +2302,9 @@ public class FragmentCUDDetpartida extends FragmentCRUD implements CommonPry.Con
             tvcomplet.setText(String.format(Locale.getDefault(),
                     "%s %s", JavaUtil.getDecimales(completada), "% completa"));
 
-            AndroidUtil.barsCard(contexto, pbar, pbar2, false,100,90,120, completada,
+            AndroidUtil.barsCard(contexto, pbar, pbar2, false, 100, 90, 120, completada,
                     tvcomplet, treking, R.color.Color_contador_ok, R.color.Color_contador_acept,
-                    R.color.Color_contador_notok,card,R.color.Color_card_ok,R.color.Color_card_acept,
+                    R.color.Color_contador_notok, card, R.color.Color_card_ok, R.color.Color_card_acept,
                     R.color.Color_card_notok);
 
             super.bind(modelo);

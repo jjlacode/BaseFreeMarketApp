@@ -1806,8 +1806,8 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
             this.backgroundColorInicioDay = context.getResources().getColor(R.color.Color_contador_acept);
             this.textColorFinDay = context.getResources().getColor(R.color.Color_contador_ok);
             this.backgroundColorFinDay = context.getResources().getColor(R.color.Color_contador_ok);
-            this.textColorMultiDay = context.getResources().getColor(R.color.colorPrimaryDark);
-            this.backgroundColorMultiDay = context.getResources().getColor(R.color.colorPrimaryDark);
+            this.textColorMultiDay = context.getResources().getColor(R.color.colorSecondaryDark);
+            this.backgroundColorMultiDay = context.getResources().getColor(R.color.colorSecondaryDark);
             this.textColorBuscaDay = context.getResources().getColor(R.color.Color_busqueda);
             this.backgroundColorBuscaDay = context.getResources().getColor(R.color.Color_busqueda);
         }
@@ -1846,7 +1846,7 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
             }
 
             if (dia.getFechaLong() == TimeDateUtil.soloFecha(JavaUtil.hoy())) {
-                btnDia.setBackgroundColor(context.getResources().getColor(R.color.colorPrimaryDark));
+                btnDia.setBackgroundColor(context.getResources().getColor(R.color.colorSecondaryDark));
                 btnDia.setTextColor(context.getResources().getColor(R.color.colorPrimary));
             }
 

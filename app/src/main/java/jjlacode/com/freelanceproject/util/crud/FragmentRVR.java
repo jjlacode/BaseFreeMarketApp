@@ -43,76 +43,12 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
     public void onResume() {
         super.onResume();
 
+        selector();
         setDatos();
 
         setAcciones();
 
     }
-
-    /*
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-        view = inflater.inflate(R.layout.contenido, container, false);
-        land = getResources().getBoolean(R.bool.esLand);
-        tablet = getResources().getBoolean(R.bool.esTablet);
-        System.out.println("land = " + land);
-        System.out.println("tablet = " + tablet);
-
-        frPrincipal = view.findViewById(R.id.contenedor);
-        frLista = view.findViewById(R.id.layout_rv);
-
-        frPie = view.findViewById(R.id.layout_pie);
-        viewBotones = inflater.inflate(R.layout.btn_sdb,container,false);
-        viewRV = inflater.inflate(R.layout.rvlayout,container,false);
-        frCabecera = view.findViewById(R.id.layout_cabecera);
-        if (layoutCabecera>0) {
-            viewCabecera = inflater.inflate(layoutCabecera, container,false);
-            if(viewCabecera.getParent() != null) {
-                ((ViewGroup)viewCabecera.getParent()).removeView(viewCabecera); // <- fix
-            }
-            if (viewCabecera!=null) {
-                frCabecera.addView(viewCabecera);
-            }
-        }
-        if(viewBotones.getParent() != null) {
-            ((ViewGroup)viewBotones.getParent()).removeView(viewBotones); // <- fix
-        }
-        if(viewRV.getParent() != null) {
-            ((ViewGroup)viewRV.getParent()).removeView(viewRV); // <- fix
-        }
-
-        frLista.addView(viewRV);
-        frPie.addView(viewBotones);
-
-        btnback = view.findViewById(R.id.btn_back);
-        btnsave = view.findViewById(R.id.btn_save);
-        btndelete = view.findViewById(R.id.btn_del);
-        rv = view.findViewById(R.id.rv);
-        refreshLayout = view.findViewById(R.id.swipeRefresh);
-        auto = view.findViewById(R.id.auto);
-        buscar = view.findViewById(R.id.imgbuscar);
-        renovar = view.findViewById(R.id.imgrenovar);
-        inicio = view.findViewById(R.id.imginicio);
-        lupa = view.findViewById(R.id.imgsearch);
-        //btnsave.setVisibility(View.GONE);
-        //btndelete.setTextColor(getResources().getColor(colorAccent));
-
-        refreshLayout.setColorSchemeResources(
-                R.color.s1,
-                R.color.s2,
-                R.color.s3,
-                R.color.s4
-        );
-
-        setInicio();
-
-        AndroidUtil.ocultarTeclado(activityBase, view);
-
-        return view;
-    }
-    */
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container){
@@ -134,8 +70,6 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
         renovar = view.findViewById(R.id.imgrenovar);
         inicio = view.findViewById(R.id.imginicio);
         lupa = view.findViewById(R.id.imgsearch);
-        //btnsave.setVisibility(View.GONE);
-        //btndelete.setTextColor(getResources().getColor(colorAccent));
 
         refreshLayout.setColorSchemeResources(
                 R.color.s1,
@@ -149,15 +83,19 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
 
     protected void selector(){
 
-            btndelete.setVisibility(View.GONE);
+        gonePie();
             visible(inicio);
-            activityBase.fab2.hide();
-            activityBase.fab.show();
+        visible(frLista);
+        activityBase.fab.hide();
+        activityBase.fab2.show();
             listaRV();
-            if (subTitulo==null) {
-                activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
-            enviarAct();
+        if (subTitulo==null) {
+            activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+        } else {
+            activityBase.toolbar.setSubtitle(subTitulo);
+
         }
+            enviarAct();
 
         acciones();
 
@@ -284,6 +222,7 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
 
     protected void listaRV(){
 
+        lista = new ListaModelo();
         if (listab==null) {
             if (tablaCab==null){
                 lista = CRUDutil.setListaModelo(campos);
@@ -292,7 +231,7 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
             }
             setLista();
         }else {
-            lista = listab;
+            lista.clearAddAllLista(listab);
         }
 
         setRv();
@@ -343,6 +282,8 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
 
     protected void actualizarConsultasRV(){
 
+        lista = new ListaModelo();
+
         if (listab==null) {
             if (tablaCab!=null){
                 lista = CRUDutil.setListaModeloDetalle(campos,id,tablaCab);
@@ -351,8 +292,9 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
             }
             setLista();
         }else{
-            lista = listab;
+            lista.clearAddAllLista(listab);
         }
+        gonePie();
 
     }
 

@@ -25,21 +25,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
-import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
 import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
 import jjlacode.com.freelanceproject.util.crud.CRUDutil;
 import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
-import jjlacode.com.freelanceproject.util.media.MediaUtil;
-import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
-import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
+import jjlacode.com.freelanceproject.util.media.MediaUtil;
 
-import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.*;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.insertRegistroDetalle;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.putDato;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryList;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryListDetalle;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryObjectDetalle;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.updateRegistroDetalle;
 
 public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonPry.Constantes,
         ContratoPry.Tablas, CommonPry.TiposDetPartida, CommonPry.TiposEstados {
@@ -52,7 +57,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     private EditMaterial importePartida;
     private EditMaterial cantidadPartida;
     private EditMaterial completadaPartida;
-    private Button btnNuevaTarea;
+    private Button btnNuevaTrabajo;
     private Button btnNuevoProd;
     private Button btnNuevoProdProv;
     private Button btnNuevaPartida;
@@ -109,7 +114,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     @Override
     protected void setAcciones() {
 
-        btnNuevaTarea.setOnClickListener(new View.OnClickListener() {
+        btnNuevaTrabajo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -124,7 +129,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                 bundle.putString(SUBTITULO, proyecto.getString(PROYECTO_NOMBRE));
                 bundle.putString(TIPO, TIPOTRABAJO);
                 bundle.putBoolean(NUEVOREGISTRO, true);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
 
             }
 
@@ -144,7 +149,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                 bundle.putString(SUBTITULO, subTitulo);
                 bundle.putString(TIPO, TIPOPRODUCTO);
                 bundle.putBoolean(NUEVOREGISTRO, true);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaProducto());
 
             }
 
@@ -164,7 +169,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                 bundle.putString(SUBTITULO, subTitulo);
                 bundle.putString(TIPO, TIPOPRODUCTOPROV);
                 bundle.putBoolean(NUEVOREGISTRO, true);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaProdProvCat());
 
             }
 
@@ -177,14 +182,14 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                 update();
                 modelo = queryObjectDetalle(CAMPOS_PARTIDA, id, secuencia);
                 bundle = new Bundle();
-                bundle.putSerializable(TABLA_PROYECTO, proyecto);
-                bundle.putSerializable(TABLA_PARTIDA, modelo);
+                bundle.putSerializable(PROYECTO, proyecto);
+                bundle.putSerializable(PARTIDA, modelo);
                 bundle.putString(CAMPO_ID, modelo.getString(PARTIDA_ID_PARTIDA));
                 bundle.putString(ORIGEN, PARTIDA);
                 bundle.putString(SUBTITULO, subTitulo);
                 bundle.putString(TIPO, TIPOPARTIDA);
                 bundle.putBoolean(NUEVOREGISTRO, true);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
 
             }
 
@@ -280,7 +285,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
         cantidadPartida = (EditMaterial) ctrl(R.id.etcantidadUDpartida);
         completadaPartida = (EditMaterial) ctrl(R.id.etcompletadaUDpartida);
         btnNuevaPartidaBase = (Button) ctrl(R.id.btn_npartidabase);
-        btnNuevaTarea = (Button) ctrl(R.id.btntareaudpartida);
+        btnNuevaTrabajo = (Button) ctrl(R.id.btntareaudpartida);
         btnNuevoProd = (Button) ctrl(R.id.btnprodudpartida);
         btnNuevoProdProv = (Button) ctrl(R.id.btnprovudpartida);
         btnNuevaPartida = (Button) ctrl(R.id.btnpartudpartida);
@@ -307,7 +312,6 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
 
     }
 
-
     @Override
     protected void setBundle() {
 
@@ -331,7 +335,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
         btndelete.setVisibility(View.VISIBLE);
         nombrePartida.setVisibility(View.VISIBLE);
         rvdetalles.setVisibility(View.VISIBLE);
-        btnNuevaTarea.setVisibility(View.VISIBLE);
+        btnNuevaTrabajo.setVisibility(View.VISIBLE);
         btnNuevoProd.setVisibility(View.VISIBLE);
         btnNuevoProdProv.setVisibility(View.VISIBLE);
         //btnNuevoProdProv.setVisibility(View.GONE);
@@ -415,8 +419,22 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
                         bundle.putString(ORIGEN, PARTIDA);
                         bundle.putString(SUBTITULO, subTitulo);
                         bundle.putString(TIPO, tipo);
-                        icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
+                        switch (tipo) {
 
+                            case TIPOTRABAJO:
+                                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
+                                break;
+                            case TIPOPRODUCTO:
+                                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaProducto());
+                                break;
+                            case TIPOPRODUCTOPROV:
+                                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaProdProvCat());
+                                break;
+                            case TIPOPARTIDA:
+                                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
+                                break;
+
+                        }
                     }
                 });
 
@@ -554,11 +572,22 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
             detpartidaViewHolder.tipo.setText(tipodetpartida.toUpperCase());
             detpartidaViewHolder.nombre.setText(listDetpartida.get(position).getString(DETPARTIDA_NOMBRE));
             detpartidaViewHolder.tiempo.setText(listDetpartida.get(position).getString(DETPARTIDA_TIEMPO));
-            if (listDetpartida.get(position).getString(DETPARTIDA_TIPO).equals(CommonPry.TiposDetPartida.TIPOTRABAJO)) {
-                detpartidaViewHolder.importe.setText(JavaUtil.formatoMonedaLocal(
-                        (listDetpartida.get(position).getDouble(DETPARTIDA_TIEMPO) * CommonPry.hora)));
+            if (tipodetpartida.equals(TIPOTRABAJO)) {
+                detpartidaViewHolder.cantidad.setText(JavaUtil.getDecimales(
+                        Double.parseDouble(listDetpartida.get(position).
+                                getString(DETPARTIDA_TIEMPO)) * Double.parseDouble(cantidadPartida.getText().toString())));
             } else {
-                detpartidaViewHolder.importe.setText(listDetpartida.get(position).getString(DETPARTIDA_PRECIO));
+                detpartidaViewHolder.cantidad.setText(JavaUtil.getDecimales(
+                        Double.parseDouble(listDetpartida.get(position).
+                                getString(DETPARTIDA_CANTIDAD)) * Double.parseDouble(cantidadPartida.getText().toString())));
+
+            }
+            if (listDetpartida.get(position).getString(DETPARTIDA_TIPO).equals(TIPOTRABAJO)) {
+                detpartidaViewHolder.importe.setText(JavaUtil.formatoMonedaLocal(
+                        (listDetpartida.get(position).getDouble(DETPARTIDA_TIEMPO) * CommonPry.hora * Double.parseDouble(cantidadPartida.getText().toString()))));
+            } else {
+                detpartidaViewHolder.importe.setText(JavaUtil.formatoMonedaLocal(Double.parseDouble(
+                        listDetpartida.get(position).getString(DETPARTIDA_PRECIO)) * Double.parseDouble(cantidadPartida.getText().toString())));
             }
             if (listDetpartida.get(position).getString(DETPARTIDA_RUTAFOTO) != null) {
                 if (tipodetpartida.equals(TIPOPRODUCTOPROV)) {

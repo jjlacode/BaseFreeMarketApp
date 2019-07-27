@@ -26,30 +26,30 @@ import androidx.cardview.widget.CardView;
 
 import java.util.ArrayList;
 
+import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.util.android.AppActivity;
-import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
-import jjlacode.com.freelanceproject.util.crud.CRUDutil;
-import jjlacode.com.freelanceproject.CommonPry;
-import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
-import jjlacode.com.freelanceproject.util.time.DatePickerFragment;
-import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
-import jjlacode.com.freelanceproject.util.media.MediaUtil;
 import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
 import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltro;
 import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
+import jjlacode.com.freelanceproject.util.crud.CRUDutil;
+import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
 import jjlacode.com.freelanceproject.util.crud.ListaModelo;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
+import jjlacode.com.freelanceproject.util.media.MediaUtil;
+import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
+import jjlacode.com.freelanceproject.util.time.DatePickerFragment;
 import jjlacode.com.freelanceproject.util.time.TimePickerFragment;
-import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 
-import static jjlacode.com.freelanceproject.util.android.AppActivity.viewOnMapA;
 import static jjlacode.com.freelanceproject.CommonPry.setNamefdef;
 import static jjlacode.com.freelanceproject.util.JavaUtil.getDate;
 import static jjlacode.com.freelanceproject.util.JavaUtil.getTime;
 import static jjlacode.com.freelanceproject.util.JavaUtil.hoy;
+import static jjlacode.com.freelanceproject.util.android.AppActivity.viewOnMapA;
 import static jjlacode.com.freelanceproject.util.time.calendar.clases.DiaCalBase.HORACAL;
 
 
@@ -1142,10 +1142,10 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
         tipoEvento = (TextView) ctrl(R.id.tvtipoudevento);
         proyRel = (AutoCompleteTextView) ctrl(R.id.sppryudevento);
         cliRel = (AutoCompleteTextView) ctrl(R.id.spcliudevento);
-        descipcion = (EditMaterial) ctrl(R.id.etdescudevento);
-        lugar = (EditMaterial) ctrl(R.id.etlugarudevento);
-        email = (EditMaterial) ctrl(R.id.etemailudevento);
-        telefono = (EditMaterial) ctrl(R.id.ettelefonoudevento);
+        descipcion = (EditMaterial) ctrl(R.id.etdescudevento, EVENTO_DESCRIPCION);
+        lugar = (EditMaterial) ctrl(R.id.etlugarudevento, EVENTO_DIRECCION);
+        email = (EditMaterial) ctrl(R.id.etemailudevento, EVENTO_EMAIL);
+        telefono = (EditMaterial) ctrl(R.id.ettelefonoudevento, EVENTO_TELEFONO);
         fechaIni = (EditMaterial) ctrl(R.id.etfechainiudevento);
         horaIni = (EditMaterial) ctrl(R.id.ethorainiudevento);
         fechaFin = (EditMaterial) ctrl(R.id.etfechafinudevento);
@@ -1172,15 +1172,15 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
         btnffin = (ImageButton) ctrl(R.id.imgbtnffinudevento);
         btnhini = (ImageButton) ctrl(R.id.imgbtnhiniudevento);
         btnhfin = (ImageButton) ctrl(R.id.imgbtnhfinudevento);
-        completa = (EditMaterial) ctrl(R.id.etcompletadaudevento);
+        completa = (EditMaterial) ctrl(R.id.etcompletadaudevento, EVENTO_COMPLETADA);
         btnNota = (ImageButton) ctrl(R.id.btn_crearnota_evento);
         btnVerNotas = (ImageButton) ctrl(R.id.btn_vernotas_evento);
         btnVerRepeticiones = (Button) ctrl(R.id.btnverrepevento);
         imgmapa = (ImageButton) ctrl(R.id.imgmapaevento);
         imgllamada = (ImageButton) ctrl(R.id.imgllamadaevento);
         imgemail = (ImageButton) ctrl(R.id.imgemailevento);
-        asunto = (EditMaterial) ctrl(R.id.etasuntoevento);
-        mensaje = (EditMaterial) ctrl(R.id.etmensajeevento);
+        asunto = (EditMaterial) ctrl(R.id.etasuntoevento, EVENTO_ASUNTO);
+        mensaje = (EditMaterial) ctrl(R.id.etmensajeevento, EVENTO_MENSAJE);
         chNotificado = (CheckBox) ctrl(R.id.chnotificadoevento);
         completada = (CheckBox) ctrl(R.id.chcompletadaevento);
 

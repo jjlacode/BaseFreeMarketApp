@@ -2,6 +2,7 @@ package jjlacode.com.freelanceproject.ui;
 // Created by jjlacode on 9/06/19. 
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -9,17 +10,19 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
-import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
-import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
-import jjlacode.com.freelanceproject.util.media.MediaUtil;
-import jjlacode.com.freelanceproject.util.crud.Modelo;
+import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
+import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
+import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
+import jjlacode.com.freelanceproject.util.media.MediaUtil;
+
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.checkQueryList;
 
 
 public class FragmentCRUDTrabajo extends FragmentCRUD implements CommonPry.Constantes, ContratoPry.Tablas {
@@ -27,6 +30,9 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements CommonPry.Const
     private EditMaterial tiempo, nombre, descripcion;
     private ImageButton btnNota;
     private ImageButton btnVerNotas;
+    private String idRel;
+    private Modelo proyecto;
+    private Modelo partida;
 
     public FragmentCRUDTrabajo() {
         // Required empty public constructor
@@ -61,11 +67,39 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements CommonPry.Const
     @Override
     protected void setDatos() {
 
-        imagenPantalla(3,2);
         nombre.setText(modelo.getString(TRABAJO_NOMBRE));
         descripcion.setText(modelo.getString(TRABAJO_DESCRIPCION));
         tiempo.setText(modelo.getString(TRABAJO_TIEMPO));
 
+        String seleccion = NOTA_ID_RELACIONADO + " = '" + id + "'";
+        if (checkQueryList(CAMPOS_NOTA, seleccion, null)) {
+            btnVerNotas.setVisibility(View.VISIBLE);
+        } else {
+            btnVerNotas.setVisibility(View.GONE);
+        }
+
+    }
+
+    @Override
+    protected void onClickRV(View v) {
+        super.onClickRV(v);
+        if (origen.equals(DETPARTIDA)) {
+            bundle = new Bundle();
+            putBundle(TRABAJO, modelo);
+            putBundle(PROYECTO, proyecto);
+            putBundle(PARTIDA, partida);
+            putBundle(CAMPO_ID, idRel);
+            putBundle(ORIGEN, PARTIDA);
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
+        }
+    }
+
+    @Override
+    protected void setBundle() {
+        super.setBundle();
+        idRel = getStringBundle(IDREL, "");
+        proyecto = (Modelo) getBundleSerial(PROYECTO);
+        partida = (Modelo) getBundleSerial(PARTIDA);
     }
 
     @Override
@@ -78,11 +112,11 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements CommonPry.Const
                 enviarBundle();
                 bundle.putString(IDREL,modelo.getString(campoID));
                 bundle.putString(SUBTITULO, modelo.getString(TRABAJO_DESCRIPCION));
-                bundle.putString(ORIGEN, TAREA);
+                bundle.putString(ORIGEN, TRABAJO);
                 bundle.putSerializable(MODELO,null);
                 bundle.putString(CAMPO_ID,null);
                 bundle.putBoolean(NUEVOREGISTRO,true);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevaNota());
             }
         });
 
@@ -105,9 +139,9 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements CommonPry.Const
     @Override
     protected void setInicio() {
 
-        nombre = (EditMaterial) ctrl(R.id.etnombretarea);
-        descripcion = (EditMaterial) ctrl(R.id.etdesctarea);
-        tiempo = (EditMaterial) ctrl(R.id.ettiempotarea);
+        nombre = (EditMaterial) ctrl(R.id.etnombretarea, TRABAJO_NOMBRE);
+        descripcion = (EditMaterial) ctrl(R.id.etdesctarea, TRABAJO_DESCRIPCION);
+        tiempo = (EditMaterial) ctrl(R.id.ettiempotarea, TRABAJO_TIEMPO);
         imagen = (ImageView) ctrl(R.id.imgtarea);
         btnNota = (ImageButton) ctrl(R.id.btn_crearnota_tarea);
         btnVerNotas = (ImageButton) ctrl(R.id.btn_vernotas_tarea);
@@ -138,6 +172,22 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements CommonPry.Const
         setDato(TRABAJO_DESCRIPCION,descripcion.getText().toString());
         setDato(TRABAJO_TIEMPO,tiempo.getText().toString(),DOUBLE);
         setDato(TRABAJO_RUTAFOTO,path);
+
+    }
+
+    @Override
+    protected void setcambioFragment() {
+        super.setcambioFragment();
+        if (origen.equals(DETPARTIDA) && id != null) {
+            bundle = new Bundle();
+            putBundle(TRABAJO, modelo);
+            putBundle(CAMPO_ID, idRel);
+            putBundle(ORIGEN, PARTIDA);
+            putBundle(PROYECTO, proyecto);
+            putBundle(PARTIDA, partida);
+
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
+        }
 
     }
 

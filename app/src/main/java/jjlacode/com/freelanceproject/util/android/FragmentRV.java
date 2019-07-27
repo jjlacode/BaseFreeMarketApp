@@ -128,7 +128,7 @@ public abstract class FragmentRV extends FragmentBase {
         setOnCreateView(view,inflaterMain,containerMain);
 
         Chronometer timer = (Chronometer) view.findViewById(R.id.chronocrud);
-        setTimer(timer);
+        setTimerEdit(timer);
 
         setControls(view);
 

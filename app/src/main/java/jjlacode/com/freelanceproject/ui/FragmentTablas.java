@@ -1,7 +1,9 @@
 package jjlacode.com.freelanceproject.ui;
 
 import android.view.View;
+
 import java.util.ArrayList;
+
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.util.android.FragmentGrid;
 
@@ -17,7 +19,7 @@ public class FragmentTablas extends FragmentGrid {
     private String partidasBase;
     private String tareas;
     private String productos;
-    private String configuracion;
+    private String proveedores;
     private String home;
 
     @Override
@@ -40,7 +42,7 @@ public class FragmentTablas extends FragmentGrid {
         tareas = getString(R.string.tareas);
         productos = getString(R.string.productos);
         home = getString(R.string.inicio);
-        configuracion = getString(R.string.configuracion);
+        proveedores = getString(R.string.proveedores);
 
         lista = new ArrayList<>();
 
@@ -54,7 +56,7 @@ public class FragmentTablas extends FragmentGrid {
         lista.add(new GridModel(R.drawable.ic_treking_indigo, partidasBase));
         lista.add(new GridModel(R.drawable.ic_tareas_indigo, tareas));
         lista.add(new GridModel(R.drawable.ic_apagar_indigo, productos));
-        lista.add(new GridModel(R.drawable.ic_ajustes_black_24dp, configuracion));
+        lista.add(new GridModel(R.drawable.ic_proveedor_indigo, proveedores));
         lista.add(new GridModel(R.drawable.ic_inicio_black_24dp, home));
 
 
@@ -145,6 +147,12 @@ public class FragmentTablas extends FragmentGrid {
             enviarBundle();
 
             icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDProducto());
+
+        } else if (nombre.equals(proveedores)) {
+            destino = PROVEEDOR;
+            enviarBundle();
+
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProveedor());
 
         }
 

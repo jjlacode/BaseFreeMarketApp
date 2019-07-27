@@ -6,25 +6,26 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-import jjlacode.com.freelanceproject.util.android.AndroidUtil;
-import jjlacode.com.freelanceproject.util.android.AppActivity;
-import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
-import jjlacode.com.freelanceproject.util.time.DatePickerFragment;
-import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
-import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
 import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
-import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
+import jjlacode.com.freelanceproject.util.android.AndroidUtil;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
+import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
+import jjlacode.com.freelanceproject.util.time.DatePickerFragment;
 
 import static jjlacode.com.freelanceproject.CommonPry.setNamefdef;
 
@@ -69,10 +70,6 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
 
     @Override
     protected void setDatos() {
-
-        for (EditMaterial materialEdit : materialEdits) {
-            materialEdit.setFondo(getResources().getColor(R.color.Color_card_acept));
-        }
 
         nombre.setText(modelo.getString(AMORTIZACION_NOMBRE));
         descripcion.setText(modelo.getString(AMORTIZACION_DESCRIPCION));
@@ -128,14 +125,14 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
     @Override
     protected void setInicio() {
 
-        nombre = (EditMaterial) ctrl(R.id.etnomcudamort);
-        descripcion = (EditMaterial) ctrl(R.id.etdesccudamort);
-        cantidad = (EditMaterial) ctrl(R.id.etcantcudamort);
-        importe = (EditMaterial) ctrl(R.id.etimpcudamort);
+        nombre = (EditMaterial) ctrl(R.id.etnomcudamort, AMORTIZACION_NOMBRE);
+        descripcion = (EditMaterial) ctrl(R.id.etdesccudamort, AMORTIZACION_DESCRIPCION);
+        cantidad = (EditMaterial) ctrl(R.id.etcantcudamort, AMORTIZACION_CANTIDAD);
+        importe = (EditMaterial) ctrl(R.id.etimpcudamort, AMORTIZACION_PRECIO);
         fecha = (EditMaterial) ctrl(R.id.tvfechacudamort);
-        anios = (EditMaterial) ctrl(R.id.etanioscudamort);
-        meses = (EditMaterial) ctrl(R.id.etmesescudamort);
-        dias = (EditMaterial) ctrl(R.id.etdiascudamort);
+        anios = (EditMaterial) ctrl(R.id.etanioscudamort, AMORTIZACION_ANYOS);
+        meses = (EditMaterial) ctrl(R.id.etmesescudamort, AMORTIZACION_MESES);
+        dias = (EditMaterial) ctrl(R.id.etdiascudamort, AMORTIZACION_DIAS);
         imagen = (ImageView) ctrl(R.id.imgcudamort);
         btnimgfecha = (ImageView) ctrl(R.id.btnimgfechacudamort);
         bar = (ProgressBar) ctrl(R.id.progressBarcudamort);
@@ -240,7 +237,7 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
         @Override
         protected void setEntradas(int posicion, View itemView, ArrayList<Modelo> entrada) {
 
-            EditMaterial nombre,descripcion,cantidad,importe,fecha,anios,meses,dias;
+            TextView nombre, descripcion, cantidad, importe, fecha, anios, meses, dias;
             ImageView imagen;
             CardView card;
             ProgressBar progressBar;
@@ -301,25 +298,23 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
 
         public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
 
-        EditMaterial nombre,descripcion,cantidad,importe,fecha,anios,meses,dias;
+            TextView nombre, descripcion, cantidad, importe, fecha, anios, meses, dias;
         ImageView imagen;
         CardView card;
         ProgressBar progressBar;
-        ArrayList<EditMaterial> listaET;
 
         public ViewHolderRV(View itemView) {
             super(itemView);
 
-            listaET = new ArrayList<>();
 
-            nombre = setEditMaterial(itemView,listaET,R.id.tvnomlamort);
-            descripcion = setEditMaterial(itemView,listaET,R.id.tvdesclamort);
-            cantidad = setEditMaterial(itemView,listaET,R.id.tvcantlamort);
-            importe = setEditMaterial(itemView,listaET,R.id.tvimplamort);
-            fecha = setEditMaterial(itemView,listaET,R.id.tvfechalamort);
-            anios = setEditMaterial(itemView,listaET,R.id.tvanioslamort);
-            meses = setEditMaterial(itemView,listaET,R.id.tvmeseslamort);
-            dias = setEditMaterial(itemView,listaET,R.id.tvdiaslamort);
+            nombre = itemView.findViewById(R.id.tvnomlamort);
+            descripcion = itemView.findViewById(R.id.tvdesclamort);
+            cantidad = itemView.findViewById(R.id.tvcantlamort);
+            importe = itemView.findViewById(R.id.tvimplamort);
+            fecha = itemView.findViewById(R.id.tvfechalamort);
+            anios = itemView.findViewById(R.id.tvanioslamort);
+            meses = itemView.findViewById(R.id.tvmeseslamort);
+            dias = itemView.findViewById(R.id.tvdiaslamort);
             imagen = itemView.findViewById(R.id.imglamort);
             card = itemView.findViewById(R.id.cardlamort);
             progressBar = itemView.findViewById(R.id.progressBarlamort);
@@ -357,14 +352,6 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
             AndroidUtil.barsCard(contexto,progressBar,null, true,100,60,30,
                     res,null,null,0,0,0,
                     card,R.color.Color_card_notok,R.color.Color_card_acept,R.color.Color_card_ok);
-
-            for (EditMaterial editMaterial : listaET) {
-
-                editMaterial.setFondo(card.getCardBackgroundColor().getDefaultColor());
-                editMaterial.setActivo(false);
-                editMaterial.setTextSize(getActivity());
-
-            }
 
             super.bind(modelo);
         }

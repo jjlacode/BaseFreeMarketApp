@@ -8,12 +8,6 @@ import java.util.ArrayList;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.util.android.FragmentGrid;
 
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ACTUAL;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.CALENDARIO;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.FECHA;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NUEVOREGISTRO;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ORIGEN;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.TIPO;
 import static jjlacode.com.freelanceproject.util.time.calendar.clases.DiaCalBase.HORACAL;
 
 public class FragmentNuevoEvento extends FragmentGrid {
@@ -37,9 +31,11 @@ public class FragmentNuevoEvento extends FragmentGrid {
     protected void cargarBundle() {
         super.cargarBundle();
 
-        fecha = bundle.getLong(FECHA);
-        hora = bundle.getLong(HORACAL);
-        origen = bundle.getString(ORIGEN);
+        if (nn(bundle)) {
+            fecha = bundle.getLong(FECHA);
+            hora = bundle.getLong(HORACAL);
+            origen = bundle.getString(ORIGEN);
+        }
     }
 
     @Override
@@ -97,8 +93,10 @@ public class FragmentNuevoEvento extends FragmentGrid {
         }
 
         if (tipoEvento!=null) {
+            bundle = new Bundle();
             bundle.putString(TIPO, tipoEvento);
             bundle.putString(ACTUAL, EVENTO);
+            bundle.putString(ORIGEN, EVENTO);
             bundle.putBoolean(NUEVOREGISTRO, true);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
         }

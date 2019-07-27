@@ -12,12 +12,6 @@ import jjlacode.com.freelanceproject.util.crud.ListaModelo;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
 
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ACTUAL;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.LISTA;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ORIGEN;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.SUBTITULO;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.VERLISTA;
-
 public class FragmentInicio extends FragmentGrid {
 
     private String proximosEventos;
@@ -190,12 +184,11 @@ public class FragmentInicio extends FragmentGrid {
         if (listaPartidasSinCompletar.chechLista()){
 
             bundle = new Bundle();
-            bundle.putBoolean(VERLISTA,true);
             bundle.putSerializable(LISTA,listaPartidasSinCompletar);
             bundle.putString(ORIGEN,INICIO);
-            bundle.putString(SUBTITULO,"Tareas Traking");
+            bundle.putString(SUBTITULO, "Tareas Treking");
 
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartida());
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentTrabajoTreking());
 
         }else{
             Toast.makeText(getContext(), "No hay Tareas en Traking", Toast.LENGTH_SHORT).show();

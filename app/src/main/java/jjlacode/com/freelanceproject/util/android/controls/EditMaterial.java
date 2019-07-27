@@ -27,8 +27,11 @@ public class EditMaterial extends LinearLayoutCompat {
     private ImageButton grabar;
     private AlCambiarListener listener;
     private AudioATexto grabarListener;
+    private CambioFocoEdit listenerFoco;
     private int posicion;
     DisplayMetrics metrics = new DisplayMetrics();
+    private boolean textoCambiado;
+    private String textoEdit;
 
     public EditMaterial(Context context) {
         super(context);
@@ -88,6 +91,7 @@ public class EditMaterial extends LinearLayoutCompat {
         editText.setInputType(tipoDato);
         editText.setGravity(gravedad);
         editText.setEnabled(activo);
+        grabar.setFocusable(false);
 
         a.recycle();
 
@@ -101,15 +105,20 @@ public class EditMaterial extends LinearLayoutCompat {
         this.grabarListener = grabarListener;
     }
 
+    public void setCambioFocoListener(CambioFocoEdit listener) {
+        listenerFoco = listener;
+    }
     private void asignarEventos() {
 
         editText.addTextChangedListener(new TextWatcher() {
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
                 if (listener!=null) {
                     listener.antesCambio(s,start,count,after);
                 }
+                textoEdit = getText().toString();
             }
 
             @Override
@@ -118,6 +127,10 @@ public class EditMaterial extends LinearLayoutCompat {
                 if (listener!=null) {
                     listener.cambiando(s,start,before,count);
                 }
+                if (!textoEdit.equals(getText().toString())) {
+                    textoCambiado = true;
+                }
+
             }
 
             @Override
@@ -126,6 +139,7 @@ public class EditMaterial extends LinearLayoutCompat {
                 if (listener!=null) {
                     listener.despuesCambio(s);
                 }
+
             }
         });
 
@@ -136,6 +150,29 @@ public class EditMaterial extends LinearLayoutCompat {
                 grabarListener.onGrabar(view, posicion);
             }
         });
+
+        editText.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+
+                if (!b && textoCambiado) {
+                    listenerFoco.alPerderFoco(view);
+                    textoCambiado = false;
+
+                }
+                if (b) {
+                    listenerFoco.alRecibirFoco(view);
+                    editText.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    editText.setTextColor(getResources().getColor(R.color.colorPrimary));
+                } else {
+                    editText.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    editText.setTextColor(getResources().getColor(R.color.colorSecondaryDark));
+                    comprobarEdit();
+                }
+            }
+        });
+
+
     }
 
     public void setFondo(int colorFondo){
@@ -167,6 +204,10 @@ public class EditMaterial extends LinearLayoutCompat {
 
     public void setText(String text){
         editText.setText(text);
+        if (getText() == null || (getText() != null && getTexto().equals(""))) {
+            editText.setBackgroundColor(getResources().getColor(R.color.Color_card_notok));
+            editText.setTextColor(getResources().getColor(R.color.colorSecondaryDark));
+        }
     }
 
     public void setGravedad(int gravedad){
@@ -205,6 +246,29 @@ public class EditMaterial extends LinearLayoutCompat {
         return editText.getText();
     }
 
+    public String getTexto() {
+        if (editText.getText() != null) {
+            return editText.getText().toString();
+        }
+        return null;
+    }
+
+    public void comprobarEdit() {
+        if (getText() == null || (getText() != null && getTexto().equals(""))) {
+            editText.setBackgroundColor(getResources().getColor(R.color.Color_card_notok));
+            editText.setTextColor(getResources().getColor(R.color.colorSecondaryDark));
+        }
+
+    }
+
+    public void seleccionarTexto() {
+        editText.selectAll();
+    }
+
+    public void finalTexto() {
+        editText.setSelection(editText.length());
+    }
+
     public void setActivo(boolean activo){
         editText.setEnabled(activo);
     }
@@ -216,6 +280,13 @@ public class EditMaterial extends LinearLayoutCompat {
     public interface AudioATexto {
 
         void onGrabar(View view, int posicion);
+    }
+
+    public interface CambioFocoEdit {
+
+        void alPerderFoco(View view);
+
+        void alRecibirFoco(View view);
     }
 
     public interface AlCambiarListener{

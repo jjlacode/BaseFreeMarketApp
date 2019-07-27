@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:jjla="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frcli"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.FragmentCRUDProveedor">
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgproveedor"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="2.5"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ic_add_a_photo_black_24dp" />
+
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                android:id="@+id/etnombreproveedor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                jjla:hint_text="@string/nombre"
+                jjla:tipo_dato="TEXTO|PERSONA" />
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                android:id="@+id/etdirproveedor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                jjla:gravedad="top|inicio"
+                jjla:hint_text="@string/direccion"
+                jjla:tipo_dato="TEXTO|MULTI|DIRECCION" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgbtndirproveedor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:layout_gravity="center"
+                android:background="@drawable/boton_redondo_secondary"
+                android:minHeight="30dp"
+                app:srcCompat="@drawable/ic_place_black_24dp" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                android:id="@+id/ettelproveedor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                jjla:hint_text="@string/telefono"
+                jjla:tipo_dato="TELEFONO" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgbtntelproveedor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:layout_gravity="center"
+                android:background="@drawable/boton_redondo_secondary"
+                android:minHeight="30dp"
+                app:srcCompat="@drawable/ic_phone_in_talk_black_24dp" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                android:id="@+id/etemailproveedor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                jjla:hint_text="@string/email"
+                jjla:tipo_dato="TEXTO|EMAIL" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgbtnmailproveedor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:layout_gravity="center"
+                android:background="@drawable/boton_redondo_secondary"
+                android:minHeight="30dp"
+                app:srcCompat="@drawable/ic_mail_outline_black_24dp" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            android:id="@+id/etcontproveedor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            jjla:hint_text="@string/contacto"
+            jjla:tipo_dato="TEXTO|PERSONA" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/chactivoproveedor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/inactivo" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btneventoproveedor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/boton_redondo_secondary"
+                android:src="@drawable/ic_evento_indigo" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btnvereventoproveedor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/boton_redondo_secondary"
+                android:src="@drawable/ic_lista_eventos_indigo" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_crearnota_proveedor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/boton_redondo_secondary"
+                android:src="@drawable/ic_nueva_nota_indigo" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_vernotas_proveedor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/boton_redondo_secondary"
+                android:src="@drawable/ic_lista_notas_indigo" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.core.widget.NestedScrollView>
+

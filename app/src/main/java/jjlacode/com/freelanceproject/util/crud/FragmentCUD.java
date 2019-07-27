@@ -11,14 +11,14 @@ import android.widget.Toast;
 
 import java.util.GregorianCalendar;
 
-import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
 import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
 import jjlacode.com.freelanceproject.util.time.TimeDateUtil;
 
 import static jjlacode.com.freelanceproject.CommonPry.permiso;
 import static jjlacode.com.freelanceproject.CommonPry.setNamefdef;
 
-public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.Constantes {
+public abstract class FragmentCUD extends FragmentBaseCRUD {
 
     public FragmentCUD() {
     }
@@ -52,6 +52,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
         }else{
             datos();
         }
+        back = false;
 
         acciones();
 
@@ -129,7 +130,6 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
         Log.d(TAG, getMetodo());
 
         if (update()) {
-
             datos();
             return true;
         }
@@ -139,22 +139,14 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
     protected boolean onDelete(){
         Log.d(TAG, getMetodo());
 
-        if ((id==null && tablaCab==null)||(tablaCab!=null && secuencia==0)){
-            selector();
-        }else {
             if (delete()) {
 
-                modelo = null;
-                if (tablaCab==null) {
-                    id = null;
-                }
-                secuencia=0;
-                selector();
+                back = true;
+
                 cambiarFragment();
 
                 return true;
             }
-        }
 
         return false;
     }
@@ -162,23 +154,17 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
     protected boolean onBack(){
         Log.d(TAG, getMetodo());
 
-        modelo=null;
-        if(tablaCab==null) {
-            id = null;
-        }
-        secuencia=0;
-        nuevo = false;
-        selector();
+        back = true;
+
         cambiarFragment();
 
         return true;
     }
 
     @Override
-    protected void alCambiarCampos() {
-        super.alCambiarCampos();
-        update();
-        selector();
+    protected void alCambiarCampos(EditMaterial editMaterial) {
+        super.alCambiarCampos(editMaterial);
+
     }
 
     protected void acciones(){
@@ -339,6 +325,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
         valores = new ContentValues();
 
         setDato(CAMPO_TIMESTAMP, TimeDateUtil.getDateLong(new GregorianCalendar()));
+        comprobarRutaFoto();
         setContenedor();
 
         if (tablaCab!=null && modelo!=null){
@@ -357,6 +344,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
 
                         modelo = ConsultaBD.queryObjectDetalle(campos, id, secuencia);
                         Toast.makeText(getContext(), "Registro detalle guardado", Toast.LENGTH_SHORT).show();
+                        nuevo = false;
                         return true;
                     }
 
@@ -365,6 +353,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
                     modelo = ConsultaBD.queryObject(campos, id);
 
                     Toast.makeText(getContext(), "Registro guardado", Toast.LENGTH_SHORT).show();
+                    nuevo = false;
                     return true;
 
                 } else {
@@ -380,6 +369,16 @@ public abstract class FragmentCUD extends FragmentBaseCRUD implements JavaUtil.C
         }
 
         return false;
+
+    }
+
+    private void comprobarRutaFoto() {
+
+        for (String campo : campos) {
+            if (campo.equals(CAMPO_RUTAFOTO)) {
+                setDato(CAMPO_RUTAFOTO, path);
+            }
+        }
 
     }
 
