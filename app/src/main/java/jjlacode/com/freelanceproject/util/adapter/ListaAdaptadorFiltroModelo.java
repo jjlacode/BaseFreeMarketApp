@@ -14,7 +14,7 @@ import java.util.List;
 
 import jjlacode.com.freelanceproject.util.crud.Modelo;
 
-public class ListaAdaptadorFiltroRV extends ArrayAdapter<Modelo> {
+public class ListaAdaptadorFiltroModelo extends ArrayAdapter<Modelo> {
 
     protected ArrayList<Modelo> entradas;
     protected ArrayList<Modelo> entradasfiltro;
@@ -22,8 +22,8 @@ public class ListaAdaptadorFiltroRV extends ArrayAdapter<Modelo> {
     private Context contexto;
     private String[] campos;
 
-    public ListaAdaptadorFiltroRV(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas,
-                                  String[] campos) {
+    public ListaAdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas,
+                                      String[] campos) {
         super(contexto,R_layout_IdView,entradas);
         this.contexto = contexto;
         this.entradas = new ArrayList<>(entradas);
@@ -56,6 +56,16 @@ public class ListaAdaptadorFiltroRV extends ArrayAdapter<Modelo> {
         return  entradasfiltro;
     }
 
+    public void addAll(ArrayList<Modelo> lista) {
+        entradas.addAll(lista);
+        notifyDataSetChanged();
+    }
+
+    public void clearAddAll(ArrayList<Modelo> lista) {
+        entradas.clear();
+        entradas.addAll(lista);
+        notifyDataSetChanged();
+    }
 
     @NonNull
     @Override

@@ -119,6 +119,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    app:activo="false"
                     app:hint_text="@string/tiempo"
                     app:tipo_dato="NUMERO|DECIMAL" />
 
@@ -127,8 +128,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    app:activo="false"
                     app:hint_text="@string/importe"
-                    app:tipo_dato="NUMERO|DECIMAL" />
+                    app:tipo_dato="TEXTO" />
 
                 <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/etcompletadaUDpartida"

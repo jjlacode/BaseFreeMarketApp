@@ -31,8 +31,7 @@ import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltro;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 import jjlacode.com.freelanceproject.util.android.AppActivity;
 import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
@@ -131,8 +130,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     }
 
     @Override
-    protected ListaAdaptadorFiltroRV setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
-        return new AdaptadorFiltroRV(context,layoutItem,lista,campos);
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+        return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
     @Override
@@ -1755,10 +1754,9 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     }
 
 
+    public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public class AdaptadorFiltroRV extends ListaAdaptadorFiltroRV{
-
-        public AdaptadorFiltroRV(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
@@ -1932,11 +1930,11 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
         listaProyectos =  ConsultaBD.queryList(CAMPOS_PROYECTO,null,null);
 
-        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
+        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltroModelo(getContext(),
                 R.layout.item_list_proyecto,listaProyectos,CAMPOS_PROYECTO) {
 
             @Override
-            public void onEntrada(Modelo entrada, View view) {
+            protected void setEntradas(int posicion, View view, ArrayList<Modelo> entrada) {
 
                 ImageView imagen = view.findViewById(R.id.imglistaproyectos);
                 TextView nombre = view.findViewById(R.id.tvnombrelistaproyectos);
@@ -1947,16 +1945,16 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 TextView estado = view.findViewById(R.id.tvestadolistaproyectos);
                 ProgressBar bar = view.findViewById(R.id.progressBarlistaproyectos);
 
-                descripcion.setText(entrada.getCampos(ContratoPry.Tablas.PROYECTO_DESCRIPCION));
+                descripcion.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.PROYECTO_DESCRIPCION));
 
-                nombre.setText(entrada.getCampos(ContratoPry.Tablas.PROYECTO_NOMBRE));
-                nomcli.setText(entrada.getCampos(ContratoPry.Tablas.CLIENTE_NOMBRE));
-                estado.setText(entrada.getCampos(ContratoPry.Tablas.ESTADO_DESCRIPCION));
+                nombre.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.PROYECTO_NOMBRE));
+                nomcli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_NOMBRE));
+                estado.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.ESTADO_DESCRIPCION));
 
-                bar.setProgress(Integer.parseInt(entrada.getCampos
+                bar.setProgress(Integer.parseInt(entrada.get(posicion).getCampos
                         (ContratoPry.Tablas.PROYECTO_TOTCOMPLETADO)));
 
-                long retraso = Long.parseLong(entrada.getCampos
+                long retraso = Long.parseLong(entrada.get(posicion).getCampos
                         (ContratoPry.Tablas.PROYECTO_RETRASO));
                 if (retraso > 3 * CommonPry.DIASLONG) {
                     imgest.setImageResource(R.drawable.alert_box_r);
@@ -1966,11 +1964,11 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     imgest.setImageResource(R.drawable.alert_box_v);
                 }
 
-                if (entrada.getCampos(ContratoPry.Tablas.PROYECTO_RUTAFOTO) != null) {
-                    imagen.setImageURI(Uri.parse(entrada.getCampos
+                if (entrada.get(posicion).getCampos(ContratoPry.Tablas.PROYECTO_RUTAFOTO) != null) {
+                    imagen.setImageURI(Uri.parse(entrada.get(posicion).getCampos
                             (ContratoPry.Tablas.PROYECTO_RUTAFOTO)));
                 }
-                int peso = Integer.parseInt(entrada.getCampos
+                int peso = Integer.parseInt(entrada.get(posicion).getCampos
                         (ContratoPry.Tablas.CLIENTE_PESOTIPOCLI));
 
                 if (peso > 6) {
@@ -1983,7 +1981,11 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     imgcli.setImageResource(R.drawable.cliente);
                 }
 
+
+                super.setEntradas(posicion, view, entrada);
             }
+
+
         });
 
     }
@@ -1993,11 +1995,11 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
         listaClientes = ConsultaBD.queryList(CAMPOS_CLIENTE, null, null);
 
-        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
+        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltroModelo(getContext(),
                 R.layout.item_list_cliente,listaClientes, CAMPOS_CLIENTE) {
 
             @Override
-            public void onEntrada(Modelo entrada, View view) {
+            protected void setEntradas(int posicion, View view, ArrayList<Modelo> entrada) {
 
                 ImageView imgcli = view.findViewById(R.id.imgclilcliente);
                 TextView nombreCli = view.findViewById(R.id.tvnomclilcliente);
@@ -2006,7 +2008,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 TextView emailCli = view.findViewById(R.id.tvemailclilcliente);
                 TextView dirCli = view.findViewById(R.id.tvdirclilcliente);
 
-                int peso = entrada.getInt((CLIENTE_PESOTIPOCLI));
+                int peso = entrada.get(posicion).getInt((CLIENTE_PESOTIPOCLI));
 
                 if (peso > 6) {
                     imgcli.setImageResource(R.drawable.clientev);
@@ -2018,13 +2020,13 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     imgcli.setImageResource(R.drawable.cliente);
                 }
 
-                nombreCli.setText(entrada.getCampos(ContratoPry.Tablas.CLIENTE_NOMBRE));
-                contactoCli.setText(entrada.getCampos(ContratoPry.Tablas.CLIENTE_CONTACTO));
-                telefonoCli.setText(entrada.getCampos(ContratoPry.Tablas.CLIENTE_TELEFONO));
-                emailCli.setText(entrada.getCampos(ContratoPry.Tablas.CLIENTE_EMAIL));
-                dirCli.setText(entrada.getCampos(ContratoPry.Tablas.CLIENTE_DIRECCION));
+                nombreCli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_NOMBRE));
+                contactoCli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_CONTACTO));
+                telefonoCli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_TELEFONO));
+                emailCli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_EMAIL));
+                dirCli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_DIRECCION));
 
-
+                super.setEntradas(posicion, view, entrada);
             }
 
         });

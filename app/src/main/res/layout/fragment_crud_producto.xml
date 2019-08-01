@@ -1,65 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-
-
-            <ImageView
-                android:id="@+id/img_crud_productos"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-    <android.support.design.widget.TextInputLayout
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_add_producto_partida"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:text="@string/add_detpartida"
+        android:textColor="@color/colorPrimary"
+        android:background="@drawable/boton_redondo_primary" />
 
 
-            <EditText
-                android:id="@+id/etnombre_crud_productos"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgproducto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="2.5"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ic_add_a_photo_black_24dp" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                android:id="@+id/etnombreproductos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/cuadro_texto"
-                android:inputType="text"
-                android:textSize="@dimen/texto"
-                android:textColor="@color/Color_texto"
-                android:hint="@string/nombre" />
+                app:hint_text="@string/nombre"
+                app:tipo_dato="TEXTO" />
 
-    </android.support.design.widget.TextInputLayout>
 
-            <EditText
-                android:id="@+id/etdescripcionlproductos"
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                android:id="@+id/etdescripcionproductos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="top"
-                android:hint="@string/descripcion"
-                android:inputType="textMultiLine|text"
-                android:textColor="@color/Color_texto"
-                android:textSize="@dimen/texto" />
+                app:gravedad="top"
+                app:hint_text="@string/descripcion"
+                app:tipo_dato="TEXTO|MULTI" />
 
-            <LinearLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                    android:id="@+id/etnomprovproducto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/etimporte_crud_productos"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="end"
-                    android:background="@drawable/cuadro_texto"
-                    android:textColor="@color/Color_texto"
-                    android:hint="@string/importe"
-                    android:textSize="@dimen/texto" />
+                    app:hint_text="@string/proveedor"
+                    app:tipo_dato="TEXTO"
+                    android:orientation="horizontal" />
 
-                <TextView
-                    android:id="@+id/limporte_crud_productos"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="@string/importe" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgbtnprovproducto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                    android:minHeight="30dp"
+                    android:layout_weight="8"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/ic_person_add_black_24dp" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
-            </LinearLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            android:id="@+id/etimporte_crud_productos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:gravedad="fin"
+            app:hint_text="@string/importe"
+            app:tipo_dato="NUMERO|DECIMAL" />
+
+        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            android:id="@+id/etrefproductos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:gravedad="fin"
+            app:hint_text="@string/referencia_proveedor" />
+
+        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            android:id="@+id/etdescprovproductos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:gravedad="fin"
+            app:hint_text="@string/descuento_proveedor"
+            app:tipo_dato="NUMERO|DECIMAL" />
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 </LinearLayout>

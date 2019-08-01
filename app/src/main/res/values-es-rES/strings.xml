@@ -280,6 +280,9 @@
     <string name="nuevo_trabajo">Nuevo trabajo</string>
     <string name="inactivo">Inactivo</string>
     <string name="proveedores">proveedores</string>
+    <string name="add_detpartida">Añadir a pratida</string>
+    <string name="catalogo">Catalogo</string>
+    <string name="add_producto">Asignar a producto</string>
 
 
 </resources>

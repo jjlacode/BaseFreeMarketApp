@@ -14,9 +14,8 @@ import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ORIGEN;
 
 
 public class FragmentGrid extends FragmentRV implements CommonPry.TiposEvento,
@@ -49,7 +48,7 @@ public class FragmentGrid extends FragmentRV implements CommonPry.TiposEvento,
         bundle = getArguments();
         if (bundle!=null){
 
-            String origen = bundle.getString(ORIGEN);
+            origen = bundle.getString(ORIGEN);
             bundle=null;
         }
 
@@ -58,7 +57,7 @@ public class FragmentGrid extends FragmentRV implements CommonPry.TiposEvento,
         gone(frPie);
         frCuerpo.setPadding(0,0,0,0);
 
-        relScreen = alto/ancho;
+        relScreen = (float) alto / (float) ancho;
 
         setLista();
 
@@ -99,6 +98,7 @@ public class FragmentGrid extends FragmentRV implements CommonPry.TiposEvento,
         gone(auto);
         gone(renovar);
         gone(voz);
+        gone(inicio);
         gone(activityBase.fab);
         visible(activityBase.fab2);
 
@@ -118,7 +118,7 @@ public class FragmentGrid extends FragmentRV implements CommonPry.TiposEvento,
     }
 
     @Override
-    protected ListaAdaptadorFiltroRV setAdaptadorAuto(Context context, int layoutItem, ArrayList lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList lista, String[] campos) {
         return null;
     }
 

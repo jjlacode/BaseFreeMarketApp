@@ -36,7 +36,6 @@ import jjlacode.com.freelanceproject.model.ProdProv;
 import jjlacode.com.freelanceproject.model.Proveedores;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltro;
 import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
 import jjlacode.com.freelanceproject.util.crud.FragmentCUD;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
@@ -152,7 +151,6 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
         tipoDetPartida.setText(tipo.toUpperCase());
 
         rv();
-        setAdaptadorAuto(autoNombre);
 
 
         autoNombre.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -556,189 +554,8 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
     }
 
-    private void setAdaptadorAuto(AutoCompleteTextView autoCompleteTextView) {
-
-        switch (tipo) {
-
-            case TIPOTRABAJO:
-                autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
-                        R.layout.item_list_trabajo, lista, CAMPOS_TRABAJO) {
-
-                    @Override
-                    public void onEntrada(Modelo entrada, View view) {
-
-                        ImageView imagenTarea = view.findViewById(R.id.imgltarea);
-                        TextView nombreTarea = view.findViewById(R.id.tvnomltarea);
-                        TextView descTarea = view.findViewById(R.id.tvdescripcionltareas);
-                        TextView tiempoTarea = view.findViewById(R.id.tvtiempoltareas);
 
 
-                        nombreTarea.setText(entrada.getString(TRABAJO_NOMBRE));
-                        descTarea.setText(entrada.getString(TRABAJO_DESCRIPCION));
-                        tiempoTarea.setText(entrada.getString(TRABAJO_TIEMPO));
-
-                        if (entrada.getString(TRABAJO_RUTAFOTO) != null) {
-                            setImagenUri(contexto,entrada.getString(TRABAJO_RUTAFOTO),imagenTarea);
-                        }
-
-                    }
-
-                });
-                break;
-
-            case TIPOPRODUCTO:
-
-                autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
-                        R.layout.item_list_producto, lista, CAMPOS_PRODUCTO) {
-
-                    @Override
-                    public void onEntrada(Modelo entrada, View view) {
-
-                        ImageView imagen = view.findViewById(R.id.imglproductos);
-                        TextView nombre = view.findViewById(R.id.tvnombrelproductos);
-                        TextView descripcion = view.findViewById(R.id.tvdescripcionlproductos);
-                        TextView importe = view.findViewById(R.id.tvimportelproductos);
-
-
-                        nombre.setText(entrada.getString(PRODUCTO_NOMBRE));
-                        descripcion.setText(entrada.getString(PRODUCTO_DESCRIPCION));
-                        importe.setText(entrada.getString(PRODUCTO_PRECIO));
-
-                        if (entrada.getString(PRODUCTO_RUTAFOTO) != null) {
-                            setImagenUri(contexto,entrada.getString(PRODUCTO_RUTAFOTO));
-                        }
-
-                    }
-                });
-
-                break;
-
-
-            case TIPOPRODUCTOPROV:
-
-                autoCompleteTextView.setAdapter(new ListaAdaptadorFiltroProdProv(getContext(),
-                        R.layout.item_list_prodprov, listaProdProv) {
-                    @Override
-                    public void onEntrada(ProdProv entrada, View view) {
-
-                        ImageView imagen = view.findViewById(R.id.imagenprov);
-                        TextView nombre = view.findViewById(R.id.tvnomprov);
-                        TextView descripcion = view.findViewById(R.id.tvdescprov);
-                        TextView importe = view.findViewById(R.id.tvprecioprov);
-                        TextView refProv = view.findViewById(R.id.tvrefprov);
-
-                        nombre.setText(entrada.getNombre());
-                        descripcion.setText(entrada.getDescripcion());
-                        importe.setText(String.valueOf(entrada.getPrecio()));
-                        refProv.setText(entrada.getRefprov());
-                        String rutafoto = entrada.getRutafoto();
-                        id = entrada.getId();
-
-                        if (entrada.getRutafoto() != null) {
-                            setImagenFireStoreCircle(contexto,rutafoto,imagen);
-                        }
-
-                    }
-                });
-
-
-                break;
-
-
-        }
-
-    }
-
-    private void setAdaptadorAutoCat() {
-
-        listaCat = new ArrayList<>();
-
-        DatabaseReference dbCategorias =
-                FirebaseDatabase.getInstance().getReference()
-                        .child("categorias");
-
-        ValueEventListener eventListenerCat = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Categorias categoria = ds.getValue(Categorias.class);
-                    categoria.setId(ds.getRef().getKey());
-                    listaCat.add(categoria);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-
-        dbCategorias.addValueEventListener(eventListenerCat);
-
-
-        ListaAdaptadorFiltroCat adapterCat = new ListaAdaptadorFiltroCat
-                (contexto, R.layout.item_list_categoria, listaCat);
-
-        autoCat.setAdapter(adapterCat);
-
-        autoCat.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                categoria = listaCat.get(position).getNombre();
-                autoCat.setText(categoria);
-                rv();
-
-            }
-        });
-
-    }
-
-    private void setAdaptadorAutoProv() {
-
-        listaProv = new ArrayList<>();
-
-        DatabaseReference dbProveedor =
-                FirebaseDatabase.getInstance().getReference()
-                        .child("proveedores");
-
-        ValueEventListener eventListenerProv = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Proveedores proveedor = ds.getValue(Proveedores.class);
-                    proveedor.setId(ds.getRef().getKey());
-                    listaProv.add(proveedor);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-
-        dbProveedor.addValueEventListener(eventListenerProv);
-
-
-        ListaAdaptadorFiltroProv adapterProv = new ListaAdaptadorFiltroProv
-                (contexto, R.layout.item_list_proveedorcat, listaProv);
-
-        autoProv.setAdapter(adapterProv);
-
-        autoProv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-
-                proveedor = listaProv.get(position).getNombre();
-                autoProv.setText(proveedor);
-                rv();
-            }
-        });
-    }
 
     public class ListaAdaptadorFiltroProv extends ArrayAdapter<Proveedores> {
 

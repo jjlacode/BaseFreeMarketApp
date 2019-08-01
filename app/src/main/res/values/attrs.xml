@@ -45,6 +45,7 @@
             <flag name="AUTO" value="65536"/>
             <flag name="SIGNO" value="4096"/>
             <flag name="NUMEROPASS" value="16"/>
+            <flag name="NULO" value="0" />
         </attr>
         <attr name="gravedad" format="flags">
             <flag name="inicio" value="8388611"/>

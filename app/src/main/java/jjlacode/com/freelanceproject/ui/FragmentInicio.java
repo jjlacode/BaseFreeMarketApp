@@ -24,7 +24,7 @@ public class FragmentInicio extends FragmentGrid {
     private String treking;
     private String diario;
     private String salir;
-    private String informes;
+    private String catalogo;
     private String tablas;
 
     @Override
@@ -46,10 +46,10 @@ public class FragmentInicio extends FragmentGrid {
         treking = getString(R.string.treking);
         diario = getString(R.string.diario);
         salir = getString(R.string.salir);
-        informes = getString(R.string.informes);
+        catalogo = getString(R.string.catalogo);
         tablas = getString(R.string.tablas);
 
-        lista = new ArrayList<>();
+        lista = new ArrayList<GridModel>();
 
         lista.add(new GridModel(R.drawable.ic_evento_indigo, proximosEventos));
         lista.add(new GridModel(R.drawable.ic_proy_curso_indigo, proyectosCurso));
@@ -60,7 +60,7 @@ public class FragmentInicio extends FragmentGrid {
         lista.add(new GridModel(R.drawable.ic_tareas_indigo, tareasEjecucion));
         lista.add(new GridModel(R.drawable.ic_treking_indigo, treking));
         lista.add(new GridModel(R.drawable.ic_registro_indigo, diario));
-        lista.add(new GridModel(R.drawable.ic_informes_indigo, informes));
+        lista.add(new GridModel(R.drawable.ic_catalogo_indigo, catalogo));
         lista.add(new GridModel(R.drawable.ic_tablas_indigo, tablas));
         lista.add(new GridModel(R.drawable.ic_apagar_indigo, salir));
 
@@ -112,10 +112,10 @@ public class FragmentInicio extends FragmentGrid {
             activityBase.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_main,new Diario()).addToBackStack(null).commit();
 
-        }else if (nombre.equals(informes)){
+        } else if (nombre.equals(catalogo)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main,new Informes()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new Catalogo()).addToBackStack(null).commit();
 
         }else if (nombre.equals(tablas)){
 

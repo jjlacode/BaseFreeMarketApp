@@ -3,6 +3,7 @@ package jjlacode.com.freelanceproject.ui;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -14,10 +15,11 @@ import java.util.ArrayList;
 
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 import jjlacode.com.freelanceproject.util.android.AppActivity;
 import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
+import jjlacode.com.freelanceproject.util.crud.CRUDutil;
 import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
 import jjlacode.com.freelanceproject.util.crud.ListaModelo;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
@@ -41,6 +43,10 @@ public class FragmentCRUDProveedor extends FragmentCRUD {
     private ImageButton mail;
     private ImageButton llamada;
     private ImageButton mapa;
+    private Modelo producto;
+    private Button addProducto;
+    private Modelo partida;
+    private Modelo proyecto;
 
 
     @Override
@@ -49,8 +55,17 @@ public class FragmentCRUDProveedor extends FragmentCRUD {
     }
 
     @Override
-    protected ListaAdaptadorFiltroRV setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
-        return new AdaptadorFiltroRV(context, layoutItem, lista, campos);
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+        return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
+    }
+
+    @Override
+    protected void setBundle() {
+        super.setBundle();
+        producto = (Modelo) getBundleSerial(PRODUCTO);
+        partida = (Modelo) getBundleSerial(PARTIDA);
+        proyecto = (Modelo) getBundleSerial(PROYECTO);
+
     }
 
     @Override
@@ -62,14 +77,15 @@ public class FragmentCRUDProveedor extends FragmentCRUD {
     @Override
     protected void setDatos() {
 
+        System.out.println("origen proveedor= " + origen);
+        if ((origen.equals(PARTIDA) || origen.equals(PRODUCTO))) {
+            visible(addProducto);
+        } else {
+            gone(addProducto);
+        }
+
         visible(btnevento);
         visible(btnNota);
-
-        nombre.setText(modelo.getString(PROVEEDOR_NOMBRE));
-        direccion.setText(modelo.getString(PROVEEDOR_DIRECCION));
-        telefono.setText(modelo.getString(PROVEEDOR_TELEFONO));
-        email.setText(modelo.getString(PROVEEDOR_EMAIL));
-        contacto.setText(modelo.getString(PROVEEDOR_CONTACTO));
 
         fechaInactivo = modelo.getLong(PROVEEDOR_ACTIVO);
         if (fechaInactivo > 0) {
@@ -132,6 +148,7 @@ public class FragmentCRUDProveedor extends FragmentCRUD {
         mapa = (ImageButton) ctrl(R.id.imgbtndirproveedor);
         llamada = (ImageButton) ctrl(R.id.imgbtntelproveedor);
         mail = (ImageButton) ctrl(R.id.imgbtnmailproveedor);
+        addProducto = (Button) ctrl(R.id.btn_add_proveedor_producto);
         mapa.setFocusable(false);
         llamada.setFocusable(false);
         mail.setFocusable(false);
@@ -234,6 +251,20 @@ public class FragmentCRUDProveedor extends FragmentCRUD {
                 AppActivity.enviarEmail(getContext(), email.getText().toString());
             }
         });
+
+        addProducto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                modelo = CRUDutil.setModelo(campos, id);
+                bundle = new Bundle();
+                putBundle(MODELO, producto);
+                putBundle(PROVEEDOR, modelo);
+                putBundle(PARTIDA, partida);
+                putBundle(PROYECTO, proyecto);
+                putBundle(ORIGEN, origen);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProducto());
+            }
+        });
     }
 
     public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
@@ -282,9 +313,9 @@ public class FragmentCRUDProveedor extends FragmentCRUD {
         }
     }
 
-    public class AdaptadorFiltroRV extends ListaAdaptadorFiltroRV {
+    public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroRV(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 

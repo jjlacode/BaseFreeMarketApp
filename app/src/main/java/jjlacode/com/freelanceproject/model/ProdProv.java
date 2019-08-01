@@ -12,6 +12,10 @@ public class ProdProv implements Serializable {
 
     private String descripcion;
 
+    private String web;
+
+    private double descProv;
+
     private double precio;
 
     private String rutafoto;
@@ -19,6 +23,10 @@ public class ProdProv implements Serializable {
     private String proveedor;
 
     private String categoria;
+
+    private String idprov;
+
+    private String alcance;
 
 
     public ProdProv() {
@@ -86,6 +94,38 @@ public class ProdProv implements Serializable {
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public double getDescProv() {
+        return descProv;
+    }
+
+    public void setDescProv(double descProv) {
+        this.descProv = descProv;
+    }
+
+    public String getIdprov() {
+        return idprov;
+    }
+
+    public void setIdprov(String idprov) {
+        this.idprov = idprov;
+    }
+
+    public String getWeb() {
+        return web;
+    }
+
+    public void setWeb(String web) {
+        this.web = web;
+    }
+
+    public String getAlcance() {
+        return alcance;
+    }
+
+    public void setAlcance(String alcance) {
+        this.alcance = alcance;
     }
 }
 

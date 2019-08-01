@@ -34,21 +34,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import jjlacode.com.freelanceproject.util.android.AppActivity;
-import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.crud.CRUDutil;
-import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
-import jjlacode.com.freelanceproject.util.media.MediaUtil;
-import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
-import jjlacode.com.freelanceproject.util.crud.ListaModelo;
-import jjlacode.com.freelanceproject.util.crud.Modelo;
+import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.crud.CRUDutil;
+import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
+import jjlacode.com.freelanceproject.util.crud.ListaModelo;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
+import jjlacode.com.freelanceproject.util.media.MediaUtil;
 
-import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.*;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.insertRegistro;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.insertRegistroDetalle;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryList;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryListDetalle;
+import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryObject;
 
 public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.Constantes,
         ContratoPry.Tablas, CommonPry.TiposDetPartida {
@@ -80,8 +84,8 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
     }
 
     @Override
-    protected ListaAdaptadorFiltroRV setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
-        return new AdaptadorFiltroRV(context,layoutItem,lista,campos);
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+        return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
 
@@ -657,14 +661,15 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
             ArrayList<Modelo> listaPartidasProy = queryList(CAMPOS_PARTIDA);
             lista.addAllLista(listaPartidasProy);
 
-            AdaptadorFiltroRVPartidas adaptadorPartida = new AdaptadorFiltroRVPartidas(contexto,
+            AdaptadorFiltroModeloPartidas adaptadorPartida = new AdaptadorFiltroModeloPartidas(contexto,
                     layoutItem,lista.getLista(),campos);
             autoCompleteTextView.setAdapter(adaptadorPartida);
 
     }
-    public class AdaptadorFiltroRVPartidas extends ListaAdaptadorFiltroRV{
 
-        public AdaptadorFiltroRVPartidas(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+    public class AdaptadorFiltroModeloPartidas extends ListaAdaptadorFiltroModelo {
+
+        public AdaptadorFiltroModeloPartidas(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
@@ -706,10 +711,10 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
         }
     }
 
-    public class AdaptadorFiltroRV extends ListaAdaptadorFiltroRV{
+    public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
 
-        public AdaptadorFiltroRV(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 

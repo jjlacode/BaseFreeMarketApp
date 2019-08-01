@@ -14,6 +14,10 @@ public class Proveedores implements Serializable {
 
     private String rutafoto;
 
+    private String email;
+
+    private String telefono;
+
 
     public Proveedores() {
     }
@@ -56,6 +60,22 @@ public class Proveedores implements Serializable {
 
     public void setRutafoto(String rutafoto) {
         this.rutafoto = rutafoto;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
 }
 

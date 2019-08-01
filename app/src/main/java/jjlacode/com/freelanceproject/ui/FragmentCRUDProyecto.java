@@ -25,6 +25,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.R;
@@ -33,10 +34,11 @@ import jjlacode.com.freelanceproject.templates.PresupuestoPDF;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
 import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltro;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 import jjlacode.com.freelanceproject.util.android.AppActivity;
 import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
+import jjlacode.com.freelanceproject.util.android.controls.ScalableImageView;
 import jjlacode.com.freelanceproject.util.crud.CRUDutil;
 import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
 import jjlacode.com.freelanceproject.util.crud.ListaModelo;
@@ -59,7 +61,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         implements CommonPry.Constantes, ContratoPry.Tablas, CommonPry.Estados,
         CommonPry.TiposEstados {
 
-    private ImageView imagenTipoClienteProyecto;
+    private ScalableImageView imagenTipoClienteProyecto;
     private ImageView btnfechaentrega;
     private AutoCompleteTextView spClienteProyecto;
     private EditMaterial nombrePry;
@@ -82,7 +84,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private ImageButton btnVerPdf;
     private ImageButton btnenviarPdf;
     private ImageButton btnVerEventos;
-    private ImageView btnimgEstadoPry;
+    private ScalableImageView btnimgEstadoPry;
     private ImageView btnfechaacord;
     private Spinner spEstadoProyecto;
 
@@ -133,8 +135,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     }
 
     @Override
-    protected ListaAdaptadorFiltroRV setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
-        return new AdaptadorFiltroRV(context,layoutItem,lista,campos);
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+        return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
 
@@ -626,8 +628,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     protected void setInicio() {
 
         imagen = (ImageView) ctrl(R.id.imudpry);
-        imagenTipoClienteProyecto = (ImageView) ctrl(R.id.imgbtntipocliudpry);
-        btnimgEstadoPry = (ImageView) ctrl(R.id.imgbtnestudpry);
+        imagenTipoClienteProyecto = (ScalableImageView) ctrl(R.id.imgbtntipocliudpry);
+        btnimgEstadoPry = (ScalableImageView) ctrl(R.id.imgbtnestudpry);
         nombrePry = (EditMaterial) ctrl(R.id.etnomudpry, PROYECTO_NOMBRE);
         descripcionPry = (EditMaterial) ctrl(R.id.etdescudpry, PROYECTO_DESCRIPCION);
         spClienteProyecto = (AutoCompleteTextView) ctrl(R.id.sptipocliudpry);
@@ -736,6 +738,17 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         nombrePry.setText(modelo.getString(PROYECTO_NOMBRE));
         descripcionPry.setText(modelo.getString(PROYECTO_DESCRIPCION));
         idCliente = modelo.getString(PROYECTO_ID_CLIENTE);
+        peso = modelo.getInt(PROYECTO_CLIENTE_PESOTIPOCLI);//cliente.getInt(CLIENTE_PESOTIPOCLI);
+        if (peso > 6) {
+            imagenTipoClienteProyecto.setImageResource(R.drawable.clientev);
+        } else if (peso > 3) {
+            imagenTipoClienteProyecto.setImageResource(R.drawable.clientea);
+        } else if (peso > 0) {
+            imagenTipoClienteProyecto.setImageResource(R.drawable.clienter);
+        } else {
+            imagenTipoClienteProyecto.setImageResource(R.drawable.cliente);
+        }
+
         idEstado = modelo.getString(PROYECTO_ID_ESTADO);
         id = modelo.getString(PROYECTO_ID_PROYECTO);
         fechaEntradaPry.setText(JavaUtil.getDateTime(modelo.getLong(PROYECTO_FECHAENTRADA)));
@@ -1413,10 +1426,10 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         listaClientes = queryList(CAMPOS_CLIENTE);
 
         autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
-                R.layout.item_list_cliente,listaClientes,CAMPOS_CLIENTE) {
+                R.layout.item_list_cliente, listaClientes) {
 
             @Override
-            public void onEntrada(Modelo entrada, View view) {
+            public void onEntrada(Object entrada, View view) {
 
                 ImageView imgcli = view.findViewById(R.id.imgclilcliente);
                 TextView nombreCli = view.findViewById(R.id.tvnomclilcliente);
@@ -1425,9 +1438,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 TextView emailCli = view.findViewById(R.id.tvemailclilcliente);
                 TextView dirCli = view.findViewById(R.id.tvdirclilcliente);
 
-                dirCli.setText(entrada.getString(CLIENTE_DIRECCION));
+                dirCli.setText(((Modelo) entrada).getString(CLIENTE_DIRECCION));
 
-                int peso = entrada.getInt
+                int peso = ((Modelo) entrada).getInt
                         (CLIENTE_PESOTIPOCLI);
 
                 if (peso > 6) {
@@ -1440,11 +1453,35 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                     imgcli.setImageResource(R.drawable.cliente);
                 }
 
-                nombreCli.setText(entrada.getString(CLIENTE_NOMBRE));
-                contactoCli.setText(entrada.getString(CLIENTE_CONTACTO));
-                telefonoCli.setText(entrada.getString(CLIENTE_TELEFONO));
-                emailCli.setText(entrada.getString(CLIENTE_EMAIL));
+                nombreCli.setText(((Modelo) entrada).getString(CLIENTE_NOMBRE));
+                contactoCli.setText(((Modelo) entrada).getString(CLIENTE_CONTACTO));
+                telefonoCli.setText(((Modelo) entrada).getString(CLIENTE_TELEFONO));
+                emailCli.setText(((Modelo) entrada).getString(CLIENTE_EMAIL));
 
+            }
+
+            @Override
+            public List onFilter(ArrayList entradas, CharSequence constraint) {
+
+                List suggestion = new ArrayList();
+
+                for (Object item : entradas) {
+
+                    for (int i = 2; i < CAMPOS_CLIENTE.length; i += 3) {
+
+
+                        if (((Modelo) item).getString(CAMPOS_CLIENTE[i]) != null && !((Modelo) item).getString(CAMPOS_CLIENTE[i]).equals("")) {
+                            if (((Modelo) item).getString(CAMPOS_CLIENTE[i]).toLowerCase().contains(constraint.toString().toLowerCase())) {
+
+                                suggestion.add(item);
+                                break;
+                            }
+                        }
+                    }
+
+                }
+
+                return null;
             }
 
         });
@@ -1676,9 +1713,10 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             return new ViewHolderRV(view);
         }
     }
-    public class AdaptadorFiltroRV extends ListaAdaptadorFiltroRV{
 
-        public AdaptadorFiltroRV(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+    public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
+
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 

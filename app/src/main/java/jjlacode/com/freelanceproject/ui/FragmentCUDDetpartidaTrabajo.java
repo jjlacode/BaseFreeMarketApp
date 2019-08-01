@@ -43,7 +43,6 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements CommonP
     private Button btntrekPausa;
     private Button btntrekReset;
     private TextView trek;
-    private Button buscarTrabajo;
     private EditMaterial tiempoDet;
     private String tipo;
     private Modelo proyecto;
@@ -69,7 +68,6 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements CommonP
     private boolean trekOnpausa;
     private EditMaterial cantidadPartida;
     private EditMaterial nombre;
-    private Button nuevoTrabajo;
     private String idDetPartida;
 
 
@@ -79,10 +77,6 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements CommonP
 
     @Override
     protected void setNuevo() {
-
-        allGone();
-        visible(buscarTrabajo);
-        visible(nuevoTrabajo);
 
     }
 
@@ -105,6 +99,8 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements CommonP
         if (partida != null) {
             secuenciaPartida = partida.getInt(PARTIDA_SECUENCIA);
             idProyecto_Partida = partida.getString(PARTIDA_ID_PROYECTO);
+            id = partida.getString(PARTIDA_ID_PARTIDA);
+
         }
         tipo = bundle.getString(TIPO);
         if (origen.equals(INICIO)){
@@ -452,37 +448,6 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements CommonP
 
             });
 
-        buscarTrabajo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                bundle = new Bundle();
-                putBundle(PROYECTO, proyecto);
-                putBundle(PARTIDA, partida);
-                putBundle(ORIGEN, DETPARTIDA);
-                putBundle(IDREL, id);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDTrabajo());
-
-
-            }
-        });
-
-        nuevoTrabajo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                bundle = new Bundle();
-                putBundle(ORIGEN, DETPARTIDA);
-                putBundle(PROYECTO, proyecto);
-                putBundle(PARTIDA, partida);
-                putBundle(IDREL, id);
-                putBundle(NUEVOREGISTRO, true);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDTrabajo());
-
-
-            }
-        });
-
     }
 
     @Override
@@ -502,25 +467,23 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements CommonP
     @Override
     protected void setInicio() {
 
-        descripcion = (EditMaterial) ctrl(R.id.etdesccdetpartida);
-        precio = (EditMaterial) ctrl(R.id.etpreciocdetpartida);
-        cantidadPartida = (EditMaterial) ctrl(R.id.etcanttotpartida);
-        nombre = (EditMaterial) ctrl(R.id.etnombredetpartida);
-        tiempoDet = (EditMaterial) ctrl(R.id.ettiempocdetpartida);
-        tiempoTotalDetPartida = (TextView) ctrl(R.id.tvtiempototaldetpartida);
-        imagen = (ImageView) ctrl(R.id.imgcdetpartida);
-        tipoDetPartida = (TextView) ctrl(R.id.tvtipocdetpartida);
-        partida_completada = (CheckBox) ctrl(R.id.cbox_hacer_detpartida_completa);
+        descripcion = (EditMaterial) ctrl(R.id.etdesccdetpartida_trb);
+        precio = (EditMaterial) ctrl(R.id.etpreciocdetpartida_trb);
+        cantidadPartida = (EditMaterial) ctrl(R.id.etcanttotpartida_trb);
+        nombre = (EditMaterial) ctrl(R.id.etnombredetpartida_trb);
+        tiempoDet = (EditMaterial) ctrl(R.id.ettiempocdetpartida_trb);
+        tiempoTotalDetPartida = (TextView) ctrl(R.id.tvtiempototaldetpartida_trb);
+        imagen = (ImageView) ctrl(R.id.imgcdetpartida_trb);
+        tipoDetPartida = (TextView) ctrl(R.id.tvtipocdetpartida_trb);
+        partida_completada = (CheckBox) ctrl(R.id.cbox_hacer_detpartida_completa_trb);
         btntrek = (Button) ctrl(R.id.btn_trek);
         btntrekPausa = (Button) ctrl(R.id.btn_trek_pausa);
         btntrekReset = (Button) ctrl(R.id.btn_trek_reset);
-        progressBarPartida = (ProgressBar) ctrl(R.id.progressBardetpartida);
+        progressBarPartida = (ProgressBar) ctrl(R.id.progressBardetpartida_trb);
         progressBarPartida2 = (ProgressBar) ctrl(R.id.progressBar2detpartida);
         trek = (TextView) ctrl(R.id.tvtrek);
         timer = (Chronometer) ctrl(R.id.chronodetpartida);
-        completadaPartida = (EditMaterial) ctrl(R.id.etcompletadadetpartida);
-        buscarTrabajo = (Button) ctrl(R.id.btn_buscar_trabajo);
-        nuevoTrabajo = (Button) ctrl(R.id.btn_nuevo_trabajo);
+        completadaPartida = (EditMaterial) ctrl(R.id.etcompletadadetpartida_trb);
         precio.setActivo(false);
         cantidadPartida.setActivo(false);
 
@@ -591,6 +554,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements CommonP
             bundle = new Bundle();
             new CommonPry.Calculos.TareaActualizaProy().execute(idProyecto_Partida);
             partida = queryObjectDetalle(CAMPOS_PARTIDA, idProyecto_Partida, secuenciaPartida);
+            proyecto = queryObject(CAMPOS_PROYECTO, idProyecto_Partida);
             bundle.putSerializable(MODELO, partida);
             bundle.putSerializable(PROYECTO, proyecto);
             bundle.putString(ORIGEN, DETPARTIDA);

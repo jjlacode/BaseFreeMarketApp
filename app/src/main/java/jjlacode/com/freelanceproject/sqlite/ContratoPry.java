@@ -5,15 +5,39 @@ import android.net.Uri;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.*;
 import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
 
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.AMORTIZACION;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.CLIENTE;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.DETPARTIDA;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.DETPARTIDABASE;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.DETPEDIDOPROVCAT;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.DETPEDIDOPROVEEDOR;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.DIARIO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.ESTADO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.EVENTO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.GASTOFIJO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.NOTA;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PARTIDA;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PARTIDABASE;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PEDIDOPROVCAT;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PEDIDOPROVEEDOR;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PERFIL;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PRODPROVCAT;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PRODUCTO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PROVCAT;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PROVEEDOR;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PROYECTO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.TABLAS;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.TIPOCLIENTE;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.TRABAJO;
 
 
 public class ContratoPry implements JavaUtil.Constantes {
 
     public static final String AUTORIDAD_CONTENIDO =
-            "jjlacode.com.freelanceproject";
+            AppActivity.getNombreApp();
 
     public static final Uri URI_BASE = Uri.parse("content://" + AUTORIDAD_CONTENIDO);
 
@@ -195,9 +219,13 @@ public class ContratoPry implements JavaUtil.Constantes {
         String TRABAJO_TIMESTAMP = CAMPO_TIMESTAMP;
 
         String PRODUCTO_ID_PRODUCTO = CAMPO_ID+TABLA_PRODUCTO;
+        String PRODUCTO_ID_PROVEEDOR = CAMPO_ID + TABLA_PROVEEDOR + TABLA_PRODUCTO;
+        String PRODUCTO_NOMBREPROV = "nombreprov_" + TABLA_PRODUCTO;
         String PRODUCTO_DESCRIPCION = CAMPO_DESCRIPCION+TABLA_PRODUCTO;
         String PRODUCTO_NOMBRE = CAMPO_NOMBRE+TABLA_PRODUCTO;
         String PRODUCTO_PRECIO = CAMPO_PRECIO+TABLA_PRODUCTO;
+        String PRODUCTO_REFERENCIA = CAMPO_REFERENCIA + TABLA_PRODUCTO;
+        String PRODUCTO_DESCPROV = "descprov_" + TABLA_PRODUCTO;
         String PRODUCTO_RUTAFOTO = CAMPO_RUTAFOTO;
         String PRODUCTO_CREATE = CAMPO_CREATEREG;
         String PRODUCTO_TIMESTAMP = CAMPO_TIMESTAMP;
@@ -548,12 +576,16 @@ public class ContratoPry implements JavaUtil.Constantes {
         };
 
 
-        String[] CAMPOS_PRODUCTO = {"23", TABLA_PRODUCTO,
+        String[] CAMPOS_PRODUCTO = {"35", TABLA_PRODUCTO,
                 PRODUCTO_ID_PRODUCTO, "TEXT NON NULL UNIQUE",STRING,
-                PRODUCTO_DESCRIPCION, "TEXT NON NULL",STRING,
-                PRODUCTO_NOMBRE, "TEXT NON NULL",STRING,
+                PRODUCTO_ID_PROVEEDOR, "TEXT", STRING,
+                PRODUCTO_NOMBREPROV, "TEXT", STRING,
+                PRODUCTO_DESCRIPCION, "TEXT", STRING,
+                PRODUCTO_NOMBRE, "TEXT", STRING,
+                PRODUCTO_REFERENCIA, "TEXT", STRING,
                 PRODUCTO_RUTAFOTO, "TEXT",STRING,
-                PRODUCTO_PRECIO, "REAL NON NULL",DOUBLE,
+                PRODUCTO_PRECIO, "REAL NON NULL DEFAULT 0", DOUBLE,
+                PRODUCTO_DESCPROV, "REAL NON NULL DEFAULT 0", DOUBLE,
                 PRODUCTO_CREATE, "INTEGER NON NULL DEFAULT 0",LONG,
                 PRODUCTO_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG
         };

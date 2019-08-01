@@ -15,6 +15,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_add_proveedor_producto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_producto"
+            android:textColor="@color/colorPrimary"
+            android:background="@drawable/boton_redondo_primary" />
+
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="match_parent"

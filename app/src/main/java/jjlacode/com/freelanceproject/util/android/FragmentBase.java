@@ -48,6 +48,7 @@ import jjlacode.com.freelanceproject.util.animation.OneFrameLayout;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.SENSOR_SERVICE;
+import static jjlacode.com.freelanceproject.R.layout.contenido;
 
 public abstract class FragmentBase extends Fragment implements JavaUtil.Constantes {
 
@@ -124,10 +125,11 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         Log.d(TAG, getMetodo());
 
         setLayout();
-        setLayoutCRUD();
+        setLayoutExtra();
+        setContext();
 
         metrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        activityBase.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
         multiPanel = esMultiPanel(metrics);
 
@@ -163,7 +165,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         inflaterMain = inflater;
         containerMain = container;
 
-        view = inflater.inflate(R.layout.contenido, container, false);
+        view = inflater.inflate(contenido, container, false);
         land = getResources().getBoolean(R.bool.esLand);
         tablet = getResources().getBoolean(R.bool.esTablet);
         System.out.println("land = " + land);
@@ -179,7 +181,6 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         frPie = view.findViewById(R.id.layout_pie);
         frLista = view.findViewById(R.id.layout_rv);
         frCuerpo = view.findViewById(R.id.layout_cuerpo);
-
         scrollDetalle = view.findViewById(R.id.scrolldetalle);
 
         if (layoutCuerpo>0) {
@@ -223,6 +224,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
             }
 
         }
+
+
         frameAnimationCuerpo = view.findViewById(R.id.frameanimationcuerpo);
 
         gone(frLista);
@@ -273,7 +276,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
     }
 
-    protected void setLayoutCRUD(){
+    protected void setLayoutExtra() {
         Log.d(TAG, getMetodo());
 
     }
@@ -589,7 +592,9 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected void setSizeTextControles(float sizeText){
 
         for (View vista : vistas) {
-            if (vista instanceof EditText){
+            if (vista instanceof AutoCompleteTextView) {
+                ((AutoCompleteTextView) vista).setTextSize(sizeText);
+            } else if (vista instanceof EditText) {
                 ((EditText) vista).setTextSize(sizeText);
             }else if (vista instanceof EditMaterial){
                 ((EditMaterial) vista).setTextSize(activityBase);
@@ -597,8 +602,6 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
                 ((CheckBox) vista).setTextSize(sizeText);
             }else if (vista instanceof TextView){
                 ((TextView) vista).setTextSize(sizeText);
-            }else if (vista instanceof AutoCompleteTextView){
-                ((AutoCompleteTextView) vista).setTextSize(sizeText);
             }
         }
 

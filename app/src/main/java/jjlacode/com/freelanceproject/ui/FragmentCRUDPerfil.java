@@ -12,17 +12,17 @@ import androidx.cardview.widget.CardView;
 
 import java.util.ArrayList;
 
-import jjlacode.com.freelanceproject.util.android.AppActivity;
-import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
-import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
-import jjlacode.com.freelanceproject.util.crud.Modelo;
-import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
-import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.R;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
+import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
+import jjlacode.com.freelanceproject.util.crud.Modelo;
+import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
 
 public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tablas {
 
@@ -55,8 +55,8 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     }
 
     @Override
-    protected ListaAdaptadorFiltroRV setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
-        return new AdaptadorFiltroRV(context,layoutItem,lista,campos);
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+        return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
     @Override
@@ -65,61 +65,13 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     }
 
     @Override
-    protected void setMaestroDetallePort() { maestroDetalleSeparados = true;
-
+    protected void setImagen() {
     }
-
-    @Override
-    protected void setMaestroDetalleLand() { maestroDetalleSeparados = false;
-
-    }
-
-    @Override
-    protected void setMaestroDetalleTabletLand() { maestroDetalleSeparados = false;
-
-    }
-
-    @Override
-    protected void setMaestroDetalleTabletPort() { maestroDetalleSeparados = false;
-
-    }
-
 
     @Override
     protected void setTabla() {
 
         tabla = TABLA_PERFIL;
-
-    }
-
-    @Override
-    protected void setTablaCab() {
-
-        tablaCab = null;
-
-    }
-
-    @Override
-    protected void setContext() {
-
-        contexto = getContext();
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = CAMPOS_PERFIL;
-    }
-
-    @Override
-    protected void setCampoID() {
-
-        campoID = PERFIL_ID_PERFIL;
-    }
-
-    @Override
-    protected void setBundle() {
-
 
     }
 
@@ -184,6 +136,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     protected void setTitulo() {
         tituloSingular = R.string.perfil;
         tituloPlural = R.string.perfiles;
+        tituloNuevo = R.string.nuevo_perfil;
     }
 
 
@@ -198,19 +151,19 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     @Override
     protected void setInicio() {
 
-        nombre = view.findViewById(R.id.etnomudperfil);
-        descripcion = view.findViewById(R.id.etdescudperfil);
-        lunes = view.findViewById(R.id.ethlunesudperfil);
-        martes = view.findViewById(R.id.ethmartesudperfil);
-        miercoles = view.findViewById(R.id.ethmiercolesudperfil);
-        jueves = view.findViewById(R.id.ethjuevesudperfil);
-        viernes = view.findViewById(R.id.ethviernesudperfil);
-        sabado = view.findViewById(R.id.ethsabadoudperfil);
-        domingo = view.findViewById(R.id.ethdomingoudperfil);
-        vacaciones = view.findViewById(R.id.etvacaudperfil);
-        sueldo = view.findViewById(R.id.etsueldocudperfil);
-        btnperfilact = view.findViewById(R.id.btnperfilactudperfil);
-        activo = view.findViewById(R.id.tvpactivocudperfil);
+        nombre = (EditText) ctrl(R.id.etnomudperfil, PERFIL_NOMBRE);
+        descripcion = (EditText) ctrl(R.id.etdescudperfil, PERFIL_DESCRIPCION);
+        lunes = (EditText) ctrl(R.id.ethlunesudperfil, PERFIL_HORASLUNES);
+        martes = (EditText) ctrl(R.id.ethmartesudperfil, PERFIL_HORASMARTES);
+        miercoles = (EditText) ctrl(R.id.ethmiercolesudperfil, PERFIL_HORASMIERCOLES);
+        jueves = (EditText) ctrl(R.id.ethjuevesudperfil, PERFIL_HORASJUEVES);
+        viernes = (EditText) ctrl(R.id.ethviernesudperfil, PERFIL_HORASVIERNES);
+        sabado = (EditText) ctrl(R.id.ethsabadoudperfil, PERFIL_HORASSABADO);
+        domingo = (EditText) ctrl(R.id.ethdomingoudperfil, PERFIL_HORASDOMINGO);
+        vacaciones = (EditText) ctrl(R.id.etvacaudperfil, PERFIL_VACACIONES);
+        sueldo = (EditText) ctrl(R.id.etsueldocudperfil, PERFIL_SUELDO);
+        btnperfilact = (Button) ctrl(R.id.btnperfilactudperfil);
+        activo = (TextView) ctrl(R.id.tvpactivocudperfil);
 
     }
 
@@ -218,15 +171,6 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     @Override
     protected void setNuevo() {
 
-        lunes.setText("");
-        martes.setText("");
-        miercoles.setText("");
-        jueves.setText("");
-        viernes.setText("");
-        sabado.setText("");
-        domingo.setText("");
-        vacaciones.setText("");
-        sueldo.setText(JavaUtil.formatoMonedaLocal(0));
         activo.setVisibility(View.GONE);
         btnperfilact.setVisibility(View.GONE);
 
@@ -291,10 +235,10 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
 
     }
 
-    public class AdaptadorFiltroRV extends ListaAdaptadorFiltroRV{
+    public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
 
-        public AdaptadorFiltroRV(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 

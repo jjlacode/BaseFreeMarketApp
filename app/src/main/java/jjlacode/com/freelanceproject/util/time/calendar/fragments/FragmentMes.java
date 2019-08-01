@@ -29,7 +29,7 @@ import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
 import jjlacode.com.freelanceproject.util.adapter.RVAdapter;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 import jjlacode.com.freelanceproject.util.android.AndroidUtil;
@@ -115,7 +115,7 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
     private boolean sinBusqueda;
     private boolean buscando;
     private AutoCompleteTextView buscar;
-    private ListaAdaptadorFiltroRV adaptadorFiltroRV;
+    private ListaAdaptadorFiltroModelo adaptadorFiltroRV;
     private GregorianCalendar cbusca;
     protected String tipoRV;
 
@@ -1090,7 +1090,7 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
 
     protected abstract TipoViewHolder setViewHolder(View view);
 
-    protected abstract ListaAdaptadorFiltroRV setAdaptadorAuto
+    protected abstract ListaAdaptadorFiltroModelo setAdaptadorAuto
             (Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos);
 
 

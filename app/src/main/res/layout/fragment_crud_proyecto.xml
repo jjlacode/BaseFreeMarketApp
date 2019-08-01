@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:jjla="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -25,7 +24,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="3"
                     android:minHeight="80dp"
-                    app:srcCompat="@drawable/ico_calendario_reloj" />
+                    app:srcCompat="@drawable/ic_add_a_photo_black_24dp" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
@@ -56,12 +55,11 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <androidx.appcompat.widget.AppCompatImageView
+                <jjlacode.com.freelanceproject.util.android.controls.ScalableImageView
                     android:id="@+id/imgbtntipocliudpry"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="10"
-                    android:scaleType="centerCrop"
                     app:srcCompat="@drawable/ic_person_add_black_24dp" />
 
 
@@ -81,19 +79,18 @@
                 android:layout_marginRight="5dp"
                 android:orientation="horizontal">
 
-                <ImageView
+                <jjlacode.com.freelanceproject.util.android.controls.ScalableImageView
                     android:id="@+id/imgbtnestudpry"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="10"
-                    android:scaleType="center"
                     app:srcCompat="@drawable/alert_box_v" />
 
                 <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/tvestudproy"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="1.2"
                     app:hint_text="@string/estado"
                     app:gravedad="centro"/>
 

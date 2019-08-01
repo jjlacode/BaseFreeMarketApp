@@ -300,6 +300,9 @@
     <string name="inactivo">Inactivo</string>
     <string name="proveedores">proveedores</string>
     <string name="nuevo_proveedor">Nuevo Proveedor</string>
+    <string name="add_detpartida">Añadir a partida</string>
+    <string name="catalogo">Catalogo</string>
+    <string name="add_producto">Asignar a producto</string>
 
 
 </resources>

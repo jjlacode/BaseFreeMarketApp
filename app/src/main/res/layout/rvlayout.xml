@@ -8,7 +8,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:minHeight="30dp">
 
         <ImageView
             android:id="@+id/imgsearch"
@@ -27,6 +28,7 @@
 
         <AutoCompleteTextView
             android:id="@+id/auto"
+            android:singleLine="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -58,8 +60,7 @@
     <jjlacode.com.freelanceproject.util.animation.OneFrameLayout
         android:id="@+id/frameanimation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#f1f1f1">
+        android:layout_height="wrap_content">
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"

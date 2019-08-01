@@ -204,10 +204,7 @@ public class EditMaterial extends LinearLayoutCompat {
 
     public void setText(String text){
         editText.setText(text);
-        if (getText() == null || (getText() != null && getTexto().equals(""))) {
-            editText.setBackgroundColor(getResources().getColor(R.color.Color_card_notok));
-            editText.setTextColor(getResources().getColor(R.color.colorSecondaryDark));
-        }
+        comprobarEdit();
     }
 
     public void setGravedad(int gravedad){
@@ -254,8 +251,8 @@ public class EditMaterial extends LinearLayoutCompat {
     }
 
     public void comprobarEdit() {
-        if (getText() == null || (getText() != null && getTexto().equals(""))) {
-            editText.setBackgroundColor(getResources().getColor(R.color.Color_card_notok));
+        if (getText() == null || (getText() != null && getTexto().equals("")) || (getText() != null && getTexto().equals("0.0"))) {
+            editText.setBackgroundColor(getResources().getColor(R.color.Color_edit_vacio));
             editText.setTextColor(getResources().getColor(R.color.colorSecondaryDark));
         }
 

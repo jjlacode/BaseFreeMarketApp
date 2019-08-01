@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
 import jjlacode.com.freelanceproject.util.adapter.RVAdapter;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 
@@ -34,7 +34,7 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
     protected ImageView renovar;
     protected ImageView inicio;
     protected ImageView lupa;
-    protected ListaAdaptadorFiltroRV adaptadorFiltroRV;
+    protected ListaAdaptadorFiltroModelo adaptadorFiltroRV;
     protected RVAdapter adaptadorRV;
     protected SwipeRefreshLayout refreshLayout;
 
@@ -273,7 +273,8 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
         }
 
     }
-    protected abstract ListaAdaptadorFiltroRV setAdaptadorAuto
+
+    protected abstract ListaAdaptadorFiltroModelo setAdaptadorAuto
             (Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos);
 
     protected void setLista() {

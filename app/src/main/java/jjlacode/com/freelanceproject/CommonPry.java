@@ -22,7 +22,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.File;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,34 +31,33 @@ import java.util.TimeZone;
 
 import jjlacode.com.freelanceproject.model.ProdProv;
 import jjlacode.com.freelanceproject.services.EventosReceiver;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.ui.CalendarioEventos;
 import jjlacode.com.freelanceproject.ui.FragmentInicio;
 import jjlacode.com.freelanceproject.ui.FragmentNuevoEvento;
-import jjlacode.com.freelanceproject.util.android.AppActivity;
-import jjlacode.com.freelanceproject.util.android.ICFragmentos;
-import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
-import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.android.ICFragmentos;
 import jjlacode.com.freelanceproject.util.crud.ListaModelo;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
+import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 import static android.content.Intent.EXTRA_EMAIL;
 import static android.content.Intent.EXTRA_SUBJECT;
 import static android.content.Intent.EXTRA_TEXT;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.INICIO;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.PARTIDA;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.PRODPROVCAT;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.PRODUCTO;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.TRABAJO;
-import static jjlacode.com.freelanceproject.util.android.AppActivity.getAppContext;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.ACCION_CANCELAR;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.ACCION_POSPONER;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.ACCION_VER;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.EXTRA_ACTUAL;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.EXTRA_ID;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.EXTRA_IDEVENTO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.INICIO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PARTIDA;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PRODPROVCAT;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PRODUCTO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.TRABAJO;
+import static jjlacode.com.freelanceproject.util.android.AppActivity.getAppContext;
 import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryList;
 
 
@@ -1137,14 +1135,17 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
             importeTiempoPartida = tiempoPartida * CommonPry.hora;
             totalPartida = importeProductosPartida +importeTiempoPartida;
 
+            Modelo partida = ConsultaBD.queryObject(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, idPartida, null,
+                    JavaUtil.Constantes.IGUAL, null);
+
+            double cantidadPartida = partida.getDouble(PARTIDA_CANTIDAD);
+
             ContentValues valores = new ContentValues();
-            ConsultaBD.putDato(valores,CAMPOS_PARTIDA,PARTIDA_TIEMPO,tiempoPartida);
-            ConsultaBD.putDato(valores,CAMPOS_PARTIDA,PARTIDA_PRECIO,totalPartida);
-            ConsultaBD.putDato(valores,CAMPOS_PARTIDA,PARTIDA_COSTE,coste);
+            ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_TIEMPO, tiempoPartida * cantidadPartida);
+            ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_PRECIO, totalPartida * cantidadPartida);
+            ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_COSTE, coste * cantidadPartida);
             ConsultaBD.putDato(valores,CAMPOS_PARTIDA,PARTIDA_PRECIOHORA,CommonPry.hora);
 
-            Modelo partida = ConsultaBD.queryObject(CAMPOS_PARTIDA,PARTIDA_ID_PARTIDA,idPartida,null,
-                    JavaUtil.Constantes.IGUAL,null);
             String idProyecto_Partida = partida.getString(PARTIDA_ID_PROYECTO);
             int secuenciaPartida = partida.getInt(PARTIDA_SECUENCIA);
             int i = ConsultaBD.updateRegistroDetalle(TABLA_PARTIDA,idProyecto_Partida,secuenciaPartida,valores);

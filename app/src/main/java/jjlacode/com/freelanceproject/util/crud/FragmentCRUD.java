@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 
 import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
 import jjlacode.com.freelanceproject.util.adapter.RVAdapter;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 import jjlacode.com.freelanceproject.util.animation.OneFrameLayout;
@@ -43,10 +44,11 @@ public abstract class FragmentCRUD extends FragmentCUD {
     protected ImageView inicio;
     protected ImageView lupa;
     protected ImageView voz;
-    protected ListaAdaptadorFiltroRV adaptadorFiltroRV;
+    protected ListaAdaptadorFiltroModelo adaptadorFiltroRV;
     protected RVAdapter adaptadorRV;
     protected SwipeRefreshLayout refreshLayout;
     private OneFrameLayout frameAnimation;
+    private String stemp = "";
 
     public FragmentCRUD() {
     }
@@ -81,6 +83,12 @@ public abstract class FragmentCRUD extends FragmentCUD {
                 R.color.s4
         );
 
+        if (land) {
+            frCuerpo.setOrientation(LinearLayout.HORIZONTAL);
+        } else {
+            frCuerpo.setOrientation(LinearLayout.VERTICAL);
+        }
+
     }
 
     @Override
@@ -92,6 +100,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
         Log.d(TAG, getMetodo());
         System.out.println("id = " + id);
+        System.out.println("modelo = " + modelo);
 
         maestroDetalle();
 
@@ -102,7 +111,9 @@ public abstract class FragmentCRUD extends FragmentCUD {
             }
             modelo = null;
             secuencia=0;
-            activityBase.toolbar.setSubtitle(tituloNuevo);
+            if (tituloNuevo > 0) {
+                activityBase.toolbar.setSubtitle(tituloNuevo);
+            }
             vaciarControles();
             path = null;
             setImagen();
@@ -200,6 +211,8 @@ public abstract class FragmentCRUD extends FragmentCUD {
                 actualizarConsultasRV();
                 setRv();
                 auto.setText("");
+                stemp = "";
+                auto.setHint(stemp);
             }
         });
 
@@ -243,19 +256,27 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
                 if (grabarVoz==null) {
                     System.out.println("Auto textChange");
-                    System.out.println("s = " + s);
+                    System.out.println("s = " + s.toString());
 
-                    if (id == null) {
+                    if (id == null || secuencia == 0) {
                         auto.setDropDownWidth(0);
                     } else {
                         auto.setDropDownWidth(ancho);
                     }
-                    if (adaptadorFiltroRV.getLista() != null) {
-                        lista.clearAddAllLista(adaptadorFiltroRV.getLista());
-                    }
+                    if (!s.toString().contains(" ")) {
 
-                    setRv();
+                        if (adaptadorFiltroRV.getLista() != null) {
+                            lista.clearAddAllLista(adaptadorFiltroRV.getLista());
+                            setRv();
+                        }
+
+                    } else if (!auto.getText().toString().equals("")) {
+                        stemp += "+" + s.toString();
+                        auto.setHint(stemp);
+                        auto.setText("");
+                    }
                 }
+
             }
 
             @Override
@@ -322,7 +343,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
         }
 
 
-        if (!lista.chechLista() && !maestroDetalleSeparados){
+        if (!lista.chechLista() && !maestroDetalleSeparados && !nuevo) {
             frdetalle.setVisibility(View.GONE);
         }else{
             frdetalle.setVisibility(View.VISIBLE);
@@ -380,7 +401,8 @@ public abstract class FragmentCRUD extends FragmentCUD {
         }
 
     }
-    protected abstract ListaAdaptadorFiltroRV setAdaptadorAuto
+
+    protected abstract ListaAdaptadorFiltroModelo setAdaptadorAuto
             (Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos);
 
     protected void setLista() {
@@ -475,7 +497,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
             visible(frLista);
             visible(rv);
             visible(refreshLayout);
-            gone(frdetalle);
+        gone(frameAnimationCuerpo);
             gone(frPie);
 
             if (nuevo){
@@ -485,18 +507,18 @@ public abstract class FragmentCRUD extends FragmentCUD {
                 gone(frLista);
                 gone(rv);
                 gone(refreshLayout);
-                visible(frdetalle);
+                visible(frameAnimationCuerpo);
                 visible(frPie);
                 activityBase.fab.setSize(FloatingActionButton.SIZE_MINI);
                 activityBase.fab2.setSize(FloatingActionButton.SIZE_MINI);
-            }else if ( (id!=null && secuencia>0) || (id!=null && tablaCab==null)){
+            } else if ((id != null && secuencia > 0) || (id != null && tablaCab == null) || (modelo != null)) {
                 if (layoutCabecera>0) {
                     gone(frCabecera);
                 }
-                visible(frLista);
+                gone(frLista);
                 gone(rv);
                 gone(refreshLayout);
-                visible(frdetalle);
+                visible(frameAnimationCuerpo);
                 visible(frPie);
                 activityBase.fab.setSize(FloatingActionButton.SIZE_MINI);
                 activityBase.fab2.setSize(FloatingActionButton.SIZE_MINI);
@@ -536,6 +558,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
         visible(frLista);
         visible(rv);
         visible(refreshLayout);
+        visible(frameAnimationCuerpo);
         visible(frdetalle);
         visible(frPie);
         if (layoutCabecera>0) {
@@ -543,7 +566,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
         }else{
             gone(frCabecera);
         }
-        activityBase.fab2.hide();
+        activityBase.fab2.show();
         activityBase.fab.show();
         visible(btndelete);
         listaRV();

@@ -84,8 +84,8 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     }
 
     @Override
-    protected void setLayoutCRUD() {
-        super.setLayoutCRUD();
+    protected void setLayoutExtra() {
+        super.setLayoutExtra();
         Log.d(TAG, getMetodo());
 
         layoutPie = R.layout.btn_sdb;
@@ -148,10 +148,8 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                 secuenciatemp = secuencia;
             }
 
-        }
-
-        if (bundle!=null) {
             setBundle();
+
         }
     }
 
@@ -215,6 +213,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
             }
             setDatos();
+            obtenerDatosEdit();
         }catch (Exception e) {
 
             e.printStackTrace();
@@ -331,7 +330,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     protected void alCambiarCampos(EditMaterial editMaterial) {
         super.alCambiarCampos(editMaterial);
 
-        if ((id != null && (tablaCab == null || secuencia > 0)) || back) {
+        if ((id != null && (tablaCab == null || secuencia > 0))) {
             guardarEdit(editMaterial);
         } else {
             if (!back) {
@@ -354,6 +353,21 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                 } else {
                     int x = ConsultaBD.updateRegistro(tabla, id, valores);
                     System.out.println("guardados = " + x);
+                }
+            }
+        }
+    }
+
+    protected void obtenerDatosEdit() {
+
+        for (EditMaterial materialEdit : materialEdits) {
+
+
+            for (Object o : camposEdit) {
+
+                if (((Map) o).get("materialEdit") == materialEdit) {
+                    materialEdit.setText(modelo.getString((String) ((Map) o).get("campoEdit")));
+
                 }
             }
         }

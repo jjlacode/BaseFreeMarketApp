@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import jjlacode.com.freelanceproject.BuildConfig;
 import jjlacode.com.freelanceproject.R;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
@@ -38,7 +39,7 @@ public class AppActivity extends Application {
     public void onCreate() {
         super.onCreate();
         AppActivity.context = getApplicationContext();
-        FILEPROVIDER = getPackage()+".provider";
+        FILEPROVIDER = getNombreApp() + ".provider";
     }
 
     public static Context getAppContext() {
@@ -85,20 +86,24 @@ public class AppActivity extends Application {
     }
 
     public static Uri getUriFromFile(File arch){
-        FILEPROVIDER = getPackage()+".provider";
+        FILEPROVIDER = getNombreApp() + ".provider";
         return FileProvider.getUriForFile(context, FILEPROVIDER, arch);
 
     }
 
     public static Uri getUriFromFile(String path){
         File arch = new File(path);
-        FILEPROVIDER = getPackage()+".provider";
+        FILEPROVIDER = getNombreApp() + ".provider";
         return FileProvider.getUriForFile(context, FILEPROVIDER, arch);
 
     }
 
     public static String getPackage(){
         return context.getPackageName();
+    }
+
+    public static String getNombreApp() {
+        return BuildConfig.APPLICATION_ID;
     }
 
     public static String getFileProvider(){

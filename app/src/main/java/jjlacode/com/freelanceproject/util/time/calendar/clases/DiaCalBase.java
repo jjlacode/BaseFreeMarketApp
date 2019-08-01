@@ -2,9 +2,7 @@ package jjlacode.com.freelanceproject.util.time.calendar.clases;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -13,12 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
 import jjlacode.com.freelanceproject.util.adapter.RVAdapter;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 import jjlacode.com.freelanceproject.util.android.FragmentRV;
@@ -26,15 +22,6 @@ import jjlacode.com.freelanceproject.util.animation.OneFrameLayout;
 import jjlacode.com.freelanceproject.util.crud.ListaModelo;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.util.time.TimeDateUtil;
-
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.CAMPO;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.DIASLONG;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.FECHA;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.LISTA;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.LONG;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.MINUTOSLONG;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NOSQL;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.STRING;
 
 public abstract class DiaCalBase extends FragmentRV {
 
@@ -84,13 +71,13 @@ public abstract class DiaCalBase extends FragmentRV {
     }
 
     @Override
-    protected ListaAdaptadorFiltroRV setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
-        return new ListaAdaptadorFiltroRV(context,layoutItem,lista,campos);
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+        return new ListaAdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
-    public class AdaptadorFiltroRV extends ListaAdaptadorFiltroRV {
+    public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroRV(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 

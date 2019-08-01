@@ -4,6 +4,7 @@ package jjlacode.com.freelanceproject.ui;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,7 +16,7 @@ import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
-import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroRV;
+import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
 import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
 import jjlacode.com.freelanceproject.util.crud.FragmentCRUD;
@@ -30,6 +31,7 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements CommonPry.Const
     private EditMaterial tiempo, nombre, descripcion;
     private ImageButton btnNota;
     private ImageButton btnVerNotas;
+    private Button addPartida;
     private String idRel;
     private Modelo proyecto;
     private Modelo partida;
@@ -44,8 +46,8 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements CommonPry.Const
     }
 
     @Override
-    protected ListaAdaptadorFiltroRV setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
-        return new AdaptadorFiltroRV(context, layoutItem, lista, campos);
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+        return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
     @Override
@@ -78,20 +80,22 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements CommonPry.Const
             btnVerNotas.setVisibility(View.GONE);
         }
 
+        if (origen.equals(PARTIDA)) {
+
+            visible(addPartida);
+            gone(btnNota);
+            gone(btnVerNotas);
+        } else {
+            gone(addPartida);
+            visible(btnNota);
+        }
+
     }
 
     @Override
     protected void onClickRV(View v) {
         super.onClickRV(v);
-        if (origen.equals(DETPARTIDA)) {
-            bundle = new Bundle();
-            putBundle(TRABAJO, modelo);
-            putBundle(PROYECTO, proyecto);
-            putBundle(PARTIDA, partida);
-            putBundle(CAMPO_ID, idRel);
-            putBundle(ORIGEN, PARTIDA);
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
-        }
+
     }
 
     @Override
@@ -104,6 +108,18 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements CommonPry.Const
 
     @Override
     protected void setAcciones() {
+
+        addPartida.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bundle = new Bundle();
+                putBundle(TRABAJO, modelo);
+                putBundle(PROYECTO, proyecto);
+                putBundle(PARTIDA, partida);
+                putBundle(ORIGEN, PARTIDA);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
+            }
+        });
 
         btnNota.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,6 +161,7 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements CommonPry.Const
         imagen = (ImageView) ctrl(R.id.imgtarea);
         btnNota = (ImageButton) ctrl(R.id.btn_crearnota_tarea);
         btnVerNotas = (ImageButton) ctrl(R.id.btn_vernotas_tarea);
+        addPartida = (Button) ctrl(R.id.btn_add_trabajo_partida);
 
     }
 
@@ -178,22 +195,12 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements CommonPry.Const
     @Override
     protected void setcambioFragment() {
         super.setcambioFragment();
-        if (origen.equals(DETPARTIDA) && id != null) {
-            bundle = new Bundle();
-            putBundle(TRABAJO, modelo);
-            putBundle(CAMPO_ID, idRel);
-            putBundle(ORIGEN, PARTIDA);
-            putBundle(PROYECTO, proyecto);
-            putBundle(PARTIDA, partida);
-
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
-        }
 
     }
 
-    public class AdaptadorFiltroRV extends ListaAdaptadorFiltroRV {
+    public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroRV(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
