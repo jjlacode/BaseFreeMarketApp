@@ -10,7 +10,19 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
 import jjlacode.com.freelanceproject.CommonPry;
-import static jjlacode.com.freelanceproject.sqlite.ContratoPry.*;
+
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.AUTORIDAD_CONTENIDO;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.FILTRO_CLIENTE;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.FILTRO_FECHA;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.Tablas;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.crearUriTabla;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.crearUriTablaDetalle;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.generarIdTabla;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.generarMime;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.generarMimeItem;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.obtenerIdTabla;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.obtenerIdTablaDetalle;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.obtenerIdTablaDetalleId;
 
 public class ProviderFreelanceProject extends ContentProvider
         implements Tablas, CommonPry.TiposEstados {
@@ -90,7 +102,15 @@ public class ProviderFreelanceProject extends ContentProvider
     public static final int PROVEEDOR = 151;
     public static final int PROVEEDOR_ID = 152;
 
+    public static final int PEDIDOCLIENTE = 153;
+    public static final int PEDIDOCLIENTE_ID = 154;
 
+    public static final int CHAT = 155;
+    public static final int CHAT_ID = 156;
+    public static final int CHAT_ID_DETCHAT = 157;
+
+    public static final int DETCHAT = 158;
+    public static final int DETCHAT_ID = 159;
 
     public static final String AUTORIDAD = AUTORIDAD_CONTENIDO;//"jjlacode.com.freelanceproject2";
 
@@ -165,6 +185,16 @@ public class ProviderFreelanceProject extends ContentProvider
 
         uriMatcher.addURI(AUTORIDAD, TABLA_PROVEEDOR, PROVEEDOR);
         uriMatcher.addURI(AUTORIDAD, TABLA_PROVEEDOR+"/*", PROVEEDOR_ID);
+
+        uriMatcher.addURI(AUTORIDAD, TABLA_PEDIDOCLIENTE, PEDIDOCLIENTE);
+        uriMatcher.addURI(AUTORIDAD, TABLA_PEDIDOCLIENTE + "/*", PEDIDOCLIENTE_ID);
+
+        uriMatcher.addURI(AUTORIDAD, TABLA_CHAT, CHAT);
+        uriMatcher.addURI(AUTORIDAD, TABLA_CHAT + "/*", CHAT_ID);
+        uriMatcher.addURI(AUTORIDAD, TABLA_CHAT + "/*/" + TABLA_DETCHAT, CHAT_ID_DETCHAT);
+
+        uriMatcher.addURI(AUTORIDAD, TABLA_DETCHAT, DETCHAT);
+        uriMatcher.addURI(AUTORIDAD, TABLA_DETCHAT + "/*", DETCHAT_ID);
 
 
     }
@@ -324,6 +354,18 @@ public class ProviderFreelanceProject extends ContentProvider
                 return generarMime(TABLA_DETPEDIDOPROVEEDOR);
             case DETPEDIDOPROVEEDOR_ID:
                 return generarMimeItem(TABLA_DETPEDIDOPROVEEDOR);
+            case PEDIDOCLIENTE:
+                return generarMime(TABLA_PEDIDOCLIENTE);
+            case PEDIDOCLIENTE_ID:
+                return generarMimeItem(TABLA_PEDIDOCLIENTE);
+            case CHAT:
+                return generarMime(TABLA_CHAT);
+            case CHAT_ID:
+                return generarMimeItem(TABLA_CHAT);
+            case DETCHAT:
+                return generarMime(TABLA_DETCHAT);
+            case DETCHAT_ID:
+                return generarMimeItem(TABLA_DETCHAT);
             default:
                 throw new UnsupportedOperationException("Uri desconocida =>" + uri);
         }
@@ -418,6 +460,7 @@ public class ProviderFreelanceProject extends ContentProvider
                 esDetalle = true;
                 esId = true;
                 break;
+
             case PARTIDABASE:
                 tabla = TABLA_PARTIDABASE;
                 setTablas = tabla;
@@ -802,6 +845,73 @@ public class ProviderFreelanceProject extends ContentProvider
                 esDetalle = false;
                 break;
 
+            case PEDIDOCLIENTE:
+                // Generar Pk
+                tabla = TABLA_PEDIDOCLIENTE;
+                setTablas = tabla;
+                proyeccion = tabla + ".*";
+                idTabla = PEDIDOCLIENTE_ID_PEDIDOCLIENTE;
+                esId = false;
+                esDetalle = false;
+                break;
+
+            case PEDIDOCLIENTE_ID:
+
+                tabla = TABLA_PEDIDOCLIENTE;
+                setTablas = tabla;
+                proyeccion = tabla + ".*";
+                idTabla = PEDIDOCLIENTE_ID_PEDIDOCLIENTE;
+                esId = true;
+                esDetalle = false;
+                break;
+
+            case CHAT:
+                tabla = TABLA_CHAT;
+                setTablas = tabla;
+                proyeccion = tabla + ".*";
+                idTabla = CHAT_ID_CHAT;
+                esDetalle = false;
+                esId = false;
+                break;
+
+            case CHAT_ID:
+
+                tabla = TABLA_CHAT;
+                setTablas = tabla;
+                proyeccion = tabla + ".*";
+                idTabla = CHAT_ID_CHAT;
+                esDetalle = false;
+                esId = true;
+                break;
+
+            case CHAT_ID_DETCHAT:
+
+                tabla = TABLA_DETCHAT;
+                setTablas = tabla;
+                proyeccion = tabla + ".*";
+                idTabla = DETCHAT_ID_CHAT;
+                esDetalle = true;
+                esId = false;
+                break;
+
+            case DETCHAT:
+                tabla = TABLA_DETCHAT;
+                setTablas = tabla;
+                proyeccion = tabla + ".*";
+                idTabla = DETCHAT_ID_CHAT;
+                esId = false;
+                esDetalle = false;
+
+                break;
+            case DETCHAT_ID:
+
+                tabla = TABLA_DETCHAT;
+                setTablas = tabla;
+                proyeccion = tabla + ".*";
+                idTabla = DETCHAT_ID_CHAT;
+                esDetalle = true;
+                esId = true;
+                break;
         }
 
         values.put("tablaModelo",tabla);

@@ -1,10 +1,5 @@
 package jjlacode.com.freelanceproject.util;
 
-import android.content.Context;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -19,8 +14,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import jjlacode.com.freelanceproject.R;
 
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.HORASLONG;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.MINUTOSLONG;
@@ -39,6 +32,7 @@ public class JavaUtil {
         String LISTA = "lista";
         String LISTAMODELO = "listaModelo";
         String CALENDARIO = "calendario";
+        String WEB = "web";
         String FECHA = "fecha";
         String CAMPO = "campo";
         String POSICION = "posicion";
@@ -53,6 +47,7 @@ public class JavaUtil {
         String CAMPO_CREATEREG = "createreg";
         String CAMPO_RUTAFOTO = "rutafoto";
         String CAMPO_NOMBRE = "nombre_";
+        String CAMPO_USUARIO = "usuario_";
         String CAMPO_DIRECCION = "direccion_";
         String CAMPO_TELEFONO = "telefono_";
         String CAMPO_EMAIL = "email_";
@@ -68,6 +63,7 @@ public class JavaUtil {
         String CAMPO_SERVIDO = "servido_";
         String CAMPO_TIEMPO = "tiempo_";
         String CAMPO_TIPO = "tipo_";
+        String CAMPO_NOTIFICADO = "notificado_";
         String CAMPO_REFERENCIA = "referencia_";
         String NUEVOREGISTRO = "nuevoreg";
         String VERLISTA = "verlista";

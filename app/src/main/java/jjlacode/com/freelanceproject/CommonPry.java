@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import jjlacode.com.freelanceproject.model.ProdProv;
+import jjlacode.com.freelanceproject.model.Rating;
 import jjlacode.com.freelanceproject.services.EventosReceiver;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.ui.CalendarioEventos;
@@ -37,6 +38,7 @@ import jjlacode.com.freelanceproject.ui.FragmentInicio;
 import jjlacode.com.freelanceproject.ui.FragmentNuevoEvento;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.android.ICFragmentos;
+import jjlacode.com.freelanceproject.util.crud.CRUDutil;
 import jjlacode.com.freelanceproject.util.crud.ListaModelo;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
 import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
@@ -49,14 +51,19 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.ACCION_CANCELAR;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.ACCION_POSPONER;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.ACCION_VER;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.ACCION_VERCHAT;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.EXTRA_ACTUAL;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.EXTRA_ID;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.EXTRA_IDCHAT;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.EXTRA_IDEVENTO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.EXTRA_SECCHAT;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.EXTRA_TIPOCHAT;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.INICIO;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.PARTIDA;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.PRODPROVCAT;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.PRODUCTO;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.TRABAJO;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.USERID;
 import static jjlacode.com.freelanceproject.util.android.AppActivity.getAppContext;
 import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryList;
 
@@ -84,11 +91,18 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
     public interface  Constantes {
 
 
+        String HTTPAYUDA = "http://frelanceproject.jjlacode.ml/";
         String PRIORIDAD = "prioridad";
         String DIASPASADOS = "diaspasados";
         String DIASFUTUROS = "diasfuturos";
         String BASEDATOS = "freelanceproject.db";
         String PERFILACTIVO = "perfil setActivo";
+        String USERID = "userid";
+        String FREELANCE = "freelance";
+        String IDFREELANCE = "idfreelance";
+        String NOMBRECHAT = "nombre_chat";
+        String IDCHATF = "idchatf";
+        String TIPOCHAT = "tipochat";
         String VISORPDF = "visor pdf";
         String VISORPDFMAIL = "visor pdf - email";
         String TODAS = "Todas";
@@ -122,6 +136,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         String DETPEDIDOPROVCAT = "detalle_pedido_prov_cat";
         String PEDIDOPROVEEDOR = "pedido_proveedor";
         String DETPEDIDOPROVEEDOR = "detalle_pedido_proveedor";
+        String PEDIDOCLIENTE = "pedido_cliente";
         String PROSPECTO = "prospecto";
         String TPROSPECTO = getAppContext().getString(R.string.t_prospecto);
         String PROSPECTOS = getAppContext().getString(R.string.prospectos);
@@ -135,8 +150,14 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         String PROYCOBROS = getAppContext().getString(R.string.proyectos_cobros);
         String HISTORICO = "Proyectos historico";
         String PROYHISTORICO = getAppContext().getString(R.string.proyectos_historico);
+        String GARANTIA = "Proyectos garantia";
+        String PROYGARANTIA = getAppContext().getString(R.string.proyectos_garantia);
         String AGENDA = "Agenda";
         String DIARIO = "Notas";
+        String CHAT = "chat";
+        int RECIBIDO = 1;
+        int ENVIADO = 2;
+        String DETCHAT = "detchat";
         String TRABAJOS = "Trabajos";
         String INICIO = "inicio";
         String SALIR = "salir";
@@ -164,13 +185,18 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         String DIRECTORIO_IMAGEN = CARPETA_PRINCIPAL + CARPETA_IMAGEN;
         String PROVIDERFILE = BuildConfig.APPLICATION_ID + ".providerFreelanceProject";
         String ACCION_AVISOEVENTO = "jjlacode.com.freelanceproject.action.AVISOEVENTO";
+        String ACCION_AVISOMSGCHAT = "jjlacode.com.freelanceproject.action.AVISOMSGCHAT";
         String ACCION_POSPONER = "jjlacode.com.freelanceproject.action.POSPONER";
         String ACCION_CANCELAR = "jjlacode.com.freelanceproject.action.CANCELAR";
         String ACCION_VER = "jjlacode.com.freelanceproject.action.VER";
+        String ACCION_VERCHAT = "jjlacode.com.freelanceproject.action.VERCHAT";
         String ACCION_VERLUGAR = "jjlacode.com.freelanceproject.action.VERLUGAR";
         String STARTSERVER ="Servicio iniciado";
         String STOPSERVER = "Servicio detenido";
         String EXTRA_IDEVENTO = "jjlacode.com.freelanceproject.EXTRA_IDEVENTO";
+        String EXTRA_IDCHAT = "jjlacode.com.freelanceproject.EXTRA_IDCHAT";
+        String EXTRA_SECCHAT = "jjlacode.com.freelanceproject.EXTRA_SECCHAT";
+        String EXTRA_TIPOCHAT = "jjlacode.com.freelanceproject.EXTRA_TIPOCHAT";
         String EXTRA_ACTUAL = "jjlacode.com.freelanceproject.EXTRA_ACTUAL";
         String EXTRA_BUNDLE = "jjlacode.com.freelanceproject.EXTRA_BUNDLE";
         String EXTRA_ACCION = "jjlacode.com.freelanceproject.EXTRA_ACCION";
@@ -189,6 +215,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         int TPROYECPENDENTREGA = 6;
         int TPROYECTPENDCOBRO = 7;
         int TPROYECTCOBRADO = 8;
+        int TPROYECTHISTORICO = 9;
         int TPRESUPNOACEPTADO = 0;
     }
 
@@ -202,6 +229,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         String PROYECPENDENTREGA = getAppContext().getString(R.string.proyecto_pendiente_entrega_est);
         String PROYECTPENDCOBRO = getAppContext().getString(R.string.proyecto_entregado_pendiente_cobro_est);
         String PROYECTCOBRADO = getAppContext().getString(R.string.proyecto_cobrado_est);
+        String PROYECTHISTORICO = getAppContext().getString(R.string.proyecto_historico_est);
         String PRESUPNOACEPTADO = getAppContext().getString(R.string.presupuesto_no_aceptado_est);
     }
 
@@ -230,6 +258,20 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         String NOTAIMAGEN = "Nota de Imagen";
     }
 
+    public static void enviarVoto(Context contexto, String key, String tipo, String id, float valor, String comentario) {
+
+        String idUser = CRUDutil.getSharePreference(contexto, PREFERENCIAS, USERID, NULL);
+        Rating rat = new Rating(valor, tipo, id, idUser, comentario);
+        if (key == null) {
+            FirebaseDatabase.getInstance().getReference().child("rating").push().setValue(rat);
+        } else {
+            FirebaseDatabase.getInstance().getReference().child("rating").child(key).setValue(rat);
+
+        }
+
+    }
+
+
 
     public static String setNamefdef(){
 
@@ -256,6 +298,54 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         return namesubdef;
     }
 
+    public static void notificationChat(Context contexto, Class<?> clase, Modelo detchat, String actual,
+                                        int id, int iconId, String titulo, String contenido) {
+
+        RemoteViews remoteView = new RemoteViews(contexto.getPackageName(), R.layout.notificacion_chat);
+        remoteView.setTextViewText(R.id.tvdescnotchat, contenido);
+
+        Modelo chat = CRUDutil.setModelo(CAMPOS_CHAT, detchat.getString(DETCHAT_ID_CHAT));
+        Intent intentVerChat = new Intent(contexto, clase);
+        intentVerChat.setAction(ACCION_VERCHAT);
+        intentVerChat.putExtra(EXTRA_IDCHAT, detchat.getString(DETCHAT_ID_CHAT));
+        intentVerChat.putExtra(EXTRA_SECCHAT, detchat.getInt(DETCHAT_SECUENCIA));
+        intentVerChat.putExtra(EXTRA_TIPOCHAT, chat.getString(CHAT_TIPO));
+        intentVerChat.putExtra(EXTRA_ACTUAL, actual);
+        intentVerChat.putExtra(EXTRA_ID, id);
+
+        intentVerChat.setFlags(FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent verChat = PendingIntent.getActivity(
+                contexto,
+                id,
+                intentVerChat,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteView.setOnClickPendingIntent(R.id.btnvernotchat, verChat);
+
+        // Estructurar la notificación
+        Notification.Builder builder =
+                new Notification.Builder(contexto)
+                        .setDefaults(Notification.DEFAULT_LIGHTS)
+                        .setSmallIcon(iconId)
+                        .setContentTitle(titulo)
+                        .setContentText(contenido)
+                        .setWhen(detchat.getLong(DETCHAT_FECHA))
+                        .setColor(contexto.getResources().getColor(R.color.colorPrimary))
+                        .setTicker(titulo)
+                        .setVibrate(new long[]{100, 250, 100, 500})
+                        .setVisibility(Notification.VISIBILITY_PUBLIC)
+                        .setPriority(Notification.PRIORITY_HIGH)
+                        .setSound(Uri.parse("android.resource://" + contexto.getPackageName() + "/" + R.raw.popcorn))
+                        .setContent(remoteView)
+                        .setAutoCancel(true);
+
+        Notification notification = builder.build();
+        NotificationManager notifyMgrEvento = (NotificationManager) contexto.getSystemService(NOTIFICATION_SERVICE);
+
+        // Construir la notificación y emitirla
+        notifyMgrEvento.notify(id, notification);
+
+
+    }
     public static void notificationEvento(Context contexto, Class<?> clase, Modelo evento, String actual,
                                           int id, int iconId, String titulo, String contenido ) {
 

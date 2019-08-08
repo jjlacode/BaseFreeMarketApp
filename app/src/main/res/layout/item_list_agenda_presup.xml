@@ -25,7 +25,7 @@
                     android:scaleType="center"
                     android:padding="5dp"
                     android:layout_weight="2"
-                    card_view:srcCompat="@drawable/ico_calendario_reloj" />
+                    card_view:srcCompat="@drawable/logofp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
 
-import static jjlacode.com.freelanceproject.util.android.AppActivity.getAppContext;
 import static jjlacode.com.freelanceproject.sqlite.ContratoPry.crearUriTabla;
 import static jjlacode.com.freelanceproject.sqlite.ContratoPry.crearUriTablaDetalle;
 import static jjlacode.com.freelanceproject.sqlite.ContratoPry.crearUriTablaDetalleId;
 import static jjlacode.com.freelanceproject.sqlite.ContratoPry.obtenerIdTabla;
 import static jjlacode.com.freelanceproject.sqlite.ContratoPry.obtenerUriContenido;
+import static jjlacode.com.freelanceproject.util.android.AppActivity.getAppContext;
 
 public class ConsultaBD implements JavaUtil.Constantes {
 
@@ -2420,5 +2420,6 @@ public class ConsultaBD implements JavaUtil.Constantes {
         return  secuencia;
 
     }
+
 
 }

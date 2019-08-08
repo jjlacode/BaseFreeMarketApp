@@ -11,7 +11,7 @@
             <gradient android:startColor="#00c4c7a9" android:endColor="#00d6dadf" android:angle="270" />
 
             <stroke android:width="5px" android:color="@color/colorAccent" />
-            <solid android:color="@color/Color_fonfo_edit"/>
+            <solid android:color="@color/Color_fondo_edit" />
             <corners android:radius="5dp" />
         </shape>
     </item>
@@ -24,7 +24,7 @@
                 />
 
             <gradient android:startColor="#00c4c7a9" android:endColor="#00d6dadf" android:angle="270" />
-            <solid android:color="@color/Color_fonfo_edit"/>
+            <solid android:color="@color/Color_fondo_edit" />
             <stroke  android:width="0px" android:color="@color/colorPrimary" />
             <corners android:radius="5dp" />
 

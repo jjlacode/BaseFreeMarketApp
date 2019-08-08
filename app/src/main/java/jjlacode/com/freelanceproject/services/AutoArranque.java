@@ -13,31 +13,31 @@ import jjlacode.com.freelanceproject.util.android.AppActivity;
 
 public class AutoArranque extends BroadcastReceiver {
 
-    private static final int PERIOD_MS = 60000;
-
     @Override
     public void onReceive(Context context, Intent intent) {
 
         System.out.println("intent = " + intent.getAction());
         Log.d("TAG","onReceive autoarranque");
-        //if (intent.getAction()!=null && intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+        if (intent.getAction() != null && intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
             scheduleJob(context);
-        //}
+        }
     }
 
     public static void scheduleJob(Context context) {
+
         ComponentName serviceComponent = new ComponentName(AppActivity.getAppContext(), AvisoEventos.class);
         JobInfo info = new JobInfo.Builder(0, serviceComponent)
-        .setMinimumLatency(PERIOD_MS)
-        .setOverrideDeadline(PERIOD_MS)
-        .build();
+                .setMinimumLatency(60000)
+                .setOverrideDeadline(60000)
+                .build();
+        ComponentName serviceComponent1 = new ComponentName(AppActivity.getAppContext(), AvisoMsgChat.class);
+        JobInfo info1 = new JobInfo.Builder(1, serviceComponent1)
+                .setMinimumLatency(1000)
+                .setOverrideDeadline(1000)
+                .build();
         JobScheduler jobScheduler = (JobScheduler) AppActivity.getAppContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        int res = jobScheduler.schedule(info);
+        jobScheduler.schedule(info);
+        jobScheduler.schedule(info1);
 
-        if (res == JobScheduler.RESULT_SUCCESS){
-            Log.d("TAG","Scheduler iniciado con  exito");
-        }else {
-            Log.d("TAG","Scheduler a fallado");
-        }
     }
 }

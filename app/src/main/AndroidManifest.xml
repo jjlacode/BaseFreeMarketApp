@@ -5,9 +5,9 @@
     <application
         android:name=".util.android.AppActivity"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher_um"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher_um_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".SplashActivity">
@@ -23,6 +23,8 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".util.android.MainActivityBase" />
+        <activity android:name=".util.login.LoginActivity" />
+
         <provider
             android:name=".sqlite.ProviderFreelanceProject"
             android:authorities="${applicationId}"
@@ -47,6 +49,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".services.ChatReceiver">
+            <intent-filter>
+                <action android:name="jjlacode.com.freelanceproject.action.AVISOMSGCHAT" />
+            </intent-filter>
+        </receiver>
         <receiver android:name=".services.EventosReceiver" >
             <intent-filter>
                 <action android:name="jjlacode.com.freelanceproject.action.AVISOEVENTO" />
@@ -55,8 +62,15 @@
             </intent-filter>
         </receiver>
         <service
+            android:name=".util.services.JobServiceBase"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
             android:name=".services.AvisoEventos"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <service
+            android:name=".services.AvisoMsgChat"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service android:name=".util.fcm.IFirebaseMessagingService" />
     </application>
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />

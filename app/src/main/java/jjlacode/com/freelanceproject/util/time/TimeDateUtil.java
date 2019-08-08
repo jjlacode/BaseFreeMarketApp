@@ -316,6 +316,13 @@ public class TimeDateUtil {
         return (horas*HORASLONG)+(minutos*MINUTOSLONG);
     }
 
+    public static long ahora() {
+
+        Calendar c = new GregorianCalendar(Locale.getDefault());
+        return (c.getTimeInMillis());
+
+    }
+
     public static long soloFecha(long date){
 
         Calendar c = new GregorianCalendar(Locale.getDefault());

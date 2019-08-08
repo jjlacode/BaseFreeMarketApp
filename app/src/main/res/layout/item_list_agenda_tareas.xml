@@ -42,7 +42,7 @@
                             android:id="@+id/imgpryagenda"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
-                            card_view:srcCompat="@drawable/ico_calendario_reloj" />
+                            card_view:srcCompat="@drawable/logofp" />
 
                         <ImageView
                             android:id="@+id/imgparagenda"

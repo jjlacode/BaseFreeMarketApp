@@ -28,7 +28,7 @@
                     android:id="@+id/imglproductos_detpartida"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    card_view:srcCompat="@drawable/ico_calendario_reloj" />
+                    card_view:srcCompat="@drawable/logofp" />
             </LinearLayout>
 
             <LinearLayout

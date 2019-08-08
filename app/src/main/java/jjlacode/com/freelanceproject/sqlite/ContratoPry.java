@@ -9,7 +9,9 @@ import jjlacode.com.freelanceproject.util.JavaUtil;
 import jjlacode.com.freelanceproject.util.android.AppActivity;
 
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.AMORTIZACION;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.CHAT;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.CLIENTE;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.DETCHAT;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.DETPARTIDA;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.DETPARTIDABASE;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.DETPEDIDOPROVCAT;
@@ -21,6 +23,7 @@ import static jjlacode.com.freelanceproject.CommonPry.Constantes.GASTOFIJO;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.NOTA;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.PARTIDA;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.PARTIDABASE;
+import static jjlacode.com.freelanceproject.CommonPry.Constantes.PEDIDOCLIENTE;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.PEDIDOPROVCAT;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.PEDIDOPROVEEDOR;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.PERFIL;
@@ -75,6 +78,9 @@ public class ContratoPry implements JavaUtil.Constantes {
         String TABLA_DETPEDIDOPROVEEDOR = DETPEDIDOPROVEEDOR;
         String TABLA_NOTA = NOTA;
         String TABLA_DIARIO = DIARIO;
+        String TABLA_PEDIDOCLIENTE = PEDIDOCLIENTE;
+        String TABLA_CHAT = CHAT;
+        String TABLA_DETCHAT = DETCHAT;
 
         //COLUMNAS--------------------------------------------------------
 
@@ -315,7 +321,6 @@ public class ContratoPry implements JavaUtil.Constantes {
 
         String PEDIDOPROVCAT_ID_PEDIDOPROVCAT = CAMPO_ID + TABLA_PEDIDOPROVCAT;
         String PEDIDOPROVCAT_ID_PROYECTO = TABLA_PEDIDOPROVCAT +CAMPO_ID+TABLA_PROYECTO;
-        String PEDIDOPROVCAT_SECUENCIA = CAMPO_SECUENCIA;
         String PEDIDOPROVCAT_ID_PROVCAT = TABLA_PEDIDOPROVCAT +CAMPO_ID+PROVCAT;
         String PEDIDOPROVCAT_DESCRIPCION = CAMPO_DESCRIPCION + TABLA_PEDIDOPROVCAT;
         String PEDIDOPROVCAT_FECHA = CAMPO_FECHA+ TABLA_PEDIDOPROVCAT;
@@ -337,7 +342,6 @@ public class ContratoPry implements JavaUtil.Constantes {
 
         String PEDIDOPROVEEDOR_ID_PEDIDOPROVEEDOR = CAMPO_ID+TABLA_PEDIDOPROVEEDOR;
         String PEDIDOPROVEEDOR_ID_PROYECTO = TABLA_PEDIDOPROVEEDOR+CAMPO_ID+TABLA_PROYECTO;
-        String PEDIDOPROVEEDOR_SECUENCIA = CAMPO_SECUENCIA;
         String PEDIDOPROVEEDOR_ID_PROVEEDOR = TABLA_PEDIDOPROVEEDOR+CAMPO_ID+TABLA_PROVEEDOR;
         String PEDIDOPROVEEDOR_DESCRIPCION = CAMPO_DESCRIPCION+TABLA_PEDIDOPROVEEDOR;
         String PEDIDOPROVEEDOR_FECHA = CAMPO_FECHA+TABLA_PEDIDOPROVEEDOR;
@@ -379,6 +383,32 @@ public class ContratoPry implements JavaUtil.Constantes {
         String DIARIO_CREATE = CAMPO_CREATEREG;
         String DIARIO_TIMESTAMP = CAMPO_TIMESTAMP;
 
+        String PEDIDOCLIENTE_ID_PEDIDOCLIENTE = CAMPO_ID + TABLA_PEDIDOCLIENTE;
+        String PEDIDOCLIENTE_ID_PROYECTO = TABLA_PEDIDOCLIENTE + CAMPO_ID + TABLA_PROYECTO;
+        String PEDIDOCLIENTE_ID_CLIENTE = TABLA_PEDIDOCLIENTE + CAMPO_ID + TABLA_PROVEEDOR;
+        String PEDIDOCLIENTE_DESCRIPCION = CAMPO_DESCRIPCION + TABLA_PEDIDOCLIENTE;
+        String PEDIDOCLIENTE_FECHA = CAMPO_FECHA + TABLA_PEDIDOCLIENTE;
+        String PEDIDOCLIENTE_FECHAF = CAMPO_FECHAF + TABLA_PEDIDOCLIENTE;
+        String PEDIDOCLIENTE_NOMBRECLIENTE = "nombrecliente_" + TABLA_PEDIDOCLIENTE;
+        String PEDIDOCLIENTE_CREATE = CAMPO_CREATEREG;
+        String PEDIDOCLIENTE_TIMESTAMP = CAMPO_TIMESTAMP;
+
+        String CHAT_ID_CHAT = CAMPO_ID + TABLA_CHAT;
+        String CHAT_USUARIO = CAMPO_USUARIO + TABLA_CHAT;
+        String CHAT_NOMBRE = CAMPO_NOMBRE + TABLA_CHAT;
+        String CHAT_TIPO = CAMPO_TIPO + TABLA_CHAT;
+        String CHAT_CREATE = CAMPO_CREATEREG;
+        String CHAT_TIMESTAMP = CAMPO_TIMESTAMP;
+
+        String DETCHAT_ID_CHAT = CAMPO_ID + TABLA_DETCHAT + TABLA_CHAT;
+        String DETCHAT_SECUENCIA = CAMPO_SECUENCIA;
+        String DETCHAT_TIPO = CAMPO_TIPO + TABLA_DETCHAT;
+        String DETCHAT_MENSAJE = "mensaje_" + TABLA_DETCHAT;
+        String DETCHAT_NOTIFICADO = CAMPO_NOTIFICADO + TABLA_DETCHAT;
+        String DETCHAT_FECHA = CAMPO_FECHA + TABLA_DETCHAT;
+        String DETCHAT_CREATE = CAMPO_CREATEREG;
+        String DETCHAT_TIMESTAMP = CAMPO_TIMESTAMP;
+
         String TABLAS_ID_TABLA = CAMPO_ID+TABLA_TABLAS;
         String TABLAS_TABLA = "tabla_"+TABLA_TABLAS;
         String TABLAS_CAMPO = "campo_"+TABLA_TABLAS;
@@ -414,6 +444,9 @@ public class ContratoPry implements JavaUtil.Constantes {
 
         String ID_PARTIDABASE = String.format("REFERENCES %s(%s) ON DELETE CASCADE",
                 TABLA_PARTIDABASE, PARTIDABASE_ID_PARTIDABASE);
+
+        String ID_CHAT = String.format("REFERENCES %s(%s) ON DELETE CASCADE",
+                TABLA_CHAT, CHAT_ID_CHAT);
 
         //CAMPOS----------------------------------------------------------------
 
@@ -714,10 +747,9 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PROVEEDOR_TIMESTAMP, "INTEGER NON NULL DEFAULT 0",LONG
         };
 
-        String[] CAMPOS_PEDIDOPROVCAT = {"32", TABLA_PEDIDOPROVCAT,
-                PEDIDOPROVCAT_ID_PROYECTO, String.format("TEXT NON NULL %s", ID_PROYECTO),STRING,
-                PEDIDOPROVCAT_SECUENCIA, "INTEGER NON NULL",INT,
+        String[] CAMPOS_PEDIDOPROVCAT = {"29", TABLA_PEDIDOPROVCAT,
                 PEDIDOPROVCAT_ID_PEDIDOPROVCAT,"TEXT NON NULL UNIQUE",STRING,
+                PEDIDOPROVCAT_ID_PROYECTO, String.format("TEXT NON NULL %s", ID_PROYECTO), STRING,
                 PEDIDOPROVCAT_ID_PROVCAT,"TEXT NON NULL",STRING,
                 PEDIDOPROVCAT_DESCRIPCION,"TEXT NON NULL",STRING,
                 PEDIDOPROVCAT_FECHA,"INTEGER NON NULL DEFAULT 0",LONG,
@@ -740,10 +772,9 @@ public class ContratoPry implements JavaUtil.Constantes {
                 DETPEDIDOPROVCAT_TIMESTAMP,"INTEGER NON NULL DEFAULT 0",LONG
         };
 
-        String[] CAMPOS_PEDIDOPROVEEDOR = {"32", TABLA_PEDIDOPROVEEDOR,
-                PEDIDOPROVEEDOR_ID_PROYECTO, String.format("TEXT NON NULL %s", ID_PROYECTO),STRING,
-                PEDIDOPROVEEDOR_SECUENCIA, "INTEGER NON NULL",INT,
+        String[] CAMPOS_PEDIDOPROVEEDOR = {"29", TABLA_PEDIDOPROVEEDOR,
                 PEDIDOPROVEEDOR_ID_PEDIDOPROVEEDOR,"TEXT NON NULL UNIQUE",STRING,
+                PEDIDOPROVEEDOR_ID_PROYECTO, String.format("TEXT NON NULL %s", ID_PROYECTO), STRING,
                 PEDIDOPROVEEDOR_ID_PROVEEDOR,"TEXT NON NULL",STRING,
                 PEDIDOPROVEEDOR_DESCRIPCION,"TEXT NON NULL",STRING,
                 PEDIDOPROVEEDOR_FECHA,"INTEGER NON NULL DEFAULT 0",LONG,
@@ -764,6 +795,38 @@ public class ContratoPry implements JavaUtil.Constantes {
                 DETPEDIDOPROVEEDOR_SERVIDO,"INTEGER NON NULL DEFAULT 0",STRING,
                 DETPEDIDOPROVEEDOR_CREATE,"INTEGER NON NULL DEFAULT 0",LONG,
                 DETPEDIDOPROVEEDOR_TIMESTAMP,"INTEGER NON NULL DEFAULT 0",LONG
+        };
+
+        String[] CAMPOS_PEDIDOCLIENTE = {"29", TABLA_PEDIDOCLIENTE,
+                PEDIDOCLIENTE_ID_PEDIDOCLIENTE, "TEXT NON NULL UNIQUE", STRING,
+                PEDIDOCLIENTE_ID_PROYECTO, String.format("TEXT NON NULL %s", ID_PROYECTO), STRING,
+                PEDIDOCLIENTE_ID_CLIENTE, "TEXT NON NULL", STRING,
+                PEDIDOCLIENTE_DESCRIPCION, "TEXT NON NULL", STRING,
+                PEDIDOCLIENTE_FECHA, "INTEGER NON NULL DEFAULT 0", LONG,
+                PEDIDOCLIENTE_FECHAF, "TEXT", STRING,
+                PEDIDOCLIENTE_NOMBRECLIENTE, "TEXT", STRING,
+                PEDIDOCLIENTE_CREATE, "INTEGER NON NULL DEFAULT 0", LONG,
+                PEDIDOCLIENTE_TIMESTAMP, "INTEGER NON NULL DEFAULT 0", LONG
+        };
+
+        String[] CAMPOS_CHAT = {"20", TABLA_CHAT,
+                CHAT_ID_CHAT, "TEXT NON NULL UNIQUE", STRING,
+                CHAT_USUARIO, "TEXT NON NULL UNIQUE", STRING,
+                CHAT_NOMBRE, "TEXT NON NULL", STRING,
+                CHAT_TIPO, "TEXT NON NULL", STRING,
+                CHAT_CREATE, "INTEGER NON NULL DEFAULT 0", LONG,
+                CHAT_TIMESTAMP, "INTEGER NON NULL DEFAULT 0", LONG
+        };
+
+        String[] CAMPOS_DETCHAT = {"26", TABLA_DETCHAT,
+                DETCHAT_ID_CHAT, String.format("TEXT NON NULL %s", ID_CHAT), STRING,
+                DETCHAT_SECUENCIA, "INTEGER NON NULL", INT,
+                DETCHAT_TIPO, "INTEGER NON NULL", INT,
+                DETCHAT_MENSAJE, "TEXT", STRING,
+                DETCHAT_NOTIFICADO, "INTEGER NON NULL DEFAULT 0", INT,
+                DETCHAT_FECHA, "INTEGER NON NULL DEFAULT 0", LONG,
+                DETCHAT_CREATE, "INTEGER NON NULL DEFAULT 0", LONG,
+                DETCHAT_TIMESTAMP, "INTEGER NON NULL DEFAULT 0", LONG
         };
 
     }
@@ -799,6 +862,9 @@ public class ContratoPry implements JavaUtil.Constantes {
         listaCampos.add(Tablas.CAMPOS_PEDIDOPROVEEDOR);
         listaCampos.add(Tablas.CAMPOS_DETPEDIDOPROVEEDOR);
         listaCampos.add(Tablas.CAMPOS_DETPEDIDOPROVCAT);
+        listaCampos.add(Tablas.CAMPOS_PEDIDOCLIENTE);
+        listaCampos.add(Tablas.CAMPOS_CHAT);
+        listaCampos.add(Tablas.CAMPOS_DETCHAT);
 
         return listaCampos;
     }
@@ -847,6 +913,10 @@ public class ContratoPry implements JavaUtil.Constantes {
             case Tablas.TABLA_DETPEDIDOPROVEEDOR:
 
                 return Tablas.TABLA_PEDIDOPROVEEDOR;
+
+            case Tablas.TABLA_DETCHAT:
+
+                return Tablas.TABLA_CHAT;
 
         }
 

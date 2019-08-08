@@ -25,11 +25,10 @@ import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltro;
 import jjlacode.com.freelanceproject.util.adapter.RVAdapter;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
-import jjlacode.com.freelanceproject.util.android.FragmentBase;
 import jjlacode.com.freelanceproject.util.animation.OneFrameLayout;
 import jjlacode.com.freelanceproject.util.media.MediaUtil;
 
-public abstract class FragmentMasterDetailNoSQL extends FragmentBase {
+public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
 
     protected LinearLayout frLista;
     protected View viewRV;
@@ -56,15 +55,15 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentBase {
     protected boolean esDetalle;
     protected String path;
     protected MediaUtil mediaUtil = new MediaUtil(contexto);
-    final protected int COD_FOTO = 10;
-    final protected int COD_SELECCIONA = 20;
     private OneFrameLayout frameAnimation;
-    private String stemp = "";
+    protected String stemp = "";
 
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
         super.setOnCreateView(view, inflater, container);
+
+        setLayoutItem();
         frLista = view.findViewById(R.id.layout_rv);
 
         viewRV = inflater.inflate(R.layout.rvlayout, container, false);
@@ -101,12 +100,17 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentBase {
         } else {
             frCuerpo.setOrientation(LinearLayout.VERTICAL);
         }
+
     }
 
     @Override
     protected void setLayoutExtra() {
         super.setLayoutExtra();
         layoutPie = R.layout.btn_sdb;
+    }
+
+    protected void setLayoutItem() {
+
     }
 
     @Override
@@ -134,6 +138,7 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentBase {
             @Override
             public void onClick(View view) {
                 esDetalle = false;
+                System.out.println("esDetalle = " + esDetalle);
                 selector();
             }
         });
@@ -520,58 +525,5 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentBase {
     protected void setMaestroDetalleTabletPort() {
         maestroDetalleSeparados = false;
     }
-
-    protected void setImagenFireStore(Context contexto, String rutaFoto, ImageView imagen, int drawable) {
-
-        MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageFireStore(rutaFoto, imagen, drawable);
-
-    }
-
-    protected void setImagenFireStore(MediaUtil imagenUtil, String rutaFoto, ImageView imagen, int drawable) {
-
-        imagenUtil.setImageFireStore(rutaFoto, imagen, drawable);
-
-    }
-
-    protected void setImagenFireStore(Context contexto, String rutaFoto, ImageView imagen) {
-
-        MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageFireStore(rutaFoto, imagen, R.drawable.ic_add_a_photo_black_24dp);
-
-    }
-
-    protected void setImagenFireStore(MediaUtil imagenUtil, String rutaFoto, ImageView imagen) {
-
-        imagenUtil.setImageFireStore(rutaFoto, imagen, R.drawable.ic_add_a_photo_black_24dp);
-
-    }
-
-    protected void setImagenFireStoreCircle(Context contexto, String rutaFoto, ImageView imagen, int drawable) {
-
-        MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageFireStoreCircle(rutaFoto, imagen, drawable);
-
-    }
-
-    protected void setImagenFireStoreCircle(MediaUtil imagenUtil, String rutaFoto, ImageView imagen, int drawable) {
-
-        imagenUtil.setImageFireStoreCircle(rutaFoto, imagen, drawable);
-
-    }
-
-    protected void setImagenFireStoreCircle(Context contexto, String rutaFoto, ImageView imagen) {
-
-        MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageFireStoreCircle(rutaFoto, imagen, R.drawable.ic_add_a_photo_black_24dp);
-
-    }
-
-    protected void setImagenFireStoreCircle(MediaUtil imagenUtil, String rutaFoto, ImageView imagen) {
-
-        imagenUtil.setImageFireStoreCircle(rutaFoto, imagen, R.drawable.ic_add_a_photo_black_24dp);
-
-    }
-
 
 }

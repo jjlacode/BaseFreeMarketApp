@@ -30,7 +30,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="2.5"
-                    app:srcCompat="@drawable/ico_calendario_reloj" />
+                    app:srcCompat="@drawable/logofp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -89,7 +89,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="4"
                             android:scaleType="fitStart"
-                            card_view:srcCompat="@drawable/ico_calendario_reloj" />
+                            app:srcCompat="@drawable/logofp" />
 
                         <TextView
                             android:id="@+id/tvestadolistaproyectos"

@@ -1,7 +1,6 @@
 package jjlacode.com.freelanceproject.util.nosql;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -14,8 +13,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -27,7 +24,6 @@ import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltro;
 import jjlacode.com.freelanceproject.util.adapter.RVAdapter;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
-import jjlacode.com.freelanceproject.util.android.AndroidUtil;
 import jjlacode.com.freelanceproject.util.android.FragmentBase;
 import jjlacode.com.freelanceproject.util.animation.OneFrameLayout;
 import jjlacode.com.freelanceproject.util.media.MediaUtil;
@@ -60,48 +56,12 @@ public abstract class FragmentRVNoSQL extends FragmentBase {
     protected RecyclerView.LayoutManager layoutManager;
     private Object objeto;
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-        view = inflater.inflate(R.layout.contenido, container, false);
-        land = getResources().getBoolean(R.bool.esLand);
-        tablet = getResources().getBoolean(R.bool.esTablet);
-        System.out.println("land = " + land);
-        System.out.println("tablet = " + tablet);
-
-        frPrincipal = view.findViewById(R.id.contenedor);
-        frLista = view.findViewById(R.id.layout_rv);
-        frCuerpo = view.findViewById(R.id.layout_cuerpo);
-
-
-        frPie = view.findViewById(R.id.layout_pie);
-        viewBotones = inflater.inflate(R.layout.btn_sdb, container, false);
-        viewRV = inflater.inflate(R.layout.rvlayout, container, false);
-        frCabecera = view.findViewById(R.id.layout_cabecera);
-        if (layoutCabecera > 0) {
-            viewCabecera = inflater.inflate(layoutCabecera, container, false);
-            if (viewCabecera.getParent() != null) {
-                ((ViewGroup) viewCabecera.getParent()).removeView(viewCabecera); // <- fix
-            }
-            if (viewCabecera != null) {
-                frCabecera.addView(viewCabecera);
-            }
-        }
-        if (viewBotones.getParent() != null) {
-            ((ViewGroup) viewBotones.getParent()).removeView(viewBotones); // <- fix
-        }
-        if (viewRV.getParent() != null) {
-            ((ViewGroup) viewRV.getParent()).removeView(viewRV); // <- fix
-        }
-
-        frLista.addView(viewRV);
-        frPie.addView(viewBotones);
+    protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
+        super.setOnCreateView(view, inflater, container);
 
         rv = view.findViewById(R.id.rv);
         refreshLayout = view.findViewById(R.id.swipeRefresh);
-        frameAnimationCuerpo = view.findViewById(R.id.frameanimationcuerpo);
-        fragment_container = view.findViewById(R.id.frameanimation);
         auto = view.findViewById(R.id.auto);
         buscar = view.findViewById(R.id.imgbuscar);
         renovar = view.findViewById(R.id.imgrenovar);
@@ -126,25 +86,11 @@ public abstract class FragmentRVNoSQL extends FragmentBase {
                 R.color.s4
         );
 
-        contexto = activityBase;
-
-        setOnCreateView(view, inflaterMain, containerMain);
-
         Chronometer timer = (Chronometer) view.findViewById(R.id.chronocrud);
         setTimerEdit(timer);
 
         setControls(view);
 
-        setInicio();
-
-        AndroidUtil.ocultarTeclado(activityBase, view);
-
-        return view;
-    }
-
-    @Override
-    protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
-        super.setOnCreateView(view, inflater, container);
     }
 
     @Override

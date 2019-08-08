@@ -126,7 +126,7 @@ public class FragmentCRUDProveedor extends FragmentCRUD {
 
     @Override
     protected void setLayout() {
-        super.setLayout();
+
         layoutCuerpo = R.layout.fragment_crud_proveedor;
         layoutItem = R.layout.item_list_proveedor;
     }

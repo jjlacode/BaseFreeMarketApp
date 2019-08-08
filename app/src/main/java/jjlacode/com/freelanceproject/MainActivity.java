@@ -4,7 +4,6 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -17,20 +16,22 @@ import androidx.appcompat.app.AlertDialog;
 
 import jjlacode.com.freelanceproject.services.AutoArranque;
 import jjlacode.com.freelanceproject.settings.SettingsActivity;
-import jjlacode.com.freelanceproject.ui.FragmentInicio;
-import jjlacode.com.freelanceproject.ui.FragmentCRUDEvento;
-import jjlacode.com.freelanceproject.ui.FragmentCRUDPartidaProyecto;
-import jjlacode.com.freelanceproject.ui.FragmentCRUDPartidaBase;
-import jjlacode.com.freelanceproject.ui.FragmentCRUDProducto;
-import jjlacode.com.freelanceproject.ui.FragmentCRUDTrabajo;
-import jjlacode.com.freelanceproject.util.android.AppActivity;
-import jjlacode.com.freelanceproject.util.android.MainActivityBase;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDAmortizacion;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDCliente;
+import jjlacode.com.freelanceproject.ui.FragmentCRUDEvento;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDGastoFijo;
+import jjlacode.com.freelanceproject.ui.FragmentCRUDPartidaBase;
+import jjlacode.com.freelanceproject.ui.FragmentCRUDPartidaProyecto;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDPerfil;
+import jjlacode.com.freelanceproject.ui.FragmentCRUDProducto;
 import jjlacode.com.freelanceproject.ui.FragmentCRUDProyecto;
+import jjlacode.com.freelanceproject.ui.FragmentCRUDTrabajo;
+import jjlacode.com.freelanceproject.ui.FragmentChat;
+import jjlacode.com.freelanceproject.ui.FragmentInicio;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.android.MainActivityBase;
 import jjlacode.com.freelanceproject.util.media.VisorPDFEmail;
+import jjlacode.com.freelanceproject.util.web.FragmentWebView;
 
 import static android.Manifest.permission.CALL_PHONE;
 import static android.Manifest.permission.CAMERA;
@@ -83,18 +84,33 @@ public class MainActivity extends MainActivityBase {
             String accion = intent.getAction();
 
 
-            if (accion!=null && accion.equals(ACCION_VER)) {
+        if (accion!=null && accion.equals(ACCION_VER)) {
 
-                System.out.println("Accion ver");
+            System.out.println("Accion ver");
 
-                String idEvento = intent.getStringExtra(EXTRA_IDEVENTO);
-                bundle.putString(ACTUAL, intent.getStringExtra(EXTRA_ACTUAL));
-                bundle.putString(CAMPO_ID, idEvento);
-                NotificationManager notifyMgr = (NotificationManager)
-                        AppActivity.getAppContext().getSystemService(NOTIFICATION_SERVICE);
-                notifyMgr.cancel(intent.getIntExtra(EXTRA_ID,0));
+            String idEvento = intent.getStringExtra(EXTRA_IDEVENTO);
+            bundle.putString(ACTUAL, intent.getStringExtra(EXTRA_ACTUAL));
+            bundle.putString(CAMPO_ID, idEvento);
+            NotificationManager notifyMgr = (NotificationManager)
+                    AppActivity.getAppContext().getSystemService(NOTIFICATION_SERVICE);
+            notifyMgr.cancel(intent.getIntExtra(EXTRA_ID,0));
 
-            }
+        } else if (accion != null && accion.equals(ACCION_VERCHAT)) {
+
+            System.out.println("Accion ver chat");
+
+            String idChat = intent.getStringExtra(EXTRA_IDCHAT);
+            int secChat = intent.getIntExtra(EXTRA_SECCHAT, 0);
+            String tipoChat = intent.getStringExtra(EXTRA_TIPOCHAT);
+            bundle.putString(ACTUAL, intent.getStringExtra(EXTRA_ACTUAL));
+            bundle.putString(CAMPO_ID, idChat);
+            bundle.putInt(CAMPO_SECUENCIA, secChat);
+            bundle.putString(CAMPO_TIPO, tipoChat);
+            NotificationManager notifyMgr = (NotificationManager)
+                    AppActivity.getAppContext().getSystemService(NOTIFICATION_SERVICE);
+            notifyMgr.cancel(intent.getIntExtra(EXTRA_ID, 0));
+
+        }
 
     }
 
@@ -116,8 +132,8 @@ public class MainActivity extends MainActivityBase {
             recargarFragment();
             return true;
         }else if (id == R.id.action_help) {
-            bundle.putString(ACTUAL, INICIO);
-            recargarFragment();
+            bundle.putString(WEB, ayudaWeb);
+            enviarBundleAFragment(bundle, new FragmentWebView());
             return true;
         }
 
@@ -264,6 +280,11 @@ public class MainActivity extends MainActivityBase {
 
             case PRODUCTO:
                 enviarBundleAFragment(bundle, new FragmentCRUDProducto());
+                break;
+
+            case CHAT:
+
+                enviarBundleAFragment(bundle, new FragmentChat());
                 break;
 
 

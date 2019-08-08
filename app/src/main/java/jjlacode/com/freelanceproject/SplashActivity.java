@@ -7,96 +7,163 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
-import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
+import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.login.LoginActivity;
+import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
 
+import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NULL;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.PERSISTENCIA;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.PREFERENCIAS;
 
 
 public class SplashActivity extends AppCompatActivity implements ContratoPry.Tablas, CommonPry.Constantes {
 
-    private static ConsultaBD consulta = new ConsultaBD();
+    EditText pass;
+    EditText etcorreo;
+    String correo, contrasena;
+    Button btnRegistrar;
+    Button btnLogin;
+    LinearLayoutCompat lyRegistro;
+    FirebaseAuth firebaseAuth;
+    Context context;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        new Handler().postDelayed(new Runnable() {
+        etcorreo = findViewById(R.id.etcorreo);
+        pass = findViewById(R.id.etpass);
+        btnRegistrar = findViewById(R.id.btnRegistrar);
+        btnLogin = findViewById(R.id.btnLogin);
+        firebaseAuth = FirebaseAuth.getInstance();
+        lyRegistro = findViewById(R.id.lyregistro);
+        context = AppActivity.getAppContext();
+
+        btnRegistrar.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
-
-                if (!comprobarInicio()){
-
-                    SharedPreferences preferences=getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor=preferences.edit();
-
-                    //try {
-                        ContentValues valoresPer = new ContentValues();
-
-                        consulta.putDato(valoresPer,CAMPOS_PERFIL,PERFIL_NOMBRE,"Defecto");
-                        consulta.putDato(valoresPer,CAMPOS_PERFIL,PERFIL_DESCRIPCION,
-                                "Perfil por defecto, jornada normal de 8 horas diarias" +
-                                        " de lunes a viernes y 30 dias de vacaciones al año, " +
-                                        " y un sueldo anual de "+ JavaUtil.formatoMonedaLocal(20000));
-                        Uri reg = consulta.insertRegistro(TABLA_PERFIL,valoresPer);
-                        System.out.println(reg);
-/*
-                    }catch (Exception e){
-
-                        Toast.makeText(getApplicationContext(),"Error al crear base de datos",Toast.LENGTH_LONG).show();
-                        System.out.println("error al crear base");
-                        getApplicationContext().deleteDatabase(BASEDATOS);
-                        if (preferences.contains(PERFILACTIVO)) {
-
-                            editor.removeModelo(PERFILACTIVO);
-                            editor.apply();
+            public void onClick(View view) {
+                correo = etcorreo.getText().toString().trim();
+                contrasena = pass.getText().toString().trim();
+                firebaseAuth.createUserWithEmailAndPassword(correo, contrasena).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            iniciarDB(firebaseAuth.getUid());
+                            Toast.makeText(context, "El usuario se registro con éxito", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, "El usuario no se registro.", Toast.LENGTH_SHORT).show();
                         }
-                        finish();
                     }
-*/
-                    try{
+                });
+            }
+        });
 
-                        editor.putString(PERFILACTIVO, "Defecto");
-                        editor.putBoolean(PRIORIDAD, true);
-                        editor.putInt(DIASPASADOS,20);
-                        editor.putInt(DIASFUTUROS,90);
-                        editor.apply();
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-                    }catch (Exception e){
-
-                        if (preferences.contains(PERFILACTIVO)) {
-
-                            editor.remove(PERFILACTIVO);
-                            editor.apply();
-
-                        }
-                        getApplicationContext().deleteDatabase(BASEDATOS);
-                        System.out.println("error al crear base");
-                        finish();
-
-                    }
-                    CommonPry.prioridad = true;
-                    CommonPry.perfila = "Defecto";
-                    CommonPry.diasfuturos = 90;
-                    CommonPry.diaspasados = 20;
-                    CommonPry.hora = CommonPry.Calculos.calculoPrecioHora();
-                    CommonPry.setNamefdef();
-                }
-
-
-
-                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                intent.putExtra(INICIO,1);
+                iniciarDB(firebaseAuth.getUid());
+                Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
             }
-        },500);
+        });
+
+
+        if (!comprobarInicio()) {
+
+            SharedPreferences preferences = context.getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
+            String userID = preferences.getString(USERID, NULL);
+
+            if (userID.equals(NULL)) {
+
+                lyRegistro.setVisibility(View.VISIBLE);
+
+            } else {
+
+                iniciarDB(userID);
+            }
+
+        } else {
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+                    //intent.putExtra(INICIO,1);
+                    startActivity(intent);
+                    finish();
+                }
+            }, 500);
+        }
+
+
+    }
+
+    private void iniciarDB(String userID) {
+
+        SharedPreferences preferences = getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        ContentValues valoresPer = new ContentValues();
+
+        ConsultaBD.putDato(valoresPer, CAMPOS_PERFIL, PERFIL_NOMBRE, "Defecto");
+        ConsultaBD.putDato(valoresPer, CAMPOS_PERFIL, PERFIL_DESCRIPCION,
+                "Perfil por defecto, jornada normal de 8 horas diarias" +
+                        " de lunes a viernes y 30 dias de vacaciones al año, " +
+                        " y un sueldo anual de " + JavaUtil.formatoMonedaLocal(20000));
+        Uri reg = ConsultaBD.insertRegistro(TABLA_PERFIL, valoresPer);
+        System.out.println(reg);
+
+        try {
+
+            editor.putString(USERID, userID);
+            editor.putString(PERFILACTIVO, "Defecto");
+            editor.putBoolean(PRIORIDAD, true);
+            editor.putInt(DIASPASADOS, 20);
+            editor.putInt(DIASFUTUROS, 90);
+            editor.apply();
+
+        } catch (Exception e) {
+
+            if (preferences.contains(PERFILACTIVO)) {
+
+                editor.remove(PERFILACTIVO);
+                editor.apply();
+
+            }
+            getApplicationContext().deleteDatabase(BASEDATOS);
+            System.out.println("error al crear base");
+            finish();
+
+        }
+        CommonPry.prioridad = true;
+        CommonPry.perfila = "Defecto";
+        CommonPry.diasfuturos = 90;
+        CommonPry.diaspasados = 20;
+        CommonPry.hora = CommonPry.Calculos.calculoPrecioHora();
+        CommonPry.setNamefdef();
+
     }
 
     private Boolean comprobarInicio() {

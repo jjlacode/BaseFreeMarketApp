@@ -36,7 +36,7 @@ public class Trabajos extends FragmentMes {
         listabase = new ListaModelo();
 
         for (Modelo modelo : listatemp.getLista()) {
-            if ((modelo.getInt(PROYECTO_TIPOESTADO) >= TNUEVOPRESUP) &&
+            if ((modelo.getInt(PROYECTO_TIPOESTADO) >= TPRESUPACEPTADO) &&
                     (modelo.getInt(PROYECTO_TIPOESTADO) < TPROYECTPENDCOBRO)){
                 listabase.addModelo(modelo);
             }
@@ -44,8 +44,10 @@ public class Trabajos extends FragmentMes {
 
         for (Modelo modelo : listabase.getLista()) {
 
-            if (TimeDateUtil.getDateString(modelo.getLong(PROYECTO_FECHAENTREGAACORDADA))
-                    .equals(TimeDateUtil.getDateString(fecha))){
+            if (TimeDateUtil.soloFecha(modelo.getLong(PROYECTO_FECHAENTRADA))
+                    >= TimeDateUtil.soloFecha(fecha) &&
+                    TimeDateUtil.soloFecha(modelo.getLong(PROYECTO_FECHAENTREGAACORDADA))
+                            <= TimeDateUtil.soloFecha(fecha)) {
 
                 listaDia.addModelo(modelo);
             }

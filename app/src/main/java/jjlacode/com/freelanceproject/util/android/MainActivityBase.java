@@ -22,9 +22,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
+import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.util.JavaUtil;
 
 public class MainActivityBase extends AppCompatActivity
@@ -40,6 +40,7 @@ public class MainActivityBase extends AppCompatActivity
     protected boolean land;
     protected boolean tablet;
     protected float sizeF;
+    protected String ayudaWeb;
     private String TAG = getClass().getSimpleName();
 
     protected void persitencia(){
@@ -126,6 +127,7 @@ public class MainActivityBase extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action barOk if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
         return true;
     }
 
@@ -225,6 +227,12 @@ public class MainActivityBase extends AppCompatActivity
     public void showSubTitle(String subTitle) {
 
         toolbar.setSubtitle(subTitle);
+    }
+
+    @Override
+    public void enviarAyudaWeb(String ayudaWeb) {
+
+        this.ayudaWeb = ayudaWeb;
     }
 
     protected void recargarFragment(){

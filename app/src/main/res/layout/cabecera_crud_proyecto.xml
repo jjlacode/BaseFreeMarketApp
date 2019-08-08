@@ -13,7 +13,7 @@
         android:textColor="@color/Color_texto_titulos"
         android:textSize="12sp"
         android:textStyle="bold"
-        android:text="@string/presupuestos"/>
+        android:text="@string/btn_presupuestos" />
 
     <Button
         android:id="@+id/btnproyectoslpry"
@@ -25,7 +25,7 @@
         android:textColor="@color/Color_texto_titulos"
         android:textSize="12sp"
         android:textStyle="bold"
-        android:text="@string/proyectos"/>
+        android:text="@string/btn_proyectos" />
 
     <Button
         android:id="@+id/btnproycobroslpry"
@@ -40,6 +40,18 @@
         android:text="@string/cobros"/>
 
     <Button
+        android:id="@+id/btngarantiapry"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        style="?attr/buttonBarButtonStyle"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/Color_texto_titulos"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:text="@string/btn_garantia" />
+
+    <Button
         android:id="@+id/btnhistoricopry"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -49,6 +61,6 @@
         android:textColor="@color/Color_texto_titulos"
         android:textSize="12sp"
         android:textStyle="bold"
-        android:text="@string/historico"/>
+        android:text="@string/btn_historico" />
 
 </LinearLayout>

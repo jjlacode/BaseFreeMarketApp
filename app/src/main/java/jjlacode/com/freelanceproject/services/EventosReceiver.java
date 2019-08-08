@@ -1,19 +1,18 @@
 package jjlacode.com.freelanceproject.services;
 
 import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 
+import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.MainActivity;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
-import jjlacode.com.freelanceproject.sqlite.ContratoPry;
-import jjlacode.com.freelanceproject.util.crud.CRUDutil;
-import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.crud.CRUDutil;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
+import jjlacode.com.freelanceproject.util.services.ReceiverBase;
+import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.CONTNOT;
@@ -21,14 +20,19 @@ import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.HORASLONG;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.MINUTOSLONG;
 import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.NOTIFICACIONES;
 
-public class EventosReceiver extends BroadcastReceiver implements CommonPry.Constantes, ContratoPry.Tablas {
+public class EventosReceiver extends ReceiverBase {
 
-    // Sin instancias
+    public EventosReceiver(Messenger messenger) {
+        super(messenger);
+    }
+
     public EventosReceiver() {
     }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceiver(Context context, Intent intent) {
+
+        System.out.println("context EventosReceiver= " + context);
 
         System.out.println("Recibiendo "+intent.getExtras().toString());
         System.out.println("intent Accion= " + intent.getAction());

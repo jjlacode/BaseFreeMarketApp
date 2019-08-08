@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imgfreelance"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:layout_weight="2.5"
+            android:contentDescription="@string/imagen_producto_proveedor"
+            app:srcCompat="@drawable/ic_add_a_photo_black_24dp" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                android:id="@+id/etnombrefreelance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint_text="@string/nombre"
+                app:tipo_dato="TEXTO|PERSONA" />
+
+
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                android:id="@+id/etdireccionfreelance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint_text="@string/direccion"
+                app:tipo_dato="TEXTO|MULTI" />
+
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                android:id="@+id/ettelefonofreelance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint_text="@string/telefono"
+                app:tipo_dato="NUMERO|TELEFONO" />
+
+            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                android:id="@+id/etemailfreelance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint_text="@string/email"
+                app:tipo_dato="TEXTO|EMAIL" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+        android:id="@+id/etdescripcionfreelance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:hint_text="@string/descripcion"
+        app:tipo_dato="TEXTO|MULTI" />
+
+    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+        android:id="@+id/etwebfreelance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:hint_text="@string/web"
+        app:tipo_dato="TEXTO|URI" />
+
+    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+        android:id="@+id/etclavesfreelance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:hint_text="@string/palabras_clave"
+        app:tipo_dato="TEXTO|MULTI" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_save_publicidad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@drawable/boton_redondo_secondary"
+        android:src="@drawable/ic_catalogo_indigo"
+        android:scaleType="center" />
+
+</LinearLayout>

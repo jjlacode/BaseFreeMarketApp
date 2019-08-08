@@ -113,11 +113,13 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private Button btnproyectos;
     private Button btncobros;
     private Button btnhistorico;
+    private Button btngarantias;
 
     public String actualtemp;
     private ImageButton btnNota;
     private ImageButton btnVerNotas;
     public static String rutaPdf;
+    private boolean enGarantia;
 
     public FragmentCRUDProyecto() {
         // Required empty public constructor
@@ -195,9 +197,17 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
                         break;
 
+                    case GARANTIA:
+
+                        if (estado == 8) {
+                            listatemp.add(item);
+                        }
+
+                        break;
+
                     case HISTORICO:
 
-                            if (estado == 8 || estado == 0) {
+                        if (estado == 9 || estado == 0) {
                                 listatemp.add(item);
                             }
 
@@ -269,6 +279,11 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             if (actualtemp==null) {
                 actualtemp = PROYECTO;
             }
+        } else if (actual.equals(GARANTIA)) {
+            activityBase.toolbar.setTitle(R.string.garantia);
+            if (actualtemp == null) {
+                actualtemp = PROYECTO;
+            }
         }else{
             activityBase.toolbar.setTitle(R.string.proyectos);
             if (actualtemp==null) {
@@ -286,6 +301,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         btnproyectos.setVisibility(View.VISIBLE);
         btncobros.setVisibility(View.VISIBLE);
         btnhistorico.setVisibility(View.VISIBLE);
+        btngarantias.setVisibility(View.VISIBLE);
 
         btnpresupuestos.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -319,6 +335,18 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 actual = COBROS;
                 actualtemp = PROYECTO;
                 activityBase.toolbar.setTitle(R.string.cobros);
+                selector();
+            }
+        });
+
+        btngarantias.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(getContext(), PROYGARANTIA, Toast.LENGTH_SHORT).show();
+                actual = GARANTIA;
+                actualtemp = PROYECTO;
+                activityBase.toolbar.setTitle(R.string.garantia);
                 selector();
             }
         });
@@ -558,10 +586,18 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
             switch (actual) {
 
-                case COBROS:
+                case GARANTIA:
                     Toast.makeText(getContext(), PROYHISTORICO, Toast.LENGTH_SHORT).show();
                     actual = HISTORICO;
                     activityBase.toolbar.setTitle(R.string.historico);
+                    actualtemp = PROYECTO;
+                    selector();
+                    break;
+
+                case COBROS:
+                    Toast.makeText(getContext(), PROYGARANTIA, Toast.LENGTH_SHORT).show();
+                    actual = GARANTIA;
+                    activityBase.toolbar.setTitle(R.string.garantia);
                     actualtemp = PROYECTO;
                     selector();
                     break;
@@ -604,11 +640,19 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 activityBase.toolbar.setTitle(R.string.proyectos);
                 selector();
                 break;
-            case HISTORICO:
+            case GARANTIA:
                 Toast.makeText(getContext(),PROYCOBROS, Toast.LENGTH_SHORT).show();
                 actual = COBROS;
                 actualtemp = PROYECTO;
                 activityBase.toolbar.setTitle(R.string.cobros);
+                selector();
+                break;
+
+            case HISTORICO:
+                Toast.makeText(getContext(), PROYGARANTIA, Toast.LENGTH_SHORT).show();
+                actual = GARANTIA;
+                actualtemp = PROYECTO;
+                activityBase.toolbar.setTitle(R.string.garantia);
                 selector();
                 break;
         }
@@ -657,6 +701,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         btnproyectos = (Button) ctrl(R.id.btnproyectoslpry);
         btncobros = (Button) ctrl(R.id.btnproycobroslpry);
         btnhistorico = (Button) ctrl(R.id.btnhistoricopry);
+        btngarantias = (Button) ctrl(R.id.btngarantiapry);
         btnVerEventos = (ImageButton) ctrl(R.id.btnvereventosudpry);
         btnNota = (ImageButton) ctrl(R.id.btn_crearnota_proy);
         btnVerNotas = (ImageButton) ctrl(R.id.btn_vernotas_proy);
@@ -667,6 +712,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         gone(btnproyectos);
         gone(btncobros);
         gone(btnhistorico);
+        gone(btngarantias);
 
         if (actual==null){
             actual=PROYECTO;
@@ -1098,6 +1144,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                     break;
                 case TPROYECTPENDCOBRO:
                     btnActualizar.setText(String.format("%s %s", convertir, PROYECTCOBRADO));
+                case TPROYECTCOBRADO:
+                    btnActualizar.setText(String.format("%s %s", convertir, PROYECTHISTORICO));
             }
 
             estadoProyecto.setGravedad(View.TEXT_ALIGNMENT_CENTER);
@@ -1147,6 +1195,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         String idProyPendEntrega = getIdEstado(TPROYECPENDENTREGA);
         String idProyPendCobro = getIdEstado(TPROYECTPENDCOBRO);
         String idProyCobrado = getIdEstado(TPROYECTCOBRADO);
+        String idProyHistorico = getIdEstado(TPROYECTHISTORICO);
 
         if (idEstado.equals(idNuevoPresup)) {
 
@@ -1195,6 +1244,11 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
             estadoProyecto.setText(PROYECTCOBRADO);
             idEstado = idProyCobrado;
+
+        } else if (idEstado.equals(idProyCobrado) && !enGarantia) {
+
+            estadoProyecto.setText(PROYECTHISTORICO);
+            idEstado = idProyHistorico;
 
         }
 

@@ -33,7 +33,7 @@
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/imagen_producto_proveedor"
-                    card_view:srcCompat="@drawable/ico_calendario_reloj" />
+                    card_view:srcCompat="@drawable/logofp" />
             </LinearLayout>
 
             <LinearLayout

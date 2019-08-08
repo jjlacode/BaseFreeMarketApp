@@ -75,5 +75,16 @@
         <item name="android:textSize">@dimen/texto_boton</item>
     </style>
 
+    <style name="AppTheme.AccentButton">
+        <item name="colorButtonNormal">@color/colorAccent</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="LoginEditText" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="colorControlActivated">@android:color/white</item>
+        <item name="android:editTextColor">@android:color/white</item>
+    </style>
+
 
 </resources>

@@ -75,6 +75,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
     protected RelativeLayout frPrincipal;
     protected LinearLayout frdetalle;
+    protected LinearLayout frdetalleExtras;
     protected LinearLayout frPie;
     protected LinearLayout frCabecera;
     protected LinearLayout frLista;
@@ -104,6 +105,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected String actualtemp;
     protected String subTitulo;
     protected String destino;
+    protected String ayudaWeb;
     protected int code;
     protected int[] codigo;
     protected int contCode;
@@ -177,6 +179,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         frPrincipal = view.findViewById(R.id.contenedor);
         frdetalle = view.findViewById(R.id.layout_detalle);
+        frdetalleExtras = view.findViewById(R.id.layout_extras_detalle);
         frCabecera = view.findViewById(R.id.layout_cabecera);
         frPie = view.findViewById(R.id.layout_pie);
         frLista = view.findViewById(R.id.layout_rv);
@@ -225,6 +228,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         }
 
+        contexto = activityBase;
 
         frameAnimationCuerpo = view.findViewById(R.id.frameanimationcuerpo);
 
@@ -289,6 +293,9 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     public void onResume() {
         super.onResume();
         Log.d(TAG, getMetodo());
+
+        ayudaWeb = setAyudaWeb();
+        icFragmentos.enviarAyudaWeb(ayudaWeb);
 
         if (!listenerSensorProx && sensorProximidad() ) {
             sensorManagerProx.registerListener(proximitySensorListener,
@@ -437,6 +444,9 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         }
     }
 
+    protected String setAyudaWeb() {
+        return null;
+    }
 
     protected void setOnRigthSwipeCuerpo(){
         Log.d(TAG, getMetodo());

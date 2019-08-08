@@ -8,11 +8,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.provider.BaseColumns;
 import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.UUID;
+
 import jjlacode.com.freelanceproject.CommonPry;
 
-import static jjlacode.com.freelanceproject.sqlite.ContratoPry.*;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.Tablas;
+import static jjlacode.com.freelanceproject.sqlite.ContratoPry.obtenerListaCampos;
 
 public class DataBase extends SQLiteOpenHelper
         implements CommonPry.Constantes, Tablas, CommonPry.Estados, CommonPry.TiposEstados {
@@ -242,6 +245,24 @@ public class DataBase extends SQLiteOpenHelper
 
         valores.put(ESTADO_DESCRIPCION, PROYECTCOBRADO);
         valores.put(ESTADO_TIPOESTADO, TPROYECTCOBRADO);
+        valores.put(ESTADO_ID_ESTADO, TABLA_ESTADO + UUID.randomUUID().toString());
+        i = db.insertOrThrow(TABLA_ESTADO, null, valores);
+        if (i > 0) {
+            Log.d("datos_iniciales", "Insertados datos defecto Estado");
+            i = 0;
+        }
+
+        valores.put(ESTADO_DESCRIPCION, PROYECTHISTORICO);
+        valores.put(ESTADO_TIPOESTADO, TPROYECTHISTORICO);
+        valores.put(ESTADO_ID_ESTADO, TABLA_ESTADO + UUID.randomUUID().toString());
+        i = db.insertOrThrow(TABLA_ESTADO, null, valores);
+        if (i > 0) {
+            Log.d("datos_iniciales", "Insertados datos defecto Estado");
+            i = 0;
+        }
+
+        valores.put(ESTADO_DESCRIPCION, PRESUPNOACEPTADO);
+        valores.put(ESTADO_TIPOESTADO, TPRESUPNOACEPTADO);
         valores.put(ESTADO_ID_ESTADO, TABLA_ESTADO + UUID.randomUUID().toString());
         i = db.insertOrThrow(TABLA_ESTADO, null, valores);
         if (i > 0) {

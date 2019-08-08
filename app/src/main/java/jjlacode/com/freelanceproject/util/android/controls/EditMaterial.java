@@ -156,14 +156,18 @@ public class EditMaterial extends LinearLayoutCompat {
             public void onFocusChange(View view, boolean b) {
 
                 if (!b && textoCambiado) {
-                    listenerFoco.alPerderFoco(view);
+                    if (listenerFoco != null) {
+                        listenerFoco.alPerderFoco(view);
+                    }
                     textoCambiado = false;
 
                 }
                 if (b) {
-                    listenerFoco.alRecibirFoco(view);
-                    editText.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                    editText.setTextColor(getResources().getColor(R.color.colorPrimary));
+                    if (listenerFoco != null) {
+                        listenerFoco.alRecibirFoco(view);
+                        editText.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                        editText.setTextColor(getResources().getColor(R.color.colorPrimary));
+                    }
                 } else {
                     editText.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                     editText.setTextColor(getResources().getColor(R.color.colorSecondaryDark));
@@ -178,6 +182,12 @@ public class EditMaterial extends LinearLayoutCompat {
     public void setFondo(int colorFondo){
         textInputLayout.setBoxBackgroundColor(colorFondo);
 
+    }
+
+    public void setMaxLeng(int leng) {
+
+        textInputLayout.setCounterEnabled(true);
+        textInputLayout.setCounterMaxLength(leng);
     }
 
     public void setPosicion(int posicion) {
@@ -251,7 +261,8 @@ public class EditMaterial extends LinearLayoutCompat {
     }
 
     public void comprobarEdit() {
-        if (getText() == null || (getText() != null && getTexto().equals("")) || (getText() != null && getTexto().equals("0.0"))) {
+        if (getActivo() && ((getText() == null) || (getText() != null && getTexto().equals("")) ||
+                (getText() != null && getTexto().equals("0.0")))) {
             editText.setBackgroundColor(getResources().getColor(R.color.Color_edit_vacio));
             editText.setTextColor(getResources().getColor(R.color.colorSecondaryDark));
         }
