@@ -8,17 +8,21 @@ public class Rating implements Serializable {
     private String tipo;
     private String idRating;
     private String idUser;
+    private String nombreUser;
     private String comentario;
+    private long fecha;
 
     public Rating() {
     }
 
-    public Rating(float valor, String tipo, String idRating, String idUser, String comentario) {
+    public Rating(float valor, String tipo, String idRating, String idUser, String nombreUser, String comentario, long fecha) {
         this.valor = valor;
         this.tipo = tipo;
         this.idRating = idRating;
         this.idUser = idUser;
+        this.nombreUser = nombreUser;
         this.comentario = comentario;
+        this.fecha = fecha;
     }
 
     public float getValor() {
@@ -59,5 +63,21 @@ public class Rating implements Serializable {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public long getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(long fecha) {
+        this.fecha = fecha;
+    }
+
+    public String getNombreUser() {
+        return nombreUser;
+    }
+
+    public void setNombreUser(String nombreUser) {
+        this.nombreUser = nombreUser;
     }
 }

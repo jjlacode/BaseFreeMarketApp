@@ -58,6 +58,19 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements CommonPry.Const
     }
 
     @Override
+    protected void setTablaCab() {
+
+        tablaCab = ContratoPry.getTabCab(tabla);
+    }
+
+    @Override
+    protected void setCampos() {
+
+        campos = ContratoPry.obtenerCampos(tabla);
+
+    }
+
+    @Override
     protected void setTitulo() {
 
         tituloSingular = R.string.tarea;

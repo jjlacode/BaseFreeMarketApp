@@ -87,6 +87,19 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements CommonP
 
     }
 
+    @Override
+    protected void setTablaCab() {
+
+        tablaCab = ContratoPry.getTabCab(tabla);
+    }
+
+    @Override
+    protected void setCampos() {
+
+        campos = ContratoPry.obtenerCampos(tabla);
+
+    }
+
 
     @Override
     protected void setBundle() {

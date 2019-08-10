@@ -103,6 +103,15 @@
                 android:rating="0"
                 android:stepSize="1" />
 
+            <RatingBar
+                android:id="@+id/ratingBarUserCardFreelance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:attr/ratingBarStyleSmall"
+                android:numStars="5"
+                android:rating="0"
+                android:stepSize="1" />
+
             <androidx.core.widget.NestedScrollView
                 android:id="@+id/lylwebfreelance"
                 android:layout_width="match_parent"

@@ -199,6 +199,7 @@ public class ProviderFreelanceProject extends ContentProvider
 
     }
 
+
     private static final String PROYECTO_JOIN_CLIENTE_Y_ESTADO=
             String.format("%s " +
                             "INNER JOIN %s " +
@@ -247,11 +248,6 @@ public class ProviderFreelanceProject extends ContentProvider
             TABLA_PARTIDA,
             PROYECTO_RETRASO,
             ESTADO_TIPOESTADO);
-
-
-
-
-
 
     public ProviderFreelanceProject() {
 

@@ -1,5 +1,6 @@
 package jjlacode.com.freelanceproject.util.time.calendar.clases;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.View;
@@ -133,10 +134,12 @@ public abstract class DiaCalBase extends FragmentRV {
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void setInicio() {
 
         gone(frameAnimationCuerpo);
+
 
         fragment_container.setOnSwipeListener(new OneFrameLayout.OnSwipeListener() {
             @Override
@@ -158,6 +161,7 @@ public abstract class DiaCalBase extends FragmentRV {
 
             }
         });
+
 
     }
 

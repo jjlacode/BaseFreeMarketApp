@@ -153,25 +153,11 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         }
     }
 
-    protected void setTabla(){
-        Log.d(TAG, getMetodo());
+    protected abstract void setTabla();
 
-    }
+    protected abstract void setTablaCab();
 
-    protected void setTablaCab(){
-        Log.d(TAG, getMetodo());
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-
-    }
-
-
-    protected void setCampos(){
-        Log.d(TAG, getMetodo());
-
-        campos = ContratoPry.obtenerCampos(tabla);
-
-    }
+    protected abstract void setCampos();
 
     protected void setCampoID(){
         Log.d(TAG, getMetodo());
@@ -309,11 +295,12 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
                 @Override
                 public void despuesCambio(Editable s) {
+                    final Editable temp = s;
                     timer = new Timer();
                     timer.schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            if ((id != null && (tablaCab == null || secuencia > 0)) || back) {
+                            if (((id != null && (tablaCab == null || secuencia > 0)) || back) && !temp.toString().equals("")) {
                                 guardarEdit(editMaterial);
                             }
                         }

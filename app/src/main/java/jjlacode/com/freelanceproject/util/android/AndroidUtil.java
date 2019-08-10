@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
@@ -615,5 +616,28 @@ public class AndroidUtil extends AppCompatActivity {
         int densidadDpi = (int) (metrics.densityDpi);
 
         return ((float) (ancho + alto + densidadDpi) / (100));
+    }
+
+    public static ColorStateList setColorStateListRatingBar(int colorActive, int colorDeactive) {
+
+        if (colorActive == 0) {
+            colorActive = R.color.colorPrimary;
+        }
+        if (colorDeactive == 0) {
+            colorDeactive = R.color.colorPrimary;
+        }
+
+        ColorStateList stateList = new ColorStateList(
+                new int[][]{
+                        new int[]{android.R.attr.state_activated},
+                        new int[]{-android.R.attr.state_activated},
+                },
+                new int[]{
+                        colorActive,
+                        colorDeactive
+                }
+        );
+
+        return stateList;
     }
 }

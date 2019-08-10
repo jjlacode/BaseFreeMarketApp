@@ -42,22 +42,6 @@
                     app:tipo_dato="TEXTO|PERSONA" />
 
                 <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
-                    android:id="@+id/etdirecciondetfreelance"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:activo="false"
-                    app:hint_text="@string/direccion"
-                    app:tipo_dato="TEXTO|DIRECCION|MULTI" />
-
-                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
-                    android:id="@+id/etdescdetfreelance"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:hint_text="@string/descripcion"
-                    app:activo="false"
-                    app:tipo_dato="TEXTO|MULTI" />
-
-                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/ettelefonodetfreelance"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -75,5 +59,21 @@
 
             </LinearLayout>
         </LinearLayout>
+
+        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            android:id="@+id/etdirecciondetfreelance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:activo="false"
+            app:hint_text="@string/direccion"
+            app:tipo_dato="TEXTO|DIRECCION|MULTI" />
+
+        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            android:id="@+id/etdescdetfreelance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hint_text="@string/descripcion"
+            app:activo="false"
+            app:tipo_dato="TEXTO|MULTI" />
     </LinearLayout>
 </ScrollView>

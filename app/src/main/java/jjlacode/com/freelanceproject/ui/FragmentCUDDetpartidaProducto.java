@@ -64,6 +64,19 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Common
 
     }
 
+    @Override
+    protected void setTablaCab() {
+
+        tablaCab = ContratoPry.getTabCab(tabla);
+    }
+
+    @Override
+    protected void setCampos() {
+
+        campos = ContratoPry.obtenerCampos(tabla);
+
+    }
+
 
     @Override
     protected void setBundle() {

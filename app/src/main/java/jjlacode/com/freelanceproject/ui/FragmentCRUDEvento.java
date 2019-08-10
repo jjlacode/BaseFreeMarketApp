@@ -467,6 +467,19 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
     }
 
     @Override
+    protected void setTablaCab() {
+
+        tablaCab = ContratoPry.getTabCab(tabla);
+    }
+
+    @Override
+    protected void setCampos() {
+
+        campos = ContratoPry.obtenerCampos(tabla);
+
+    }
+
+    @Override
     protected void setBundle() {
 
         proyecto = (Modelo) bundle.getSerializable(TABLA_PROYECTO);

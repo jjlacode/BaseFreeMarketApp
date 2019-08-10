@@ -1,4 +1,4 @@
-package jjlacode.com.freelanceproject.util.android;
+package jjlacode.com.freelanceproject.util.interfaces;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;

@@ -1,6 +1,8 @@
 package jjlacode.com.freelanceproject.util.android;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -43,8 +45,10 @@ import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.MainActivity;
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.Models.Contactos;
 import jjlacode.com.freelanceproject.util.android.controls.EditMaterial;
 import jjlacode.com.freelanceproject.util.animation.OneFrameLayout;
+import jjlacode.com.freelanceproject.util.interfaces.ICFragmentos;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.SENSOR_SERVICE;
@@ -160,6 +164,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         return ((float)metrics.densityDpi / (float)metrics.widthPixels) < 0.30;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -232,6 +237,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         frameAnimationCuerpo = view.findViewById(R.id.frameanimationcuerpo);
 
+        frameAnimationCuerpo.setAncho((int) (ancho * densidad));
+
         gone(frLista);
 
         setOnCreateView(view,inflaterMain,containerMain);
@@ -255,6 +262,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
                 setOnLeftSwipeCuerpo();
             }
         });
+
 
         return view;
     }
@@ -858,20 +866,26 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
                     ArrayList<String> speech = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    grabarVoz = speech.get(0).toLowerCase();
-                    String ir = null;
-                    String destino = null;
 
-                    if (grabarVoz.length()>=5) {
-                        ir = grabarVoz.substring(0, 5);
-                        destino = grabarVoz.substring(5);
-                        if (ir.equals("ir a ")) {
-                            CommonPry.seleccionarDestino(icFragmentos, bundle, destino);
-                        } else if (ir.equals("crear")) {
-                            CommonPry.seleccionarDestino(icFragmentos, bundle, destino);
-                        }else if (grabarVoz.equals(getString(R.string.salir).toLowerCase())) {
+                    grabarVoz = speech.get(0).toLowerCase();
+
+                    if (grabarVoz.length() >= 16 && grabarVoz.substring(0, 16).equals("llamar contacto ")) {
+
+                        llamarContacto(grabarVoz.substring(16));
+
+                    } else if (grabarVoz.length() >= 5 && grabarVoz.substring(0, 5).equals("ir a ")) {
+
+                        CommonPry.seleccionarDestino(icFragmentos, bundle, grabarVoz.substring(5));
+
+                    } else if (grabarVoz.length() >= 6 && (grabarVoz.substring(0, 6).equals("crear ") ||
+                            grabarVoz.substring(0, 6).equals("nuevo "))) {
+
+                        CommonPry.seleccionarNuevoDestino(icFragmentos, bundle, grabarVoz.substring(6));
+
+                    } else if (grabarVoz.equals(getString(R.string.salir).toLowerCase())) {
+
                             activityBase.finish();
-                        }
+
                     }
             }
 
@@ -898,10 +912,26 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
 
 }
-protected boolean nn(Object object){
+
+    protected void llamarContacto(String contacto) {
+
+        ContentResolver cr = contexto.getContentResolver();
+        ArrayList<Contactos> listaContactos = AppActivity.registroContactos(cr);
+
+        for (Contactos contactos : listaContactos) {
+
+            System.out.println("contacto = " + contacto);
+            System.out.println("contactos = " + contactos.getDatos());
+            if (contactos.getDatos().toLowerCase().equals(contacto)) {
+                AppActivity.hacerLlamada(contexto, contactos.getNumero(), CommonPry.permiso);
+            }
+        }
+    }
+
+    protected boolean nn(Object object) {
         if (object!=null){
             return true;
         }
         return false;
-}
+    }
 }

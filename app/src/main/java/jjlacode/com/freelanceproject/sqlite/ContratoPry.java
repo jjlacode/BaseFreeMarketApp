@@ -1,12 +1,9 @@
 package jjlacode.com.freelanceproject.sqlite;
 
-import android.net.Uri;
-
 import java.util.ArrayList;
-import java.util.UUID;
 
 import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.sqlite.ContratoBaseSQLite;
 
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.AMORTIZACION;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.CHAT;
@@ -37,20 +34,7 @@ import static jjlacode.com.freelanceproject.CommonPry.Constantes.TIPOCLIENTE;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.TRABAJO;
 
 
-public class ContratoPry implements JavaUtil.Constantes {
-
-    public static final String AUTORIDAD_CONTENIDO =
-            AppActivity.getNombreApp();
-
-    public static final Uri URI_BASE = Uri.parse("content://" + AUTORIDAD_CONTENIDO);
-
-    public static final String BASE_CONTENIDOS = "freelanceproject.";
-
-    public static final String TIPO_CONTENIDO = "vnd.android.cursor.dir/vnd."
-            + BASE_CONTENIDOS;
-
-    public static final String TIPO_CONTENIDO_ITEM = "vnd.android.cursor.item/vnd."
-            + BASE_CONTENIDOS;
+public class ContratoPry extends ContratoBaseSQLite implements JavaUtil.Constantes {
 
     public interface Tablas {
 
@@ -413,6 +397,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         String TABLAS_TABLA = "tabla_"+TABLA_TABLAS;
         String TABLAS_CAMPO = "campo_"+TABLA_TABLAS;
         String TABLAS_PARAMETROS = "parametros_"+TABLA_TABLAS;
+        String TABLAS_TIPODATO = "tipo_dato_" + TABLA_TABLAS;
 
 
         //REFERENCIAS----------------------------------------------------------
@@ -874,9 +859,9 @@ public class ContratoPry implements JavaUtil.Constantes {
         ArrayList<String[]> listaCampos = obtenerListaCampos();
 
         for (String[] campo : listaCampos) {
-             if (campo[1].equals(tabla)){
-                 return campo;
-             }
+            if (campo[1].equals(tabla)) {
+                return campo;
+            }
         }
 
         return null;
@@ -921,78 +906,6 @@ public class ContratoPry implements JavaUtil.Constantes {
         }
 
         return null;
-    }
-
-    public static Uri obtenerUriContenido(String tabla){
-
-        return URI_BASE.buildUpon().appendPath(tabla).build();
-    }
-
-    public static Uri crearUriTabla(String id, String tabla){
-
-        Uri URI_CONTENIDO = obtenerUriContenido(tabla);
-
-        return URI_CONTENIDO.buildUpon().appendPath(id).build();
-    }
-
-    public static Uri crearUriTablaDetalle(String id, String secuencia, String tabla) {
-        // Uri de la forma 'gasto/:id#:secuencia'
-        Uri URI_CONTENIDO = obtenerUriContenido(tabla);
-        return URI_CONTENIDO.buildUpon()
-                .appendPath(String.format("%s#%s", id, secuencia))
-                .build();
-    }
-
-    public static Uri crearUriTablaDetalle(String id, int secuencia, String tabla) {
-        // Uri de la forma 'gasto/:id#:secuencia'
-        Uri URI_CONTENIDO = obtenerUriContenido(tabla);
-        return URI_CONTENIDO.buildUpon()
-                .appendPath(String.format("%s#%s", id, String.valueOf(secuencia)))
-                .build();
-    }
-
-    public static Uri crearUriTablaDetalleId(String id, String tabla, String tablaCab){
-
-        Uri URI_CONTENIDO = obtenerUriContenido(tablaCab);
-        return URI_CONTENIDO.buildUpon().appendPath(id).appendPath(tabla).build();
-
-    }
-
-    public static String obtenerIdTablaDetalleId(Uri uri) {
-        return uri.getPathSegments().get(1);
-    }
-
-    public static String[] obtenerIdTablaDetalle(Uri uri) {
-        return uri.getLastPathSegment().split("#");
-    }
-
-    public static String generarIdTabla(String tabla){
-        return tabla + UUID.randomUUID().toString();
-    }
-
-    public static String obtenerIdTabla(Uri uri){
-        return uri.getLastPathSegment();
-    }
-
-    public static boolean tieneFiltro(Uri uri){
-        return uri != null && uri.getQueryParameter(PARAMETRO_FILTRO) != null;
-    }
-
-
-    public static String generarMime(String id) {
-        if (id != null) {
-            return TIPO_CONTENIDO + id;
-        } else {
-            return null;
-        }
-    }
-
-    public static String generarMimeItem(String id) {
-        if (id != null) {
-            return TIPO_CONTENIDO_ITEM + id;
-        } else {
-            return null;
-        }
     }
 
     private ContratoPry() {

@@ -1,5 +1,6 @@
 package jjlacode.com.freelanceproject.util.crud;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.speech.RecognizerIntent;
@@ -49,6 +50,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
     protected SwipeRefreshLayout refreshLayout;
     private OneFrameLayout frameAnimation;
     private String stemp = "";
+    private int posicion;
 
     public FragmentCRUD() {
     }
@@ -75,6 +77,8 @@ public abstract class FragmentCRUD extends FragmentCUD {
         lupa = view.findViewById(R.id.imgsearch);
         voz = view.findViewById(R.id.imgvoz);
         frameAnimation = view.findViewById(R.id.frameanimation);
+
+        frameAnimation.setAncho((int) (ancho * densidad));
 
         refreshLayout.setColorSchemeResources(
                 R.color.s1,
@@ -162,6 +166,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void acciones() {
         super.acciones();
@@ -287,6 +292,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
             }
         });
+
 
         frameAnimation.setOnSwipeListener(new OneFrameLayout.OnSwipeListener() {
             @Override
@@ -617,20 +623,47 @@ public abstract class FragmentCRUD extends FragmentCUD {
         Log.d(TAG, getMetodo());
 
         modelo = lista.getItem(rv.getChildAdapterPosition(v));
-            id = modelo.getString(campoID);
 
-            if (tablaCab != null) {
-                secuencia = modelo.getInt(CAMPO_SECUENCIA);
-            }
+        posicion = rv.getChildAdapterPosition(v);
+        setOnClickRV(modelo);
 
-            if (id!=null) {
-                selector();
-            }
 
-            if (subTitulo==null) {
-                activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
-            }
+    }
 
+    protected void setOnClickRV(Modelo modelo) {
+
+        id = modelo.getString(campoID);
+
+        if (tablaCab != null) {
+            secuencia = modelo.getInt(CAMPO_SECUENCIA);
+        }
+
+        if (id != null) {
+            selector();
+        }
+
+        if (subTitulo == null) {
+            activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+        }
+
+    }
+
+    @Override
+    protected void setOnLeftSwipeCuerpo() {
+
+        if (posicion < lista.sizeLista() - 1) {
+            posicion++;
+            setOnClickRV(lista.getItem(posicion));
+        }
+    }
+
+    @Override
+    protected void setOnRigthSwipeCuerpo() {
+
+        if (posicion > 0) {
+            posicion--;
+            setOnClickRV(lista.getItem(posicion));
+        }
     }
 
     protected void onSetAdapter(ArrayList<Modelo> lista){

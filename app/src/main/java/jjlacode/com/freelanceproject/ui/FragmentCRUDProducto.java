@@ -58,6 +58,19 @@ public class FragmentCRUDProducto extends FragmentCRUD implements CommonPry.Cons
     }
 
     @Override
+    protected void setTablaCab() {
+
+        tablaCab = ContratoPry.getTabCab(tabla);
+    }
+
+    @Override
+    protected void setCampos() {
+
+        campos = ContratoPry.obtenerCampos(tabla);
+
+    }
+
+    @Override
     protected void setTitulo() {
         tituloSingular = R.string.producto;
         tituloPlural = R.string.productos;

@@ -66,6 +66,19 @@ public class FragmentTrabajoTreking extends FragmentRVR implements CommonPry.Con
     }
 
     @Override
+    protected void setTablaCab() {
+
+        tablaCab = ContratoPry.getTabCab(tabla);
+    }
+
+    @Override
+    protected void setCampos() {
+
+        campos = ContratoPry.obtenerCampos(tabla);
+
+    }
+
+    @Override
     protected void setDatos() {
         startTimer();
         System.out.println("lista = " + lista.sizeLista());

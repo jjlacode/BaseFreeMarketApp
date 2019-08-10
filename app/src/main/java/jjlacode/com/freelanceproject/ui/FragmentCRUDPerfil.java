@@ -76,6 +76,19 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     }
 
     @Override
+    protected void setTablaCab() {
+
+        tablaCab = ContratoPry.getTabCab(tabla);
+    }
+
+    @Override
+    protected void setCampos() {
+
+        campos = ContratoPry.obtenerCampos(tabla);
+
+    }
+
+    @Override
     protected void setDatos() {
 
         nombre.setText(modelo.getString(PERFIL_NOMBRE));

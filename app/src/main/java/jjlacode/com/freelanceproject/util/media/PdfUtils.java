@@ -1,6 +1,5 @@
 package jjlacode.com.freelanceproject.util.media;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -11,8 +10,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
-
-import androidx.core.content.FileProvider;
 
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
@@ -38,13 +35,9 @@ import java.util.ArrayList;
 
 import jjlacode.com.freelanceproject.util.android.AppActivity;
 import jjlacode.com.freelanceproject.util.android.FragmentBase;
-import jjlacode.com.freelanceproject.util.android.ICFragmentos;
+import jjlacode.com.freelanceproject.util.interfaces.ICFragmentos;
 
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.VISORPDF;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.VISORPDFMAIL;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ACTUAL;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.ORIGEN;
-import static jjlacode.com.freelanceproject.util.JavaUtil.Constantes.SUBTITULO;
 
 public class PdfUtils extends FragmentBase {
 

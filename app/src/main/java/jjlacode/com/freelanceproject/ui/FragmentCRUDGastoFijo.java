@@ -97,29 +97,13 @@ public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.T
     @Override
     protected void setTablaCab() {
 
-        tablaCab = null;
-    }
-
-    @Override
-    protected void setContext() {
-
-        contexto = getContext();
+        tablaCab = ContratoPry.getTabCab(tabla);
     }
 
     @Override
     protected void setCampos() {
 
-        campos = CAMPOS_GASTOFIJO;
-    }
-
-    @Override
-    protected void setCampoID() {
-
-        campoID = GASTOFIJO_ID_GASTOFIJO;
-    }
-
-    @Override
-    protected void setBundle() {
+        campos = ContratoPry.obtenerCampos(tabla);
 
     }
 

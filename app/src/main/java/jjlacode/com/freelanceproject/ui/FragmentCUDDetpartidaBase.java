@@ -100,6 +100,19 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
     }
 
     @Override
+    protected void setTablaCab() {
+
+        tablaCab = ContratoPry.getTabCab(tabla);
+    }
+
+    @Override
+    protected void setCampos() {
+
+        campos = ContratoPry.obtenerCampos(tabla);
+
+    }
+
+    @Override
     protected void setBundle() {
 
         if (bundle != null) {

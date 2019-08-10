@@ -30,17 +30,17 @@ import java.util.List;
 import java.util.TimeZone;
 
 import jjlacode.com.freelanceproject.model.ProdProv;
-import jjlacode.com.freelanceproject.model.Rating;
 import jjlacode.com.freelanceproject.services.EventosReceiver;
 import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.ui.CalendarioEventos;
+import jjlacode.com.freelanceproject.ui.FragmentCRUDEvento;
 import jjlacode.com.freelanceproject.ui.FragmentInicio;
 import jjlacode.com.freelanceproject.ui.FragmentNuevoEvento;
 import jjlacode.com.freelanceproject.util.JavaUtil;
-import jjlacode.com.freelanceproject.util.android.ICFragmentos;
 import jjlacode.com.freelanceproject.util.crud.CRUDutil;
 import jjlacode.com.freelanceproject.util.crud.ListaModelo;
 import jjlacode.com.freelanceproject.util.crud.Modelo;
+import jjlacode.com.freelanceproject.util.interfaces.ICFragmentos;
 import jjlacode.com.freelanceproject.util.sqlite.ConsultaBD;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -63,7 +63,6 @@ import static jjlacode.com.freelanceproject.CommonPry.Constantes.PARTIDA;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.PRODPROVCAT;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.PRODUCTO;
 import static jjlacode.com.freelanceproject.CommonPry.Constantes.TRABAJO;
-import static jjlacode.com.freelanceproject.CommonPry.Constantes.USERID;
 import static jjlacode.com.freelanceproject.util.android.AppActivity.getAppContext;
 import static jjlacode.com.freelanceproject.util.sqlite.ConsultaBD.queryList;
 
@@ -101,6 +100,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         String FREELANCE = "freelance";
         String IDFREELANCE = "idfreelance";
         String NOMBRECHAT = "nombre_chat";
+        String ANON = "Sin asignar";
         String IDCHATF = "idchatf";
         String TIPOCHAT = "tipochat";
         String VISORPDF = "visor pdf";
@@ -257,20 +257,6 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
         String NOTAVIDEO = "Nota de Video";
         String NOTAIMAGEN = "Nota de Imagen";
     }
-
-    public static void enviarVoto(Context contexto, String key, String tipo, String id, float valor, String comentario) {
-
-        String idUser = CRUDutil.getSharePreference(contexto, PREFERENCIAS, USERID, NULL);
-        Rating rat = new Rating(valor, tipo, id, idUser, comentario);
-        if (key == null) {
-            FirebaseDatabase.getInstance().getReference().child("rating").push().setValue(rat);
-        } else {
-            FirebaseDatabase.getInstance().getReference().child("rating").child(key).setValue(rat);
-
-        }
-
-    }
-
 
 
     public static String setNamefdef(){
@@ -739,13 +725,23 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
             bundle = null;
             icFragmentos.enviarBundleAFragment(bundle,new CalendarioEventos());
 
-        }else if (destino.equals(getAppContext().getString(R.string.nuevo_evento).toLowerCase())){
-            bundle = new Bundle();
-            bundle.putBoolean(NUEVOREGISTRO,true);
-            icFragmentos.enviarBundleAFragment(bundle,new FragmentNuevoEvento());
+        } else if (destino.equals(getAppContext().getString(R.string.evento).toLowerCase())) {
+
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
 
         }
         System.out.println("destino = " + destino);
+
+    }
+
+    public static void seleccionarNuevoDestino(ICFragmentos icFragmentos, Bundle bundle, String destino) {
+
+        if (destino.equals(getAppContext().getString(R.string.evento).toLowerCase())) {
+
+            icFragmentos.enviarBundleAFragment(bundle,new FragmentNuevoEvento());
+
+        }
+        System.out.println("destino nuevo = " + destino);
 
     }
 

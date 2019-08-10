@@ -1,21 +1,26 @@
 package jjlacode.com.freelanceproject.util.android;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.provider.CallLog;
 import android.speech.RecognizerIntent;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,13 +33,17 @@ import java.util.List;
 
 import jjlacode.com.freelanceproject.BuildConfig;
 import jjlacode.com.freelanceproject.R;
+import jjlacode.com.freelanceproject.util.Models.Contactos;
+import jjlacode.com.freelanceproject.util.Models.Llamadas;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+import static android.provider.ContactsContract.CommonDataKinds;
 
 public class AppActivity extends Application {
 
     private static Context context;
     private static String FILEPROVIDER;
+
 
     public void onCreate() {
         super.onCreate();
@@ -174,15 +183,15 @@ public class AppActivity extends Application {
         }
     }
 
-    public static void hacerLlamada(AppCompatActivity activity, Context context, String phoneNo, boolean permiso) {
+    public static void hacerLlamada(Context context, String phoneNo, boolean permiso) {
 
         if (permiso) {
 
             if (!TextUtils.isEmpty(phoneNo)) {
                 Uri uri = Uri.parse("tel:" + phoneNo);
-                Intent intent = new Intent(Intent.ACTION_DIAL, uri);
+                Intent intent = new Intent(Intent.ACTION_CALL, uri);
                 intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-                activity.startActivity(intent);
+                context.startActivity(intent);
             } else {
                 Toast.makeText(context, "El numero no es valido", Toast.LENGTH_SHORT).show();
             }
@@ -440,6 +449,209 @@ public class AppActivity extends Application {
 
     }
 
+    @SuppressLint("InlinedApi")
+    public static void filePicker(FragmentActivity activity, int code) {
 
+        if (Build.VERSION.SDK_INT < 19) {
+            Intent intent = new Intent();
+            intent.setType("*/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            activity.startActivityForResult(
+                    Intent.createChooser(intent, "Select File"),
+                    code);
+
+        } else {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("*/*");
+            activity.startActivityForResult(intent, code);
+        }
+    }
+
+    @SuppressLint("InlinedApi")
+    public static void filePicker(FragmentActivity activity, int code, String mimeType) {
+
+        if (Build.VERSION.SDK_INT < 19) {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            if (mimeType != null) {
+                intent.setType(mimeType);
+
+            } else {
+                intent.setType("*/*");
+            }
+            activity.startActivityForResult(
+                    Intent.createChooser(intent, "Select File"),
+                    code);
+
+        } else {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            if (mimeType != null) {
+                intent.setType(mimeType);
+
+            } else {
+                intent.setType("*/*");
+            }
+            activity.startActivityForResult(intent, code);
+        }
+    }
+
+    public static ArrayList<Contactos> registroContactos(ContentResolver cr) {
+
+        ArrayList<Contactos> arrayContactos = new ArrayList<Contactos>();
+        String[] columnas = new String[]{CommonDataKinds.Phone.TYPE, CommonDataKinds.Phone.DISPLAY_NAME, CommonDataKinds.Phone.NUMBER};
+        Cursor cursor = null;
+
+        try {
+            Contactos contactos = null;
+            Uri identificadorContactos = CommonDataKinds.Phone.CONTENT_URI;
+        /*Se declara e inicializa la clase ContentResolver, referenciándole el método getContentResolver(),
+        que proporciona el acceso a los datos del Content Provider.*/
+
+            cursor = cr.query(identificadorContactos, columnas, null, null, null);
+            int columDatos, columNumero, columTipo = 0;
+            if (cursor != null) {
+            /*Se recorrerán los resultados almacenados de la consulta en el objeto
+            Cursor, comprobando en cada iteración que existe el registro siguiente.*/
+                if (cursor.moveToFirst()) {
+                    columTipo = cursor.getColumnIndex(CommonDataKinds.Phone.TYPE);
+                    columDatos = cursor.getColumnIndex(CommonDataKinds.Phone.DISPLAY_NAME);
+                    columNumero = cursor.getColumnIndex(CommonDataKinds.Phone.NUMBER);
+                    int tipoContacto = 0;
+
+                    String numeroContacto = null;
+                    String datosContacto = null;
+                    String contactoTipo = null;
+
+                    do {
+
+                        tipoContacto = cursor.getInt(columTipo);
+                        numeroContacto = cursor.getString(columNumero);
+                        datosContacto = cursor.getString(columDatos);
+                    /*Se controla el tipo de contacto para asignarle los valores de 'Teléfono Casa' o
+                    'Teléfono móvil'.*/
+                        if (tipoContacto == CommonDataKinds.Phone.TYPE_HOME) {
+                            contactoTipo = "Casa";
+
+                        } else if (tipoContacto == CommonDataKinds.Phone.TYPE_MOBILE) {
+                            contactoTipo = "móvil";
+                        }
+
+                    /*Se crea un objeto de la clase Contactos por cada iteración, con los valores de tipo,
+                    datos y número de contacto.*/
+                        contactos = new Contactos(contactoTipo, datosContacto, numeroContacto);
+                        arrayContactos.add(contactos);
+
+                    } while (cursor.moveToNext());
+                }
+            }
+        } catch (Exception ex) {
+            ex.getMessage();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return arrayContactos;
+    }
+
+    public static ArrayList<Llamadas> registroLlamadas(ContentResolver cr) {
+        ArrayList<Llamadas> lista = new ArrayList<Llamadas>();
+        String[] columnas = new String[]{CallLog.Calls.TYPE, CallLog.Calls.NUMBER, CallLog.Calls.DATE};
+        Cursor cursor = null;
+        try {
+            Llamadas llamadas = null;
+            Uri identificadorLlamadas = CallLog.Calls.CONTENT_URI;
+        /*Se declara e inicializa la clase ContentResolver, referenciándole el método getContentResolver(),
+        que proporciona el acceso a los datos del Content Provider.*/
+
+
+            cursor = cr.query(identificadorLlamadas, columnas, null, null, null);
+            int columTipo, columNumero, columFecha = 0;
+            if (cursor != null) {
+            /*Se recorrerán los resultados almacenados de la consulta en el objeto
+            Cursor, comprobando en cada iteración que existe el registro siguiente.*/
+                if (cursor.moveToFirst()) {
+                    columTipo = cursor.getColumnIndex(CallLog.Calls.TYPE);
+                    columNumero = cursor.getColumnIndex(CallLog.Calls.NUMBER);
+                    /*Los datos de la columna Date de la tabla Calls se definen en milisegundos*/
+                    columFecha = cursor.getColumnIndex(CallLog.Calls.DATE);
+                    int tipoLlamada = 0;
+                    String numeroLlamada = null;
+                    long fechaLlamada = 0;
+                    String llamadaTipo = null;
+
+                    do {
+
+                        tipoLlamada = cursor.getInt(columTipo);
+                        numeroLlamada = cursor.getString(columNumero);
+
+                        fechaLlamada = cursor.getLong(columFecha);
+
+                    /*Se controla el tipo de llamada para asignarle los valores de 'Entrante', 'Perdida' o
+                    'Saliente'.*/
+                        if (tipoLlamada == CallLog.Calls.INCOMING_TYPE) {
+                            llamadaTipo = "Entrante";
+                        } else if (tipoLlamada == CallLog.Calls.MISSED_TYPE) {
+                            llamadaTipo = "Perdida";
+                        } else if (tipoLlamada == CallLog.Calls.OUTGOING_TYPE) {
+                            llamadaTipo = "Saliente";
+                        }
+
+                    /*Se crea un objeto de la clase Llamadas por cada iteración, con los valores de tipo de
+                    llamada, número y fecha (se convierte la fecha de milisegundos al formato HH:mm:ss dd-MM-YYYY).*/
+                        llamadas = new Llamadas(llamadaTipo, numeroLlamada, fechaLlamada);
+                        lista.add(llamadas);
+                    } while (cursor.moveToNext());
+                }
+            }
+
+        } catch (Exception ex) {
+            ex.getMessage();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return lista;
+    }
+
+    public static void enviarWhatsapp(String numero, String mensaje) {
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        String uri = "whatsapp://send?phone=" + numero + "&text=" + mensaje;//numero telefonico sin prefijo "+"!
+        intent.setData(Uri.parse(uri));
+        context.startActivity(intent);
+
+    }
+
+    private static void sendImageWhatsApp(String phoneNumber, String nombreImagen) {
+        try {
+            Intent intent = new Intent("android.intent.action.MAIN");
+            intent.setAction(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(Environment.getExternalStorageDirectory() + "/" + nombreImagen));
+            intent.putExtra("jid", phoneNumber + "@s.whatsapp.net"); //numero telefonico sin prefijo "+"!
+            intent.setPackage("com.whatsapp");
+            context.startActivity(intent);
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(context, "Whatsapp no esta instalado.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private static void sendImageWhatsApp(String phoneNumber, Uri uri) {
+        try {
+            Intent intent = new Intent("android.intent.action.MAIN");
+            intent.setAction(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_STREAM, uri);
+            intent.putExtra("jid", phoneNumber + "@s.whatsapp.net"); //numero telefonico sin prefijo "+"!
+            intent.setPackage("com.whatsapp");
+            context.startActivity(intent);
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(context, "Whatsapp no esta instalado.", Toast.LENGTH_LONG).show();
+        }
+    }
 
 }

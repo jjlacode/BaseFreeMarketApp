@@ -303,6 +303,19 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     }
 
     @Override
+    protected void setTablaCab() {
+
+        tablaCab = ContratoPry.getTabCab(tabla);
+    }
+
+    @Override
+    protected void setCampos() {
+
+        campos = ContratoPry.obtenerCampos(tabla);
+
+    }
+
+    @Override
     protected void setBundle() {
 
         System.out.println("bundle = " + bundle);

@@ -1,5 +1,6 @@
 package jjlacode.com.freelanceproject.ui;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
@@ -58,6 +59,7 @@ public class Freelancers extends FragmentMasterDetailNoSQLFirebaseRatingWeb {
     private Query query;
     private Freelance freelance;
     private String idFreelance;
+    private ProgressDialog progressDialog;
 
 
     @Override
@@ -104,6 +106,8 @@ public class Freelancers extends FragmentMasterDetailNoSQLFirebaseRatingWeb {
     @Override
     protected void setLista() {
 
+        progressDialog = ProgressDialog.show(contexto, "Cargando lista de freelance", "Por favor espere...", false, false);
+
         lista = new ArrayList<Freelance>();
 
         db = FirebaseDatabase.getInstance().getReference();
@@ -122,6 +126,7 @@ public class Freelancers extends FragmentMasterDetailNoSQLFirebaseRatingWeb {
                 System.out.println("lista freelance: " + lista.size());
                 setRv();
 
+                progressDialog.cancel();
             }
 
             @Override
@@ -150,7 +155,6 @@ public class Freelancers extends FragmentMasterDetailNoSQLFirebaseRatingWeb {
     public void setOnClickRV(Object object) {
 
         freelance = (Freelance) object;
-        idFreelance = freelance.getIdchatf();
         esDetalle = true;
         selector();
 
@@ -260,6 +264,7 @@ public class Freelancers extends FragmentMasterDetailNoSQLFirebaseRatingWeb {
         ImageButton btnchat;
         WebView webView;
         RatingBar ratingBarCard;
+        RatingBar ratingBarUserCard;
         NestedScrollView lylweb;
         String web;
 
@@ -275,6 +280,8 @@ public class Freelancers extends FragmentMasterDetailNoSQLFirebaseRatingWeb {
             webView = view.findViewById(R.id.browserweblfreelance);
             btnchat = view.findViewById(R.id.btnchatlfreelance);
             ratingBarCard = view.findViewById(R.id.ratingBarCardFreelance);
+            ratingBarUserCard = view.findViewById(R.id.ratingBarUserCardFreelance);
+
             lylweb = view.findViewById(R.id.lylwebfreelance);
 
         }
@@ -347,8 +354,13 @@ public class Freelancers extends FragmentMasterDetailNoSQLFirebaseRatingWeb {
             });
 
             ratingBarCard.setRating(0);
-            recuperarVotos(ratingBarCard, contexto, FREELANCE, freelance.getIdchatf());
+            recuperarVotos(ratingBarCard, FREELANCE, freelance.getIdchatf());
             ratingBarCard.setIsIndicator(true);
+
+            ratingBarUserCard.setRating(0);
+            recuperarVotoUsuario(ratingBarUserCard, contexto, FREELANCE, freelance.getIdchatf());
+            ratingBarUserCard.setIsIndicator(true);
+
 
             super.bind(lista, position);
         }

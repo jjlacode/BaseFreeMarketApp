@@ -38,7 +38,7 @@ public class FragmentInicio extends FragmentGrid {
 
         lista = new ArrayList<GridModel>();
 
-        lista.add(new GridModel(R.drawable.col_lg_union, um));
+        lista.add(new GridModel(R.drawable.logoum_sintxt_512, um));
         lista.add(new GridModel(R.drawable.ic_clientes_indigo, crm));
         lista.add(new GridModel(R.drawable.ic_proy_curso_indigo, proyectos));
         lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, facturacion));
@@ -55,6 +55,7 @@ public class FragmentInicio extends FragmentGrid {
         GridModel gridModel = (GridModel) lista.get(rv.getChildAdapterPosition(v));
 
         String nombre = gridModel.getNombre();
+
 
         if (nombre.equals(crm)) {
 

@@ -29,6 +29,7 @@ import jjlacode.com.freelanceproject.ui.FragmentCRUDTrabajo;
 import jjlacode.com.freelanceproject.ui.FragmentChat;
 import jjlacode.com.freelanceproject.ui.FragmentInicio;
 import jjlacode.com.freelanceproject.util.android.AppActivity;
+import jjlacode.com.freelanceproject.util.android.CheckPermisos;
 import jjlacode.com.freelanceproject.util.android.MainActivityBase;
 import jjlacode.com.freelanceproject.util.media.VisorPDFEmail;
 import jjlacode.com.freelanceproject.util.web.FragmentWebView;
@@ -46,6 +47,17 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 public class MainActivity extends MainActivityBase {
 
     private static final int PERIOD_MS = 5000;
+    public boolean permisoBoot;
+    public boolean permisoImagen;
+    public boolean permisoReadExt;
+    public boolean permisoWriteExt;
+    public boolean permisoCamara;
+    public boolean permisoInternet;
+    public boolean permisoWriteCont;
+    public boolean permisoReadCont;
+    public boolean permisoRecordAudio;
+    public boolean permisoCall;
+
 
     @Override
     protected void acciones() {
@@ -359,7 +371,8 @@ public class MainActivity extends MainActivityBase {
                 grantResults[4]==PackageManager.PERMISSION_GRANTED &&
                 grantResults[5]==PackageManager.PERMISSION_GRANTED &&
                 grantResults[6]==PackageManager.PERMISSION_GRANTED &&
-                grantResults[7]==PackageManager.PERMISSION_GRANTED)){
+                grantResults[7] == PackageManager.PERMISSION_GRANTED &&
+                grantResults[8] == PackageManager.PERMISSION_GRANTED)) {
 
             CommonPry.permiso = true;
 
@@ -370,6 +383,17 @@ public class MainActivity extends MainActivityBase {
         }
     }
 
+    private void checkPermisos() {
 
+        permisoBoot = CheckPermisos.validarPermisos(this, RECEIVE_BOOT_COMPLETED, 101);
+        permisoBoot = CheckPermisos.validarPermisos(this, READ_EXTERNAL_STORAGE, 102);
+        permisoBoot = CheckPermisos.validarPermisos(this, WRITE_EXTERNAL_STORAGE, 103);
+        permisoBoot = CheckPermisos.validarPermisos(this, CAMERA, 104);
+        permisoBoot = CheckPermisos.validarPermisos(this, RECORD_AUDIO, 105);
+        permisoBoot = CheckPermisos.validarPermisos(this, INTERNET, 106);
+        permisoBoot = CheckPermisos.validarPermisos(this, READ_CONTACTS, 107);
+        permisoBoot = CheckPermisos.validarPermisos(this, WRITE_CONTACTS, 108);
+        permisoBoot = CheckPermisos.validarPermisos(this, CALL_PHONE, 109);
+    }
 
 }

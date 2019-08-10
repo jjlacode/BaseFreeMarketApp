@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import jjlacode.com.freelanceproject.R;
 import jjlacode.com.freelanceproject.model.MsgChat;
+import jjlacode.com.freelanceproject.sqlite.ContratoPry;
 import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
 import jjlacode.com.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
 import jjlacode.com.freelanceproject.util.adapter.RVAdapter;
@@ -56,6 +57,19 @@ public class FragmentChat extends FragmentCRUD {
     protected void setTabla() {
 
         tabla = TABLA_CHAT;
+    }
+
+    @Override
+    protected void setTablaCab() {
+
+        tablaCab = ContratoPry.getTabCab(tabla);
+    }
+
+    @Override
+    protected void setCampos() {
+
+        campos = ContratoPry.obtenerCampos(tabla);
+
     }
 
     @Override

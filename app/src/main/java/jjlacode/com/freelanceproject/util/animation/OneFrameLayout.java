@@ -20,7 +20,7 @@ public class OneFrameLayout extends FrameLayout {
     }
 
 
-    private static final int mWidth = 500;
+    private int mWidth = 300;
     private float mDisplacementX;
     // private float mLastMoveX;
     private float mDisplacementY;
@@ -28,9 +28,11 @@ public class OneFrameLayout extends FrameLayout {
     private boolean mTracking;
     private OnSwipeListener onSwipeListener;
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        return true;
+
+    public void setAncho(int ancho) {
+
+        mWidth = ancho;
+
     }
 
     @Override
@@ -75,9 +77,9 @@ public class OneFrameLayout extends FrameLayout {
                     mTracking = false;
                     float currentTranslateX = getTranslationX();
 
-                    if (currentTranslateX > mWidth / 4) {
+                    if (currentTranslateX > mWidth / 8) {
                         onSwipeListener.rightSwipe();
-                    } else if (currentTranslateX < -(mWidth / 4)) {
+                    } else if (currentTranslateX < -(mWidth / 8)) {
                         onSwipeListener.leftSwipe();
                     }
 
@@ -104,4 +106,5 @@ public class OneFrameLayout extends FrameLayout {
     public void setOnSwipeListener(OnSwipeListener onSwipeListener) {
         this.onSwipeListener = onSwipeListener;
     }
+
 }

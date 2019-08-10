@@ -22,7 +22,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:numStars="5"
-                android:rating="5"
+                android:rating="0"
+                android:secondaryProgressTint="@color/color_star_defecto"
                 android:stepSize="1" />
         </LinearLayout>
 
@@ -121,6 +122,9 @@
                     android:isIndicator="true"
                     android:numStars="5"
                     android:rating="5"
+                    android:progressBackgroundTint="@color/color_star_defecto"
+                    android:secondaryProgressTint="@color/Color_star_small_ok"
+                    android:progressTint="@color/Color_star_ok"
                     android:stepSize="1" />
             </LinearLayout>
 
@@ -130,6 +134,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:text="@string/clasificacion"
+                android:gravity="center"
+                android:background="@color/Color_star_small_ok"
                 android:textColor="@color/Color_texto" />
         </LinearLayout>
 
@@ -152,6 +158,9 @@
                     android:isIndicator="true"
                     android:numStars="5"
                     android:rating="4"
+                    android:progressBackgroundTint="@color/color_star_defecto"
+                    android:secondaryProgressTint="@color/Color_star_small_ok"
+                    android:progressTint="@color/Color_star_ok"
                     android:stepSize="1" />
             </LinearLayout>
 
@@ -161,6 +170,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:text="@string/clasificacion"
+                android:gravity="center"
+                android:background="@color/Color_star_small_ok"
                 android:textColor="@color/Color_texto" />
         </LinearLayout>
 
@@ -183,6 +194,10 @@
                     android:isIndicator="true"
                     android:numStars="5"
                     android:rating="3"
+                    android:progressBackgroundTint="@color/color_star_defecto"
+                    android:secondaryProgressTint="@color/Color_star_small_acept"
+                    android:progressTint="@color/Color_star_acept"
+
                     android:stepSize="1" />
             </LinearLayout>
 
@@ -192,6 +207,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:text="@string/clasificacion"
+                android:gravity="center"
+                android:background="@color/Color_star_small_acept"
                 android:textColor="@color/Color_texto" />
         </LinearLayout>
 
@@ -214,6 +231,9 @@
                     android:isIndicator="true"
                     android:numStars="5"
                     android:rating="2"
+                    android:progressBackgroundTint="@color/color_star_defecto"
+                    android:secondaryProgressTint="@color/Color_star_small_acept"
+                    android:progressTint="@color/Color_star_acept"
                     android:stepSize="1" />
             </LinearLayout>
 
@@ -222,7 +242,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
+                android:gravity="center"
                 android:text="@string/clasificacion"
+                android:background="@color/Color_star_small_acept"
                 android:textColor="@color/Color_texto" />
         </LinearLayout>
 
@@ -245,6 +267,9 @@
                     android:isIndicator="true"
                     android:numStars="5"
                     android:rating="1"
+                    android:progressBackgroundTint="@color/color_star_defecto"
+                    android:secondaryProgressTint="@color/Color_star_small_notok"
+                    android:progressTint="@color/Color_star_notok"
                     android:stepSize="1" />
             </LinearLayout>
 
@@ -254,8 +279,24 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:text="@string/clasificacion"
+                android:gravity="center"
+                android:background="@color/Color_star_small_notok"
                 android:textColor="@color/Color_texto" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/totalvotos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/clasificacion"
+            android:textColor="@color/Color_texto" />
+
+        <TextView
+            android:id="@+id/ultimovoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/clasificacion"
+            android:textColor="@color/Color_texto" />
 
         <ImageButton
             android:id="@+id/btn_comentstar"
@@ -267,13 +308,16 @@
             android:src="@drawable/ic_lista_notas_indigo" />
 
         <RelativeLayout
+            android:id="@+id/rlcomentariosstar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvcomentariosstar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
         </RelativeLayout>
 
     </LinearLayout>

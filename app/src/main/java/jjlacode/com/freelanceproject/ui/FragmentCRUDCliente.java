@@ -182,6 +182,21 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
 
     }
 
+    @Override
+    protected void setCampos() {
+
+        campos = ContratoPry.obtenerCampos(TABLA_CLIENTE);
+
+        System.out.println("campos cliente = " + campos);
+
+    }
+
+    @Override
+    protected void setTablaCab() {
+
+        tablaCab = ContratoPry.getTabCab(TABLA_CLIENTE);
+
+    }
 
     @Override
     protected void setBundle() {
@@ -297,7 +312,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
             public void onClick(View v) {
 
                 AppActivity.hacerLlamada(AppActivity.getAppContext()
-                        , telefonoCliente.getText().toString());
+                        , telefonoCliente.getText().toString(), CommonPry.permiso);
             }
         });
 
@@ -470,6 +485,9 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     grabarVoz = speech.get(0);
 
+                    String ir = null;
+                    String destino = null;
+
                     if (grabarVoz.equals("mapa") || grabarVoz.equals("direccion")) {
 
                         if (!direccionCliente.getText().toString().equals("")) {
@@ -486,7 +504,19 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
 
                         if (!telefonoCliente.getText().toString().equals("")) {
                             AppActivity.hacerLlamada(AppActivity.getAppContext()
+                                    , telefonoCliente.getText().toString(), CommonPry.permiso);
+                        }
+                    } else if (grabarVoz.equals("marcar")) {
+
+                        if (!telefonoCliente.getText().toString().equals("")) {
+                            AppActivity.hacerLlamada(AppActivity.getAppContext()
                                     , telefonoCliente.getText().toString());
+                        }
+                    } else if (grabarVoz.equals("llamar cliente")) {
+
+                        if (!telefonoCliente.getText().toString().equals("")) {
+                            AppActivity.hacerLlamada(AppActivity.getAppContext()
+                                    , telefonoCliente.getText().toString(), CommonPry.permiso);
                         }
                     }
             }
@@ -494,6 +524,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
         super.onActivityResult(requestCode, resultCode, data);
 
     }
+
 
     @Override
     protected void setcambioFragment() {

@@ -265,6 +265,10 @@ public class EditMaterial extends LinearLayoutCompat {
                 (getText() != null && getTexto().equals("0.0")))) {
             editText.setBackgroundColor(getResources().getColor(R.color.Color_edit_vacio));
             editText.setTextColor(getResources().getColor(R.color.colorSecondaryDark));
+        } else {
+            editText.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            editText.setTextColor(getResources().getColor(R.color.Color_texto));
+
         }
 
     }

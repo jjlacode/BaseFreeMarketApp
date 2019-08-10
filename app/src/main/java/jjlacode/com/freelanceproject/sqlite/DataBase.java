@@ -2,22 +2,19 @@ package jjlacode.com.freelanceproject.sqlite;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Build;
-import android.provider.BaseColumns;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
 import jjlacode.com.freelanceproject.CommonPry;
+import jjlacode.com.freelanceproject.util.sqlite.DataBaseBase;
 
 import static jjlacode.com.freelanceproject.sqlite.ContratoPry.Tablas;
 import static jjlacode.com.freelanceproject.sqlite.ContratoPry.obtenerListaCampos;
 
-public class DataBase extends SQLiteOpenHelper
+public class DataBase extends DataBaseBase
         implements CommonPry.Constantes, Tablas, CommonPry.Estados, CommonPry.TiposEstados {
 
     private static final String NOMBRE_BASE_DATOS = "freelanceproject.db";
@@ -27,99 +24,22 @@ public class DataBase extends SQLiteOpenHelper
     private final Context contexto;
 
     public DataBase(Context contexto) {
-        super(contexto, NOMBRE_BASE_DATOS, null, VERSION_ACTUAL);
+        super(contexto, NOMBRE_BASE_DATOS, VERSION_ACTUAL);
         this.contexto = contexto;
     }
 
     @Override
-    public void onOpen(SQLiteDatabase db) {
-        super.onOpen(db);
-        if (!db.isReadOnly()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                db.setForeignKeyConstraintsEnabled(true);
-            } else {
-                db.execSQL("PRAGMA foreign_keys=ON");
-            }
-        }
-    }
-
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-
-        db.execSQL(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "%s TEXT NOT NULL UNIQUE," +
-                        "%s TEXT NOT NULL," +
-                        "%s TEXT NOT NULL," +
-                        "%s TEXT"+
-                        ")",
-                TABLA_TABLAS, BaseColumns._ID,
-                TABLAS_ID_TABLA,
-                TABLAS_TABLA,
-                TABLAS_CAMPO,
-                TABLAS_PARAMETROS
-
-        ));
-
-        Log.d("db", "Creada tablaModelo tablaModelo");
-        cargarDatosTabla(db);
-
-        String[] proyeccion = {TABLAS_TABLA};
-        Cursor cursor = db.query(true, TABLA_TABLAS, proyeccion,null,null,
-                null,null,null,null);
-
-        StringBuilder insert = null;
-
-        while (cursor.moveToNext()){
-
-            String tbl = cursor.getString(cursor.getColumnIndex(TABLAS_TABLA));
-            String seleccion = TABLAS_TABLA + " = '" + tbl+"'";
-
-            insert = new StringBuilder(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT,", tbl, BaseColumns._ID));
-
-            Cursor campos = db.query(TABLA_TABLAS,null,seleccion,
-                    null,null,null,null);
-
-            while (campos.moveToNext()){
-
-                String nomCampo = campos.getString(campos.getColumnIndex(TABLAS_CAMPO));
-                String parametrosCampo = campos.getString(campos.getColumnIndex(TABLAS_PARAMETROS));
-
-                if (campos.isLast()) {
-                    insert.append(nomCampo).append(" ").append(parametrosCampo).append(")");
-                }else{
-                    insert.append(nomCampo).append(" ").append(parametrosCampo).append(",");
-                }
-            }
-
-            campos.close();
-            db.execSQL(insert.toString());
-            Log.d("db", "Creada tablaModelo "+tbl);
-
-        }
-        cursor.close();
+    protected void setOnCreate(SQLiteDatabase db) {
+        super.setOnCreate(db);
 
         cargarDatosTipoCliente(db);
         cargarDatosEstados(db);
 
-
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
-        String[] proyeccion = {TABLAS_TABLA};
-        Cursor cursor = db.query(true, TABLA_TABLAS, proyeccion,null,null,
-                null,null,null,null);
-
-        if (cursor.moveToNext()) {
-
-            db.execSQL("DROP TABLE IF EXISTS " + TABLAS_TABLA);
-
-        }
-
-        cursor.close();
-        onCreate(db);
-
+    protected ArrayList<String[]> setListaCampos() {
+        return obtenerListaCampos();
     }
 
     private void cargarDatosTipoCliente(SQLiteDatabase db) {
@@ -270,40 +190,6 @@ public class DataBase extends SQLiteOpenHelper
             i = 0;
         }
 
-    }
-
-
-    private void cargarDatosTabla(SQLiteDatabase db) {
-
-        ArrayList<String[]> listaCampos = obtenerListaCampos();
-
-        for (String[] campos : listaCampos) {
-
-            construirTabla(db,campos);
-        }
-
-    }
-
-    private void construirTabla(SQLiteDatabase db, String[] args){
-
-        ContentValues valores = new ContentValues();
-
-        int fin = Integer.parseInt(args[0]);
-
-        for (int i = 2;i<fin;i+=3){
-
-            valores.put(TABLAS_TABLA, args[1]);
-            valores.put(TABLAS_CAMPO, args[i]);
-            valores.put(TABLAS_PARAMETROS, args[i+1]);
-            valores.put(TABLAS_ID_TABLA, TABLA_TABLAS + UUID.randomUUID().toString());
-            long res = db.insertOrThrow(TABLA_TABLAS, null, valores);
-            if (res > 0) {
-                Log.d("datos_iniciales", "Insertado " + args[i]);
-            } else {
-                Log.d("datos_iniciales", "Error al Insertar " + args[i]);
-            }
-
-        }
     }
 
 }

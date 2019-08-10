@@ -71,4 +71,21 @@ public class SQLiteUtil {
         }
     }
 
+    public static void copy(File source, File destination) throws IOException {
+
+        FileChannel in = new FileInputStream(source).getChannel();
+        FileChannel out = new FileOutputStream(destination).getChannel();
+
+        try {
+            in.transferTo(0, in.size(), out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (in != null)
+                in.close();
+            if (out != null)
+                out.close();
+        }
+    }
+
 }

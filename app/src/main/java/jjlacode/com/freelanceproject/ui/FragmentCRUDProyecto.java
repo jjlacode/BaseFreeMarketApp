@@ -238,6 +238,18 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         tabla = TABLA_PROYECTO;
     }
 
+    @Override
+    protected void setTablaCab() {
+
+        tablaCab = ContratoPry.getTabCab(tabla);
+    }
+
+    @Override
+    protected void setCampos() {
+
+        campos = ContratoPry.obtenerCampos(tabla);
+
+    }
 
     @Override
     protected void setBundle() {

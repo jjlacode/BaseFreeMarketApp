@@ -66,7 +66,18 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
 
     }
 
+    @Override
+    protected void setTablaCab() {
 
+        tablaCab = ContratoPry.getTabCab(tabla);
+    }
+
+    @Override
+    protected void setCampos() {
+
+        campos = ContratoPry.obtenerCampos(tabla);
+
+    }
 
     @Override
     protected void setDatos() {

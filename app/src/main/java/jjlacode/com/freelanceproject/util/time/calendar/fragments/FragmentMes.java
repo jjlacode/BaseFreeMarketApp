@@ -244,7 +244,6 @@ public abstract class FragmentMes extends FragmentBase implements CommonPry.Tipo
             }
         });
 
-
         buttonDown.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -153,7 +153,7 @@ public class FragmentGrid extends FragmentRV implements CommonPry.TiposEvento,
             imagen.setImageResource(gridModel.getDrawable());
             imagen.setPadding(padancho,padalto,padancho,0);
 
-            if (gridModel.getNombre()!=null) {
+            if (!gridModel.isSinTexto()) {
                 nombre.setText(gridModel.getNombre());
                 nombre.setTextSize(sizeT);
                 nombre.setPadding(padtxt, 0, padtxt, 0);
@@ -174,10 +174,18 @@ public class FragmentGrid extends FragmentRV implements CommonPry.TiposEvento,
 
         private int drawable;
         private String nombre;
+        private boolean sinTexto;
 
         public GridModel(int drawable, String nombre) {
             this.drawable = drawable;
             this.nombre = nombre;
+            sinTexto = false;
+        }
+
+        public GridModel(int drawable, String nombre, boolean sinTexto) {
+            this.drawable = drawable;
+            this.nombre = nombre;
+            this.sinTexto = sinTexto;
         }
 
         public int getDrawable() {
@@ -196,6 +204,13 @@ public class FragmentGrid extends FragmentRV implements CommonPry.TiposEvento,
             this.nombre = nombre;
         }
 
+        public boolean isSinTexto() {
+            return sinTexto;
+        }
+
+        public void setSinTexto(boolean sinTexto) {
+            this.sinTexto = sinTexto;
+        }
     }
 
 }
