@@ -1,4 +1,4 @@
-package jjlacode.com.freelanceproject.model;
+package jjlacode.com.freelanceproject.util.Models;
 
 import java.io.Serializable;
 

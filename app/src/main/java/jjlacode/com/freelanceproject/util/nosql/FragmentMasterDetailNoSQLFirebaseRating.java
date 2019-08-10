@@ -29,8 +29,8 @@ import java.util.ArrayList;
 
 import jjlacode.com.freelanceproject.CommonPry;
 import jjlacode.com.freelanceproject.R;
-import jjlacode.com.freelanceproject.model.Rating;
 import jjlacode.com.freelanceproject.util.JavaUtil;
+import jjlacode.com.freelanceproject.util.Models.Rating;
 import jjlacode.com.freelanceproject.util.adapter.BaseViewHolder;
 import jjlacode.com.freelanceproject.util.adapter.RVAdapter;
 import jjlacode.com.freelanceproject.util.adapter.TipoViewHolder;
