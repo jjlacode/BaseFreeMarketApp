@@ -21,15 +21,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.android.AppActivity;
+import com.jjlacode.base.util.login.LoginActivity;
+import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
-import com.jjlacode.freelanceproject.util.JavaUtil;
-import com.jjlacode.freelanceproject.util.android.AppActivity;
-import com.jjlacode.freelanceproject.util.login.LoginActivity;
-import com.jjlacode.freelanceproject.util.sqlite.ConsultaBD;
 
-import static com.jjlacode.freelanceproject.util.JavaUtil.Constantes.NULL;
-import static com.jjlacode.freelanceproject.util.JavaUtil.Constantes.PERSISTENCIA;
-import static com.jjlacode.freelanceproject.util.JavaUtil.Constantes.PREFERENCIAS;
+import static com.jjlacode.base.util.JavaUtil.Constantes.NULL;
+import static com.jjlacode.base.util.JavaUtil.Constantes.PERSISTENCIA;
+import static com.jjlacode.base.util.JavaUtil.Constantes.PREFERENCIAS;
 
 public class SplashActivity extends AppCompatActivity implements ContratoPry.Tablas, CommonPry.Constantes {
 

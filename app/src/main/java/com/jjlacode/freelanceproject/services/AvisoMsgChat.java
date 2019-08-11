@@ -10,16 +10,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.crud.CRUDutil;
+import com.jjlacode.base.util.crud.ListaModelo;
+import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.services.JobServiceBase;
+import com.jjlacode.base.util.sqlite.ConsultaBD;
+import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.model.MsgChat;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
-import com.jjlacode.freelanceproject.util.JavaUtil;
-import com.jjlacode.freelanceproject.util.crud.CRUDutil;
-import com.jjlacode.freelanceproject.util.crud.ListaModelo;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
-import com.jjlacode.freelanceproject.util.services.JobServiceBase;
-import com.jjlacode.freelanceproject.util.sqlite.ConsultaBD;
-import com.jjlacode.freelanceproject.util.time.TimeDateUtil;
 
 import java.util.ArrayList;
 

@@ -2,13 +2,13 @@ package com.jjlacode.freelanceproject.ui;
 
 import android.view.View;
 
+import com.jjlacode.base.util.android.FragmentGrid;
 import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
-import com.jjlacode.freelanceproject.util.android.FragmentGrid;
 
 import java.util.ArrayList;
 
-import static com.jjlacode.freelanceproject.util.time.calendar.clases.DiaCalBase.HORACAL;
+import static com.jjlacode.base.util.time.calendar.clases.DiaCalBase.HORACAL;
 
 public class FragmentNuevaNota extends FragmentGrid implements CommonPry.TiposNota {
 

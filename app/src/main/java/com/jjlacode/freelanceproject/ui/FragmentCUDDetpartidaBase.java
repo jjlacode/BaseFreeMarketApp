@@ -25,26 +25,26 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.crud.FragmentCUD;
+import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.model.Categorias;
 import com.jjlacode.freelanceproject.model.ProdProv;
 import com.jjlacode.freelanceproject.model.Proveedores;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
-import com.jjlacode.freelanceproject.util.JavaUtil;
-import com.jjlacode.freelanceproject.util.android.controls.EditMaterial;
-import com.jjlacode.freelanceproject.util.crud.FragmentCUD;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
-import com.jjlacode.freelanceproject.util.media.MediaUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.idInsertRegistro;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.putDato;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryList;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryObject;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.updateRegistro;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.idInsertRegistro;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.putDato;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryList;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObject;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.updateRegistro;
 
 public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.Constantes,
         ContratoPry.Tablas, CommonPry.TiposDetPartida{

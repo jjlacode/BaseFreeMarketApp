@@ -14,6 +14,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.jjlacode.base.util.android.AppActivity;
+import com.jjlacode.base.util.android.CheckPermisos;
+import com.jjlacode.base.util.android.MainActivityBase;
+import com.jjlacode.base.util.media.VisorPDFEmail;
+import com.jjlacode.base.util.web.FragmentWebView;
 import com.jjlacode.freelanceproject.services.AutoArranque;
 import com.jjlacode.freelanceproject.settings.SettingsActivity;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDAmortizacion;
@@ -28,11 +33,6 @@ import com.jjlacode.freelanceproject.ui.FragmentCRUDProyecto;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDTrabajo;
 import com.jjlacode.freelanceproject.ui.FragmentChat;
 import com.jjlacode.freelanceproject.ui.FragmentInicio;
-import com.jjlacode.freelanceproject.util.android.AppActivity;
-import com.jjlacode.freelanceproject.util.android.CheckPermisos;
-import com.jjlacode.freelanceproject.util.android.MainActivityBase;
-import com.jjlacode.freelanceproject.util.media.VisorPDFEmail;
-import com.jjlacode.freelanceproject.util.web.FragmentWebView;
 
 import static android.Manifest.permission.CALL_PHONE;
 import static android.Manifest.permission.CAMERA;

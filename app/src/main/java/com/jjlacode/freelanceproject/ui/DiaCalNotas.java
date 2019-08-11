@@ -8,18 +8,18 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.adapter.BaseViewHolder;
+import com.jjlacode.base.util.adapter.RVAdapter;
+import com.jjlacode.base.util.adapter.TipoViewHolder;
+import com.jjlacode.base.util.android.AppActivity;
+import com.jjlacode.base.util.crud.ListaModelo;
+import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.media.MediaUtil;
+import com.jjlacode.base.util.time.calendar.clases.DiaCalBase;
 import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
-import com.jjlacode.freelanceproject.util.JavaUtil;
-import com.jjlacode.freelanceproject.util.adapter.BaseViewHolder;
-import com.jjlacode.freelanceproject.util.adapter.RVAdapter;
-import com.jjlacode.freelanceproject.util.adapter.TipoViewHolder;
-import com.jjlacode.freelanceproject.util.android.AppActivity;
-import com.jjlacode.freelanceproject.util.crud.ListaModelo;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
-import com.jjlacode.freelanceproject.util.media.MediaUtil;
-import com.jjlacode.freelanceproject.util.time.calendar.clases.DiaCalBase;
 
 import static com.jjlacode.freelanceproject.CommonPry.Constantes.NOTA;
 import static com.jjlacode.freelanceproject.CommonPry.Constantes.NOTAS;

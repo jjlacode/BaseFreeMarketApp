@@ -3,7 +3,7 @@
     package="com.jjlacode.freelanceproject">
 
     <application
-        android:name=".util.android.AppActivity"
+        android:name="com.jjlacode.base.util.android.AppActivity"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher_um"
         android:label="@string/app_name"
@@ -22,8 +22,8 @@
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".util.android.MainActivityBase" />
-        <activity android:name=".util.login.LoginActivity" />
+        <activity android:name="com.jjlacode.base.util.android.MainActivityBase" />
+        <activity android:name="com.jjlacode.base.util.login.LoginActivity" />
 
         <provider
             android:name=".sqlite.ProviderFreelanceProject"
@@ -62,7 +62,7 @@
             </intent-filter>
         </receiver>
         <service
-            android:name=".util.services.JobServiceBase"
+            android:name="com.jjlacode.base.util.services.JobServiceBase"
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
             android:name=".services.AvisoEventos"
@@ -70,7 +70,7 @@
         <service
             android:name=".services.AvisoMsgChat"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service android:name=".util.fcm.IFirebaseMessagingService" />
+        <service android:name="com.jjlacode.base.util.fcm.IFirebaseMessagingService" />
     </application>
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />

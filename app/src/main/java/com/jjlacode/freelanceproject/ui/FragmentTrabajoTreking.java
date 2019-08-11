@@ -10,24 +10,24 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 
+import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.adapter.BaseViewHolder;
+import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
+import com.jjlacode.base.util.adapter.TipoViewHolder;
+import com.jjlacode.base.util.android.AndroidUtil;
+import com.jjlacode.base.util.crud.FragmentRVR;
+import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
-import com.jjlacode.freelanceproject.util.JavaUtil;
-import com.jjlacode.freelanceproject.util.adapter.BaseViewHolder;
-import com.jjlacode.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
-import com.jjlacode.freelanceproject.util.adapter.TipoViewHolder;
-import com.jjlacode.freelanceproject.util.android.AndroidUtil;
-import com.jjlacode.freelanceproject.util.crud.FragmentRVR;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
-import com.jjlacode.freelanceproject.util.media.MediaUtil;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-import static com.jjlacode.freelanceproject.util.JavaUtil.hoy;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryObject;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryObjectDetalle;
+import static com.jjlacode.base.util.JavaUtil.hoy;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObject;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObjectDetalle;
 
 public class FragmentTrabajoTreking extends FragmentRVR implements CommonPry.Constantes,
         ContratoPry.Tablas, CommonPry.TiposDetPartida, CommonPry.TiposEstados {

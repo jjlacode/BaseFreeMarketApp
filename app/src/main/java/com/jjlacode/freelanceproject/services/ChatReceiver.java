@@ -4,19 +4,19 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 
+import com.jjlacode.base.util.crud.CRUDutil;
+import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.services.ReceiverBase;
+import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.MainActivity;
 import com.jjlacode.freelanceproject.R;
-import com.jjlacode.freelanceproject.util.crud.CRUDutil;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
-import com.jjlacode.freelanceproject.util.services.ReceiverBase;
-import com.jjlacode.freelanceproject.util.sqlite.ConsultaBD;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-import static com.jjlacode.freelanceproject.util.JavaUtil.Constantes.CONTNOT;
-import static com.jjlacode.freelanceproject.util.JavaUtil.Constantes.NOTIFICACIONES;
-import static com.jjlacode.freelanceproject.util.JavaUtil.Constantes.NULL;
-import static com.jjlacode.freelanceproject.util.JavaUtil.Constantes.PREFERENCIAS;
+import static com.jjlacode.base.util.JavaUtil.Constantes.CONTNOT;
+import static com.jjlacode.base.util.JavaUtil.Constantes.NOTIFICACIONES;
+import static com.jjlacode.base.util.JavaUtil.Constantes.NULL;
+import static com.jjlacode.base.util.JavaUtil.Constantes.PREFERENCIAS;
 
 public class ChatReceiver extends ReceiverBase {
 

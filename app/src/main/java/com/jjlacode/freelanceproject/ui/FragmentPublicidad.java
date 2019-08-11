@@ -20,11 +20,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.crud.CRUDutil;
+import com.jjlacode.base.util.nosql.FragmentNoSQL;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.model.Freelance;
-import com.jjlacode.freelanceproject.util.android.controls.EditMaterial;
-import com.jjlacode.freelanceproject.util.crud.CRUDutil;
-import com.jjlacode.freelanceproject.util.nosql.FragmentNoSQL;
 
 import java.io.File;
 import java.util.HashMap;

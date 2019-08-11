@@ -29,29 +29,29 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.adapter.BaseViewHolder;
+import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
+import com.jjlacode.base.util.adapter.TipoViewHolder;
+import com.jjlacode.base.util.android.AppActivity;
+import com.jjlacode.base.util.crud.CRUDutil;
+import com.jjlacode.base.util.crud.FragmentCRUD;
+import com.jjlacode.base.util.crud.ListaModelo;
+import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
-import com.jjlacode.freelanceproject.util.JavaUtil;
-import com.jjlacode.freelanceproject.util.adapter.BaseViewHolder;
-import com.jjlacode.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
-import com.jjlacode.freelanceproject.util.adapter.TipoViewHolder;
-import com.jjlacode.freelanceproject.util.android.AppActivity;
-import com.jjlacode.freelanceproject.util.crud.CRUDutil;
-import com.jjlacode.freelanceproject.util.crud.FragmentCRUD;
-import com.jjlacode.freelanceproject.util.crud.ListaModelo;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
-import com.jjlacode.freelanceproject.util.media.MediaUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.insertRegistro;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.insertRegistroDetalle;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryList;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryListDetalle;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryObject;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.insertRegistro;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.insertRegistroDetalle;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryList;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryListDetalle;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObject;
 
 public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.Constantes,
         ContratoPry.Tablas, CommonPry.TiposDetPartida {

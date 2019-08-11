@@ -4,9 +4,9 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.jjlacode.base.util.android.FragmentGrid;
+import com.jjlacode.base.util.web.FragmentWebView;
 import com.jjlacode.freelanceproject.R;
-import com.jjlacode.freelanceproject.util.android.FragmentGrid;
-import com.jjlacode.freelanceproject.util.web.FragmentWebView;
 
 import java.util.ArrayList;
 

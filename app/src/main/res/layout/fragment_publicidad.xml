@@ -26,7 +26,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.base.util.android.controls.EditMaterial
                 android:id="@+id/etnombrefreelance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -34,21 +34,21 @@
                 app:tipo_dato="TEXTO|PERSONA" />
 
 
-            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.base.util.android.controls.EditMaterial
                 android:id="@+id/etdireccionfreelance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:hint_text="@string/direccion"
                 app:tipo_dato="TEXTO|MULTI" />
 
-            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.base.util.android.controls.EditMaterial
                 android:id="@+id/ettelefonofreelance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:hint_text="@string/telefono"
                 app:tipo_dato="NUMERO|TELEFONO" />
 
-            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.base.util.android.controls.EditMaterial
                 android:id="@+id/etemailfreelance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -58,21 +58,21 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-    <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+    <com.jjlacode.base.util.android.controls.EditMaterial
         android:id="@+id/etdescripcionfreelance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:hint_text="@string/descripcion"
         app:tipo_dato="TEXTO|MULTI" />
 
-    <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+    <com.jjlacode.base.util.android.controls.EditMaterial
         android:id="@+id/etwebfreelance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:hint_text="@string/web"
         app:tipo_dato="TEXTO|URI" />
 
-    <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+    <com.jjlacode.base.util.android.controls.EditMaterial
         android:id="@+id/etclavesfreelance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

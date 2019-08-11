@@ -5,8 +5,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.jjlacode.base.util.sqlite.DataBaseBase;
 import com.jjlacode.freelanceproject.CommonPry;
-import com.jjlacode.freelanceproject.util.sqlite.DataBaseBase;
 
 import java.util.ArrayList;
 import java.util.UUID;

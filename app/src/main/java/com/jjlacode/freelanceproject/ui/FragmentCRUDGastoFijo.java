@@ -5,15 +5,15 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.adapter.BaseViewHolder;
+import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
+import com.jjlacode.base.util.adapter.TipoViewHolder;
+import com.jjlacode.base.util.crud.FragmentCRUD;
+import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
-import com.jjlacode.freelanceproject.util.JavaUtil;
-import com.jjlacode.freelanceproject.util.adapter.BaseViewHolder;
-import com.jjlacode.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
-import com.jjlacode.freelanceproject.util.adapter.TipoViewHolder;
-import com.jjlacode.freelanceproject.util.crud.FragmentCRUD;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
 
 import java.util.ArrayList;
 

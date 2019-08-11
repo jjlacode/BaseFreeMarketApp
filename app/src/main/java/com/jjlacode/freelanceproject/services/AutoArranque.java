@@ -8,7 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.jjlacode.freelanceproject.util.android.AppActivity;
+import com.jjlacode.base.util.android.AppActivity;
 
 
 public class AutoArranque extends BroadcastReceiver {

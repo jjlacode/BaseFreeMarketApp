@@ -37,7 +37,7 @@
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_add_a_photo_black_24dp" />
 
-            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.base.util.android.controls.EditMaterial
                 android:id="@+id/etnombreproveedor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.base.util.android.controls.EditMaterial
                 android:id="@+id/etdirproveedor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.base.util.android.controls.EditMaterial
                 android:id="@+id/ettelproveedor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -114,7 +114,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.base.util.android.controls.EditMaterial
                 android:id="@+id/etemailproveedor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -137,7 +137,7 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+        <com.jjlacode.base.util.android.controls.EditMaterial
             android:id="@+id/etcontproveedor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

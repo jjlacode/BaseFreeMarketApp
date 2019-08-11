@@ -10,17 +10,17 @@ import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
 
+import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.adapter.BaseViewHolder;
+import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
+import com.jjlacode.base.util.adapter.TipoViewHolder;
+import com.jjlacode.base.util.android.AppActivity;
+import com.jjlacode.base.util.crud.FragmentCRUD;
+import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
-import com.jjlacode.freelanceproject.util.JavaUtil;
-import com.jjlacode.freelanceproject.util.adapter.BaseViewHolder;
-import com.jjlacode.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
-import com.jjlacode.freelanceproject.util.adapter.TipoViewHolder;
-import com.jjlacode.freelanceproject.util.android.AppActivity;
-import com.jjlacode.freelanceproject.util.crud.FragmentCRUD;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
-import com.jjlacode.freelanceproject.util.sqlite.ConsultaBD;
 
 import java.util.ArrayList;
 

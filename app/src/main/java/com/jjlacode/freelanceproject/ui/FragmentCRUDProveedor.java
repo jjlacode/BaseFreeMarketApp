@@ -11,22 +11,22 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 
+import com.jjlacode.base.util.adapter.BaseViewHolder;
+import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
+import com.jjlacode.base.util.adapter.TipoViewHolder;
+import com.jjlacode.base.util.android.AppActivity;
+import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.crud.CRUDutil;
+import com.jjlacode.base.util.crud.FragmentCRUD;
+import com.jjlacode.base.util.crud.ListaModelo;
+import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
-import com.jjlacode.freelanceproject.util.adapter.BaseViewHolder;
-import com.jjlacode.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
-import com.jjlacode.freelanceproject.util.adapter.TipoViewHolder;
-import com.jjlacode.freelanceproject.util.android.AppActivity;
-import com.jjlacode.freelanceproject.util.android.controls.EditMaterial;
-import com.jjlacode.freelanceproject.util.crud.CRUDutil;
-import com.jjlacode.freelanceproject.util.crud.FragmentCRUD;
-import com.jjlacode.freelanceproject.util.crud.ListaModelo;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
-import com.jjlacode.freelanceproject.util.media.MediaUtil;
 
 import java.util.ArrayList;
 
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.checkQueryList;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.checkQueryList;
 
 public class FragmentCRUDProveedor extends FragmentCRUD {
 

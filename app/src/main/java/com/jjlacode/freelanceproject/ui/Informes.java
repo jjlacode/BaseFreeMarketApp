@@ -5,19 +5,19 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
+import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.adapter.BaseViewHolder;
+import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
+import com.jjlacode.base.util.adapter.TipoViewHolder;
+import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.crud.ListaModelo;
+import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.time.Day;
+import com.jjlacode.base.util.time.ListaDays;
+import com.jjlacode.base.util.time.TimeDateUtil;
+import com.jjlacode.base.util.time.calendar.fragments.FragmentMes;
 import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
-import com.jjlacode.freelanceproject.util.JavaUtil;
-import com.jjlacode.freelanceproject.util.adapter.BaseViewHolder;
-import com.jjlacode.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
-import com.jjlacode.freelanceproject.util.adapter.TipoViewHolder;
-import com.jjlacode.freelanceproject.util.android.controls.EditMaterial;
-import com.jjlacode.freelanceproject.util.crud.ListaModelo;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
-import com.jjlacode.freelanceproject.util.time.Day;
-import com.jjlacode.freelanceproject.util.time.ListaDays;
-import com.jjlacode.freelanceproject.util.time.TimeDateUtil;
-import com.jjlacode.freelanceproject.util.time.calendar.fragments.FragmentMes;
 
 import java.util.ArrayList;
 

@@ -22,29 +22,29 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.adapter.BaseViewHolder;
+import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
+import com.jjlacode.base.util.adapter.TipoViewHolder;
+import com.jjlacode.base.util.android.AppActivity;
+import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.crud.CRUDutil;
+import com.jjlacode.base.util.crud.FragmentCRUD;
+import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
-import com.jjlacode.freelanceproject.util.JavaUtil;
-import com.jjlacode.freelanceproject.util.adapter.BaseViewHolder;
-import com.jjlacode.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
-import com.jjlacode.freelanceproject.util.adapter.TipoViewHolder;
-import com.jjlacode.freelanceproject.util.android.AppActivity;
-import com.jjlacode.freelanceproject.util.android.controls.EditMaterial;
-import com.jjlacode.freelanceproject.util.crud.CRUDutil;
-import com.jjlacode.freelanceproject.util.crud.FragmentCRUD;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
-import com.jjlacode.freelanceproject.util.media.MediaUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.insertRegistroDetalle;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.putDato;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryList;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryListDetalle;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryObjectDetalle;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.updateRegistroDetalle;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.insertRegistroDetalle;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.putDato;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryList;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryListDetalle;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObjectDetalle;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.updateRegistroDetalle;
 
 public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonPry.Constantes,
         ContratoPry.Tablas, CommonPry.TiposDetPartida, CommonPry.TiposEstados {

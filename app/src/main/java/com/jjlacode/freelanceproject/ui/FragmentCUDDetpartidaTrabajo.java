@@ -11,26 +11,26 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.android.AndroidUtil;
+import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.crud.CRUDutil;
+import com.jjlacode.base.util.crud.FragmentCUD;
+import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
-import com.jjlacode.freelanceproject.util.JavaUtil;
-import com.jjlacode.freelanceproject.util.android.AndroidUtil;
-import com.jjlacode.freelanceproject.util.android.controls.EditMaterial;
-import com.jjlacode.freelanceproject.util.crud.CRUDutil;
-import com.jjlacode.freelanceproject.util.crud.FragmentCUD;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
-import com.jjlacode.freelanceproject.util.media.MediaUtil;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-import static com.jjlacode.freelanceproject.util.JavaUtil.hoy;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.putDato;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryList;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryObject;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryObjectDetalle;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.updateRegistroDetalle;
+import static com.jjlacode.base.util.JavaUtil.hoy;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.putDato;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryList;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObject;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObjectDetalle;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.updateRegistroDetalle;
 
 public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements CommonPry.Constantes,
         ContratoPry.Tablas, CommonPry.TiposDetPartida, CommonPry.TiposEstados {

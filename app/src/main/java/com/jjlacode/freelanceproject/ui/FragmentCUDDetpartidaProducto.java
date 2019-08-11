@@ -7,17 +7,17 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.crud.CRUDutil;
+import com.jjlacode.base.util.crud.FragmentCUD;
+import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
-import com.jjlacode.freelanceproject.util.JavaUtil;
-import com.jjlacode.freelanceproject.util.android.controls.EditMaterial;
-import com.jjlacode.freelanceproject.util.crud.CRUDutil;
-import com.jjlacode.freelanceproject.util.crud.FragmentCUD;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
-import com.jjlacode.freelanceproject.util.media.MediaUtil;
 
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryObjectDetalle;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObjectDetalle;
 
 public class FragmentCUDDetpartidaProducto extends FragmentCUD implements CommonPry.Constantes,
         ContratoPry.Tablas, CommonPry.TiposDetPartida, CommonPry.TiposEstados {

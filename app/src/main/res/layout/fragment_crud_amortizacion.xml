@@ -43,7 +43,7 @@
                         android:orientation="vertical">
 
 
-                        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+                        <com.jjlacode.base.util.android.controls.EditMaterial
                             android:id="@+id/etnomcudamort"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 
-                            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+                            <com.jjlacode.base.util.android.controls.EditMaterial
                                 android:id="@+id/etdesccudamort"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+                        <com.jjlacode.base.util.android.controls.EditMaterial
                             android:id="@+id/etcantcudamort"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
                             app:tipo_dato="NUMERO|DECIMAL" />
 
 
-                        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+                        <com.jjlacode.base.util.android.controls.EditMaterial
                             android:id="@+id/etimpcudamort"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -103,7 +103,7 @@
                         android:layout_height="match_parent"
                         android:orientation="horizontal">
 
-                        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+                        <com.jjlacode.base.util.android.controls.EditMaterial
                             android:id="@+id/tvfechacudamort"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -131,7 +131,7 @@
                         android:orientation="horizontal">
 
 
-                        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+                        <com.jjlacode.base.util.android.controls.EditMaterial
                             android:id="@+id/etanioscudamort"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -140,7 +140,7 @@
                             app:hint_text="@string/anios"
                             app:tipo_dato="NUMERO" />
 
-                        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+                        <com.jjlacode.base.util.android.controls.EditMaterial
                             android:id="@+id/etmesescudamort"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -148,7 +148,7 @@
                             app:hint_text="@string/meses"
                             app:tipo_dato="NUMERO" />
 
-                        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+                        <com.jjlacode.base.util.android.controls.EditMaterial
                             android:id="@+id/etdiascudamort"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

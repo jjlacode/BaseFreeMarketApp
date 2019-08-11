@@ -24,38 +24,38 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.adapter.BaseViewHolder;
+import com.jjlacode.base.util.adapter.ListaAdaptadorFiltro;
+import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
+import com.jjlacode.base.util.adapter.TipoViewHolder;
+import com.jjlacode.base.util.android.AppActivity;
+import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.ScalableImageView;
+import com.jjlacode.base.util.crud.CRUDutil;
+import com.jjlacode.base.util.crud.FragmentCRUD;
+import com.jjlacode.base.util.crud.ListaModelo;
+import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.media.MediaUtil;
+import com.jjlacode.base.util.sqlite.ConsultaBD;
+import com.jjlacode.base.util.time.DatePickerFragment;
 import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.templates.PresupuestoPDF;
-import com.jjlacode.freelanceproject.util.JavaUtil;
-import com.jjlacode.freelanceproject.util.adapter.BaseViewHolder;
-import com.jjlacode.freelanceproject.util.adapter.ListaAdaptadorFiltro;
-import com.jjlacode.freelanceproject.util.adapter.ListaAdaptadorFiltroModelo;
-import com.jjlacode.freelanceproject.util.adapter.TipoViewHolder;
-import com.jjlacode.freelanceproject.util.android.AppActivity;
-import com.jjlacode.freelanceproject.util.android.controls.EditMaterial;
-import com.jjlacode.freelanceproject.util.android.controls.ScalableImageView;
-import com.jjlacode.freelanceproject.util.crud.CRUDutil;
-import com.jjlacode.freelanceproject.util.crud.FragmentCRUD;
-import com.jjlacode.freelanceproject.util.crud.ListaModelo;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
-import com.jjlacode.freelanceproject.util.media.MediaUtil;
-import com.jjlacode.freelanceproject.util.sqlite.ConsultaBD;
-import com.jjlacode.freelanceproject.util.time.DatePickerFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.checkQueryList;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.insertRegistro;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.putDato;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryList;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryListDetalle;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryObject;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.updateRegistro;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.updateRegistrosDetalle;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.checkQueryList;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.insertRegistro;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.putDato;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryList;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryListDetalle;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObject;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.updateRegistro;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.updateRegistrosDetalle;
 
 public class FragmentCRUDProyecto extends FragmentCRUD
         implements CommonPry.Constantes, ContratoPry.Tablas, CommonPry.Estados,

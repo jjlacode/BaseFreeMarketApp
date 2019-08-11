@@ -4,11 +4,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.jjlacode.base.util.android.FragmentGrid;
+import com.jjlacode.base.util.crud.ListaModelo;
+import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.freelanceproject.R;
-import com.jjlacode.freelanceproject.util.android.FragmentGrid;
-import com.jjlacode.freelanceproject.util.crud.ListaModelo;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
-import com.jjlacode.freelanceproject.util.sqlite.ConsultaBD;
 
 import java.util.ArrayList;
 

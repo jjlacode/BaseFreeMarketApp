@@ -21,14 +21,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+        <com.jjlacode.base.util.android.controls.EditMaterial
             android:id="@+id/ettitulo_nota"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             jjla:hint_text="@string/titulo"
             jjla:tipo_dato="TEXTO|ASUNTO"/>
 
-        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+        <com.jjlacode.base.util.android.controls.EditMaterial
             android:id="@+id/etdesc_nota"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

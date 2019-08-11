@@ -2,9 +2,9 @@ package com.jjlacode.freelanceproject.services;
 
 import android.content.Intent;
 
+import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.services.JobServiceBase;
 import com.jjlacode.freelanceproject.CommonPry;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
-import com.jjlacode.freelanceproject.util.services.JobServiceBase;
 
 import java.util.ArrayList;
 

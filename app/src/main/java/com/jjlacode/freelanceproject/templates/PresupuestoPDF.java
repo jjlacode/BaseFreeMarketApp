@@ -1,11 +1,11 @@
 package com.jjlacode.freelanceproject.templates;
 
 
+import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.media.PdfUtils;
+import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
-import com.jjlacode.freelanceproject.util.JavaUtil;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
-import com.jjlacode.freelanceproject.util.media.PdfUtils;
-import com.jjlacode.freelanceproject.util.sqlite.ConsultaBD;
 
 import java.util.ArrayList;
 

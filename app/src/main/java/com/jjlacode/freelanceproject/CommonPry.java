@@ -21,6 +21,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.crud.CRUDutil;
+import com.jjlacode.base.util.crud.ListaModelo;
+import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.interfaces.ICFragmentos;
+import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.freelanceproject.model.ProdProv;
 import com.jjlacode.freelanceproject.services.EventosReceiver;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
@@ -28,12 +34,6 @@ import com.jjlacode.freelanceproject.ui.CalendarioEventos;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDEvento;
 import com.jjlacode.freelanceproject.ui.FragmentInicio;
 import com.jjlacode.freelanceproject.ui.FragmentNuevoEvento;
-import com.jjlacode.freelanceproject.util.JavaUtil;
-import com.jjlacode.freelanceproject.util.crud.CRUDutil;
-import com.jjlacode.freelanceproject.util.crud.ListaModelo;
-import com.jjlacode.freelanceproject.util.crud.Modelo;
-import com.jjlacode.freelanceproject.util.interfaces.ICFragmentos;
-import com.jjlacode.freelanceproject.util.sqlite.ConsultaBD;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -47,6 +47,8 @@ import static android.content.Intent.EXTRA_EMAIL;
 import static android.content.Intent.EXTRA_SUBJECT;
 import static android.content.Intent.EXTRA_TEXT;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+import static com.jjlacode.base.util.android.AppActivity.getAppContext;
+import static com.jjlacode.base.util.sqlite.ConsultaBD.queryList;
 import static com.jjlacode.freelanceproject.CommonPry.Constantes.ACCION_CANCELAR;
 import static com.jjlacode.freelanceproject.CommonPry.Constantes.ACCION_POSPONER;
 import static com.jjlacode.freelanceproject.CommonPry.Constantes.ACCION_VER;
@@ -62,8 +64,6 @@ import static com.jjlacode.freelanceproject.CommonPry.Constantes.PARTIDA;
 import static com.jjlacode.freelanceproject.CommonPry.Constantes.PRODPROVCAT;
 import static com.jjlacode.freelanceproject.CommonPry.Constantes.PRODUCTO;
 import static com.jjlacode.freelanceproject.CommonPry.Constantes.TRABAJO;
-import static com.jjlacode.freelanceproject.util.android.AppActivity.getAppContext;
-import static com.jjlacode.freelanceproject.util.sqlite.ConsultaBD.queryList;
 
 
 public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {

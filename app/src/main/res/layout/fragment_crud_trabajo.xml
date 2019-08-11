@@ -38,14 +38,14 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.base.util.android.controls.EditMaterial
                     android:id="@+id/etnombretarea"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     jjla:tipo_dato="TEXTO"
                     jjla:hint_text="nombref" />
 
-                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.base.util.android.controls.EditMaterial
                     android:id="@+id/etdesctarea"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
             </androidx.appcompat.widget.LinearLayoutCompat>
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+        <com.jjlacode.base.util.android.controls.EditMaterial
         android:id="@+id/ettiempotarea"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

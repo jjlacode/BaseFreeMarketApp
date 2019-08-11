@@ -3,8 +3,8 @@ package com.jjlacode.freelanceproject.ui;
 import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.jjlacode.base.util.android.FragmentGrid;
 import com.jjlacode.freelanceproject.R;
-import com.jjlacode.freelanceproject.util.android.FragmentGrid;
 
 import java.util.ArrayList;
 

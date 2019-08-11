@@ -40,21 +40,21 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.base.util.android.controls.EditMaterial
                     android:id="@+id/etnombrecatalogo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:activo="false"
                     app:hint_text="@string/nombre" />
 
-                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.base.util.android.controls.EditMaterial
                     android:id="@+id/etrefprovcatalogo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:activo="false"
                     app:hint_text="@string/referencia_proveedor" />
 
-                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.base.util.android.controls.EditMaterial
                     android:id="@+id/etdesccatalogo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
             android:orientation="horizontal">
 
 
-            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.base.util.android.controls.EditMaterial
                 android:id="@+id/etpreciocatalogo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
                 app:hint_text="@string/importe"
                 app:tipo_dato="NUMERO|DECIMAL" />
 
-            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.base.util.android.controls.EditMaterial
                 android:id="@+id/etporcdesprovcatalogo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -124,28 +124,28 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.base.util.android.controls.EditMaterial
                     android:id="@+id/etnombreprovcatalogo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:activo="false"
                     app:hint_text="@string/proveedor" />
 
-                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.base.util.android.controls.EditMaterial
                     android:id="@+id/etdireccionprovcatalogo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:activo="false"
                     app:hint_text="@string/direccion" />
 
-                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.base.util.android.controls.EditMaterial
                     android:id="@+id/etemailprovcatalogo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:activo="false"
                     app:hint_text="@string/email" />
 
-                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.base.util.android.controls.EditMaterial
                     android:id="@+id/ettelefonoprovcatalogo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -155,7 +155,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
+        <com.jjlacode.base.util.android.controls.EditMaterial
             android:id="@+id/etdescripprovcatalogo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
