@@ -35,7 +35,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etnombreproductos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -43,7 +43,7 @@
                 app:tipo_dato="TEXTO" />
 
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etdescripcionproductos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/etnomprovproducto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -83,7 +83,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
             android:id="@+id/etimporte_crud_productos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -92,7 +92,7 @@
             app:hint_text="@string/importe"
             app:tipo_dato="NUMERO|DECIMAL" />
 
-        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
             android:id="@+id/etrefproductos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
             app:gravedad="fin"
             app:hint_text="@string/referencia_proveedor" />
 
-        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
             android:id="@+id/etdescprovproductos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

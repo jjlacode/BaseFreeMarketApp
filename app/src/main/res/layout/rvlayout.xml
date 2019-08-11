@@ -57,7 +57,8 @@
             android:minHeight="30dp"
             app:srcCompat="@drawable/ic_inicio_black_24dp"/>
     </LinearLayout>
-    <jjlacode.com.freelanceproject.util.animation.OneFrameLayout
+
+    <com.jjlacode.freelanceproject.util.animation.OneFrameLayout
         android:id="@+id/frameanimation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -78,7 +79,7 @@
         app:layoutManager="LinearLayoutManager"/>
         </RelativeLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    </jjlacode.com.freelanceproject.util.animation.OneFrameLayout>
+    </com.jjlacode.freelanceproject.util.animation.OneFrameLayout>
 </LinearLayout>
 
 

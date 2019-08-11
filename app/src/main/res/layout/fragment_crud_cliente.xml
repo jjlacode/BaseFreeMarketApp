@@ -40,7 +40,7 @@
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/etnombreudcliente"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                    <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                         android:id="@+id/etdirudcliente"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                    <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                         android:id="@+id/etteludcliente"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -112,7 +112,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                    <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                         android:id="@+id/etemailudcliente"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -135,7 +135,7 @@
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/etcontudcliente"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

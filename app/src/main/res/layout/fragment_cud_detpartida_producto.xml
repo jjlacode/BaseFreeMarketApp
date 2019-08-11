@@ -44,19 +44,19 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/etnombredetpartida_prod"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:hint_text="@string/nombre" />
 
-                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/tvrefprovcdetpartida_prod"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:hint_text="@string/referencia_proveedor" />
 
-                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/etdesccdetpartida_prod"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -72,7 +72,7 @@
             android:orientation="horizontal">
 
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etpreciocdetpartida_prod"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -80,14 +80,15 @@
                 app:hint_text="@string/importe"
                 app:tipo_dato="NUMERO|DECIMAL"/>
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etcantcdetpartida_prod"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 app:hint_text="@string/cantidad"
                 app:tipo_dato="NUMERO|DECIMAL" />
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etcanttotpartida_prod"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -95,7 +96,7 @@
                 app:hint_text="@string/cantidad_partida"
                 app:tipo_dato="NUMERO|DECIMAL" />
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etporcdesprovcdetpartida_prod"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -105,7 +106,7 @@
 
         </LinearLayout>
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etcompletadadetpartida_prod"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -32,14 +32,14 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
 
-                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                    <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                         android:id="@+id/etnomudpry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:hint_text="@string/nombre"
                         app:tipo_dato="PERSONA"/>
 
-                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                    <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                         android:id="@+id/etdescudpry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <jjlacode.com.freelanceproject.util.android.controls.ScalableImageView
+                <com.jjlacode.freelanceproject.util.android.controls.ScalableImageView
                     android:id="@+id/imgbtntipocliudpry"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -79,14 +79,14 @@
                 android:layout_marginRight="5dp"
                 android:orientation="horizontal">
 
-                <jjlacode.com.freelanceproject.util.android.controls.ScalableImageView
+                <com.jjlacode.freelanceproject.util.android.controls.ScalableImageView
                     android:id="@+id/imgbtnestudpry"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="10"
                     app:srcCompat="@drawable/alert_box_v" />
 
-                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/tvestudproy"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -103,7 +103,7 @@
 
             </LinearLayout>
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/proyecto_ud_tv_fecha_entrada"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -126,7 +126,7 @@
                     android:visibility="gone"
                     android:text="@string/fecha_calculada" />
 
-                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/tvfcalcudpry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -153,7 +153,7 @@
                         android:orientation="horizontal">
 
 
-                        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                             android:id="@+id/tvfacorudpry"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -179,7 +179,7 @@
                         android:layout_marginRight="5dp"
                         android:orientation="horizontal">
 
-                        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                             android:id="@+id/tvfentpresuppry"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -208,8 +208,7 @@
                 android:text="@string/partidas_proyecto"/>
 
 
-
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
 
                 android:id="@+id/tvffinudpry"
                 android:layout_height="wrap_content"
@@ -227,7 +226,7 @@
                 android:orientation="horizontal">
 
 
-                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/tvimpcaludpry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -237,7 +236,7 @@
                     app:activo="false"/>
 
 
-                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/etimpfinudpry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -256,7 +255,7 @@
                     android:layout_marginRight="5dp">
 
 
-                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                    <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                         android:id="@+id/tvtotpartudpry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -266,7 +265,7 @@
                         app:activo="false"/>
 
 
-                    <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                    <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                         android:id="@+id/tvpreciopartidasudpry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

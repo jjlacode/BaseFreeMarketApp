@@ -32,7 +32,7 @@
                 android:layout_weight="3"
                 app:srcCompat="@drawable/ic_add_a_photo_black_24dp" />
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etdescudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
                 android:scaleType="center"
                 app:srcCompat="@drawable/ic_search_black_24dp" />
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
 
                 android:id="@+id/etfechainiudevento"
                 android:layout_width="match_parent"
@@ -66,7 +66,7 @@
                 app:hint_text="@string/fecha_ini_evento" />
 
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
 
                 android:id="@+id/ethorainiudevento"
                 android:layout_width="match_parent"
@@ -102,7 +102,7 @@
                 android:scaleType="center"
                 app:srcCompat="@drawable/ic_search_black_24dp" />
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etfechafinudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -111,7 +111,7 @@
                 app:hint_text="@string/fecha_fin_evento" />
 
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/ethorafinudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -136,7 +136,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/ettelefonoudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -161,7 +161,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etlugarudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -186,7 +186,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etemailudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -206,14 +206,14 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
             android:id="@+id/etasuntoevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:hint_text="@string/asunto"
             app:tipo_dato="TEXTO" />
 
-        <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+        <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
             android:id="@+id/etmensajeevento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -244,7 +244,7 @@
                 android:layout_weight="1"
                 android:text="@string/aviso" />
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etdiasudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -253,7 +253,7 @@
                 app:hint_text="@string/dias"
                 app:tipo_dato="NUMERO" />
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/ethorasudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -262,7 +262,7 @@
                 app:hint_text="@string/horas"
                 app:tipo_dato="NUMERO" />
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etminutosudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -312,7 +312,7 @@
                 android:layout_weight="25"
                 android:text="@string/repetir_evento" />
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etrepaniosudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -321,7 +321,7 @@
                 app:hint_text="@string/anios"
                 app:tipo_dato="NUMERO" />
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etrepmesesudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -330,7 +330,7 @@
                 app:hint_text="@string/meses"
                 app:tipo_dato="NUMERO" />
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etrepdiasudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -354,7 +354,7 @@
                 android:layout_weight="25"
                 android:text="@string/duracion" />
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etrepdaniosudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -363,7 +363,7 @@
                 app:hint_text="@string/anios"
                 app:tipo_dato="NUMERO" />
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etrepdmesesudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -372,7 +372,7 @@
                 app:hint_text="@string/meses"
                 app:tipo_dato="NUMERO" />
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etrepddiasudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -411,7 +411,7 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etcompletadaudevento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

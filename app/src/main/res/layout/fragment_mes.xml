@@ -200,7 +200,7 @@
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-    <jjlacode.com.freelanceproject.util.animation.OneFrameLayout
+        <com.jjlacode.freelanceproject.util.animation.OneFrameLayout
         android:id="@+id/fragment_animation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -210,7 +210,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-    </jjlacode.com.freelanceproject.util.animation.OneFrameLayout>
+        </com.jjlacode.freelanceproject.util.animation.OneFrameLayout>
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/frOpciones"

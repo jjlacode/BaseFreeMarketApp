@@ -68,7 +68,7 @@
                     android:textSize="@dimen/texto"
                     android:text="@string/referencia_proveedor" />
 
-                <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+                <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                     android:id="@+id/etdesccdetpartidabase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-             <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/ettiempocdetpartidabase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -91,7 +91,7 @@
                 app:gravedad="centro"
                 app:tipo_dato="NUMERO|DECIMAL" />
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etpreciocdetpartidabase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -99,7 +99,7 @@
                 app:hint_text="@string/importe"
                 app:tipo_dato="NUMERO|DECIMAL" />
 
-            <jjlacode.com.freelanceproject.util.android.controls.EditMaterial
+            <com.jjlacode.freelanceproject.util.android.controls.EditMaterial
                 android:id="@+id/etdescprovcdetpartidabase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
