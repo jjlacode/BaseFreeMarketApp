@@ -31,8 +31,8 @@ import com.jjlacode.freelanceproject.ui.FragmentCRUDPerfil;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDProducto;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDProyecto;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDTrabajo;
-import com.jjlacode.freelanceproject.ui.FragmentChat;
 import com.jjlacode.freelanceproject.ui.FragmentInicio;
+import com.jjlacode.um.base.ui.FragmentChat;
 
 import static android.Manifest.permission.CALL_PHONE;
 import static android.Manifest.permission.CAMERA;

@@ -33,6 +33,7 @@ import com.jjlacode.base.util.nosql.FragmentMasterDetailNoSQLFirebaseRatingWeb;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.model.Freelance;
+import com.jjlacode.um.base.ui.FragmentChat;
 
 import java.util.ArrayList;
 import java.util.List;

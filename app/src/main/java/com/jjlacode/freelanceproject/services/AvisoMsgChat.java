@@ -18,8 +18,8 @@ import com.jjlacode.base.util.services.JobServiceBase;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.freelanceproject.CommonPry;
-import com.jjlacode.freelanceproject.model.MsgChat;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
+import com.jjlacode.um.base.model.MsgChat;
 
 import java.util.ArrayList;
 

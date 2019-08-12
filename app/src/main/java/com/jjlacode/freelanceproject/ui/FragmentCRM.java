@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.jjlacode.base.util.android.FragmentGrid;
 import com.jjlacode.base.util.web.FragmentWebView;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.um.base.ui.FragmentChat;
 
 import java.util.ArrayList;
 
