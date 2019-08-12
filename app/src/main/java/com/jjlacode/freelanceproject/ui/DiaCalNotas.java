@@ -17,15 +17,12 @@ import com.jjlacode.base.util.crud.ListaModelo;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.base.util.time.calendar.clases.DiaCalBase;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.NOTA;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.NOTAS;
-
 public class DiaCalNotas extends DiaCalBase implements ContratoPry.Tablas,
-        JavaUtil.Constantes, CommonPry.TiposEvento {
+        JavaUtil.Constantes, Interactor.TiposEvento {
 
 
     @Override
@@ -121,7 +118,7 @@ public class DiaCalNotas extends DiaCalBase implements ContratoPry.Tablas,
         }
     }
 
-    public class ViewHolderRVcont extends BaseViewHolder implements TipoViewHolder, CommonPry.TiposNota {
+    public class ViewHolderRVcont extends BaseViewHolder implements TipoViewHolder, Interactor.TiposNota {
 
         TextView descripcion, fechanota, rel;
         ImageView imagen,ver;

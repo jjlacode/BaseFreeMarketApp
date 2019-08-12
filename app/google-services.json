@@ -15,40 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "600841627329-9pphtd962948aa7893hj6ol37f8h9uqq.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBpu-UzM1poaj2bImbZ8XzWacHgbgNJvMk"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "600841627329-9pphtd962948aa7893hj6ol37f8h9uqq.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:600841627329:android:fc164510766b3051",
-        "android_client_info": {
-          "package_name": "jjlacode.com.freelanceproject"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "600841627329-0b8807p8c90lqq8a3ldhcn1r3617mkqp.apps.googleusercontent.com",
+          "client_id": "600841627329-is3c17eq06khdiebvvv7k20gk1qe5tes.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "jjlacode.com.freelanceproject",
-            "certificate_hash": "a8e843c9b23f26e93e229fd1e0424c1dcf2f9acd"
+            "package_name": "com.jjlacode.freelanceproject",
+            "certificate_hash": "9e8c551cd1bc5183696ec85ce1f61b7aa80f05cb"
           }
         },
         {

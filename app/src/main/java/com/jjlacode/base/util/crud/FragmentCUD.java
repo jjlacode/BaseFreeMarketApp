@@ -15,8 +15,8 @@ import com.jjlacode.base.util.time.TimeDateUtil;
 
 import java.util.GregorianCalendar;
 
-import static com.jjlacode.freelanceproject.CommonPry.permiso;
-import static com.jjlacode.freelanceproject.CommonPry.setNamefdef;
+import static com.jjlacode.freelanceproject.logica.Interactor.permiso;
+import static com.jjlacode.freelanceproject.logica.Interactor.setNamefdef;
 
 public abstract class FragmentCUD extends FragmentBaseCRUD {
 

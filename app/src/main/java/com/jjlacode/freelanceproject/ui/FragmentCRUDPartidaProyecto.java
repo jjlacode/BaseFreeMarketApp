@@ -32,8 +32,8 @@ import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
@@ -46,8 +46,8 @@ import static com.jjlacode.base.util.sqlite.ConsultaBD.queryListDetalle;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObjectDetalle;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.updateRegistroDetalle;
 
-public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonPry.Constantes,
-        ContratoPry.Tablas, CommonPry.TiposDetPartida, CommonPry.TiposEstados {
+public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interactor.Constantes,
+        ContratoPry.Tablas, Interactor.TiposDetPartida, Interactor.TiposEstados {
 
     private Long retraso;
     private EditMaterial nombrePartida;
@@ -188,7 +188,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
         btnVolverProy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new CommonPry.Calculos.TareaActualizaProy().execute(id);
+                new Interactor.Calculos.TareaActualizaProy().execute(id);
                 System.out.println("origen = " + origen);
                 bundle.putSerializable(MODELO, proyecto);
                 bundle.putString(ACTUAL,origen);
@@ -230,7 +230,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
         visible(descripcionPartida);
         visible(cantidadPartida);
 
-        new CommonPry.Calculos.TareaSincronizarPartidasBase().execute();
+        new Interactor.Calculos.TareaSincronizarPartidasBase().execute();
 
         setAdaptadorAuto(autoClonarPartida);
 
@@ -450,7 +450,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     @Override
     protected void setcambioFragment() {
 
-        new CommonPry.Calculos.TareaActualizaProy().execute(id);
+        new Interactor.Calculos.TareaActualizaProy().execute(id);
 
     }
 
@@ -458,8 +458,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     @Override
     protected boolean delete() {
 
-        new CommonPry.Calculos.Tareafechas().execute();
-        new CommonPry.Calculos.TareaActualizaProy().execute(id);
+        new Interactor.Calculos.Tareafechas().execute();
+        new Interactor.Calculos.TareaActualizaProy().execute(id);
 
         return super.delete();
     }
@@ -514,8 +514,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
     @Override
     protected boolean update() {
 
-        new CommonPry.Calculos.Tareafechas().execute();
-        new CommonPry.Calculos.TareaActualizaProy().execute(id);
+        new Interactor.Calculos.Tareafechas().execute();
+        new Interactor.Calculos.TareaActualizaProy().execute(id);
 
         super.update();
 
@@ -528,7 +528,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
         if (proyecto==null && id!=null){
             proyecto = CRUDutil.setModelo(CAMPOS_PROYECTO,id);
         }
-        if (proyecto!=null && id!=null && CommonPry.getTipoEstado(proyecto.getString(PROYECTO_ID_ESTADO))>=TPRESUPPENDENTREGA){
+        if (proyecto != null && id != null && Interactor.getTipoEstado(proyecto.getString(PROYECTO_ID_ESTADO)) >= TPRESUPPENDENTREGA) {
             new FragmentCRUDProyecto.TareaGenerarPdf().execute(id);
         }
         return true;
@@ -536,7 +536,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
 
 
     public class AdaptadorDetpartida extends RecyclerView.Adapter<AdaptadorDetpartida.DetpartidaViewHolder>
-            implements View.OnClickListener, ContratoPry.Tablas, CommonPry.TiposDetPartida {
+            implements View.OnClickListener, ContratoPry.Tablas, Interactor.TiposDetPartida {
 
         private ArrayList<Modelo> listDetpartida;
         private View.OnClickListener listener;
@@ -585,7 +585,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements CommonP
             }
             if (listDetpartida.get(position).getString(DETPARTIDA_TIPO).equals(TIPOTRABAJO)) {
                 detpartidaViewHolder.importe.setText(JavaUtil.formatoMonedaLocal(
-                        (listDetpartida.get(position).getDouble(DETPARTIDA_TIEMPO) * CommonPry.hora * Double.parseDouble(cantidadPartida.getText().toString()))));
+                        (listDetpartida.get(position).getDouble(DETPARTIDA_TIEMPO) * Interactor.hora * Double.parseDouble(cantidadPartida.getText().toString()))));
             } else {
                 detpartidaViewHolder.importe.setText(JavaUtil.formatoMonedaLocal(Double.parseDouble(
                         listDetpartida.get(position).getString(DETPARTIDA_PRECIO)) * Double.parseDouble(cantidadPartida.getText().toString())));

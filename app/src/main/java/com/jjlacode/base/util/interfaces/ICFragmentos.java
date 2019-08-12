@@ -19,6 +19,7 @@ public interface ICFragmentos {
     void showSubTitle(int subTitle);
     void showTitle(String title);
     void showSubTitle(String subTitle);
+    //void alBuscarDestino();
 
     void enviarAyudaWeb(String ayudaWeb);
 }

@@ -36,8 +36,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.VISORPDFMAIL;
-
 public class PdfUtils extends FragmentBase {
 
     private final static String NOMBRE_DIRECTORIO = "Pdf";

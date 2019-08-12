@@ -23,8 +23,8 @@ import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.AudioPlayRec;
 import com.jjlacode.base.util.media.MediaUtil;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.io.File;
@@ -33,8 +33,8 @@ import java.util.ArrayList;
 
 import static com.jjlacode.base.util.time.calendar.clases.DiaCalBase.HORACAL;
 
-public class FragmentCRUDNota extends FragmentCRUD implements CommonPry.Constantes,
-        ContratoPry.Tablas , CommonPry.TiposNota{
+public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constantes,
+        ContratoPry.Tablas, Interactor.TiposNota {
 
 
     private String idrelacionado;

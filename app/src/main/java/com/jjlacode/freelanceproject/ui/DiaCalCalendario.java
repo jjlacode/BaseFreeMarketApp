@@ -19,17 +19,16 @@ import com.jjlacode.base.util.crud.ListaModelo;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.base.util.time.calendar.clases.DiaCalBase;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
 
 import static com.jjlacode.base.util.android.AppActivity.viewOnMapA;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.EVENTO;
 
 public class DiaCalCalendario extends DiaCalBase implements ContratoPry.Tablas,
-        JavaUtil.Constantes, CommonPry.TiposEvento {
+        JavaUtil.Constantes, Interactor.TiposEvento {
 
 
 
@@ -193,18 +192,18 @@ public class DiaCalCalendario extends DiaCalBase implements ContratoPry.Tablas,
                         long retraso = JavaUtil.hoy() - modelo.getLong(EVENTO_FECHAINIEVENTO);
 
                         if (!tipoevento.equals(TIPOEVENTOTAREA)) {
-                            if (retraso > 3 * CommonPry.DIASLONG) {
+                            if (retraso > 3 * Interactor.DIASLONG) {
                                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
-                            } else if (retraso > CommonPry.DIASLONG) {
+                            } else if (retraso > Interactor.DIASLONG) {
                                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
                             } else {
                                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
                             }//imgret.setImageResource(R.drawable.alert_box_v);}
                         } else {
                             retraso = JavaUtil.hoy() - modelo.getLong(EVENTO_FECHAFINEVENTO);
-                            if (retraso > 3 * CommonPry.DIASLONG) {
+                            if (retraso > 3 * Interactor.DIASLONG) {
                                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
-                            } else if (retraso > CommonPry.DIASLONG) {
+                            } else if (retraso > Interactor.DIASLONG) {
                                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
                             } else {
                                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));

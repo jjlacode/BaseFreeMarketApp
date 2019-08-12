@@ -17,8 +17,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.RVAdapter;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 
 import java.util.ArrayList;
 
@@ -90,7 +90,7 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
         activityBase.fab2.show();
             listaRV();
         if (subTitulo==null) {
-            activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+            activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
         } else {
             activityBase.toolbar.setSubtitle(subTitulo);
 
@@ -184,7 +184,7 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
                 }
                 setRv();
                 if (subTitulo==null) {
-                    activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+                    activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
                 }
                 enviarAct();
             }

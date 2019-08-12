@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
-import com.jjlacode.freelanceproject.CommonPry;
+import com.jjlacode.freelanceproject.logica.Interactor;
 
 import static com.jjlacode.freelanceproject.sqlite.ContratoPry.AUTORIDAD_CONTENIDO;
 import static com.jjlacode.freelanceproject.sqlite.ContratoPry.FILTRO_CLIENTE;
@@ -25,7 +25,7 @@ import static com.jjlacode.freelanceproject.sqlite.ContratoPry.obtenerIdTablaDet
 import static com.jjlacode.freelanceproject.sqlite.ContratoPry.obtenerIdTablaDetalleId;
 
 public class ProviderFreelanceProject extends ContentProvider
-        implements Tablas, CommonPry.TiposEstados {
+        implements Tablas, Interactor.TiposEstados {
 
     private DataBase bd;
 

@@ -24,8 +24,8 @@ import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.RVAdapter;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.animation.OneFrameLayout;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 
 import java.util.ArrayList;
 
@@ -133,7 +133,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
             datos();
 
             if (subTitulo==null) {
-                activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+                activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
             }
 
         }else if (id!=null  && (secuencia>0||tablaCab==null)) {
@@ -147,14 +147,14 @@ public abstract class FragmentCRUD extends FragmentCUD {
             datos();
 
             if (subTitulo==null) {
-                activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+                activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
             }
 
         }else{
 
             back = false;
             if (subTitulo==null) {
-                activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+                activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
             }
 
         }
@@ -233,7 +233,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
                 }
                 setRv();
                 if (subTitulo==null) {
-                    activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+                    activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
                 }
                 enviarAct();
             }
@@ -642,7 +642,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
         }
 
         if (subTitulo == null) {
-            activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+            activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
         }
 
     }
@@ -748,7 +748,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
         cambiarFragment();
         selector();
 
-        activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+        activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
         return true;
     }
 
@@ -797,7 +797,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
                     }
                     setRv();
                     if (subTitulo == null) {
-                        activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+                        activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
                     }
                     //auto.setText("");
                     enviarAct();

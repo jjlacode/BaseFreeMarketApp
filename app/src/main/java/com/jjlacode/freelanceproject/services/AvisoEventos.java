@@ -4,12 +4,12 @@ import android.content.Intent;
 
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.services.JobServiceBase;
-import com.jjlacode.freelanceproject.CommonPry;
+import com.jjlacode.freelanceproject.logica.Interactor;
 
 import java.util.ArrayList;
 
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.ACCION_AVISOEVENTO;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.EVENTO;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.ACCION_AVISOEVENTO;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.EVENTO;
 import static com.jjlacode.freelanceproject.sqlite.ContratoPry.Tablas.EVENTO_AVISO;
 import static com.jjlacode.freelanceproject.sqlite.ContratoPry.Tablas.EVENTO_COMPLETADA;
 
@@ -24,7 +24,7 @@ public class AvisoEventos extends JobServiceBase {
     protected void setJob() {
         super.setJob();
 
-        listaEventos = CommonPry.Calculos.comprobarEventos();
+        listaEventos = Interactor.Calculos.comprobarEventos();
 
         for (Modelo evento : listaEventos) {
 

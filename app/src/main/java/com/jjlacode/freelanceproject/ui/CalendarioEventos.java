@@ -21,17 +21,17 @@ import com.jjlacode.base.util.time.Day;
 import com.jjlacode.base.util.time.ListaDays;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.base.util.time.calendar.fragments.FragmentMes;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 
 import java.util.ArrayList;
 
 import static com.jjlacode.base.util.android.AppActivity.viewOnMapA;
-import static com.jjlacode.freelanceproject.CommonPry.TiposEvento.TIPOEVENTOCITA;
-import static com.jjlacode.freelanceproject.CommonPry.TiposEvento.TIPOEVENTOEMAIL;
-import static com.jjlacode.freelanceproject.CommonPry.TiposEvento.TIPOEVENTOEVENTO;
-import static com.jjlacode.freelanceproject.CommonPry.TiposEvento.TIPOEVENTOLLAMADA;
-import static com.jjlacode.freelanceproject.CommonPry.TiposEvento.TIPOEVENTOTAREA;
+import static com.jjlacode.freelanceproject.logica.Interactor.TiposEvento.TIPOEVENTOCITA;
+import static com.jjlacode.freelanceproject.logica.Interactor.TiposEvento.TIPOEVENTOEMAIL;
+import static com.jjlacode.freelanceproject.logica.Interactor.TiposEvento.TIPOEVENTOEVENTO;
+import static com.jjlacode.freelanceproject.logica.Interactor.TiposEvento.TIPOEVENTOLLAMADA;
+import static com.jjlacode.freelanceproject.logica.Interactor.TiposEvento.TIPOEVENTOTAREA;
 
 public class CalendarioEventos extends FragmentMes {
 
@@ -262,18 +262,18 @@ public class CalendarioEventos extends FragmentMes {
                 long retraso = JavaUtil.hoy() - entrada.get(posicion).getLong(EVENTO_FECHAINIEVENTO);
 
                 if (!tipoevento.equals(TIPOEVENTOTAREA)) {
-                    if (retraso > 3 * CommonPry.DIASLONG) {
+                    if (retraso > 3 * Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
-                    } else if (retraso > CommonPry.DIASLONG) {
+                    } else if (retraso > Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
                     } else {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
                     }//imgret.setImageResource(R.drawable.alert_box_v);}
                 }else {
                     retraso = JavaUtil.hoy() - entrada.get(posicion).getLong(EVENTO_FECHAFINEVENTO);
-                    if (retraso > 3 * CommonPry.DIASLONG) {
+                    if (retraso > 3 * Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
-                    } else if (retraso > CommonPry.DIASLONG) {
+                    } else if (retraso > Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
                     } else {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
@@ -370,18 +370,18 @@ public class CalendarioEventos extends FragmentMes {
                 long retraso = JavaUtil.hoy() - modelo.getLong(EVENTO_FECHAINIEVENTO);
 
                 if (!tipoevento.equals(TIPOEVENTOTAREA)) {
-                    if (retraso > 3 * CommonPry.DIASLONG) {
+                    if (retraso > 3 * Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
-                    } else if (retraso > CommonPry.DIASLONG) {
+                    } else if (retraso > Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
                     } else {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
                     }//imgret.setImageResource(R.drawable.alert_box_v);}
                 }else {
                     retraso = JavaUtil.hoy() - modelo.getLong(EVENTO_FECHAFINEVENTO);
-                    if (retraso > 3 * CommonPry.DIASLONG) {
+                    if (retraso > 3 * Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
-                    } else if (retraso > CommonPry.DIASLONG) {
+                    } else if (retraso > Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
                     } else {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));

@@ -8,9 +8,9 @@ import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.services.ReceiverBase;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.MainActivity;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.jjlacode.base.util.JavaUtil.Constantes.CONTNOT;
@@ -35,7 +35,7 @@ public class ChatReceiver extends ReceiverBase {
             if (detChat.getInt(DETCHAT_NOTIFICADO) == 0) {
                 String idchat = CRUDutil.getSharePreference(context, PREFERENCIAS, IDCHATF, NULL);
                 if (!idchat.equals(chat.getString(CHAT_USUARIO))) {
-                    CommonPry.notificationChat(context, MainActivity.class, detChat, CHAT,
+                    Interactor.notificationChat(context, MainActivity.class, detChat, CHAT,
                             contnot, R.drawable.alert_box_r, "Nuevo msg de chat",
                             contenido);
                     CRUDutil.setSharePreference(context, NOTIFICACIONES, CONTNOT, contnot + 1);

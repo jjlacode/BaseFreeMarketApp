@@ -19,8 +19,8 @@ import com.jjlacode.base.util.time.Day;
 import com.jjlacode.base.util.time.ListaDays;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.base.util.time.calendar.fragments.FragmentMes;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 
 import java.util.ArrayList;
 
@@ -128,7 +128,7 @@ public class Diario extends FragmentMes {
     }
 
 
-    public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder, CommonPry.TiposNota {
+    public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder, Interactor.TiposNota {
 
         TextView descripcion, fechaDiario, rel;
         ImageView imagen,ver;

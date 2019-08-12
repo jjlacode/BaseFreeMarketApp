@@ -23,8 +23,8 @@ import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.FragmentBase;
 import com.jjlacode.base.util.animation.OneFrameLayout;
 import com.jjlacode.base.util.media.MediaUtil;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 
 import java.util.ArrayList;
 
@@ -105,7 +105,7 @@ public abstract class FragmentRVNoSQL extends FragmentBase {
         visible(inicio);
         listaRV();
         if (subTitulo == null) {
-            activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+            activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
         }
         acciones();
     }
@@ -168,7 +168,7 @@ public abstract class FragmentRVNoSQL extends FragmentBase {
 
                 setRv();
                 if (subTitulo == null) {
-                    activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+                    activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
                 }
             }
         });

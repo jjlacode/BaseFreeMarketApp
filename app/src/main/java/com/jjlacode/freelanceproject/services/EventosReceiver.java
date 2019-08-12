@@ -10,9 +10,9 @@ import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.services.ReceiverBase;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.MainActivity;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -42,7 +42,7 @@ public class EventosReceiver extends ReceiverBase implements JavaUtil.Constantes
             String contenido = evento.getString(EVENTO_DESCRIPCION);
 
             if (evento.getInt(EVENTO_NOTIFICADO)==0) {
-                CommonPry.notificationEvento(context, MainActivity.class, evento,EVENTO,
+                Interactor.notificationEvento(context, MainActivity.class, evento, EVENTO,
                         contnot, R.drawable.alert_box_r, "Aviso evento próximo a vencer",
                         contenido);
                 ContentValues valores = new ContentValues();

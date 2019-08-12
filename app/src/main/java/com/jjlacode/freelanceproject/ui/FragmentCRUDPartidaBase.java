@@ -39,8 +39,8 @@ import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.ListaModelo;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
@@ -53,8 +53,8 @@ import static com.jjlacode.base.util.sqlite.ConsultaBD.queryList;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryListDetalle;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObject;
 
-public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.Constantes,
-        ContratoPry.Tablas, CommonPry.TiposDetPartida {
+public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.Constantes,
+        ContratoPry.Tablas, Interactor.TiposDetPartida {
 
     private AutoCompleteTextView autoNombrePartida;
     private EditText nombrePartida;
@@ -183,7 +183,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
             btnpart.setVisibility(View.VISIBLE);
         }
 
-        CommonPry.Calculos.actualizarPartidaBase(id);
+        Interactor.Calculos.actualizarPartidaBase(id);
 
 
         nombrePartida.setText(modelo.getString(PARTIDABASE_NOMBRE));
@@ -320,7 +320,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                CommonPry.Calculos.sincronizarPartidaBase(id);
+                Interactor.Calculos.sincronizarPartidaBase(id);
 
             }
 
@@ -351,7 +351,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
                 @Override
                 public void run() {
 
-                    CommonPry.Calculos.actualizarPartidaBase(id);
+                    Interactor.Calculos.actualizarPartidaBase(id);
                     System.out.println("En segundo plano");
                 }
             };
@@ -470,7 +470,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
     }
 
     public static class AdaptadorDetpartida extends RecyclerView.Adapter<AdaptadorDetpartida.DetpartidaViewHolder>
-            implements View.OnClickListener, ContratoPry.Tablas, CommonPry.TiposDetPartida {
+            implements View.OnClickListener, ContratoPry.Tablas, Interactor.TiposDetPartida {
 
         private ArrayList<Modelo> listDetpartida;
         private View.OnClickListener listener;
@@ -507,9 +507,9 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
             detpartidaViewHolder.tipo.setText(tipodetpartida.toUpperCase());
             detpartidaViewHolder.nombre.setText(listDetpartida.get(position).getString(DETPARTIDABASE_NOMBRE));
             detpartidaViewHolder.tiempo.setText(listDetpartida.get(position).getString(DETPARTIDABASE_TIEMPO));
-            if (listDetpartida.get(position).getString(DETPARTIDABASE_TIPO).equals(CommonPry.TiposDetPartida.TIPOTRABAJO)) {
+            if (listDetpartida.get(position).getString(DETPARTIDABASE_TIPO).equals(Interactor.TiposDetPartida.TIPOTRABAJO)) {
                 detpartidaViewHolder.importe.setText(JavaUtil.formatoMonedaLocal(
-                        (listDetpartida.get(position).getDouble(DETPARTIDABASE_TIEMPO) * CommonPry.hora)));
+                        (listDetpartida.get(position).getDouble(DETPARTIDABASE_TIEMPO) * Interactor.hora)));
             }else{
                 detpartidaViewHolder.importe.setText(listDetpartida.get(position).getString(DETPARTIDABASE_PRECIO));
             }
@@ -601,9 +601,9 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements CommonPry.C
             nombre.setText(modelo.getString(DETPARTIDABASE_NOMBRE));
             tiempo.setText(modelo.getString(DETPARTIDABASE_TIEMPO));
             cantidad.setText(modelo.getString(DETPARTIDABASE_CANTIDAD));
-            if (modelo.getString(DETPARTIDABASE_TIPO).equals(CommonPry.TiposDetPartida.TIPOTRABAJO)) {
+            if (modelo.getString(DETPARTIDABASE_TIPO).equals(Interactor.TiposDetPartida.TIPOTRABAJO)) {
                 importe.setText(JavaUtil.formatoMonedaLocal(
-                        (modelo.getDouble(DETPARTIDABASE_TIEMPO) * CommonPry.hora *
+                        (modelo.getDouble(DETPARTIDABASE_TIEMPO) * Interactor.hora *
                                 modelo.getDouble(DETPARTIDABASE_CANTIDAD))));
             }else{
                 importe.setText(modelo.getString(DETPARTIDABASE_PRECIO));

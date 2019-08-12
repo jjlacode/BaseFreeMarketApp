@@ -22,8 +22,8 @@ import com.jjlacode.freelanceproject.R;
 
 import static com.jjlacode.base.util.JavaUtil.Constantes.NULL;
 import static com.jjlacode.base.util.JavaUtil.Constantes.PREFERENCIAS;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.INICIO;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.USERID;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.INICIO;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.USERID;
 
 /**
  * Muestra el formulario de login
@@ -64,11 +64,13 @@ public class LoginFragment extends Fragment implements LoginContract.View {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 SharedPreferences preferences = getContext().getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
                 String userID = preferences.getString(USERID, NULL);
+                System.out.println("user: " + user.getUid());
+                System.out.println("userID = " + userID);
                 if (user != null && user.getUid().equals(userID)) {
                     System.out.println("user: " + user.getUid());
                     showPushNotifications();
                 } else {
-                    // El usuario no está logueado
+                    Toast.makeText(getContext(), "Debe logearse de nuevo", Toast.LENGTH_SHORT).show();
                 }
             }
         };

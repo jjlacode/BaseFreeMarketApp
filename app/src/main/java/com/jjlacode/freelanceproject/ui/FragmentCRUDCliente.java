@@ -25,8 +25,8 @@ import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.ListaModelo;
 import com.jjlacode.base.util.crud.Modelo;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
@@ -34,9 +34,9 @@ import java.util.ArrayList;
 import static android.app.Activity.RESULT_OK;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.checkQueryList;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryList;
-import static com.jjlacode.freelanceproject.CommonPry.setNamefdef;
+import static com.jjlacode.freelanceproject.logica.Interactor.setNamefdef;
 
-public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Constantes,
+public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Constantes,
         ContratoPry.Tablas {
 
 
@@ -311,7 +311,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
             public void onClick(View v) {
 
                 AppActivity.hacerLlamada(AppActivity.getAppContext()
-                        , telefonoCliente.getText().toString(), CommonPry.permiso);
+                        , telefonoCliente.getText().toString(), Interactor.permiso);
             }
         });
 
@@ -503,7 +503,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
 
                         if (!telefonoCliente.getText().toString().equals("")) {
                             AppActivity.hacerLlamada(AppActivity.getAppContext()
-                                    , telefonoCliente.getText().toString(), CommonPry.permiso);
+                                    , telefonoCliente.getText().toString(), Interactor.permiso);
                         }
                     } else if (grabarVoz.equals("marcar")) {
 
@@ -515,7 +515,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements CommonPry.Const
 
                         if (!telefonoCliente.getText().toString().equals("")) {
                             AppActivity.hacerLlamada(AppActivity.getAppContext()
-                                    , telefonoCliente.getText().toString(), CommonPry.permiso);
+                                    , telefonoCliente.getText().toString(), Interactor.permiso);
                         }
                     }
             }

@@ -17,15 +17,15 @@ import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
 
 import static com.jjlacode.base.util.sqlite.ConsultaBD.checkQueryList;
 
-public class FragmentCRUDTrabajo extends FragmentCRUD implements CommonPry.Constantes, ContratoPry.Tablas {
+public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Constantes, ContratoPry.Tablas {
 
     private EditMaterial tiempo, nombre, descripcion;
     private ImageButton btnNota;
@@ -188,7 +188,7 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements CommonPry.Const
     @Override
     protected boolean update() {
         if (super.update()){
-            new CommonPry.Calculos.TareaSincronizarPartidasBase().execute();
+            new Interactor.Calculos.TareaSincronizarPartidasBase().execute();
             return true;
         }
         return false;

@@ -20,14 +20,14 @@ import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.time.DatePickerFragment;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static com.jjlacode.freelanceproject.CommonPry.setNamefdef;
+import static com.jjlacode.freelanceproject.logica.Interactor.setNamefdef;
 
 public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPry.Tablas {
 
@@ -162,7 +162,7 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
 
         if(super.update()) {
 
-            CommonPry.hora = CommonPry.Calculos.calculoPrecioHora();
+            Interactor.hora = Interactor.Calculos.calculoPrecioHora();
 
             return true;
         }
@@ -175,7 +175,7 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
 
         if(super.delete()) {
 
-            CommonPry.hora = CommonPry.Calculos.calculoPrecioHora();
+            Interactor.hora = Interactor.Calculos.calculoPrecioHora();
 
             return true;
         }
@@ -188,7 +188,7 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
 
         if(super.registrar()) {
 
-            CommonPry.hora = CommonPry.Calculos.calculoPrecioHora();
+            Interactor.hora = Interactor.Calculos.calculoPrecioHora();
 
             return true;
         }
@@ -224,10 +224,10 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         // +1 because january is zero
-                        //String selectedDate = CommonPry.twoDigits(day) + " / " +
-                        //        CommonPry.twoDigits(month+1) + " / " + year;
+                        //String selectedDate = Interactor.twoDigits(day) + " / " +
+                        //        Interactor.twoDigits(month+1) + " / " + year;
                         fechaCompra = JavaUtil.fechaALong(year, month, day);
-                        //String selectedDate = CommonPry.formatDateForUi(year,month,day);
+                        //String selectedDate = Interactor.formatDateForUi(year,month,day);
                         String selectedDate = JavaUtil.getDate(fechaCompra);
                         fecha.setText(selectedDate);
 

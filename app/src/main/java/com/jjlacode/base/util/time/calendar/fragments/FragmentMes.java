@@ -31,8 +31,8 @@ import com.jjlacode.base.util.time.Day;
 import com.jjlacode.base.util.time.ListaDays;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.base.util.time.calendar.clases.CalendarAdapter;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.text.SimpleDateFormat;
@@ -46,8 +46,8 @@ import java.util.Locale;
  * Created by DARWIN on 3/3/2017.
  */
 
-public abstract class FragmentMes extends FragmentBase implements CommonPry.TiposEstados,
-        JavaUtil.Constantes, ContratoPry.Tablas, CommonPry.Constantes {//}, CalendarAdapter.DayOnClickListener {
+public abstract class FragmentMes extends FragmentBase implements Interactor.TiposEstados,
+        JavaUtil.Constantes, ContratoPry.Tablas, Interactor.Constantes {//}, CalendarAdapter.DayOnClickListener {
 
 
     private int  month, year;

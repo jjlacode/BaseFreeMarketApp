@@ -30,11 +30,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.FREELANCE;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.IDCHATF;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.IDFREELANCE;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.NOMBRECHAT;
-
 public class FragmentPublicidad extends FragmentNoSQL {
 
     private EditMaterial nombre;

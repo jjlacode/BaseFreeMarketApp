@@ -19,6 +19,7 @@ import com.jjlacode.base.util.android.CheckPermisos;
 import com.jjlacode.base.util.android.MainActivityBase;
 import com.jjlacode.base.util.media.VisorPDFEmail;
 import com.jjlacode.base.util.web.FragmentWebView;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.services.AutoArranque;
 import com.jjlacode.freelanceproject.settings.SettingsActivity;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDAmortizacion;
@@ -73,12 +74,12 @@ public class MainActivity extends MainActivityBase {
 
             if (getDatabasePath(BASEDATOS)!=null && preferences.contains(PERFILACTIVO)){
 
-                CommonPry.perfila = preferences.getString(PERFILACTIVO,"Defecto");
-                CommonPry.prioridad = preferences.getBoolean(PRIORIDAD,true);
-                CommonPry.diaspasados = preferences.getInt(DIASPASADOS,20);
-                CommonPry.diasfuturos = preferences.getInt(DIASFUTUROS,90);
-                CommonPry.hora = CommonPry.Calculos.calculoPrecioHora();
-                CommonPry.setNamefdef();
+                Interactor.perfila = preferences.getString(PERFILACTIVO, "Defecto");
+                Interactor.prioridad = preferences.getBoolean(PRIORIDAD, true);
+                Interactor.diaspasados = preferences.getInt(DIASPASADOS, 20);
+                Interactor.diasfuturos = preferences.getInt(DIASFUTUROS, 90);
+                Interactor.hora = Interactor.Calculos.calculoPrecioHora();
+                Interactor.setNamefdef();
 
                 Log.d("inicio", "Inicio correcto");
 
@@ -256,7 +257,7 @@ public class MainActivity extends MainActivityBase {
 
                 fab2.show();
                 fab.hide();
-                toolbar.setSubtitle(CommonPry.setNamefdef());
+                toolbar.setSubtitle(Interactor.setNamefdef());
                 enviarBundleAFragment(bundle, new FragmentInicio());
                 break;
             case AMORTIZACION:
@@ -311,7 +312,7 @@ public class MainActivity extends MainActivityBase {
 
         if (Build.VERSION.SDK_INT<Build.VERSION_CODES.M ){
 
-            CommonPry.permiso = true;
+            Interactor.permiso = true;
         }
         else if ((checkSelfPermission(CAMERA)== PackageManager.PERMISSION_GRANTED) &&
                 (checkSelfPermission(CALL_PHONE)== PackageManager.PERMISSION_GRANTED) &&
@@ -322,7 +323,7 @@ public class MainActivity extends MainActivityBase {
                 (checkSelfPermission(WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED)
         ){
 
-            CommonPry.permiso = true;
+            Interactor.permiso = true;
         }
         else if ((shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE))||
                 (shouldShowRequestPermissionRationale(READ_EXTERNAL_STORAGE))||
@@ -374,7 +375,7 @@ public class MainActivity extends MainActivityBase {
                 grantResults[7] == PackageManager.PERMISSION_GRANTED &&
                 grantResults[8] == PackageManager.PERMISSION_GRANTED)) {
 
-            CommonPry.permiso = true;
+            Interactor.permiso = true;
 
         }else{
 

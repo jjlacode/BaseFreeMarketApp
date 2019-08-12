@@ -31,10 +31,6 @@ import com.jjlacode.freelanceproject.model.Proveedores;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.PARTIDA;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.PRODPROVCAT;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.PROYECTO;
-
 public class Catalogo extends FragmentMasterDetailNoSQL {
 
     private EditMaterial nombre;

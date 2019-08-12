@@ -17,14 +17,14 @@ import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.services.JobServiceBase;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.base.util.time.TimeDateUtil;
-import com.jjlacode.freelanceproject.CommonPry;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 import com.jjlacode.um.base.model.MsgChat;
 
 import java.util.ArrayList;
 
 
-public class AvisoMsgChat extends JobServiceBase implements JavaUtil.Constantes, CommonPry.Constantes, ContratoPry.Tablas {
+public class AvisoMsgChat extends JobServiceBase implements JavaUtil.Constantes, Interactor.Constantes, ContratoPry.Tablas {
 
     private ArrayList<Modelo> listaEventos;
     private Query dbFreelance;

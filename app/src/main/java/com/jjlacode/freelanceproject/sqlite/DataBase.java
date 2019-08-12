@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.jjlacode.base.util.sqlite.DataBaseBase;
-import com.jjlacode.freelanceproject.CommonPry;
+import com.jjlacode.freelanceproject.logica.Interactor;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -15,7 +15,7 @@ import static com.jjlacode.freelanceproject.sqlite.ContratoPry.obtenerListaCampo
 
 
 public class DataBase extends DataBaseBase
-        implements CommonPry.Constantes, ContratoPry.Tablas, CommonPry.Estados, CommonPry.TiposEstados {
+        implements Interactor.Constantes, ContratoPry.Tablas, Interactor.Estados, Interactor.TiposEstados {
 
     private static final String NOMBRE_BASE_DATOS = "freelanceproject.db";
 

@@ -1,4 +1,4 @@
-package com.jjlacode.freelanceproject;
+package com.jjlacode.freelanceproject.logica;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -27,6 +27,8 @@ import com.jjlacode.base.util.crud.ListaModelo;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.interfaces.ICFragmentos;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
+import com.jjlacode.freelanceproject.BuildConfig;
+import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.model.ProdProv;
 import com.jjlacode.freelanceproject.services.EventosReceiver;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
@@ -49,24 +51,24 @@ import static android.content.Intent.EXTRA_TEXT;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.jjlacode.base.util.android.AppActivity.getAppContext;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryList;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.ACCION_CANCELAR;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.ACCION_POSPONER;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.ACCION_VER;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.ACCION_VERCHAT;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.EXTRA_ACTUAL;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.EXTRA_ID;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.EXTRA_IDCHAT;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.EXTRA_IDEVENTO;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.EXTRA_SECCHAT;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.EXTRA_TIPOCHAT;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.INICIO;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.PARTIDA;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.PRODPROVCAT;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.PRODUCTO;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.TRABAJO;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.ACCION_CANCELAR;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.ACCION_POSPONER;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.ACCION_VER;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.ACCION_VERCHAT;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.EXTRA_ACTUAL;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.EXTRA_ID;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.EXTRA_IDCHAT;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.EXTRA_IDEVENTO;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.EXTRA_SECCHAT;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.EXTRA_TIPOCHAT;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.INICIO;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.PARTIDA;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.PRODPROVCAT;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.PRODUCTO;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.TRABAJO;
 
 
-public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
+public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
 
 
         public static String perfila = null;//Perfil setActivo para calculos y preferencias
@@ -715,7 +717,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
 
     }
 
-    public static void seleccionarDestino(ICFragmentos icFragmentos, Bundle bundle, String destino){
+    public static void seleccionarDestino(ICFragmentos icFragmentos, Bundle bundle, String destino, CallbackFragmentBase callbackFragmentBase) {
 
         if (destino.equals(INICIO.toLowerCase())){
             icFragmentos.enviarBundleAFragment(bundle,new FragmentInicio());
@@ -730,10 +732,11 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
 
         }
         System.out.println("destino = " + destino);
+        callbackFragmentBase.alSeleccionarDestino(destino);
 
     }
 
-    public static void seleccionarNuevoDestino(ICFragmentos icFragmentos, Bundle bundle, String destino) {
+    public static void seleccionarNuevoDestino(ICFragmentos icFragmentos, Bundle bundle, String destino, CallbackFragmentBase callbackFragmentBase) {
 
         if (destino.equals(getAppContext().getString(R.string.evento).toLowerCase())) {
 
@@ -741,6 +744,8 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
 
         }
         System.out.println("destino nuevo = " + destino);
+        callbackFragmentBase.alSeleccionarNuevoDestino(destino);
+
 
     }
 
@@ -1217,7 +1222,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
                 }
             }
             coste += (tiempoPartida * calculoCosteHora());
-            importeTiempoPartida = tiempoPartida * CommonPry.hora;
+            importeTiempoPartida = tiempoPartida * Interactor.hora;
             totalPartida = importeProductosPartida +importeTiempoPartida;
 
             Modelo partida = ConsultaBD.queryObject(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, idPartida, null,
@@ -1229,7 +1234,7 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
             ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_TIEMPO, tiempoPartida * cantidadPartida);
             ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_PRECIO, totalPartida * cantidadPartida);
             ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_COSTE, coste * cantidadPartida);
-            ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_PRECIOHORA, CommonPry.hora);
+            ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_PRECIOHORA, Interactor.hora);
 
             String idProyecto_Partida = partida.getString(PARTIDA_ID_PROYECTO);
             int secuenciaPartida = partida.getInt(PARTIDA_SECUENCIA);
@@ -1286,8 +1291,8 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
 
 
             coste += (tiempoPartida * calculoCosteHora());
-            importeTiempoPartida = tiempoPartida * CommonPry.hora;
-            System.out.println("hora = " + CommonPry.hora);
+            importeTiempoPartida = tiempoPartida * Interactor.hora;
+            System.out.println("hora = " + Interactor.hora);
             System.out.println("tiempoPartida = " + tiempoPartida);
             totalPartida = importeProductosPartida +importeTiempoPartida;
 
@@ -1517,5 +1522,15 @@ public class CommonPry implements JavaUtil.Constantes, ContratoPry.Tablas {
 
     }
 
+    public interface CallbackFragmentBase {
+
+        void alSeleccionarDestino(String destino);
+
+        void alSeleccionarNuevoDestino(String nuevoDestino);
+    }
+
+    public interface CallbackEventos {
+
+    }
 
 }

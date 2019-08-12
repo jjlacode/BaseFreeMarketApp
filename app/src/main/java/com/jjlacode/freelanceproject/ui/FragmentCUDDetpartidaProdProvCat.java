@@ -13,15 +13,15 @@ import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCUD;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.model.ProdProv;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObjectDetalle;
 
-public class FragmentCUDDetpartidaProdProvCat extends FragmentCUD implements CommonPry.Constantes,
-        ContratoPry.Tablas, CommonPry.TiposDetPartida, CommonPry.TiposEstados {
+public class FragmentCUDDetpartidaProdProvCat extends FragmentCUD implements Interactor.Constantes,
+        ContratoPry.Tablas, Interactor.TiposDetPartida, Interactor.TiposEstados {
 
     private EditMaterial descripcion;
     private EditMaterial precio;
@@ -200,7 +200,7 @@ public class FragmentCUDDetpartidaProdProvCat extends FragmentCUD implements Com
         setDato(DETPARTIDA_REFPROVEEDOR, refProv.getText().toString());
 
 
-        CommonPry.Calculos.actualizarPartidaProyecto(id);
+        Interactor.Calculos.actualizarPartidaProyecto(id);
 
     }
 
@@ -214,7 +214,7 @@ public class FragmentCUDDetpartidaProdProvCat extends FragmentCUD implements Com
     protected void setcambioFragment() {
 
         bundle = new Bundle();
-        new CommonPry.Calculos.TareaActualizaProy().execute(idProyecto_Partida);
+        new Interactor.Calculos.TareaActualizaProy().execute(idProyecto_Partida);
         partida = queryObjectDetalle(CAMPOS_PARTIDA, idProyecto_Partida, secuenciaPartida);
         bundle.putSerializable(MODELO, partida);
         bundle.putSerializable(PROYECTO, proyecto);

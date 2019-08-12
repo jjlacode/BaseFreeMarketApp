@@ -18,8 +18,8 @@ import com.jjlacode.base.util.android.AndroidUtil;
 import com.jjlacode.base.util.crud.FragmentRVR;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
@@ -29,8 +29,8 @@ import static com.jjlacode.base.util.JavaUtil.hoy;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObject;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObjectDetalle;
 
-public class FragmentTrabajoTreking extends FragmentRVR implements CommonPry.Constantes,
-        ContratoPry.Tablas, CommonPry.TiposDetPartida, CommonPry.TiposEstados {
+public class FragmentTrabajoTreking extends FragmentRVR implements Interactor.Constantes,
+        ContratoPry.Tablas, Interactor.TiposDetPartida, Interactor.TiposEstados {
 
 
     public FragmentTrabajoTreking() {
@@ -147,9 +147,9 @@ public class FragmentTrabajoTreking extends FragmentRVR implements CommonPry.Con
             tipo.setText(tipodetpartida.toUpperCase());
             nombre.setText(entrada.get(posicion).getString(DETPARTIDA_NOMBRE));
             tiempo.setText(entrada.get(posicion).getString(DETPARTIDA_TIEMPO));
-            if (entrada.get(posicion).getString(DETPARTIDA_TIPO).equals(CommonPry.TiposDetPartida.TIPOTRABAJO)) {
+            if (entrada.get(posicion).getString(DETPARTIDA_TIPO).equals(Interactor.TiposDetPartida.TIPOTRABAJO)) {
                 importe.setText(JavaUtil.formatoMonedaLocal(
-                        (entrada.get(posicion).getDouble(DETPARTIDA_TIEMPO) * CommonPry.hora)));
+                        (entrada.get(posicion).getDouble(DETPARTIDA_TIEMPO) * Interactor.hora)));
             } else {
                 importe.setText(entrada.get(posicion).getString(DETPARTIDA_PRECIO));
             }

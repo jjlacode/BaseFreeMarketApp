@@ -32,14 +32,10 @@ import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.time.TimeDateUtil;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 
 import java.util.ArrayList;
-
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.ANON;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.NOMBRECHAT;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.USERID;
 
 public abstract class FragmentMasterDetailNoSQLFirebaseRating extends FragmentMasterDetailNoSQL {
 
@@ -118,7 +114,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRating extends FragmentMa
         }
 
         if (subTitulo == null) {
-            activityBase.toolbar.setSubtitle(CommonPry.setNamefdef());
+            activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
         }
 
         activityBase.fab.hide();

@@ -22,8 +22,8 @@ import com.jjlacode.base.util.android.FragmentBase;
 import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ import java.util.TimerTask;
 import static android.app.Activity.RESULT_OK;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.putDato;
 
-public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoPry.Tablas, CommonPry.Constantes {
+public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoPry.Tablas {
 
 
     protected int tituloPlural;
@@ -135,7 +135,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
             actualtemp = bundle.getString(ACTUALTEMP);
             nuevo = bundle.getBoolean(NUEVOREGISTRO);
             if (subTitulo==null){
-                subTitulo = CommonPry.setNamefdef();
+                subTitulo = Interactor.setNamefdef();
             }
             listab = (ListaModelo) bundle.getSerializable(LISTA);
             modelo = (Modelo) bundle.getSerializable(MODELO);

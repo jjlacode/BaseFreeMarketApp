@@ -40,9 +40,8 @@ import com.jjlacode.base.util.Models.Contactos;
 import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.animation.OneFrameLayout;
 import com.jjlacode.base.util.interfaces.ICFragmentos;
-import com.jjlacode.freelanceproject.CommonPry;
-import com.jjlacode.freelanceproject.MainActivity;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -53,13 +52,13 @@ import java.util.Timer;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.SENSOR_SERVICE;
 
-public abstract class FragmentBase extends Fragment implements JavaUtil.Constantes {
+public abstract class FragmentBase extends Fragment implements JavaUtil.Constantes,
+        Interactor.Constantes, Interactor.CallbackFragmentBase {
 
     protected String TAG;
     protected View view;
     protected int layout;
     protected MainActivityBase activityBase;
-    protected MainActivity mainActivity;
     protected Context contexto;
     protected ICFragmentos icFragmentos;
     protected Bundle bundle;
@@ -874,12 +873,12 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
                     } else if (grabarVoz.length() >= 5 && grabarVoz.substring(0, 5).equals("ir a ")) {
 
-                        CommonPry.seleccionarDestino(icFragmentos, bundle, grabarVoz.substring(5));
+                        Interactor.seleccionarDestino(icFragmentos, bundle, grabarVoz.substring(5), this);
 
                     } else if (grabarVoz.length() >= 6 && (grabarVoz.substring(0, 6).equals("crear ") ||
                             grabarVoz.substring(0, 6).equals("nuevo "))) {
 
-                        CommonPry.seleccionarNuevoDestino(icFragmentos, bundle, grabarVoz.substring(6));
+                        Interactor.seleccionarNuevoDestino(icFragmentos, bundle, grabarVoz.substring(6), this);
 
                     } else if (grabarVoz.equals(getString(R.string.salir).toLowerCase())) {
 
@@ -907,6 +906,18 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         }
     }
 
+    @Override
+    public void alSeleccionarDestino(String destino) {
+
+        System.out.println(" Fragment destino = " + destino);
+    }
+
+    @Override
+    public void alSeleccionarNuevoDestino(String nuevoDestino) {
+
+        System.out.println("Nuevo registro en destino = " + nuevoDestino);
+    }
+
     protected void alCambiarCampos(EditMaterial editMaterial) {
 
 
@@ -922,7 +933,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
             System.out.println("contacto = " + contacto);
             System.out.println("contactos = " + contactos.getDatos());
             if (contactos.getDatos().toLowerCase().equals(contacto)) {
-                AppActivity.hacerLlamada(contexto, contactos.getNumero(), CommonPry.permiso);
+                AppActivity.hacerLlamada(contexto, contactos.getNumero(), Interactor.permiso);
             }
         }
     }

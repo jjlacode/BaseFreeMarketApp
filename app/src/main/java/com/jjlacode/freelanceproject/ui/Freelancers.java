@@ -38,7 +38,6 @@ import com.jjlacode.um.base.ui.FragmentChat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.FREELANCE;
 import static com.jjlacode.freelanceproject.sqlite.ContratoPry.Tablas.CAMPOS_CHAT;
 import static com.jjlacode.freelanceproject.sqlite.ContratoPry.Tablas.CHAT_CREATE;
 import static com.jjlacode.freelanceproject.sqlite.ContratoPry.Tablas.CHAT_ID_CHAT;

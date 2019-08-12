@@ -16,12 +16,12 @@ import com.jjlacode.base.util.time.Day;
 import com.jjlacode.base.util.time.ListaDays;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.base.util.time.calendar.fragments.FragmentMes;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 
 import java.util.ArrayList;
 
-public class Informes extends FragmentMes implements CommonPry.TiposEstados {
+public class Informes extends FragmentMes implements Interactor.TiposEstados {
 
     private CheckBox chTodos;
     private CheckBox chClientes;

@@ -18,8 +18,8 @@ import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCUD;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
@@ -32,8 +32,8 @@ import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObject;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObjectDetalle;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.updateRegistroDetalle;
 
-public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements CommonPry.Constantes,
-        ContratoPry.Tablas, CommonPry.TiposDetPartida, CommonPry.TiposEstados {
+public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interactor.Constantes,
+        ContratoPry.Tablas, Interactor.TiposDetPartida, Interactor.TiposEstados {
 
     private EditMaterial descripcion;
     private EditMaterial precio;
@@ -513,7 +513,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements CommonP
         setDato(DETPARTIDA_CANTIDAD, 1);
         if (partida.getInt(PARTIDA_TIPO_ESTADO) <= TPRESUPPENDENTREGA) {
             setDato(DETPARTIDA_PRECIO, (Double.parseDouble(tiempoDet.getText().toString()) *
-                    CommonPry.hora * cantidadTotal));
+                    Interactor.hora * cantidadTotal));
         }
         setDato(DETPARTIDA_RUTAFOTO, path);
         setDato(DETPARTIDA_ID_DETPARTIDA, idDetPartida);
@@ -529,7 +529,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements CommonP
         }
                 setDato(DETPARTIDA_TIEMPO, tiempoDet.getText().toString());
 
-        CommonPry.Calculos.actualizarPartidaProyecto(id);
+        Interactor.Calculos.actualizarPartidaProyecto(id);
 
     }
 
@@ -554,7 +554,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements CommonP
     @Override
     protected boolean update() {
         if (super.update()) {
-                new CommonPry.Calculos.TareaActualizarTareaAuto().execute(idDetPartida);
+            new Interactor.Calculos.TareaActualizarTareaAuto().execute(idDetPartida);
             return true;
         }
         return false;
@@ -565,7 +565,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements CommonP
 
         if (origen.equals(PARTIDA)) {
             bundle = new Bundle();
-            new CommonPry.Calculos.TareaActualizaProy().execute(idProyecto_Partida);
+            new Interactor.Calculos.TareaActualizaProy().execute(idProyecto_Partida);
             partida = queryObjectDetalle(CAMPOS_PARTIDA, idProyecto_Partida, secuenciaPartida);
             proyecto = queryObject(CAMPOS_PROYECTO, idProyecto_Partida);
             bundle.putSerializable(MODELO, partida);

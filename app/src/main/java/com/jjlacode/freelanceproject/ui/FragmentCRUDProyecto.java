@@ -39,8 +39,8 @@ import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.base.util.time.DatePickerFragment;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.templates.PresupuestoPDF;
 
@@ -58,8 +58,8 @@ import static com.jjlacode.base.util.sqlite.ConsultaBD.updateRegistro;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.updateRegistrosDetalle;
 
 public class FragmentCRUDProyecto extends FragmentCRUD
-        implements CommonPry.Constantes, ContratoPry.Tablas, CommonPry.Estados,
-        CommonPry.TiposEstados {
+        implements Interactor.Constantes, ContratoPry.Tablas, Interactor.Estados,
+        Interactor.TiposEstados {
 
     private ScalableImageView imagenTipoClienteProyecto;
     private ImageView btnfechaentrega;
@@ -151,7 +151,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     protected void actualizarConsultas() {
 
-        new CommonPry.Calculos.TareaActualizarProys().execute();
+        new Interactor.Calculos.TareaActualizarProys().execute();
 
         if (listab==null) {
             lista = CRUDutil.setListaModelo(campos);
@@ -264,7 +264,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         if (id !=null) {
                 modelo = CRUDutil.setModelo(campos,id);
                 idCliente = modelo.getString(PROYECTO_ID_CLIENTE);
-                new CommonPry.Calculos.TareaActualizaProy().execute(id);
+            new Interactor.Calculos.TareaActualizaProy().execute(id);
         }
 
         if (actual==null){
@@ -900,9 +900,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         estadoProyecto.setText(modelo.getString(PROYECTO_DESCRIPCION_ESTADO));
 
             long retraso = modelo.getLong(PROYECTO_RETRASO);
-            if (retraso > 3 * CommonPry.DIASLONG) {
+        if (retraso > 3 * Interactor.DIASLONG) {
                 btnimgEstadoPry.setImageResource(R.drawable.alert_box_r);
-            } else if (retraso > CommonPry.DIASLONG) {
+        } else if (retraso > Interactor.DIASLONG) {
                 btnimgEstadoPry.setImageResource(R.drawable.alert_box_a);
             } else {
                 btnimgEstadoPry.setImageResource(R.drawable.alert_box_v);
@@ -1078,7 +1078,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         totcompletada = (int) (Math.round(((double) totcompletada) / (double) x));
 
         totPartidas = modelo.getDouble(PROYECTO_TIEMPO);
-        precioPartidas = totPartidas * CommonPry.hora;
+        precioPartidas = totPartidas * Interactor.hora;
         preciototal = modelo.getDouble(PROYECTO_IMPORTEPRESUPUESTO);
 
         Log.d(TAG,"calculosTotales");
@@ -1088,7 +1088,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected boolean update() {
 
-        new CommonPry.Calculos.Tareafechas().execute();
+        new Interactor.Calculos.Tareafechas().execute();
         if (modelo!=null) {
             fechaCalculada = modelo.getLong(PROYECTO_FECHAENTREGACALCULADA);
             calculoTotales();
@@ -1112,7 +1112,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected boolean delete() {
 
-        new CommonPry.Calculos.Tareafechas().execute();
+        new Interactor.Calculos.Tareafechas().execute();
 
         return super.delete();
     }
@@ -1273,7 +1273,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         comprobarEstado();
 
-        new CommonPry.Calculos.TareaTipoCliente().execute(idCliente);
+        new Interactor.Calculos.TareaTipoCliente().execute(idCliente);
 
         Log.d(TAG,"modificarEstado");
     }
@@ -1308,7 +1308,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             String mensaje = "Envio presupuesto solicitado por usted";
             Modelo cliente = queryObject(CAMPOS_CLIENTE, idCliente);
             valores = new ContentValues();
-            putDato(valores, CAMPOS_EVENTO, EVENTO_TIPO, CommonPry.TiposEvento.TIPOEVENTOEMAIL);
+        putDato(valores, CAMPOS_EVENTO, EVENTO_TIPO, Interactor.TiposEvento.TIPOEVENTOEMAIL);
             putDato(valores, CAMPOS_EVENTO, EVENTO_DESCRIPCION, "Envío presupuesto a cliente");
             putDato(valores, CAMPOS_EVENTO, EVENTO_EMAIL, cliente.getString(CLIENTE_EMAIL));
             putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, fechaini);
@@ -1440,7 +1440,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             setDato(PROYECTO_FECHAENTRADAF, JavaUtil.getDateTime(JavaUtil.hoy()));
         }
 
-        if (modelo!=null && id!=null && CommonPry.getTipoEstado(modelo.getString(PROYECTO_ID_ESTADO))>=TPRESUPPENDENTREGA){
+        if (modelo != null && id != null && Interactor.getTipoEstado(modelo.getString(PROYECTO_ID_ESTADO)) >= TPRESUPPENDENTREGA) {
             new TareaGenerarPdf().execute(id);
             System.out.println("Generar pdf");
         }
@@ -1683,7 +1683,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                         setDato(PROYECTO_FECHAENTREGAACORDADAF,selectedDate);
                         updateRegistro(tabla,id,valores);
 
-                            new CommonPry.Calculos.Tareafechas().execute();
+                        new Interactor.Calculos.Tareafechas().execute();
 
                     }
                 });
@@ -1703,7 +1703,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                         setDato(PROYECTO_FECHAENTREGAPRESUPF,selectedDate);
                         updateRegistro(tabla,id,valores);
 
-                            new CommonPry.Calculos.Tareafechas().execute();
+                        new Interactor.Calculos.Tareafechas().execute();
 
                     }
                 });
@@ -1811,9 +1811,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
             long retraso = Long.parseLong(entrada.get(posicion).getCampos
                     (ContratoPry.Tablas.PROYECTO_RETRASO));
-            if (retraso > 3 * CommonPry.DIASLONG) {
+            if (retraso > 3 * Interactor.DIASLONG) {
                 imgest.setImageResource(R.drawable.alert_box_r);
-            } else if (retraso > CommonPry.DIASLONG) {
+            } else if (retraso > Interactor.DIASLONG) {
                 imgest.setImageResource(R.drawable.alert_box_a);
             } else {
                 imgest.setImageResource(R.drawable.alert_box_v);

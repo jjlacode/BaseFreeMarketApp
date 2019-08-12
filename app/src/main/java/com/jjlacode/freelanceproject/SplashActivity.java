@@ -25,13 +25,14 @@ import com.jjlacode.base.util.JavaUtil;
 import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.login.LoginActivity;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import static com.jjlacode.base.util.JavaUtil.Constantes.NULL;
 import static com.jjlacode.base.util.JavaUtil.Constantes.PERSISTENCIA;
 import static com.jjlacode.base.util.JavaUtil.Constantes.PREFERENCIAS;
 
-public class SplashActivity extends AppCompatActivity implements ContratoPry.Tablas, CommonPry.Constantes {
+public class SplashActivity extends AppCompatActivity implements ContratoPry.Tablas, Interactor.Constantes {
 
     EditText pass;
     EditText etcorreo;
@@ -155,12 +156,12 @@ public class SplashActivity extends AppCompatActivity implements ContratoPry.Tab
             finish();
 
         }
-        CommonPry.prioridad = true;
-        CommonPry.perfila = "Defecto";
-        CommonPry.diasfuturos = 90;
-        CommonPry.diaspasados = 20;
-        CommonPry.hora = CommonPry.Calculos.calculoPrecioHora();
-        CommonPry.setNamefdef();
+        Interactor.prioridad = true;
+        Interactor.perfila = "Defecto";
+        Interactor.diasfuturos = 90;
+        Interactor.diaspasados = 20;
+        Interactor.hora = Interactor.Calculos.calculoPrecioHora();
+        Interactor.setNamefdef();
 
     }
 
@@ -170,12 +171,12 @@ public class SplashActivity extends AppCompatActivity implements ContratoPry.Tab
 
         if (getDatabasePath(BASEDATOS)!=null && preferences.contains(PERFILACTIVO)){
 
-            CommonPry.perfila = preferences.getString(PERFILACTIVO,"Defecto");
-            CommonPry.prioridad = preferences.getBoolean(PRIORIDAD,true);
-            CommonPry.diaspasados = preferences.getInt(DIASPASADOS,20);
-            CommonPry.diasfuturos = preferences.getInt(DIASFUTUROS,90);
-            CommonPry.hora = CommonPry.Calculos.calculoPrecioHora();
-            CommonPry.setNamefdef();
+            Interactor.perfila = preferences.getString(PERFILACTIVO, "Defecto");
+            Interactor.prioridad = preferences.getBoolean(PRIORIDAD, true);
+            Interactor.diaspasados = preferences.getInt(DIASPASADOS, 20);
+            Interactor.diasfuturos = preferences.getInt(DIASFUTUROS, 90);
+            Interactor.hora = Interactor.Calculos.calculoPrecioHora();
+            Interactor.setNamefdef();
 
             Log.d("inicio", "Inicio correcto");
 

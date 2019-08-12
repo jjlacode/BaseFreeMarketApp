@@ -18,8 +18,8 @@ import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
@@ -105,7 +105,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
         btndelete.setVisibility(View.VISIBLE);
         btnperfilact.setVisibility(View.VISIBLE);
 
-        if (modelo.getString(PERFIL_NOMBRE)!=null && modelo.getString(PERFIL_NOMBRE).equals(CommonPry.perfila)){
+        if (modelo.getString(PERFIL_NOMBRE) != null && modelo.getString(PERFIL_NOMBRE).equals(Interactor.perfila)) {
 
             activo.setVisibility(View.VISIBLE);
             btnperfilact.setVisibility(View.GONE);
@@ -126,18 +126,18 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
             @Override
             public void onClick(View v) {
 
-                CommonPry.perfila = nombre.getText().toString();
+                Interactor.perfila = nombre.getText().toString();
                 activo.setVisibility(View.VISIBLE);
                 btnperfilact.setVisibility(View.GONE);
 
                 SharedPreferences preferences=getContext().getSharedPreferences("preferencias", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor=preferences.edit();
-                editor.putString("perfil_activo", CommonPry.perfila);
+                editor.putString("perfil_activo", Interactor.perfila);
                 editor.apply();
 
-                new CommonPry.Calculos.Tareafechas().execute();
+                new Interactor.Calculos.Tareafechas().execute();
 
-                subTitulo = CommonPry.setNamefdef();
+                subTitulo = Interactor.setNamefdef();
                 enviarAct();
             }
         });
@@ -194,9 +194,9 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
 
         super.update();
 
-        new CommonPry.Calculos.Tareafechas().execute();
+        new Interactor.Calculos.Tareafechas().execute();
 
-        CommonPry.setNamefdef();
+        Interactor.setNamefdef();
 
         return true;
 
@@ -206,8 +206,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     protected boolean delete() {
 
 
-
-        if (!modelo.getString(PERFIL_NOMBRE).equals(CommonPry.perfila)) {
+        if (!modelo.getString(PERFIL_NOMBRE).equals(Interactor.perfila)) {
             super.delete();
             consulta.deleteRegistro(tabla, id);
         }else{
@@ -268,7 +267,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
             nombre.setText(entrada.get(posicion).getString(PERFIL_NOMBRE));
             descripcion.setText(entrada.get(posicion).getString(PERFIL_DESCRIPCION));
 
-            if (entrada.get(posicion).getString(PERFIL_NOMBRE).equals(CommonPry.perfila)){
+            if (entrada.get(posicion).getString(PERFIL_NOMBRE).equals(Interactor.perfila)) {
 
                 card.setCardBackgroundColor(
                         AppActivity.getAppContext().getResources().getColor(R.color.Color_card_ok));
@@ -297,7 +296,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
             nombre.setText(modelo.getString(PERFIL_NOMBRE));
             descripcion.setText(modelo.getString(PERFIL_DESCRIPCION));
 
-            if (modelo.getString(PERFIL_NOMBRE).equals(CommonPry.perfila)){
+            if (modelo.getString(PERFIL_NOMBRE).equals(Interactor.perfila)) {
 
                 card.setCardBackgroundColor(
                         AppActivity.getAppContext().getResources().getColor(R.color.Color_card_ok));

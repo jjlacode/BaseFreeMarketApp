@@ -18,7 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import static com.jjlacode.base.util.JavaUtil.Constantes.NULL;
 import static com.jjlacode.base.util.JavaUtil.Constantes.PREFERENCIAS;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.USERID;
+import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.USERID;
 
 /**
  * Interactor del login

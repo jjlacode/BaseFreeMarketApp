@@ -17,19 +17,14 @@ import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.base.util.time.calendar.clases.DiaCalBase;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
 
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.CLIENTE;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.DIARIO;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.EVENTO;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.PROYECTO;
-
 public class DiaCalDiario extends DiaCalBase implements ContratoPry.Tablas,
-        JavaUtil.Constantes, CommonPry.TiposEvento {
+        JavaUtil.Constantes, Interactor.TiposEvento {
 
 
     @Override
@@ -84,7 +79,7 @@ public class DiaCalDiario extends DiaCalBase implements ContratoPry.Tablas,
         }
     }
 
-    public class ViewHolderRVcont extends BaseViewHolder implements TipoViewHolder, CommonPry.TiposNota {
+    public class ViewHolderRVcont extends BaseViewHolder implements TipoViewHolder, Interactor.TiposNota {
 
         TextView descripcion, fechaDiario, rel;
         ImageView imagen,ver;

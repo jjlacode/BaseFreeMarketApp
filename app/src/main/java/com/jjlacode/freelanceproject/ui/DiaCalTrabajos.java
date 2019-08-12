@@ -17,18 +17,14 @@ import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.base.util.time.calendar.clases.DiaCalBase;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
 
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.PROYECTO;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.PROYECTOS;
-import static com.jjlacode.freelanceproject.CommonPry.Constantes.TRABAJOS;
-
 public class DiaCalTrabajos extends DiaCalBase implements ContratoPry.Tablas,
-        JavaUtil.Constantes, CommonPry.TiposEvento {
+        JavaUtil.Constantes, Interactor.TiposEvento {
 
 
     @Override
@@ -94,7 +90,7 @@ public class DiaCalTrabajos extends DiaCalBase implements ContratoPry.Tablas,
         }
     }
 
-    public class ViewHolderRVcont extends BaseViewHolder implements TipoViewHolder, CommonPry.TiposNota {
+    public class ViewHolderRVcont extends BaseViewHolder implements TipoViewHolder, Interactor.TiposNota {
 
         TextView descripcion,cliente;
         ProgressBar pbar;
@@ -137,9 +133,9 @@ public class DiaCalTrabajos extends DiaCalBase implements ContratoPry.Tablas,
 
             long retraso = modelo.getLong(PROYECTO_RETRASO);
 
-            if (retraso > 3 * CommonPry.DIASLONG) {
+            if (retraso > 3 * Interactor.DIASLONG) {
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
-            } else if (retraso > CommonPry.DIASLONG) {
+            } else if (retraso > Interactor.DIASLONG) {
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
             } else {
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));

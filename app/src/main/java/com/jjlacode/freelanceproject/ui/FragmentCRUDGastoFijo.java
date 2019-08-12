@@ -11,8 +11,8 @@ import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.Modelo;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
@@ -159,7 +159,7 @@ public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.T
     @Override
     protected void setcambioFragment() {
 
-        subTitulo = CommonPry.setNamefdef();
+        subTitulo = Interactor.setNamefdef();
 
     }
 

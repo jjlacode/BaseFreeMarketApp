@@ -3,14 +3,14 @@ package com.jjlacode.freelanceproject.ui;
 import android.view.View;
 
 import com.jjlacode.base.util.android.FragmentGrid;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 
 import java.util.ArrayList;
 
 import static com.jjlacode.base.util.time.calendar.clases.DiaCalBase.HORACAL;
 
-public class FragmentNuevaNota extends FragmentGrid implements CommonPry.TiposNota {
+public class FragmentNuevaNota extends FragmentGrid implements Interactor.TiposNota {
 
     private String notaTexto;
     private String notaAudio;

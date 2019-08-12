@@ -38,8 +38,8 @@ import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.base.util.time.DatePickerFragment;
 import com.jjlacode.base.util.time.TimePickerFragment;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
@@ -49,10 +49,10 @@ import static com.jjlacode.base.util.JavaUtil.getTime;
 import static com.jjlacode.base.util.JavaUtil.hoy;
 import static com.jjlacode.base.util.android.AppActivity.viewOnMapA;
 import static com.jjlacode.base.util.time.calendar.clases.DiaCalBase.HORACAL;
-import static com.jjlacode.freelanceproject.CommonPry.setNamefdef;
+import static com.jjlacode.freelanceproject.logica.Interactor.setNamefdef;
 
-public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Constantes,
-        ContratoPry.Tablas, CommonPry.TiposEvento {
+public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Constantes,
+        ContratoPry.Tablas, Interactor.TiposEvento {
 
     private AutoCompleteTextView proyRel;
     private AutoCompleteTextView cliRel;
@@ -325,7 +325,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
                     break;
 
-                case CommonPry.TiposEvento.TIPOEVENTOEVENTO:
+                case Interactor.TiposEvento.TIPOEVENTOEVENTO:
                     ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, finiEvento);
                     ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTO, ffinEvento);
                     ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, hiniEvento);
@@ -417,7 +417,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                         ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, fecharep);
                         ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTOF, getDate(fecharep));
 
-                        if (tevento.equals(CommonPry.TiposEvento.TIPOEVENTOEVENTO)) {
+                        if (tevento.equals(Interactor.TiposEvento.TIPOEVENTOEVENTO)) {
                             ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTO, (fecharep + diffecha));
                             ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTOF, getDate(fecharep + diffecha));
 
@@ -674,7 +674,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     horaIni.setText(getTime(hiniEvento));
                     break;
 
-                case CommonPry.TiposEvento.TIPOEVENTOEVENTO:
+                case Interactor.TiposEvento.TIPOEVENTOEVENTO:
                     fechaIni.setVisibility(View.VISIBLE);
                     horaIni.setVisibility(View.VISIBLE);
                     fechaFin.setVisibility(View.VISIBLE);
@@ -1294,7 +1294,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
                 break;
 
-            case CommonPry.TiposEvento.TIPOEVENTOEVENTO:
+            case Interactor.TiposEvento.TIPOEVENTOEVENTO:
                 ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
                 ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
                 ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTO,ffinEvento);
@@ -1376,7 +1376,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTOF, getDate(fecharep));
 
 
-                    if (tevento.equals(CommonPry.TiposEvento.TIPOEVENTOEVENTO)) {
+                    if (tevento.equals(Interactor.TiposEvento.TIPOEVENTOEVENTO)) {
                         ConsultaBD.putDato(valores,campos,EVENTO_FECHAFINEVENTO, String.valueOf(fecharep + diffecha));
                         ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTOF, getDate(fecharep + diffecha));
 
@@ -1648,7 +1648,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     btnllamada.setVisibility(View.VISIBLE);
                     break;
 
-                case CommonPry.TiposEvento.TIPOEVENTOEVENTO:
+                case Interactor.TiposEvento.TIPOEVENTOEVENTO:
                     fechaini.setVisibility(View.VISIBLE);
                     horaini.setVisibility(View.VISIBLE);
                     fechafin.setVisibility(View.VISIBLE);
@@ -1666,18 +1666,18 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 long retraso = hoy() - modelo.getLong(EVENTO_FECHAINIEVENTO);
 
                 if (!tipoEvento.equals(TIPOEVENTOTAREA)) {
-                    if (retraso > 3 * CommonPry.DIASLONG) {
+                    if (retraso > 3 * Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
-                    } else if (retraso > CommonPry.DIASLONG) {
+                    } else if (retraso > Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
                     } else {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
                     }//imgret.setImageResource(R.drawable.alert_box_v);}
                 }else {
                     retraso = hoy() - modelo.getLong(EVENTO_FECHAFINEVENTO);
-                    if (retraso > 3 * CommonPry.DIASLONG) {
+                    if (retraso > 3 * Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
-                    } else if (retraso > CommonPry.DIASLONG) {
+                    } else if (retraso > Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
                     } else {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
@@ -1887,7 +1887,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                     btnllamada.setVisibility(View.VISIBLE);
                     break;
 
-                case CommonPry.TiposEvento.TIPOEVENTOEVENTO:
+                case Interactor.TiposEvento.TIPOEVENTOEVENTO:
                     fechaini.setVisibility(View.VISIBLE);
                     horaini.setVisibility(View.VISIBLE);
                     fechafin.setVisibility(View.VISIBLE);
@@ -1908,18 +1908,18 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                 long retraso = hoy() - entrada.get(posicion).getLong(EVENTO_FECHAINIEVENTO);
 
                 if (!tipoEvento.equals(TIPOEVENTOTAREA)) {
-                    if (retraso > 3 * CommonPry.DIASLONG) {
+                    if (retraso > 3 * Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
-                    } else if (retraso > CommonPry.DIASLONG) {
+                    } else if (retraso > Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
                     } else {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
                     }//imgret.setImageResource(R.drawable.alert_box_v);}
                 }else {
                     retraso = hoy() - entrada.get(posicion).getLong(EVENTO_FECHAFINEVENTO);
-                    if (retraso > 3 * CommonPry.DIASLONG) {
+                    if (retraso > 3 * Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
-                    } else if (retraso > CommonPry.DIASLONG) {
+                    } else if (retraso > Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
                     } else {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
@@ -1968,9 +1968,9 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
 
                 long retraso = Long.parseLong(entrada.get(posicion).getCampos
                         (ContratoPry.Tablas.PROYECTO_RETRASO));
-                if (retraso > 3 * CommonPry.DIASLONG) {
+                if (retraso > 3 * Interactor.DIASLONG) {
                     imgest.setImageResource(R.drawable.alert_box_r);
-                } else if (retraso > CommonPry.DIASLONG) {
+                } else if (retraso > Interactor.DIASLONG) {
                     imgest.setImageResource(R.drawable.alert_box_a);
                 } else {
                     imgest.setImageResource(R.drawable.alert_box_v);
@@ -2053,7 +2053,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements CommonPry.Consta
                         finiEvento = JavaUtil.fechaALong(year, month, day);
                         String selectedDate = getDate(finiEvento);
                         fechaIni.setText(selectedDate);
-                        if (!tevento.equals(CommonPry.TiposEvento.TIPOEVENTOEVENTO)){
+                        if (!tevento.equals(Interactor.TiposEvento.TIPOEVENTOEVENTO)) {
                             fechaFin.setText(selectedDate);
                         }
 

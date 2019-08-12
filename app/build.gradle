@@ -19,7 +19,7 @@ android {
         }
     }
 
-    sourceSets { main { res.srcDirs = ['src/main/res', 'src/main/res/base'] } }
+    sourceSets { main { res.srcDirs = ['src/main/res', 'src/main/res/base', 'src/main/res/um'] } }
 }
 
 dependencies {

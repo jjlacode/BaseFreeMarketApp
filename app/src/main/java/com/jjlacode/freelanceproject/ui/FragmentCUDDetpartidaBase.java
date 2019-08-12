@@ -30,8 +30,8 @@ import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.crud.FragmentCUD;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.model.Categorias;
 import com.jjlacode.freelanceproject.model.ProdProv;
 import com.jjlacode.freelanceproject.model.Proveedores;
@@ -46,8 +46,8 @@ import static com.jjlacode.base.util.sqlite.ConsultaBD.queryList;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObject;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.updateRegistro;
 
-public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.Constantes,
-        ContratoPry.Tablas, CommonPry.TiposDetPartida{
+public class FragmentCUDDetpartidaBase extends FragmentCUD implements Interactor.Constantes,
+        ContratoPry.Tablas, Interactor.TiposDetPartida {
 
     private EditMaterial descripcion;
     private EditMaterial precio;
@@ -136,7 +136,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
             autoNombre.setText(modelo.getString(DETPARTIDABASE_NOMBRE));
             descripcion.setText(modelo.getString(DETPARTIDABASE_DESCRIPCION));
             pvp = modelo.getDouble(DETPARTIDABASE_TIEMPO);
-            precio.setText(JavaUtil.formatoMonedaLocal(pvp * CommonPry.hora));
+            precio.setText(JavaUtil.formatoMonedaLocal(pvp * Interactor.hora));
             tiempo.setText(modelo.getString(DETPARTIDABASE_TIEMPO));
             descProv.setText(modelo.getString(DETPARTIDABASE_DESCUENTOPROVCAT));
             refProv.setText(modelo.getString(DETPARTIDABASE_REFPROVCAT));
@@ -494,7 +494,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
     @Override
     protected boolean registrar() {
 
-            CommonPry.Calculos.sincronizarPartidaBase(id);
+        Interactor.Calculos.sincronizarPartidaBase(id);
             partidabase = queryObject(CAMPOS_PARTIDABASE,id);
 
             super.registrar();
@@ -548,7 +548,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements CommonPry.
 
             super.update();
 
-        CommonPry.Calculos.actualizarPartidaBase(id);
+        Interactor.Calculos.actualizarPartidaBase(id);
         partidabase = queryObject(CAMPOS_PARTIDABASE,id);
 
 

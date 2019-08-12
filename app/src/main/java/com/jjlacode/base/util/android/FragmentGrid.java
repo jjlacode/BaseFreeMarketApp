@@ -11,14 +11,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.jjlacode.base.util.adapter.BaseViewHolder;
 import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
 
-public class FragmentGrid extends FragmentRV implements CommonPry.TiposEvento,
-        ContratoPry.Tablas, CommonPry.Constantes {
+public class FragmentGrid extends FragmentRV implements Interactor.TiposEvento,
+        ContratoPry.Tablas, Interactor.Constantes {
 
     protected int columnas = 3;
     protected int filas = 4;

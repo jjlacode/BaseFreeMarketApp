@@ -20,8 +20,8 @@ import com.jjlacode.base.util.time.Day;
 import com.jjlacode.base.util.time.ListaDays;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.base.util.time.calendar.fragments.FragmentMes;
-import com.jjlacode.freelanceproject.CommonPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 
 import java.util.ArrayList;
 
@@ -199,9 +199,9 @@ public class Presupuestos extends FragmentMes {
 
             long retraso = modelo.getLong(PROYECTO_RETRASO);
 
-            if (retraso > 3 * CommonPry.DIASLONG) {
+            if (retraso > 3 * Interactor.DIASLONG) {
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
-            } else if (retraso > CommonPry.DIASLONG) {
+            } else if (retraso > Interactor.DIASLONG) {
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_acept));
             } else {
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));

@@ -4,10 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.jjlacode.freelanceproject.CommonPry;
+import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
-public abstract class ReceiverBase extends BroadcastReceiver implements CommonPry.Constantes, ContratoPry.Tablas {
+public abstract class ReceiverBase extends BroadcastReceiver implements Interactor.Constantes, ContratoPry.Tablas {
 
     // Sin instancias
 
@@ -36,7 +36,7 @@ public abstract class ReceiverBase extends BroadcastReceiver implements CommonPr
             String contenido = evento.getString(EVENTO_DESCRIPCION);
 
             if (evento.getInt(EVENTO_NOTIFICADO)==0) {
-                CommonPry.notificationEvento(context, MainActivity.class, evento,EVENTO,
+                Interactor.notificationEvento(context, MainActivity.class, evento,EVENTO,
                         contnot, R.drawable.alert_box_r, "Aviso evento próximo a vencer",
                         contenido);
                 ContentValues valores = new ContentValues();
@@ -83,7 +83,7 @@ public abstract class ReceiverBase extends BroadcastReceiver implements CommonPr
             if (detChat.getInt(DETCHAT_NOTIFICADO)==0) {
                 String idchat = CRUDutil.getSharePreference(context,PREFERENCIAS,IDCHATF,NULL);
                 if (!idchat.equals(chat.getString(CHAT_USUARIO))) {
-                    CommonPry.notificationChat(context, MainActivity.class, detChat, CHAT,
+                    Interactor.notificationChat(context, MainActivity.class, detChat, CHAT,
                             contnot, R.drawable.alert_box_r, "Nuevo msg de chat",
                             contenido);
                     CRUDutil.setSharePreference(context, NOTIFICACIONES, CONTNOT, contnot + 1);
