@@ -7,20 +7,21 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.jjlacode.base.util.android.FragmentGrid;
 import com.jjlacode.base.util.web.FragmentWebView;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.um.base.ui.FragmentChat;
 
 import java.util.ArrayList;
 
-public class FragmentCRM extends FragmentGrid {
+public class FragmentMarketing extends FragmentGrid {
 
-    private String proximosEventos;
+    private String campanias;
     private String clientes;
-    private String eventos;
+    private String chat;
     private String notas;
-    private String listas;
     private String calendarioNotas;
     private String salir;
     private String home;
     private String ayuda;
+    private String publicidad;
 
     @Override
     protected void setContext() {
@@ -35,24 +36,24 @@ public class FragmentCRM extends FragmentGrid {
     @Override
     protected void setLista() {
 
-        proximosEventos = getString(R.string.proximos_eventos);
+        campanias = getString(R.string.proximos_eventos);
         clientes = getString(R.string.clientes);
+        chat = getString(R.string.chat);
         notas = getString(R.string.notas);
-        listas = getString(R.string.listas);
-        eventos = getString(R.string.eventos);
         calendarioNotas = getString(R.string.calendario_notas);
         salir = getString(R.string.salir);
         home = getString(R.string.inicio);
         ayuda = getString(R.string.ayuda);
+        publicidad = getString(R.string.publicidad);
 
         lista = new ArrayList<GridModel>();
 
+        lista.add(new GridModel(R.drawable.ic_evento_indigo, campanias));
         lista.add(new GridModel(R.drawable.ic_clientes_indigo, clientes));
-        lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, listas));
-        lista.add(new GridModel(R.drawable.ic_evento_indigo, proximosEventos));
-        lista.add(new GridModel(R.drawable.ic_nueva_nota_indigo, notas));
-        lista.add(new GridModel(R.drawable.ic_lista_eventos_indigo, eventos));
+        lista.add(new GridModel(R.drawable.ic_chat_indigo, chat));
+        lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, notas));
         lista.add(new GridModel(R.drawable.ic_lista_eventos_indigo, calendarioNotas));
+        lista.add(new GridModel(R.drawable.ic_catalogo_indigo, publicidad));
         lista.add(new GridModel(R.drawable.ic_ayuda_indigo, ayuda));
         lista.add(new GridModel(R.drawable.ic_inicio_black_24dp, home));
         lista.add(new GridModel(R.drawable.ic_salir_rojo, salir));
@@ -67,7 +68,7 @@ public class FragmentCRM extends FragmentGrid {
 
         String nombre = gridModel.getNombre();
 
-        if (nombre.equals(proximosEventos)) {
+        if (nombre.equals(campanias)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_main, new CalendarioEventos()).addToBackStack(null).commit();
@@ -85,10 +86,10 @@ public class FragmentCRM extends FragmentGrid {
             activityBase.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_main, new FragmentCRUDNota()).addToBackStack(null).commit();
 
-        } else if (nombre.equals(eventos)) {
+        } else if (nombre.equals(publicidad)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentCRUDEvento()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new FragmentPublicidad()).addToBackStack(null).commit();
 
         } else if (nombre.equals(home)) {
 
@@ -105,6 +106,11 @@ public class FragmentCRM extends FragmentGrid {
             bundle = new Bundle();
             putBundle(WEB, ayudaWeb);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentWebView());
+
+        } else if (nombre.equals(chat)) {
+
+            activityBase.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_main, new FragmentChat()).addToBackStack(null).commit();
 
         }
 

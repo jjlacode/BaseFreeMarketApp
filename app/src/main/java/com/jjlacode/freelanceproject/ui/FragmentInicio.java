@@ -1,9 +1,11 @@
 package com.jjlacode.freelanceproject.ui;
 
+import android.os.Bundle;
 import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.jjlacode.base.util.android.FragmentGrid;
+import com.jjlacode.base.util.web.FragmentWebView;
 import com.jjlacode.freelanceproject.R;
 
 import java.util.ArrayList;
@@ -12,10 +14,12 @@ public class FragmentInicio extends FragmentGrid {
 
     private String um;
     private String crm;
+    private String marketing;
     private String proyectos;
     private String facturacion;
     private String contabilidad;
     private String ajustes;
+    private String ayuda;
     private String salir;
 
     @Override
@@ -23,26 +27,34 @@ public class FragmentInicio extends FragmentGrid {
         contexto = getContext();
     }
 
+    @Override
+    protected String setAyudaWeb() {
+        return HTTPAYUDA + "inicio";
+    }
 
     @Override
     protected void setLista() {
 
         um = getString(R.string.union_market);
         crm = getString(R.string.crm);
+        marketing = getString(R.string.marketing);
         proyectos = getString(R.string.proyectos);
         facturacion = getString(R.string.facturacion);
         contabilidad = getString(R.string.contabilidad);
         ajustes = getString(R.string.informesyajustes);
+        ayuda = getString(R.string.ayuda);
         salir = getString(R.string.salir);
 
         lista = new ArrayList<GridModel>();
 
         lista.add(new GridModel(R.drawable.logoum_sintxt_512, um));
         lista.add(new GridModel(R.drawable.ic_clientes_indigo, crm));
+        lista.add(new GridModel(R.drawable.ic_marketing_indigo, marketing));
         lista.add(new GridModel(R.drawable.ic_proy_curso_indigo, proyectos));
         lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, facturacion));
         lista.add(new GridModel(R.drawable.ic_cobros_indigo, contabilidad));
         lista.add(new GridModel(R.drawable.ic_tareas_indigo, ajustes));
+        lista.add(new GridModel(R.drawable.ic_ayuda_indigo, ayuda));
         lista.add(new GridModel(R.drawable.ic_salir_rojo, salir));
 
     }
@@ -81,6 +93,12 @@ public class FragmentInicio extends FragmentGrid {
                     .replace(R.id.content_main, new FragmentInformesAjustes()).addToBackStack(null).commit();
 
 
+        } else if (nombre.equals(marketing)) {
+
+            activityBase.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_main, new FragmentMarketing()).addToBackStack(null).commit();
+
+
         } else if (nombre.equals(um)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
@@ -91,6 +109,12 @@ public class FragmentInicio extends FragmentGrid {
 
             FirebaseAuth.getInstance().signOut();
             activityBase.finish();
+
+        } else if (nombre.equals(ayuda)) {
+
+            bundle = new Bundle();
+            putBundle(WEB, ayudaWeb);
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentWebView());
 
         }
 

@@ -42,8 +42,8 @@ public class UnionMarket extends FragmentGrid {
         lista = new ArrayList<GridModel>();
 
         lista.add(new GridModel(R.drawable.ic_clientes_indigo, clientesWeb));
-        lista.add(new GridModel(R.drawable.logofp, freelance));
-        lista.add(new GridModel(R.drawable.ic_pte_entrega_indigo, freelanceDemanda));
+        lista.add(new GridModel(R.drawable.ic_freelance_indigo, freelance));
+        lista.add(new GridModel(R.drawable.logofp, freelanceDemanda));
         lista.add(new GridModel(R.drawable.ic_proveedor_indigo, proveedoresWeb));
         lista.add(new GridModel(R.drawable.ic_producto_indigo, comercios));
         lista.add(new GridModel(R.drawable.ic_usado_indigo, usado));

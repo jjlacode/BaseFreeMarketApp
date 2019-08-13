@@ -3,11 +3,11 @@
     <color name="colorPrimary">#FFFFFF</color>
     <color name="colorSecondary">#8A3949AB</color>
     <color name="colorSecondaryDark">#3949AB</color>
-    <color name="textColorPrimary">#3F51B5</color>
+    <color name="textColorPrimary">#3949AB</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="ColorBotonF">#3F51B5</color>
+    <color name="ColorBotonF">#3949AB</color>
     <color name="Color_texto_titulos">#3949AB</color>
-    <color name="Color_texto">#3F51B5</color>
+    <color name="Color_texto">#3949AB</color>
     <color name="Color_fondo_edit">#09008577</color>
     <color name="Color_card_ok">#6500FF00</color>
     <color name="Color_card_acept">#7BFFFF00</color>

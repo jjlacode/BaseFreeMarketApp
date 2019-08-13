@@ -346,13 +346,15 @@
     <string name="clientesweb">Clientes web</string>
     <string name="freelance">Freelance</string>
     <string name="proveedoresweb">Proveedores web</string>
-    <string name="comercios">Comercios</string>
+    <string name="comercios">Ecommerce</string>
     <string name="trabajo_oferta">Oferta Empleo</string>
     <string name="usado">Usado Seminuevo</string>
     <string name="trabajo_demanda">Demanda Empleo</string>
-    <string name="demanda_freelance">Demanda Freelance</string>
+    <string name="demanda_freelance">Freelance Market</string>
     <string name="comentario">Comentario</string>
     <string name="clasificacion">Clasificacion</string>
+    <string name="marketing">Marketing y Publicidad</string>
+    <string name="listas">Listas</string>
 
 
 </resources>
