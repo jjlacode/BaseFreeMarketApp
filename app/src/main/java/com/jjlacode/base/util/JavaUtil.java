@@ -502,11 +502,15 @@ public class JavaUtil {
         try {
             u = new URL(url);
         } catch (MalformedURLException e) {
+            System.out.println("url = " + url + " no es url valida");
+            e.printStackTrace();
             return false;
         }
         try {
             u.toURI();
         } catch (URISyntaxException e) {
+            System.out.println("url = " + url + " no es url valida");
+            e.printStackTrace();
             return false;
         }
 

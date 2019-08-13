@@ -26,7 +26,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWeb extends Fragmen
         if (viewWeb.getParent() != null) {
             ((ViewGroup) viewWeb.getParent()).removeView(viewWeb); // <- fix
         }
-        frdetalleExtras.addView(viewWeb);
+        frdetalleExtraspost.addView(viewWeb);
 
         browser = (WebView) view.findViewById(R.id.webBrowser);
         lyweb = view.findViewById(R.id.lywebBrowser);

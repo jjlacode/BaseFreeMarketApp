@@ -35,7 +35,8 @@ import static android.app.Activity.RESULT_OK;
 
 public class FragmentChat extends FragmentCRUD {
 
-    private String tipoChat = NULL;
+    private String tipoChatOrigen = NULL;
+    private String tipoChatRetorno = NULL;
     private String idchat;
     private RecyclerView rvMsgChat;
     private EditText msgEnv;
@@ -89,11 +90,11 @@ public class FragmentChat extends FragmentCRUD {
         if (id != null) {
 
             modelo = CRUDutil.setModelo(campos, id);
-            tipoChat = modelo.getString(CHAT_TIPO);
+            tipoChatOrigen = modelo.getString(CHAT_TIPO);
+            tipoChatRetorno = modelo.getString(CHAT_TIPORETORNO);
             idchat = modelo.getString(CHAT_USUARIO);
-            CRUDutil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, idchat);
             System.out.println("idchat = " + idchat);
-            System.out.println("tipoChat = " + tipoChat);
+            System.out.println("tipoChatOrigen = " + tipoChatOrigen);
         }
 
     }
@@ -102,16 +103,16 @@ public class FragmentChat extends FragmentCRUD {
     protected void setLista() {
         super.setLista();
 
-        if (!tipoChat.equals(NULL)) {
+        if (!tipoChatOrigen.equals(NULL)) {
             ListaModelo listaTemp = new ListaModelo();
 
             for (Modelo chat : lista.getLista()) {
-                if (chat.getString(CHAT_TIPO).equals(tipoChat)) {
+                if (chat.getString(CHAT_TIPO).equals(tipoChatOrigen)) {
                     listaTemp.addModelo(chat);
                 }
             }
             lista.clearAddAllLista(listaTemp);
-            activityBase.toolbar.setTitle(CHAT + " " + tipoChat);
+            activityBase.toolbar.setTitle(CHAT + " " + tipoChatOrigen);
 
         } else {
             activityBase.toolbar.setTitle(CHAT);
@@ -154,7 +155,6 @@ public class FragmentChat extends FragmentCRUD {
         modelo = CRUDutil.setModelo(campos, id);
         activityBase.toolbar.setTitle(modelo.getString(CHAT_NOMBRE));
         idchat = modelo.getString(CHAT_USUARIO);
-        CRUDutil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, idchat);
 
         visible(frCabecera);
 
@@ -199,8 +199,8 @@ public class FragmentChat extends FragmentCRUD {
             msgChat.setNombre(chat.getString(CHAT_NOMBRE));
             msgChat.setFecha(TimeDateUtil.ahora());
             msgChat.setIdDestino(chat.getString(CHAT_USUARIO));
-            msgChat.setIdOrigen(CRUDutil.getSharePreference(contexto, PREFERENCIAS, IDFREELANCE, ""));
-            msgChat.setTipo(FREELANCE);
+            msgChat.setIdOrigen(CRUDutil.getSharePreference(contexto, PREFERENCIAS, USERID, ""));
+            msgChat.setTipo(tipoChatRetorno);
 
             FirebaseDatabase.getInstance().getReference().child(chat.getString(CHAT_TIPO)).child(chat.getString(CHAT_USUARIO)).child(CHAT).push().setValue(msgChat);
             msgEnv.setText("");
@@ -302,7 +302,7 @@ public class FragmentChat extends FragmentCRUD {
 
             setImagenFireStoreCircle(contexto, modelo.getString(CHAT_USUARIO), imgchat);
 
-            if (modelo.getInt(CHAT_TIPO) > 0) {
+            if (modelo.getString(CHAT_TIPO).equals("")) {
 
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
 

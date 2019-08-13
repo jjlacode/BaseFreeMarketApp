@@ -380,6 +380,7 @@ public class ContratoPry extends ContratoBaseSQLite implements JavaUtil.Constant
         String CHAT_USUARIO = CAMPO_USUARIO + TABLA_CHAT;
         String CHAT_NOMBRE = CAMPO_NOMBRE + TABLA_CHAT;
         String CHAT_TIPO = CAMPO_TIPO + TABLA_CHAT;
+        String CHAT_TIPORETORNO = "tiporetorno_" + TABLA_CHAT;
         String CHAT_CREATE = CAMPO_CREATEREG;
         String CHAT_TIMESTAMP = CAMPO_TIMESTAMP;
 
@@ -793,11 +794,12 @@ public class ContratoPry extends ContratoBaseSQLite implements JavaUtil.Constant
                 PEDIDOCLIENTE_TIMESTAMP, "INTEGER NON NULL DEFAULT 0", LONG
         };
 
-        String[] CAMPOS_CHAT = {"20", TABLA_CHAT,
+        String[] CAMPOS_CHAT = {"23", TABLA_CHAT,
                 CHAT_ID_CHAT, "TEXT NON NULL UNIQUE", STRING,
                 CHAT_USUARIO, "TEXT NON NULL UNIQUE", STRING,
                 CHAT_NOMBRE, "TEXT NON NULL", STRING,
                 CHAT_TIPO, "TEXT NON NULL", STRING,
+                CHAT_TIPORETORNO, "TEXT NON NULL", STRING,
                 CHAT_CREATE, "INTEGER NON NULL DEFAULT 0", LONG,
                 CHAT_TIMESTAMP, "INTEGER NON NULL DEFAULT 0", LONG
         };

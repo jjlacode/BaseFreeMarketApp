@@ -64,6 +64,17 @@
                     android:orientation="vertical">
 
                     <LinearLayout
+                        android:id="@+id/layout_extras_antes_detalle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:orientation="vertical"
+                        android:paddingStart="5dp"
+                        android:paddingTop="5dp"
+                        android:paddingEnd="5dp"
+                        android:paddingBottom="5dp" />
+
+                    <LinearLayout
                         android:id="@+id/layout_detalle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -75,7 +86,7 @@
                         android:paddingBottom="5dp" />
 
                     <LinearLayout
-                        android:id="@+id/layout_extras_detalle"
+                        android:id="@+id/layout_extras_post_detalle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="top"

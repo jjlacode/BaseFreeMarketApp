@@ -37,7 +37,7 @@ import com.jjlacode.freelanceproject.logica.Interactor;
 
 import java.util.ArrayList;
 
-public abstract class FragmentMasterDetailNoSQLFirebaseRating extends FragmentMasterDetailNoSQL {
+public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends FragmentMasterDetailNoSQLFormBaseFirebase {
 
     private Object objeto;
     private String stemp = "";
@@ -61,7 +61,6 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRating extends FragmentMa
     private String keyVoto;
     private ArrayList<Rating> listaComents;
     private TextView ultimoVoto;
-    private int posicion;
 
 
     @Override
@@ -104,12 +103,11 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRating extends FragmentMa
 
         if (esDetalle) {
             setDatos();
-            idRating = setIdRating();
-            tipoRating = setTipoRating();
+            idRating = firebaseFormBase.getIdchatBase();
+            tipoRating = setTipo();
             recuperarVotos(ratingBar, tipoRating, idRating);
             recuperarComentarios(tipoRating, idRating);
             recuperarVotoUsuario(ratingBarUser, contexto, tipoRating, idRating);
-            onSetDatos();
             gone(lyvoto);
         }
 
@@ -119,11 +117,6 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRating extends FragmentMa
 
         activityBase.fab.hide();
         acciones();
-
-    }
-
-    protected void onSetDatos() {
-
 
     }
 
@@ -161,7 +154,8 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRating extends FragmentMa
             public void onClick(View view) {
 
                 gone(lyvoto);
-                enviarVoto(contexto, keyVoto, tipoRating, idRating, votoUser, comentario.getTexto());
+                String nombre = firebaseFormBase.getNombreBase();
+                enviarVoto(contexto, keyVoto, nombre, tipoRating, idRating, votoUser, comentario.getTexto());
             }
         });
 
@@ -183,8 +177,6 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRating extends FragmentMa
             @Override
             public void onClick(View view) {
 
-                System.out.println("rvcoment = " + rvcoment.getVisibility());
-
                 if (rlcoment.getVisibility() == View.VISIBLE) {
                     gone(rlcoment);
                 } else {
@@ -200,11 +192,10 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRating extends FragmentMa
 
     }
 
-    public void enviarVoto(Context contexto, String key, String tipo, String id, float valor, String comentario) {
+    public void enviarVoto(Context contexto, String key, String nombre, String tipo, String id, float valor, String comentario) {
 
         String idUser = CRUDutil.getSharePreference(contexto, PREFERENCIAS, USERID, NULL);
-        String nombreUser = CRUDutil.getSharePreference(contexto, PREFERENCIAS, NOMBRECHAT, ANON);
-        Rating rat = new Rating(valor, tipo, id, idUser, nombreUser, comentario, TimeDateUtil.ahora());
+        Rating rat = new Rating(valor, tipo, id, idUser, nombre, comentario, TimeDateUtil.ahora());
         if (key == null) {
             FirebaseDatabase.getInstance().getReference().child("rating").push().setValue(rat, new DatabaseReference.CompletionListener() {
                 @Override
@@ -425,37 +416,11 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRating extends FragmentMa
 
     }
 
-    protected abstract String setIdRating();
-
-    protected abstract String setTipoRating();
 
     protected void onClickRV(View v) {
 
         setOnClickRV(lista.get(rv.getChildAdapterPosition(v)));
-        setIdRating();
-        setTipoRating();
         posicion = rv.getChildAdapterPosition(v);
-    }
-
-    @Override
-    protected void setOnLeftSwipeCuerpo() {
-        super.setOnLeftSwipeCuerpo();
-
-        if (posicion < lista.size() - 1) {
-            posicion++;
-            setOnClickRV(lista.get(posicion));
-            System.out.println("posicion = " + posicion);
-        }
-    }
-
-    @Override
-    protected void setOnRigthSwipeCuerpo() {
-        super.setOnRigthSwipeCuerpo();
-        if (posicion > 0) {
-            posicion--;
-            setOnClickRV(lista.get(posicion));
-            System.out.println("posicion = " + posicion);
-        }
     }
 
     public class ViewHolderRVComents extends BaseViewHolder implements TipoViewHolder {

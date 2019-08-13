@@ -77,7 +77,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
     protected RelativeLayout frPrincipal;
     protected LinearLayout frdetalle;
-    protected LinearLayout frdetalleExtras;
+    protected LinearLayout frdetalleExtraspost;
+    protected LinearLayout frdetalleExtrasante;
     protected LinearLayout frPie;
     protected LinearLayout frCabecera;
     protected LinearLayout frLista;
@@ -182,7 +183,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         frPrincipal = view.findViewById(R.id.contenedor);
         frdetalle = view.findViewById(R.id.layout_detalle);
-        frdetalleExtras = view.findViewById(R.id.layout_extras_detalle);
+        frdetalleExtraspost = view.findViewById(R.id.layout_extras_post_detalle);
+        frdetalleExtrasante = view.findViewById(R.id.layout_extras_antes_detalle);
         frCabecera = view.findViewById(R.id.layout_cabecera);
         frPie = view.findViewById(R.id.layout_pie);
         frLista = view.findViewById(R.id.layout_rv);

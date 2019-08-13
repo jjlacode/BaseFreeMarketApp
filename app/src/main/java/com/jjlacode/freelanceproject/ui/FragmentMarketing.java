@@ -21,7 +21,7 @@ public class FragmentMarketing extends FragmentGrid {
     private String salir;
     private String home;
     private String ayuda;
-    private String publicidad;
+    private String publicidadFreelance;
 
     @Override
     protected void setContext() {
@@ -44,7 +44,7 @@ public class FragmentMarketing extends FragmentGrid {
         salir = getString(R.string.salir);
         home = getString(R.string.inicio);
         ayuda = getString(R.string.ayuda);
-        publicidad = getString(R.string.publicidad);
+        publicidadFreelance = getString(R.string.publicidad_freelance);
 
         lista = new ArrayList<GridModel>();
 
@@ -53,7 +53,7 @@ public class FragmentMarketing extends FragmentGrid {
         lista.add(new GridModel(R.drawable.ic_chat_indigo, chat));
         lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, notas));
         lista.add(new GridModel(R.drawable.ic_lista_eventos_indigo, calendarioNotas));
-        lista.add(new GridModel(R.drawable.ic_catalogo_indigo, publicidad));
+        lista.add(new GridModel(R.drawable.ic_catalogo_indigo, publicidadFreelance));
         lista.add(new GridModel(R.drawable.ic_ayuda_indigo, ayuda));
         lista.add(new GridModel(R.drawable.ic_inicio_black_24dp, home));
         lista.add(new GridModel(R.drawable.ic_salir_rojo, salir));
@@ -86,10 +86,10 @@ public class FragmentMarketing extends FragmentGrid {
             activityBase.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_main, new FragmentCRUDNota()).addToBackStack(null).commit();
 
-        } else if (nombre.equals(publicidad)) {
+        } else if (nombre.equals(publicidadFreelance)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentPublicidad()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new PublicidadFreelance()).addToBackStack(null).commit();
 
         } else if (nombre.equals(home)) {
 

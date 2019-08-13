@@ -56,6 +56,8 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     protected MediaUtil mediaUtil = new MediaUtil(contexto);
     private OneFrameLayout frameAnimation;
     protected String stemp = "";
+    protected int posicion;
+
 
 
     @Override
@@ -247,7 +249,9 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
 
     protected abstract TipoViewHolder setViewHolder(View view);
 
-    protected abstract void setDatos();
+    protected void setDatos() {
+
+    }
 
     protected void listaRV() {
 
@@ -321,6 +325,7 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
 
     protected abstract void setLista();
 
+
     protected void actualizarConsultasRV() {
 
         if (listab == null) {
@@ -332,13 +337,34 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
 
     }
 
+    public abstract void setOnClickRV(Object object);
+
     protected void onClickRV(View v) {
 
         setOnClickRV(lista.get(rv.getChildAdapterPosition(v)));
+        posicion = rv.getChildAdapterPosition(v);
     }
 
-    public abstract void setOnClickRV(Object object);
+    @Override
+    protected void setOnLeftSwipeCuerpo() {
+        super.setOnLeftSwipeCuerpo();
 
+        if (posicion < lista.size() - 1) {
+            posicion++;
+            setOnClickRV(lista.get(posicion));
+            System.out.println("posicion = " + posicion);
+        }
+    }
+
+    @Override
+    protected void setOnRigthSwipeCuerpo() {
+        super.setOnRigthSwipeCuerpo();
+        if (posicion > 0) {
+            posicion--;
+            setOnClickRV(lista.get(posicion));
+            System.out.println("posicion = " + posicion);
+        }
+    }
 
     protected void setOnItemClickAuto() {
 
