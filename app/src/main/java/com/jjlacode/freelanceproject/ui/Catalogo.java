@@ -22,7 +22,9 @@ import com.jjlacode.base.util.adapter.BaseViewHolder;
 import com.jjlacode.base.util.adapter.ListaAdaptadorFiltro;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.media.ImagenUtil;
 import com.jjlacode.base.util.nosql.FragmentMasterDetailNoSQL;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.model.ProdProv;
@@ -76,7 +78,8 @@ public class Catalogo extends FragmentMasterDetailNoSQL {
         web = prodProv.getWeb();
 
         if (path != null) {
-            setImagenFireStore(contexto, path, imagen);
+            //setImagenFireStore(contexto, path, imagen);
+            imagen.setImageFirestore(path);
         }
 
 
@@ -105,7 +108,7 @@ public class Catalogo extends FragmentMasterDetailNoSQL {
                     pathProv = proveedor.getRutafoto();
 
                     if (pathProv != null) {
-                        setImagenFireStore(contexto, pathProv, imgProv);
+                        ImagenUtil.setImageFireStore(pathProv, imgProv);
                     }
                 }
 
@@ -222,7 +225,7 @@ public class Catalogo extends FragmentMasterDetailNoSQL {
         descripcionCorta = (EditMaterial) ctrl(R.id.etdesccatalogo);
         precio = (EditMaterial) ctrl(R.id.etpreciocatalogo);
         nombre = (EditMaterial) ctrl(R.id.etnombrecatalogo);
-        imagen = (ImageView) ctrl(R.id.imgcatalogo);
+        imagen = (ImagenLayout) ctrl(R.id.imgcatalogo);
         refProv = (EditMaterial) ctrl(R.id.etrefprovcatalogo);
         descProv = (EditMaterial) ctrl(R.id.etporcdesprovcatalogo);
         addPartida = (Button) ctrl(R.id.btn_add_partida);
@@ -286,7 +289,7 @@ public class Catalogo extends FragmentMasterDetailNoSQL {
 
             if (((ProdProv) entrada).getRutafoto() != null) {
 
-                setImagenFireStoreCircle(contexto, rutafoto, imagen);
+                ImagenUtil.setImageFireStoreCircle(rutafoto, imagen);
             }
 
         }
@@ -356,7 +359,7 @@ public class Catalogo extends FragmentMasterDetailNoSQL {
 
             if (prodProv.getRutafoto() != null) {
 
-                setImagenFireStoreCircle(contexto, rutafoto, imagen);
+                ImagenUtil.setImageFireStoreCircle(rutafoto, imagen);
             }
 
             super.bind(lista, position);

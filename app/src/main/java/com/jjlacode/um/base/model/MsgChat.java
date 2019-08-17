@@ -9,6 +9,7 @@ public class MsgChat implements Serializable {
     private String nombre;
     private String mensaje;
     private String tipo;
+    private String tipoRetorno;
     private long fecha;
 
     public MsgChat() {
@@ -60,5 +61,13 @@ public class MsgChat implements Serializable {
 
     public void setFecha(long fecha) {
         this.fecha = fecha;
+    }
+
+    public String getTipoRetorno() {
+        return tipoRetorno;
+    }
+
+    public void setTipoRetorno(String tipoRetorno) {
+        this.tipoRetorno = tipoRetorno;
     }
 }

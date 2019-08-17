@@ -27,6 +27,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.jjlacode.base.util.JavaUtil;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.FragmentCUD;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
@@ -210,7 +211,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements Interactor
                         precio.setText(String.valueOf(prodprov.getPrecio()));
                         refProv.setText(prodprov.getRefprov());
                         if (prodprov.getRutafoto() != null) {
-                            setImagenFireStoreCircle(contexto,prodprov.getRutafoto(),imagen);
+                            imagen.setImageFirestoreCircle(prodprov.getRutafoto());
 
                         }
 
@@ -248,7 +249,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements Interactor
         precio = (EditMaterial) ctrl(R.id.etpreciocdetpartidabase);
         autoNombre = (AutoCompleteTextView) ctrl(R.id.etnomcdetpartidabase);
         tiempo = (EditMaterial) ctrl(R.id.ettiempocdetpartidabase);
-        imagen = (ImageView) ctrl(R.id.imgcdetpartidabase);
+        imagen = (ImagenLayout) ctrl(R.id.imgcdetpartidabase);
         refProv = (TextView) ctrl(R.id.tvrefprovcdetpartidabase);
         descProv = (EditMaterial) ctrl(R.id.etdescprovcdetpartidabase);
         tipoDetPartida = (TextView) ctrl(R.id.tvtipocdetpartidabase);
@@ -381,7 +382,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements Interactor
 
                                 path = listaProdProv.get(i).getRutafoto();
                                 if (path != null) {
-                                    setImagenFireStoreCircle(contexto, path, imagen);
+                                    imagen.setImageFirestoreCircle(path);
                                 }
 
 

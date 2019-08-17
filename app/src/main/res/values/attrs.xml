@@ -18,8 +18,16 @@
             <enum name="PT_BR" value="2" />
         </attr>
 
+    </declare-styleable>
+    <declare-styleable name="ImagenLayout">
+
+        <attr name="titulo" format="string" />
+        <attr name="pie" format="string" />
+        <attr name="rectitulo" format="integer" />
+        <attr name="recpie" format="integer" />
 
     </declare-styleable>
+
     <declare-styleable name="EditMaterial">
         <attr name="hint_text" format="string"/>
         <attr name="activo" format="boolean"/>

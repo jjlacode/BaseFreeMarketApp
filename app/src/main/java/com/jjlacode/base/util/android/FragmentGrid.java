@@ -98,8 +98,8 @@ public class FragmentGrid extends FragmentRV implements Interactor.TiposEvento,
         gone(renovar);
         gone(voz);
         gone(inicio);
-        gone(activityBase.fab);
-        visible(activityBase.fab2);
+        gone(activityBase.fabNuevo);
+        visible(activityBase.fabVoz);
 
     }
 

@@ -24,9 +24,16 @@ public class LoginPresenter implements LoginContract.Presenter, LoginInteractor.
     }
 
     @Override
-    public void attemptLogin(String email, String password) {
+    public void attemptLogin(String email, String password, String perfil) {
         mLoginView.showProgress(true);
-        mLoginInteractor.login(email, password, this);
+        mLoginInteractor.login(email, password, perfil, this);
+    }
+
+    @Override
+    public void registro(String email, String password, String perfil) {
+        mLoginView.showProgress(true);
+        mLoginInteractor.registro(email, password, perfil, this);
+
     }
 
     @Override
@@ -43,13 +50,24 @@ public class LoginPresenter implements LoginContract.Presenter, LoginInteractor.
 
     @Override
     public void onAuthSuccess() {
-        mLoginView.showPushNotifications();
+        mLoginView.accessApp();
     }
 
     @Override
     public void onAuthFailed(String msg) {
         mLoginView.showProgress(false);
         mLoginView.showLoginError(msg);
+    }
+
+    @Override
+    public void onRegSuccess() {
+        mLoginView.showBienvenida();
+    }
+
+    @Override
+    public void onRegFailed(String msg) {
+        mLoginView.showProgress(false);
+        mLoginView.showRegError(msg);
     }
 
     @Override

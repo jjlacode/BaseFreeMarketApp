@@ -84,4 +84,16 @@
         app:backgroundTint="@color/colorSecondaryDark"
         app:srcCompat="@drawable/ic_rec_indigo" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="@dimen/fab_margin"
+        app:borderWidth="2dp"
+        app:rippleColor="@color/colorAccent"
+        android:tint="@color/colorPrimary"
+        app:backgroundTint="@color/colorPrimary"
+        app:srcCompat="@drawable/ic_inicio_black_24dp" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

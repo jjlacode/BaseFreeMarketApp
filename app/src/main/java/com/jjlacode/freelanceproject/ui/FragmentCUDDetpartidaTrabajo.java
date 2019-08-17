@@ -7,13 +7,13 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Chronometer;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.jjlacode.base.util.JavaUtil;
 import com.jjlacode.base.util.android.AndroidUtil;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCUD;
 import com.jjlacode.base.util.crud.Modelo;
@@ -304,7 +304,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
         if (modelo.getString(DETPARTIDA_RUTAFOTO) != null) {
             mediaUtil = new MediaUtil(contexto);
             path = modelo.getString(DETPARTIDA_RUTAFOTO);
-            mediaUtil.setImageUri(modelo.getString(DETPARTIDA_RUTAFOTO), imagen);
+            imagen.setImageUri(modelo.getString(DETPARTIDA_RUTAFOTO));
         }
 
     }
@@ -486,7 +486,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
         nombre = (EditMaterial) ctrl(R.id.etnombredetpartida_trb);
         tiempoDet = (EditMaterial) ctrl(R.id.ettiempocdetpartida_trb);
         tiempoTotalDetPartida = (TextView) ctrl(R.id.tvtiempototaldetpartida_trb);
-        imagen = (ImageView) ctrl(R.id.imgcdetpartida_trb);
+        imagen = (ImagenLayout) ctrl(R.id.imgcdetpartida_trb);
         tipoDetPartida = (TextView) ctrl(R.id.tvtipocdetpartida_trb);
         partida_completada = (CheckBox) ctrl(R.id.cbox_hacer_detpartida_completa_trb);
         btntrek = (Button) ctrl(R.id.btn_trek);

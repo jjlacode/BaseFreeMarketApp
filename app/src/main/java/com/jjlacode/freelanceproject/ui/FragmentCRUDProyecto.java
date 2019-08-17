@@ -31,6 +31,7 @@ import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.android.controls.ScalableImageView;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCRUD;
@@ -683,7 +684,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setInicio() {
 
-        imagen = (ImageView) ctrl(R.id.imudpry);
+        imagen = (ImagenLayout) ctrl(R.id.imudpry);
         imagenTipoClienteProyecto = (ScalableImageView) ctrl(R.id.imgbtntipocliudpry);
         btnimgEstadoPry = (ScalableImageView) ctrl(R.id.imgbtnestudpry);
         nombrePry = (EditMaterial) ctrl(R.id.etnomudpry, PROYECTO_NOMBRE);
@@ -1497,7 +1498,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             @Override
             public void onEntrada(Object entrada, View view) {
 
-                ImageView imgcli = view.findViewById(R.id.imgclilcliente);
+                ImagenLayout imgcli = view.findViewById(R.id.imglcliente);
+                ImagenLayout imgcliPeso = view.findViewById(R.id.imglclientepeso);
                 TextView nombreCli = view.findViewById(R.id.tvnomclilcliente);
                 TextView contactoCli = view.findViewById(R.id.tvcontacclilcliente);
                 TextView telefonoCli = view.findViewById(R.id.tvtelclilcliente);
@@ -1510,19 +1512,20 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                         (CLIENTE_PESOTIPOCLI);
 
                 if (peso > 6) {
-                    imgcli.setImageResource(R.drawable.clientev);
+                    imgcliPeso.setImageResource(R.drawable.clientev);
                 } else if (peso > 3) {
-                    imgcli.setImageResource(R.drawable.clientea);
+                    imgcliPeso.setImageResource(R.drawable.clientea);
                 } else if (peso > 0) {
-                    imgcli.setImageResource(R.drawable.clienter);
+                    imgcliPeso.setImageResource(R.drawable.clienter);
                 } else {
-                    imgcli.setImageResource(R.drawable.cliente);
+                    imgcliPeso.setImageResource(R.drawable.cliente);
                 }
 
                 nombreCli.setText(((Modelo) entrada).getString(CLIENTE_NOMBRE));
                 contactoCli.setText(((Modelo) entrada).getString(CLIENTE_CONTACTO));
                 telefonoCli.setText(((Modelo) entrada).getString(CLIENTE_TELEFONO));
                 emailCli.setText(((Modelo) entrada).getString(CLIENTE_EMAIL));
+                imgcli.setImageUriPerfil(activityBase, ((Modelo) entrada).getString(CLIENTE_RUTAFOTO));
 
             }
 

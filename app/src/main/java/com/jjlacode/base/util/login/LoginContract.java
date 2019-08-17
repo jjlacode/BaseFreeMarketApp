@@ -18,7 +18,11 @@ public interface LoginContract {
 
         void showLoginError(String msg);
 
-        void showPushNotifications();
+        void showRegError(String msg);
+
+        void accessApp();
+
+        void showBienvenida();
 
         void showGooglePlayServicesDialog(int errorCode);
 
@@ -28,6 +32,8 @@ public interface LoginContract {
     }
 
     interface Presenter extends BasePresenter {
-        void attemptLogin(String email, String password);
+        void attemptLogin(String email, String password, String perfil);
+
+        void registro(String email, String password, String perfil);
     }
 }

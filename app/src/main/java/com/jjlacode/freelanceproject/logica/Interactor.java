@@ -34,8 +34,8 @@ import com.jjlacode.freelanceproject.services.EventosReceiver;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.ui.CalendarioEventos;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDEvento;
-import com.jjlacode.freelanceproject.ui.FragmentInicio;
 import com.jjlacode.freelanceproject.ui.FragmentNuevoEvento;
+import com.jjlacode.freelanceproject.ui.MenuInicio;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -85,8 +85,7 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
         public static boolean grabar;
 
 
-    private static ConsultaBD consulta = new ConsultaBD();
-
+    //private static ConsultaBD consulta = new ConsultaBD();
 
     public interface  Constantes {
 
@@ -98,21 +97,16 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
         String BASEDATOS = "freelanceproject.db";
         String PERFILACTIVO = "perfil setActivo";
         String USERID = "userid";
-        String FREELANCE = "freelance";
-        String CLIENTEWEB = "clienteWeb";
-        String PROVEEDORWEB = "proveedorWeb";
+        String FREELANCE = "Freelance";
+        String CLIENTEWEB = "Cliente";
+        String COMERCIAL = "Comercial";
+        String PROVEEDORWEB = "Proveedor";
         String ECOMMERCE = "Ecommerce";
         String LUGAR = "Lugar";
-        String IDFREELANCE = "idfreelance";
-        String IDCLIENTEWEB = "idclienteweb";
-        String IDPROVEEDORWEB = "idproveedorweb";
-        String IDECOMMERCE = "idecommerce";
-        String IDLUGAR = "idlugar";
+        String EMPRESA = "Empresa";
         String NOMBRECHAT = "nombre_chat";
         String ANON = "Sin asignar";
         String IDCHATF = "idchatBase";
-        String TIPOCHAT = "tipochat";
-        String VISORPDF = "visor pdf";
         String VISORPDFMAIL = "visor pdf - email";
         String TODAS = "Todas";
         String TODOS = "Todos";
@@ -206,6 +200,7 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
         String EXTRA_IDCHAT = "jjlacode.com.freelanceproject.EXTRA_IDCHAT";
         String EXTRA_SECCHAT = "jjlacode.com.freelanceproject.EXTRA_SECCHAT";
         String EXTRA_TIPOCHAT = "jjlacode.com.freelanceproject.EXTRA_TIPOCHAT";
+        String EXTRA_TIPOCHATRETORNO = "jjlacode.com.freelanceproject.EXTRA_TIPOCHATRETORNO";
         String EXTRA_ACTUAL = "jjlacode.com.freelanceproject.EXTRA_ACTUAL";
         String EXTRA_BUNDLE = "jjlacode.com.freelanceproject.EXTRA_BUNDLE";
         String EXTRA_ACCION = "jjlacode.com.freelanceproject.EXTRA_ACCION";
@@ -267,6 +262,11 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
         String NOTAIMAGEN = "Nota de Imagen";
     }
 
+    public static String getNombreUser() {
+
+        return null;
+    }
+
 
     public static String setNamefdef(){
 
@@ -281,12 +281,14 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
 
         if (prioridad){
 
-            namesubdef = "Perfil: " + perfil + " hora: " +  JavaUtil.formatoMonedaLocal(hora) + " - P";
+            //namesubdef = "Perfil: " + perfil + " hora: " +  JavaUtil.formatoMonedaLocal(hora) + " - P";
+            namesubdef = CRUDutil.getSharePreference(getAppContext(), PREFERENCIAS, PERFILUSER, NULL);
 
 
         }else{
 
-            namesubdef = "Perfil: " + perfil + " hora: " + JavaUtil.formatoMonedaLocal(hora);
+            //namesubdef = "Perfil: " + perfil + " hora: " + JavaUtil.formatoMonedaLocal(hora);
+            namesubdef = CRUDutil.getSharePreference(getAppContext(), PREFERENCIAS, PERFILUSER, NULL);
 
         }
 
@@ -728,7 +730,7 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
     public static void seleccionarDestino(ICFragmentos icFragmentos, Bundle bundle, String destino, CallbackFragmentBase callbackFragmentBase) {
 
         if (destino.equals(INICIO.toLowerCase())){
-            icFragmentos.enviarBundleAFragment(bundle,new FragmentInicio());
+            icFragmentos.enviarBundleAFragment(bundle, new MenuInicio());
 
         }else if (destino.equals(CALENDARIO.toLowerCase())){
             bundle = null;
@@ -833,9 +835,9 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
 
         public static double calculoPrecioHora() {
 
-            ArrayList<Modelo> listaAmortizaciones = consulta.queryList(CAMPOS_AMORTIZACION);
+            ArrayList<Modelo> listaAmortizaciones = ConsultaBD.queryList(CAMPOS_AMORTIZACION);
 
-            ArrayList<Modelo> listaGastosFijos = consulta.queryList(CAMPOS_GASTOFIJO);
+            ArrayList<Modelo> listaGastosFijos = ConsultaBD.queryList(CAMPOS_GASTOFIJO);
 
             long hoy = JavaUtil.hoy();
             double precioHoraAmortizaciones = 0;
@@ -867,7 +869,7 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
 
             double totalAmortizacionesYGastos = (precioHoraAmortizaciones + precioHoraGastosFijos) * 24 * 365;
 
-            Modelo perfil = consulta.queryObject(CAMPOS_PERFIL,PERFIL_NOMBRE,perfila,null,IGUAL,null);
+            Modelo perfil = ConsultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila, null, IGUAL, null);
 
 
             double beneficio = perfil.getDouble(PERFIL_BENEFICIO);
@@ -893,7 +895,7 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
         public static double calculoCosteHora(){
 
             double horapvp = calculoPrecioHora();
-            Modelo perfil = consulta.queryObject(CAMPOS_PERFIL,PERFIL_NOMBRE,perfila,null,IGUAL,null);
+            Modelo perfil = ConsultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila, null, IGUAL, null);
             double beneficio = perfil.getDouble(PERFIL_BENEFICIO);
 
             return horapvp/(1+(beneficio/100));
@@ -902,11 +904,11 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
 
         public static void recalcularFechas() {
 
-            Modelo perfilActivo = consulta.queryObject(CAMPOS_PERFIL,PERFIL_NOMBRE,perfila,null,IGUAL,null);
+            Modelo perfilActivo = ConsultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila, null, IGUAL, null);
 
             String ordenProyectosFecha = PROYECTO_FECHAENTRADA + " ASC";
 
-            ArrayList<Modelo> listaProyectos = consulta.queryList(CAMPOS_PROYECTO,null, ordenProyectosFecha);
+            ArrayList<Modelo> listaProyectos = ConsultaBD.queryList(CAMPOS_PROYECTO, null, ordenProyectosFecha);
 
             for (int i = 0; i < listaProyectos.size(); i++) {
 
@@ -921,9 +923,9 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
                         if (proyecto.getLong(PROYECTO_FECHAFINAL) == 0) {
 
                             ContentValues valores = new ContentValues();
-                            consulta.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAFINAL, JavaUtil.hoy());
-                            consulta.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAFINALF, JavaUtil.getDate(JavaUtil.hoy()));
-                            consulta.updateRegistro(TABLA_PROYECTO,proyecto.getString(PROYECTO_ID_PROYECTO),valores);
+                            ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAFINAL, JavaUtil.hoy());
+                            ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAFINALF, JavaUtil.getDate(JavaUtil.hoy()));
+                            ConsultaBD.updateRegistro(TABLA_PROYECTO, proyecto.getString(PROYECTO_ID_PROYECTO), valores);
 
                         }
 
@@ -958,8 +960,8 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
                                 perfilActivo.getDouble(PERFIL_HORASDOMINGO));
 
                         ContentValues valores = new ContentValues();
-                        consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_FECHAENTREGACALCULADA,fecha);
-                        consulta.updateRegistro(TABLA_PROYECTO,proyecto.getString(PROYECTO_ID_PROYECTO),valores);
+                        ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAENTREGACALCULADA, fecha);
+                        ConsultaBD.updateRegistro(TABLA_PROYECTO, proyecto.getString(PROYECTO_ID_PROYECTO), valores);
                     }
 
                 }
@@ -980,7 +982,7 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
             int pesoNuevo = 0;
             int pesoProspecto = 0;
 
-            ArrayList<Modelo> listaTipoCliente = consulta.queryList
+            ArrayList<Modelo> listaTipoCliente = ConsultaBD.queryList
                     (CAMPOS_TIPOCLIENTE,null, null);
 
             for (Modelo tipoCliente : listaTipoCliente) {
@@ -1013,10 +1015,10 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
                 }
             }
 
-            ArrayList<Modelo> listaProyectos = consulta.queryList
+            ArrayList<Modelo> listaProyectos = ConsultaBD.queryList
                     (CAMPOS_PROYECTO,null, null);
 
-            ArrayList<Modelo> lista = consulta.queryList
+            ArrayList<Modelo> lista = ConsultaBD.queryList
                     (CAMPOS_CLIENTE,null,null);
 
             Modelo cliente= null;
@@ -1335,12 +1337,12 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
 
             totcompletada = (int) (Math.round(((double) totcompletada) / listaPartidas.size()));
             ContentValues valores = new ContentValues();
-            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_TIEMPO,totalTiempo);
-            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_IMPORTEPRESUPUESTO,totalPrecio);
-            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_COSTE,totalcoste);
-            consulta.putDato(valores,CAMPOS_PROYECTO,PROYECTO_TOTCOMPLETADO,totcompletada);
+            ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_TIEMPO, totalTiempo);
+            ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_IMPORTEPRESUPUESTO, totalPrecio);
+            ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_COSTE, totalcoste);
+            ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_TOTCOMPLETADO, totcompletada);
 
-            consulta.updateRegistro(TABLA_PROYECTO,partida.getString(PARTIDA_ID_PROYECTO),valores);
+            ConsultaBD.updateRegistro(TABLA_PROYECTO, partida.getString(PARTIDA_ID_PROYECTO), valores);
 
         }
 

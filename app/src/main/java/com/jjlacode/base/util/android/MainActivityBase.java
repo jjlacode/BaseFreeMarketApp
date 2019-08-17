@@ -33,8 +33,9 @@ public class MainActivityBase extends AppCompatActivity
 
     protected Bundle bundle;
     public Toolbar toolbar;
-    public FloatingActionButton fab;
-    public FloatingActionButton fab2;
+    public FloatingActionButton fabNuevo;
+    public FloatingActionButton fabVoz;
+    public FloatingActionButton fabInicio;
 
     public Context context;
     protected boolean land;
@@ -89,8 +90,9 @@ public class MainActivityBase extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        fab =  findViewById(R.id.fab);
-        fab2 =  findViewById(R.id.fab2);
+        fabNuevo = findViewById(R.id.fab);
+        fabVoz = findViewById(R.id.fab2);
+        fabInicio = findViewById(R.id.fab3);
 
         acciones();
 
@@ -178,7 +180,7 @@ public class MainActivityBase extends AppCompatActivity
     @Override
     public void fabVisible() {
 
-        fab.show();
+        fabNuevo.show();
 
     }
 
@@ -193,18 +195,18 @@ public class MainActivityBase extends AppCompatActivity
     @Override
     public void setIcoFab(int recurso) {
 
-        fab.setImageResource(recurso);
+        fabNuevo.setImageResource(recurso);
     }
 
     @Override
     public void setIcoFab(Drawable drawable) {
 
-        fab.setImageDrawable(drawable);
+        fabNuevo.setImageDrawable(drawable);
     }
 
     @Override
     public void fabOculto() {
-        fab.hide();
+        fabNuevo.hide();
     }
 
     @Override

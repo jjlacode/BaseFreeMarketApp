@@ -20,6 +20,7 @@ import com.jjlacode.base.util.JavaUtil;
 import com.jjlacode.base.util.android.AndroidUtil;
 import com.jjlacode.base.util.android.FragmentBase;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.freelanceproject.R;
@@ -57,7 +58,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     protected ListaModelo listab;
     protected boolean nuevo;
 
-    protected ImageView imagen;
+    protected ImagenLayout imagen;
 
 
     protected String path;
@@ -79,6 +80,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         btnback = view.findViewById(R.id.btn_back);
         btnsave = view.findViewById(R.id.btn_save);
         btndelete = view.findViewById(R.id.btn_del);
+
         System.out.println("view = " + view);
 
     }
@@ -101,8 +103,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         campoCreate = CAMPO_CREATEREG;
 
         campoImagen = CAMPO_RUTAFOTO;
-
-
 
     }
 
@@ -210,7 +210,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     protected void setImagen(){
         Log.d(TAG, getMetodo());
 
-
         try {
 
             if (modelo == null && id != null) {
@@ -225,13 +224,14 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
             if (path != null) {
 
-                setImagenUri(contexto, path);
+                //imagen.setImageUri(path, (int)(anchoReal*0.25f),(int)(altoReal*0.15f));
+                imagen.setImageUriPerfil(activityBase, path);
 
             } else {
 
                 try {
 
-                    imagen.setImageResource(R.drawable.ic_add_a_photo_black_24dp);
+                    imagen.setImageResource(R.drawable.ic_add_a_photo_black_24dp, (int) (anchoReal * 0.25f), (int) (altoReal * 0.15f));
 
                 } catch (Exception er) {
                     er.printStackTrace();
@@ -244,13 +244,16 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
             if (path != null) {
 
-                setImagenUri(contexto, path);
+                //imagen.setImageUri(path, (int)(anchoReal*0.25f),(int)(altoReal*0.15f));
+                imagen.setImageUriPerfil(activityBase, path);
+
 
             } else {
 
                 try {
 
-                    imagen.setImageResource(R.drawable.ic_add_a_photo_black_24dp);
+                    imagen.setImageResource(R.drawable.ic_add_a_photo_black_24dp, (int) (anchoReal * 0.25f), (int) (altoReal * 0.15f));
+
 
                 } catch (Exception er) {
                     er.printStackTrace();
@@ -633,133 +636,24 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
     protected void setImagenUri(Context contexto, String rutaFoto){
 
-        MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageUri(rutaFoto,imagen, R.drawable.ic_add_a_photo_black_24dp);
+        imagen.setImageUri(rutaFoto);
 
     }
 
     protected void setImagenUri(MediaUtil imagenUtil, String rutaFoto){
 
-        imagenUtil.setImageUri(rutaFoto,imagen, R.drawable.ic_add_a_photo_black_24dp);
+        imagen.setImageUri(rutaFoto);
 
     }
 
-    protected void setImagenUri(Context contexto, String rutaFoto, int drawable){
-
-        MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageUri(rutaFoto,imagen,drawable);
-
-    }
-
-    protected void setImagenUri(MediaUtil imagenUtil, String rutaFoto, int drawable){
-
-        imagenUtil.setImageUri(rutaFoto,imagen,drawable);
-
-    }
-
-    protected void setImagenUri(Context contexto, String rutaFoto, ImageView imagen, int drawable){
-
-        MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageUri(rutaFoto,imagen,drawable);
-
-    }
-
-    protected void setImagenUri(MediaUtil imagenUtil, String rutaFoto, ImageView imagen, int drawable){
-
-        imagenUtil.setImageUri(rutaFoto,imagen,drawable);
-
-    }
-
-    protected void setImagenUri(Context contexto, String rutaFoto, ImageView imagen){
-
-        MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageUri(rutaFoto,imagen, R.drawable.ic_add_a_photo_black_24dp);
-
-    }
-
-    protected void setImagenUri(MediaUtil imagenUtil, String rutaFoto, ImageView imagen){
-
-        imagenUtil.setImageUri(rutaFoto,imagen, R.drawable.ic_add_a_photo_black_24dp);
-
-    }
-
-    protected void setImagenFireStore(Context contexto, String rutaFoto, int drawable){
-
-        MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageFireStore(rutaFoto,imagen,drawable);
-
-    }
-
-    protected void setImagenFireStore(MediaUtil imagenUtil, String rutaFoto, int drawable){
-
-        imagenUtil.setImageFireStore(rutaFoto,imagen,drawable);
-
-    }
-
-    protected void setImagenFireStore(Context contexto, String rutaFoto, ImageView imagen,int drawable){
-
-        MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageFireStore(rutaFoto,imagen,drawable);
-
-    }
-
-    protected void setImagenFireStore(MediaUtil imagenUtil, String rutaFoto, ImageView imagen, int drawable){
-
-        imagenUtil.setImageFireStore(rutaFoto,imagen,drawable);
-
-    }
-
-    protected void setImagenFireStore(Context contexto, String rutaFoto, ImageView imagen){
-
-        MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageFireStore(rutaFoto,imagen,R.drawable.ic_add_a_photo_black_24dp);
-
-    }
-
-    protected void setImagenFireStore(MediaUtil imagenUtil, String rutaFoto, ImageView imagen){
-
-        imagenUtil.setImageFireStore(rutaFoto,imagen,R.drawable.ic_add_a_photo_black_24dp);
-
-    }
 
     protected void setImagenUriCircle(Context contexto, String rutaFoto){
 
         MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageUriCircle(rutaFoto,imagen, R.drawable.ic_add_a_photo_black_24dp);
+        imagen.setImageUriCircle(rutaFoto);
 
     }
 
-    protected void setImagenUriCircle(MediaUtil imagenUtil, String rutaFoto){
-
-        imagenUtil.setImageUriCircle(rutaFoto,imagen, R.drawable.ic_add_a_photo_black_24dp);
-
-    }
-
-    protected void setImagenUriCircle(Context contexto, String rutaFoto, int drawable){
-
-        MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageUriCircle(rutaFoto,imagen,drawable);
-
-    }
-
-    protected void setImagenUriCircle(MediaUtil imagenUtil, String rutaFoto, int drawable){
-
-        imagenUtil.setImageUriCircle(rutaFoto,imagen,drawable);
-
-    }
-
-    protected void setImagenUriCircle(Context contexto, String rutaFoto, ImageView imagen, int drawable){
-
-        MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageUriCircle(rutaFoto,imagen,drawable);
-
-    }
-
-    protected void setImagenUriCircle(MediaUtil imagenUtil, String rutaFoto, ImageView imagen, int drawable){
-
-        imagenUtil.setImageUriCircle(rutaFoto,imagen,drawable);
-
-    }
 
     protected void setImagenUriCircle(Context contexto, String rutaFoto, ImageView imagen){
 
@@ -768,47 +662,10 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
     }
 
-    protected void setImagenUriCircle(MediaUtil imagenUtil, String rutaFoto, ImageView imagen){
-
-        imagenUtil.setImageUriCircle(rutaFoto,imagen, R.drawable.ic_add_a_photo_black_24dp);
-
-    }
-
-    protected void setImagenFireStoreCircle(Context contexto, String rutaFoto, int drawable){
-
-        MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageFireStoreCircle(rutaFoto,imagen,drawable);
-
-    }
-
-    protected void setImagenFireStoreCircle(MediaUtil imagenUtil, String rutaFoto, int drawable){
-
-        imagenUtil.setImageFireStoreCircle(rutaFoto,imagen,drawable);
-
-    }
-
-    protected void setImagenFireStoreCircle(Context contexto, String rutaFoto, ImageView imagen,int drawable){
-
-        MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageFireStoreCircle(rutaFoto,imagen,drawable);
-
-    }
-
-    protected void setImagenFireStoreCircle(MediaUtil imagenUtil, String rutaFoto, ImageView imagen, int drawable){
-
-        imagenUtil.setImageFireStoreCircle(rutaFoto,imagen,drawable);
-
-    }
 
     protected void setImagenFireStoreCircle(Context contexto, String rutaFoto, ImageView imagen){
 
         MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageFireStoreCircle(rutaFoto,imagen,R.drawable.ic_add_a_photo_black_24dp);
-
-    }
-
-    protected void setImagenFireStoreCircle(MediaUtil imagenUtil, String rutaFoto, ImageView imagen){
-
         imagenUtil.setImageFireStoreCircle(rutaFoto,imagen,R.drawable.ic_add_a_photo_black_24dp);
 
     }

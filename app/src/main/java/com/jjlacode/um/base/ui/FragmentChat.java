@@ -9,8 +9,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,6 +44,15 @@ public class FragmentChat extends FragmentCRUD {
     private EditText msgEnv;
     private ImageButton btnEnviar;
     private ListaModelo listaMsgChat;
+    private ImageButton btnClienteWeb;
+    private ImageButton btnFreelance;
+    private ImageButton btnComercial;
+    private ImageButton btnEcommerce;
+    private ImageButton btnLugar;
+    private ImageButton btnEmpresa;
+    private ImageButton btnProveedorWeb;
+    private LinearLayout lyEnvMsg;
+    private TextView actuar;
 
     @Override
     protected TipoViewHolder setViewHolder(View view) {
@@ -93,8 +104,45 @@ public class FragmentChat extends FragmentCRUD {
             tipoChatOrigen = modelo.getString(CHAT_TIPO);
             tipoChatRetorno = modelo.getString(CHAT_TIPORETORNO);
             idchat = modelo.getString(CHAT_USUARIO);
+            CRUDutil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, modelo.getString(CHAT_USUARIO));
+
             System.out.println("idchat = " + idchat);
             System.out.println("tipoChatOrigen = " + tipoChatOrigen);
+
+
+            switch (tipoChatOrigen) {
+
+                case CLIENTEWEB:
+                    btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    break;
+
+                case FREELANCE:
+                    btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    break;
+
+                case ECOMMERCE:
+                    btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    break;
+
+                case LUGAR:
+                    btnLugar.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    break;
+
+                case PROVEEDORWEB:
+                    btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    break;
+
+                case COMERCIAL:
+                    btnComercial.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    break;
+
+                case EMPRESA:
+                    btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    break;
+
+            }
+        } else {
+            tipoChatRetorno = CRUDutil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
         }
 
     }
@@ -102,6 +150,8 @@ public class FragmentChat extends FragmentCRUD {
     @Override
     protected void setLista() {
         super.setLista();
+
+        selectorChat(ORIGEN);
 
         if (!tipoChatOrigen.equals(NULL)) {
             ListaModelo listaTemp = new ListaModelo();
@@ -117,8 +167,9 @@ public class FragmentChat extends FragmentCRUD {
         } else {
             activityBase.toolbar.setTitle(CHAT);
         }
-        gone(activityBase.fab);
-        gone(frCabecera);
+        gone(activityBase.fabNuevo);
+        gone(lyEnvMsg);
+        gone(actuar);
 
 
     }
@@ -127,8 +178,11 @@ public class FragmentChat extends FragmentCRUD {
     protected void onClickRV(View v) {
         super.onClickRV(v);
 
-        activityBase.toolbar.setTitle(modelo.getString(CHAT_NOMBRE));
-        activityBase.toolbar.setSubtitle(modelo.getString(CHAT_TIPO));
+        tipoChatRetorno = modelo.getString(CHAT_TIPORETORNO);
+
+        if (tipoChatRetorno == null || tipoChatRetorno.equals(NULL)) {
+            tipoChatRetorno = CRUDutil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
+        }
 
     }
 
@@ -145,18 +199,61 @@ public class FragmentChat extends FragmentCRUD {
     @Override
     protected void setDatos() {
 
+        CRUDutil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, modelo.getString(CHAT_USUARIO));
+
+        System.out.println("idChat = " + id);
         listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, id, TABLA_CHAT, null, DETCHAT_FECHA + " DESC");
 
-        System.out.println("view = " + view);
         RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat);
         rvMsgChat.setAdapter(adaptadorDetChat);
-        gone(activityBase.fab);
+        gone(activityBase.fabNuevo);
 
         modelo = CRUDutil.setModelo(campos, id);
         activityBase.toolbar.setTitle(modelo.getString(CHAT_NOMBRE));
+        activityBase.toolbar.setSubtitle(modelo.getString(CHAT_TIPO));
         idchat = modelo.getString(CHAT_USUARIO);
 
+        visible(lyEnvMsg);
+        visible(actuar);
         visible(frCabecera);
+
+        selectorChat(NULL);
+
+        if (tipoChatRetorno != null && !tipoChatRetorno.equals(NULL)) {
+
+            actuar.setText("Chatear como : " + tipoChatRetorno);
+
+            switch (tipoChatRetorno) {
+
+                case CLIENTEWEB:
+                    btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    break;
+
+                case FREELANCE:
+                    btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    break;
+
+                case ECOMMERCE:
+                    btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    break;
+
+                case LUGAR:
+                    btnLugar.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    break;
+
+                case PROVEEDORWEB:
+                    btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    break;
+
+                case COMERCIAL:
+                    btnComercial.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    break;
+
+                case EMPRESA:
+                    btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    break;
+            }
+        }
 
     }
 
@@ -168,10 +265,224 @@ public class FragmentChat extends FragmentCRUD {
             @Override
             public void onClick(View view) {
 
-                enviarMensaje();
+                if (tipoChatRetorno != null && !tipoChatRetorno.equals(NULL)) {
+                    enviarMensaje();
+                } else {
+                    Toast.makeText(contexto, "Debe elegir un perfil con el que chatear", Toast.LENGTH_SHORT).show();
+                }
 
             }
         });
+
+    }
+
+    private void selectorChat(final String tipoChat) {
+
+        btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+
+        btnClienteWeb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (tipoChat.equals(ORIGEN)) {
+                    tipoChatOrigen = CLIENTEWEB;
+                    selector();
+                } else {
+                    tipoChatRetorno = CLIENTEWEB;
+                    cambiarTipoChatRetorno();
+                }
+
+                btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+
+            }
+        });
+
+        btnFreelance.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (tipoChat.equals(ORIGEN)) {
+                    tipoChatOrigen = FREELANCE;
+                    selector();
+                } else {
+                    tipoChatRetorno = FREELANCE;
+                    cambiarTipoChatRetorno();
+                }
+
+                btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            }
+        });
+
+        btnEcommerce.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (tipoChat.equals(ORIGEN)) {
+                    tipoChatOrigen = ECOMMERCE;
+                    selector();
+                } else {
+                    tipoChatRetorno = ECOMMERCE;
+                    cambiarTipoChatRetorno();
+                }
+
+                btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            }
+        });
+
+        btnLugar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (tipoChat.equals(ORIGEN)) {
+                    tipoChatOrigen = LUGAR;
+                    selector();
+                } else {
+                    tipoChatRetorno = LUGAR;
+                    cambiarTipoChatRetorno();
+                }
+
+                btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnLugar.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+
+            }
+        });
+
+        btnProveedorWeb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (tipoChat.equals(ORIGEN)) {
+                    tipoChatOrigen = PROVEEDORWEB;
+                    selector();
+                } else {
+                    tipoChatRetorno = PROVEEDORWEB;
+                    cambiarTipoChatRetorno();
+                }
+
+                btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+
+            }
+        });
+
+        btnComercial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (tipoChat.equals(ORIGEN)) {
+                    tipoChatOrigen = COMERCIAL;
+                    selector();
+                } else {
+                    tipoChatRetorno = COMERCIAL;
+                    cambiarTipoChatRetorno();
+                }
+
+                btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnComercial.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+
+            }
+        });
+
+        btnEmpresa.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (tipoChat.equals(ORIGEN)) {
+                    tipoChatOrigen = EMPRESA;
+                    selector();
+                } else {
+                    tipoChatRetorno = EMPRESA;
+                    cambiarTipoChatRetorno();
+                }
+
+                btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+
+
+            }
+        });
+
+
+    }
+
+    private void cambiarTipoChatRetorno() {
+
+        if (modelo.getString(tipoChatRetorno) == null || !modelo.getString(tipoChatRetorno).equals(tipoChatRetorno)) {
+            ListaModelo listaChatUser = CRUDutil.setListaModelo(campos, CHAT_TIPORETORNO, tipoChatRetorno, IGUAL);
+            boolean existeChat = false;
+            for (Modelo chat : listaChatUser.getLista()) {
+                if (chat.getString(CHAT_USUARIO).equals(modelo.getString(CHAT_USUARIO)) &&
+                        chat.getString(CHAT_TIPORETORNO).equals(tipoChatRetorno)) {
+                    id = chat.getString(CHAT_ID_CHAT);
+                    modelo = CRUDutil.setModelo(campos, id);
+                    existeChat = true;
+                    break;
+                }
+            }
+            if (!existeChat) {
+                valores = new ContentValues();
+                valores.put(CHAT_USUARIO, modelo.getString(CHAT_USUARIO));
+                valores.put(CHAT_NOMBRE, modelo.getString(CHAT_NOMBRE));
+                valores.put(CHAT_TIPO, modelo.getString(CHAT_TIPO));
+                valores.put(CHAT_CREATE, TimeDateUtil.ahora());
+                valores.put(CHAT_TIMESTAMP, TimeDateUtil.ahora());
+                valores.put(CHAT_TIPORETORNO, tipoChatRetorno);
+                id = CRUDutil.crearRegistroId(TABLA_CHAT, valores);
+                modelo = CRUDutil.setModelo(campos, id);
+            }
+
+        }
+
+        System.out.println("idChat = " + id);
+        listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, id, TABLA_CHAT, null, DETCHAT_FECHA + " DESC");
+
+        RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat);
+        rvMsgChat.setAdapter(adaptadorDetChat);
+        actuar.setText("Chatear como : " + tipoChatRetorno);
 
     }
 
@@ -201,8 +512,9 @@ public class FragmentChat extends FragmentCRUD {
             msgChat.setIdDestino(chat.getString(CHAT_USUARIO));
             msgChat.setIdOrigen(CRUDutil.getSharePreference(contexto, PREFERENCIAS, USERID, ""));
             msgChat.setTipo(tipoChatRetorno);
+            msgChat.setTipoRetorno(tipoChatOrigen);
 
-            FirebaseDatabase.getInstance().getReference().child(chat.getString(CHAT_TIPO)).child(chat.getString(CHAT_USUARIO)).child(CHAT).push().setValue(msgChat);
+            FirebaseDatabase.getInstance().getReference().child(CHAT).child(chat.getString(CHAT_USUARIO)).push().setValue(msgChat);
             msgEnv.setText("");
         }
     }
@@ -219,6 +531,15 @@ public class FragmentChat extends FragmentCRUD {
         rvMsgChat = view.findViewById(R.id.rvdetmsgchat);
         msgEnv = view.findViewById(R.id.msgchatenv);
         btnEnviar = view.findViewById(R.id.btn_envmsgchat);
+        btnClienteWeb = view.findViewById(R.id.btn_cab_chat_clienteweb);
+        btnFreelance = view.findViewById(R.id.btn_cab_chat_freelance);
+        btnEcommerce = view.findViewById(R.id.btn_cab_chat_ecommerce);
+        btnLugar = view.findViewById(R.id.btn_cab_chat_lugar);
+        btnProveedorWeb = view.findViewById(R.id.btn_cab_chat_proveedorweb);
+        btnComercial = view.findViewById(R.id.btn_cab_chat_comercial);
+        btnEmpresa = view.findViewById(R.id.btn_cab_chat_empresa);
+        lyEnvMsg = view.findViewById(R.id.lyevnmsg);
+        actuar = view.findViewById(R.id.tvchatactuar);
 
         gone(btnsave);
 
@@ -227,7 +548,6 @@ public class FragmentChat extends FragmentCRUD {
     @Override
     public void onPause() {
         super.onPause();
-        CRUDutil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, NULL);
 
     }
 
@@ -250,14 +570,15 @@ public class FragmentChat extends FragmentCRUD {
                     String orden = null;
                     String mensaje = null;
 
-                    if (grabarVoz.length() >= 5) {
-                        orden = grabarVoz.substring(0, 5);
-                        mensaje = grabarVoz.substring(5);
-                        if (orden.equals("chat ")) {
-                            msgEnv.setText(mensaje);
+                    if (grabarVoz.equals("enviar")) {
                             enviarMensaje();
 
-                        }
+                    } else if (grabarVoz.equals("borrar")) {
+                        msgEnv.setText("");
+
+                    } else {
+                        msgEnv.setText(grabarVoz);
+
                     }
             }
 
@@ -300,7 +621,6 @@ public class FragmentChat extends FragmentCRUD {
 
             nombre.setText(modelo.getCampos(CHAT_NOMBRE));
 
-            setImagenFireStoreCircle(contexto, modelo.getString(CHAT_USUARIO), imgchat);
 
             if (modelo.getString(CHAT_TIPO).equals("")) {
 
@@ -308,6 +628,12 @@ public class FragmentChat extends FragmentCRUD {
 
             } else {
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_defecto));
+                try {
+                    setImagenFireStoreCircle(contexto, modelo.getString(CHAT_USUARIO) + modelo.getString(CHAT_TIPO), imgchat);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
 
             super.bind(modelo);

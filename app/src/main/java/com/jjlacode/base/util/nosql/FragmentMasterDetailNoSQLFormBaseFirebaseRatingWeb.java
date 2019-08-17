@@ -23,6 +23,7 @@ import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.ListaModelo;
 import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.media.ImagenUtil;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
@@ -31,7 +32,7 @@ import com.jjlacode.um.base.ui.FragmentChat;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
+public class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
         extends FragmentMasterDetailNoSQLFormBaseFirebaseRating implements ContratoPry.Tablas {
 
     private View viewWeb;
@@ -53,6 +54,16 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
         browser = (WebView) view.findViewById(R.id.webBrowser);
         lyweb = view.findViewById(R.id.lywebBrowser);
 
+
+    }
+
+    @Override
+    protected void setLayout() {
+
+    }
+
+    @Override
+    protected void setInicio() {
 
     }
 
@@ -89,6 +100,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
     @Override
     protected void setLayoutItem() {
+
         layoutItem = R.layout.item_list_firebase_formbase_rating_web;
 
     }
@@ -129,7 +141,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             email.setText(((FirebaseFormBase) entrada).getEmailBase());
 
             if (nn(((FirebaseFormBase) entrada).getIdchatBase()) && !((FirebaseFormBase) entrada).getIdchatBase().equals("")) {
-                setImagenFireStoreCircle(contexto, ((FirebaseFormBase) entrada).getIdchatBase() +
+                ImagenUtil.setImageFireStoreCircle(((FirebaseFormBase) entrada).getIdchatBase() +
                         ((FirebaseFormBase) entrada).getTipoBase(), imagen);
             }
 
@@ -208,7 +220,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             web = firebaseFormBase.getWebBase();
 
             if (nn(firebaseFormBase.getIdchatBase()) && !firebaseFormBase.getIdchatBase().equals("")) {
-                setImagenFireStoreCircle(contexto, firebaseFormBase.getIdchatBase() +
+                ImagenUtil.setImageFireStoreCircle(firebaseFormBase.getIdchatBase() +
                         firebaseFormBase.getTipoBase(), imagen);
             }
 
@@ -250,6 +262,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
                         values.put(CHAT_NOMBRE, firebaseFormBase.getNombreBase());
                         values.put(CHAT_USUARIO, firebaseFormBase.getIdchatBase());
                         values.put(CHAT_TIPO, firebaseFormBase.getTipoBase());
+                        values.put(CHAT_TIPORETORNO, CLIENTEWEB);
                         values.put(CHAT_CREATE, TimeDateUtil.ahora());
                         values.put(CHAT_TIMESTAMP, TimeDateUtil.ahora());
 

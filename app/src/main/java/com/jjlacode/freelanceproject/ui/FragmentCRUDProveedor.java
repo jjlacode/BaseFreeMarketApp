@@ -16,6 +16,7 @@ import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.ListaModelo;
@@ -158,7 +159,7 @@ public class FragmentCRUDProveedor extends FragmentCRUD {
         btnVerEventos = (ImageButton) ctrl(R.id.btnvereventoproveedor);
         btnNota = (ImageButton) ctrl(R.id.btn_crearnota_proveedor);
         btnVerNotas = (ImageButton) ctrl(R.id.btn_vernotas_proveedor);
-        imagen = (ImageView) ctrl(R.id.imgproveedor);
+        imagen = (ImagenLayout) ctrl(R.id.imgproveedor);
         mapa = (ImageButton) ctrl(R.id.imgbtndirproveedor);
         llamada = (ImageButton) ctrl(R.id.imgbtntelproveedor);
         mail = (ImageButton) ctrl(R.id.imgbtnmailproveedor);

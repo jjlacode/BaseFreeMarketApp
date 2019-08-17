@@ -514,8 +514,8 @@ public abstract class FragmentCRUD extends FragmentCUD {
                 gone(refreshLayout);
                 visible(frameAnimationCuerpo);
                 visible(frPie);
-                activityBase.fab.setSize(FloatingActionButton.SIZE_MINI);
-                activityBase.fab2.setSize(FloatingActionButton.SIZE_MINI);
+                activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_MINI);
+                activityBase.fabVoz.setSize(FloatingActionButton.SIZE_MINI);
             } else if ((id != null && secuencia > 0) || (id != null && tablaCab == null) || (modelo != null)) {
                 if (layoutCabecera>0) {
                     gone(frCabecera);
@@ -525,14 +525,14 @@ public abstract class FragmentCRUD extends FragmentCUD {
                 gone(refreshLayout);
                 visible(frameAnimationCuerpo);
                 visible(frPie);
-                activityBase.fab.setSize(FloatingActionButton.SIZE_MINI);
-                activityBase.fab2.setSize(FloatingActionButton.SIZE_MINI);
+                activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_MINI);
+                activityBase.fabVoz.setSize(FloatingActionButton.SIZE_MINI);
 
             }else{
-                activityBase.fab2.show();
-                activityBase.fab.show();
-                activityBase.fab.setSize(FloatingActionButton.SIZE_NORMAL);
-                activityBase.fab2.setSize(FloatingActionButton.SIZE_NORMAL);
+                activityBase.fabVoz.show();
+                activityBase.fabNuevo.show();
+                activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_NORMAL);
+                activityBase.fabVoz.setSize(FloatingActionButton.SIZE_NORMAL);
 
                 if (grabarVoz==null) {
                     listaRV();
@@ -571,8 +571,8 @@ public abstract class FragmentCRUD extends FragmentCUD {
         }else{
             gone(frCabecera);
         }
-        activityBase.fab2.show();
-        activityBase.fab.show();
+        activityBase.fabVoz.show();
+        activityBase.fabNuevo.show();
         visible(btndelete);
         listaRV();
 

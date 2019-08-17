@@ -29,20 +29,29 @@
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="1.7"
                     android:orientation="vertical">
 
                     <RatingBar
                         android:id="@+id/ratingBarcoment"
+                        style="?android:attr/ratingBarStyleSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        style="?android:attr/ratingBarStyleSmall"
                         android:isIndicator="true"
                         android:numStars="5"
                         android:rating="0"
                         android:secondaryProgressTint="@color/color_star_defecto"
                         android:stepSize="1" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvtipocoments"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="top"
+                    android:textStyle="italic"
+                    android:textSize="@dimen/texto" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvnombrecoments"

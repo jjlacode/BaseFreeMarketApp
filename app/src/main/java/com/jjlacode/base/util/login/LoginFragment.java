@@ -2,14 +2,15 @@ package com.jjlacode.base.util.login;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,11 +18,12 @@ import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
+import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.freelanceproject.MainActivity;
 import com.jjlacode.freelanceproject.R;
 
 import static com.jjlacode.base.util.JavaUtil.Constantes.NULL;
-import static com.jjlacode.base.util.JavaUtil.Constantes.PREFERENCIAS;
 import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.INICIO;
 import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.USERID;
 
@@ -31,14 +33,25 @@ import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.USERID;
 public class LoginFragment extends Fragment implements LoginContract.View {
 
     private LoginContract.Presenter mPresenter;
+    private ImagenLayout imagen;
     private EditText mEmail;
     private EditText mPassword;
     private Button mSignInButton;
+    private Button registrar;
+    private Spinner spPerfiles;
     private View mLoginForm;
     private View mLoginProgress;
     private Callback mCallback;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private String userID;
+    private DisplayMetrics metrics;
+    private boolean land;
+    private boolean tablet;
+    private float densidad;
+    private int anchoReal;
+    private int altoReal;
+
 
     public static LoginFragment newInstance() {
         LoginFragment fragment = new LoginFragment();
@@ -62,15 +75,15 @@ public class LoginFragment extends Fragment implements LoginContract.View {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                SharedPreferences preferences = getContext().getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
-                String userID = preferences.getString(USERID, NULL);
-                System.out.println("user: " + user.getUid());
-                System.out.println("userID = " + userID);
+                userID = CRUDutil.getSharePreference(getContext(), USERID, USERID, NULL);
                 if (user != null && user.getUid().equals(userID)) {
-                    System.out.println("user: " + user.getUid());
-                    showPushNotifications();
-                } else {
+                    accessApp();
+                } else if (user == null) {
                     Toast.makeText(getContext(), "Debe logearse de nuevo", Toast.LENGTH_SHORT).show();
+                } else if (userID == null || !userID.equals(NULL)) {
+                    Toast.makeText(getContext(), "Usuario erroneo", Toast.LENGTH_SHORT).show();
+                } else {
+                    //mFirebaseAuth.signOut();
                 }
             }
         };
@@ -86,10 +99,37 @@ public class LoginFragment extends Fragment implements LoginContract.View {
 
         mEmail = (EditText) root.findViewById(R.id.etcorreologin);
         mPassword = (EditText) root.findViewById(R.id.etpasslogin);
-
+        registrar = root.findViewById(R.id.btnRegistrar);
         mSignInButton = (Button) root.findViewById(R.id.btnacceder);
+        spPerfiles = root.findViewById(R.id.spPerfil);
+        imagen = root.findViewById(R.id.imglogin);
+
+        metrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        land = getResources().getBoolean(R.bool.esLand);
+        tablet = getResources().getBoolean(R.bool.esTablet);
+        densidad = metrics.density;
+        anchoReal = metrics.widthPixels;
+        altoReal = metrics.heightPixels;
+
+        imagen.setImageResource(R.drawable.logo, anchoReal / 2, altoReal / 3);
+        imagen.setVisibleTitulo(true);
+        imagen.setVisiblePie(true);
+        imagen.setTextPie(R.string.auth);
+        imagen.setColorTextoTitulo(getResources().getColor(R.color.colorPrimary));
+        imagen.setColorTextoPie(getResources().getColor(R.color.colorPrimary));
+        imagen.setTextTitulo(R.string.app_name);
+        imagen.setTextAutoSizeTitulo(getActivity(), 3f);
+        imagen.setTextAutoSizePie(getActivity(), 1.5f);
 
         mLoginForm.setVisibility(View.VISIBLE);
+
+        userID = CRUDutil.getSharePreference(getContext(), USERID, USERID, NULL);
+
+        if (userID == null && mFirebaseAuth.getUid() == null) {
+            registrar.setVisibility(View.VISIBLE);
+        }
 
         mSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -97,6 +137,17 @@ public class LoginFragment extends Fragment implements LoginContract.View {
                 attemptLogin();
             }
         });
+
+        registrar.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                registro();
+            }
+        });
+
+
+
         return root;
     }
 
@@ -148,9 +199,20 @@ public class LoginFragment extends Fragment implements LoginContract.View {
     }
 
     private void attemptLogin() {
+        String perfil = (String) spPerfiles.getSelectedItem();
+
         mPresenter.attemptLogin(
                 mEmail.getText().toString(),
-                mPassword.getText().toString());
+                mPassword.getText().toString(), perfil);
+
+    }
+
+    private void registro() {
+        String perfil = (String) spPerfiles.getSelectedItem();
+
+        mPresenter.registro(mEmail.getText().toString(),
+                mPassword.getText().toString(), perfil);
+
     }
 
     @Override
@@ -184,9 +246,23 @@ public class LoginFragment extends Fragment implements LoginContract.View {
     }
 
     @Override
-    public void showPushNotifications() {
+    public void showRegError(String msg) {
+        Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void accessApp() {
         Intent intent = new Intent(getActivity(), MainActivity.class);
         intent.putExtra(INICIO, 1);
+        startActivity(intent);
+        getActivity().finish();
+    }
+
+    @Override
+    public void showBienvenida() {
+
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        intent.putExtra(INICIO, 2);
         startActivity(intent);
         getActivity().finish();
     }

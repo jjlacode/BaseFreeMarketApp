@@ -24,7 +24,7 @@ import static com.jjlacode.freelanceproject.sqlite.ContratoPry.obtenerIdTabla;
 import static com.jjlacode.freelanceproject.sqlite.ContratoPry.obtenerIdTablaDetalle;
 import static com.jjlacode.freelanceproject.sqlite.ContratoPry.obtenerIdTablaDetalleId;
 
-public class ProviderFreelanceProject extends ContentProvider
+public class ProviderPry extends ContentProvider
         implements Tablas, Interactor.TiposEstados {
 
     private DataBase bd;
@@ -249,15 +249,15 @@ public class ProviderFreelanceProject extends ContentProvider
             PROYECTO_RETRASO,
             ESTADO_TIPOESTADO);
 
-    public ProviderFreelanceProject() {
+    public ProviderPry() {
 
     }
 
     @Override
     public boolean onCreate() {
+
+
         bd = new DataBase(getContext());
-
-
         resolver = getContext().getContentResolver();
         return true;
     }

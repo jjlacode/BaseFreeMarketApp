@@ -221,8 +221,8 @@ public abstract class FragmentMes extends FragmentBase implements Interactor.Tip
 
         textViewMY.setTextColor(textColorMonthAndYear);
 
-        activityBase.fab.hide();
-        activityBase.fab2.show();
+        activityBase.fabNuevo.hide();
+        activityBase.fabVoz.show();
 
         main.setBackgroundColor(mainBackgroundColor);
         fragment_container.setBackgroundColor(calendarBackgroundColor);

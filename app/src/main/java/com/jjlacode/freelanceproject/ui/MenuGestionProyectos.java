@@ -12,20 +12,20 @@ import com.jjlacode.freelanceproject.R;
 
 import java.util.ArrayList;
 
-public class FragmentFacturacion extends FragmentGrid {
+public class MenuGestionProyectos extends FragmentGrid {
 
-    private String proximosEventos;
+    private String productos;
     private String proyectosCurso;
-    private String notas;
+    private String proveedores;
     private String pendienteEntrega;
     private String enEspera;
     private String pendienteCobro;
     private String tareasEjecucion;
     private String treking;
-    private String diario;
+    private String trabajos;
     private String salir;
     private String catalogo;
-    private String tablas;
+    private String home;
 
     @Override
     protected void setContext() {
@@ -36,33 +36,33 @@ public class FragmentFacturacion extends FragmentGrid {
     @Override
     protected void setLista() {
 
-        proximosEventos = getString(R.string.proximos_eventos);
+        productos = getString(R.string.productos);
         proyectosCurso = getString(R.string.proyectos_en_curso);
-        notas = getString(R.string.notas);
+        proveedores = getString(R.string.proveedores);
         pendienteEntrega = getString(R.string.presupuesto_pendiente_entrega);
         enEspera = getString(R.string.presupuesto_en_espera_aceptar);
         pendienteCobro = getString(R.string.pendiente_cobro);
         tareasEjecucion = getString(R.string.tareas_ejecucion);
         treking = getString(R.string.treking);
-        diario = getString(R.string.diario);
+        trabajos = getString(R.string.trabajos);
         salir = getString(R.string.salir);
         catalogo = getString(R.string.catalogo);
-        tablas = getString(R.string.tablas);
+        home = getString(R.string.inicio);
 
         lista = new ArrayList<GridModel>();
 
-        lista.add(new GridModel(R.drawable.ic_evento_indigo, proximosEventos));
         lista.add(new GridModel(R.drawable.ic_proy_curso_indigo, proyectosCurso));
-        lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, notas));
+        lista.add(new GridModel(R.drawable.ic_tareas_indigo, tareasEjecucion));
+        lista.add(new GridModel(R.drawable.ic_treking_indigo, treking));
         lista.add(new GridModel(R.drawable.ic_pte_entrega_indigo, pendienteEntrega));
         lista.add(new GridModel(R.drawable.ic_espera_indigo, enEspera));
         lista.add(new GridModel(R.drawable.ic_cobros_indigo, pendienteCobro));
-        lista.add(new GridModel(R.drawable.ic_tareas_indigo, tareasEjecucion));
-        lista.add(new GridModel(R.drawable.ic_treking_indigo, treking));
-        lista.add(new GridModel(R.drawable.ic_registro_indigo, diario));
+        lista.add(new GridModel(R.drawable.ic_tareas_indigo, trabajos));
+        lista.add(new GridModel(R.drawable.ic_producto_indigo, productos));
         lista.add(new GridModel(R.drawable.ic_catalogo_indigo, catalogo));
-        lista.add(new GridModel(R.drawable.ic_tablas_indigo, tablas));
-        lista.add(new GridModel(R.drawable.ic_apagar_indigo, salir));
+        lista.add(new GridModel(R.drawable.ic_proveedor_indigo, proveedores));
+        lista.add(new GridModel(R.drawable.ic_inicio_black_24dp, home));
+        lista.add(new GridModel(R.drawable.ic_salir_rojo, salir));
 
     }
 
@@ -74,18 +74,18 @@ public class FragmentFacturacion extends FragmentGrid {
 
         String nombre = gridModel.getNombre();
 
-        if (nombre.equals(proximosEventos)) {
+        if (nombre.equals(productos)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new CalendarioEventos()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new FragmentCRUDProducto()).addToBackStack(null).commit();
         } else if (nombre.equals(proyectosCurso)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_main, new Trabajos()).addToBackStack(null).commit();
-        } else if (nombre.equals(notas)) {
+        } else if (nombre.equals(proveedores)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new Notas()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new FragmentCRUDProveedor()).addToBackStack(null).commit();
 
         } else if (nombre.equals(pendienteEntrega)) {
 
@@ -107,20 +107,20 @@ public class FragmentFacturacion extends FragmentGrid {
 
             obtenerDeptpartidasTreking();
 
-        } else if (nombre.equals(diario)) {
+        } else if (nombre.equals(trabajos)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new Diario()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new FragmentCRUDTrabajo()).addToBackStack(null).commit();
 
         } else if (nombre.equals(catalogo)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_main, new Catalogo()).addToBackStack(null).commit();
 
-        } else if (nombre.equals(tablas)) {
+        } else if (nombre.equals(home)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentTablas()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuInicio()).addToBackStack(null).commit();
 
         } else if (nombre.equals(salir)) {
 

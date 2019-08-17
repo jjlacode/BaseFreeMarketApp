@@ -3,16 +3,15 @@ package com.jjlacode.freelanceproject.ui;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.jjlacode.base.util.JavaUtil;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCUD;
 import com.jjlacode.base.util.crud.Modelo;
-import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
@@ -117,9 +116,8 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
 
 
         if (modelo.getString(DETPARTIDA_RUTAFOTO) != null) {
-            mediaUtil = new MediaUtil(contexto);
             path = modelo.getString(DETPARTIDA_RUTAFOTO);
-            mediaUtil.setImageUri(modelo.getString(DETPARTIDA_RUTAFOTO), imagen);
+            imagen.setImageUri(modelo.getString(DETPARTIDA_RUTAFOTO));
         }
 
     }
@@ -152,7 +150,7 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
         cantidad = (EditMaterial) ctrl(R.id.etcantcdetpartida_prod, DETPARTIDA_CANTIDAD);
         cantidadPartida = (EditMaterial) ctrl(R.id.etcanttotpartida_prod);
         nombre = (EditMaterial) ctrl(R.id.etnombredetpartida_prod, DETPARTIDA_NOMBRE);
-        imagen = (ImageView) ctrl(R.id.imgcdetpartida_prod);
+        imagen = (ImagenLayout) ctrl(R.id.imgcdetpartida_prod);
         refProv = (EditMaterial) ctrl(R.id.tvrefprovcdetpartida_prod, DETPARTIDA_REFPROVEEDOR);
         descProv = (EditMaterial) ctrl(R.id.etporcdesprovcdetpartida_prod, DETPARTIDA_DESCUENTOPROVEEDOR);
         tipoDetPartida = (TextView) ctrl(R.id.tvtipocdetpartida_prod, DETPARTIDA_TIPO);

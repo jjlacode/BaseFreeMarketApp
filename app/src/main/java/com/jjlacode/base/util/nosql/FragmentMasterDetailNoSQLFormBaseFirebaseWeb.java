@@ -23,6 +23,7 @@ import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.ListaModelo;
 import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.media.ImagenUtil;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
@@ -129,7 +130,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseWeb
             email.setText(((FirebaseFormBase) entrada).getEmailBase());
 
             if (nn(((FirebaseFormBase) entrada).getIdchatBase()) && !((FirebaseFormBase) entrada).getIdchatBase().equals("")) {
-                setImagenFireStoreCircle(contexto, ((FirebaseFormBase) entrada).getIdchatBase() +
+                ImagenUtil.setImageFireStoreCircle(((FirebaseFormBase) entrada).getIdchatBase() +
                         ((FirebaseFormBase) entrada).getTipoBase(), imagen);
             }
 
@@ -206,7 +207,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseWeb
             web = firebaseFormBase.getWebBase();
 
             if (nn(firebaseFormBase.getIdchatBase()) && !firebaseFormBase.getIdchatBase().equals("")) {
-                setImagenFireStoreCircle(contexto, firebaseFormBase.getIdchatBase() +
+                ImagenUtil.setImageFireStoreCircle(firebaseFormBase.getIdchatBase() +
                         firebaseFormBase.getTipoBase(), imagen);
             }
 

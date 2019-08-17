@@ -413,7 +413,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                     importePartida.setText(JavaUtil.formatoMonedaLocal(partidabase.getDouble(PARTIDABASE_PRECIO)));
                     tiempoPartida.setText(partidabase.getString(PARTIDABASE_TIEMPO));
                     if (partidabase.getString(PARTIDABASE_RUTAFOTO)!=null){
-                        imagen.setImageURI(partidabase.getUri(PARTIDABASE_RUTAFOTO));
+                        imagen.setImageUri(partidabase.getString(PARTIDABASE_RUTAFOTO));
                         path = partidabase.getString(PARTIDABASE_RUTAFOTO);
                     }
 

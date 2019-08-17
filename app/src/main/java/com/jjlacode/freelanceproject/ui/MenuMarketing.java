@@ -8,10 +8,11 @@ import com.jjlacode.base.util.android.FragmentGrid;
 import com.jjlacode.base.util.web.FragmentWebView;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.um.base.ui.FragmentChat;
+import com.jjlacode.um.base.ui.FragmentPerfilUser;
 
 import java.util.ArrayList;
 
-public class FragmentMarketing extends FragmentGrid {
+public class MenuMarketing extends FragmentGrid {
 
     private String campanias;
     private String clientes;
@@ -79,22 +80,23 @@ public class FragmentMarketing extends FragmentGrid {
         } else if (nombre.equals(notas)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new Freelancers()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new FragmentCRUDNota()).addToBackStack(null).commit();
 
         } else if (nombre.equals(calendarioNotas)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentCRUDNota()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new Notas()).addToBackStack(null).commit();
 
         } else if (nombre.equals(publicidadFreelance)) {
 
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new PublicidadFreelance()).addToBackStack(null).commit();
+            bundle = new Bundle();
+            putBundle(TIPO, FREELANCE);
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentPerfilUser());
 
         } else if (nombre.equals(home)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentInicio()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuInicio()).addToBackStack(null).commit();
 
         } else if (nombre.equals(salir)) {
 

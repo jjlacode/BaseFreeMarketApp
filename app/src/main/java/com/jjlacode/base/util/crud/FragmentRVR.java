@@ -86,8 +86,8 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
         gonePie();
             visible(inicio);
         visible(frLista);
-        activityBase.fab.hide();
-        activityBase.fab2.show();
+        activityBase.fabNuevo.hide();
+        activityBase.fabVoz.show();
             listaRV();
         if (subTitulo==null) {
             activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
@@ -105,7 +105,7 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
     protected void acciones() {
         super.acciones();
 
-        activityBase.fab.setOnClickListener(new View.OnClickListener() {
+        activityBase.fabNuevo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 

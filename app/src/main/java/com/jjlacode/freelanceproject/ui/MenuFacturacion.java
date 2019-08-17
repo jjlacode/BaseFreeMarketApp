@@ -12,7 +12,7 @@ import com.jjlacode.freelanceproject.R;
 
 import java.util.ArrayList;
 
-public class FragmentContabilidad extends FragmentGrid {
+public class MenuFacturacion extends FragmentGrid {
 
     private String proximosEventos;
     private String proyectosCurso;

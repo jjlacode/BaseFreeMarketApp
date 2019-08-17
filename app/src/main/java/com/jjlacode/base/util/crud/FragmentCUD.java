@@ -201,7 +201,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
             }
         });
 
-        activityBase.fab.setOnClickListener(new View.OnClickListener() {
+        activityBase.fabNuevo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -211,7 +211,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
             }
         });
 
-        activityBase.fab2.setOnClickListener(new View.OnClickListener() {
+        activityBase.fabVoz.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 reconocimientoVoz(RECOGNIZE_SPEECH_ACTIVITY);

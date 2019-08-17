@@ -47,6 +47,7 @@ public class ChatReceiver extends ReceiverBase {
                     intentVerChat.putExtra(EXTRA_IDCHAT, detChat.getString(DETCHAT_ID_CHAT));
                     intentVerChat.putExtra(EXTRA_SECCHAT, detChat.getInt(DETCHAT_SECUENCIA));
                     intentVerChat.putExtra(EXTRA_TIPOCHAT, chat.getString(CHAT_TIPO));
+                    intentVerChat.putExtra(EXTRA_TIPOCHATRETORNO, chat.getString(CHAT_TIPORETORNO));
                     intentVerChat.putExtra(EXTRA_ACTUAL, CHAT);
                     intentVerChat.putExtra(EXTRA_ID, contnot);
                     intentVerChat.setFlags(FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);

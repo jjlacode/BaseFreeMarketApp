@@ -22,7 +22,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.jjlacode.base.util.JavaUtil;
 import com.jjlacode.base.util.Models.Rating;
@@ -39,7 +38,6 @@ import java.util.ArrayList;
 
 public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends FragmentMasterDetailNoSQLFormBaseFirebase {
 
-    private Object objeto;
     private String stemp = "";
     private ImageButton votar;
     private ImageButton verVoto;
@@ -58,7 +56,6 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends Fr
     private float votoUser;
     private String tipoRating;
     private String idRating;
-    private String keyVoto;
     private ArrayList<Rating> listaComents;
     private TextView ultimoVoto;
 
@@ -104,7 +101,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends Fr
         if (esDetalle) {
             setDatos();
             idRating = firebaseFormBase.getIdchatBase();
-            tipoRating = setTipo();
+            tipoRating = tipo;
             recuperarVotos(ratingBar, tipoRating, idRating);
             recuperarComentarios(tipoRating, idRating);
             recuperarVotoUsuario(ratingBarUser, contexto, tipoRating, idRating);
@@ -115,7 +112,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends Fr
             activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
         }
 
-        activityBase.fab.hide();
+        activityBase.fabNuevo.hide();
         acciones();
 
     }
@@ -155,7 +152,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends Fr
 
                 gone(lyvoto);
                 String nombre = firebaseFormBase.getNombreBase();
-                enviarVoto(contexto, keyVoto, nombre, tipoRating, idRating, votoUser, comentario.getTexto());
+                enviarVoto(contexto, nombre, tipoRating, idRating, votoUser, comentario.getTexto());
             }
         });
 
@@ -192,26 +189,17 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends Fr
 
     }
 
-    public void enviarVoto(Context contexto, String key, String nombre, String tipo, String id, float valor, String comentario) {
+    public void enviarVoto(Context contexto, String nombre, final String tipo, final String id, float valor, String comentario) {
 
-        String idUser = CRUDutil.getSharePreference(contexto, PREFERENCIAS, USERID, NULL);
+        perfilUser = CRUDutil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
+        idUser = CRUDutil.getSharePreference(contexto, USERID, USERID, NULL);
         Rating rat = new Rating(valor, tipo, id, idUser, nombre, comentario, TimeDateUtil.ahora());
-        if (key == null) {
-            FirebaseDatabase.getInstance().getReference().child("rating").push().setValue(rat, new DatabaseReference.CompletionListener() {
+        FirebaseDatabase.getInstance().getReference().child("rating").child(tipo).child(id).child(idUser + perfilUser).setValue(rat, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                    recuperarVotos(ratingBar, tipoRating, idRating);
+                    recuperarVotos(ratingBar, tipo, id);
                 }
             });
-        } else {
-            FirebaseDatabase.getInstance().getReference().child("rating").child(key).setValue(rat, new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                    recuperarVotos(ratingBar, tipoRating, idRating);
-                }
-            });
-
-        }
 
     }
 
@@ -224,8 +212,8 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends Fr
                     contexto.getResources().getColor(R.color.color_star_defecto));
         }
 
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("rating");
-        Query query = db.orderByChild("idRating").equalTo(id);
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("rating").child(tipo).child(id);
+
 
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
@@ -235,6 +223,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends Fr
 
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
 
+                    System.out.println("child.getValue() = " + dataSnapshot.getValue());
                     listaVotos.add(child.getValue(Rating.class));
 
                 }
@@ -320,36 +309,32 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends Fr
             }
         };
 
-        query.addValueEventListener(valueEventListener);
+        db.addValueEventListener(valueEventListener);
 
     }
 
     public void recuperarVotoUsuario(final RatingBar ratingBarUser, final Context contexto, final String tipo, final String id) {
 
-        final String idUser = CRUDutil.getSharePreference(contexto, PREFERENCIAS, USERID, NULL);
-        System.out.println("idUser = " + idUser);
+        idUser = CRUDutil.getSharePreference(contexto, USERID, USERID, NULL);
+        perfilUser = CRUDutil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
+
         votoUser = 0.0f;
         comentario.setText("");
-        keyVoto = null;
         ratingBarUser.setRating(votoUser);
 
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("rating");
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("rating").child(tipo).child(id).child(idUser + perfilUser);
+
 
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
 
-                    Rating rat = child.getValue(Rating.class);
-                    if (rat.getIdUser().equals(idUser) && rat.getTipo().equals(tipo) &&
-                            rat.getIdRating().equals(id)) {
-                        votoUser += rat.getValor();
-                        comentario.setText(rat.getComentario());
-                        keyVoto = child.getKey();
-                        break;
-                    }
+                Rating rat = dataSnapshot.getValue(Rating.class);
 
+                if (rat != null) {
+                    votoUser = rat.getValor();
+                    comentario.setText(rat.getComentario());
                 }
 
                 voto.setText(String.valueOf(votoUser));
@@ -382,8 +367,8 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends Fr
     protected void recuperarComentarios(final String tipo, final String id) {
 
 
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("rating");
-        Query query = db.orderByChild("idRating").equalTo(id);
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("rating").child(tipo).child(id);
+
 
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
@@ -393,11 +378,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends Fr
 
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
 
-                    if (child.getValue(Rating.class).getTipo().equals(tipo)) {
-
                         listaComents.add(child.getValue(Rating.class));
-
-                    }
 
                 }
 
@@ -412,7 +393,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends Fr
             }
         };
 
-        query.addValueEventListener(valueEventListener);
+        db.addValueEventListener(valueEventListener);
 
     }
 
@@ -428,6 +409,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends Fr
         TextView comentario;
         TextView nombreComent;
         TextView fechaComent;
+        TextView tipoComment;
         RatingBar ratingBarComent;
 
         public ViewHolderRVComents(View itemView) {
@@ -437,6 +419,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends Fr
             nombreComent = itemView.findViewById(R.id.tvnombrecoments);
             fechaComent = itemView.findViewById(R.id.tvfechacoments);
             ratingBarComent = itemView.findViewById(R.id.ratingBarcoment);
+            tipoComment = itemView.findViewById(R.id.tvtipocoments);
         }
 
         @Override
@@ -448,6 +431,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends Fr
             comentario.setText(rating.getComentario());
             nombreComent.setText(rating.getNombreUser());
             fechaComent.setText(TimeDateUtil.getDateString(rating.getFecha()));
+            tipoComment.setText(rating.getTipo());
             float ratUser = rating.getValor();
             ratingBarComent.setRating(ratUser);
 

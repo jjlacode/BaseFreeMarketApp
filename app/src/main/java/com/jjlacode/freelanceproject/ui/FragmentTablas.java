@@ -140,7 +140,7 @@ public class FragmentTablas extends FragmentGrid {
             destino = INICIO;
             enviarBundle();
 
-            icFragmentos.enviarBundleAFragment(bundle,new FragmentInicio());
+            icFragmentos.enviarBundleAFragment(bundle, new MenuInicio());
 
         }else if (nombre.equals(productos)){
             destino = PRODUCTO;

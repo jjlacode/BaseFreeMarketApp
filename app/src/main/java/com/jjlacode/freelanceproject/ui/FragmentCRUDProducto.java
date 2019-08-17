@@ -12,6 +12,7 @@ import com.jjlacode.base.util.adapter.BaseViewHolder;
 import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.freelanceproject.R;
@@ -139,7 +140,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         descProv = (EditMaterial) ctrl(R.id.etdescprovproductos, PRODUCTO_DESCPROV);
         btnProv = (ImageView) ctrl(R.id.imgbtnprovproducto);
         addPartida = (Button) ctrl(R.id.btn_add_producto_partida);
-        imagen = (ImageView) ctrl(R.id.imgproducto);
+        imagen = (ImagenLayout) ctrl(R.id.imgproducto);
     }
 
     @Override

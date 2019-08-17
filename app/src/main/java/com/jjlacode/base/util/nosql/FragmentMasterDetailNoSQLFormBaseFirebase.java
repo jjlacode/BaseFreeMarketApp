@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
@@ -16,6 +15,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.jjlacode.base.util.Models.FirebaseFormBase;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.freelanceproject.R;
 
 import java.util.ArrayList;
@@ -31,6 +31,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebase extends Fragment
     protected DatabaseReference db;
     protected Query query;
     protected ProgressDialog progressDialog;
+    protected String tipo;
 
 
     @Override
@@ -48,20 +49,47 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebase extends Fragment
         direccionBase = (EditMaterial) ctrl(R.id.etdireccionformbase);
         emailBase = (EditMaterial) ctrl(R.id.etemailformbase);
         telefonoBase = (EditMaterial) ctrl(R.id.ettelefonoformbase);
-        imagen = (ImageView) ctrl(R.id.imgformbase);
+        imagen = (ImagenLayout) ctrl(R.id.imgformbase);
+        imagen.setIcfragmentos(icFragmentos);
 
+    }
+
+    @Override
+    protected void cargarBundle() {
+        super.cargarBundle();
+
+        tipo = bundle.getString(TIPO);
+    }
+
+    @Override
+    protected void acciones() {
+        super.acciones();
+
+    }
+
+    protected void accionesImagen() {
+
+        imagen.setVisibleBtn();
+
+        imagen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mostrarDialogoOpcionesImagen(contexto);
+
+            }
+        });
     }
 
     @Override
     protected void setLista() {
 
-        progressDialog = ProgressDialog.show(contexto, "Cargando lista de " + setTipo(), "Por favor espere...", false, false);
+        progressDialog = ProgressDialog.show(contexto, "Cargando lista de " + tipo, "Por favor espere...", false, false);
 
         lista = new ArrayList<FirebaseFormBase>();
 
         db = FirebaseDatabase.getInstance().getReference();
 
-        query = db.child(setTipo());
+        query = db.child(tipo);
 
         ValueEventListener eventListenerProd = new ValueEventListener() {
             @Override
@@ -72,7 +100,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebase extends Fragment
                     lista.add(firebaseFormBase);
                 }
 
-                System.out.println("lista " + setTipo() + ": " + lista.size());
+                System.out.println("lista " + tipo + ": " + lista.size());
                 setRv();
 
                 progressDialog.cancel();
@@ -95,6 +123,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebase extends Fragment
 
     protected void setDatos() {
 
+
         nombreBase.setText(firebaseFormBase.getNombreBase());
         direccionBase.setText(firebaseFormBase.getDireccionBase());
         emailBase.setText(firebaseFormBase.getEmailBase());
@@ -103,7 +132,9 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebase extends Fragment
 
         activityBase.toolbar.setTitle(firebaseFormBase.getTipoBase());
 
-        setImagenFireStore(contexto, firebaseFormBase.getIdchatBase() + setTipo(), imagen);
+        //setImagenFireStore(contexto, firebaseFormBase.getIdchatBase() + setTipo(), imagen);
+        accionesImagen();
+
 
     }
 
@@ -116,5 +147,4 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebase extends Fragment
 
     }
 
-    protected abstract String setTipo();
 }

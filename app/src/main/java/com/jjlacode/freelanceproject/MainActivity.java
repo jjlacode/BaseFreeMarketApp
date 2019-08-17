@@ -32,7 +32,7 @@ import com.jjlacode.freelanceproject.ui.FragmentCRUDPerfil;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDProducto;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDProyecto;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDTrabajo;
-import com.jjlacode.freelanceproject.ui.FragmentInicio;
+import com.jjlacode.freelanceproject.ui.MenuInicio;
 import com.jjlacode.um.base.ui.FragmentChat;
 
 import static android.Manifest.permission.CALL_PHONE;
@@ -70,27 +70,20 @@ public class MainActivity extends MainActivityBase {
 
         if (intent.getIntExtra(INICIO,0)==0){
 
-            SharedPreferences preferences=getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
+            inicio();
 
-            if (getDatabasePath(BASEDATOS)!=null && preferences.contains(PERFILACTIVO)){
-
-                Interactor.perfila = preferences.getString(PERFILACTIVO, "Defecto");
-                Interactor.prioridad = preferences.getBoolean(PRIORIDAD, true);
-                Interactor.diaspasados = preferences.getInt(DIASPASADOS, 20);
-                Interactor.diasfuturos = preferences.getInt(DIASFUTUROS, 90);
-                Interactor.hora = Interactor.Calculos.calculoPrecioHora();
-                Interactor.setNamefdef();
-
-                Log.d("inicio", "Inicio correcto");
-
-                SharedPreferences persistencia=getSharedPreferences(PERSISTENCIA, MODE_PRIVATE);
-                SharedPreferences.Editor editor=persistencia.edit();
-                editor.clear();
-                editor.apply();
-
-            }
         }else if (intent.getIntExtra(INICIO,0)==1){
+
             AutoArranque.scheduleJob(AppActivity.getAppContext());
+
+            inicio();
+
+        } else if (intent.getIntExtra(INICIO, 0) == 2) {
+
+            inicio();
+            ayudaWeb = HTTPAYUDA + "Bienvenida";
+            bundle.putString(WEB, ayudaWeb);
+            enviarBundleAFragment(bundle, new FragmentWebView());
         }
 
 
@@ -115,16 +108,41 @@ public class MainActivity extends MainActivityBase {
             String idChat = intent.getStringExtra(EXTRA_IDCHAT);
             int secChat = intent.getIntExtra(EXTRA_SECCHAT, 0);
             String tipoChat = intent.getStringExtra(EXTRA_TIPOCHAT);
+            String tipoChatRetorno = intent.getStringExtra(EXTRA_TIPOCHATRETORNO);
             bundle.putString(ACTUAL, intent.getStringExtra(EXTRA_ACTUAL));
             bundle.putString(CAMPO_ID, idChat);
             bundle.putInt(CAMPO_SECUENCIA, secChat);
             bundle.putString(CAMPO_TIPO, tipoChat);
+            bundle.putString(CAMPO_TIPORETORNO, tipoChatRetorno);
             NotificationManager notifyMgr = (NotificationManager)
                     AppActivity.getAppContext().getSystemService(NOTIFICATION_SERVICE);
             notifyMgr.cancel(intent.getIntExtra(EXTRA_ID, 0));
 
         }
 
+    }
+
+    public void inicio() {
+
+        SharedPreferences preferences = getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
+
+        if (getDatabasePath("unionmarket.db") != null && preferences.contains(PERFILACTIVO)) {
+
+            Interactor.perfila = preferences.getString(PERFILACTIVO, "Defecto");
+            Interactor.prioridad = preferences.getBoolean(PRIORIDAD, true);
+            Interactor.diaspasados = preferences.getInt(DIASPASADOS, 20);
+            Interactor.diasfuturos = preferences.getInt(DIASFUTUROS, 90);
+            Interactor.hora = Interactor.Calculos.calculoPrecioHora();
+            Interactor.setNamefdef();
+
+            Log.d("inicio", "Inicio correcto");
+
+            SharedPreferences persistencia = getSharedPreferences(PERSISTENCIA, MODE_PRIVATE);
+            SharedPreferences.Editor editor = persistencia.edit();
+            editor.clear();
+            editor.apply();
+
+        }
     }
 
 
@@ -255,10 +273,10 @@ public class MainActivity extends MainActivityBase {
 
             case INICIO:
 
-                fab2.show();
-                fab.hide();
+                fabVoz.show();
+                fabNuevo.hide();
                 toolbar.setSubtitle(Interactor.setNamefdef());
-                enviarBundleAFragment(bundle, new FragmentInicio());
+                enviarBundleAFragment(bundle, new MenuInicio());
                 break;
             case AMORTIZACION:
 

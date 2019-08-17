@@ -1,5 +1,6 @@
 package com.jjlacode.freelanceproject.ui;
 
+import android.os.Bundle;
 import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,7 +43,7 @@ public class UnionMarket extends FragmentGrid {
         lista = new ArrayList<GridModel>();
 
         lista.add(new GridModel(R.drawable.ic_clientes_indigo, clientesWeb));
-        lista.add(new GridModel(R.drawable.ic_freelance_indigo, freelance));
+        lista.add(new GridModel(R.drawable.ic_comercial_indigo, freelance));
         lista.add(new GridModel(R.drawable.logofp, freelanceDemanda));
         lista.add(new GridModel(R.drawable.ic_proveedor_indigo, proveedoresWeb));
         lista.add(new GridModel(R.drawable.ic_producto_indigo, comercios));
@@ -64,44 +65,44 @@ public class UnionMarket extends FragmentGrid {
         if (nombre.equals(clientesWeb)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentCRM()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuCRM()).addToBackStack(null).commit();
         } else if (nombre.equals(freelance)) {
-
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new Freelancers()).addToBackStack(null).commit();
+            bundle = new Bundle();
+            putBundle(TIPO, FREELANCE);
+            icFragmentos.enviarBundleAFragment(bundle, new ListadosFirebase());
         } else if (nombre.equals(freelanceDemanda)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentInformesAjustes()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuInformesAjustes()).addToBackStack(null).commit();
 
 
         } else if (nombre.equals(proveedoresWeb)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentFacturacion()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuFacturacion()).addToBackStack(null).commit();
 
         } else if (nombre.equals(comercios)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentContabilidad()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuContabilidad()).addToBackStack(null).commit();
 
 
         } else if (nombre.equals(trabajoOferta)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentInformesAjustes()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuInformesAjustes()).addToBackStack(null).commit();
 
 
         } else if (nombre.equals(trabajoDemanda)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentInformesAjustes()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuInformesAjustes()).addToBackStack(null).commit();
 
 
         } else if (nombre.equals(usado)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentInformesAjustes()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuInformesAjustes()).addToBackStack(null).commit();
 
 
         } else if (nombre.equals(salir)) {

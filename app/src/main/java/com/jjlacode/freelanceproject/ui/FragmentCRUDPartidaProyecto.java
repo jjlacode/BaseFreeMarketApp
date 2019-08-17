@@ -28,6 +28,7 @@ import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.Modelo;
@@ -280,7 +281,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         btnNuevoProdProv = (Button) ctrl(R.id.btnprovudpartida);
         btnNuevaPartida = (Button) ctrl(R.id.btnpartudpartida);
         progressBarPartida = (ProgressBar) ctrl(R.id.progressBarUDpartida);
-        imagen = (ImageView) ctrl(R.id.imgudpartida);
+        imagen = (ImagenLayout) ctrl(R.id.imgudpartida);
         imagenret = (ImageView) ctrl(R.id.imgretudpartida);
         buscar = (ImageView) ctrl(R.id.imgbuscarpartida);
         rvdetalles = (RecyclerView) ctrl(R.id.rvdetalleUDpartida);

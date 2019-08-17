@@ -10,7 +10,7 @@ import com.jjlacode.freelanceproject.R;
 
 import java.util.ArrayList;
 
-public class FragmentCRM extends FragmentGrid {
+public class MenuCRM extends FragmentGrid {
 
     private String proximosEventos;
     private String clientes;
@@ -78,12 +78,12 @@ public class FragmentCRM extends FragmentGrid {
         } else if (nombre.equals(notas)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new Freelancers()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new FragmentCRUDNota()).addToBackStack(null).commit();
 
         } else if (nombre.equals(calendarioNotas)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentCRUDNota()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new Notas()).addToBackStack(null).commit();
 
         } else if (nombre.equals(eventos)) {
 
@@ -93,7 +93,7 @@ public class FragmentCRM extends FragmentGrid {
         } else if (nombre.equals(home)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentInicio()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuInicio()).addToBackStack(null).commit();
 
         } else if (nombre.equals(salir)) {
 

@@ -17,6 +17,7 @@ import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.AndroidUtil;
 import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.time.DatePickerFragment;
@@ -144,7 +145,7 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
         anios = (EditMaterial) ctrl(R.id.etanioscudamort, AMORTIZACION_ANYOS);
         meses = (EditMaterial) ctrl(R.id.etmesescudamort, AMORTIZACION_MESES);
         dias = (EditMaterial) ctrl(R.id.etdiascudamort, AMORTIZACION_DIAS);
-        imagen = (ImageView) ctrl(R.id.imgcudamort);
+        imagen = (ImagenLayout) ctrl(R.id.imgcudamort);
         btnimgfecha = (ImageView) ctrl(R.id.btnimgfechacudamort);
         bar = (ProgressBar) ctrl(R.id.progressBarcudamort);
 

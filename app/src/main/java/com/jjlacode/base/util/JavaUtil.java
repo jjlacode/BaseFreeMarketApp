@@ -62,6 +62,7 @@ public class JavaUtil {
         String CAMPO_SERVIDO = "servido_";
         String CAMPO_TIEMPO = "tiempo_";
         String CAMPO_TIPO = "tipo_";
+        String CAMPO_TIPORETORNO = "tiporetorno_";
         String CAMPO_NOTIFICADO = "notificado_";
         String CAMPO_REFERENCIA = "referencia_";
         String NUEVOREGISTRO = "nuevoreg";
@@ -73,6 +74,7 @@ public class JavaUtil {
         String PATH = "path";
         String CONTNOT ="Contador notificacion";
         String PREFERENCIAS = "preferencias";
+        String PERFILUSER = "perfiluser";
 
 
 

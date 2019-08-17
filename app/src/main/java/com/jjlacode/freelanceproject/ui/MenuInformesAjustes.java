@@ -10,7 +10,7 @@ import com.jjlacode.freelanceproject.R;
 
 import java.util.ArrayList;
 
-public class FragmentInformesAjustes extends FragmentGrid {
+public class MenuInformesAjustes extends FragmentGrid {
 
     private String perfiles;
     private String informes;
@@ -96,7 +96,7 @@ public class FragmentInformesAjustes extends FragmentGrid {
         } else if (nombre.equals(home)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentInicio()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuInicio()).addToBackStack(null).commit();
 
         } else if (nombre.equals(salir)) {
 

@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
@@ -21,6 +20,7 @@ import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.ListaModelo;
@@ -63,6 +63,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     private String actualtemp;
     private ImageButton btnNota;
     private ImageButton btnVerNotas;
+    private ImagenLayout imagenPeso;
 
 
     public FragmentCRUDCliente() {
@@ -116,11 +117,6 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             enviarAct();
             selector();
         }
-    }
-
-    @Override
-    protected void setImagen() {
-
     }
 
     @Override
@@ -221,6 +217,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
         idTipoCliente = modelo.getString(CLIENTE_ID_TIPOCLIENTE);
         id = modelo.getString(CLIENTE_ID_CLIENTE);
         tipoCliente.setText(modelo.getString(CLIENTE_DESCRIPCIONTIPOCLI));
+        tipoCliente.setTextSize(sizeText * 2);
         peso = modelo.getInt(CLIENTE_PESOTIPOCLI);
         fechaInactivo = modelo.getLong(CLIENTE_ACTIVO);
         if (fechaInactivo > 0) {
@@ -243,13 +240,24 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
         }
 
         if (peso > 6) {
-            imagen.setImageResource(R.drawable.clientev);
+            //imagen.setImageResource(R.drawable.clientev);
+            //imagenPeso.setImageResource(R.drawable.clientev,(int)((double)(anchoReal)/4),(int)((double)(altoReal)/6));
+            imagenPeso.setImageResourcePerfil(activityBase, R.drawable.clientev);
         } else if (peso > 3) {
-            imagen.setImageResource(R.drawable.clientea);
+            //imagen.setImageResource(R.drawable.clientea);
+            //imagenPeso.setImageResource(R.drawable.clientea,(int)((double)(anchoReal)/4),(int)((double)(altoReal)/6));
+            imagenPeso.setImageResourcePerfil(activityBase, R.drawable.clientea);
+
         } else if (peso > 0) {
-            imagen.setImageResource(R.drawable.clienter);
+            //imagen.setImageResource(R.drawable.clienter);
+            //imagenPeso.setImageResource(R.drawable.clienter,(int)((double)(anchoReal)/4),(int)((double)(altoReal)/6));
+            imagenPeso.setImageResourcePerfil(activityBase, R.drawable.clienter);
+
         } else {
-            imagen.setImageResource(R.drawable.cliente);
+            //imagen.setImageResource(R.drawable.cliente);
+            //imagenPeso.setImageResource(R.drawable.cliente,(int)((double)(anchoReal)/4),(int)((double)(altoReal)/6));
+            imagenPeso.setImageResourcePerfil(activityBase, R.drawable.cliente);
+
         }
 
         String seleccion = EVENTO_CLIENTEREL + " = '" + id + "'";
@@ -417,7 +425,8 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
         contactoCliente = (EditMaterial) ctrl(R.id.etcontudcliente, CLIENTE_CONTACTO);
         btnevento = (ImageButton) ctrl(R.id.btneventoudcliente);
         tipoCliente = (TextView) ctrl(R.id.tvtipoudcliente);
-        imagen = (ImageView) ctrl(R.id.imgudcliente);
+        imagen = (ImagenLayout) ctrl(R.id.imgcliente);
+        imagenPeso = (ImagenLayout) ctrl(R.id.imgpesocliente);
         mapa = (ImageButton) ctrl(R.id.imgbtndirudcliente);
         llamada = (ImageButton) ctrl(R.id.imgbtnteludcliente);
         mail = (ImageButton) ctrl(R.id.imgbtnmailudcliente);
@@ -540,7 +549,8 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
 
         @Override
         protected void setEntradas(int posicion, View view, ArrayList<Modelo> entrada) {
-            ImageView imgcli = view.findViewById(R.id.imgclilcliente);
+            ImagenLayout imgcli = view.findViewById(R.id.imglcliente);
+            ImagenLayout imgcliPeso = view.findViewById(R.id.imglclientepeso);
             TextView nombreCli = view.findViewById(R.id.tvnomclilcliente);
             TextView contactoCli = view.findViewById(R.id.tvcontacclilcliente);
             TextView telefonoCli = view.findViewById(R.id.tvtelclilcliente);
@@ -550,13 +560,13 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             int peso = entrada.get(posicion).getInt((CLIENTE_PESOTIPOCLI));
 
             if (peso > 6) {
-                imgcli.setImageResource(R.drawable.clientev);
+                imgcliPeso.setImageResource(R.drawable.clientev);
             } else if (peso > 3) {
-                imgcli.setImageResource(R.drawable.clientea);
+                imgcliPeso.setImageResource(R.drawable.clientea);
             } else if (peso > 0) {
-                imgcli.setImageResource(R.drawable.clienter);
+                imgcliPeso.setImageResource(R.drawable.clienter);
             } else {
-                imgcli.setImageResource(R.drawable.cliente);
+                imgcliPeso.setImageResource(R.drawable.cliente);
             }
 
             nombreCli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_NOMBRE));
@@ -564,6 +574,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             telefonoCli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_TELEFONO));
             emailCli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_EMAIL));
             dirCli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_DIRECCION));
+            imgcli.setImageUriPerfil(activityBase, entrada.get(posicion).getString(CLIENTE_RUTAFOTO));
             super.setEntradas(posicion, view, entrada);
         }
     }
@@ -571,7 +582,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
 
         TextView nombre, direccion, telefono, email, contacto;
-        ImageView imagen;
+        ImagenLayout imagen, imagenPeso;
         CardView card;
 
         public ViewHolderRV(View itemView) {
@@ -581,7 +592,8 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             telefono = itemView.findViewById(R.id.tvtelclilcliente);
             email = itemView.findViewById(R.id.tvemailclilcliente);
             contacto = itemView.findViewById(R.id.tvcontacclilcliente);
-            imagen = itemView.findViewById(R.id.imgclilcliente);
+            imagen = itemView.findViewById(R.id.imglcliente);
+            imagenPeso = itemView.findViewById(R.id.imglclientepeso);
             card = itemView.findViewById(R.id.cardcliente);
         }
 
@@ -593,15 +605,16 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             telefono.setText(modelo.getCampos(CLIENTE_TELEFONO));
             email.setText(modelo.getCampos(CLIENTE_EMAIL));
             contacto.setText(modelo.getCampos(CLIENTE_CONTACTO));
+            imagen.setImageUriCard(activityBase, modelo.getString(CLIENTE_RUTAFOTO));
             int peso = modelo.getInt(CLIENTE_PESOTIPOCLI);
             if (peso > 6) {
-                imagen.setImageResource(R.drawable.clientev);
+                imagenPeso.setImageResourceCard(activityBase, R.drawable.clientev);
             } else if (peso > 3) {
-                imagen.setImageResource(R.drawable.clientea);
+                imagenPeso.setImageResourceCard(activityBase, R.drawable.clientea);
             } else if (peso > 0) {
-                imagen.setImageResource(R.drawable.clienter);
+                imagenPeso.setImageResourceCard(activityBase, R.drawable.clienter);
             } else {
-                imagen.setImageResource(R.drawable.cliente);
+                imagenPeso.setImageResourceCard(activityBase, R.drawable.cliente);
             }
 
             if (modelo.getLong(CLIENTE_ACTIVO) > 0) {

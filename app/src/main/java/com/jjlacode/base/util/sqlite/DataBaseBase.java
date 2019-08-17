@@ -36,6 +36,7 @@ public abstract class DataBaseBase extends SQLiteOpenHelper {
         this.version = version;
     }
 
+
     @Override
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);

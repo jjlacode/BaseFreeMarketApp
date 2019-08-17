@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tituloImgLy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textColor="@color/Color_texto"
+        android:textSize="@dimen/texto" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imglayout"
+        android:layout_below="@+id/tituloImgLy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/pieImgLy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imglayout"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textColor="@color/Color_texto"
+        android:textSize="@dimen/texto" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_img"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pieImgLy"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        android:background="@drawable/boton_redondo_secondary"
+        android:src="@drawable/ic_search_black_24dp"
+        android:textColor="@color/Color_texto_titulos" />
+
+
+</RelativeLayout>

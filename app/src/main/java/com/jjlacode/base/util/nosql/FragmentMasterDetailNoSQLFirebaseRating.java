@@ -117,7 +117,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRating extends FragmentMa
             activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
         }
 
-        activityBase.fab.hide();
+        activityBase.fabNuevo.hide();
         acciones();
 
     }

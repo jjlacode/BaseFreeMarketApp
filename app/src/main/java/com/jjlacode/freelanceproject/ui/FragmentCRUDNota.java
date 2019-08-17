@@ -18,6 +18,7 @@ import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.Modelo;
@@ -420,7 +421,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
 
         titulo = (EditMaterial) ctrl(R.id.ettitulo_nota);
         descripcion = (EditMaterial) ctrl(R.id.etdesc_nota);
-        imagen = (ImageView) ctrl(R.id.imagen_nota);
+        imagen = (ImagenLayout) ctrl(R.id.imagen_nota);
         playVideo = (ImageView) ctrl(R.id.btn_play_video);
         recVideo = (ImageView) ctrl(R.id.btn_grabar_video);
         ampliar = (ImageView) ctrl(R.id.ampliar_imagen);

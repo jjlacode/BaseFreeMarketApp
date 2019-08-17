@@ -14,6 +14,7 @@ import com.jjlacode.base.util.adapter.BaseViewHolder;
 import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
@@ -170,7 +171,7 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
         nombre = (EditMaterial) ctrl(R.id.etnombretarea, TRABAJO_NOMBRE);
         descripcion = (EditMaterial) ctrl(R.id.etdesctarea, TRABAJO_DESCRIPCION);
         tiempo = (EditMaterial) ctrl(R.id.ettiempotarea, TRABAJO_TIEMPO);
-        imagen = (ImageView) ctrl(R.id.imgtarea);
+        imagen = (ImagenLayout) ctrl(R.id.imgtarea);
         btnNota = (ImageButton) ctrl(R.id.btn_crearnota_tarea);
         btnVerNotas = (ImageButton) ctrl(R.id.btn_vernotas_tarea);
         addPartida = (Button) ctrl(R.id.btn_add_trabajo_partida);

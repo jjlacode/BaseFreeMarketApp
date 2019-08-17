@@ -25,12 +25,11 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <androidx.appcompat.widget.AppCompatImageView
+            <com.jjlacode.base.util.android.controls.ImagenLayout
                 android:id="@+id/imgudevento"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:layout_weight="3"
-                app:srcCompat="@drawable/ic_add_a_photo_black_24dp" />
+                android:layout_weight="3" />
 
             <com.jjlacode.base.util.android.controls.EditMaterial
                 android:id="@+id/etdescudevento"

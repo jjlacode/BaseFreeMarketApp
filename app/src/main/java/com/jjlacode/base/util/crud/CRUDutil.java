@@ -197,9 +197,14 @@ public class CRUDutil {
 
     public static String getSharePreference(Context contexto, String sharePreference, String key, String defecto){
 
-        SharedPreferences persistencia=contexto.getSharedPreferences(sharePreference, Context.MODE_PRIVATE);
+        try {
+            SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, Context.MODE_PRIVATE);
+            return persistencia.getString(key, defecto);
 
-        return persistencia.getString(key,defecto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
 
     }
 

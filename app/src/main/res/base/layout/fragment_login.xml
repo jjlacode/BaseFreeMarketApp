@@ -1,71 +1,102 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:background="@color/colorSecondary">
+    android:background="@color/colorSecondaryDark">
 
-    <!-- Logo -->
-    <ImageView
-        android:id="@+id/imglogin"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:adjustViewBounds="true"
-        android:scaleType="center"
-        app:srcCompat="@drawable/logofp" />
-
-    <!-- Indicador de progreso -->
-    <ProgressBar
-        android:id="@+id/login_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone" />
-
-    <!-- Formulario de login -->
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/login_form"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1.5"
-        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:background="@color/colorSecondary"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/etcorreologin"
+        <!-- Logo -->
+        <com.jjlacode.base.util.android.controls.ImagenLayout
+            android:id="@+id/imglogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:background="@drawable/cuadro_texto"
-            android:gravity="center_horizontal|center_vertical"
-            android:hint="@string/email"
-            android:inputType="textEmailAddress" />
+            android:layout_gravity="center"
+            android:background="@color/colorSecondary"
+            android:layout_weight="1" />
 
-        <EditText
-            android:id="@+id/etpasslogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/altobtn"
-            android:background="@drawable/cuadro_texto"
-            android:gravity="center_horizontal|center_vertical"
-            android:hint="@string/pass"
-            android:inputType="textPassword" />
+        <!-- Indicador de progreso -->
+        <ProgressBar
+            android:id="@+id/login_progress"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="8dp"
+            android:layout_weight="2"
+            android:progressBackgroundTint="@color/colorPrimary"
+            android:visibility="gone" />
+
+        <!-- Formulario de login -->
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/login_form"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:background="@color/colorSecondary"
+            android:visibility="gone">
+
+            <Spinner
+                android:id="@+id/spPerfil"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/altobtn"
+                android:background="@color/colorPrimary"
+                android:outlineAmbientShadowColor="@color/colorSecondary"
+                android:entries="@array/perfiles_user"
+                android:gravity="center" />
+
+            <EditText
+                android:id="@+id/etcorreologin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/altobtn"
+                android:gravity="center_horizontal|center_vertical"
+                android:hint="@string/email"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/colorPrimary"
+                android:textColorHint="@color/colorPrimary" />
+
+            <EditText
+                android:id="@+id/etpasslogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/altobtn"
+                android:gravity="center_horizontal|center_vertical"
+                android:hint="@string/pass"
+                android:inputType="textPassword"
+                android:textColor="@color/colorPrimary"
+                android:textColorHint="@color/colorPrimary" />
 
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnacceder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/altobtn"
-            android:textColor="@color/colorPrimary"
-            android:background="@drawable/boton_redondo_primary"
-            android:text="@string/acceder" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnacceder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/altobtn"
+                android:background="@drawable/boton_redondo_secondary"
+                android:text="@string/acceder"
+                android:textColor="@color/colorSecondaryDark" />
 
-    </androidx.appcompat.widget.LinearLayoutCompat>
-</LinearLayout>
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnRegistrar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/altobtn"
+                android:background="@drawable/boton_redondo_secondary"
+                android:text="@string/registrar"
+                android:textColor="@color/Color_texto"
+                android:visibility="gone" />
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </LinearLayout>
+</ScrollView>

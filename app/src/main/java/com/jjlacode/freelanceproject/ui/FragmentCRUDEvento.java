@@ -26,10 +26,12 @@ import androidx.cardview.widget.CardView;
 
 import com.jjlacode.base.util.JavaUtil;
 import com.jjlacode.base.util.adapter.BaseViewHolder;
+import com.jjlacode.base.util.adapter.ListaAdaptadorFiltro;
 import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.ListaModelo;
@@ -43,6 +45,7 @@ import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.jjlacode.base.util.JavaUtil.getDate;
 import static com.jjlacode.base.util.JavaUtil.getTime;
@@ -1145,10 +1148,10 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
     @Override
     protected void setInicio() {
 
-        imagen = (ImageView) ctrl(R.id.imgudevento);
+        imagen = (ImagenLayout) ctrl(R.id.imgudevento);
         if (proyecto!=null && proyecto.getString(PROYECTO_RUTAFOTO)!=null){
             path = proyecto.getString(PROYECTO_RUTAFOTO);
-            imagen.setImageURI(Uri.parse(path));
+            imagen.setImageUri(path);
         }
         tipoEvento = (TextView) ctrl(R.id.tvtipoudevento);
         proyRel = (AutoCompleteTextView) ctrl(R.id.sppryudevento);
@@ -2007,38 +2010,66 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
         listaClientes = ConsultaBD.queryList(CAMPOS_CLIENTE, null, null);
 
-        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltroModelo(getContext(),
-                R.layout.item_list_cliente,listaClientes, CAMPOS_CLIENTE) {
+        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
+                R.layout.item_list_cliente, listaClientes) {
 
             @Override
-            protected void setEntradas(int posicion, View view, ArrayList<Modelo> entrada) {
+            public void onEntrada(Object entrada, View view) {
 
-                ImageView imgcli = view.findViewById(R.id.imgclilcliente);
+                ImagenLayout imgcli = view.findViewById(R.id.imglcliente);
+                ImagenLayout imgcliPeso = view.findViewById(R.id.imglclientepeso);
                 TextView nombreCli = view.findViewById(R.id.tvnomclilcliente);
                 TextView contactoCli = view.findViewById(R.id.tvcontacclilcliente);
                 TextView telefonoCli = view.findViewById(R.id.tvtelclilcliente);
                 TextView emailCli = view.findViewById(R.id.tvemailclilcliente);
                 TextView dirCli = view.findViewById(R.id.tvdirclilcliente);
 
-                int peso = entrada.get(posicion).getInt((CLIENTE_PESOTIPOCLI));
+                dirCli.setText(((Modelo) entrada).getString(CLIENTE_DIRECCION));
+
+                int peso = ((Modelo) entrada).getInt
+                        (CLIENTE_PESOTIPOCLI);
 
                 if (peso > 6) {
-                    imgcli.setImageResource(R.drawable.clientev);
+                    imgcliPeso.setImageResource(R.drawable.clientev);
                 } else if (peso > 3) {
-                    imgcli.setImageResource(R.drawable.clientea);
+                    imgcliPeso.setImageResource(R.drawable.clientea);
                 } else if (peso > 0) {
-                    imgcli.setImageResource(R.drawable.clienter);
+                    imgcliPeso.setImageResource(R.drawable.clienter);
                 } else {
-                    imgcli.setImageResource(R.drawable.cliente);
+                    imgcliPeso.setImageResource(R.drawable.cliente);
                 }
 
-                nombreCli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_NOMBRE));
-                contactoCli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_CONTACTO));
-                telefonoCli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_TELEFONO));
-                emailCli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_EMAIL));
-                dirCli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_DIRECCION));
+                nombreCli.setText(((Modelo) entrada).getString(CLIENTE_NOMBRE));
+                contactoCli.setText(((Modelo) entrada).getString(CLIENTE_CONTACTO));
+                telefonoCli.setText(((Modelo) entrada).getString(CLIENTE_TELEFONO));
+                emailCli.setText(((Modelo) entrada).getString(CLIENTE_EMAIL));
+                imgcli.setImageUriPerfil(activityBase, ((Modelo) entrada).getString(CLIENTE_RUTAFOTO));
 
-                super.setEntradas(posicion, view, entrada);
+
+            }
+
+            @Override
+            public List onFilter(ArrayList entradas, CharSequence constraint) {
+
+                List suggestion = new ArrayList();
+
+                for (Object item : entradas) {
+
+                    for (int i = 2; i < CAMPOS_CLIENTE.length; i += 3) {
+
+
+                        if (((Modelo) item).getString(CAMPOS_CLIENTE[i]) != null && !((Modelo) item).getString(CAMPOS_CLIENTE[i]).equals("")) {
+                            if (((Modelo) item).getString(CAMPOS_CLIENTE[i]).toLowerCase().contains(constraint.toString().toLowerCase())) {
+
+                                suggestion.add(item);
+                                break;
+                            }
+                        }
+                    }
+
+                }
+
+                return null;
             }
 
         });

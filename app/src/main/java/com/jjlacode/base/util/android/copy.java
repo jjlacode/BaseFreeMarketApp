@@ -2162,7 +2162,7 @@ public class QueryDB implements Utilidades.Constantes {
 
     //PROVIDER ------------------------------------------------------------------------------------------
 
-    public class ProviderFreelanceProject extends ContentProvider implements Tablas{
+    public class ProviderPry extends ContentProvider implements Tablas{
 
     private DataBase bd;
 
@@ -2209,7 +2209,7 @@ public class QueryDB implements Utilidades.Constantes {
 
 
 
-    public ProviderFreelanceProject() {
+    public ProviderPry() {
 
     }
 

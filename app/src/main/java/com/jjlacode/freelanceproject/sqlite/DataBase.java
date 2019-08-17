@@ -17,15 +17,10 @@ import static com.jjlacode.freelanceproject.sqlite.ContratoPry.obtenerListaCampo
 public class DataBase extends DataBaseBase
         implements Interactor.Constantes, ContratoPry.Tablas, Interactor.Estados, Interactor.TiposEstados {
 
-    private static final String NOMBRE_BASE_DATOS = "freelanceproject.db";
-
     private static final int VERSION_ACTUAL = 1;
 
-    private final Context contexto;
-
     public DataBase(Context contexto) {
-        super(contexto, NOMBRE_BASE_DATOS, VERSION_ACTUAL);
-        this.contexto = contexto;
+        super(contexto, "unionmarket.db", VERSION_ACTUAL);
     }
 
     @Override

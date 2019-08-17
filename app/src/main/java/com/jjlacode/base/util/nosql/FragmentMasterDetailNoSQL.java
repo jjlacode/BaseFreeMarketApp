@@ -20,6 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jjlacode.base.util.adapter.ListaAdaptadorFiltro;
 import com.jjlacode.base.util.adapter.RVAdapter;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.animation.OneFrameLayout;
 import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.freelanceproject.R;
@@ -35,7 +36,7 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     protected RecyclerView rv;
     protected AutoCompleteTextView auto;
     protected ArrayList listafiltrada;
-    protected ImageView imagen;
+    protected ImagenLayout imagen;
     protected ImageView buscar;
     protected ImageView renovar;
     protected ImageView inicio;
@@ -134,6 +135,8 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     }
 
     protected void acciones() {
+
+        super.acciones();
 
         btnback.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -482,14 +485,14 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
             gone(refreshLayout);
             visible(frameAnimationCuerpo);
             visible(frPie);
-            activityBase.fab.setSize(FloatingActionButton.SIZE_MINI);
-            activityBase.fab2.setSize(FloatingActionButton.SIZE_MINI);
+            activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_MINI);
+            activityBase.fabVoz.setSize(FloatingActionButton.SIZE_MINI);
 
         } else {
-            activityBase.fab2.show();
-            activityBase.fab.show();
-            activityBase.fab.setSize(FloatingActionButton.SIZE_NORMAL);
-            activityBase.fab2.setSize(FloatingActionButton.SIZE_NORMAL);
+            activityBase.fabVoz.show();
+            activityBase.fabNuevo.show();
+            activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_NORMAL);
+            activityBase.fabVoz.setSize(FloatingActionButton.SIZE_NORMAL);
 
             if (grabarVoz == null) {
                 listaRV();
@@ -527,8 +530,8 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
         } else {
             gone(frCabecera);
         }
-        activityBase.fab2.show();
-        activityBase.fab.show();
+        activityBase.fabVoz.show();
+        activityBase.fabNuevo.show();
         visible(btndelete);
         listaRV();
 

@@ -10,7 +10,7 @@ import com.jjlacode.freelanceproject.R;
 
 import java.util.ArrayList;
 
-public class FragmentInicio extends FragmentGrid {
+public class MenuPerfilUser extends FragmentGrid {
 
     private String um;
     private String crm;
@@ -47,7 +47,7 @@ public class FragmentInicio extends FragmentGrid {
 
         lista = new ArrayList<GridModel>();
 
-        lista.add(new GridModel(R.drawable.logoum_sintxt_512, um));
+        lista.add(new GridModel(R.drawable.logo, um));
         lista.add(new GridModel(R.drawable.ic_clientes_indigo, crm));
         lista.add(new GridModel(R.drawable.ic_marketing_indigo, marketing));
         lista.add(new GridModel(R.drawable.ic_proy_curso_indigo, proyectos));
@@ -71,32 +71,32 @@ public class FragmentInicio extends FragmentGrid {
         if (nombre.equals(crm)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentCRM()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuCRM()).addToBackStack(null).commit();
         } else if (nombre.equals(proyectos)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentGestionProyectos()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuGestionProyectos()).addToBackStack(null).commit();
         } else if (nombre.equals(facturacion)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentFacturacion()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuFacturacion()).addToBackStack(null).commit();
 
         } else if (nombre.equals(contabilidad)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentContabilidad()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuContabilidad()).addToBackStack(null).commit();
 
 
         } else if (nombre.equals(ajustes)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentInformesAjustes()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuInformesAjustes()).addToBackStack(null).commit();
 
 
         } else if (nombre.equals(marketing)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentMarketing()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuMarketing()).addToBackStack(null).commit();
 
 
         } else if (nombre.equals(um)) {
@@ -105,7 +105,7 @@ public class FragmentInicio extends FragmentGrid {
                     .replace(R.id.content_main, new UnionMarket()).addToBackStack(null).commit();
 
 
-        }else if (nombre.equals(salir)){
+        } else if (nombre.equals(salir)) {
 
             FirebaseAuth.getInstance().signOut();
             activityBase.finish();

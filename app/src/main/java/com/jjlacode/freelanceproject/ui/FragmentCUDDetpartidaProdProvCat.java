@@ -3,12 +3,12 @@ package com.jjlacode.freelanceproject.ui;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.jjlacode.base.util.JavaUtil;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCUD;
 import com.jjlacode.base.util.crud.Modelo;
@@ -123,7 +123,7 @@ public class FragmentCUDDetpartidaProdProvCat extends FragmentCUD implements Int
         if (modelo.getString(DETPARTIDA_RUTAFOTO) != null) {
             mediaUtil = new MediaUtil(contexto);
             path = modelo.getString(DETPARTIDA_RUTAFOTO);
-            setImagenFireStoreCircle(contexto, path, imagen);
+            imagen.setImageFirestoreCircle(path);
         }
     }
 
@@ -160,7 +160,7 @@ public class FragmentCUDDetpartidaProdProvCat extends FragmentCUD implements Int
         precio = (EditMaterial) ctrl(R.id.etpreciocdetpartida_cat, DETPARTIDA_PRECIO);
         cantidad = (EditMaterial) ctrl(R.id.etcantcdetpartida_cat, DETPARTIDA_CANTIDAD);
         nombre = (EditMaterial) ctrl(R.id.etnombredetpartida_cat, DETPARTIDA_NOMBRE);
-        imagen = (ImageView) ctrl(R.id.imgcdetpartida_cat);
+        imagen = (ImagenLayout) ctrl(R.id.imgcdetpartida_cat);
         refProv = (EditMaterial) ctrl(R.id.tvrefprovcdetpartida_cat, DETPARTIDA_REFPROVEEDOR);
         descProv = (EditMaterial) ctrl(R.id.etporcdesprovcdetpartida_cat, DETPARTIDA_DESCUENTOPROVEEDOR);
         tipoDetPartida = (TextView) ctrl(R.id.tvtipocdetpartida_cat);

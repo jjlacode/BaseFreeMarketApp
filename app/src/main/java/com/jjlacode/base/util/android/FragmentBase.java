@@ -39,9 +39,11 @@ import com.jjlacode.base.util.JavaUtil;
 import com.jjlacode.base.util.Models.Contactos;
 import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.animation.OneFrameLayout;
+import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.interfaces.ICFragmentos;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
+import com.jjlacode.freelanceproject.ui.MenuInicio;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -67,7 +69,9 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected DisplayMetrics metrics;
 
     protected int ancho;
+    protected int anchoReal;
     protected int alto;
+    protected int altoReal;
     protected int densidadDpi;
     protected float sizeText;
     protected boolean multiPanel;
@@ -123,6 +127,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     private float valorLuz;
     protected ArrayList camposEdit;
     protected Timer timer;
+    protected String perfilUser;
+    protected String idUser;
 
 
     @Override
@@ -141,6 +147,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         land = getResources().getBoolean(R.bool.esLand);
         tablet = getResources().getBoolean(R.bool.esTablet);
         densidad = metrics.density;
+        anchoReal = metrics.widthPixels;
+        altoReal = metrics.heightPixels;
         ancho = (int) (metrics.widthPixels/densidad);
         alto = (int) (metrics.heightPixels/densidad);
         densidadDpi = (int) (metrics.densityDpi);
@@ -153,6 +161,9 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         recursos = new ArrayList<>();
         camposEdit = new ArrayList();
         TAG = getClass().getSimpleName();
+
+        perfilUser = CRUDutil.getSharePreference(AppActivity.getAppContext(), PREFERENCIAS, PERFILUSER, NULL);
+        idUser = CRUDutil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
 
         super.onCreate(savedInstanceState);
     }
@@ -241,9 +252,9 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         gone(frLista);
 
-        setOnCreateView(view,inflaterMain,containerMain);
-
         timerg = (Chronometer) view.findViewById(R.id.chronocrud);
+
+        setOnCreateView(view, inflaterMain, containerMain);
 
         setInicio();
 
@@ -271,7 +282,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         Log.d(TAG, getMetodo());
 
-        activityBase.fab2.setOnClickListener(new View.OnClickListener() {
+        activityBase.fabVoz.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 reconocimientoVoz(RECOGNIZE_SPEECH_ACTIVITY);
@@ -301,6 +312,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     public void onResume() {
         super.onResume();
         Log.d(TAG, getMetodo());
+
+        CRUDutil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, NULL);
 
         ayudaWeb = setAyudaWeb();
         icFragmentos.enviarAyudaWeb(ayudaWeb);
@@ -369,6 +382,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         if (listenerSensorLuz) {
             sensorManagerLuz.unregisterListener(sensorLuzListener);
         }
+
     }
 
     protected void acciones(){
@@ -396,6 +410,13 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
                 codigo[contCode] = code;
             }
         }
+
+        activityBase.fabInicio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                icFragmentos.enviarBundleAFragment(bundle, new MenuInicio());
+            }
+        });
 
 
     }
