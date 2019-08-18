@@ -76,7 +76,7 @@ public class JavaUtil {
         String PREFERENCIAS = "preferencias";
         String PERFILUSER = "perfiluser";
         String TIMESTAMP = "timestamp";
-
+        String TIMESTAMPDIA = "timestampdia";
 
 
         long SEGUNDOSLONG = (1000);

@@ -1,4 +1,4 @@
-package com.jjlacode.freelanceproject.sqlite;
+package com.jjlacode.base.util.sqlite;
 
 import android.content.ContentProvider;
 import android.content.ContentResolver;
@@ -15,18 +15,19 @@ import com.jjlacode.freelanceproject.logica.Interactor;
 
 import static com.jjlacode.base.util.JavaUtil.Constantes.PREFERENCIAS;
 import static com.jjlacode.base.util.JavaUtil.Constantes.TIMESTAMP;
-import static com.jjlacode.freelanceproject.sqlite.ContratoPry.AUTORIDAD_CONTENIDO;
-import static com.jjlacode.freelanceproject.sqlite.ContratoPry.FILTRO_CLIENTE;
-import static com.jjlacode.freelanceproject.sqlite.ContratoPry.FILTRO_FECHA;
-import static com.jjlacode.freelanceproject.sqlite.ContratoPry.Tablas;
-import static com.jjlacode.freelanceproject.sqlite.ContratoPry.crearUriTabla;
-import static com.jjlacode.freelanceproject.sqlite.ContratoPry.crearUriTablaDetalle;
-import static com.jjlacode.freelanceproject.sqlite.ContratoPry.generarIdTabla;
-import static com.jjlacode.freelanceproject.sqlite.ContratoPry.generarMime;
-import static com.jjlacode.freelanceproject.sqlite.ContratoPry.generarMimeItem;
-import static com.jjlacode.freelanceproject.sqlite.ContratoPry.obtenerIdTabla;
-import static com.jjlacode.freelanceproject.sqlite.ContratoPry.obtenerIdTablaDetalle;
-import static com.jjlacode.freelanceproject.sqlite.ContratoPry.obtenerIdTablaDetalleId;
+import static com.jjlacode.base.util.JavaUtil.Constantes.TIMESTAMPDIA;
+import static com.jjlacode.base.util.sqlite.ContratoPry.AUTORIDAD_CONTENIDO;
+import static com.jjlacode.base.util.sqlite.ContratoPry.FILTRO_CLIENTE;
+import static com.jjlacode.base.util.sqlite.ContratoPry.FILTRO_FECHA;
+import static com.jjlacode.base.util.sqlite.ContratoPry.Tablas;
+import static com.jjlacode.base.util.sqlite.ContratoPry.crearUriTabla;
+import static com.jjlacode.base.util.sqlite.ContratoPry.crearUriTablaDetalle;
+import static com.jjlacode.base.util.sqlite.ContratoPry.generarIdTabla;
+import static com.jjlacode.base.util.sqlite.ContratoPry.generarMime;
+import static com.jjlacode.base.util.sqlite.ContratoPry.generarMimeItem;
+import static com.jjlacode.base.util.sqlite.ContratoPry.obtenerIdTabla;
+import static com.jjlacode.base.util.sqlite.ContratoPry.obtenerIdTablaDetalle;
+import static com.jjlacode.base.util.sqlite.ContratoPry.obtenerIdTablaDetalleId;
 
 public class ProviderPry extends ContentProvider
         implements Tablas, Interactor.TiposEstados {
@@ -948,6 +949,8 @@ public class ProviderPry extends ContentProvider
                     db.insertOrThrow(tabla, null, values);
                     notificarCambio(uri);
                     CRUDutil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMP, TimeDateUtil.ahora());
+                    CRUDutil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMPDIA, TimeDateUtil.ahora());
+
 
                     if (secuencia != null && Integer.parseInt(secuencia)>0) {
                         id= values.getAsString(idTabla);
@@ -1066,6 +1069,7 @@ public class ProviderPry extends ContentProvider
 
             notificarCambio(uri);
             CRUDutil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMP, TimeDateUtil.ahora());
+            CRUDutil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMPDIA, TimeDateUtil.ahora());
 
             return db.update(tabla, values,
                     seleccion ,
@@ -1119,6 +1123,7 @@ public class ProviderPry extends ContentProvider
         if (tabla!=null) {
             notificarCambio(uri);
             CRUDutil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMP, TimeDateUtil.ahora());
+            CRUDutil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMPDIA, TimeDateUtil.ahora());
 
             return db.delete(tabla,seleccion,
                     selectionArgs);

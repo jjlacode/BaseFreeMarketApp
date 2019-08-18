@@ -10,8 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
-import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
 

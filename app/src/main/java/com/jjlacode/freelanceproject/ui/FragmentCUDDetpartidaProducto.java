@@ -12,9 +12,9 @@ import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCUD;
 import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
-import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObjectDetalle;
 

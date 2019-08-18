@@ -16,10 +16,10 @@ import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.crud.ListaModelo;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
+import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.base.util.time.calendar.clases.DiaCalBase;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
-import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 public class DiaCalNotas extends DiaCalBase implements ContratoPry.Tablas,
         JavaUtil.Constantes, Interactor.TiposEvento {

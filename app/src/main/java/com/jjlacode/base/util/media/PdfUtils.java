@@ -29,6 +29,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.android.FragmentBase;
 import com.jjlacode.base.util.interfaces.ICFragmentos;
+import com.jjlacode.freelanceproject.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -38,7 +39,7 @@ import java.util.ArrayList;
 
 public class PdfUtils extends FragmentBase {
 
-    private final static String NOMBRE_DIRECTORIO = "Pdf";
+    private final static String NOMBRE_DIRECTORIO = AppActivity.getAppContext().getString(R.string.app_name) + "/Pdf";
     private final static String ETIQUETA_ERROR = "ERROR PDF";
     public File archivoPDF;
     private Font fuente;

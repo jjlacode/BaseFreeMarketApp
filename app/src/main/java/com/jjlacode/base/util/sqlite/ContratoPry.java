@@ -1,7 +1,6 @@
-package com.jjlacode.freelanceproject.sqlite;
+package com.jjlacode.base.util.sqlite;
 
 import com.jjlacode.base.util.JavaUtil;
-import com.jjlacode.base.util.sqlite.ContratoBaseSQLite;
 
 import java.util.ArrayList;
 

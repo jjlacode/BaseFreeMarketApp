@@ -24,9 +24,9 @@ import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.AudioPlayRec;
 import com.jjlacode.base.util.media.MediaUtil;
+import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
-import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.io.File;
 import java.io.IOException;

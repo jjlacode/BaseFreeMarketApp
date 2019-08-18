@@ -25,9 +25,9 @@ import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.ListaModelo;
 import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
-import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
 
@@ -167,6 +167,28 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
         } else {
             btnVerEventos.setVisibility(View.GONE);
         }
+
+        if (peso > 6) {
+            //imagen.setImageResource(R.drawable.clientev);
+            //imagenPeso.setImageResource(R.drawable.clientev,(int)((double)(anchoReal)/4),(int)((double)(altoReal)/6));
+            imagenPeso.setImageResourcePerfil(activityBase, R.drawable.clientev);
+        } else if (peso > 3) {
+            //imagen.setImageResource(R.drawable.clientea);
+            //imagenPeso.setImageResource(R.drawable.clientea,(int)((double)(anchoReal)/4),(int)((double)(altoReal)/6));
+            imagenPeso.setImageResourcePerfil(activityBase, R.drawable.clientea);
+
+        } else if (peso > 0) {
+            //imagen.setImageResource(R.drawable.clienter);
+            //imagenPeso.setImageResource(R.drawable.clienter,(int)((double)(anchoReal)/4),(int)((double)(altoReal)/6));
+            imagenPeso.setImageResourcePerfil(activityBase, R.drawable.clienter);
+
+        } else {
+            //imagen.setImageResource(R.drawable.cliente);
+            //imagenPeso.setImageResource(R.drawable.cliente,(int)((double)(anchoReal)/4),(int)((double)(altoReal)/6));
+            imagenPeso.setImageResourcePerfil(activityBase, R.drawable.cliente);
+
+        }
+
 
     }
 

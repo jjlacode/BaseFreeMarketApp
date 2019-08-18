@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 
 import com.jjlacode.base.util.sqlite.ConsultaBD;
-import com.jjlacode.freelanceproject.sqlite.ContratoPry;
+import com.jjlacode.base.util.sqlite.ContratoPry;
 
 import java.util.ArrayList;
 import java.util.Set;

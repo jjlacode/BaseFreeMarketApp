@@ -18,9 +18,10 @@ import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.android.CheckPermisos;
 import com.jjlacode.base.util.android.MainActivityBase;
 import com.jjlacode.base.util.media.VisorPDFEmail;
+import com.jjlacode.base.util.services.AutoArranque;
+import com.jjlacode.base.util.sqlite.SQLiteUtil;
 import com.jjlacode.base.util.web.FragmentWebView;
 import com.jjlacode.freelanceproject.logica.Interactor;
-import com.jjlacode.freelanceproject.services.AutoArranque;
 import com.jjlacode.freelanceproject.settings.SettingsActivity;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDAmortizacion;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDCliente;
@@ -67,6 +68,8 @@ public class MainActivity extends MainActivityBase {
         validarPermisos();
 
         Intent intent = getIntent();
+
+        System.out.println("inicio = " + intent.getIntExtra(INICIO, 0));
 
         if (intent.getIntExtra(INICIO,0)==0){
 
@@ -126,7 +129,8 @@ public class MainActivity extends MainActivityBase {
 
         SharedPreferences preferences = getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
 
-        if (getDatabasePath("unionmarket.db") != null && preferences.contains(PERFILACTIVO)) {
+        if (SQLiteUtil.checkDataBase(getDatabasePath(this.getString(R.string.app_name) + ".db").getAbsolutePath())
+                && preferences.contains(PERFILACTIVO)) {
 
             Interactor.perfila = preferences.getString(PERFILACTIVO, "Defecto");
             Interactor.prioridad = preferences.getBoolean(PRIORIDAD, true);

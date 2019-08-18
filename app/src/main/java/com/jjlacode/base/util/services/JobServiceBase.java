@@ -4,8 +4,6 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.os.Handler;
 
-import com.jjlacode.freelanceproject.services.AutoArranque;
-
 public class JobServiceBase extends JobService {
 
 

@@ -16,13 +16,15 @@ import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.ListaModelo;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
+import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.base.util.sqlite.SQLiteUtil;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.freelanceproject.logica.Interactor;
-import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 import com.jjlacode.um.base.model.MsgChat;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 
 public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interactor.Constantes, ContratoPry.Tablas {
@@ -32,7 +34,9 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
     private DatabaseReference dbFirebase;
     private static long time0 = 0;
     private static long time1 = 0;
+    private static long time2 = 0;
     private static String ultimoIdChild = NULL;
+    private static int intentos = 0;
 
     public Jobs() {
     }
@@ -42,19 +46,25 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
         super.setJob();
 
         long ahora = TimeDateUtil.ahora();
+        int minutosCopia = 5;
 
         if (ahora > time0) {
             long timeStamp = CRUDutil.getSharePreference(getApplicationContext(), PREFERENCIAS, TIMESTAMP, 0L);
 
-            if (ahora < timeStamp + (MINUTOSLONG * 5)) {
+            if (ahora < timeStamp + (MINUTOSLONG * minutosCopia)) {
 
                 try {
-                    if (SQLiteUtil.BD_backup("unionmarket")) {
+                    if (SQLiteUtil.BD_backup(null, true)) {
                         System.out.println("Creada copia de bd");
-                        time0 = ahora + (MINUTOSLONG * 4);
+                        time0 = ahora + (MINUTOSLONG * (minutosCopia - 1));
                         CRUDutil.setSharePreference(getApplicationContext(), PREFERENCIAS, TIMESTAMP, 0L);
                     } else {
                         System.out.println("Falló la copia de seguridad");
+                        intentos++;
+                        if (intentos >= 10) {
+                            intentos = 0;
+                            time0 = ahora + (MINUTOSLONG * (minutosCopia - 1));
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -63,7 +73,33 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
 
         }
 
-        if (ahora > time1) {
+        Calendar c = new GregorianCalendar();
+
+        if (ahora > time1 && c.get(Calendar.HOUR_OF_DAY) == 0) {
+            long timeStamp = CRUDutil.getSharePreference(getApplicationContext(), PREFERENCIAS, TIMESTAMPDIA, 0L);
+
+            if (ahora < timeStamp + (DIASLONG)) {
+
+                try {
+                    if (SQLiteUtil.BD_backup(null, true)) {
+                        System.out.println("Creada copia de bd diaria");
+                        time1 = ahora + (DIASLONG);
+                    } else {
+                        System.out.println("Falló la copia de seguridad diaria");
+                        intentos++;
+                        if (intentos >= 10) {
+                            intentos = 0;
+                            time1 = ahora + (DIASLONG);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+        if (ahora > time2) {
 
             ArrayList<Modelo> listaEventos = Interactor.Calculos.comprobarEventos();
 
@@ -79,7 +115,7 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
                 }
             }
 
-            time1 = ahora + MINUTOSLONG;
+            time2 = ahora + MINUTOSLONG;
 
         }
 

@@ -31,12 +31,12 @@ import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.FragmentCUD;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
+import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.model.Categorias;
 import com.jjlacode.freelanceproject.model.ProdProv;
 import com.jjlacode.freelanceproject.model.Proveedores;
-import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
 import java.util.List;

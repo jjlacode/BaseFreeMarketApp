@@ -5,7 +5,7 @@ import com.jjlacode.base.util.JavaUtil;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.PdfUtils;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
-import com.jjlacode.freelanceproject.sqlite.ContratoPry;
+import com.jjlacode.base.util.sqlite.ContratoPry;
 
 import java.util.ArrayList;
 

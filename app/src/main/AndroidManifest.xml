@@ -26,7 +26,7 @@
         <activity android:name="com.jjlacode.base.util.login.LoginActivity" />
 
         <provider
-            android:name=".sqlite.ProviderPry"
+            android:name="com.jjlacode.base.util.sqlite.ProviderPry"
             android:authorities="${applicationId}"
             android:enabled="true"
             android:exported="false" />
@@ -42,7 +42,7 @@
         </provider>
         <receiver android:enabled="false"
                   android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
-                  android:name=".services.AutoArranque" >
+            android:name="com.jjlacode.base.util.services.AutoArranque">
 
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

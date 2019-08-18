@@ -1,4 +1,4 @@
-package com.jjlacode.freelanceproject.services;
+package com.jjlacode.base.util.services;
 
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.jjlacode.base.util.android.AppActivity;
-import com.jjlacode.base.util.services.Jobs;
 
 
 public class AutoArranque extends BroadcastReceiver {

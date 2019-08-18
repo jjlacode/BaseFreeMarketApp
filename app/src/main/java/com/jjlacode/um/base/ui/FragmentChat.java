@@ -26,9 +26,9 @@ import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.ListaModelo;
 import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.freelanceproject.R;
-import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 import com.jjlacode.um.base.model.MsgChat;
 
 import java.util.ArrayList;

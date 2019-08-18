@@ -5,7 +5,7 @@ import android.net.Uri;
 
 import com.jjlacode.base.util.JavaUtil;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
-import com.jjlacode.freelanceproject.sqlite.ContratoPry;
+import com.jjlacode.base.util.sqlite.ContratoPry;
 
 import java.io.Serializable;
 

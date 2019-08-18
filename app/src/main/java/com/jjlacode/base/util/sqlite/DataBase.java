@@ -1,17 +1,17 @@
-package com.jjlacode.freelanceproject.sqlite;
+package com.jjlacode.base.util.sqlite;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.jjlacode.base.util.sqlite.DataBaseBase;
+import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static com.jjlacode.freelanceproject.sqlite.ContratoPry.obtenerListaCampos;
+import static com.jjlacode.base.util.sqlite.ContratoPry.obtenerListaCampos;
 
 
 public class DataBase extends DataBaseBase
@@ -20,7 +20,7 @@ public class DataBase extends DataBaseBase
     private static final int VERSION_ACTUAL = 1;
 
     public DataBase(Context contexto) {
-        super(contexto, "unionmarket.db", VERSION_ACTUAL);
+        super(contexto, contexto.getString(R.string.app_name) + ".db", VERSION_ACTUAL);
     }
 
     @Override

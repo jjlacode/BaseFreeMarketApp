@@ -23,9 +23,9 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.jjlacode.base.util.JavaUtil;
 import com.jjlacode.base.util.interfaces.ICFragmentos;
+import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
-import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 public class MainActivityBase extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ICFragmentos,

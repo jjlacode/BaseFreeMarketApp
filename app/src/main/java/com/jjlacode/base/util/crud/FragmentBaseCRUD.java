@@ -23,9 +23,9 @@ import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
+import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
-import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.io.IOException;
 import java.util.Map;
@@ -81,7 +81,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         btnsave = view.findViewById(R.id.btn_save);
         btndelete = view.findViewById(R.id.btn_del);
 
-        System.out.println("view = " + view);
+        activityBase.fabInicio.hide();
 
     }
 

@@ -18,9 +18,9 @@ import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.crud.FragmentCRUD;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
+import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
-import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
 

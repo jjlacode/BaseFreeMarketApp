@@ -27,13 +27,13 @@ import com.jjlacode.base.util.android.FragmentBase;
 import com.jjlacode.base.util.animation.OneFrameLayout;
 import com.jjlacode.base.util.crud.ListaModelo;
 import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.base.util.time.Day;
 import com.jjlacode.base.util.time.ListaDays;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.base.util.time.calendar.clases.CalendarAdapter;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
-import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

@@ -18,22 +18,25 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
+import com.jjlacode.base.util.sqlite.SQLiteUtil;
+import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
 
 import static com.jjlacode.base.util.JavaUtil.Constantes.NULL;
 import static com.jjlacode.base.util.JavaUtil.Constantes.PERFILUSER;
 import static com.jjlacode.base.util.JavaUtil.Constantes.PREFERENCIAS;
+import static com.jjlacode.base.util.sqlite.ContratoPry.Tablas.CAMPOS_PERFIL;
+import static com.jjlacode.base.util.sqlite.ContratoPry.Tablas.PERFIL_DESCRIPCION;
+import static com.jjlacode.base.util.sqlite.ContratoPry.Tablas.PERFIL_NOMBRE;
+import static com.jjlacode.base.util.sqlite.ContratoPry.Tablas.TABLA_PERFIL;
 import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.DIASFUTUROS;
 import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.DIASPASADOS;
 import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.PERFILACTIVO;
 import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.PRIORIDAD;
 import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.USERID;
-import static com.jjlacode.freelanceproject.sqlite.ContratoPry.Tablas.CAMPOS_PERFIL;
-import static com.jjlacode.freelanceproject.sqlite.ContratoPry.Tablas.PERFIL_DESCRIPCION;
-import static com.jjlacode.freelanceproject.sqlite.ContratoPry.Tablas.PERFIL_NOMBRE;
-import static com.jjlacode.freelanceproject.sqlite.ContratoPry.Tablas.TABLA_PERFIL;
 
 /**
  * Interactor del login
@@ -214,12 +217,10 @@ public class LoginInteractor {
 
     private Boolean comprobarInicio() {
 
-        String BASEDATOS = "unionmarket.db";
-        String idUser = CRUDutil.getSharePreference(mContext, USERID, USERID, NULL);
-        String idUserpref = CRUDutil.getSharePreference(mContext, PREFERENCIAS, USERID, NULL);
+        String BASEDATOS = AppActivity.getAppContext().getString(R.string.app_name) + ".db";
 
-        if (mContext.getDatabasePath(BASEDATOS) == null &&
-                idUser.equals(NULL) && idUserpref.equals(NULL)) {
+        System.out.println("PathBD = " + mContext.getDatabasePath(BASEDATOS));
+        if (!SQLiteUtil.checkDataBase(mContext.getDatabasePath(BASEDATOS).getAbsolutePath())) {
 
             return false;
 

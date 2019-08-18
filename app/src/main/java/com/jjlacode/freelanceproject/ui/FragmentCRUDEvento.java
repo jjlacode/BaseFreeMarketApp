@@ -38,11 +38,11 @@ import com.jjlacode.base.util.crud.ListaModelo;
 import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
+import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.base.util.time.DatePickerFragment;
 import com.jjlacode.base.util.time.TimePickerFragment;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
-import com.jjlacode.freelanceproject.sqlite.ContratoPry;
 
 import java.util.ArrayList;
 import java.util.List;

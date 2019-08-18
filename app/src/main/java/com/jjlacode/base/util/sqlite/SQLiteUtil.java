@@ -1,11 +1,16 @@
 package com.jjlacode.base.util.sqlite;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.os.Environment;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.jjlacode.base.util.android.AppActivity;
+import com.jjlacode.base.util.file.FileUtils;
+import com.jjlacode.freelanceproject.R;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -99,33 +104,63 @@ public class SQLiteUtil {
         }
     }
 
-    public static boolean BD_backup(String basedatos) {
+    public static boolean BD_backup(String basedatos, boolean instant) {
 
         try {
-            final String inFileName = "/data/data/com.jjlacode.freelanceproject/databases/unionmarket.db";
+            boolean ready = false;
+            if (basedatos == null) {
+                basedatos = AppActivity.getAppContext().getString(R.string.app_name);
+            }
+            String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
+            final String inFileName = "/data/data/" + AppActivity.getPackage() + "/databases/"
+                    + basedatos + ".db";
             File dbFile = new File(inFileName);
             FileInputStream fis = new FileInputStream(dbFile);
 
-            String outFileName = Environment.getExternalStorageDirectory() + "/database_copy.db";
+            String outFileName = "/" + AppActivity.getAppContext().getString(R.string.app_name) + "/backupDB";
 
-            // Open the empty db as the output stream
-            OutputStream output = new FileOutputStream(outFileName);
+            File extFile = FileUtils.crearDirectorioPublico(outFileName, FileUtils.DOWNLOADS);
 
-            // Transfer bytes from the inputfile to the outputfile
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = fis.read(buffer)) > 0) {
-                output.write(buffer, 0, length);
+            System.out.println("extFile = " + extFile.getAbsolutePath());
+            if (!extFile.exists()) {
+                if (extFile.mkdir()) {
+                    ready = true;
+                } else {
+                    System.out.println("No se ha podido crear el directorio externo");
+                }
+            } else {
+                ready = true;
             }
 
-            // Close the streams
-            output.flush();
-            output.close();
-            fis.close();
-            return true;
+            if (ready) {
+
+                outFileName = extFile.getAbsolutePath();
+                if (instant) {
+                    outFileName += "/dbInstant.db";
+                } else {
+                    outFileName += "/" + timeStamp + AppActivity.getAppContext().getString(R.string.app_name) + ".db";
+                }
+                // Open the empty db as the output stream
+                OutputStream output = new FileOutputStream(outFileName);
+
+                // Transfer bytes from the inputfile to the outputfile
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = fis.read(buffer)) > 0) {
+                    output.write(buffer, 0, length);
+                }
+
+                // Close the streams
+                output.flush();
+                output.close();
+                fis.close();
+                return true;
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println("No se ha podido realizar la copia de seguridad de la BD");
         return false;
     }
 
@@ -210,6 +245,29 @@ public class SQLiteUtil {
             }
         }
 
+    }
+
+    public static boolean checkDataBase(String Database_path) {
+        SQLiteDatabase checkDB = null;
+        try {
+            checkDB = SQLiteDatabase.openDatabase(Database_path, null, SQLiteDatabase.OPEN_READONLY);
+            checkDB.close();
+        } catch (SQLiteException e) {
+            Log.e("Error", "No existe la base de datos " + e.getMessage());
+        }
+        return checkDB != null;
+    }
+
+    public boolean isTableExists(String nombreTabla, SQLiteDatabase db) {
+        boolean isExist = false;
+        Cursor cursor = db.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '" + nombreTabla + "'", null);
+        if (cursor != null) {
+            if (cursor.getCount() > 0) {
+                isExist = true;
+            }
+            cursor.close();
+        }
+        return isExist;
     }
 
 }
