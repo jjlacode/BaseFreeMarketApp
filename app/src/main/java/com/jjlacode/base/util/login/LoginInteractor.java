@@ -7,7 +7,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Patterns;
 
 import androidx.annotation.NonNull;
@@ -23,8 +22,8 @@ import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.freelanceproject.logica.Interactor;
 
+import static com.jjlacode.base.util.JavaUtil.Constantes.NULL;
 import static com.jjlacode.base.util.JavaUtil.Constantes.PERFILUSER;
-import static com.jjlacode.base.util.JavaUtil.Constantes.PERSISTENCIA;
 import static com.jjlacode.base.util.JavaUtil.Constantes.PREFERENCIAS;
 import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.DIASFUTUROS;
 import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.DIASPASADOS;
@@ -160,11 +159,31 @@ public class LoginInteractor {
                         if (!task.isSuccessful()) {
                             callback.onAuthFailed(task.getException().getMessage());
                         } else {
-                            if (comprobarInicio(task.getResult().getUser().getUid(), callback)) {
-                                CRUDutil.setSharePreference(mContext, USERID, USERID, task.getResult().getUser().getUid());
-                                CRUDutil.setSharePreference(mContext, PREFERENCIAS, PERFILUSER, perfil);
+                            if (comprobarInicio()) {
+                                String idUser = CRUDutil.getSharePreference(mContext, USERID, USERID, NULL);
+                                String idUserpref = CRUDutil.getSharePreference(mContext, PREFERENCIAS, USERID, NULL);
 
-                                callback.onAuthSuccess();
+                                if (task.getResult().getUser().getUid().equals(idUser) &&
+                                        task.getResult().getUser().getUid().equals(idUserpref)) {
+
+                                    CRUDutil.setSharePreference(mContext, PREFERENCIAS, PERFILUSER, perfil);
+
+                                    callback.onAuthSuccess();
+                                } else {
+                                    callback.onAuthFailed("Usuario erroneo");
+                                }
+
+
+                            } else {
+
+                                if (iniciarDB(task.getResult().getUser().getUid(), perfil)) {
+                                    CRUDutil.setSharePreference(mContext, USERID, USERID, task.getResult().getUser().getUid());
+                                    callback.onAuthSuccess();
+
+                                } else {
+                                    callback.onAuthFailed("Error al crear base de datos, por seguridad debe borrar los datos" +
+                                            " de la app manualmente para crear una nueva base de datos");
+                                }
                             }
                         }
                     }
@@ -179,8 +198,12 @@ public class LoginInteractor {
 
                 if (task.isSuccessful()) {
 
-                    iniciarDB(task.getResult().getUser().getUid(), perfil, callback);
-                    callback.onRegSuccess();
+                    if (iniciarDB(task.getResult().getUser().getUid(), perfil)) {
+                        callback.onRegSuccess();
+                    } else {
+                        callback.onRegFailed("Error al crear base de datos, por seguridad debe borrar los datos" +
+                                " de la app manualmente para crear una nueva base de datos");
+                    }
 
                 } else {
                     callback.onRegFailed(task.getException().getMessage());
@@ -189,102 +212,74 @@ public class LoginInteractor {
         });
     }
 
-    private Boolean comprobarInicio(String userId, Callback callback) {
+    private Boolean comprobarInicio() {
 
-        SharedPreferences preferences = mContext.getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
         String BASEDATOS = "unionmarket.db";
+        String idUser = CRUDutil.getSharePreference(mContext, USERID, USERID, NULL);
+        String idUserpref = CRUDutil.getSharePreference(mContext, PREFERENCIAS, USERID, NULL);
 
-        if (mContext.getDatabasePath(BASEDATOS) != null && preferences.contains(PERFILACTIVO)) {
+        if (mContext.getDatabasePath(BASEDATOS) == null &&
+                idUser.equals(NULL) && idUserpref.equals(NULL)) {
 
-            Interactor.perfila = preferences.getString(PERFILACTIVO, "Defecto");
-            Interactor.prioridad = preferences.getBoolean(PRIORIDAD, true);
-            Interactor.diaspasados = preferences.getInt(DIASPASADOS, 20);
-            Interactor.diasfuturos = preferences.getInt(DIASFUTUROS, 90);
-            Interactor.hora = Interactor.Calculos.calculoPrecioHora();
-            Interactor.setNamefdef();
+            return false;
 
-            Log.d("inicio", "Inicio correcto");
-
-            SharedPreferences persistencia = mContext.getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = persistencia.edit();
-            editor.clear();
-            editor.apply();
-
-            return true;
-
-        } else {
-
-
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.clear();
-            editor.apply();
-
-            Log.d("inicio", "borrada preferencias");
-
-            if (mContext.getDatabasePath(BASEDATOS) != null) {
-
-
-                mContext.deleteDatabase(BASEDATOS);
-
-                Log.d("inicio", "borrada : " + BASEDATOS);
-            }
-            iniciarDB(userId, perfil, callback);
         }
 
-        return false;
+        return true;
     }
 
-    private void iniciarDB(String userID, String perfil, Callback callback) {
-
-        System.out.println("userID iniciardb= " + userID);
-        SharedPreferences preferences = mContext.getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
-
-        SharedPreferences.Editor editor = preferences.edit();
-
-        editor.putString(USERID, userID).apply();
-
-        ContentValues valoresPer = new ContentValues();
-
-        ConsultaBD.putDato(valoresPer, CAMPOS_PERFIL, PERFIL_NOMBRE, "Defecto");
-        ConsultaBD.putDato(valoresPer, CAMPOS_PERFIL, PERFIL_DESCRIPCION,
-                "Perfil por defecto, jornada normal de 8 horas diarias" +
-                        " de lunes a viernes y 30 dias de vacaciones al año, " +
-                        " y un sueldo anual de " + JavaUtil.formatoMonedaLocal(20000));
-        Uri reg = ConsultaBD.insertRegistro(TABLA_PERFIL, valoresPer);
-        System.out.println(reg);
-
-        preferences = mContext.getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
+    private boolean iniciarDB(String userID, String perfil) {
 
         try {
 
-            editor = preferences.edit();
-            editor.putString(PERFILUSER, perfil);
-            editor.putString(PERFILACTIVO, "Defecto");
-            editor.putBoolean(PRIORIDAD, true);
-            editor.putInt(DIASPASADOS, 20);
-            editor.putInt(DIASFUTUROS, 90);
-            editor.apply();
+            if (!comprobarInicio()) {
+
+                SharedPreferences preferences = mContext.getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
+
+                SharedPreferences.Editor editor = preferences.edit();
+
+                editor.putString(USERID, userID).apply();
+
+                ContentValues valoresPer = new ContentValues();
+
+                ConsultaBD.putDato(valoresPer, CAMPOS_PERFIL, PERFIL_NOMBRE, "Defecto");
+                ConsultaBD.putDato(valoresPer, CAMPOS_PERFIL, PERFIL_DESCRIPCION,
+                        "Perfil por defecto, jornada normal de 8 horas diarias" +
+                                " de lunes a viernes y 30 dias de vacaciones al año, " +
+                                " y un sueldo anual de " + JavaUtil.formatoMonedaLocal(20000));
+                Uri reg = ConsultaBD.insertRegistro(TABLA_PERFIL, valoresPer);
+                System.out.println(reg);
+
+                preferences = mContext.getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
+
+
+                editor = preferences.edit();
+                editor.putString(PERFILUSER, perfil);
+                editor.putString(PERFILACTIVO, "Defecto");
+                editor.putBoolean(PRIORIDAD, true);
+                editor.putInt(DIASPASADOS, 20);
+                editor.putInt(DIASFUTUROS, 90);
+                editor.apply();
+
+                Interactor.prioridad = true;
+                Interactor.perfila = "Defecto";
+                Interactor.diasfuturos = 90;
+                Interactor.diaspasados = 20;
+                Interactor.hora = Interactor.Calculos.calculoPrecioHora();
+                Interactor.setNamefdef();
+                CRUDutil.setSharePreference(mContext, USERID, USERID, userID);
+
+                return true;
+            }
 
         } catch (Exception e) {
 
-
-            editor = preferences.edit();
-
-            editor.clear().apply();
-
-            mContext.deleteDatabase(userID);
+            e.printStackTrace();
             System.out.println("error al crear base");
 
         }
-        Interactor.prioridad = true;
-        Interactor.perfila = "Defecto";
-        Interactor.diasfuturos = 90;
-        Interactor.diaspasados = 20;
-        Interactor.hora = Interactor.Calculos.calculoPrecioHora();
-        Interactor.setNamefdef();
-        CRUDutil.setSharePreference(mContext, USERID, USERID, userID);
-        callback.onAuthSuccess();
 
+        return false;
 
     }
 

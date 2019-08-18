@@ -64,13 +64,12 @@
         <service
             android:name="com.jjlacode.base.util.services.JobServiceBase"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service
-            android:name=".services.AvisoEventos"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
-        <service
-            android:name=".services.AvisoMsgChat"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <service android:name="com.jjlacode.base.util.fcm.IFirebaseMessagingService" />
+        <service
+            android:name="com.jjlacode.base.util.services.Jobs"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
     </application>
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />

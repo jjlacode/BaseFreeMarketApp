@@ -75,6 +75,7 @@ public class JavaUtil {
         String CONTNOT ="Contador notificacion";
         String PREFERENCIAS = "preferencias";
         String PERFILUSER = "perfiluser";
+        String TIMESTAMP = "timestamp";
 
 
 

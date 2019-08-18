@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.jjlacode.base.util.android.AppActivity;
+import com.jjlacode.base.util.services.Jobs;
 
 
 public class AutoArranque extends BroadcastReceiver {
@@ -25,19 +26,14 @@ public class AutoArranque extends BroadcastReceiver {
 
     public static void scheduleJob(Context context) {
 
-        ComponentName serviceComponent = new ComponentName(AppActivity.getAppContext(), AvisoEventos.class);
+
+        ComponentName serviceComponent = new ComponentName(AppActivity.getAppContext(), Jobs.class);
         JobInfo info = new JobInfo.Builder(0, serviceComponent)
-                .setMinimumLatency(60000)
-                .setOverrideDeadline(60000)
-                .build();
-        ComponentName serviceComponent1 = new ComponentName(AppActivity.getAppContext(), AvisoMsgChat.class);
-        JobInfo info1 = new JobInfo.Builder(1, serviceComponent1)
-                .setMinimumLatency(1000)
-                .setOverrideDeadline(1000)
+                .setMinimumLatency(500)
+                .setOverrideDeadline(500)
                 .build();
         JobScheduler jobScheduler = (JobScheduler) AppActivity.getAppContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
         jobScheduler.schedule(info);
-        jobScheduler.schedule(info1);
 
     }
 }

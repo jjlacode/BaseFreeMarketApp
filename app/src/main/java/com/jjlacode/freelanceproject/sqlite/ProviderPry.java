@@ -9,8 +9,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
+import com.jjlacode.base.util.crud.CRUDutil;
+import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.freelanceproject.logica.Interactor;
 
+import static com.jjlacode.base.util.JavaUtil.Constantes.PREFERENCIAS;
+import static com.jjlacode.base.util.JavaUtil.Constantes.TIMESTAMP;
 import static com.jjlacode.freelanceproject.sqlite.ContratoPry.AUTORIDAD_CONTENIDO;
 import static com.jjlacode.freelanceproject.sqlite.ContratoPry.FILTRO_CLIENTE;
 import static com.jjlacode.freelanceproject.sqlite.ContratoPry.FILTRO_FECHA;
@@ -943,6 +947,8 @@ public class ProviderPry extends ContentProvider
                     System.out.println("values = " + values);
                     db.insertOrThrow(tabla, null, values);
                     notificarCambio(uri);
+                    CRUDutil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMP, TimeDateUtil.ahora());
+
                     if (secuencia != null && Integer.parseInt(secuencia)>0) {
                         id= values.getAsString(idTabla);
                         return crearUriTablaDetalle(id, secuencia, tabla);
@@ -1059,6 +1065,7 @@ public class ProviderPry extends ContentProvider
         if (tabla!=null) {
 
             notificarCambio(uri);
+            CRUDutil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMP, TimeDateUtil.ahora());
 
             return db.update(tabla, values,
                     seleccion ,
@@ -1111,6 +1118,8 @@ public class ProviderPry extends ContentProvider
 
         if (tabla!=null) {
             notificarCambio(uri);
+            CRUDutil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMP, TimeDateUtil.ahora());
+
             return db.delete(tabla,seleccion,
                     selectionArgs);
         }else{
@@ -1120,6 +1129,7 @@ public class ProviderPry extends ContentProvider
     }
 
     private void notificarCambio(Uri uri) {
+
         resolver.notifyChange(uri, null);
     }
 

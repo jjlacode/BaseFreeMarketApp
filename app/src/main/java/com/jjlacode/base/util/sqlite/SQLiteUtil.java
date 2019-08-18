@@ -3,6 +3,8 @@ package com.jjlacode.base.util.sqlite;
 import android.os.Environment;
 import android.util.Log;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.jjlacode.base.util.android.AppActivity;
 
 import java.io.File;
@@ -20,20 +22,23 @@ import static com.jjlacode.base.util.android.AppActivity.getAppContext;
 
 public class SQLiteUtil {
 
-    public static void exportDatabase(String databaseName, String backup) {
+    public static boolean exportDatabase(String databaseName, String backup) {
         try {
             File sd = Environment.getExternalStorageDirectory();
             File data = Environment.getDataDirectory();
             String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
 
             if (sd.canWrite()) {
+                System.out.println("nombre paquete" + AppActivity.getPackage());
                 String currentDBPath = "//data//" + AppActivity.getPackage() + "//databases//" + databaseName + ".db ";
-                String backupDBPath = timeStamp + "backup" + databaseName + ".db";
+                String backupDBPath = timeStamp + "_backup_" + databaseName + ".db";
                 if (backup != null) {
                     backupDBPath = backup;
                 }
                 File currentDB = new File(data, currentDBPath);
                 File backupDB = new File(sd, backupDBPath);
+
+                System.out.println("currentDB = " + currentDB.getAbsolutePath());
 
                 if (currentDB.exists()) {
                     FileChannel src = new FileInputStream(currentDB).getChannel();
@@ -41,11 +46,17 @@ public class SQLiteUtil {
                     dst.transferFrom(src, 0, src.size());
                     src.close();
                     dst.close();
+                    return true;
+                } else {
+                    System.out.println("no existe la BD a copiar");
                 }
+                return false;
             }
         } catch (Exception e) {
+            e.printStackTrace();
 
         }
+        return false;
     }
 
     public static void copiarBaseDatosAssets(String archivo, String prefijo) {
@@ -86,6 +97,119 @@ public class SQLiteUtil {
             if (out != null)
                 out.close();
         }
+    }
+
+    public static boolean BD_backup(String basedatos) {
+
+        try {
+            final String inFileName = "/data/data/com.jjlacode.freelanceproject/databases/unionmarket.db";
+            File dbFile = new File(inFileName);
+            FileInputStream fis = new FileInputStream(dbFile);
+
+            String outFileName = Environment.getExternalStorageDirectory() + "/database_copy.db";
+
+            // Open the empty db as the output stream
+            OutputStream output = new FileOutputStream(outFileName);
+
+            // Transfer bytes from the inputfile to the outputfile
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = fis.read(buffer)) > 0) {
+                output.write(buffer, 0, length);
+            }
+
+            // Close the streams
+            output.flush();
+            output.close();
+            fis.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static final String BASE_PATH = Environment.getExternalStoragePublicDirectory
+            ("App_BackUp").getAbsolutePath();
+    public static final String SEPARATOR = "/";
+    private static boolean operationStatus = true;
+    private static String dataDirectory = null;
+    private static String appName = "APP_NAME";
+
+    public static boolean copyAppDataToLocal(AppCompatActivity callingActivity, String appName) {
+
+        dataDirectory = callingActivity.getApplicationInfo().dataDir;
+        SQLiteUtil.appName = appName;
+        String TAG = "Developer_Option";
+        try {
+            if (dataDirectory != null) {
+                copyAppData(new File(dataDirectory, "shared_prefs"), "shared_prefs");
+                copyAppData(new File(dataDirectory, "files"), "files");
+                copyAppData(new File(dataDirectory, "databases"), "databases");
+            } else {
+                Log.e(TAG, "!!!!!Unable to get data directory for ACTIVITY-->" + callingActivity
+                        .toString());
+            }
+        } catch (Exception ex) {
+            Log.e(TAG, "!!!!@@@Exception Occurred while copying DATA--->" + ex.getMessage(), ex.fillInStackTrace());
+            operationStatus = false;
+        }
+
+        return operationStatus;
+    }
+
+    private static void copyFileToStorage(String directoryName, String inFile, String fileName, boolean
+            isDirectory, String subdirectoryName) {
+        try {
+            FileInputStream myInput = new FileInputStream(inFile);
+            File out_dir;
+            if (!isDirectory) {
+                out_dir = new File(BASE_PATH + SEPARATOR + appName +
+                        SEPARATOR + directoryName);
+            } else {
+                out_dir = new File(BASE_PATH + SEPARATOR + appName +
+                        SEPARATOR + directoryName + SEPARATOR + subdirectoryName);
+            }
+            if (!out_dir.exists()) {
+                operationStatus = out_dir.mkdirs();
+            }
+            String outFileName = out_dir + "/" + fileName;
+            OutputStream myOutput = new FileOutputStream(outFileName);
+            byte[] buffer1 = new byte[1024];
+            int length;
+            while ((length = myInput.read(buffer1)) > 0) {
+                myOutput.write(buffer1, 0, length);
+            }
+            myOutput.flush();
+            myOutput.close();
+            myInput.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void copyAppData(File fileTypeToBeCopied, String outDirectoryName) {
+        if (fileTypeToBeCopied.exists() && fileTypeToBeCopied.isDirectory()) {
+            File[] files = fileTypeToBeCopied.listFiles();
+            for (File file : files) {
+                if (file.isFile()) {
+                    copyFileToStorage(outDirectoryName, file.getAbsolutePath(), file.getName(), false, "");
+                } else {
+                    String folderName = file.getName();
+                    File databaseDirsNew = new File(dataDirectory, outDirectoryName + "/" + folderName);
+                    if (databaseDirsNew.exists() && databaseDirsNew.isDirectory()) {
+                        File[] filesDB = databaseDirsNew.listFiles();
+                        for (File file1 : filesDB) {
+                            if (file1.isFile()) {
+                                copyFileToStorage(outDirectoryName, file1.getAbsolutePath(), file1.getName(),
+                                        true, folderName);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
 }
