@@ -4,14 +4,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ProgressBar
-        android:id="@+id/progressBarWeb"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <WebView
-        android:id="@+id/browserweb"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <ProgressBar
+            android:id="@+id/progressBarWeb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
+        <WebView
+            android:id="@+id/browserweb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 </androidx.core.widget.NestedScrollView>

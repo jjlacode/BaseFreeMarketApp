@@ -69,7 +69,7 @@ public class UnionMarket extends FragmentGrid {
         } else if (nombre.equals(freelance)) {
             bundle = new Bundle();
             putBundle(TIPO, FREELANCE);
-            icFragmentos.enviarBundleAFragment(bundle, new ListadosFirebase());
+            icFragmentos.enviarBundleAFragment(bundle, new ListadosPerfilesFirebase());
         } else if (nombre.equals(freelanceDemanda)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
@@ -79,7 +79,7 @@ public class UnionMarket extends FragmentGrid {
         } else if (nombre.equals(proveedoresWeb)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new MenuFacturacion()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new ListadoProductosProvWeb()).addToBackStack(null).commit();
 
         } else if (nombre.equals(comercios)) {
 

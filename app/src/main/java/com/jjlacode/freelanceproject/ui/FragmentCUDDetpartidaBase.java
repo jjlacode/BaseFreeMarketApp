@@ -957,7 +957,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements Interactor
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_list_prodprov, null, false);
+                    .inflate(R.layout.item_list_catalogo_prod_prov_web, null, false);
 
             view.setOnClickListener(this);
             return new ViewHolder(view);
@@ -1025,7 +1025,7 @@ public class FragmentCUDDetpartidaBase extends FragmentCUD implements Interactor
         public ProdProvHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_list_prodprov, parent, false);
+                    .inflate(R.layout.item_list_catalogo_prod_prov_web, parent, false);
 
             view.setOnClickListener(this);
             return new ProdProvHolder(view);

@@ -55,7 +55,7 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     protected boolean esDetalle;
     protected String path;
     protected MediaUtil mediaUtil = new MediaUtil(contexto);
-    private OneFrameLayout frameAnimation;
+    protected OneFrameLayout frameAnimation;
     protected String stemp = "";
     protected int posicion;
 
@@ -260,7 +260,6 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
 
         if (listab == null) {
             setLista();
-            System.out.println("lista.size() = " + lista.size());
 
         } else {
             lista = listab;
@@ -486,12 +485,14 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
             visible(frameAnimationCuerpo);
             visible(frPie);
             activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_MINI);
+            activityBase.fabInicio.setSize(FloatingActionButton.SIZE_MINI);
             activityBase.fabVoz.setSize(FloatingActionButton.SIZE_MINI);
 
         } else {
             activityBase.fabVoz.show();
             activityBase.fabNuevo.show();
             activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_NORMAL);
+            activityBase.fabInicio.setSize(FloatingActionButton.SIZE_NORMAL);
             activityBase.fabVoz.setSize(FloatingActionButton.SIZE_NORMAL);
 
             if (grabarVoz == null) {

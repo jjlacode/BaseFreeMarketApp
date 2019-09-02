@@ -205,6 +205,11 @@ public class ImagenLayout extends RelativeLayout {
         btn.setVisibility(View.VISIBLE);
     }
 
+    public void setGoneBtn() {
+
+        btn.setVisibility(View.GONE);
+    }
+
     public void setSizeTextTitulo(float sizeTextTitulo) {
 
         titulo.setTextSize(sizeTextTitulo);

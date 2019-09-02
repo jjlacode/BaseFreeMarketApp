@@ -404,15 +404,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         switch(orientation ) {
             case Configuration.ORIENTATION_LANDSCAPE:
                 // Con la orientación en horizontal actualizamos el adaptador
-                editor.putString(ORIGEN, origen);
-                editor.putString(ACTUAL, actual);
-                editor.putString(ACTUALTEMP, actualtemp);
-                editor.putString(SUBTITULO, subTitulo);
-                editor.putString(CAMPO_ID,id);
-                editor.putInt(CAMPO_SECUENCIA,secuencia);
-                editor.putBoolean(NUEVOREGISTRO,nuevo);
-                editor.apply();
-                break;
             case Configuration.ORIENTATION_PORTRAIT:
                 // Con la orientación en vertical actualizamos el adaptador
                 editor.putString(ORIGEN, origen);

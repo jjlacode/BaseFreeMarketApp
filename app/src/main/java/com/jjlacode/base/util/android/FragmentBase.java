@@ -27,7 +27,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +37,7 @@ import androidx.fragment.app.Fragment;
 import com.jjlacode.base.util.JavaUtil;
 import com.jjlacode.base.util.Models.Contactos;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.android.controls.LockableScrollView;
 import com.jjlacode.base.util.animation.OneFrameLayout;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.interfaces.ICFragmentos;
@@ -51,6 +51,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 
+import static android.Manifest.permission.READ_CONTACTS;
+import static android.Manifest.permission.WRITE_CONTACTS;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.SENSOR_SERVICE;
 
@@ -103,7 +105,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected ImageButton btnback;
     protected ImageButton btndelete;
     protected OneFrameLayout frameAnimationCuerpo;
-    protected ScrollView scrollDetalle;
+    protected LockableScrollView scrollDetalle;
     protected float densidad;
     protected static final int RECOGNIZE_SPEECH_ACTIVITY = 30;
     protected String grabarVoz;
@@ -136,6 +138,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         Log.d(TAG, getMetodo());
 
         setLayout();
+        System.out.println("layoutCabecera = " + layoutCabecera);
+
         setLayoutExtra();
         setContext();
 
@@ -456,12 +460,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         switch(orientation ) {
             case Configuration.ORIENTATION_LANDSCAPE:
                 // Con la orientación en horizontal actualizamos el adaptador
-                editor.putString(ORIGEN, origen);
-                editor.putString(ACTUAL, actual);
-                editor.putString(ACTUALTEMP, actualtemp);
-                editor.putString(SUBTITULO, subTitulo);
-                editor.apply();
-                break;
+
             case Configuration.ORIENTATION_PORTRAIT:
                 // Con la orientación en vertical actualizamos el adaptador
                 editor.putString(ORIGEN, origen);
@@ -751,19 +750,23 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
     public void reconocimientoVoz(int code){
 
-        Intent intentActionRecognizeSpeech = new Intent(
-                RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intentActionRecognizeSpeech.putExtra(
-                RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
-        intentActionRecognizeSpeech.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
-        try {
-            update();
-            startActivityForResult(intentActionRecognizeSpeech,
-                    code,null);
-        } catch (ActivityNotFoundException a) {
-            Toast.makeText(contexto,
-                    "Tú dispositivo no soporta el reconocimiento por voz",
-                    Toast.LENGTH_SHORT).show();
+        if (CheckPermisos.validarPermisos(activityBase, READ_CONTACTS, 100) &&
+                CheckPermisos.validarPermisos(activityBase, WRITE_CONTACTS, 100)) {
+
+            Intent intentActionRecognizeSpeech = new Intent(
+                    RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intentActionRecognizeSpeech.putExtra(
+                    RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
+            intentActionRecognizeSpeech.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+            try {
+                update();
+                startActivityForResult(intentActionRecognizeSpeech,
+                        code, null);
+            } catch (ActivityNotFoundException a) {
+                Toast.makeText(contexto,
+                        "Tú dispositivo no soporta el reconocimiento por voz",
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -956,7 +959,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
             System.out.println("contacto = " + contacto);
             System.out.println("contactos = " + contactos.getDatos());
             if (contactos.getDatos().toLowerCase().equals(contacto)) {
-                AppActivity.hacerLlamada(contexto, contactos.getNumero(), Interactor.permiso);
+                AppActivity.hacerLlamada(contexto, contactos.getNumero(), activityBase);
             }
         }
     }

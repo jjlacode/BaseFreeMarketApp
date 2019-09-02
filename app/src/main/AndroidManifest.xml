@@ -70,6 +70,10 @@
             android:name="com.jjlacode.base.util.services.Jobs"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBpu-UzM1poaj2bImbZ8XzWacHgbgNJvMk" />
+
     </application>
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -81,5 +85,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
 </manifest>

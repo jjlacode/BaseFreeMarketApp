@@ -160,7 +160,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
                 bundle.putSerializable(PARTIDA, modelo);
                 bundle.putString(ORIGEN, PARTIDA);
                 bundle.putString(SUBTITULO, proyecto.getString(PROYECTO_NOMBRE));
-                icFragmentos.enviarBundleAFragment(bundle, new Catalogo());
+                icFragmentos.enviarBundleAFragment(bundle, new CatalogoProdProvWeb());
 
             }
 

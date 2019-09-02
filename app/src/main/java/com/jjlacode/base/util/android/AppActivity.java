@@ -19,6 +19,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
 
@@ -36,6 +37,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static android.Manifest.permission.CALL_PHONE;
+import static android.Manifest.permission.READ_CONTACTS;
+import static android.Manifest.permission.WRITE_CONTACTS;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static android.provider.ContactsContract.CommonDataKinds;
 
@@ -57,18 +61,21 @@ public class AppActivity extends Application {
 
     public static void reconocimientoVoz(MainActivityBase activityBase, String idioma, int code){
 
-        Intent intentActionRecognizeSpeech = new Intent(
-                RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        // Configura el Lenguaje (Español-México)
-        intentActionRecognizeSpeech.putExtra(
-                RecognizerIntent.EXTRA_LANGUAGE_MODEL, idioma);
-        try {
-            activityBase.startActivityForResult(intentActionRecognizeSpeech,
-                    code,null);
-        } catch (ActivityNotFoundException a) {
-            Toast.makeText(context,
-                    "Tú dispositivo no soporta el reconocimiento por voz",
-                    Toast.LENGTH_SHORT).show();
+        if (CheckPermisos.validarPermisos(activityBase, READ_CONTACTS, 100) &&
+                CheckPermisos.validarPermisos(activityBase, WRITE_CONTACTS, 100)) {
+
+            Intent intentActionRecognizeSpeech = new Intent(
+                    RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intentActionRecognizeSpeech.putExtra(
+                    RecognizerIntent.EXTRA_LANGUAGE_MODEL, idioma);
+            try {
+                activityBase.startActivityForResult(intentActionRecognizeSpeech,
+                        code, null);
+            } catch (ActivityNotFoundException a) {
+                Toast.makeText(context,
+                        "Tú dispositivo no soporta el reconocimiento por voz",
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -183,9 +190,9 @@ public class AppActivity extends Application {
         }
     }
 
-    public static void hacerLlamada(Context context, String phoneNo, boolean permiso) {
+    public static void hacerLlamada(Context context, String phoneNo, AppCompatActivity activity) {
 
-        if (permiso) {
+        if (CheckPermisos.validarPermisos(activity, CALL_PHONE, 100)) {
 
             if (!TextUtils.isEmpty(phoneNo)) {
                 Uri uri = Uri.parse("tel:" + phoneNo);

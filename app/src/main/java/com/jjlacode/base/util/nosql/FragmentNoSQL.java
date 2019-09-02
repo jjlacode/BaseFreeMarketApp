@@ -34,7 +34,6 @@ public abstract class FragmentNoSQL extends FragmentBase {
     protected void acciones() {
         super.acciones();
 
-        activityBase.fabInicio.show();
 
     }
 
@@ -102,6 +101,8 @@ public abstract class FragmentNoSQL extends FragmentBase {
 
                     if (data != null && data.getData() != null) {
                         path = mediaUtil.getPath(data.getData());
+                        CRUDutil.setSharePreference(contexto, PERSISTENCIA, PATH, path);
+                        System.out.println("path = " + path);
                         guardarImagen();
                     }
                     break;

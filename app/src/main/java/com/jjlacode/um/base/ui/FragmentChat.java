@@ -14,10 +14,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.jjlacode.base.util.Models.FirebaseFormBase;
 import com.jjlacode.base.util.adapter.BaseViewHolder;
 import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.RVAdapter;
@@ -53,6 +59,9 @@ public class FragmentChat extends FragmentCRUD {
     private ImageButton btnProveedorWeb;
     private LinearLayout lyEnvMsg;
     private TextView actuar;
+    private FirebaseFormBase firebaseFormBase;
+    private String nombreChat;
+    private String tipoChatRetornoOld;
 
     @Override
     protected TipoViewHolder setViewHolder(View view) {
@@ -110,40 +119,27 @@ public class FragmentChat extends FragmentCRUD {
             System.out.println("tipoChatOrigen = " + tipoChatOrigen);
 
 
-            switch (tipoChatOrigen) {
-
-                case CLIENTEWEB:
+            if (tipoChatOrigen.equals(CLIENTEWEB)) {
                     btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                    break;
-
-                case FREELANCE:
+            } else if (tipoChatOrigen.equals(FREELANCE)) {
                     btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                    break;
-
-                case ECOMMERCE:
+            } else if (tipoChatOrigen.equals(COMERCIAL)) {
+                btnComercial.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+            } else if (tipoChatOrigen.equals(ECOMMERCE)) {
                     btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                    break;
-
-                case LUGAR:
+            } else if (tipoChatOrigen.equals(LUGAR)) {
                     btnLugar.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                    break;
-
-                case PROVEEDORWEB:
+            } else if (tipoChatOrigen.equals(EMPRESA)) {
+                btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+            } else if (tipoChatOrigen.equals(PROVEEDORWEB)) {
                     btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                    break;
-
-                case COMERCIAL:
-                    btnComercial.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                    break;
-
-                case EMPRESA:
-                    btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                    break;
-
             }
+
         } else {
             tipoChatRetorno = CRUDutil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
         }
+
+        getNombreChat();
 
     }
 
@@ -179,9 +175,49 @@ public class FragmentChat extends FragmentCRUD {
         super.onClickRV(v);
 
         tipoChatRetorno = modelo.getString(CHAT_TIPORETORNO);
+        getNombreChat();
 
         if (tipoChatRetorno == null || tipoChatRetorno.equals(NULL)) {
             tipoChatRetorno = CRUDutil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
+        }
+
+    }
+
+    protected void getNombreChat() {
+
+        idUser = CRUDutil.getSharePreference(contexto, USERID, USERID, NULL);
+
+        if (!idUser.equals(NULL)) {
+
+            DatabaseReference dbFirebase = FirebaseDatabase.getInstance().getReference()
+                    .child(tipoChatRetorno).child(idUser).child("nombreBase");
+
+            ValueEventListener eventListenerProd = new ValueEventListener() {
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    nombreChat = dataSnapshot.getValue(String.class);
+
+                    if (nombreChat != null) {
+                        cambiarTipoChatRetorno();
+                    } else {
+                        Toast.makeText(contexto, "Debe tener un nombre en el perfil de " + tipoChatRetorno, Toast.LENGTH_SHORT).show();
+                        tipoChatRetorno = tipoChatRetornoOld;
+                    }
+
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+
+            };
+
+            dbFirebase.addValueEventListener(eventListenerProd);
+
         }
 
     }
@@ -219,40 +255,31 @@ public class FragmentChat extends FragmentCRUD {
 
         selectorChat(NULL);
 
-        if (tipoChatRetorno != null && !tipoChatRetorno.equals(NULL)) {
+
+        if (tipoChatRetorno != null && !tipoChatRetorno.equals(NULL) && nombreChat != null) {
 
             actuar.setText("Chatear como : " + tipoChatRetorno);
 
-            switch (tipoChatRetorno) {
-
-                case CLIENTEWEB:
-                    btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                    break;
-
-                case FREELANCE:
-                    btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                    break;
-
-                case ECOMMERCE:
-                    btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                    break;
-
-                case LUGAR:
-                    btnLugar.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                    break;
-
-                case PROVEEDORWEB:
-                    btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                    break;
-
-                case COMERCIAL:
-                    btnComercial.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                    break;
-
-                case EMPRESA:
-                    btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                    break;
+            if (tipoChatRetorno.equals(CLIENTEWEB)) {
+                btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+            } else if (tipoChatRetorno.equals(FREELANCE)) {
+                btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+            } else if (tipoChatRetorno.equals(COMERCIAL)) {
+                btnComercial.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+            } else if (tipoChatRetorno.equals(ECOMMERCE)) {
+                btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+            } else if (tipoChatRetorno.equals(LUGAR)) {
+                btnLugar.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+            } else if (tipoChatRetorno.equals(EMPRESA)) {
+                btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+            } else if (tipoChatRetorno.equals(PROVEEDORWEB)) {
+                btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
             }
+
+        } else {
+
+            Toast.makeText(contexto, "Debe tener un nombre en el perfil de este tipo", Toast.LENGTH_SHORT).show();
+
         }
 
     }
@@ -265,7 +292,7 @@ public class FragmentChat extends FragmentCRUD {
             @Override
             public void onClick(View view) {
 
-                if (tipoChatRetorno != null && !tipoChatRetorno.equals(NULL)) {
+                if (tipoChatRetorno != null && !tipoChatRetorno.equals(NULL) && nombreChat != null) {
                     enviarMensaje();
                 } else {
                     Toast.makeText(contexto, "Debe elegir un perfil con el que chatear", Toast.LENGTH_SHORT).show();
@@ -278,6 +305,7 @@ public class FragmentChat extends FragmentCRUD {
 
     private void selectorChat(final String tipoChat) {
 
+        /*
         btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
@@ -285,6 +313,7 @@ public class FragmentChat extends FragmentCRUD {
         btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        */
 
         btnClienteWeb.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -293,18 +322,20 @@ public class FragmentChat extends FragmentCRUD {
                 if (tipoChat.equals(ORIGEN)) {
                     tipoChatOrigen = CLIENTEWEB;
                     selector();
-                } else {
-                    tipoChatRetorno = CLIENTEWEB;
-                    cambiarTipoChatRetorno();
-                }
+                    btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
 
-                btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                } else {
+                    tipoChatRetornoOld = tipoChatRetorno;
+                    tipoChatRetorno = CLIENTEWEB;
+                    getNombreChat();
+
+                }
 
             }
         });
@@ -316,18 +347,19 @@ public class FragmentChat extends FragmentCRUD {
                 if (tipoChat.equals(ORIGEN)) {
                     tipoChatOrigen = FREELANCE;
                     selector();
-                } else {
-                    tipoChatRetorno = FREELANCE;
-                    cambiarTipoChatRetorno();
-                }
+                    btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
 
-                btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                } else {
+                    tipoChatRetornoOld = tipoChatRetorno;
+                    tipoChatRetorno = FREELANCE;
+                    getNombreChat();
+                }
             }
         });
 
@@ -338,18 +370,19 @@ public class FragmentChat extends FragmentCRUD {
                 if (tipoChat.equals(ORIGEN)) {
                     tipoChatOrigen = ECOMMERCE;
                     selector();
-                } else {
-                    tipoChatRetorno = ECOMMERCE;
-                    cambiarTipoChatRetorno();
-                }
+                    btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
 
-                btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                } else {
+                    tipoChatRetornoOld = tipoChatRetorno;
+                    tipoChatRetorno = ECOMMERCE;
+                    getNombreChat();
+                }
             }
         });
 
@@ -357,21 +390,24 @@ public class FragmentChat extends FragmentCRUD {
             @Override
             public void onClick(View view) {
 
+                boolean valido;
                 if (tipoChat.equals(ORIGEN)) {
                     tipoChatOrigen = LUGAR;
                     selector();
-                } else {
-                    tipoChatRetorno = LUGAR;
-                    cambiarTipoChatRetorno();
-                }
+                    btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnLugar.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
 
-                btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnLugar.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                } else {
+                    tipoChatRetornoOld = tipoChatRetorno;
+                    tipoChatRetornoOld = tipoChatRetorno;
+                    tipoChatRetorno = LUGAR;
+                    getNombreChat();
+                }
 
             }
         });
@@ -383,18 +419,18 @@ public class FragmentChat extends FragmentCRUD {
                 if (tipoChat.equals(ORIGEN)) {
                     tipoChatOrigen = PROVEEDORWEB;
                     selector();
+                    btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                    btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                 } else {
+                    tipoChatRetornoOld = tipoChatRetorno;
                     tipoChatRetorno = PROVEEDORWEB;
-                    cambiarTipoChatRetorno();
+                    getNombreChat();
                 }
-
-                btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-                btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
 
             }
         });
@@ -406,18 +442,20 @@ public class FragmentChat extends FragmentCRUD {
                 if (tipoChat.equals(ORIGEN)) {
                     tipoChatOrigen = COMERCIAL;
                     selector();
-                } else {
-                    tipoChatRetorno = COMERCIAL;
-                    cambiarTipoChatRetorno();
-                }
+                    btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnComercial.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
 
-                btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnComercial.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+                } else {
+                    tipoChatRetornoOld = tipoChatRetorno;
+                    tipoChatRetorno = COMERCIAL;
+                    getNombreChat();
+
+                }
 
             }
         });
@@ -429,19 +467,18 @@ public class FragmentChat extends FragmentCRUD {
                 if (tipoChat.equals(ORIGEN)) {
                     tipoChatOrigen = EMPRESA;
                     selector();
+                    btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
                 } else {
+                    tipoChatRetornoOld = tipoChatRetorno;
                     tipoChatRetorno = EMPRESA;
-                    cambiarTipoChatRetorno();
+                    getNombreChat();
                 }
-
-                btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
-
 
             }
         });
@@ -484,6 +521,31 @@ public class FragmentChat extends FragmentCRUD {
         rvMsgChat.setAdapter(adaptadorDetChat);
         actuar.setText("Chatear como : " + tipoChatRetorno);
 
+        btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        btnLugar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        btnComercial.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+
+        if (tipoChatRetorno.equals(CLIENTEWEB)) {
+            btnClienteWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+        } else if (tipoChatRetorno.equals(FREELANCE)) {
+            btnFreelance.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+        } else if (tipoChatRetorno.equals(COMERCIAL)) {
+            btnComercial.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+        } else if (tipoChatRetorno.equals(ECOMMERCE)) {
+            btnEcommerce.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+        } else if (tipoChatRetorno.equals(LUGAR)) {
+            btnLugar.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+        } else if (tipoChatRetorno.equals(EMPRESA)) {
+            btnEmpresa.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+        } else if (tipoChatRetorno.equals(PROVEEDORWEB)) {
+            btnProveedorWeb.setBackgroundColor(getResources().getColor(R.color.colorSecondary));
+        }
+
+
     }
 
     private void enviarMensaje() {
@@ -507,7 +569,7 @@ public class FragmentChat extends FragmentCRUD {
 
             MsgChat msgChat = new MsgChat();
             msgChat.setMensaje(msgEnv.getText().toString());
-            msgChat.setNombre(chat.getString(CHAT_NOMBRE));
+            msgChat.setNombre(nombreChat);
             msgChat.setFecha(TimeDateUtil.ahora());
             msgChat.setIdDestino(chat.getString(CHAT_USUARIO));
             msgChat.setIdOrigen(CRUDutil.getSharePreference(contexto, PREFERENCIAS, USERID, ""));

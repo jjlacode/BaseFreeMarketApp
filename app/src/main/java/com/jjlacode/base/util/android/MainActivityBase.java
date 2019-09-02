@@ -18,11 +18,15 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.jjlacode.base.util.JavaUtil;
 import com.jjlacode.base.util.interfaces.ICFragmentos;
+import com.jjlacode.base.util.localizacion.FragmentMap;
 import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
@@ -31,6 +35,7 @@ public class MainActivityBase extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ICFragmentos,
         Interactor.Constantes, ContratoPry.Tablas, JavaUtil.Constantes {
 
+    private static final int LOCATION_REQUEST_CODE = 333;
     protected Bundle bundle;
     public Toolbar toolbar;
     public FloatingActionButton fabNuevo;
@@ -43,17 +48,34 @@ public class MainActivityBase extends AppCompatActivity
     protected float sizeF;
     protected String ayudaWeb;
     private String TAG = getClass().getSimpleName();
+    public double latitud;
+    public double longitud;
+    public int zoom;
+    public String titMap;
+    public String txtMap;
+    public boolean dragable;
+    private FragmentMap mMap;
+    private GoogleMap gMap;
+    public LatLng posMark;
+    private CircleOptions circleOptions;
 
-    protected void persitencia(){
+    public boolean permisoBoot;
+    public boolean permisoInternet;
+    public boolean permisoWriteCont;
+    public boolean permisoReadCont;
+    public boolean permisoRecordAudio;
+    public boolean permisoCall;
+
+    protected void persitencia() {
 
         bundle = new Bundle();
 
-        SharedPreferences persistencia=getSharedPreferences(PERSISTENCIA, MODE_PRIVATE);
-        bundle.putString(ORIGEN, persistencia.getString(ORIGEN,""));
-        bundle.putString(ACTUAL, persistencia.getString(ACTUAL,""));
-        bundle.putString(ACTUALTEMP, persistencia.getString(ACTUALTEMP,""));
-        bundle.putString(CAMPO_ID, persistencia.getString(CAMPO_ID,""));
-        bundle.putInt(CAMPO_SECUENCIA, persistencia.getInt(CAMPO_SECUENCIA,0));
+        SharedPreferences persistencia = getSharedPreferences(PERSISTENCIA, MODE_PRIVATE);
+        bundle.putString(ORIGEN, persistencia.getString(ORIGEN, ""));
+        bundle.putString(ACTUAL, persistencia.getString(ACTUAL, ""));
+        bundle.putString(ACTUALTEMP, persistencia.getString(ACTUALTEMP, ""));
+        bundle.putString(CAMPO_ID, persistencia.getString(CAMPO_ID, ""));
+        bundle.putInt(CAMPO_SECUENCIA, persistencia.getInt(CAMPO_SECUENCIA, 0));
 
     }
 
@@ -61,7 +83,9 @@ public class MainActivityBase extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d(TAG,"on Create");
+        Log.d(TAG, "on Create");
+
+        checkPermisos();
 
         land = getResources().getBoolean(R.bool.esLand);
         tablet = getResources().getBoolean(R.bool.esTablet);
@@ -70,17 +94,17 @@ public class MainActivityBase extends AppCompatActivity
 
         int ancho = metrics.widthPixels;
         int alto = metrics.heightPixels;
-        if (!land){
-            sizeF = (float) (((float)ancho*(float)alto)/(metrics.densityDpi*300));
-        }else {
-            sizeF = (float) (((float)ancho*(float)alto)/(metrics.densityDpi*300));
+        if (!land) {
+            sizeF = (float) (((float) ancho * (float) alto) / (metrics.densityDpi * 300));
+        } else {
+            sizeF = (float) (((float) ancho * (float) alto) / (metrics.densityDpi * 300));
         }
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
-        if (savedInstanceState!=null){
+        if (savedInstanceState != null) {
 
             persitencia();
 
-        }else {
+        } else {
 
             bundle = new Bundle();
             bundle.putString(ACTUAL, INICIO);
@@ -110,8 +134,11 @@ public class MainActivityBase extends AppCompatActivity
 
     }
 
-    protected void acciones(){
+    protected void acciones() {
 
+    }
+
+    protected void checkPermisos() {
     }
 
     @Override
@@ -154,7 +181,7 @@ public class MainActivityBase extends AppCompatActivity
         return true;
     }
 
-    protected void setOnNavigation(MenuItem item){
+    protected void setOnNavigation(MenuItem item) {
 
     }
 
@@ -165,7 +192,7 @@ public class MainActivityBase extends AppCompatActivity
 
         this.bundle = bundle;
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.content_main,myFragment).addToBackStack(null).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_main, myFragment).addToBackStack(null).commit();
 
     }
 
@@ -175,6 +202,12 @@ public class MainActivityBase extends AppCompatActivity
 
         this.bundle = bundle;
 
+    }
+
+    @Override
+    public void addFragment(Fragment myFragment, int layout) {
+
+        getSupportFragmentManager().beginTransaction().add(layout, myFragment).addToBackStack(null).commit();
     }
 
     @Override
@@ -231,15 +264,14 @@ public class MainActivityBase extends AppCompatActivity
         toolbar.setSubtitle(subTitle);
     }
 
+
     @Override
     public void enviarAyudaWeb(String ayudaWeb) {
 
         this.ayudaWeb = ayudaWeb;
     }
 
-    protected void recargarFragment(){
-
-
+    protected void recargarFragment() {
 
     }
 

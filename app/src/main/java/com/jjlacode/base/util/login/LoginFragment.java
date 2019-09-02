@@ -127,7 +127,7 @@ public class LoginFragment extends Fragment implements LoginContract.View {
 
         userID = CRUDutil.getSharePreference(getContext(), USERID, USERID, NULL);
 
-        if (userID == null && mFirebaseAuth.getUid() == null) {
+        if (userID == NULL) {
             registrar.setVisibility(View.VISIBLE);
         }
 

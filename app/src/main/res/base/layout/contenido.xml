@@ -45,7 +45,6 @@
             android:orientation="vertical"
             android:padding="5dp" />
 
-
         <com.jjlacode.base.util.animation.OneFrameLayout
             android:id="@+id/frameanimationcuerpo"
             android:layout_width="match_parent"
@@ -53,12 +52,13 @@
             android:layout_weight="1"
             android:background="@color/colorPrimary">
 
-            <ScrollView
+            <com.jjlacode.base.util.android.controls.LockableScrollView
                 android:id="@+id/scrolldetalle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <LinearLayout
+                    android:id="@+id/ly_bloque_detalle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
@@ -97,7 +97,7 @@
                         android:paddingBottom="5dp" />
 
                 </LinearLayout>
-            </ScrollView>
+            </com.jjlacode.base.util.android.controls.LockableScrollView>
         </com.jjlacode.base.util.animation.OneFrameLayout>
     </LinearLayout>
 
@@ -109,10 +109,5 @@
         android:layout_alignParentBottom="true"
         android:orientation="vertical"
         android:paddingStart="35dp"
-        android:paddingEnd="35dp">
-
-
-    </LinearLayout>
-
-
+        android:paddingEnd="35dp" />
 </RelativeLayout>

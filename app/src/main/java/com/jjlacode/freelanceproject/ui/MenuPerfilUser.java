@@ -7,18 +7,19 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.jjlacode.base.util.android.FragmentGrid;
 import com.jjlacode.base.util.web.FragmentWebView;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.um.base.ui.FragmentPerfilUser;
 
 import java.util.ArrayList;
 
 public class MenuPerfilUser extends FragmentGrid {
 
-    private String um;
-    private String crm;
-    private String marketing;
-    private String proyectos;
-    private String facturacion;
-    private String contabilidad;
-    private String ajustes;
+    private String clienteWeb;
+    private String freelance;
+    private String comercial;
+    private String ecommerce;
+    private String lugar;
+    private String empresa;
+    private String proveedorWeb;
     private String ayuda;
     private String salir;
 
@@ -29,31 +30,31 @@ public class MenuPerfilUser extends FragmentGrid {
 
     @Override
     protected String setAyudaWeb() {
-        return HTTPAYUDA + "inicio";
+        return HTTPAYUDA + "perfil-usuario";
     }
 
     @Override
     protected void setLista() {
 
-        um = getString(R.string.union_market);
-        crm = getString(R.string.crm);
-        marketing = getString(R.string.marketing);
-        proyectos = getString(R.string.proyectos);
-        facturacion = getString(R.string.facturacion);
-        contabilidad = getString(R.string.contabilidad);
-        ajustes = getString(R.string.informesyajustes);
+        clienteWeb = getString(R.string.clienteweb);
+        freelance = getString(R.string.freelance);
+        comercial = getString(R.string.comercial);
+        ecommerce = getString(R.string.ecommerce);
+        lugar = getString(R.string.lugar);
+        empresa = getString(R.string.empresa);
+        proveedorWeb = getString(R.string.proveedorweb);
         ayuda = getString(R.string.ayuda);
         salir = getString(R.string.salir);
 
         lista = new ArrayList<GridModel>();
 
-        lista.add(new GridModel(R.drawable.logo, um));
-        lista.add(new GridModel(R.drawable.ic_clientes_indigo, crm));
-        lista.add(new GridModel(R.drawable.ic_marketing_indigo, marketing));
-        lista.add(new GridModel(R.drawable.ic_proy_curso_indigo, proyectos));
-        lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, facturacion));
-        lista.add(new GridModel(R.drawable.ic_cobros_indigo, contabilidad));
-        lista.add(new GridModel(R.drawable.ic_tareas_indigo, ajustes));
+        lista.add(new GridModel(R.drawable.ic_clientes_indigo, clienteWeb));
+        lista.add(new GridModel(R.drawable.ic_tareas_indigo, freelance));
+        lista.add(new GridModel(R.drawable.ic_comercial_indigo, comercial));
+        lista.add(new GridModel(R.drawable.ic_producto_indigo, ecommerce));
+        lista.add(new GridModel(R.drawable.ic_proveedor_indigo, lugar));
+        lista.add(new GridModel(R.drawable.ic_empresa_indigo, empresa));
+        lista.add(new GridModel(R.drawable.ic_catalogo_indigo, proveedorWeb));
         lista.add(new GridModel(R.drawable.ic_ayuda_indigo, ayuda));
         lista.add(new GridModel(R.drawable.ic_salir_rojo, salir));
 
@@ -68,41 +69,47 @@ public class MenuPerfilUser extends FragmentGrid {
         String nombre = gridModel.getNombre();
 
 
-        if (nombre.equals(crm)) {
+        if (nombre.equals(clienteWeb)) {
 
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new MenuCRM()).addToBackStack(null).commit();
-        } else if (nombre.equals(proyectos)) {
+            bundle = new Bundle();
+            putBundle(TIPO, clienteWeb);
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentPerfilUser());
+        } else if (nombre.equals(freelance)) {
 
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new MenuGestionProyectos()).addToBackStack(null).commit();
-        } else if (nombre.equals(facturacion)) {
+            bundle = new Bundle();
+            putBundle(TIPO, freelance);
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentPerfilUser());
+        } else if (nombre.equals(comercial)) {
 
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new MenuFacturacion()).addToBackStack(null).commit();
+            bundle = new Bundle();
+            putBundle(TIPO, comercial);
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentPerfilUser());
+        } else if (nombre.equals(ecommerce)) {
 
-        } else if (nombre.equals(contabilidad)) {
-
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new MenuContabilidad()).addToBackStack(null).commit();
-
-
-        } else if (nombre.equals(ajustes)) {
-
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new MenuInformesAjustes()).addToBackStack(null).commit();
+            bundle = new Bundle();
+            putBundle(TIPO, ecommerce);
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentPerfilUser());
 
 
-        } else if (nombre.equals(marketing)) {
+        } else if (nombre.equals(lugar)) {
 
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new MenuMarketing()).addToBackStack(null).commit();
+            bundle = new Bundle();
+            putBundle(TIPO, lugar);
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentPerfilUser());
 
 
-        } else if (nombre.equals(um)) {
+        } else if (nombre.equals(empresa)) {
 
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new UnionMarket()).addToBackStack(null).commit();
+            bundle = new Bundle();
+            putBundle(TIPO, empresa);
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentPerfilUser());
+
+
+        } else if (nombre.equals(proveedorWeb)) {
+
+            bundle = new Bundle();
+            putBundle(TIPO, proveedorWeb);
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentPerfilUser());
 
 
         } else if (nombre.equals(salir)) {

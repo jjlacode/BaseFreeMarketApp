@@ -17,7 +17,7 @@ public class MenuInformesAjustes extends FragmentGrid {
     private String ayuda;
     private String diario;
     private String salir;
-    private String configuracion;
+    private String perfilesUser;
     private String home;
     private String estadisticas;
 
@@ -36,7 +36,7 @@ public class MenuInformesAjustes extends FragmentGrid {
         estadisticas = getString(R.string.estadisticas);
         diario = getString(R.string.diario);
         salir = getString(R.string.salir);
-        configuracion = getString(R.string.configuracion);
+        perfilesUser = getString(R.string.perfiles_usuario);
         home = getString(R.string.inicio);
 
         lista = new ArrayList<GridModel>();
@@ -45,7 +45,7 @@ public class MenuInformesAjustes extends FragmentGrid {
         lista.add(new GridModel(R.drawable.ic_informes_indigo, informes));
         lista.add(new GridModel(R.drawable.ic_estadisticas_indigo, estadisticas));
         lista.add(new GridModel(R.drawable.ic_registro_indigo, diario));
-        lista.add(new GridModel(R.drawable.ic_configuracion_indigo, configuracion));
+        lista.add(new GridModel(R.drawable.ic_configuracion_indigo, perfilesUser));
         lista.add(new GridModel(R.drawable.ic_ayuda_indigo, ayuda));
         lista.add(new GridModel(R.drawable.ic_inicio_black_24dp, home));
         lista.add(new GridModel(R.drawable.ic_salir_rojo, salir));
@@ -88,10 +88,10 @@ public class MenuInformesAjustes extends FragmentGrid {
             activityBase.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_main, new Diario()).addToBackStack(null).commit();
 
-        } else if (nombre.equals(configuracion)) {
+        } else if (nombre.equals(perfilesUser)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new Catalogo()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new MenuPerfilUser()).addToBackStack(null).commit();
 
         } else if (nombre.equals(home)) {
 

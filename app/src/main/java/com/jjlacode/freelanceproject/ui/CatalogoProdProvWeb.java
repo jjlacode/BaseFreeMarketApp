@@ -6,7 +6,6 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -24,7 +23,6 @@ import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.Modelo;
-import com.jjlacode.base.util.media.ImagenUtil;
 import com.jjlacode.base.util.nosql.FragmentMasterDetailNoSQL;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.model.ProdProv;
@@ -33,7 +31,7 @@ import com.jjlacode.freelanceproject.model.Proveedores;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Catalogo extends FragmentMasterDetailNoSQL {
+public class CatalogoProdProvWeb extends FragmentMasterDetailNoSQL {
 
     private EditMaterial nombre;
     private EditMaterial descripcionCorta;
@@ -45,7 +43,7 @@ public class Catalogo extends FragmentMasterDetailNoSQL {
     private EditMaterial direccion;
     private EditMaterial email;
     private EditMaterial telefono;
-    private ImageView imgProv;
+    private ImagenLayout imgProv;
     private Button addPartida;
     private String web;
     private String idDetPartida;
@@ -108,7 +106,7 @@ public class Catalogo extends FragmentMasterDetailNoSQL {
                     pathProv = proveedor.getRutafoto();
 
                     if (pathProv != null) {
-                        ImagenUtil.setImageFireStore(pathProv, imgProv);
+                        imgProv.setImageFirestore(pathProv);
                     }
                 }
 
@@ -214,8 +212,8 @@ public class Catalogo extends FragmentMasterDetailNoSQL {
     @Override
     protected void setLayout() {
 
-        layoutItem = R.layout.item_list_prodprov;
-        layoutCuerpo = R.layout.fragment_detalle_catalogo;
+        layoutItem = R.layout.item_list_catalogo_prod_prov_web;
+        layoutCuerpo = R.layout.catalogo_prod_prov_web;
 
     }
 
@@ -234,7 +232,7 @@ public class Catalogo extends FragmentMasterDetailNoSQL {
         direccion = (EditMaterial) ctrl(R.id.etdireccionprovcatalogo);
         email = (EditMaterial) ctrl(R.id.etemailprovcatalogo);
         telefono = (EditMaterial) ctrl(R.id.ettelefonoprovcatalogo);
-        imgProv = (ImageView) ctrl(R.id.imgprovcatalogo);
+        imgProv = (ImagenLayout) ctrl(R.id.imgprovcatalogo);
         browser = (WebView) view.findViewById(R.id.etwebcatalogo);
 
 
@@ -275,7 +273,7 @@ public class Catalogo extends FragmentMasterDetailNoSQL {
         @Override
         public void onEntrada(Object entrada, View view) {
 
-            ImageView imagen = view.findViewById(R.id.imagenprov);
+            ImagenLayout imagen = view.findViewById(R.id.imagenprov);
             TextView nombre = view.findViewById(R.id.tvnomprov);
             TextView descripcion = view.findViewById(R.id.tvdescprov);
             TextView importe = view.findViewById(R.id.tvprecioprov);
@@ -289,7 +287,7 @@ public class Catalogo extends FragmentMasterDetailNoSQL {
 
             if (((ProdProv) entrada).getRutafoto() != null) {
 
-                ImagenUtil.setImageFireStoreCircle(rutafoto, imagen);
+                imagen.setImageFirestoreCircle(rutafoto);
             }
 
         }
@@ -329,7 +327,7 @@ public class Catalogo extends FragmentMasterDetailNoSQL {
 
     private class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
 
-        ImageView imagen;
+        ImagenLayout imagen;
         TextView nombre;
         TextView descripcion;
         TextView importe;
@@ -359,7 +357,7 @@ public class Catalogo extends FragmentMasterDetailNoSQL {
 
             if (prodProv.getRutafoto() != null) {
 
-                ImagenUtil.setImageFireStoreCircle(rutafoto, imagen);
+                imagen.setImageFirestoreCircle(rutafoto);
             }
 
             super.bind(lista, position);

@@ -2,7 +2,7 @@ package com.jjlacode.freelanceproject.ui;
 
 import com.jjlacode.base.util.nosql.FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb;
 
-public class ListadosFirebase extends FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb {
+public class ListadosPerfilesFirebase extends FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb {
 
     @Override
     protected void accionesImagen() {
@@ -13,4 +13,18 @@ public class ListadosFirebase extends FragmentMasterDetailNoSQLFormBaseFirebaseR
         System.out.println("Acciones listados firebase");
     }
 
+    @Override
+    protected void setLayout() {
+
+    }
+
+    @Override
+    protected void setInicio() {
+
+    }
+
+    @Override
+    protected String setTipoForm() {
+        return LISTA;
+    }
 }

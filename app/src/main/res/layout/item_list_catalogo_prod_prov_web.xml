@@ -29,14 +29,12 @@
                     android:layout_weight="2.5"
                     android:orientation="vertical">
 
-                    <ImageView
+                    <com.jjlacode.base.util.android.controls.ImagenLayout
                         android:id="@+id/imagenprov"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:adjustViewBounds="true"
-                        android:contentDescription="@string/imagen_producto_proveedor"
-                        card_view:srcCompat="@drawable/logofp" />
+                        android:layout_gravity="center" />
+
                 </LinearLayout>
 
                 <LinearLayout

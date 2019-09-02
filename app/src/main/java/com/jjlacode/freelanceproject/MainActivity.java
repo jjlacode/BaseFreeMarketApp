@@ -2,17 +2,11 @@ package com.jjlacode.freelanceproject;
 
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
-
-import androidx.appcompat.app.AlertDialog;
 
 import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.android.CheckPermisos;
@@ -37,35 +31,23 @@ import com.jjlacode.freelanceproject.ui.MenuInicio;
 import com.jjlacode.um.base.ui.FragmentChat;
 
 import static android.Manifest.permission.CALL_PHONE;
-import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.READ_CONTACTS;
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.RECEIVE_BOOT_COMPLETED;
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_CONTACTS;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class MainActivity extends MainActivityBase {
 
     private static final int PERIOD_MS = 5000;
-    public boolean permisoBoot;
-    public boolean permisoImagen;
-    public boolean permisoReadExt;
-    public boolean permisoWriteExt;
-    public boolean permisoCamara;
-    public boolean permisoInternet;
-    public boolean permisoWriteCont;
-    public boolean permisoReadCont;
-    public boolean permisoRecordAudio;
-    public boolean permisoCall;
+
 
 
     @Override
     protected void acciones() {
         super.acciones();
 
-        validarPermisos();
+        //validarPermisos();
 
         Intent intent = getIntent();
 
@@ -329,94 +311,18 @@ public class MainActivity extends MainActivityBase {
         System.out.println("bundle = " + bundle);
     }
 
-    private void validarPermisos() {
 
+    protected void checkPermisos() {
 
-        if (Build.VERSION.SDK_INT<Build.VERSION_CODES.M ){
+        System.out.println("chekeando permisos");
 
-            Interactor.permiso = true;
-        }
-        else if ((checkSelfPermission(CAMERA)== PackageManager.PERMISSION_GRANTED) &&
-                (checkSelfPermission(CALL_PHONE)== PackageManager.PERMISSION_GRANTED) &&
-                (checkSelfPermission(INTERNET)== PackageManager.PERMISSION_GRANTED) &&
-                (checkSelfPermission(RECORD_AUDIO)== PackageManager.PERMISSION_GRANTED) &&
-                (checkSelfPermission(READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED) &&
-                (checkSelfPermission(RECEIVE_BOOT_COMPLETED)== PackageManager.PERMISSION_GRANTED) &&
-                (checkSelfPermission(WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED)
-        ){
+        permisoBoot = CheckPermisos.validarPermisos(this, RECEIVE_BOOT_COMPLETED, 100);
+        permisoRecordAudio = CheckPermisos.validarPermisos(this, RECORD_AUDIO, 100);
+        permisoInternet = CheckPermisos.validarPermisos(this, INTERNET, 100);
+        permisoReadCont = CheckPermisos.validarPermisos(this, READ_CONTACTS, 100);
+        permisoWriteCont = CheckPermisos.validarPermisos(this, WRITE_CONTACTS, 100);
+        permisoCall = CheckPermisos.validarPermisos(this, CALL_PHONE, 100);
 
-            Interactor.permiso = true;
-        }
-        else if ((shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE))||
-                (shouldShowRequestPermissionRationale(READ_EXTERNAL_STORAGE))||
-                (shouldShowRequestPermissionRationale(RECEIVE_BOOT_COMPLETED))||
-                (shouldShowRequestPermissionRationale(RECORD_AUDIO))||
-                (shouldShowRequestPermissionRationale(INTERNET))||
-                (shouldShowRequestPermissionRationale(CAMERA))||
-                (shouldShowRequestPermissionRationale(WRITE_CONTACTS))||
-                (shouldShowRequestPermissionRationale(READ_CONTACTS))||
-                (shouldShowRequestPermissionRationale(CALL_PHONE))){
-
-            AlertDialog.Builder dialogo = new AlertDialog.Builder(this);
-            dialogo.setTitle("Permisos desactivados");
-            dialogo.setMessage("Debe aceptar los permisos para el correcto funcionamiento de la app");
-
-            dialogo.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                    requestPermissions(new String[]
-                            {RECEIVE_BOOT_COMPLETED,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,
-                                    CAMERA,RECORD_AUDIO,INTERNET,READ_CONTACTS,
-                                    WRITE_CONTACTS,CALL_PHONE},100);
-                }
-            });
-            dialogo.show();
-
-        }
-        else {
-
-            requestPermissions(new String[]
-                    {RECEIVE_BOOT_COMPLETED,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,
-                            CAMERA,RECORD_AUDIO,INTERNET,READ_CONTACTS,
-                            WRITE_CONTACTS,CALL_PHONE},100);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if(requestCode==100 && grantResults.length==8 && (grantResults[0]==PackageManager.PERMISSION_GRANTED &&
-                grantResults[1]==PackageManager.PERMISSION_GRANTED &&
-                grantResults[2]==PackageManager.PERMISSION_GRANTED &&
-                grantResults[3]==PackageManager.PERMISSION_GRANTED &&
-                grantResults[4]==PackageManager.PERMISSION_GRANTED &&
-                grantResults[5]==PackageManager.PERMISSION_GRANTED &&
-                grantResults[6]==PackageManager.PERMISSION_GRANTED &&
-                grantResults[7] == PackageManager.PERMISSION_GRANTED &&
-                grantResults[8] == PackageManager.PERMISSION_GRANTED)) {
-
-            Interactor.permiso = true;
-
-        }else{
-
-            Toast.makeText(this,"Debe aceptar todos los permisos para " +
-                    "que la app se ejecute correctamente",Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void checkPermisos() {
-
-        permisoBoot = CheckPermisos.validarPermisos(this, RECEIVE_BOOT_COMPLETED, 101);
-        permisoBoot = CheckPermisos.validarPermisos(this, READ_EXTERNAL_STORAGE, 102);
-        permisoBoot = CheckPermisos.validarPermisos(this, WRITE_EXTERNAL_STORAGE, 103);
-        permisoBoot = CheckPermisos.validarPermisos(this, CAMERA, 104);
-        permisoBoot = CheckPermisos.validarPermisos(this, RECORD_AUDIO, 105);
-        permisoBoot = CheckPermisos.validarPermisos(this, INTERNET, 106);
-        permisoBoot = CheckPermisos.validarPermisos(this, READ_CONTACTS, 107);
-        permisoBoot = CheckPermisos.validarPermisos(this, WRITE_CONTACTS, 108);
-        permisoBoot = CheckPermisos.validarPermisos(this, CALL_PHONE, 109);
     }
 
 }

@@ -9,13 +9,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.jjlacode.base.util.android.CheckPermisos;
 import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.base.util.time.TimeDateUtil;
 
 import java.util.GregorianCalendar;
 
-import static com.jjlacode.freelanceproject.logica.Interactor.permiso;
+import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static com.jjlacode.freelanceproject.logica.Interactor.setNamefdef;
 
 public abstract class FragmentCUD extends FragmentBaseCRUD {
@@ -218,7 +221,9 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
             }
         });
 
-        if (permiso) {
+        if (CheckPermisos.validarPermisos(activityBase, READ_EXTERNAL_STORAGE, 100) &&
+                CheckPermisos.validarPermisos(activityBase, WRITE_EXTERNAL_STORAGE, 100) &&
+                CheckPermisos.validarPermisos(activityBase, CAMERA, 100)) {
             if (imagen!=null) {
                 imagen.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -395,14 +400,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
         switch(orientation ) {
             case Configuration.ORIENTATION_LANDSCAPE:
                 // Con la orientación en horizontal actualizamos el adaptador
-                editor.putString(ORIGEN, origen);
-                editor.putString(ACTUAL, actual);
-                editor.putString(ACTUALTEMP, actualtemp);
-                editor.putString(SUBTITULO, subTitulo);
-                editor.putString(CAMPO_ID,id);
-                editor.putInt(CAMPO_SECUENCIA,secuencia);
-                editor.apply();
-                break;
+
             case Configuration.ORIENTATION_PORTRAIT:
                 // Con la orientación en vertical actualizamos el adaptador
                 editor.putString(ORIGEN, origen);

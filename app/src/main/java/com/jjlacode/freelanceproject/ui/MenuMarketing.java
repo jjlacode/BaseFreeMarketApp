@@ -8,7 +8,6 @@ import com.jjlacode.base.util.android.FragmentGrid;
 import com.jjlacode.base.util.web.FragmentWebView;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.um.base.ui.FragmentChat;
-import com.jjlacode.um.base.ui.FragmentPerfilUser;
 
 import java.util.ArrayList;
 
@@ -22,7 +21,7 @@ public class MenuMarketing extends FragmentGrid {
     private String salir;
     private String home;
     private String ayuda;
-    private String publicidadFreelance;
+    private String publicidad;
 
     @Override
     protected void setContext() {
@@ -45,7 +44,7 @@ public class MenuMarketing extends FragmentGrid {
         salir = getString(R.string.salir);
         home = getString(R.string.inicio);
         ayuda = getString(R.string.ayuda);
-        publicidadFreelance = getString(R.string.publicidad_freelance);
+        publicidad = getString(R.string.publicidad);
 
         lista = new ArrayList<GridModel>();
 
@@ -54,7 +53,7 @@ public class MenuMarketing extends FragmentGrid {
         lista.add(new GridModel(R.drawable.ic_chat_indigo, chat));
         lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, notas));
         lista.add(new GridModel(R.drawable.ic_lista_eventos_indigo, calendarioNotas));
-        lista.add(new GridModel(R.drawable.ic_catalogo_indigo, publicidadFreelance));
+        lista.add(new GridModel(R.drawable.ic_catalogo_indigo, publicidad));
         lista.add(new GridModel(R.drawable.ic_ayuda_indigo, ayuda));
         lista.add(new GridModel(R.drawable.ic_inicio_black_24dp, home));
         lista.add(new GridModel(R.drawable.ic_salir_rojo, salir));
@@ -87,11 +86,9 @@ public class MenuMarketing extends FragmentGrid {
             activityBase.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_main, new Notas()).addToBackStack(null).commit();
 
-        } else if (nombre.equals(publicidadFreelance)) {
+        } else if (nombre.equals(publicidad)) {
 
-            bundle = new Bundle();
-            putBundle(TIPO, FREELANCE);
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentPerfilUser());
+            icFragmentos.enviarBundleAFragment(bundle, new MenuPublicidad());
 
         } else if (nombre.equals(home)) {
 

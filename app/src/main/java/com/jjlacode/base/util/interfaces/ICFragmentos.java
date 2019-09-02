@@ -10,6 +10,8 @@ public interface ICFragmentos {
 
     void enviarBundleAFragment(Bundle bundle, Fragment myFragment);
     void enviarBundleAActivity(Bundle bundle);
+
+    void addFragment(Fragment myFragment, int layout);
     void fabVisible();
     void snackBarShow(View view, String mensaje);
     void setIcoFab(int recurso);
@@ -19,7 +21,6 @@ public interface ICFragmentos {
     void showSubTitle(int subTitle);
     void showTitle(String title);
     void showSubTitle(String subTitle);
-    //void alBuscarDestino();
 
     void enviarAyudaWeb(String ayudaWeb);
 }

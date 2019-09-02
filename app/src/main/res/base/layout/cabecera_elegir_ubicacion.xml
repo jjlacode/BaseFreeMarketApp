@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ToggleButton
+        android:id="@+id/btn_vermapacab"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/boton_redondo_secondary"
+        android:textOff="@string/select_ubicacion"
+        android:textOn="@string/ocultar_mapa" />
+
+    <ToggleButton
+        android:id="@+id/btn_opciones_zonaCab"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/boton_redondo_primary"
+        android:textColor="@color/colorPrimary"
+        android:textOff="@string/opciones_zona"
+        android:textOn="@string/ocultar_opciones"
+        android:visibility="gone" />
+
+
+    <com.jjlacode.base.util.android.controls.LockableScrollView
+        android:id="@+id/scrollcab"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Switch
+                android:id="@+id/chmiubicacion_cab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="@string/mi_ubicacion_por_defecto" />
+
+            <RadioGroup
+                android:id="@+id/radio_group_map_cab"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <RadioButton
+                    android:id="@+id/radioButtonMap_cab"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:text="@string/mundial" />
+
+                <RadioButton
+                    android:id="@+id/radioButtonMap1_cab"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/nacional" />
+
+                <RadioButton
+                    android:id="@+id/radioButtonMap2_cab"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:text="@string/regional" />
+
+                <RadioButton
+                    android:id="@+id/radioButtonMap3_cab"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:text="@string/provincial" />
+
+                <RadioButton
+                    android:id="@+id/radioButtonMap4_cab"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:text="@string/local" />
+
+                <RadioButton
+                    android:id="@+id/radioButtonMap5_cab"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    android:text="@string/codigo_postal" />
+
+            </RadioGroup>
+
+            <LinearLayout
+                android:id="@+id/mapcap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </com.jjlacode.base.util.android.controls.LockableScrollView>
+</LinearLayout>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ToggleButton
+        android:id="@+id/btn_opciones_zona"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/boton_redondo_primary"
+        android:textOff="@string/opciones_zona"
+        android:textOn="@string/ocultar_opciones"
+        android:textColor="@color/colorPrimary" />
+
+    <LinearLayout
+        android:id="@+id/lymap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <com.jjlacode.base.util.android.controls.EditMaterial
+            android:id="@+id/etzonaprod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:hint_text="@string/zona"
+            app:tipo_dato="TEXTO" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_crear_marcador"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:background="@drawable/boton_redondo_secondary"
+                android:text="@string/crear_marcador"
+                android:textColor="@color/colorSecondaryDark" />
+
+            <Button
+                android:id="@+id/btn_borrar_marcador"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:background="@drawable/boton_redondo_secondary"
+                android:text="@string/borrar_marcador"
+                android:textColor="@color/colorSecondaryDark" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/radio_group_map"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <RadioButton
+            android:id="@+id/radioButtonMap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/mundial" />
+
+        <RadioButton
+            android:id="@+id/radioButtonMap1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/nacional" />
+
+        <RadioButton
+            android:id="@+id/radioButtonMap2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/regional" />
+
+        <RadioButton
+            android:id="@+id/radioButtonMap3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/provincial" />
+
+        <RadioButton
+            android:id="@+id/radioButtonMap4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/local" />
+
+        <RadioButton
+            android:id="@+id/radioButtonMap5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/codigo_postal" />
+
+    </RadioGroup>
+
+
+</LinearLayout>
+
+

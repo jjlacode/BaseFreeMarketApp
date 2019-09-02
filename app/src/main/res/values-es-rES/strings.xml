@@ -335,6 +335,36 @@
     <string name="marketing">Marketing y Publicidad</string>
     <string name="listas">Listas</string>
     <string name="publicidad_freelance">Publicidad Freelance</string>
+    <string name="comercial">Comercial</string>
+    <string name="ecommerce">Ecommerce</string>
+    <string name="lugar">Lugar</string>
+    <string name="empresa">Empresa</string>
+    <string name="proveedorweb">Proveedor</string>
+    <string name="clienteweb">Cliente</string>
+    <string name="pause">Pausa</string>
+    <string name="resume">Reinicio</string>
+    <string name="productos_proveedor">Productos proveedor</string>
+    <string name="radio">Radio de Zona en Kmts (max. 1000)</string>
+    <string name="sorteos">Sorteos</string>
+    <string name="perfiles_usuario">Perfiles usuario</string>
+    <string name="select_pais">Excluir paises</string>
+    <string name="ocultar_pais">Ocultar lista paises</string>
+    <string name="select_ubicacion">Seleccionar ubicación</string>
+    <string name="ocultar_mapa">Ocultar mapa</string>
+    <string name="crear_marcador">Crear Zona</string>
+    <string name="borrar_marcador">Borrar Zona</string>
+    <string name="zona">Zona</string>
+    <string name="ancho">Ancho de zona en Kmt (max. 1000)</string>
+    <string name="alto">Alto de zona en Kmt (max. 1000)</string>
+    <string name="mundial">Mundial</string>
+    <string name="nacional">Nacional</string>
+    <string name="provincial">Provincial</string>
+    <string name="regional">Regional</string>
+    <string name="local">Local</string>
+    <string name="codigo_postal">Codigo  postal</string>
+    <string name="opciones_zona">Opciones zona</string>
+    <string name="ocultar_opciones">Ocultar opciones zona</string>
+    <string name="mi_ubicacion_por_defecto">Mi ubicación por defecto</string>
 
 
 </resources>

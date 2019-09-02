@@ -5,17 +5,11 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StreamDownloadTask;
 import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.freelanceproject.R;
 
@@ -302,26 +296,14 @@ public class ImagenUtil {
         StorageReference storageRef = storage.getReference();
         final StorageReference spaceRef = storageRef.child(rutafoto);
         System.out.println("spaceRef = " + spaceRef);
-        spaceRef.getStream().addOnCompleteListener(new OnCompleteListener<StreamDownloadTask.TaskSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<StreamDownloadTask.TaskSnapshot> task) {
 
-                RequestOptions options = new RequestOptions()
-                        .placeholder(R.drawable.ic_add_a_photo_black_24dp)
-                        .error(R.drawable.alert_box_r);
-                Glide.with(context)
-                        .load(spaceRef)
-                        .apply(options)
-                        .into(imagen);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
-        });
-
-
+        RequestOptions options = new RequestOptions()
+                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
+                .error(R.drawable.alert_box_r);
+        Glide.with(context)
+                .load(spaceRef)
+                .apply(options)
+                .into(imagen);
     }
 
     public static void setImageFireStore(String rutafoto, ImageView imagen, float multiplicador) {

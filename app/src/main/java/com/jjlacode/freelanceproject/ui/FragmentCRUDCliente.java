@@ -341,7 +341,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             public void onClick(View v) {
 
                 AppActivity.hacerLlamada(AppActivity.getAppContext()
-                        , telefonoCliente.getText().toString(), Interactor.permiso);
+                        , telefonoCliente.getText().toString(), activityBase);
             }
         });
 
@@ -534,7 +534,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
 
                         if (!telefonoCliente.getText().toString().equals("")) {
                             AppActivity.hacerLlamada(AppActivity.getAppContext()
-                                    , telefonoCliente.getText().toString(), Interactor.permiso);
+                                    , telefonoCliente.getText().toString(), activityBase);
                         }
                     } else if (grabarVoz.equals("marcar")) {
 
@@ -546,7 +546,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
 
                         if (!telefonoCliente.getText().toString().equals("")) {
                             AppActivity.hacerLlamada(AppActivity.getAppContext()
-                                    , telefonoCliente.getText().toString(), Interactor.permiso);
+                                    , telefonoCliente.getText().toString(), activityBase);
                         }
                     }
             }

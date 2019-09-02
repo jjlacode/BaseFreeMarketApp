@@ -18,8 +18,6 @@ public class ProdProv implements Serializable {
 
     private double precio;
 
-    private String rutafoto;
-
     private String proveedor;
 
     private String categoria;
@@ -28,8 +26,30 @@ public class ProdProv implements Serializable {
 
     private String alcance;
 
+    private boolean activo;
+
+    private String rutafoto;
+
 
     public ProdProv() {
+    }
+
+    public ProdProv(String id, String refprov, String nombre, String descripcion,
+                    String web, double descProv, double precio, String proveedor,
+                    String categoria, String idprov, String alcance, boolean activo, String rutafoto) {
+        this.id = id;
+        this.refprov = refprov;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.web = web;
+        this.descProv = descProv;
+        this.precio = precio;
+        this.proveedor = proveedor;
+        this.categoria = categoria;
+        this.idprov = idprov;
+        this.alcance = alcance;
+        this.activo = activo;
+        this.rutafoto = rutafoto;
     }
 
     public String getId() {
@@ -70,14 +90,6 @@ public class ProdProv implements Serializable {
 
     public void setPrecio(double precio) {
         this.precio = precio;
-    }
-
-    public String getRutafoto() {
-        return rutafoto;
-    }
-
-    public void setRutafoto(String rutafoto) {
-        this.rutafoto = rutafoto;
     }
 
     public String getProveedor() {
@@ -126,6 +138,22 @@ public class ProdProv implements Serializable {
 
     public void setAlcance(String alcance) {
         this.alcance = alcance;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
+    public String getRutafoto() {
+        return rutafoto;
+    }
+
+    public void setRutafoto(String rutafoto) {
+        this.rutafoto = rutafoto;
     }
 }
 

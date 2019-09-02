@@ -115,7 +115,7 @@ public class MenuGestionProyectos extends FragmentGrid {
         } else if (nombre.equals(catalogo)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new Catalogo()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new CatalogoProdProvWeb()).addToBackStack(null).commit();
 
         } else if (nombre.equals(home)) {
 

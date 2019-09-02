@@ -16,7 +16,7 @@ public class MenuInicio extends FragmentGrid {
     private String crm;
     private String marketing;
     private String proyectos;
-    private String facturacion;
+    private String perfiles;
     private String contabilidad;
     private String ajustes;
     private String ayuda;
@@ -39,7 +39,7 @@ public class MenuInicio extends FragmentGrid {
         crm = getString(R.string.crm);
         marketing = getString(R.string.marketing);
         proyectos = getString(R.string.proyectos);
-        facturacion = getString(R.string.facturacion);
+        perfiles = getString(R.string.perfiles_usuario);
         contabilidad = getString(R.string.contabilidad);
         ajustes = getString(R.string.informesyajustes);
         ayuda = getString(R.string.ayuda);
@@ -51,9 +51,9 @@ public class MenuInicio extends FragmentGrid {
         lista.add(new GridModel(R.drawable.ic_clientes_indigo, crm));
         lista.add(new GridModel(R.drawable.ic_marketing_indigo, marketing));
         lista.add(new GridModel(R.drawable.ic_proy_curso_indigo, proyectos));
-        lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, facturacion));
+        lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, perfiles));
         lista.add(new GridModel(R.drawable.ic_cobros_indigo, contabilidad));
-        lista.add(new GridModel(R.drawable.ic_tareas_indigo, ajustes));
+        lista.add(new GridModel(R.drawable.ic_ajustes_black_24dp, ajustes));
         lista.add(new GridModel(R.drawable.ic_ayuda_indigo, ayuda));
         lista.add(new GridModel(R.drawable.ic_salir_rojo, salir));
 
@@ -76,15 +76,12 @@ public class MenuInicio extends FragmentGrid {
 
             activityBase.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_main, new MenuGestionProyectos()).addToBackStack(null).commit();
-        } else if (nombre.equals(facturacion)) {
+        } else if (nombre.equals(perfiles)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_main, new MenuFacturacion()).addToBackStack(null).commit();
 
         } else if (nombre.equals(contabilidad)) {
-
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new MenuContabilidad()).addToBackStack(null).commit();
 
 
         } else if (nombre.equals(ajustes)) {

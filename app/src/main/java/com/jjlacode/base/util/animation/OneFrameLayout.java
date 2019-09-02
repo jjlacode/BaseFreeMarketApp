@@ -27,6 +27,7 @@ public class OneFrameLayout extends FrameLayout {
     private float mInitialTx;
     private boolean mTracking;
     private OnSwipeListener onSwipeListener;
+    public boolean activo = true;
 
 
     public void setAncho(int ancho) {
@@ -35,63 +36,71 @@ public class OneFrameLayout extends FrameLayout {
 
     }
 
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        switch (event.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN:
 
-                mDisplacementX = event.getRawX();
-                mDisplacementY = event.getRawY();
+        if (activo) {
 
-                mInitialTx = getTranslationX();
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
 
-                break;
+                    mDisplacementX = event.getRawX();
+                    mDisplacementY = event.getRawY();
 
-            case MotionEvent.ACTION_MOVE:
-                // get the delta distance in X and Y direction
-                float deltaX = event.getRawX() - mDisplacementX;
-                float deltaY = event.getRawY() - mDisplacementY;
-                // updatePressedState(false);
+                    mInitialTx = getTranslationX();
 
-                // set the touch and cancel event
-                if ((Math.abs(deltaX) > ViewConfiguration.get(getContext())
-                        .getScaledTouchSlop() * 2 && Math.abs(deltaY) < Math
-                        .abs(deltaX) / 2)
-                        || mTracking) {
-
-                    mTracking = true;
-
-                    if (getTranslationX() <= mWidth / 2
-                            && getTranslationX() >= -(mWidth / 2)) {
-
-                        setTranslationX(mInitialTx + deltaX);
-                        break;
-                    }
-                }
-
-                break;
-
-            case MotionEvent.ACTION_UP:
-
-                if (mTracking) {
-                    mTracking = false;
-                    float currentTranslateX = getTranslationX();
-
-                    if (currentTranslateX > mWidth / 8) {
-                        onSwipeListener.rightSwipe();
-                    } else if (currentTranslateX < -(mWidth / 8)) {
-                        onSwipeListener.leftSwipe();
-                    }
-
-                    // comment this line if you don't want your frame layout to
-                    // take its original position after releasing the touch
-                    setTranslationX(0);
                     break;
-                } else {
-                    // handle click event
-                    setTranslationX(0);
-                }
-                break;
+
+                case MotionEvent.ACTION_MOVE:
+                    // get the delta distance in X and Y direction
+                    float deltaX = event.getRawX() - mDisplacementX;
+                    float deltaY = event.getRawY() - mDisplacementY;
+                    // updatePressedState(false);
+
+                    // set the touch and cancel event
+                    if ((Math.abs(deltaX) > ViewConfiguration.get(getContext())
+                            .getScaledTouchSlop() * 2 && Math.abs(deltaY) < Math
+                            .abs(deltaX) / 2)
+                            || mTracking) {
+
+                        mTracking = true;
+
+                        if (getTranslationX() <= mWidth / 2
+                                && getTranslationX() >= -(mWidth / 2)) {
+
+                            setTranslationX(mInitialTx + deltaX);
+                            break;
+                        }
+                    }
+
+                    break;
+
+                case MotionEvent.ACTION_UP:
+
+                    if (mTracking) {
+                        mTracking = false;
+                        float currentTranslateX = getTranslationX();
+
+                        if (currentTranslateX > mWidth / 8) {
+                            onSwipeListener.rightSwipe();
+                        } else if (currentTranslateX < -(mWidth / 8)) {
+                            onSwipeListener.leftSwipe();
+                        }
+
+                        // comment this line if you don't want your frame layout to
+                        // take its original position after releasing the touch
+                        setTranslationX(0);
+                        break;
+                    } else {
+                        // handle click event
+                        setTranslationX(0);
+                    }
+                    break;
+            }
         }
         return false;
     }
