@@ -24,6 +24,25 @@ android {
             res.srcDirs = ['src/main/res', 'src/main/res/base', 'src/main/res/res']
         }
     }
+    flavorDimensions 'default'
+    productFlavors {
+        cli {
+            dimension = 'default'
+            applicationId = 'com.codevsolution.freemarketsapp.cli'
+            versionCode = 1
+            versionName = '1.0'
+            targetSdkVersion 28
+            minSdkVersion 22
+        }
+        pro {
+            dimension = 'default'
+            applicationId = 'com.codevsolution.freemarketsapp.pro'
+            versionCode = 1
+            versionName = '1.0'
+            targetSdkVersion 28
+            minSdkVersion 22
+        }
+    }
 }
 
 dependencies {
