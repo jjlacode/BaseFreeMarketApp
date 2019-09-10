@@ -34,12 +34,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.jjlacode.base.util.JavaUtil;
-import com.jjlacode.base.util.Models.Rating;
 import com.jjlacode.base.util.adapter.BaseViewHolder;
 import com.jjlacode.base.util.adapter.RVAdapter;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
+import com.jjlacode.base.util.android.AndroidUtil;
 import com.jjlacode.base.util.android.controls.EditMaterial;
-import com.jjlacode.base.util.crud.CRUDutil;
+import com.jjlacode.base.util.models.Rating;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
@@ -76,6 +76,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWeb extends Fragmen
     private int posicion;
     protected String nombreVoto;
     protected String tipo;
+    protected String perfil;
     protected String tipoForm;
     private DatabaseReference db;
 
@@ -117,7 +118,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWeb extends Fragmen
         if (viewWeb.getParent() != null) {
             ((ViewGroup) viewWeb.getParent()).removeView(viewWeb); // <- fix
         }
-        frdetalleExtraspost.addView(viewWeb);
+        frWeb.addView(viewWeb);
 
         browser = (WebView) view.findViewById(R.id.webBrowser);
         progressBarWeb = view.findViewById(R.id.progressBarWeb);
@@ -130,8 +131,10 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWeb extends Fragmen
     protected void cargarBundle() {
         super.cargarBundle();
 
-        if (bundle != null) {
+        if (nn(bundle)) {
             tipo = bundle.getString(TIPO);
+            perfil = bundle.getString(PERFIL);
+            titulo = bundle.getString(TITULO);
         }
     }
 
@@ -249,8 +252,8 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWeb extends Fragmen
 
     protected void setNombreVoto() {
 
-        perfilUser = CRUDutil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
-        idUser = CRUDutil.getSharePreference(contexto, USERID, USERID, NULL);
+        perfilUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
+        idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
 
         if (!idUser.equals(NULL)) {
 
@@ -282,8 +285,8 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWeb extends Fragmen
 
     public void enviarVoto(Context contexto, final String tipo, final String id, float valor, String comentario) {
 
-        perfilUser = CRUDutil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
-        idUser = CRUDutil.getSharePreference(contexto, USERID, USERID, NULL);
+        perfilUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
+        idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
 
         if (nombreVoto != null) {
 
@@ -416,8 +419,8 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWeb extends Fragmen
 
     public void recuperarVotoUsuario(final RatingBar ratingBarUser, final Context contexto, final String tipo, final String id) {
 
-        idUser = CRUDutil.getSharePreference(contexto, USERID, USERID, NULL);
-        perfilUser = CRUDutil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
+        idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
+        perfilUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
 
         votoUser = 0.0f;
         comentario.setText("");

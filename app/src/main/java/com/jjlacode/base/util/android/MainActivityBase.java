@@ -1,6 +1,8 @@
 package com.jjlacode.base.util.android;
 
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -18,22 +20,22 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.jjlacode.base.util.JavaUtil;
 import com.jjlacode.base.util.interfaces.ICFragmentos;
-import com.jjlacode.base.util.localizacion.FragmentMap;
+import com.jjlacode.base.util.logica.InteractorBase;
+import com.jjlacode.base.util.services.AutoArranque;
 import com.jjlacode.base.util.sqlite.ContratoPry;
+import com.jjlacode.base.util.web.FragmentWebView;
 import com.jjlacode.freelanceproject.R;
-import com.jjlacode.freelanceproject.logica.Interactor;
+
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.HTTPAYUDA;
 
 public class MainActivityBase extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ICFragmentos,
-        Interactor.Constantes, ContratoPry.Tablas, JavaUtil.Constantes {
+        InteractorBase.Constantes, ContratoPry.Tablas, JavaUtil.Constantes {
 
     private static final int LOCATION_REQUEST_CODE = 333;
     protected Bundle bundle;
@@ -48,16 +50,6 @@ public class MainActivityBase extends AppCompatActivity
     protected float sizeF;
     protected String ayudaWeb;
     private String TAG = getClass().getSimpleName();
-    public double latitud;
-    public double longitud;
-    public int zoom;
-    public String titMap;
-    public String txtMap;
-    public boolean dragable;
-    private FragmentMap mMap;
-    private GoogleMap gMap;
-    public LatLng posMark;
-    private CircleOptions circleOptions;
 
     public boolean permisoBoot;
     public boolean permisoInternet;
@@ -65,6 +57,8 @@ public class MainActivityBase extends AppCompatActivity
     public boolean permisoReadCont;
     public boolean permisoRecordAudio;
     public boolean permisoCall;
+    protected Intent intent;
+    protected String accion;
 
     protected void persitencia() {
 
@@ -134,7 +128,57 @@ public class MainActivityBase extends AppCompatActivity
 
     }
 
+    protected void inicio() {
+
+    }
+
     protected void acciones() {
+
+        intent = getIntent();
+
+        System.out.println("inicio = " + intent.getIntExtra(INICIO, 0));
+
+        if (intent.getIntExtra(INICIO, 0) == 0) {
+
+            inicio();
+
+        } else if (intent.getIntExtra(INICIO, 0) == 1) {
+
+            AutoArranque.scheduleJob(AppActivity.getAppContext());
+
+            inicio();
+
+        } else if (intent.getIntExtra(INICIO, 0) == 2) {
+
+            inicio();
+            ayudaWeb = HTTPAYUDA + "Bienvenida";
+            bundle.putString(WEB, ayudaWeb);
+            enviarBundleAFragment(bundle, new FragmentWebView());
+        }
+
+        accion = intent.getAction();
+
+        if (accion != null && accion.equals(ACCION_VERCHAT)) {
+
+            System.out.println("Accion ver chat");
+
+            String idChat = intent.getStringExtra(EXTRA_IDCHAT);
+            String idUser = intent.getStringExtra(EXTRA_IDSPCHAT);
+            System.out.println("idUser = " + idUser);
+            int secChat = intent.getIntExtra(EXTRA_SECCHAT, 0);
+            String tipoChat = intent.getStringExtra(EXTRA_TIPOCHAT);
+            String tipoChatRetorno = intent.getStringExtra(EXTRA_TIPOCHATRETORNO);
+            bundle.putString(ACTUAL, intent.getStringExtra(EXTRA_ACTUAL));
+            bundle.putString(CAMPO_ID, idChat);
+            bundle.putString(USERID, idUser);
+            bundle.putInt(CAMPO_SECUENCIA, secChat);
+            bundle.putString(CAMPO_TIPO, tipoChat);
+            bundle.putString(CAMPO_TIPORETORNO, tipoChatRetorno);
+            NotificationManager notifyMgr = (NotificationManager)
+                    AppActivity.getAppContext().getSystemService(NOTIFICATION_SERVICE);
+            notifyMgr.cancel(intent.getIntExtra(EXTRA_ID, 0));
+
+        }
 
     }
 

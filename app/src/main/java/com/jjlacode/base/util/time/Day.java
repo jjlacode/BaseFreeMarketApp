@@ -2,8 +2,8 @@ package com.jjlacode.base.util.time;
 
 import android.graphics.Color;
 
-import com.jjlacode.base.util.crud.ListaModelo;
-import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Modelo;
 
 import java.util.ArrayList;
 import java.util.Calendar;

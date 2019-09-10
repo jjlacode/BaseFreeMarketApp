@@ -22,6 +22,8 @@ import com.jjlacode.base.util.android.FragmentBase;
 import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.media.MediaUtil;
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
@@ -54,7 +56,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     protected String campoCreate;
 
     protected ContentValues valores;
-    protected ListaModelo lista;
     protected ListaModelo listab;
     protected boolean nuevo;
 
@@ -138,6 +139,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                 subTitulo = Interactor.setNamefdef();
             }
             listab = (ListaModelo) bundle.getSerializable(LISTA);
+
             modelo = (Modelo) bundle.getSerializable(MODELO);
             if (id==null) {
                 id = bundle.getString(CAMPO_ID);
@@ -469,7 +471,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                             startActivityForResult(mediaUtil.takePhotoIntent(), COD_FOTO);
                             mediaUtil.addPhotoToGallery();
                             path = mediaUtil.getPath(mediaUtil.getPhotoUri());
-                            CRUDutil.setSharePreference(contexto, PERSISTENCIA, PATH, path);
+                            AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PATH, path);
                             onUpdate();
                         }
 
@@ -511,7 +513,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
                 case COD_FOTO:
 
-                    path = CRUDutil.getSharePreference(contexto,PERSISTENCIA,PATH,path);
+                    path = AndroidUtil.getSharePreference(contexto, PERSISTENCIA, PATH, path);
 
                 case COD_SELECCIONA:
 

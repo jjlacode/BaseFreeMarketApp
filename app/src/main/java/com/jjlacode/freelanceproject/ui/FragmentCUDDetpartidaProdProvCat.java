@@ -11,8 +11,8 @@ import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCUD;
-import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
@@ -20,7 +20,7 @@ import com.jjlacode.freelanceproject.model.ProdProv;
 
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObjectDetalle;
 
-public class FragmentCUDDetpartidaProdProvCat extends FragmentCUD implements Interactor.Constantes,
+public class FragmentCUDDetpartidaProdProvCat extends FragmentCUD implements Interactor.ConstantesPry,
         ContratoPry.Tablas, Interactor.TiposDetPartida, Interactor.TiposEstados {
 
     private EditMaterial descripcion;

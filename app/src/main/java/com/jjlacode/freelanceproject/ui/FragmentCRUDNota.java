@@ -21,9 +21,9 @@ import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCRUD;
-import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.AudioPlayRec;
 import com.jjlacode.base.util.media.MediaUtil;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
@@ -34,7 +34,7 @@ import java.util.ArrayList;
 
 import static com.jjlacode.base.util.time.calendar.clases.DiaCalBase.HORACAL;
 
-public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constantes,
+public class FragmentCRUDNota extends FragmentCRUD implements Interactor.ConstantesPry,
         ContratoPry.Tablas, Interactor.TiposNota {
 
 
@@ -392,7 +392,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
                     datos();
                 }else{
                     ampliado = false;
-                    ampliar.setImageResource(R.drawable.ic_ampliar_indigo);
+                    ampliar.setImageResource(R.drawable.ic_ampliar_secondary_dark);
                     datos();
 
                 }

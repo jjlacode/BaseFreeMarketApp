@@ -6,21 +6,117 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import com.jjlacode.base.util.JavaUtil;
-import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.models.Modelo;
 
 import java.util.ArrayList;
 
 import static com.jjlacode.base.util.android.AppActivity.getAppContext;
-import static com.jjlacode.base.util.sqlite.ContratoBaseSQLite.crearUriTabla;
-import static com.jjlacode.base.util.sqlite.ContratoBaseSQLite.crearUriTablaDetalle;
-import static com.jjlacode.base.util.sqlite.ContratoBaseSQLite.crearUriTablaDetalleId;
-import static com.jjlacode.base.util.sqlite.ContratoBaseSQLite.obtenerIdTabla;
-import static com.jjlacode.base.util.sqlite.ContratoBaseSQLite.obtenerUriContenido;
+import static com.jjlacode.base.util.sqlite.ContratoPry.obtenerIdTabla;
 
 public class ConsultaBD implements JavaUtil.Constantes {
 
 
     private static ContentResolver resolver = getAppContext().getContentResolver();
+
+    public static Uri obtenerUriContenido(String tabla) {
+
+        if (ContratoSystem.obtenerCampos(tabla) != null) {
+
+
+            return ContratoSystem.obtenerUriContenido(
+                    tabla);
+
+        } else if (ContratoPry.obtenerCampos(tabla) != null) {
+
+
+            return ContratoPry.obtenerUriContenido(
+                    tabla);
+
+        }
+
+
+        return null;
+    }
+
+    public static Uri crearUriTabla(String id, String tabla) {
+
+        if (ContratoSystem.obtenerCampos(tabla) != null) {
+
+
+            return ContratoSystem.crearUriTabla(id,
+                    tabla);
+
+        } else if (ContratoPry.obtenerCampos(tabla) != null) {
+
+
+            return ContratoPry.crearUriTabla(id,
+                    tabla);
+
+        }
+
+
+        return null;
+    }
+
+    public static Uri crearUriTablaDetalle(String id, String secuencia, String tabla) {
+
+        if (ContratoSystem.obtenerCampos(tabla) != null) {
+
+
+            return ContratoSystem.crearUriTablaDetalle(id, secuencia,
+                    tabla);
+
+        } else if (ContratoPry.obtenerCampos(tabla) != null) {
+
+
+            return ContratoPry.crearUriTablaDetalle(id, secuencia,
+                    tabla);
+
+        }
+
+
+        return null;
+    }
+
+    public static Uri crearUriTablaDetalle(String id, int secuencia, String tabla) {
+
+        if (ContratoSystem.obtenerCampos(tabla) != null) {
+
+
+            return ContratoSystem.crearUriTablaDetalle(id, secuencia,
+                    tabla);
+
+        } else if (ContratoPry.obtenerCampos(tabla) != null) {
+
+
+            return ContratoPry.crearUriTablaDetalle(id, secuencia,
+                    tabla);
+
+        }
+
+
+        return null;
+    }
+
+    public static Uri crearUriTablaDetalleId(String id, String secuencia, String tabla) {
+
+        if (ContratoSystem.obtenerCampos(tabla) != null) {
+
+
+            return ContratoSystem.crearUriTablaDetalleId(id, secuencia,
+                    tabla);
+
+        } else if (ContratoPry.obtenerCampos(tabla) != null) {
+
+
+            return ContratoPry.crearUriTablaDetalleId(id, secuencia,
+                    tabla);
+
+        }
+
+
+        return null;
+    }
 
 
     public static ArrayList<Modelo> queryList(String[] campos, String seleccion, String orden) {
@@ -171,7 +267,6 @@ public class ConsultaBD implements JavaUtil.Constantes {
         Cursor reg = resolver.query(obtenerUriContenido(
                 campos[1]), null, seleccion, null, orden);
 
-
         if (reg != null) {
 
             while (reg.moveToNext()) {
@@ -282,7 +377,6 @@ public class ConsultaBD implements JavaUtil.Constantes {
 
         Cursor reg = resolver.query(obtenerUriContenido(
                 campos[1]), null, null, null, null);
-
 
         if (reg != null) {
 

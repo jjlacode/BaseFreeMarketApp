@@ -28,9 +28,7 @@ public class DataBaseSystem extends DataBaseBase {
     @Override
     protected ArrayList<String[]> setListaCampos() {
 
-        ArrayList<String[]> listaCampos = new ArrayList<>();
-
-        return listaCampos;
+        return ContratoSystem.obtenerListaCampos();
     }
 
     private void cargarDatosinicio(SQLiteDatabase db) {

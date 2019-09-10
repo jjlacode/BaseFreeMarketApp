@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -35,6 +36,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Set;
 
 public class AndroidUtil extends AppCompatActivity {
 
@@ -639,5 +641,112 @@ public class AndroidUtil extends AppCompatActivity {
         );
 
         return stateList;
+    }
+
+    public static void setSharePreference(Context contexto, String sharePreference, String key, String valor) {
+
+        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+        SharedPreferences.Editor editor = persistencia.edit();
+        editor.putString(key, valor);
+        editor.apply();
+
+    }
+
+    public static float getSharePreference(Context contexto, String sharePreference, String key, float defecto) {
+
+        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+
+        return persistencia.getFloat(key, defecto);
+
+    }
+
+    public static void setSharePreference(Context contexto, String sharePreference, String key, int valor) {
+
+        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+        SharedPreferences.Editor editor = persistencia.edit();
+        editor.putInt(key, valor);
+        editor.apply();
+
+    }
+
+    public static void setSharePreference(Context contexto, String sharePreference, String key, long valor) {
+
+        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+        SharedPreferences.Editor editor = persistencia.edit();
+        editor.putLong(key, valor);
+        editor.apply();
+
+    }
+
+    public static void setSharePreference(Context contexto, String sharePreference, String key, boolean valor) {
+
+        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+        SharedPreferences.Editor editor = persistencia.edit();
+        editor.putBoolean(key, valor);
+        editor.apply();
+
+    }
+
+    public static void setSharePreference(Context contexto, String sharePreference, String key, float valor) {
+
+        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+        SharedPreferences.Editor editor = persistencia.edit();
+        editor.putFloat(key, valor);
+        editor.apply();
+
+    }
+
+    public static void setSharePreference(Context contexto, String sharePreference, String key, Set<String> valor) {
+
+        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+        SharedPreferences.Editor editor = persistencia.edit();
+        editor.putStringSet(key, valor);
+        editor.apply();
+
+    }
+
+    public static String getSharePreference(Context contexto, String sharePreference, String key, String defecto) {
+
+        try {
+            SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+            return persistencia.getString(key, defecto);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    public static int getSharePreference(Context contexto, String sharePreference, String key, int defecto) {
+
+        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+
+        return persistencia.getInt(key, defecto);
+
+    }
+
+    public static long getSharePreference(Context contexto, String sharePreference, String key, long defecto) {
+
+        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+
+        return persistencia.getLong(key, defecto);
+
+    }
+
+    public static boolean getSharePreference(Context contexto, String sharePreference, String key, boolean defecto) {
+
+        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+
+        return persistencia.getBoolean(key, defecto);
+
+    }
+
+    public static Set<String> getSharePreference(Context contexto, String sharePreference, String key, Set<String> defecto) {
+
+        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+
+        return persistencia.getStringSet(key, defecto);
+
     }
 }

@@ -16,8 +16,8 @@ import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.FragmentCRUD;
-import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 import static com.jjlacode.base.util.sqlite.ConsultaBD.checkQueryList;
 
-public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Constantes, ContratoPry.Tablas {
+public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.ConstantesPry, ContratoPry.Tablas {
 
     private EditMaterial tiempo, nombre, descripcion;
     private ImageButton btnNota;

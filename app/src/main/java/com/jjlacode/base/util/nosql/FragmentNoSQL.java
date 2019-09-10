@@ -4,37 +4,39 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.google.firebase.database.GenericTypeIndicator;
+import com.jjlacode.base.util.android.AndroidUtil;
 import com.jjlacode.base.util.android.FragmentBase;
 import com.jjlacode.base.util.android.controls.ImagenLayout;
-import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.media.MediaUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
 
+
 public abstract class FragmentNoSQL extends FragmentBase {
+
     private MediaUtil mediaUtil;
     protected String path;
     final protected int COD_FOTO = 10;
     final protected int COD_SELECCIONA = 20;
     protected ImagenLayout imagen;
+    protected GenericTypeIndicator<ArrayList<String>> tipoArrayListsString;
 
     @Override
-    public void onResume() {
-        super.onResume();
+    protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
+        super.setOnCreateView(view, inflater, container);
 
-        acciones();
-    }
-
-    @Override
-    protected void acciones() {
-        super.acciones();
-
-
+        tipoArrayListsString = new GenericTypeIndicator<ArrayList<String>>() {
+        };
     }
 
     protected void mostrarDialogoOpcionesImagen(final Context contexto) {
@@ -57,7 +59,7 @@ public abstract class FragmentNoSQL extends FragmentBase {
                         startActivityForResult(mediaUtil.takePhotoIntent(), COD_FOTO);
                         mediaUtil.addPhotoToGallery();
                         path = mediaUtil.getPath(mediaUtil.getPhotoUri());
-                        CRUDutil.setSharePreference(contexto, PERSISTENCIA, PATH, path);
+                        AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PATH, path);
 
                     } catch (IOException e) {
                         Log.e("DialogoOpcionesImagen", e.toString());
@@ -94,14 +96,14 @@ public abstract class FragmentNoSQL extends FragmentBase {
 
                 case COD_FOTO:
 
-                    path = CRUDutil.getSharePreference(contexto, PERSISTENCIA, PATH, path);
+                    path = AndroidUtil.getSharePreference(contexto, PERSISTENCIA, PATH, path);
                     guardarImagen();
 
                 case COD_SELECCIONA:
 
                     if (data != null && data.getData() != null) {
                         path = mediaUtil.getPath(data.getData());
-                        CRUDutil.setSharePreference(contexto, PERSISTENCIA, PATH, path);
+                        AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PATH, path);
                         System.out.println("path = " + path);
                         guardarImagen();
                     }

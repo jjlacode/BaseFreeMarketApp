@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RadioGroup
+        android:id="@+id/radio_group_prod"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <RadioButton
+            android:id="@+id/radioButtonprod1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/producto" />
+
+        <RadioButton
+            android:id="@+id/radioButtonprod2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/servicios" />
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <com.jjlacode.base.util.android.controls.ImagenLayout
+                android:id="@+id/imgformprodprov"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2.5" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <com.jjlacode.base.util.android.controls.EditMaterial
+                    android:id="@+id/etrefformprodprov"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:activo="false"
+                    app:hint_text="@string/referencia_proveedor"
+                    app:tipo_dato="TEXTO|PERSONA" />
+
+                <com.jjlacode.base.util.android.controls.EditMaterial
+                    android:id="@+id/etnombreformprodprov"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint_text="@string/nombre"
+                    app:activo="false"
+                    app:tipo_dato="TEXTO|PERSONA" />
+
+                <com.jjlacode.base.util.android.controls.EditMaterial
+                    android:id="@+id/etproveedorformprodprov"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint_text="@string/proveedor"
+                    app:activo="false"
+                    app:tipo_dato="TEXTO|PERSONA" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.jjlacode.base.util.android.controls.EditMaterial
+            android:id="@+id/etdescformprodprov"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:activo="false"
+            app:hint_text="@string/descripcion"
+            app:tipo_dato="TEXTO|MULTI" />
+
+        <com.jjlacode.base.util.android.controls.EditMaterial
+            android:id="@+id/etprecioformprodprov"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hint_text="@string/precio_proveedor"
+            app:activo="false"
+            app:tipo_dato="NUMERO|DECIMAL" />
+
+        <com.jjlacode.base.util.android.controls.EditMaterial
+            android:id="@+id/etclavesformprodprov"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:hint_text="@string/palabras_clave"
+            app:tipo_dato="TEXTO|MULTI" />
+
+        <com.jjlacode.base.util.android.controls.EditMaterial
+            android:id="@+id/etwebformprodprov"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:hint_text="@string/web"
+            app:tipo_dato="TEXTO|URI" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_sorteo_prod"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/altobtn"
+            style="@style/boton_secondary"
+            android:visibility="gone"
+            android:text="@string/sortear" />
+
+        <com.jjlacode.base.util.android.controls.EditMaterial
+            android:id="@+id/etmaxpartformprodprov"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:hint_text="@string/max_participantes_sorteo"
+            app:tipo_dato="NUMERO" />
+
+
+    </LinearLayout>
+</LinearLayout>

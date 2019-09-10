@@ -9,7 +9,7 @@ import android.widget.Filter;
 
 import androidx.annotation.NonNull;
 
-import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.models.Modelo;
 
 import java.util.ArrayList;
 import java.util.List;

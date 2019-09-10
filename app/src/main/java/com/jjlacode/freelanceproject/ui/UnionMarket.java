@@ -69,28 +69,42 @@ public class UnionMarket extends FragmentGrid {
         } else if (nombre.equals(freelance)) {
             bundle = new Bundle();
             putBundle(TIPO, FREELANCE);
+            putBundle(PERFIL, FREELANCE);
+            putBundle(TITULO, getString(R.string.perfil_freelance));
             icFragmentos.enviarBundleAFragment(bundle, new ListadosPerfilesFirebase());
+
         } else if (nombre.equals(freelanceDemanda)) {
 
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new MenuInformesAjustes()).addToBackStack(null).commit();
+            bundle = new Bundle();
+            putBundle(TIPO, PRODFREELANCE);
+            putBundle(PERFIL, FREELANCE);
+            putBundle(TITULO, getString(R.string.servicios_freelance));
+            icFragmentos.enviarBundleAFragment(bundle, new ListadoProductosFreelance());
+
 
 
         } else if (nombre.equals(proveedoresWeb)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new ListadoProductosProvWeb()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new ListadoProductos()).addToBackStack(null).commit();
 
         } else if (nombre.equals(comercios)) {
 
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new MenuContabilidad()).addToBackStack(null).commit();
+            bundle = new Bundle();
+            putBundle(TIPO, SORTEO);
+            putBundle(PERFIL, SORTEO);
+            putBundle(TITULO, getString(R.string.sorteos));
+            icFragmentos.enviarBundleAFragment(bundle, new AltaProductosSorteos());
 
 
         } else if (nombre.equals(trabajoOferta)) {
 
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new MenuInformesAjustes()).addToBackStack(null).commit();
+            bundle = new Bundle();
+            putBundle(TIPO, SORTEO);
+            putBundle(PERFIL, SORTEO);
+            putBundle(TITULO, getString(R.string.sorteos));
+            icFragmentos.enviarBundleAFragment(bundle, new ListadoProductosSorteos());
+
 
 
         } else if (nombre.equals(trabajoDemanda)) {

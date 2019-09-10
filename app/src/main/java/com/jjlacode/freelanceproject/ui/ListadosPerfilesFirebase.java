@@ -11,6 +11,7 @@ public class ListadosPerfilesFirebase extends FragmentMasterDetailNoSQLFormBaseF
         imagen.setImageFirestore(firebaseFormBase.getIdchatBase() + tipo);
 
         System.out.println("Acciones listados firebase");
+
     }
 
     @Override

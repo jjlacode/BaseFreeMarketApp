@@ -9,12 +9,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,18 +22,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.jjlacode.base.util.JavaUtil;
-import com.jjlacode.base.util.crud.CRUDutil;
-import com.jjlacode.base.util.crud.ListaModelo;
-import com.jjlacode.base.util.crud.Modelo;
-import com.jjlacode.base.util.interfaces.ICFragmentos;
+import com.jjlacode.base.util.android.AndroidUtil;
+import com.jjlacode.base.util.logica.InteractorBase;
+import com.jjlacode.base.util.models.DestinosVoz;
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.base.util.sqlite.ContratoPry;
+import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.freelanceproject.BuildConfig;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.model.ProdProv;
 import com.jjlacode.freelanceproject.services.EventosReceiver;
 import com.jjlacode.freelanceproject.ui.CalendarioEventos;
-import com.jjlacode.freelanceproject.ui.FragmentCRUDEvento;
 import com.jjlacode.freelanceproject.ui.FragmentNuevoEvento;
 import com.jjlacode.freelanceproject.ui.MenuInicio;
 
@@ -51,24 +52,20 @@ import static android.content.Intent.EXTRA_TEXT;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.jjlacode.base.util.android.AppActivity.getAppContext;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryList;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.ACCION_CANCELAR;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.ACCION_POSPONER;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.ACCION_VER;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.ACCION_VERCHAT;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.EXTRA_ACTUAL;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.EXTRA_ID;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.EXTRA_IDCHAT;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.EXTRA_IDEVENTO;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.EXTRA_SECCHAT;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.EXTRA_TIPOCHAT;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.INICIO;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.PARTIDA;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.PRODPROVCAT;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.PRODUCTO;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.TRABAJO;
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.ACCION_CANCELAR;
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.ACCION_POSPONER;
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.ACCION_VER;
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.EXTRA_GANADOR;
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.EXTRA_IDEVENTO;
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.EXTRA_SORTEO;
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.PARTIDA;
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.PRODPROVCAT;
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.PRODUCTO;
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.TRABAJO;
 
 
-public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
+public class Interactor extends InteractorBase implements JavaUtil.Constantes,
+        InteractorBase.Constantes, ContratoPry.Tablas {
 
 
         public static String perfila = null;//Perfil setActivo para calculos y preferencias
@@ -84,36 +81,35 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
         public static String namesubdef;
         public static boolean grabar;
 
+    public static Fragment fragmentMenuInicio = new MenuInicio();
+
+
+
 
     //private static ConsultaBD consulta = new ConsultaBD();
 
-    public interface  Constantes {
+    public interface ConstantesPry {
 
 
         String HTTPAYUDA = "http://frelanceproject.jjlacode.ml/";
         String PRIORIDAD = "prioridad";
         String DIASPASADOS = "diaspasados";
         String DIASFUTUROS = "diasfuturos";
-        String BASEDATOS = "freelanceproject.db";
         String PERFILACTIVO = "perfil setActivo";
-        String USERID = "userid";
         String SORTEOS = getAppContext().getString(R.string.sorteos);
         String PRODSORTEOS = "prodsorteos";
         String FREELANCE = getAppContext().getString(R.string.freelance);
         String CLIENTEWEB = getAppContext().getString(R.string.clienteweb);
         String COMERCIAL = getAppContext().getString(R.string.comercial);
         String PRODCOMERCIAL = "prodcomer";
+        String PRODFREELANCE = "prodfreelance";
         String PROVEEDORWEB = getAppContext().getString(R.string.proveedorweb);
         String ECOMMERCE = getAppContext().getString(R.string.ecommerce);
         String PRODECOMMERCE = "prodecom";
+        String PRODEMPRESA = "prodempresa";
+        String PRODLUGAR = "prodlugar";
         String LUGAR = getAppContext().getString(R.string.lugar);
         String EMPRESA = getAppContext().getString(R.string.empresa);
-        String NOMBRECHAT = "nombre_chat";
-        String ANON = "Sin asignar";
-        String IDCHATF = "idchatBase";
-        String VISORPDFMAIL = "visor pdf - email";
-        String TODAS = "Todas";
-        String TODOS = "Todos";
         String PARTIDABASE = "partidabase";
         String NUEVOPRESUPUESTO = getAppContext().getString(R.string.nuevo_presupuesto);
         String NUEVOPROYECTO = getAppContext().getString(R.string.nuevo_proyecto);
@@ -162,16 +158,9 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
         String PROYGARANTIA = getAppContext().getString(R.string.proyectos_garantia);
         String AGENDA = "Agenda";
         String DIARIO = "Notas";
-        String CHAT = "chat";
-        int RECIBIDO = 1;
-        int ENVIADO = 2;
-        String DETCHAT = "detchat";
         String TRABAJOS = "Trabajos";
-        String INICIO = "inicio";
-        String SALIR = "salir";
-        String TABLAS = "tablas";
         String EVENTO = "evento";
-        String PERFIL = "perfil";
+        String PERFILTR = "perfiltr";
         String NOTA = "nota";
         String NOTAS = "notas";
         String TRABAJO = "trabajo";
@@ -183,33 +172,29 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
         String GASTO = getAppContext().getString(R.string.gasto);
         String GASTOS = getAppContext().getString(R.string.gastos);
         String HABITUAL = getAppContext().getString(R.string.habitual);
-        String NUEVO = getAppContext().getString(R.string.nuevo);
         String OCASIONAL = getAppContext().getString(R.string.ocasional);
         String PRINCIPAL = getAppContext().getString(R.string.principal);
+        String GANADORSORTEO = "ganador_sorteo";
         int COD_SELECCIONA = 10;
         int COD_FOTO = 20;
         String CARPETA_PRINCIPAL = "freelanceproyect/";
         String CARPETA_IMAGEN = "imagenes";
         String DIRECTORIO_IMAGEN = CARPETA_PRINCIPAL + CARPETA_IMAGEN;
         String PROVIDERFILE = BuildConfig.APPLICATION_ID + ".providerFreelanceProject";
-        String ACCION_AVISOEVENTO = "jjlacode.com.freelanceproject.action.AVISOEVENTO";
-        String ACCION_AVISOMSGCHAT = "jjlacode.com.freelanceproject.action.AVISOMSGCHAT";
-        String ACCION_POSPONER = "jjlacode.com.freelanceproject.action.POSPONER";
-        String ACCION_CANCELAR = "jjlacode.com.freelanceproject.action.CANCELAR";
-        String ACCION_VER = "jjlacode.com.freelanceproject.action.VER";
-        String ACCION_VERCHAT = "jjlacode.com.freelanceproject.action.VERCHAT";
-        String ACCION_VERLUGAR = "jjlacode.com.freelanceproject.action.VERLUGAR";
+        String ACCION_AVISOEVENTO = "com.jjlacode.freelanceproject.action.AVISOEVENTO";
+        String ACCION_AVISOSORTEO = "com.jjlacode.freelanceproject.action.AVISOSORTEO";
+        String ACCION_POSPONER = "com.jjlacode.freelanceproject.action.POSPONER";
+        String ACCION_CANCELAR = "com.jjlacode.freelanceproject.action.CANCELAR";
+        String ACCION_VER = "com.jjlacode.freelanceproject.action.VER";
+        String ACCION_VERLUGAR = "com.jjlacode.freelanceproject.action.VERLUGAR";
         String STARTSERVER ="Servicio iniciado";
         String STOPSERVER = "Servicio detenido";
-        String EXTRA_IDEVENTO = "jjlacode.com.freelanceproject.EXTRA_IDEVENTO";
-        String EXTRA_IDCHAT = "jjlacode.com.freelanceproject.EXTRA_IDCHAT";
-        String EXTRA_SECCHAT = "jjlacode.com.freelanceproject.EXTRA_SECCHAT";
-        String EXTRA_TIPOCHAT = "jjlacode.com.freelanceproject.EXTRA_TIPOCHAT";
-        String EXTRA_TIPOCHATRETORNO = "jjlacode.com.freelanceproject.EXTRA_TIPOCHATRETORNO";
-        String EXTRA_ACTUAL = "jjlacode.com.freelanceproject.EXTRA_ACTUAL";
-        String EXTRA_BUNDLE = "jjlacode.com.freelanceproject.EXTRA_BUNDLE";
-        String EXTRA_ACCION = "jjlacode.com.freelanceproject.EXTRA_ACCION";
-        String EXTRA_ID = "jjlacode.com.freelanceproject.EXTRA_ID";
+        String EXTRA_IDEVENTO = "com.jjlacode.freelanceproject.EXTRA_IDEVENTO";
+        String EXTRA_BUNDLE = "com.jjlacode.freelanceproject.EXTRA_BUNDLE";
+        String EXTRA_ACCION = "com.jjlacode.freelanceproject.EXTRA_ACCION";
+        String EXTRA_SORTEO = "com.jjlacode.freelanceproject.EXTRA_SORTEO";
+        String EXTRA_PRODUCTO = "com.jjlacode.freelanceproject.EXTRA_PRODUCTO";
+        String EXTRA_GANADOR = "com.jjlacode.freelanceproject.EXTRA_GANADOR";
 
 
     }
@@ -267,6 +252,24 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
         String NOTAIMAGEN = "Nota de Imagen";
     }
 
+    public static ArrayList<DestinosVoz> getListaDestinosVoz() {
+
+        ArrayList<DestinosVoz> listaDestinos = new ArrayList<>();
+        listaDestinos.add(new DestinosVoz(INICIO.toLowerCase(), new MenuInicio()));
+        listaDestinos.add(new DestinosVoz(CALENDARIO.toLowerCase(), new CalendarioEventos()));
+
+        return listaDestinos;
+    }
+
+    public static ArrayList<DestinosVoz> getListaNuevosDestinosVoz() {
+
+        ArrayList<DestinosVoz> listaDestinos = new ArrayList<>();
+        listaDestinos.add(new DestinosVoz(getAppContext().getString(R.string.evento).toLowerCase(),
+                new FragmentNuevoEvento()));
+
+        return listaDestinos;
+    }
+
     public static String getNombreUser() {
 
         return null;
@@ -287,32 +290,30 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
         if (prioridad){
 
             //namesubdef = "Perfil: " + perfil + " hora: " +  JavaUtil.formatoMonedaLocal(hora) + " - P";
-            namesubdef = CRUDutil.getSharePreference(getAppContext(), PREFERENCIAS, PERFILUSER, NULL);
+            namesubdef = AndroidUtil.getSharePreference(getAppContext(), PREFERENCIAS, PERFILUSER, NULL);
 
 
         }else{
 
             //namesubdef = "Perfil: " + perfil + " hora: " + JavaUtil.formatoMonedaLocal(hora);
-            namesubdef = CRUDutil.getSharePreference(getAppContext(), PREFERENCIAS, PERFILUSER, NULL);
+            namesubdef = AndroidUtil.getSharePreference(getAppContext(), PREFERENCIAS, PERFILUSER, NULL);
 
         }
 
         return namesubdef;
     }
 
-    public static void notificationChat(Context contexto, Class<?> clase, Modelo detchat, String actual,
-                                        int id, int iconId, String titulo, String contenido) {
+    public static void notificationSorteo(Context contexto, Class<?> clase, String idGanador,
+                                          String idSorteo, int id, int iconId, String titulo, String contenido) {
 
         RemoteViews remoteView = new RemoteViews(contexto.getPackageName(), R.layout.notificacion_chat);
         remoteView.setTextViewText(R.id.tvdescnotchat, contenido);
 
-        Modelo chat = CRUDutil.setModelo(CAMPOS_CHAT, detchat.getString(DETCHAT_ID_CHAT));
         Intent intentVerChat = new Intent(contexto, clase);
-        intentVerChat.setAction(ACCION_VERCHAT);
-        intentVerChat.putExtra(EXTRA_IDCHAT, detchat.getString(DETCHAT_ID_CHAT));
-        intentVerChat.putExtra(EXTRA_SECCHAT, detchat.getInt(DETCHAT_SECUENCIA));
-        intentVerChat.putExtra(EXTRA_TIPOCHAT, chat.getString(CHAT_TIPO));
-        intentVerChat.putExtra(EXTRA_ACTUAL, actual);
+        intentVerChat.setAction(ACCION_VERSORTEO);
+        intentVerChat.putExtra(EXTRA_ACTUAL, SORTEO);
+        intentVerChat.putExtra(EXTRA_SORTEO, idSorteo);
+        intentVerChat.putExtra(EXTRA_GANADOR, idGanador);
         intentVerChat.putExtra(EXTRA_ID, id);
 
         intentVerChat.setFlags(FLAG_ACTIVITY_NEW_TASK);
@@ -323,6 +324,7 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
                 PendingIntent.FLAG_UPDATE_CURRENT);
         remoteView.setOnClickPendingIntent(R.id.btnvernotchat, verChat);
 
+
         // Estructurar la notificación
         Notification.Builder builder =
                 new Notification.Builder(contexto)
@@ -330,7 +332,7 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
                         .setSmallIcon(iconId)
                         .setContentTitle(titulo)
                         .setContentText(contenido)
-                        .setWhen(detchat.getLong(DETCHAT_FECHA))
+                        .setWhen(TimeDateUtil.ahora())
                         .setColor(contexto.getResources().getColor(R.color.colorPrimary))
                         .setTicker(titulo)
                         .setVibrate(new long[]{100, 250, 100, 500})
@@ -341,13 +343,14 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
                         .setAutoCancel(true);
 
         Notification notification = builder.build();
-        NotificationManager notifyMgrEvento = (NotificationManager) contexto.getSystemService(NOTIFICATION_SERVICE);
+        NotificationManager notifyMgrSorteo = (NotificationManager) contexto.getSystemService(NOTIFICATION_SERVICE);
 
         // Construir la notificación y emitirla
-        notifyMgrEvento.notify(id, notification);
+        notifyMgrSorteo.notify(id, notification);
 
 
     }
+
     public static void notificationEvento(Context contexto, Class<?> clase, Modelo evento, String actual,
                                           int id, int iconId, String titulo, String contenido ) {
 
@@ -732,37 +735,7 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
 
     }
 
-    public static void seleccionarDestino(ICFragmentos icFragmentos, Bundle bundle, String destino, CallbackFragmentBase callbackFragmentBase) {
 
-        if (destino.equals(INICIO.toLowerCase())){
-            icFragmentos.enviarBundleAFragment(bundle, new MenuInicio());
-
-        }else if (destino.equals(CALENDARIO.toLowerCase())){
-            bundle = null;
-            icFragmentos.enviarBundleAFragment(bundle,new CalendarioEventos());
-
-        } else if (destino.equals(getAppContext().getString(R.string.evento).toLowerCase())) {
-
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
-
-        }
-        System.out.println("destino = " + destino);
-        callbackFragmentBase.alSeleccionarDestino(destino);
-
-    }
-
-    public static void seleccionarNuevoDestino(ICFragmentos icFragmentos, Bundle bundle, String destino, CallbackFragmentBase callbackFragmentBase) {
-
-        if (destino.equals(getAppContext().getString(R.string.evento).toLowerCase())) {
-
-            icFragmentos.enviarBundleAFragment(bundle,new FragmentNuevoEvento());
-
-        }
-        System.out.println("destino nuevo = " + destino);
-        callbackFragmentBase.alSeleccionarNuevoDestino(destino);
-
-
-    }
 
     public static long fechaEntregaCalculada(double horastrabajos, double hlunes, double hmartes,
                                              double hmiercoles, double hjueves, double hviernes,
@@ -804,7 +777,7 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
         return -1;
     }
 
-    public static class Calculos implements  Constantes, TiposDetPartida{
+    public static class Calculos implements ConstantesPry, TiposDetPartida {
 
 
         public static ArrayList<Modelo> comprobarEventos(){
@@ -1534,17 +1507,6 @@ public class Interactor implements JavaUtil.Constantes, ContratoPry.Tablas {
             }
 
         }
-
-    }
-
-    public interface CallbackFragmentBase {
-
-        void alSeleccionarDestino(String destino);
-
-        void alSeleccionarNuevoDestino(String nuevoDestino);
-    }
-
-    public interface CallbackEventos {
 
     }
 

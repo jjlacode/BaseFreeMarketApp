@@ -16,8 +16,8 @@ import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.AndroidUtil;
 import com.jjlacode.base.util.crud.FragmentRVR;
-import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
@@ -29,7 +29,7 @@ import static com.jjlacode.base.util.JavaUtil.hoy;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObject;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObjectDetalle;
 
-public class FragmentTrabajoTreking extends FragmentRVR implements Interactor.Constantes,
+public class FragmentTrabajoTreking extends FragmentRVR implements Interactor.ConstantesPry,
         ContratoPry.Tablas, Interactor.TiposDetPartida, Interactor.TiposEstados {
 
 

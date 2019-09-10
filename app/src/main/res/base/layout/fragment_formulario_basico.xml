@@ -70,5 +70,23 @@
             app:hint_text="@string/descripcion"
             app:activo="false"
             app:tipo_dato="TEXTO|MULTI" />
+
+        <com.jjlacode.base.util.android.controls.EditMaterial
+            android:id="@+id/etclavesformpbase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:hint_text="@string/palabras_clave"
+            app:tipo_dato="TEXTO|MULTI" />
+
+        <com.jjlacode.base.util.android.controls.EditMaterial
+            android:id="@+id/etwebformbase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:hint_text="@string/web"
+            app:tipo_dato="TEXTO|URI" />
+
+
     </LinearLayout>
 </ScrollView>

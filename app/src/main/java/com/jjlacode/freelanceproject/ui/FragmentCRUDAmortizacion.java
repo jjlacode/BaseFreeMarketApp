@@ -19,7 +19,7 @@ import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.FragmentCRUD;
-import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.base.util.time.DatePickerFragment;
 import com.jjlacode.freelanceproject.R;

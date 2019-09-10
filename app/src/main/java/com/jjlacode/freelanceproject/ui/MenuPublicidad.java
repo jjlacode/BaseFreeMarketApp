@@ -5,10 +5,9 @@ import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.jjlacode.base.util.android.FragmentGrid;
+import com.jjlacode.base.util.nosql.FragmentPerfilUser;
 import com.jjlacode.base.util.web.FragmentWebView;
 import com.jjlacode.freelanceproject.R;
-import com.jjlacode.um.base.ui.FragmentChat;
-import com.jjlacode.um.base.ui.FragmentPerfilUser;
 
 import java.util.ArrayList;
 
@@ -71,17 +70,26 @@ public class MenuPublicidad extends FragmentGrid {
 
         if (nombre.equals(altaProdProvWeb)) {
 
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new AltaProductosProvWeb()).addToBackStack(null).commit();
+            bundle = new Bundle();
+            bundle.putString(TIPO, PRODPROVCAT);
+            bundle.putString(PERFIL, PRODPROVCAT);
+            bundle.putString(TITULO, getString(R.string.productos_proveedor));
+
+            icFragmentos.enviarBundleAFragment(bundle, new AltaProductos());
 
         } else if (nombre.equals(clientes)) {
 
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentCRUDCliente()).addToBackStack(null).commit();
+            bundle = new Bundle();
+            bundle.putString(TIPO, PRODFREELANCE);
+            bundle.putString(PERFIL, FREELANCE);
+            bundle.putString(TITULO, getString(R.string.servicios_freelance));
+
+            icFragmentos.enviarBundleAFragment(bundle, new AltaProductos());
+
         } else if (nombre.equals(notas)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentCRUDNota()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new AltaProductosMulti()).addToBackStack(null).commit();
 
         } else if (nombre.equals(calendarioNotas)) {
 

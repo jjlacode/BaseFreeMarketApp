@@ -12,11 +12,11 @@ import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.android.CheckPermisos;
 import com.jjlacode.base.util.android.MainActivityBase;
 import com.jjlacode.base.util.media.VisorPDFEmail;
-import com.jjlacode.base.util.services.AutoArranque;
 import com.jjlacode.base.util.sqlite.SQLiteUtil;
 import com.jjlacode.base.util.web.FragmentWebView;
 import com.jjlacode.freelanceproject.logica.Interactor;
 import com.jjlacode.freelanceproject.settings.SettingsActivity;
+import com.jjlacode.freelanceproject.ui.AltaProductosSorteos;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDAmortizacion;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDCliente;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDEvento;
@@ -27,8 +27,12 @@ import com.jjlacode.freelanceproject.ui.FragmentCRUDPerfil;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDProducto;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDProyecto;
 import com.jjlacode.freelanceproject.ui.FragmentCRUDTrabajo;
+import com.jjlacode.freelanceproject.ui.FragmentChat;
+import com.jjlacode.freelanceproject.ui.ListadoProductos;
+import com.jjlacode.freelanceproject.ui.ListadoProductosFreelance;
+import com.jjlacode.freelanceproject.ui.ListadoProductosSorteos;
+import com.jjlacode.freelanceproject.ui.ListadosProductosUsados;
 import com.jjlacode.freelanceproject.ui.MenuInicio;
-import com.jjlacode.um.base.ui.FragmentChat;
 
 import static android.Manifest.permission.CALL_PHONE;
 import static android.Manifest.permission.INTERNET;
@@ -37,10 +41,7 @@ import static android.Manifest.permission.RECEIVE_BOOT_COMPLETED;
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_CONTACTS;
 
-public class MainActivity extends MainActivityBase {
-
-    private static final int PERIOD_MS = 5000;
-
+public class MainActivity extends MainActivityBase implements Interactor.ConstantesPry {
 
 
     @Override
@@ -49,30 +50,6 @@ public class MainActivity extends MainActivityBase {
 
         //validarPermisos();
 
-        Intent intent = getIntent();
-
-        System.out.println("inicio = " + intent.getIntExtra(INICIO, 0));
-
-        if (intent.getIntExtra(INICIO,0)==0){
-
-            inicio();
-
-        }else if (intent.getIntExtra(INICIO,0)==1){
-
-            AutoArranque.scheduleJob(AppActivity.getAppContext());
-
-            inicio();
-
-        } else if (intent.getIntExtra(INICIO, 0) == 2) {
-
-            inicio();
-            ayudaWeb = HTTPAYUDA + "Bienvenida";
-            bundle.putString(WEB, ayudaWeb);
-            enviarBundleAFragment(bundle, new FragmentWebView());
-        }
-
-
-            String accion = intent.getAction();
 
 
         if (accion!=null && accion.equals(ACCION_VER)) {
@@ -86,19 +63,17 @@ public class MainActivity extends MainActivityBase {
                     AppActivity.getAppContext().getSystemService(NOTIFICATION_SERVICE);
             notifyMgr.cancel(intent.getIntExtra(EXTRA_ID,0));
 
-        } else if (accion != null && accion.equals(ACCION_VERCHAT)) {
+        }
 
-            System.out.println("Accion ver chat");
+        if (accion != null && accion.equals(ACCION_VERSORTEO)) {
 
-            String idChat = intent.getStringExtra(EXTRA_IDCHAT);
-            int secChat = intent.getIntExtra(EXTRA_SECCHAT, 0);
-            String tipoChat = intent.getStringExtra(EXTRA_TIPOCHAT);
-            String tipoChatRetorno = intent.getStringExtra(EXTRA_TIPOCHATRETORNO);
+            System.out.println("Accion ver sorteo");
+
+            String id = intent.getStringExtra(EXTRA_SORTEO);
+            String idGanador = intent.getStringExtra(EXTRA_GANADOR);
             bundle.putString(ACTUAL, intent.getStringExtra(EXTRA_ACTUAL));
-            bundle.putString(CAMPO_ID, idChat);
-            bundle.putInt(CAMPO_SECUENCIA, secChat);
-            bundle.putString(CAMPO_TIPO, tipoChat);
-            bundle.putString(CAMPO_TIPORETORNO, tipoChatRetorno);
+            bundle.putString(GANADORSORTEO, idGanador);
+            bundle.putString(CAMPO_ID, id);
             NotificationManager notifyMgr = (NotificationManager)
                     AppActivity.getAppContext().getSystemService(NOTIFICATION_SERVICE);
             notifyMgr.cancel(intent.getIntExtra(EXTRA_ID, 0));
@@ -107,6 +82,7 @@ public class MainActivity extends MainActivityBase {
 
     }
 
+    @Override
     public void inicio() {
 
         SharedPreferences preferences = getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
@@ -230,9 +206,8 @@ public class MainActivity extends MainActivityBase {
 
         super.recargarFragment();
 
-        String actual = bundle.getString(ACTUAL, INICIO);
 
-        switch (actual){
+        switch (bundle.getString(ACTUAL, INICIO)) {
 
             case PROYECTO:
 
@@ -269,7 +244,7 @@ public class MainActivity extends MainActivityBase {
                 enviarBundleAFragment(bundle, new FragmentCRUDAmortizacion());
                 break;
 
-            case PERFIL:
+            case PERFILTR:
 
                 enviarBundleAFragment(bundle, new FragmentCRUDPerfil());
                 break;
@@ -304,10 +279,89 @@ public class MainActivity extends MainActivityBase {
                 enviarBundleAFragment(bundle, new FragmentChat());
                 break;
 
+            case PRODFREELANCE:
+
+                bundle.putString(TIPO, PRODFREELANCE);
+                bundle.putString(PERFIL, FREELANCE);
+                bundle.putBoolean(AVISO, true);
+                bundle.putString(TITULO, getString(R.string.servicios_freelance));
+
+                enviarBundleAFragment(bundle, new ListadoProductosFreelance());
+                break;
+
+            case PRODPROVCAT:
+
+                bundle.putString(TIPO, PRODPROVCAT);
+                bundle.putString(PERFIL, PROVEEDORWEB);
+                bundle.putBoolean(AVISO, true);
+                bundle.putString(TITULO, getString(R.string.productos_proveedor));
+
+                enviarBundleAFragment(bundle, new ListadoProductos());
+                break;
+
+            case PRODCOMERCIAL:
+
+                bundle.putString(TIPO, PRODCOMERCIAL);
+                bundle.putString(PERFIL, COMERCIAL);
+                bundle.putBoolean(AVISO, true);
+                bundle.putString(TITULO, getString(R.string.productos_comercial));
+
+                enviarBundleAFragment(bundle, new ListadoProductos());
+                break;
+
+            case PRODECOMMERCE:
+
+                bundle.putString(TIPO, PRODECOMMERCE);
+                bundle.putString(PERFIL, ECOMMERCE);
+                bundle.putBoolean(AVISO, true);
+                bundle.putString(TITULO, getString(R.string.productos_ecommerce));
+
+                enviarBundleAFragment(bundle, new ListadoProductos());
+                break;
+
+            case PRODLUGAR:
+
+                bundle.putString(TIPO, PRODLUGAR);
+                bundle.putString(PERFIL, LUGAR);
+                bundle.putBoolean(AVISO, true);
+                bundle.putString(TITULO, getString(R.string.productos_lugar));
+
+                enviarBundleAFragment(bundle, new ListadoProductos());
+                break;
+
+            case PRODSORTEOS:
+
+                bundle.putString(TIPO, PRODSORTEOS);
+                bundle.putString(PERFIL, SORTEOS);
+                bundle.putBoolean(AVISO, true);
+                bundle.putString(TITULO, getString(R.string.sorteos));
+
+                enviarBundleAFragment(bundle, new ListadoProductosSorteos());
+                break;
+
+            case USADO:
+
+                bundle.putString(TIPO, USADO);
+                bundle.putString(PERFIL, CLIENTEWEB);
+                bundle.putBoolean(AVISO, true);
+                bundle.putString(TITULO, getString(R.string.productos_usados));
+
+                enviarBundleAFragment(bundle, new ListadosProductosUsados());
+                break;
+
+            case SORTEO:
+
+                bundle.putString(TIPO, SORTEO);
+                bundle.putString(PERFIL, SORTEO);
+                bundle.putString(TITULO, getString(R.string.sorteos));
+
+                enviarBundleAFragment(bundle, new AltaProductosSorteos());
+                break;
+
 
         }
 
-        System.out.println("Recargado fragment " + actual);
+        System.out.println("Recargado fragment " + bundle.getString(ACTUAL, INICIO));
         System.out.println("bundle = " + bundle);
     }
 

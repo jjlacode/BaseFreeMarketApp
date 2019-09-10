@@ -13,8 +13,8 @@ import com.jjlacode.base.util.adapter.BaseViewHolder;
 import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.AppActivity;
-import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.base.util.time.calendar.clases.DiaCalBase;
@@ -24,7 +24,7 @@ import com.jjlacode.freelanceproject.logica.Interactor;
 import java.util.ArrayList;
 
 public class DiaCalDiario extends DiaCalBase implements ContratoPry.Tablas,
-        JavaUtil.Constantes, Interactor.TiposEvento {
+        JavaUtil.Constantes, Interactor.TiposEvento, Interactor.ConstantesPry {
 
 
     @Override

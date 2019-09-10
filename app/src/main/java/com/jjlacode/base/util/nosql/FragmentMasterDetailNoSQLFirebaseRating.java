@@ -25,12 +25,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.jjlacode.base.util.JavaUtil;
-import com.jjlacode.base.util.Models.Rating;
 import com.jjlacode.base.util.adapter.BaseViewHolder;
 import com.jjlacode.base.util.adapter.RVAdapter;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
+import com.jjlacode.base.util.android.AndroidUtil;
 import com.jjlacode.base.util.android.controls.EditMaterial;
-import com.jjlacode.base.util.crud.CRUDutil;
+import com.jjlacode.base.util.models.Rating;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
@@ -202,8 +202,8 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRating extends FragmentMa
 
     public void enviarVoto(Context contexto, String key, String tipo, String id, float valor, String comentario) {
 
-        String idUser = CRUDutil.getSharePreference(contexto, PREFERENCIAS, USERID, NULL);
-        String nombreUser = CRUDutil.getSharePreference(contexto, PREFERENCIAS, NOMBRECHAT, ANON);
+        String idUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, USERID, NULL);
+        String nombreUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, NOMBRECHAT, ANON);
         Rating rat = new Rating(valor, tipo, id, idUser, nombreUser, comentario, TimeDateUtil.ahora());
         if (key == null) {
             FirebaseDatabase.getInstance().getReference().child("rating").push().setValue(rat, new DatabaseReference.CompletionListener() {
@@ -335,7 +335,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRating extends FragmentMa
 
     public void recuperarVotoUsuario(final RatingBar ratingBarUser, final Context contexto, final String tipo, final String id) {
 
-        final String idUser = CRUDutil.getSharePreference(contexto, PREFERENCIAS, USERID, NULL);
+        final String idUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, USERID, NULL);
         System.out.println("idUser = " + idUser);
         votoUser = 0.0f;
         comentario.setText("");

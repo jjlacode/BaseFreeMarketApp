@@ -17,6 +17,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.RVAdapter;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
 
@@ -28,6 +30,7 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
     protected View viewRV;
     protected int layoutItem;
     protected RecyclerView rv;
+    protected ListaModelo lista;
     protected AutoCompleteTextView auto;
     protected ArrayList<Modelo> listafiltrada;
     protected ImageView buscar;

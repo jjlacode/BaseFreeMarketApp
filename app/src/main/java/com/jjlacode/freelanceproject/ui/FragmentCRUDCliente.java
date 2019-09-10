@@ -23,8 +23,8 @@ import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCRUD;
-import com.jjlacode.base.util.crud.ListaModelo;
-import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
@@ -36,7 +36,7 @@ import static com.jjlacode.base.util.sqlite.ConsultaBD.checkQueryList;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryList;
 import static com.jjlacode.freelanceproject.logica.Interactor.setNamefdef;
 
-public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Constantes,
+public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.ConstantesPry,
         ContratoPry.Tablas {
 
 

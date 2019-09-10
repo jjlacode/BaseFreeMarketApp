@@ -14,14 +14,14 @@ import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.FragmentCRUD;
-import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
 
 import java.util.ArrayList;
 
-public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Constantes, ContratoPry.Tablas {
+public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.ConstantesPry, ContratoPry.Tablas {
 
     EditMaterial nombre;
     EditMaterial descripcion;

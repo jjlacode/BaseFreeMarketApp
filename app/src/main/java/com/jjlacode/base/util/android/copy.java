@@ -225,7 +225,7 @@ public class copy {
 }
     //CONTRACT BASE ---------------------------------------------------------------------------
 
-    public class Contract implements Utilidades.Constantes {
+    public class Contract implements Utilidades.ConstantesPry {
 
     public static final String AUTORIDAD_CONTENIDO =
             "jjlacode.com.proyecto";
@@ -364,7 +364,7 @@ public class copy {
 
     //QUERYDB BASE------------------------------------------------------------------------------
 
-public class QueryDB implements Utilidades.Constantes {
+public class QueryDB implements Utilidades.ConstantesPry {
 
     private static ContentResolver resolver = getAppContext().getContentResolver();
 
@@ -2003,7 +2003,7 @@ public class QueryDB implements Utilidades.Constantes {
     //DATABASE -------------------------------------------------------------------------------------------
 
     public class DataBase extends SQLiteOpenHelper
-        implements Common.Constantes, Contract.Tablas, Common.Estados, Common.TiposEstados {
+        implements Common.ConstantesPry, Contract.Tablas, Common.Estados, Common.TiposEstados {
 
     private static final String NOMBRE_BASE_DATOS = "freelanceproject.db";
 
@@ -2550,7 +2550,7 @@ public class QueryDB implements Utilidades.Constantes {
 
                         QueryDB.putDato(valoresPer,CAMPOS_PERFIL,PERFIL_NOMBRE,"Defecto");
                         QueryDB.putDato(valoresPer,CAMPOS_PERFIL,PERFIL_BENEFICIO,10);
-                        System.out.println("Contract.Tablas.obtenerUriContenido(Contract.Tabla.PERFIL) = "
+                        System.out.println("Contract.Tablas.obtenerUriContenido(Contract.Tabla.PERFILTR) = "
                                 + Contract.obtenerUriContenido(TABLA_PERFIL));
                         Uri reg = QueryDB.insertRegistro(TABLA_PERFIL,valoresPer);
                         System.out.println(reg);

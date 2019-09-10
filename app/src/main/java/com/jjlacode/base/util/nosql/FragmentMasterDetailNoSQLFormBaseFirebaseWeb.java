@@ -16,24 +16,24 @@ import android.widget.TextView;
 import androidx.core.widget.NestedScrollView;
 
 import com.jjlacode.base.util.JavaUtil;
-import com.jjlacode.base.util.Models.FirebaseFormBase;
 import com.jjlacode.base.util.adapter.BaseViewHolder;
 import com.jjlacode.base.util.adapter.ListaAdaptadorFiltro;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.crud.CRUDutil;
-import com.jjlacode.base.util.crud.ListaModelo;
-import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.ImagenUtil;
-import com.jjlacode.base.util.sqlite.ContratoPry;
+import com.jjlacode.base.util.models.FirebaseFormBase;
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Modelo;
+import com.jjlacode.base.util.sqlite.ContratoSystem;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.freelanceproject.R;
-import com.jjlacode.um.base.ui.FragmentChat;
+import com.jjlacode.freelanceproject.ui.FragmentChat;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseWeb
-        extends FragmentMasterDetailNoSQLFormBaseFirebase implements ContratoPry.Tablas {
+        extends FragmentMasterDetailNoSQLFormBaseFirebase implements ContratoSystem.Tablas {
 
     private View viewWeb;
     protected WebView browser;

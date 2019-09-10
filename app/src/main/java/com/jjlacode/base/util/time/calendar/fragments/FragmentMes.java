@@ -25,8 +25,8 @@ import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.AndroidUtil;
 import com.jjlacode.base.util.android.FragmentBase;
 import com.jjlacode.base.util.animation.OneFrameLayout;
-import com.jjlacode.base.util.crud.ListaModelo;
-import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.base.util.time.Day;
 import com.jjlacode.base.util.time.ListaDays;
@@ -47,7 +47,7 @@ import java.util.Locale;
  */
 
 public abstract class FragmentMes extends FragmentBase implements Interactor.TiposEstados,
-        JavaUtil.Constantes, ContratoPry.Tablas, Interactor.Constantes {//}, CalendarAdapter.DayOnClickListener {
+        JavaUtil.Constantes, ContratoPry.Tablas, Interactor.ConstantesPry {//}, CalendarAdapter.DayOnClickListener {
 
 
     private int  month, year;

@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
-import com.jjlacode.base.util.crud.CRUDutil;
+import com.jjlacode.base.util.android.AndroidUtil;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.freelanceproject.logica.Interactor;
 
@@ -28,6 +28,7 @@ import static com.jjlacode.base.util.sqlite.ContratoPry.generarMimeItem;
 import static com.jjlacode.base.util.sqlite.ContratoPry.obtenerIdTabla;
 import static com.jjlacode.base.util.sqlite.ContratoPry.obtenerIdTablaDetalle;
 import static com.jjlacode.base.util.sqlite.ContratoPry.obtenerIdTablaDetalleId;
+import static com.jjlacode.base.util.sqlite.ContratoSystem.Tablas.TABLA_CHAT;
 
 public class ProviderPry extends ContentProvider
         implements Tablas, Interactor.TiposEstados {
@@ -194,14 +195,6 @@ public class ProviderPry extends ContentProvider
         uriMatcher.addURI(AUTORIDAD, TABLA_PEDIDOCLIENTE, PEDIDOCLIENTE);
         uriMatcher.addURI(AUTORIDAD, TABLA_PEDIDOCLIENTE + "/*", PEDIDOCLIENTE_ID);
 
-        uriMatcher.addURI(AUTORIDAD, TABLA_CHAT, CHAT);
-        uriMatcher.addURI(AUTORIDAD, TABLA_CHAT + "/*", CHAT_ID);
-        uriMatcher.addURI(AUTORIDAD, TABLA_CHAT + "/*/" + TABLA_DETCHAT, CHAT_ID_DETCHAT);
-
-        uriMatcher.addURI(AUTORIDAD, TABLA_DETCHAT, DETCHAT);
-        uriMatcher.addURI(AUTORIDAD, TABLA_DETCHAT + "/*", DETCHAT_ID);
-
-
     }
 
 
@@ -363,10 +356,6 @@ public class ProviderPry extends ContentProvider
                 return generarMime(TABLA_CHAT);
             case CHAT_ID:
                 return generarMimeItem(TABLA_CHAT);
-            case DETCHAT:
-                return generarMime(TABLA_DETCHAT);
-            case DETCHAT_ID:
-                return generarMimeItem(TABLA_DETCHAT);
             default:
                 throw new UnsupportedOperationException("Uri desconocida =>" + uri);
         }
@@ -866,53 +855,7 @@ public class ProviderPry extends ContentProvider
                 esDetalle = false;
                 break;
 
-            case CHAT:
-                tabla = TABLA_CHAT;
-                setTablas = tabla;
-                proyeccion = tabla + ".*";
-                idTabla = CHAT_ID_CHAT;
-                esDetalle = false;
-                esId = false;
-                break;
 
-            case CHAT_ID:
-
-                tabla = TABLA_CHAT;
-                setTablas = tabla;
-                proyeccion = tabla + ".*";
-                idTabla = CHAT_ID_CHAT;
-                esDetalle = false;
-                esId = true;
-                break;
-
-            case CHAT_ID_DETCHAT:
-
-                tabla = TABLA_DETCHAT;
-                setTablas = tabla;
-                proyeccion = tabla + ".*";
-                idTabla = DETCHAT_ID_CHAT;
-                esDetalle = true;
-                esId = false;
-                break;
-
-            case DETCHAT:
-                tabla = TABLA_DETCHAT;
-                setTablas = tabla;
-                proyeccion = tabla + ".*";
-                idTabla = DETCHAT_ID_CHAT;
-                esId = false;
-                esDetalle = false;
-
-                break;
-            case DETCHAT_ID:
-
-                tabla = TABLA_DETCHAT;
-                setTablas = tabla;
-                proyeccion = tabla + ".*";
-                idTabla = DETCHAT_ID_CHAT;
-                esDetalle = true;
-                esId = true;
-                break;
         }
 
         values.put("tablaModelo",tabla);
@@ -948,8 +891,8 @@ public class ProviderPry extends ContentProvider
                     System.out.println("values = " + values);
                     db.insertOrThrow(tabla, null, values);
                     notificarCambio(uri);
-                    CRUDutil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMP, TimeDateUtil.ahora());
-                    CRUDutil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMPDIA, TimeDateUtil.ahora());
+                    AndroidUtil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMP, TimeDateUtil.ahora());
+                    AndroidUtil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMPDIA, TimeDateUtil.ahora());
 
 
                     if (secuencia != null && Integer.parseInt(secuencia)>0) {
@@ -1068,8 +1011,8 @@ public class ProviderPry extends ContentProvider
         if (tabla!=null) {
 
             notificarCambio(uri);
-            CRUDutil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMP, TimeDateUtil.ahora());
-            CRUDutil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMPDIA, TimeDateUtil.ahora());
+            AndroidUtil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMP, TimeDateUtil.ahora());
+            AndroidUtil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMPDIA, TimeDateUtil.ahora());
 
             return db.update(tabla, values,
                     seleccion ,
@@ -1122,8 +1065,8 @@ public class ProviderPry extends ContentProvider
 
         if (tabla!=null) {
             notificarCambio(uri);
-            CRUDutil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMP, TimeDateUtil.ahora());
-            CRUDutil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMPDIA, TimeDateUtil.ahora());
+            AndroidUtil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMP, TimeDateUtil.ahora());
+            AndroidUtil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMPDIA, TimeDateUtil.ahora());
 
             return db.delete(tabla,seleccion,
                     selectionArgs);

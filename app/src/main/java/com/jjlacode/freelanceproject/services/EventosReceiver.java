@@ -6,8 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.android.AndroidUtil;
 import com.jjlacode.base.util.crud.CRUDutil;
-import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.services.ReceiverBase;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.freelanceproject.MainActivity;
@@ -15,6 +16,7 @@ import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
+import static com.jjlacode.base.util.logica.InteractorBase.Constantes.EXTRA_ID;
 
 public class EventosReceiver extends ReceiverBase implements JavaUtil.Constantes {
 
@@ -33,7 +35,7 @@ public class EventosReceiver extends ReceiverBase implements JavaUtil.Constantes
         System.out.println("Recibiendo "+intent.getExtras().toString());
         System.out.println("intent Accion= " + intent.getAction());
 
-        int contnot = CRUDutil.getSharePreference(context,NOTIFICACIONES,CONTNOT,0);
+        int contnot = AndroidUtil.getSharePreference(context, NOTIFICACIONES, CONTNOT, 0);
 
         if (intent.getAction()!=null && intent.getExtras()!=null && intent.getAction().equals(ACCION_AVISOEVENTO)){
 
@@ -48,7 +50,7 @@ public class EventosReceiver extends ReceiverBase implements JavaUtil.Constantes
                 ContentValues valores = new ContentValues();
                 ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_NOTIFICADO, 1);
                 ConsultaBD.updateRegistro(TABLA_EVENTO, evento.getString(EVENTO_ID_EVENTO), valores);
-                CRUDutil.setSharePreference(context, NOTIFICACIONES, CONTNOT, contnot + 1);
+                AndroidUtil.setSharePreference(context, NOTIFICACIONES, CONTNOT, contnot + 1);
             }
         }else if (intent.getAction()!=null && intent.getExtras()!=null && intent.getAction().equals(ACCION_POSPONER)) {
 

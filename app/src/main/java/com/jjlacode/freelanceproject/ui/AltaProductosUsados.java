@@ -4,16 +4,6 @@ import com.jjlacode.base.util.nosql.FragmentMasterDetailNoSQLFormProductosFireba
 
 public class AltaProductosUsados extends FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb {
 
-    @Override
-    protected String setTipo() {
-        return USADO;
-    }
-
-    @Override
-    protected String setPerfil() {
-        return CLIENTEWEB;
-    }
-
 
     @Override
     protected void setLayout() {
@@ -29,6 +19,5 @@ public class AltaProductosUsados extends FragmentMasterDetailNoSQLFormProductosF
     protected String setTipoForm() {
         return NUEVO;
     }
-
 
 }

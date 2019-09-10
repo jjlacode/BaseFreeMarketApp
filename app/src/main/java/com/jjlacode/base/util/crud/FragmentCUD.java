@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import com.jjlacode.base.util.android.CheckPermisos;
 import com.jjlacode.base.util.android.controls.EditMaterial;
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.base.util.time.TimeDateUtil;
 
@@ -290,6 +292,8 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
 
                 id = ConsultaBD.idInsertRegistro(tabla, valores);
                 modelo = ConsultaBD.queryObject(campos, id);
+                //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                //db.child(idUser).child(tabla).child(id).setValue(convertirModelo(modelo));
 
                 Toast.makeText(getContext(), "Registro creado", Toast.LENGTH_SHORT).show();
                 nuevo = false;
@@ -356,6 +360,10 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
                 } else if (ConsultaBD.updateRegistro(tabla, id, valores) > 0) {
 
                     modelo = ConsultaBD.queryObject(campos, id);
+                    //idUser = AndroidUtil.getSharePreference(contexto,USERID,USERID,NULL);
+                    //System.out.println("idUser = " + idUser);
+                    //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                    //db.child(idUser).child(tabla).child(id).setValue(convertirModelo(modelo));
 
                     Toast.makeText(getContext(), "Registro guardado", Toast.LENGTH_SHORT).show();
                     nuevo = false;

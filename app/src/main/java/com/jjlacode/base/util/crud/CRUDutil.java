@@ -1,15 +1,14 @@
 package com.jjlacode.base.util.crud;
 
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.base.util.sqlite.ContratoPry;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 import static com.jjlacode.base.util.JavaUtil.Constantes.CAMPO_SECUENCIA;
 
@@ -18,6 +17,7 @@ public class CRUDutil {
     public static ListaModelo setListaModelo(String[] campos){
         return new ListaModelo(campos);
     }
+
 
     public static ListaModelo clonaListaModelo(String[] campos, ListaModelo list) {
         ListaModelo lista = new ListaModelo(campos);
@@ -34,6 +34,7 @@ public class CRUDutil {
     public static ListaModelo setListaModeloDetalle(String[] campos, String id, String tablaCab){
         return new ListaModelo(campos,id,tablaCab,null,null);
     }
+
 
     public static ListaModelo setListaModelo(String[] campos, String seleccion){
         return new ListaModelo(campos,seleccion,null);
@@ -52,14 +53,17 @@ public class CRUDutil {
         return new ListaModelo(campos,id,tablaCab,seleccion,orden);
     }
 
+
     public static ListaModelo setListaModelo(String[] campos, String campo, String valor, int flag){
         return new ListaModelo(campos,campo,valor,null,flag,null);
     }
+
 
     public static Modelo setModelo(String[] campos, String id){
 
         return ConsultaBD.queryObject(campos,id);
     }
+
 
     public static Modelo setModelo(String[] campos, String id, int secuencia){
 
@@ -116,10 +120,12 @@ public class CRUDutil {
         return ConsultaBD.idInsertRegistro(tabla,valores);
     }
 
+
     public static int crearRegistroSec(String[] campos, String id, String tablaCab, ContentValues valores){
 
         return ConsultaBD.secInsertRegistroDetalle(campos,id,tablaCab,valores);
     }
+
 
     public static int borrarRegistro(String tabla, String id ){
 
@@ -141,110 +147,4 @@ public class CRUDutil {
     }
 
 
-    public static void setSharePreference(Context contexto, String sharePreference, String key, String valor){
-
-        SharedPreferences persistencia=contexto.getSharedPreferences(sharePreference, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor=persistencia.edit();
-        editor.putString(key, valor);
-        editor.apply();
-
-    }
-
-    public static void setSharePreference(Context contexto, String sharePreference, String key, int valor){
-
-        SharedPreferences persistencia=contexto.getSharedPreferences(sharePreference, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor=persistencia.edit();
-        editor.putInt(key, valor);
-        editor.apply();
-
-    }
-
-    public static void setSharePreference(Context contexto, String sharePreference, String key, long valor){
-
-        SharedPreferences persistencia=contexto.getSharedPreferences(sharePreference, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor=persistencia.edit();
-        editor.putLong(key, valor);
-        editor.apply();
-
-    }
-
-    public static void setSharePreference(Context contexto, String sharePreference, String key, boolean valor){
-
-        SharedPreferences persistencia=contexto.getSharedPreferences(sharePreference, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor=persistencia.edit();
-        editor.putBoolean(key, valor);
-        editor.apply();
-
-    }
-
-    public static void setSharePreference(Context contexto, String sharePreference, String key, float valor){
-
-        SharedPreferences persistencia=contexto.getSharedPreferences(sharePreference, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor=persistencia.edit();
-        editor.putFloat(key, valor);
-        editor.apply();
-
-    }
-
-    public static void setSharePreference(Context contexto, String sharePreference, String key, Set<String> valor){
-
-        SharedPreferences persistencia=contexto.getSharedPreferences(sharePreference, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor=persistencia.edit();
-        editor.putStringSet(key, valor);
-        editor.apply();
-
-    }
-
-    public static String getSharePreference(Context contexto, String sharePreference, String key, String defecto){
-
-        try {
-            SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, Context.MODE_PRIVATE);
-            return persistencia.getString(key, defecto);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-
-    }
-
-    public static int getSharePreference(Context contexto, String sharePreference, String key, int defecto){
-
-        SharedPreferences persistencia=contexto.getSharedPreferences(sharePreference, Context.MODE_PRIVATE);
-
-        return persistencia.getInt(key,defecto);
-
-    }
-
-    public static long getSharePreference(Context contexto, String sharePreference, String key, long defecto){
-
-        SharedPreferences persistencia=contexto.getSharedPreferences(sharePreference, Context.MODE_PRIVATE);
-
-        return persistencia.getLong(key,defecto);
-
-    }
-
-    public static boolean getSharePreference(Context contexto, String sharePreference, String key, boolean defecto){
-
-        SharedPreferences persistencia=contexto.getSharedPreferences(sharePreference, Context.MODE_PRIVATE);
-
-        return persistencia.getBoolean(key,defecto);
-
-    }
-
-    public static float getSharePreference(Context contexto, String sharePreference, String key, float defecto){
-
-        SharedPreferences persistencia=contexto.getSharedPreferences(sharePreference, Context.MODE_PRIVATE);
-
-        return persistencia.getFloat(key,defecto);
-
-    }
-
-    public static Set<String> getSharePreference(Context contexto, String sharePreference, String key, Set<String> defecto){
-
-        SharedPreferences persistencia=contexto.getSharedPreferences(sharePreference, Context.MODE_PRIVATE);
-
-        return persistencia.getStringSet(key,defecto);
-
-    }
 }

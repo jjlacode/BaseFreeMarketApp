@@ -1,6 +1,5 @@
 package com.jjlacode.base.util.nosql;
 
-import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
@@ -15,6 +14,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -24,37 +24,39 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.jjlacode.base.util.JavaUtil;
-import com.jjlacode.base.util.Models.FirebaseFormBase;
 import com.jjlacode.base.util.adapter.BaseViewHolder;
 import com.jjlacode.base.util.adapter.ListaAdaptadorFiltro;
+import com.jjlacode.base.util.adapter.RVAdapter;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
+import com.jjlacode.base.util.android.AndroidUtil;
 import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.CRUDutil;
-import com.jjlacode.base.util.crud.ListaModelo;
-import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.logica.InteractorBase;
 import com.jjlacode.base.util.media.ImagenUtil;
-import com.jjlacode.base.util.sqlite.ContratoPry;
+import com.jjlacode.base.util.models.FirebaseFormBase;
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Marcador;
+import com.jjlacode.base.util.models.Modelo;
+import com.jjlacode.base.util.models.Productos;
+import com.jjlacode.base.util.sqlite.ContratoSystem;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.freelanceproject.R;
-import com.jjlacode.um.base.ui.FragmentChat;
+import com.jjlacode.freelanceproject.ui.FragmentChat;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
-        extends FragmentMasterDetailNoSQLFirebaseRatingWeb implements ContratoPry.Tablas {
+        extends FragmentMasterDetailNoSQLFirebaseRatingWebMapSus implements ContratoSystem.Tablas, InteractorBase.Constantes {
 
-    protected EditMaterial nombreBase;
-    protected EditMaterial descripcionBase;
-    protected EditMaterial direccionBase;
-    protected EditMaterial emailBase;
-    protected EditMaterial telefonoBase;
-    protected FirebaseFormBase firebaseFormBase;
-    protected DatabaseReference db;
-    protected Query query;
-    protected ProgressDialog progressDialog;
-
+    protected EditMaterial nombre;
+    protected EditMaterial descripcion;
+    protected EditMaterial direccion;
+    protected EditMaterial email;
+    protected EditMaterial telefono;
+    protected EditMaterial claves;
+    protected EditMaterial etWeb;
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
@@ -66,23 +68,46 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
         }
         frdetalleExtrasante.addView(viewFB);
 
-        nombreBase = (EditMaterial) ctrl(R.id.etnombreformbase);
-        descripcionBase = (EditMaterial) ctrl(R.id.etdescformbase);
-        direccionBase = (EditMaterial) ctrl(R.id.etdireccionformbase);
-        emailBase = (EditMaterial) ctrl(R.id.etemailformbase);
-        telefonoBase = (EditMaterial) ctrl(R.id.ettelefonoformbase);
+
+        nombre = (EditMaterial) ctrl(R.id.etnombreformbase);
+        descripcion = (EditMaterial) ctrl(R.id.etdescformbase);
+        direccion = (EditMaterial) ctrl(R.id.etdireccionformbase);
+        email = (EditMaterial) ctrl(R.id.etemailformbase);
+        telefono = (EditMaterial) ctrl(R.id.ettelefonoformbase);
+        claves = (EditMaterial) ctrl(R.id.etclavesformpbase);
+        etWeb = (EditMaterial) ctrl(R.id.etwebformbase);
         imagen = (ImagenLayout) ctrl(R.id.imgformbase);
         imagen.setIcfragmentos(icFragmentos);
 
 
-    }
+        if (tipoForm.equals(NUEVO)) {
+            gone(frCabecera);
+            nombre.setActivo(true);
+            descripcion.setActivo(true);
+            direccion.setActivo(true);
+            telefono.setActivo(true);
+            email.setActivo(true);
+            etWeb.setActivo(true);
+            zona.setActivo(true);
+        } else {
+            gone(btnEnviarNoticias);
+            gone(chActivo);
+        }
 
+    }
 
 
     @Override
     protected void setLayoutItem() {
 
         layoutItem = R.layout.item_list_firebase_formbase_rating_web;
+
+
+    }
+
+    @Override
+    protected void setLayout() {
+
 
     }
 
@@ -96,70 +121,279 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
         return new AdapterFiltroFormBaseRatingWeb(context, layoutItem, lista);
     }
 
-    protected void accionesImagen() {
-
-        imagen.setVisibleBtn();
-
-        imagen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mostrarDialogoOpcionesImagen(contexto);
-
-            }
-        });
-    }
-
     @Override
     protected void setLista() {
 
-        progressDialog = ProgressDialog.show(contexto, "Cargando lista de " + tipo, "Por favor espere...", false, false);
+        gone(lyChat);
 
-        lista = new ArrayList<FirebaseFormBase>();
+        if (tipoForm.equals(LISTA) && paisUser != null) {
 
-        db = FirebaseDatabase.getInstance().getReference();
+            lista = new ArrayList<Productos>();
 
-        query = db.child(tipo);
+            String lugar = "";
 
-        ValueEventListener eventListenerProd = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            for (int i = 5; i >= getAlcance(); i--) {
 
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    FirebaseFormBase firebaseFormBase = ds.getValue(FirebaseFormBase.class);
-                    lista.add(firebaseFormBase);
+                switch (i) {
+
+                    case 5:
+                        lugar = (String) paisUser.get(4);
+                        break;
+                    case 4:
+                        lugar = (String) paisUser.get(3);
+                        break;
+                    case 3:
+                        lugar = (String) paisUser.get(2);
+                        break;
+                    case 2:
+                        lugar = (String) paisUser.get(1);
+                        break;
+                    case 1:
+                        lugar = (String) paisUser.get(0);
+                        break;
+                    case 0:
+                        lugar = MUNDIAL;
+                        break;
+
                 }
 
-                System.out.println("lista " + tipo + ": " + lista.size());
-                setRv();
+                DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                Query querydb = db.child(LUGARES + tipo).child(lugar.toLowerCase());
 
-                progressDialog.cancel();
+                querydb.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot prod : dataSnapshot.getChildren()) {
+
+                            if (prod.getValue(Boolean.class)) {
+
+                                DatabaseReference dbproductosprov = FirebaseDatabase.getInstance().getReference().
+                                        child(tipo).child(prod.getKey());
+
+                                dbproductosprov.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot2) {
+
+
+                                        FirebaseFormBase firebaseFormBase = dataSnapshot2.getValue(FirebaseFormBase.class);
+                                        lista.add(firebaseFormBase);
+
+                                        setRv();
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                            }
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+        } else if (tipoForm.equals(NUEVO)) {
 
+            gone(verVoto);
+            gone(frCabecera);
+            gone(rv);
+
+            lista = new ArrayList<Productos>();
+
+            DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+            Query querydb = db.child(tipo).child(idUser);
+
+            querydb.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    firebaseFormBase = dataSnapshot.getValue(FirebaseFormBase.class);
+                    if (nn(firebaseFormBase)) {
+                        id = firebaseFormBase.getIdchatBase();
+                    }
+                    esDetalle = true;
+                    selector();
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+
+            });
+
+            if (lista.size() == 0) {
+                activityBase.fabNuevo.show();
+                activityBase.fabInicio.hide();
             }
 
-        };
+        }
 
-        query.addValueEventListener(eventListenerProd);
+        int numero = 100;
+        System.out.println("Numero aleatorio hasta " + numero + " = " + Math.round((Math.random() % numero) * numero));
+
+
+    }
+
+    @Override
+    protected void cargarBundle() {
+        super.cargarBundle();
+        activityBase.fabNuevo.hide();
+        activityBase.fabInicio.show();
     }
 
 
     protected void setDatos() {
 
+        if (tipoForm.equals(NUEVO)) {
 
-        nombreBase.setText(firebaseFormBase.getNombreBase());
-        direccionBase.setText(firebaseFormBase.getDireccionBase());
-        emailBase.setText(firebaseFormBase.getEmailBase());
-        telefonoBase.setText(firebaseFormBase.getTelefonoBase());
-        descripcionBase.setText(firebaseFormBase.getDescripcionBase());
+            visible(btnEnviarNoticias);
+            visible(btndelete);
+            visible(btnsave);
+            visible(chActivo);
+            visible(claves);
+            visible(etWeb);
 
-        activityBase.toolbar.setTitle(firebaseFormBase.getTipoBase());
-        //setImagenFireStore(contexto, firebaseFormBase.getIdchatBase() + setTipo(), imagen);
-        accionesImagen();
+            gone(verVoto);
+            zona.setActivo(false);
+            visible(opcionesZona);
+            gone(lyMap);
+            gone(suscripcion);
+            visible(suscritos);
+            gone(lyChat);
+            gone(btnback);
+
+        } else {
+            gone(opcionesZona);
+            comprobarSuscripcion();
+            visible(suscripcion);
+            gone(suscritos);
+            gone(btndelete);
+            gone(btnsave);
+            visible(lyChat);
+
+            if (idChat == null) {
+                ListaModelo listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
+                for (Modelo chat : listaChats.getLista()) {
+                    if (chat.getString(CHAT_USUARIO).equals(id)) {
+                        idChat = chat.getString(CHAT_ID_CHAT);
+                    }
+                }
+            }
+
+            listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, idChat, TABLA_CHAT, null, DETCHAT_FECHA + " DESC");
+
+            RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
+            rvMsgChat.setAdapter(adaptadorDetChat);
+            visible(rvMsgChat);
+            noticias.setChecked(true);
+
+        }
+
+        if (firebaseFormBase != null) {
+
+            nombre.setText(firebaseFormBase.getNombreBase());
+            direccion.setText(firebaseFormBase.getDireccionBase());
+            telefono.setText(firebaseFormBase.getTelefonoBase());
+            email.setText(firebaseFormBase.getEmailBase());
+            descripcion.setText(firebaseFormBase.getDescripcionBase());
+            claves.setText(firebaseFormBase.getClavesBase());
+            web = firebaseFormBase.getWebBase();
+            etWeb.setText(web);
+            if (firebaseFormBase.isMulti()) {
+                visible(multitxt);
+            }
+            chActivo.setChecked(firebaseFormBase.isActivo());
+
+            activityBase.toolbar.setTitle(firebaseFormBase.getNombreBase());
+            accionesImagen();
+
+        }
 
     }
+
+
+    @Override
+    protected void acciones() {
+        super.acciones();
+
+        if (tipoForm.equals(NUEVO)) {
+
+
+            btndelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    if (idUser != null) {
+
+                        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                        db.child(tipo).child(idUser).removeValue();
+                        db.child(PERFILES).child(idUser).child(tipo).removeValue();
+                        db.child(RATING).child(tipo).child(idUser).removeValue();
+                        db.child(INDICEMARC + tipo).child(idUser).removeValue();
+                        db.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                                    deleteMarcador(child.getValue(Marcador.class), mapa);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+            });
+
+
+        }
+
+    }
+
+    protected void guardar() {
+
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+
+        firebaseFormBase = new FirebaseFormBase();
+        firebaseFormBase.setTipoBase(tipo);
+        firebaseFormBase.setNombreBase(nombre.getTexto());
+        firebaseFormBase.setActivo(chActivo.isChecked());
+        firebaseFormBase.setDescripcionBase(descripcion.getTexto());
+        firebaseFormBase.setTelefonoBase(telefono.getTexto());
+        firebaseFormBase.setEmailBase(email.getTexto());
+        firebaseFormBase.setDireccionBase(direccion.getTexto());
+        firebaseFormBase.setClavesBase(claves.getTexto());
+        firebaseFormBase.setWebBase(etWeb.getTexto());
+        if (tipo.equals(PERFILMULTI)) {
+            firebaseFormBase.setMulti(true);
+        } else {
+            firebaseFormBase.setMulti(false);
+        }
+        firebaseFormBase.setIdchatBase(idUser);
+
+        db.child(tipo).child(idUser).setValue(firebaseFormBase, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+
+            }
+        });
+        db.child(PERFILES).child(idUser).child(tipo).setValue(true);
+
+    }
+
 
     @Override
     protected String setTipoRating() {
@@ -176,11 +410,11 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
     public void setOnClickRV(Object object) {
 
         firebaseFormBase = (FirebaseFormBase) object;
+        id = firebaseFormBase.getIdchatBase();
         esDetalle = true;
         selector();
 
     }
-
 
     protected void setMaestroDetalleTabletPort() {
         maestroDetalleSeparados = true;
@@ -321,7 +555,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
                 @Override
                 public void onClick(View view) {
 
-                    perfilUser = CRUDutil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
+                    perfilUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
                     ListaModelo listaChats = new ListaModelo(CAMPOS_CHAT);
                     String idChat = null;
                     for (Modelo chat : listaChats.getLista()) {
@@ -365,4 +599,5 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             return new ViewHolderRVFormBaseRatingWeb(view);
         }
     }
+
 }

@@ -36,9 +36,9 @@ import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.AppActivity;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCRUD;
-import com.jjlacode.base.util.crud.ListaModelo;
-import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
@@ -53,7 +53,7 @@ import static com.jjlacode.base.util.sqlite.ConsultaBD.queryList;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryListDetalle;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.queryObject;
 
-public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.Constantes,
+public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.ConstantesPry,
         ContratoPry.Tablas, Interactor.TiposDetPartida {
 
     private AutoCompleteTextView autoNombrePartida;

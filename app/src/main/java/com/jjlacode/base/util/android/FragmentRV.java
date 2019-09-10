@@ -20,7 +20,7 @@ import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.RVAdapter;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.animation.OneFrameLayout;
-import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
 

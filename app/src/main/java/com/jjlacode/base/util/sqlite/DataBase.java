@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.jjlacode.base.util.logica.InteractorBase;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
 
@@ -15,7 +16,8 @@ import static com.jjlacode.base.util.sqlite.ContratoPry.obtenerListaCampos;
 
 
 public class DataBase extends DataBaseBase
-        implements Interactor.Constantes, ContratoPry.Tablas, Interactor.Estados, Interactor.TiposEstados {
+        implements Interactor.ConstantesPry, InteractorBase.Constantes, ContratoPry.Tablas,
+        Interactor.Estados, Interactor.TiposEstados {
 
     private static final int VERSION_ACTUAL = 1;
 

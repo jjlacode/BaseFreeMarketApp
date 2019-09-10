@@ -35,15 +35,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.jjlacode.base.util.JavaUtil;
-import com.jjlacode.base.util.Models.Contactos;
 import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.android.controls.LockableScrollView;
 import com.jjlacode.base.util.animation.OneFrameLayout;
-import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.interfaces.ICFragmentos;
+import com.jjlacode.base.util.logica.InteractorBase;
+import com.jjlacode.base.util.models.Contactos;
+import com.jjlacode.base.util.models.DestinosVoz;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
-import com.jjlacode.freelanceproject.ui.MenuInicio;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ import static android.app.Activity.RESULT_OK;
 import static android.content.Context.SENSOR_SERVICE;
 
 public abstract class FragmentBase extends Fragment implements JavaUtil.Constantes,
-        Interactor.Constantes, Interactor.CallbackFragmentBase {
+        InteractorBase.Constantes {
 
     protected String TAG;
     protected View view;
@@ -86,6 +86,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected LinearLayout frdetalleExtraspost;
     protected LinearLayout frdetalleExtrasante;
     protected LinearLayout frPie;
+    protected LinearLayout frPubli;
+    protected LinearLayout frWeb;
     protected LinearLayout frCabecera;
     protected LinearLayout frLista;
     protected LinearLayout frCuerpo;
@@ -166,8 +168,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         camposEdit = new ArrayList();
         TAG = getClass().getSimpleName();
 
-        perfilUser = CRUDutil.getSharePreference(AppActivity.getAppContext(), PREFERENCIAS, PERFILUSER, NULL);
-        idUser = CRUDutil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
+        perfilUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), PREFERENCIAS, PERFILUSER, NULL);
+        idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
 
         super.onCreate(savedInstanceState);
     }
@@ -202,6 +204,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         frdetalleExtrasante = view.findViewById(R.id.layout_extras_antes_detalle);
         frCabecera = view.findViewById(R.id.layout_cabecera);
         frPie = view.findViewById(R.id.layout_pie);
+        frWeb = view.findViewById(R.id.layout_web_detalle);
+        frPubli = view.findViewById(R.id.layout_publi);
         frLista = view.findViewById(R.id.layout_rv);
         frCuerpo = view.findViewById(R.id.layout_cuerpo);
         scrollDetalle = view.findViewById(R.id.scrolldetalle);
@@ -317,7 +321,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         super.onResume();
         Log.d(TAG, getMetodo());
 
-        CRUDutil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, NULL);
+        AndroidUtil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, NULL);
 
         ayudaWeb = setAyudaWeb();
         icFragmentos.enviarAyudaWeb(ayudaWeb);
@@ -418,7 +422,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         activityBase.fabInicio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                icFragmentos.enviarBundleAFragment(bundle, new MenuInicio());
+                icFragmentos.enviarBundleAFragment(bundle, Interactor.fragmentMenuInicio);
             }
         });
 
@@ -709,7 +713,10 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     }
 
     protected String getStringBundle(String key, String defValue){
-        return bundle.getString(key, defValue);
+        if (nn(bundle)) {
+            return bundle.getString(key, defValue);
+        }
+        return NULL;
     }
 
     protected Serializable getBundleSerial(String key){
@@ -893,18 +900,18 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
                     grabarVoz = speech.get(0).toLowerCase();
 
-                    if (grabarVoz.length() >= 16 && grabarVoz.substring(0, 16).equals("llamar contacto ")) {
+                    if (grabarVoz.substring(0, 16).equals("llamar contacto ")) {
 
                         llamarContacto(grabarVoz.substring(16));
 
-                    } else if (grabarVoz.length() >= 5 && grabarVoz.substring(0, 5).equals("ir a ")) {
+                    } else if (grabarVoz.substring(0, 5).equals("ir a ")) {
 
-                        Interactor.seleccionarDestino(icFragmentos, bundle, grabarVoz.substring(5), this);
+                        seleccionarDestino(grabarVoz.substring(5));
 
-                    } else if (grabarVoz.length() >= 6 && (grabarVoz.substring(0, 6).equals("crear ") ||
-                            grabarVoz.substring(0, 6).equals("nuevo "))) {
+                    } else if (grabarVoz.substring(0, 6).equals("crear ") ||
+                            grabarVoz.substring(0, 6).equals("nuevo ")) {
 
-                        Interactor.seleccionarNuevoDestino(icFragmentos, bundle, grabarVoz.substring(6), this);
+                        seleccionarNuevoDestino(grabarVoz.substring(6));
 
                     } else if (grabarVoz.equals(getString(R.string.salir).toLowerCase())) {
 
@@ -932,16 +939,32 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         }
     }
 
-    @Override
-    public void alSeleccionarDestino(String destino) {
+    public void seleccionarDestino(String destino) {
 
-        System.out.println(" Fragment destino = " + destino);
+        ArrayList<DestinosVoz> listaDestinos = Interactor.getListaDestinosVoz();
+
+        for (DestinosVoz destinosVoz : listaDestinos) {
+
+            if (destino.equals(destinosVoz.getDestino())) {
+                icFragmentos.enviarBundleAFragment(null, destinosVoz.getFragment());
+            }
+        }
+
+
     }
 
-    @Override
-    public void alSeleccionarNuevoDestino(String nuevoDestino) {
+    public void seleccionarNuevoDestino(String destino) {
 
-        System.out.println("Nuevo registro en destino = " + nuevoDestino);
+        ArrayList<DestinosVoz> listaDestinos = Interactor.getListaNuevosDestinosVoz();
+
+        for (DestinosVoz destinosVoz : listaDestinos) {
+
+            if (destino.equals(destinosVoz.getDestino())) {
+                icFragmentos.enviarBundleAFragment(null, destinosVoz.getFragment());
+            }
+        }
+
+
     }
 
     protected void alCambiarCampos(EditMaterial editMaterial) {
@@ -969,5 +992,23 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
             return true;
         }
         return false;
+    }
+
+    protected void changeFragment(Fragment fragment) {
+
+        activityBase.getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_main, fragment).addToBackStack(null).commit();
+    }
+
+    protected void addFragment(Fragment fragment) {
+
+        activityBase.getSupportFragmentManager().beginTransaction()
+                .add(R.id.content_main, fragment).addToBackStack(null).commit();
+    }
+
+    protected void removeFragment(Fragment fragment) {
+
+        activityBase.getSupportFragmentManager().beginTransaction()
+                .remove(fragment).commit();
     }
 }

@@ -36,6 +36,9 @@ public class JavaUtil {
         String CAMPO = "campo";
         String POSICION = "posicion";
         String TIPO = "tipo";
+        String AVISO = "aviso";
+        String PERFIL = "perfil";
+        String TITULO = "titulo";
         String CAMPO_ID = "id_";
         String IDREL = "idrel";
         String CAMPO_SECUENCIA = "secuencia";

@@ -10,7 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_um_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SplashActivity">
+        <activity android:name="com.jjlacode.base.util.android.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -32,6 +32,12 @@
             android:exported="false" />
 
         <provider
+            android:name="com.jjlacode.base.util.sqlite.ProviderSystem"
+            android:authorities="${applicationId}.system"
+            android:enabled="true"
+            android:exported="false" />
+
+        <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
@@ -49,9 +55,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".services.ChatReceiver">
+        <receiver android:name="com.jjlacode.base.util.services.ChatReceiver">
             <intent-filter>
-                <action android:name="jjlacode.com.freelanceproject.action.AVISOMSGCHAT" />
+                <action android:name="jjlacode.com.base.util.action.AVISOMSGCHAT" />
             </intent-filter>
         </receiver>
         <receiver android:name=".services.EventosReceiver" >

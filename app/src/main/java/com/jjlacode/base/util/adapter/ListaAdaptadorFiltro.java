@@ -22,8 +22,10 @@ public abstract class ListaAdaptadorFiltro extends ArrayAdapter {
     public ListaAdaptadorFiltro(Context contexto, int R_layout_IdView, ArrayList entradas) {
         super(contexto,R_layout_IdView,entradas);
         this.contexto = contexto;
-        this.entradas = new ArrayList(entradas);
-        this.entradasfiltro = new ArrayList(entradas);
+        if (entradas != null) {
+            this.entradas = new ArrayList(entradas);
+            this.entradasfiltro = new ArrayList(entradas);
+        }
         this.R_layout_IdView = R_layout_IdView;
     }
 

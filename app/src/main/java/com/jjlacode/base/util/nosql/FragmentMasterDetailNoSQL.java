@@ -20,6 +20,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jjlacode.base.util.adapter.ListaAdaptadorFiltro;
 import com.jjlacode.base.util.adapter.RVAdapter;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
+import com.jjlacode.base.util.android.AndroidUtil;
+import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.animation.OneFrameLayout;
 import com.jjlacode.base.util.media.MediaUtil;
@@ -27,6 +29,8 @@ import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
 
@@ -48,7 +52,8 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     protected String subTitulo;
     protected ArrayList listab;
     protected ArrayList lista;
-    protected int tituloPlural;
+    protected String tituloPlural;
+    protected String titulo;
     protected RecyclerView.LayoutManager layoutManager;
     private Object objeto;
     protected boolean maestroDetalleSeparados;
@@ -58,7 +63,7 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     protected OneFrameLayout frameAnimation;
     protected String stemp = "";
     protected int posicion;
-
+    protected boolean autoGuardado;
 
 
     @Override
@@ -137,6 +142,54 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     protected void acciones() {
 
         super.acciones();
+
+        if (autoGuardado) {
+            for (final EditMaterial editMaterial : materialEdits) {
+                editMaterial.setCambioFocoListener(new EditMaterial.CambioFocoEdit() {
+                    @Override
+                    public void alPerderFoco(View view) {
+                        alCambiarCampos(editMaterial);
+                        if (editMaterial.getNextFocusDownId() == 0) {
+                            AndroidUtil.ocultarTeclado(contexto, view);
+                        }
+                    }
+
+                    @Override
+                    public void alRecibirFoco(View view) {
+                        editMaterial.finalTexto();
+                    }
+                });
+
+                editMaterial.setAlCambiarListener(new EditMaterial.AlCambiarListener() {
+                    @Override
+                    public void antesCambio(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void cambiando(CharSequence s, int start, int before, int count) {
+
+                        if (timer != null) {
+                            timer.cancel();
+                        }
+                    }
+
+                    @Override
+                    public void despuesCambio(Editable s) {
+                        final Editable temp = s;
+                        timer = new Timer();
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                if (!temp.toString().equals("")) {
+                                    guardar();
+                                }
+                            }
+                        }, 1000);
+                    }
+                });
+            }
+        }
 
         btnback.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -242,6 +295,10 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
         });
 
         setAcciones();
+    }
+
+    protected void guardar() {
+
     }
 
     protected void setControls(View view) {

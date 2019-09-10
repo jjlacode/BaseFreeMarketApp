@@ -2,8 +2,10 @@ package com.jjlacode.freelanceproject.ui;
 
 
 import com.jjlacode.base.util.nosql.FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb;
+import com.jjlacode.freelanceproject.logica.Interactor;
 
-public class ListadoProductosSorteos extends FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb {
+public class ListadoProductosSorteos extends FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
+        implements Interactor.ConstantesPry {
 
     @Override
     protected void setLayout() {
@@ -21,12 +23,7 @@ public class ListadoProductosSorteos extends FragmentMasterDetailNoSQLFormProduc
     }
 
     @Override
-    protected String setTipo() {
-        return PRODSORTEOS;
-    }
-
-    @Override
-    protected String setPerfil() {
-        return SORTEOS;
+    protected void setDatos() {
+        super.setDatos();
     }
 }

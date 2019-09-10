@@ -1,42 +1,39 @@
 package com.jjlacode.base.util.services;
 
-import android.content.ContentValues;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.jjlacode.base.util.JavaUtil;
-import com.jjlacode.base.util.crud.CRUDutil;
-import com.jjlacode.base.util.crud.ListaModelo;
-import com.jjlacode.base.util.crud.Modelo;
-import com.jjlacode.base.util.sqlite.ConsultaBD;
+import com.jjlacode.base.util.android.AndroidUtil;
+import com.jjlacode.base.util.models.Modelo;
+import com.jjlacode.base.util.models.MsgChat;
+import com.jjlacode.base.util.models.Productos;
 import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.base.util.sqlite.SQLiteUtil;
 import com.jjlacode.base.util.time.TimeDateUtil;
+import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
-import com.jjlacode.um.base.model.MsgChat;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 
-public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interactor.Constantes, ContratoPry.Tablas {
+public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interactor.ConstantesPry, ContratoPry.Tablas {
 
-    private String idUser;
-    private String idChat;
-    private DatabaseReference dbFirebase;
     private static long time0 = 0;
     private static long time1 = 0;
     private static long time2 = 0;
-    private static String ultimoIdChild = NULL;
+    private static long time3 = 0;
     private static int intentos = 0;
+    private static long ganador = 0;
 
     public Jobs() {
     }
@@ -49,7 +46,7 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
         int minutosCopia = 5;
 
         if (ahora > time0) {
-            long timeStamp = CRUDutil.getSharePreference(getApplicationContext(), PREFERENCIAS, TIMESTAMP, 0L);
+            long timeStamp = AndroidUtil.getSharePreference(getApplicationContext(), PREFERENCIAS, TIMESTAMP, 0L);
 
             if (ahora < timeStamp + (MINUTOSLONG * minutosCopia)) {
 
@@ -57,7 +54,7 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
                     if (SQLiteUtil.BD_backup(null, true)) {
                         System.out.println("Creada copia de bd");
                         time0 = ahora + (MINUTOSLONG * (minutosCopia - 1));
-                        CRUDutil.setSharePreference(getApplicationContext(), PREFERENCIAS, TIMESTAMP, 0L);
+                        AndroidUtil.setSharePreference(getApplicationContext(), PREFERENCIAS, TIMESTAMP, 0L);
                     } else {
                         System.out.println("Falló la copia de seguridad");
                         intentos++;
@@ -76,7 +73,7 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
         Calendar c = new GregorianCalendar();
 
         if (ahora > time1 && c.get(Calendar.HOUR_OF_DAY) == 0) {
-            long timeStamp = CRUDutil.getSharePreference(getApplicationContext(), PREFERENCIAS, TIMESTAMPDIA, 0L);
+            long timeStamp = AndroidUtil.getSharePreference(getApplicationContext(), PREFERENCIAS, TIMESTAMPDIA, 0L);
 
             if (ahora < timeStamp + (DIASLONG)) {
 
@@ -119,100 +116,167 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
 
         }
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        idUser = CRUDutil.getSharePreference(getApplicationContext(), PREFERENCIAS, USERID, NULL);
+        if (ahora > time3) {
 
+            final String iduser = AndroidUtil.getSharePreference(getBaseContext(), USERID, USERID, NULL);
+            DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+            Query querydb = db.child(INDICE + SORTEO).child(iduser);
+            querydb.addListenerForSingleValueEvent(new ValueEventListener() {
 
-        if (auth.getUid() != null && auth.getUid().equals(idUser)) {
-
-            dbFirebase = FirebaseDatabase.getInstance().getReference().child(CHAT).child(idUser);
-
-            ValueEventListener eventListenerProd = new ValueEventListener() {
                 @Override
-                public void onDataChange(final DataSnapshot dataSnapshot) {
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    for (final DataSnapshot sorteo : dataSnapshot.getChildren()) {
 
-                        MsgChat msgChat = child.getValue(MsgChat.class);
-                        String idChild = child.getKey();
+                        DatabaseReference dbnum = FirebaseDatabase.getInstance().getReference();
+                        Query querydbnum = dbnum.child(SORTEO).child(sorteo.getKey());
+                        querydbnum.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull final DataSnapshot dataSnapshot1) {
 
-                        if (!ultimoIdChild.equals(idChild)) {
-                            ContentValues values;
-                            ListaModelo listaChats = new ListaModelo(CAMPOS_CHAT);
-                            int cChat = 0;
-                            boolean primerReg = false;
-                            for (Modelo chat : listaChats.getLista()) {
-                                String seleccion = DETCHAT_TIPO + " = '" + RECIBIDO + "'";
-                                ListaModelo listaDetChat = new ListaModelo(CAMPOS_DETCHAT, chat.getString(CHAT_ID_CHAT), TABLA_CHAT, seleccion, DETCHAT_FECHA + " DESC");
-                                Modelo detChat = null;
-                                if (listaDetChat.getLista().size() > 0) {
-                                    detChat = listaDetChat.getLista().get(0);
-                                } else {
-                                    primerReg = true;
-                                }
+                                DatabaseReference dbSus = FirebaseDatabase.getInstance().getReference();
+                                Query querydbSus = dbSus.child(SUSCRIPCIONES).child(sorteo.getKey());
+                                querydbSus.addListenerForSingleValueEvent(new ValueEventListener() {
 
-                                if (chat.getString(CHAT_USUARIO).equals(msgChat.getIdOrigen()) &&
-                                        msgChat.getTipoRetorno().equals(chat.getString(CHAT_TIPORETORNO)) &&
-                                        msgChat.getTipo().equals(chat.getString(CHAT_TIPO))) {
+                                    private long numSus;
+                                    private String idGanador;
 
-                                    values = new ContentValues();
-                                    values.put(CHAT_USUARIO, msgChat.getIdOrigen());
-                                    values.put(CHAT_NOMBRE, msgChat.getNombre());
-                                    values.put(CHAT_TIPO, msgChat.getTipo());
-                                    values.put(CHAT_TIPORETORNO, msgChat.getTipoRetorno());
-                                    values.put(CHAT_CREATE, TimeDateUtil.ahora());
-                                    values.put(CHAT_TIMESTAMP, TimeDateUtil.ahora());
-                                    CRUDutil.actualizarRegistro(chat, values);
-                                    if (primerReg || msgChat.getFecha() > detChat.getLong(DETCHAT_FECHA)) {
-                                        idChat = chat.getString(CHAT_ID_CHAT);
-                                        values = new ContentValues();
-                                        values.put(DETCHAT_ID_CHAT, idChat);
-                                        values.put(DETCHAT_MENSAJE, msgChat.getMensaje());
-                                        values.put(DETCHAT_FECHA, msgChat.getFecha());
-                                        values.put(DETCHAT_CREATE, TimeDateUtil.ahora());
-                                        values.put(DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
-                                        values.put(DETCHAT_TIPO, RECIBIDO);
-                                        int sec = ConsultaBD.secInsertRegistroDetalle(CAMPOS_DETCHAT, idChat, TABLA_CHAT, values);
-                                        if (sec > 0) {
-                                            detChat = ConsultaBD.queryObjectDetalle(CAMPOS_DETCHAT, idChat, sec);
-                                            FirebaseDatabase.getInstance().getReference().child(CHAT).child(idUser).child(idChild).removeValue();
-                                            Intent intent = new Intent(ACCION_AVISOMSGCHAT).putExtra(CHAT, detChat);
-                                            sendBroadcast(intent);
-                                            ultimoIdChild = idChild;
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot2) {
+
+                                        for (DataSnapshot sus : dataSnapshot2.getChildren()) {
+
+                                            numSus++;
+
+                                            if (numSus >= dataSnapshot1.getValue(long.class) && ganador == 0) {
+
+                                                ganador = Math.round((Math.random() % numSus) * numSus);
+
+                                                numSus = 0;
+
+                                                DatabaseReference dbSusg = FirebaseDatabase.getInstance().getReference();
+                                                Query querydbSusg = dbSusg.child(SUSCRIPCIONES).child(sorteo.getKey());
+                                                querydbSusg.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot3) {
+
+                                                        for (final DataSnapshot participantesTipo : dataSnapshot3.getChildren()) {
+
+                                                            for (final DataSnapshot participante : participantesTipo.getChildren()) {
+
+                                                                numSus++;
+
+                                                                if (numSus == ganador) {
+
+                                                                    idGanador = participante.getKey();
+
+                                                                    DatabaseReference dbSusgan = FirebaseDatabase.getInstance().getReference();
+                                                                    Query querydbSusgan = dbSusgan.child(PRODUCTOS).child(sorteo.getKey());
+                                                                    querydbSusgan.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                                                                        @Override
+                                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot4) {
+
+                                                                            Productos prod = dataSnapshot4.getValue(Productos.class);
+                                                                            StringBuilder msg = new StringBuilder();
+                                                                            msg.append(getBaseContext().getString(R.string.mensaje_ganador));
+                                                                            msg.append("\n");
+                                                                            msg.append(prod.getNombre());
+                                                                            msg.append("\n");
+                                                                            msg.append(getBaseContext().getString(R.string.envio_prod_sorteo));
+                                                                            MsgChat msgChat = new MsgChat();
+                                                                            msgChat.setMensaje(msg.toString());
+                                                                            msgChat.setNombre(prod.getProveedor());
+                                                                            msgChat.setFecha(TimeDateUtil.ahora());
+                                                                            msgChat.setIdDestino(idGanador);
+                                                                            msgChat.setIdOrigen(prod.getIdprov());
+                                                                            msgChat.setTipo(participantesTipo.getKey());
+                                                                            msgChat.setTipoRetorno(prod.getTipo());
+                                                                            ;
+
+                                                                            FirebaseDatabase.getInstance().getReference().child(CHAT).child(idGanador).push().setValue(msgChat);
+                                                                            FirebaseDatabase.getInstance().getReference().child(INDICE + SORTEOS).child(iduser).child(sorteo.getKey()).setValue(idGanador);
+
+                                                                            Intent intent = new Intent(ACCION_AVISOSORTEO).putExtra(GANADORSORTEO, idGanador).
+                                                                                    putExtra(SORTEO, prod.getId()).putExtra(PRODUCTO, prod.getNombre());
+
+                                                                            sendBroadcast(intent);
+
+                                                                        }
+
+                                                                        @Override
+                                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                        }
+                                                                    });
+
+                                                                } else {
+
+                                                                    DatabaseReference dbSusgan = FirebaseDatabase.getInstance().getReference();
+                                                                    Query querydbSusgan = dbSusgan.child(PRODUCTOS).child(sorteo.getKey());
+                                                                    querydbSusgan.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                                                                        @Override
+                                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot4) {
+
+                                                                            Productos prod = dataSnapshot4.getValue(Productos.class);
+                                                                            MsgChat msgChat = new MsgChat();
+                                                                            StringBuilder msg = new StringBuilder();
+                                                                            msg.append(getBaseContext().getString(R.string.mensaje_no_ganador));
+                                                                            msg.append("\n");
+                                                                            msg.append(prod.getNombre());
+                                                                            msg.append("\n");
+                                                                            msg.append(getBaseContext().getString(R.string.proximo_sorteo));
+                                                                            msgChat.setMensaje(msg.toString());
+                                                                            msgChat.setNombre(prod.getProveedor());
+                                                                            msgChat.setFecha(TimeDateUtil.ahora());
+                                                                            msgChat.setIdDestino(participante.getKey());
+                                                                            msgChat.setIdOrigen(prod.getIdprov());
+                                                                            msgChat.setTipo(participantesTipo.getKey());
+                                                                            msgChat.setTipoRetorno(prod.getTipo());
+
+                                                                            FirebaseDatabase.getInstance().getReference().child(CHAT).child(participante.getKey()).push().setValue(msgChat);
+
+                                                                        }
+
+                                                                        @Override
+                                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                        }
+                                                                    });
+
+
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                    }
+                                                });
+
+
+                                            }
 
                                         }
                                     }
-                                    cChat++;
-                                }
-                            }
-                            if (cChat == 0) {
-                                values = new ContentValues();
-                                values.put(CHAT_USUARIO, msgChat.getIdOrigen());
-                                values.put(CHAT_NOMBRE, msgChat.getNombre());
-                                values.put(CHAT_TIPO, msgChat.getTipo());
-                                values.put(CHAT_TIPORETORNO, msgChat.getTipoRetorno());
-                                values.put(CHAT_CREATE, TimeDateUtil.ahora());
-                                values.put(CHAT_TIMESTAMP, TimeDateUtil.ahora());
-                                idChat = ConsultaBD.idInsertRegistro(TABLA_CHAT, values);
-                                values = new ContentValues();
-                                values.put(DETCHAT_ID_CHAT, idChat);
-                                values.put(DETCHAT_MENSAJE, msgChat.getMensaje());
-                                values.put(DETCHAT_FECHA, msgChat.getFecha());
-                                values.put(DETCHAT_CREATE, TimeDateUtil.ahora());
-                                values.put(DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
-                                values.put(DETCHAT_TIPO, RECIBIDO);
-                                int sec = ConsultaBD.secInsertRegistroDetalle(CAMPOS_DETCHAT, idChat, TABLA_CHAT, values);
-                                if (sec > 0) {
-                                    Modelo detChat = ConsultaBD.queryObjectDetalle(CAMPOS_DETCHAT, idChat, sec);
-                                    FirebaseDatabase.getInstance().getReference().child(CHAT).child(idUser).child(idChild).removeValue();
-                                    Intent intent = new Intent(ACCION_AVISOMSGCHAT).putExtra(CHAT, detChat);
-                                    sendBroadcast(intent);
-                                    ultimoIdChild = idChild;
 
-                                }
-                            }
-                        }
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                                    }
+                                });
+                            }
+
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
                     }
 
                 }
@@ -221,12 +285,14 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
                 }
+            });
 
-            };
-
-            dbFirebase.addValueEventListener(eventListenerProd);
+            time3 = ahora + MINUTOSLONG;
 
         }
+
+
+
 
     }
 

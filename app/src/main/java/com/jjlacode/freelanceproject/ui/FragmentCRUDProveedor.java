@@ -19,17 +19,18 @@ import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCRUD;
-import com.jjlacode.base.util.crud.ListaModelo;
-import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.freelanceproject.R;
+import com.jjlacode.freelanceproject.logica.Interactor;
 
 import java.util.ArrayList;
 
 import static com.jjlacode.base.util.sqlite.ConsultaBD.checkQueryList;
 
-public class FragmentCRUDProveedor extends FragmentCRUD {
+public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.ConstantesPry {
 
     private EditMaterial nombre;
     private EditMaterial direccion;

@@ -5,8 +5,8 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.jjlacode.base.util.crud.ListaModelo;
-import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Modelo;
 
 import java.util.ArrayList;
 

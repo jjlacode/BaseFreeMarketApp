@@ -24,6 +24,8 @@ import com.jjlacode.base.util.adapter.ListaAdaptadorFiltroModelo;
 import com.jjlacode.base.util.adapter.RVAdapter;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.animation.OneFrameLayout;
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
 
@@ -37,6 +39,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
     protected int layoutItem;
     protected RecyclerView rv;
     protected AutoCompleteTextView auto;
+    protected ListaModelo lista;
     protected boolean maestroDetalleSeparados;
     protected ArrayList<Modelo> listafiltrada;
     protected ImageView buscar;

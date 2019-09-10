@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Switch
+        android:id="@+id/chactivo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:text="@string/activo" />
+
+    <TextView
+        android:id="@+id/tvmulti"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textColor="@color/colorAccent"
+        android:textSize="@dimen/titulo_xl"
+        android:visibility="gone"
+        android:text="@string/multi_perfil" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.jjlacode.base.util.android.controls.EditMaterial
+            android:id="@+id/etsuscritos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_weight="2"
+            app:activo="false"
+            app:gravedad="centro"
+            app:hint_text="@string/suscriptores"
+            app:tipo_dato="NUMERO" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_enviar_noticias"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/altobtn"
+            style="@style/boton_secondary"
+            android:visibility="gone"
+            android:layout_weight="1"
+            android:text="@string/envio_noticias" />
+
+
+    </LinearLayout>
+
+    <Switch
+        android:id="@+id/swsuscripcion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:text="@string/suscripcion" />
+
+
+</LinearLayout>

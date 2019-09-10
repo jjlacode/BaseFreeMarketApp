@@ -7,7 +7,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.jjlacode.base.util.android.FragmentGrid;
 import com.jjlacode.base.util.web.FragmentWebView;
 import com.jjlacode.freelanceproject.R;
-import com.jjlacode.um.base.ui.FragmentPerfilUser;
 
 import java.util.ArrayList;
 
@@ -73,43 +72,43 @@ public class MenuPerfilUser extends FragmentGrid {
 
             bundle = new Bundle();
             putBundle(TIPO, clienteWeb);
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentPerfilUser());
+            icFragmentos.enviarBundleAFragment(bundle, new AltaPerfilesFirebase());
         } else if (nombre.equals(freelance)) {
 
             bundle = new Bundle();
             putBundle(TIPO, freelance);
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentPerfilUser());
+            icFragmentos.enviarBundleAFragment(bundle, new AltaPerfilesFirebase());
         } else if (nombre.equals(comercial)) {
 
             bundle = new Bundle();
             putBundle(TIPO, comercial);
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentPerfilUser());
+            icFragmentos.enviarBundleAFragment(bundle, new AltaPerfilesFirebase());
         } else if (nombre.equals(ecommerce)) {
 
             bundle = new Bundle();
             putBundle(TIPO, ecommerce);
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentPerfilUser());
+            icFragmentos.enviarBundleAFragment(bundle, new AltaPerfilesFirebase());
 
 
         } else if (nombre.equals(lugar)) {
 
             bundle = new Bundle();
             putBundle(TIPO, lugar);
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentPerfilUser());
+            icFragmentos.enviarBundleAFragment(bundle, new AltaPerfilesFirebase());
 
 
         } else if (nombre.equals(empresa)) {
 
             bundle = new Bundle();
             putBundle(TIPO, empresa);
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentPerfilUser());
+            icFragmentos.enviarBundleAFragment(bundle, new AltaPerfilesFirebase());
 
 
         } else if (nombre.equals(proveedorWeb)) {
 
             bundle = new Bundle();
             putBundle(TIPO, proveedorWeb);
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentPerfilUser());
+            icFragmentos.enviarBundleAFragment(bundle, new AltaPerfilesFirebase());
 
 
         } else if (nombre.equals(salir)) {

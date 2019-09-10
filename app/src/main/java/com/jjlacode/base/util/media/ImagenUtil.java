@@ -19,6 +19,8 @@ import java.io.ByteArrayOutputStream;
 public class ImagenUtil {
 
     static Context context = AppActivity.getAppContext();
+    static int logo = R.drawable.logo;
+    static int error = R.drawable.logo;
 
     public static Bitmap getBitmap(ImageView imagen) {
 
@@ -131,9 +133,9 @@ public class ImagenUtil {
     public static void setImageFireStore(String rutafoto, ImageView imagen, int ancho, int alto) {
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
+                .placeholder(logo)
                 .override(ancho, alto)
-                .error(R.drawable.alert_box_r);
+                .error(error);
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
@@ -281,10 +283,10 @@ public class ImagenUtil {
     public static void setImageUriCircle(String uri, ImageView imagen, int ancho, int alto) {
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
+                .placeholder(logo)
+                .error(error)
                 .override(ancho, alto)
-                .circleCrop()
-                .error(R.drawable.alert_box_r);
+                .circleCrop();
 
         Glide.with(context).load(uri).apply(options).into(imagen);
     }
@@ -298,8 +300,8 @@ public class ImagenUtil {
         System.out.println("spaceRef = " + spaceRef);
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
-                .error(R.drawable.alert_box_r);
+                .error(error)
+                .placeholder(logo);
         Glide.with(context)
                 .load(spaceRef)
                 .apply(options)
@@ -338,8 +340,8 @@ public class ImagenUtil {
     public static void setImageUri(String uri, ImageView imagen) {
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
-                .error(R.drawable.ic_add_a_photo_black_24dp);
+                .placeholder(logo)
+                .error(error);
 
         Glide.with(context).load(uri).apply(options).into(imagen);
     }
@@ -347,9 +349,9 @@ public class ImagenUtil {
     public static void setImageUri(String uri, ImageView imagen, float multiplicador) {
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
+                .placeholder(logo)
                 .sizeMultiplier(multiplicador)
-                .error(R.drawable.ic_add_a_photo_black_24dp);
+                .error(error);
 
         Glide.with(context).load(uri).apply(options).into(imagen);
     }
@@ -357,9 +359,9 @@ public class ImagenUtil {
     public static void setImageUri(int recurso, ImageView imagen, float multiplicador) {
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
+                .placeholder(logo)
                 .sizeMultiplier(multiplicador)
-                .error(R.drawable.ic_add_a_photo_black_24dp);
+                .error(error);
 
         Glide.with(context).load(recurso).apply(options).into(imagen);
     }
@@ -367,8 +369,8 @@ public class ImagenUtil {
     public static void setImageUri(int recurso, ImageView imagen) {
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
-                .error(R.drawable.ic_add_a_photo_black_24dp);
+                .placeholder(logo)
+                .error(error);
 
         Glide.with(context).load(recurso).apply(options).into(imagen);
     }
@@ -377,9 +379,9 @@ public class ImagenUtil {
 
         RequestOptions options = new RequestOptions()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
-                .override(ancho, alto)
-                .error(R.drawable.alert_box_r);
+                .placeholder(logo)
+                .error(error)
+                .override(ancho, alto);
 
         Glide.with(context).load(uri).thumbnail(0.25f).apply(options).into(imagen);
     }
@@ -388,9 +390,9 @@ public class ImagenUtil {
 
         RequestOptions options = new RequestOptions()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
-                .override(ancho, alto)
-                .error(R.drawable.alert_box_r);
+                .placeholder(logo)
+                .error(error)
+                .override(ancho, alto);
 
         Glide.with(context).load(recurso).thumbnail(0.25f).apply(options).into(imagen);
     }
@@ -398,9 +400,9 @@ public class ImagenUtil {
     public static void setImageFireStoreCircle(String rutafoto, ImageView imagen) {
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
+                .placeholder(logo)
                 .circleCrop()
-                .error(R.drawable.ic_add_a_photo_black_24dp);
+                .error(error);
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
@@ -413,10 +415,10 @@ public class ImagenUtil {
     public static void setImageFireStoreCircle(String rutafoto, ImageView imagen, float multiplicador) {
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
+                .placeholder(logo)
                 .sizeMultiplier(multiplicador)
                 .circleCrop()
-                .error(R.drawable.ic_add_a_photo_black_24dp);
+                .error(error);
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
@@ -429,9 +431,9 @@ public class ImagenUtil {
     public static void setImageWebCircle(String url, ImageView imagen) {
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
+                .placeholder(logo)
                 .circleCrop()
-                .error(R.drawable.ic_add_a_photo_black_24dp);
+                .error(error);
 
         Glide.with(context).load(url).apply(options).into(imagen);
     }
@@ -439,10 +441,10 @@ public class ImagenUtil {
     public static void setImageWebCircle(String url, ImageView imagen, float multiplicador) {
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
+                .placeholder(logo)
                 .sizeMultiplier(multiplicador)
                 .circleCrop()
-                .error(R.drawable.ic_add_a_photo_black_24dp);
+                .error(error);
 
         Glide.with(context).load(url).apply(options).into(imagen);
     }
@@ -450,9 +452,9 @@ public class ImagenUtil {
     public static void setImageUriCircle(String uri, ImageView imagen) {
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
+                .placeholder(logo)
                 .circleCrop()
-                .error(R.drawable.ic_add_a_photo_black_24dp);
+                .error(error);
 
         Glide.with(context).load(uri).apply(options).into(imagen);
     }
@@ -460,10 +462,10 @@ public class ImagenUtil {
     public static void setImageUriCircle(String uri, ImageView imagen, float multiplicador) {
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
+                .placeholder(logo)
                 .sizeMultiplier(multiplicador)
                 .circleCrop()
-                .error(R.drawable.ic_add_a_photo_black_24dp);
+                .error(error);
 
         Glide.with(context).load(uri).apply(options).into(imagen);
     }
@@ -471,10 +473,10 @@ public class ImagenUtil {
     public static void setImageUriCircle(int recurso, ImageView imagen, float multiplicador) {
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
+                .placeholder(logo)
                 .sizeMultiplier(multiplicador)
                 .circleCrop()
-                .error(R.drawable.ic_add_a_photo_black_24dp);
+                .error(error);
 
         Glide.with(context).load(recurso).apply(options).into(imagen);
     }
@@ -482,10 +484,10 @@ public class ImagenUtil {
     public static void setImageUriCircle(int recurso, ImageView imagen, int ancho, int alto) {
 
         RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ic_add_a_photo_black_24dp)
+                .placeholder(logo)
                 .override(ancho, alto)
                 .circleCrop()
-                .error(R.drawable.ic_add_a_photo_black_24dp);
+                .error(error);
 
         Glide.with(context).load(recurso).apply(options).into(imagen);
     }

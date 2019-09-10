@@ -18,7 +18,7 @@ import com.jjlacode.freelanceproject.logica.Interactor;
 import java.util.ArrayList;
 
 public class FragmentGrid extends FragmentRV implements Interactor.TiposEvento,
-        ContratoPry.Tablas, Interactor.Constantes {
+        ContratoPry.Tablas, Interactor.ConstantesPry {
 
     protected int columnas = 3;
     protected int filas = 4;

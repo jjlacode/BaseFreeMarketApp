@@ -22,7 +22,7 @@ import com.jjlacode.base.util.adapter.ListaAdaptadorFiltro;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
 import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.android.controls.ImagenLayout;
-import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.nosql.FragmentMasterDetailNoSQL;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.model.ProdProv;
@@ -30,6 +30,10 @@ import com.jjlacode.freelanceproject.model.Proveedores;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.PARTIDA;
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.PRODPROVCAT;
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.PROYECTO;
 
 public class CatalogoProdProvWeb extends FragmentMasterDetailNoSQL {
 

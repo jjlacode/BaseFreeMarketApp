@@ -23,8 +23,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
 
-import com.jjlacode.base.util.Models.Contactos;
-import com.jjlacode.base.util.Models.Llamadas;
+import com.jjlacode.base.util.models.Contactos;
+import com.jjlacode.base.util.models.Llamadas;
 import com.jjlacode.freelanceproject.BuildConfig;
 import com.jjlacode.freelanceproject.R;
 

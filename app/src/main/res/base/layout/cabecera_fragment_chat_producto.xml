@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Switch
+            android:id="@+id/btn_cab_chat_clienteweb_producto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/clientesweb"
+            android:layout_weight="1" />
+
+        <Switch
+            android:id="@+id/btn_cab_chat_freelance_producto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/freelance"
+            android:layout_weight="1" />
+
+        <Switch
+            android:id="@+id/btn_cab_chat_comercial_producto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/comercial"
+            android:layout_weight="1" />
+
+        <Switch
+            android:id="@+id/btn_cab_chat_ecommerce_producto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/clientesweb"
+            android:layout_weight="1" />
+
+        <Switch
+            android:id="@+id/btn_cab_chat_lugar_producto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/lugar"
+            android:layout_weight="1" />
+
+        <Switch
+            android:id="@+id/btn_cab_chat_empresa_producto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/empresa"
+            android:layout_weight="1" />
+
+        <Switch
+            android:id="@+id/btn_cab_chat_proveedorweb_producto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/clientesweb"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+</LinearLayout>

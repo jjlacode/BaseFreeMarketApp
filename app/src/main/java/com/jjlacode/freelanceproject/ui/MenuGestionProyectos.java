@@ -5,8 +5,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.jjlacode.base.util.android.FragmentGrid;
-import com.jjlacode.base.util.crud.ListaModelo;
-import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.freelanceproject.R;
 

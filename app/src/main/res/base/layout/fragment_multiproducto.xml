@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <ToggleButton
+            android:id="@+id/btn_ver_multi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textOn="@string/asignar_multiperfil"
+            android:background="@drawable/boton_redondo_secondary" />
+
+        <LinearLayout
+            android:id="@+id/lymulti"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:orientation="vertical">
+
+            <Switch
+                android:id="@+id/swmultifreelance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="@string/activo" />
+
+            <Switch
+                android:id="@+id/swmultiproveedor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="@string/activo" />
+
+            <Switch
+                android:id="@+id/swmultiecommerce"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="@string/activo" />
+
+            <Switch
+                android:id="@+id/swmulticomercial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="@string/activo" />
+
+            <Switch
+                android:id="@+id/swmultiLugar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="@string/activo" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

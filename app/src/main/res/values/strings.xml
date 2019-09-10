@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">FreeMarketsApp</string>
-    <string name="auth" translatable="false">By JjlaCode</string>
+    <string name="auth" translatable="false"></string>
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
     <string name="nav_header_title" translatable="false">FreelanceProject</string>
@@ -256,7 +256,7 @@
     <string name="compartir">Compartir</string>
     <string name="parar_grabacion">Parar grabacion</string>
     <string name="notificado">Notificado</string>
-    <string name="salir">Off</string>
+    <string name="salir">LogOut</string>
     <string name="treking">Treking</string>
     <string name="calendario">Events Calendar</string>
     <string name="tarea">Tarea</string>
@@ -387,6 +387,47 @@
     <string name="opciones_zona">Opciones zona</string>
     <string name="ocultar_opciones">Ocultar opciones zona</string>
     <string name="mi_ubicacion_por_defecto">Mi ubicación por defecto</string>
+    <string name="cambioperfil">Cambiar perfil usuario</string>
+    <string name="refsevicio">Referencia Servicio</string>
+    <string name="precio_servicio">Precio  Servicio</string>
+    <string name="servicios_freelance">Servicios Freelance</string>
+    <string name="productos_usados">Articulos usados y seminuevos</string>
+    <string name="productos_comercial">Productos Comercial</string>
+    <string name="productos_ecommerce">Productos Ecommerce</string>
+    <string name="imagen_subida_ok">Imagen subida OK</string>
+    <string name="fallo_subiendo_imagen">Fallo subiendo imagen</string>
+    <string name="mi_ubicacion">Mi ubicación</string>
+    <string name="fallo_subiendo_registro">Fallo subiendo registro</string>
+    <string name="debe_tener_perfil">Debe tener un perfil de </string>
+    <string name="productos_multiperfil">Productos Multi-Perfil</string>
+    <string name="asignar_multiperfil">Asignar Multi-Perfil</string>
+    <string name="multi_perfil">MULTI-PERFIL</string>
+    <string name="suscripcion">Suscribirse a Producto</string>
+    <string name="suscriptores">Suscriptores</string>
+    <string name="msg_subscribed">Suscrito correctamente</string>
+    <string name="msg_subscribe_failed">Fallo en la suscripción</string>
+    <string name="enviado_a">Enviado a:</string>
+    <string name="mensajes_enviados">Mensajes enviados</string>
+    <string name="productos_lugar">Productos Lugar</string>
+    <string name="envio_noticias">Envio de Noticias</string>
+    <string name="perfil_freelance">Perfil Freelance</string>
+    <string name="ocultar_noticias">Ocultar noticias</string>
+    <string name="ver_noticias">Ver Noticias</string>
+    <string name="mensaje_ganador">Ha resultado ganador del sorteo de !!</string>
+    <string name="sortear">Sortear</string>
+    <string name="sorteo_creado">Sorteo creado con exito</string>
+    <string name="fallo_creando_sorteo">Falló la creación del sorteo</string>
+    <string name="producto_sorteado">Producto o servicio sorteado</string>
+    <string name="valor_producto">Valor del producto o servicio</string>
+    <string name="referencia_sorteo">Referencia Sorteo</string>
+    <string name="en_sorteo">En sorteo</string>
+    <string name="empezar_sorteo">Empezar sorteo</string>
+    <string name="envio_prod_sorteo">Por favor, responda este mensaje para acordar la entrega del premio</string>
+    <string name="mensaje_no_ganador">Lo sentimos esta vez no ha ganado el sorteo</string>
+    <string name="proximo_sorteo">Suscribase al producto para estar informado de nuevos sorteos</string>
+    <string name="participantes">Participantes</string>
+    <string name="max_participantes_sorteo">Max. Participantes sorteo</string>
+    <string name="servicios">Servicio</string>
 
 
 </resources>

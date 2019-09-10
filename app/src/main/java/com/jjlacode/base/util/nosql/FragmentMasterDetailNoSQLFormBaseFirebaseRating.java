@@ -24,12 +24,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.jjlacode.base.util.JavaUtil;
-import com.jjlacode.base.util.Models.Rating;
 import com.jjlacode.base.util.adapter.BaseViewHolder;
 import com.jjlacode.base.util.adapter.RVAdapter;
 import com.jjlacode.base.util.adapter.TipoViewHolder;
+import com.jjlacode.base.util.android.AndroidUtil;
 import com.jjlacode.base.util.android.controls.EditMaterial;
-import com.jjlacode.base.util.crud.CRUDutil;
+import com.jjlacode.base.util.models.Rating;
 import com.jjlacode.base.util.time.TimeDateUtil;
 import com.jjlacode.freelanceproject.R;
 import com.jjlacode.freelanceproject.logica.Interactor;
@@ -191,8 +191,8 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends Fr
 
     public void enviarVoto(Context contexto, String nombre, final String tipo, final String id, float valor, String comentario) {
 
-        perfilUser = CRUDutil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
-        idUser = CRUDutil.getSharePreference(contexto, USERID, USERID, NULL);
+        perfilUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
+        idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
         Rating rat = new Rating(valor, tipo, id, idUser, nombre, comentario, TimeDateUtil.ahora());
         FirebaseDatabase.getInstance().getReference().child("rating").child(tipo).child(id).child(idUser + perfilUser).setValue(rat, new DatabaseReference.CompletionListener() {
                 @Override
@@ -315,8 +315,8 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRating extends Fr
 
     public void recuperarVotoUsuario(final RatingBar ratingBarUser, final Context contexto, final String tipo, final String id) {
 
-        idUser = CRUDutil.getSharePreference(contexto, USERID, USERID, NULL);
-        perfilUser = CRUDutil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
+        idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
+        perfilUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
 
         votoUser = 0.0f;
         comentario.setText("");

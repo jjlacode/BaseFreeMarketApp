@@ -267,7 +267,7 @@ public class LocalizacionUtils {
     public static List<Address> getAddressListGeoCoord(Context context, double latitude, double longitude) {
 
         Geocoder geocoder;
-        geocoder = new Geocoder(context, Locale.getDefault());
+        geocoder = new Geocoder(context, Locale.ENGLISH);
         if (latitude > 90) {
             latitude = 90;
         }
@@ -293,7 +293,7 @@ public class LocalizacionUtils {
     public static Address getAddressGeoCoord(Context context, double latitude, double longitude) {
 
         Geocoder geocoder;
-        geocoder = new Geocoder(context, Locale.getDefault());
+        geocoder = new Geocoder(context, Locale.ENGLISH);
         if (latitude > 90) {
             latitude = 90;
         }
@@ -320,7 +320,7 @@ public class LocalizacionUtils {
 
         Geocoder geocoder;
         List<Address> direccion = null;
-        geocoder = new Geocoder(context, Locale.getDefault());
+        geocoder = new Geocoder(context, Locale.ENGLISH);
 
         try {
             direccion = geocoder.getFromLocation(latitude, longitude, 1);
@@ -338,7 +338,7 @@ public class LocalizacionUtils {
 
         Geocoder geocoder;
         List<Address> direccion;
-        geocoder = new Geocoder(context, Locale.getDefault());
+        geocoder = new Geocoder(context, Locale.ENGLISH);
 
         direccion = geocoder.getFromLocation(latitude, longitude, 1);
         if (direccion != null && direccion.size() > 0) {
@@ -352,7 +352,7 @@ public class LocalizacionUtils {
 
         Geocoder geocoder;
         List<Address> direccion;
-        geocoder = new Geocoder(context, Locale.getDefault());
+        geocoder = new Geocoder(context, Locale.ENGLISH);
 
         direccion = geocoder.getFromLocation(latitude, longitude, 1);
         if (direccion != null && direccion.size() > 0) {
@@ -367,7 +367,7 @@ public class LocalizacionUtils {
 
         Geocoder geocoder;
         List<Address> direccion;
-        geocoder = new Geocoder(context, Locale.getDefault());
+        geocoder = new Geocoder(context, Locale.ENGLISH);
 
         direccion = geocoder.getFromLocation(latitude, longitude, 1);
         if (direccion != null && direccion.size() > 0) {
@@ -382,7 +382,7 @@ public class LocalizacionUtils {
 
         Geocoder geocoder;
         List<Address> direccion;
-        geocoder = new Geocoder(context, Locale.getDefault());
+        geocoder = new Geocoder(context, Locale.ENGLISH);
 
         direccion = geocoder.getFromLocation(latitude, longitude, 1);
         if (direccion != null && direccion.size() > 0) {
@@ -397,7 +397,7 @@ public class LocalizacionUtils {
 
         Geocoder geocoder;
         List<Address> direccion;
-        geocoder = new Geocoder(context, Locale.getDefault());
+        geocoder = new Geocoder(context, Locale.ENGLISH);
 
         direccion = geocoder.getFromLocation(latitude, longitude, 1);
         if (direccion != null && direccion.size() > 0) {
@@ -412,7 +412,7 @@ public class LocalizacionUtils {
 
         Geocoder geocoder;
         List<Address> direccion;
-        geocoder = new Geocoder(context, Locale.getDefault());
+        geocoder = new Geocoder(context, Locale.ENGLISH);
 
         direccion = geocoder.getFromLocation(latitude, longitude, 1);
         if (direccion != null && direccion.size() > 0) {

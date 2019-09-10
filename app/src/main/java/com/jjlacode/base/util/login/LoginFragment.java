@@ -18,14 +18,14 @@ import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.jjlacode.base.util.android.AndroidUtil;
 import com.jjlacode.base.util.android.controls.ImagenLayout;
-import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.freelanceproject.MainActivity;
 import com.jjlacode.freelanceproject.R;
 
 import static com.jjlacode.base.util.JavaUtil.Constantes.NULL;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.INICIO;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.USERID;
+import static com.jjlacode.base.util.logica.InteractorBase.Constantes.INICIO;
+import static com.jjlacode.base.util.logica.InteractorBase.Constantes.USERID;
 
 /**
  * Muestra el formulario de login
@@ -75,7 +75,7 @@ public class LoginFragment extends Fragment implements LoginContract.View {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                userID = CRUDutil.getSharePreference(getContext(), USERID, USERID, NULL);
+                userID = AndroidUtil.getSharePreference(getContext(), USERID, USERID, NULL);
                 if (user != null && user.getUid().equals(userID)) {
                     accessApp();
                 } else if (user == null) {
@@ -125,7 +125,7 @@ public class LoginFragment extends Fragment implements LoginContract.View {
 
         mLoginForm.setVisibility(View.VISIBLE);
 
-        userID = CRUDutil.getSharePreference(getContext(), USERID, USERID, NULL);
+        userID = AndroidUtil.getSharePreference(getContext(), USERID, USERID, NULL);
 
         if (userID == NULL) {
             registrar.setVisibility(View.VISIBLE);

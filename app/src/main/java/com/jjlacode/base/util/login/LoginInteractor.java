@@ -18,8 +18,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.jjlacode.base.util.JavaUtil;
+import com.jjlacode.base.util.android.AndroidUtil;
 import com.jjlacode.base.util.android.AppActivity;
-import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.base.util.sqlite.SQLiteUtil;
 import com.jjlacode.freelanceproject.R;
@@ -28,15 +28,15 @@ import com.jjlacode.freelanceproject.logica.Interactor;
 import static com.jjlacode.base.util.JavaUtil.Constantes.NULL;
 import static com.jjlacode.base.util.JavaUtil.Constantes.PERFILUSER;
 import static com.jjlacode.base.util.JavaUtil.Constantes.PREFERENCIAS;
+import static com.jjlacode.base.util.logica.InteractorBase.Constantes.USERID;
 import static com.jjlacode.base.util.sqlite.ContratoPry.Tablas.CAMPOS_PERFIL;
 import static com.jjlacode.base.util.sqlite.ContratoPry.Tablas.PERFIL_DESCRIPCION;
 import static com.jjlacode.base.util.sqlite.ContratoPry.Tablas.PERFIL_NOMBRE;
 import static com.jjlacode.base.util.sqlite.ContratoPry.Tablas.TABLA_PERFIL;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.DIASFUTUROS;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.DIASPASADOS;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.PERFILACTIVO;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.PRIORIDAD;
-import static com.jjlacode.freelanceproject.logica.Interactor.Constantes.USERID;
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.DIASFUTUROS;
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.DIASPASADOS;
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.PERFILACTIVO;
+import static com.jjlacode.freelanceproject.logica.Interactor.ConstantesPry.PRIORIDAD;
 
 /**
  * Interactor del login
@@ -163,13 +163,13 @@ public class LoginInteractor {
                             callback.onAuthFailed(task.getException().getMessage());
                         } else {
                             if (comprobarInicio()) {
-                                String idUser = CRUDutil.getSharePreference(mContext, USERID, USERID, NULL);
-                                String idUserpref = CRUDutil.getSharePreference(mContext, PREFERENCIAS, USERID, NULL);
+                                String idUser = AndroidUtil.getSharePreference(mContext, USERID, USERID, NULL);
+                                String idUserpref = AndroidUtil.getSharePreference(mContext, PREFERENCIAS, USERID, NULL);
 
                                 if (task.getResult().getUser().getUid().equals(idUser) &&
                                         task.getResult().getUser().getUid().equals(idUserpref)) {
 
-                                    CRUDutil.setSharePreference(mContext, PREFERENCIAS, PERFILUSER, perfil);
+                                    AndroidUtil.setSharePreference(mContext, PREFERENCIAS, PERFILUSER, perfil);
 
                                     callback.onAuthSuccess();
                                 } else {
@@ -180,7 +180,7 @@ public class LoginInteractor {
                             } else {
 
                                 if (iniciarDB(task.getResult().getUser().getUid(), perfil)) {
-                                    CRUDutil.setSharePreference(mContext, USERID, USERID, task.getResult().getUser().getUid());
+                                    AndroidUtil.setSharePreference(mContext, USERID, USERID, task.getResult().getUser().getUid());
                                     callback.onAuthSuccess();
 
                                 } else {
@@ -218,9 +218,11 @@ public class LoginInteractor {
     private Boolean comprobarInicio() {
 
         String BASEDATOS = AppActivity.getAppContext().getString(R.string.app_name) + ".db";
+        String BASEDATOSSYSTEM = "system.db";
 
         System.out.println("PathBD = " + mContext.getDatabasePath(BASEDATOS));
-        if (!SQLiteUtil.checkDataBase(mContext.getDatabasePath(BASEDATOS).getAbsolutePath())) {
+        if (!SQLiteUtil.checkDataBase(mContext.getDatabasePath(BASEDATOSSYSTEM).getAbsolutePath()) ||
+                !SQLiteUtil.checkDataBase(mContext.getDatabasePath(BASEDATOS).getAbsolutePath())) {
 
             return false;
 
@@ -268,7 +270,7 @@ public class LoginInteractor {
                 Interactor.diaspasados = 20;
                 Interactor.hora = Interactor.Calculos.calculoPrecioHora();
                 Interactor.setNamefdef();
-                CRUDutil.setSharePreference(mContext, USERID, USERID, userID);
+                AndroidUtil.setSharePreference(mContext, USERID, USERID, userID);
 
                 return true;
             }

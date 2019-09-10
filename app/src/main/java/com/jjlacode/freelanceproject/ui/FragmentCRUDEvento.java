@@ -34,9 +34,9 @@ import com.jjlacode.base.util.android.controls.EditMaterial;
 import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCRUD;
-import com.jjlacode.base.util.crud.ListaModelo;
-import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.base.util.time.DatePickerFragment;
@@ -54,7 +54,7 @@ import static com.jjlacode.base.util.android.AppActivity.viewOnMapA;
 import static com.jjlacode.base.util.time.calendar.clases.DiaCalBase.HORACAL;
 import static com.jjlacode.freelanceproject.logica.Interactor.setNamefdef;
 
-public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Constantes,
+public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.ConstantesPry,
         ContratoPry.Tablas, Interactor.TiposEvento {
 
     private AutoCompleteTextView proyRel;

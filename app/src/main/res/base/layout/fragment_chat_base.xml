@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/colorPrimary"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ToggleButton
+        android:id="@+id/btn_vernoticias"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textOn="@string/ocultar_noticias"
+        android:textOff="@string/ver_noticias"
+        android:visibility="gone"
+        android:background="@drawable/boton_redondo_secondary"
+        android:textColor="@color/colorSecondaryDark"
+        android:textSize="@dimen/texto" />
+
+    <LinearLayout
+        android:id="@+id/ly_chat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvdetmsgchat_base"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -35,9 +35,9 @@ import com.jjlacode.base.util.android.controls.ImagenLayout;
 import com.jjlacode.base.util.android.controls.ScalableImageView;
 import com.jjlacode.base.util.crud.CRUDutil;
 import com.jjlacode.base.util.crud.FragmentCRUD;
-import com.jjlacode.base.util.crud.ListaModelo;
-import com.jjlacode.base.util.crud.Modelo;
 import com.jjlacode.base.util.media.MediaUtil;
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Modelo;
 import com.jjlacode.base.util.sqlite.ConsultaBD;
 import com.jjlacode.base.util.sqlite.ContratoPry;
 import com.jjlacode.base.util.time.DatePickerFragment;
@@ -59,7 +59,7 @@ import static com.jjlacode.base.util.sqlite.ConsultaBD.updateRegistro;
 import static com.jjlacode.base.util.sqlite.ConsultaBD.updateRegistrosDetalle;
 
 public class FragmentCRUDProyecto extends FragmentCRUD
-        implements Interactor.Constantes, ContratoPry.Tablas, Interactor.Estados,
+        implements Interactor.ConstantesPry, ContratoPry.Tablas, Interactor.Estados,
         Interactor.TiposEstados {
 
     private ScalableImageView imagenTipoClienteProyecto;

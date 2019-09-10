@@ -3,8 +3,8 @@ package com.jjlacode.freelanceproject.ui;
 import android.os.Bundle;
 import android.view.View;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.jjlacode.base.util.android.FragmentGrid;
+import com.jjlacode.base.util.logica.InteractorBase;
 import com.jjlacode.base.util.web.FragmentWebView;
 import com.jjlacode.freelanceproject.R;
 
@@ -104,8 +104,7 @@ public class MenuInicio extends FragmentGrid {
 
         }else if (nombre.equals(salir)){
 
-            FirebaseAuth.getInstance().signOut();
-            activityBase.finish();
+            InteractorBase.logOut();
 
         } else if (nombre.equals(ayuda)) {
 

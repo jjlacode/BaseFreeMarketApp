@@ -7,8 +7,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.jjlacode.base.util.crud.ListaModelo;
-import com.jjlacode.base.util.crud.Modelo;
+import com.jjlacode.base.util.models.ListaModelo;
+import com.jjlacode.base.util.models.Modelo;
 
 import java.util.ArrayList;
 
@@ -31,7 +31,7 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
         this.list = list;
         this.tipoVH = LISTA;
-        if (list.size()>0 && list.get(0) instanceof Modelo){
+        if (list != null && list.size() > 0 && list.get(0) instanceof Modelo) {
             tipoVH = MODELO;
         }
         this.layout = layout;
