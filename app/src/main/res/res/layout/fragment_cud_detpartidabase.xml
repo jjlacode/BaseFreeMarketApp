@@ -22,7 +22,7 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <com.jjlacode.base.util.android.controls.ImagenLayout
+            <com.codevsolution.base.util.android.controls.ImagenLayout
                 android:id="@+id/imgcdetpartidabase"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -66,7 +66,7 @@
                     android:textSize="@dimen/texto"
                     android:text="@string/referencia_proveedor" />
 
-                <com.jjlacode.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.util.android.controls.EditMaterial
                     android:id="@+id/etdesccdetpartidabase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <com.jjlacode.base.util.android.controls.EditMaterial
+            <com.codevsolution.base.util.android.controls.EditMaterial
                 android:id="@+id/ettiempocdetpartidabase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
                 app:gravedad="centro"
                 app:tipo_dato="NUMERO|DECIMAL" />
 
-            <com.jjlacode.base.util.android.controls.EditMaterial
+            <com.codevsolution.base.util.android.controls.EditMaterial
                 android:id="@+id/etpreciocdetpartidabase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -97,7 +97,7 @@
                 app:hint_text="@string/importe"
                 app:tipo_dato="NUMERO|DECIMAL" />
 
-            <com.jjlacode.base.util.android.controls.EditMaterial
+            <com.codevsolution.base.util.android.controls.EditMaterial
                 android:id="@+id/etdescprovcdetpartidabase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

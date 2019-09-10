@@ -25,7 +25,7 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <com.jjlacode.base.util.android.controls.ImagenLayout
+            <com.codevsolution.base.util.android.controls.ImagenLayout
                 android:id="@+id/imgdetprodprovweb"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -38,21 +38,21 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <com.jjlacode.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.util.android.controls.EditMaterial
                     android:id="@+id/etnombredetprodprovweb"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:activo="false"
                     app:hint_text="@string/nombre" />
 
-                <com.jjlacode.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.util.android.controls.EditMaterial
                     android:id="@+id/etrefprovdetprodprovweb"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:activo="false"
                     app:hint_text="@string/referencia_proveedor" />
 
-                <com.jjlacode.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.util.android.controls.EditMaterial
                     android:id="@+id/etdescdetprodprovweb"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
             android:orientation="horizontal">
 
 
-            <com.jjlacode.base.util.android.controls.EditMaterial
+            <com.codevsolution.base.util.android.controls.EditMaterial
                 android:id="@+id/etpreciodetprodprovweb"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -78,7 +78,7 @@
                 app:hint_text="@string/importe"
                 app:tipo_dato="NUMERO|DECIMAL" />
 
-            <com.jjlacode.base.util.android.controls.EditMaterial
+            <com.codevsolution.base.util.android.controls.EditMaterial
                 android:id="@+id/etporcdesprovdetprodprovweb"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

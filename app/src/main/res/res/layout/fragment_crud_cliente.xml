@@ -20,13 +20,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <com.jjlacode.base.util.android.controls.ImagenLayout
+                    <com.codevsolution.base.util.android.controls.ImagenLayout
                         android:id="@+id/imgcliente"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="2" />
 
-                    <com.jjlacode.base.util.android.controls.ImagenLayout
+                    <com.codevsolution.base.util.android.controls.ImagenLayout
                         android:id="@+id/imgpesocliente"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <com.jjlacode.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.util.android.controls.EditMaterial
                     android:id="@+id/etnombreudcliente"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <com.jjlacode.base.util.android.controls.EditMaterial
+                    <com.codevsolution.base.util.android.controls.EditMaterial
                         android:id="@+id/etdirudcliente"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -91,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <com.jjlacode.base.util.android.controls.EditMaterial
+                    <com.codevsolution.base.util.android.controls.EditMaterial
                         android:id="@+id/etteludcliente"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -119,7 +119,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <com.jjlacode.base.util.android.controls.EditMaterial
+                    <com.codevsolution.base.util.android.controls.EditMaterial
                         android:id="@+id/etemailudcliente"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -142,7 +142,7 @@
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <com.jjlacode.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.util.android.controls.EditMaterial
                     android:id="@+id/etcontudcliente"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

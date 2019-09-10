@@ -18,7 +18,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.jjlacode.base.util.android.controls.ImagenLayout
+                <com.codevsolution.base.util.android.controls.ImagenLayout
                     android:id="@+id/imudpry"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -31,14 +31,14 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
 
-                    <com.jjlacode.base.util.android.controls.EditMaterial
+                    <com.codevsolution.base.util.android.controls.EditMaterial
                         android:id="@+id/etnomudpry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:hint_text="@string/nombre"
                         app:tipo_dato="PERSONA"/>
 
-                    <com.jjlacode.base.util.android.controls.EditMaterial
+                    <com.codevsolution.base.util.android.controls.EditMaterial
                         android:id="@+id/etdescudpry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.jjlacode.base.util.android.controls.ScalableImageView
+                <com.codevsolution.base.util.android.controls.ScalableImageView
                     android:id="@+id/imgbtntipocliudpry"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -78,14 +78,14 @@
                 android:layout_marginRight="5dp"
                 android:orientation="horizontal">
 
-                <com.jjlacode.base.util.android.controls.ScalableImageView
+                <com.codevsolution.base.util.android.controls.ScalableImageView
                     android:id="@+id/imgbtnestudpry"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="10"
                     app:srcCompat="@drawable/alert_box_v" />
 
-                <com.jjlacode.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.util.android.controls.EditMaterial
                     android:id="@+id/tvestudproy"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -102,7 +102,7 @@
 
             </LinearLayout>
 
-            <com.jjlacode.base.util.android.controls.EditMaterial
+            <com.codevsolution.base.util.android.controls.EditMaterial
                 android:id="@+id/proyecto_ud_tv_fecha_entrada"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -125,7 +125,7 @@
                     android:visibility="gone"
                     android:text="@string/fecha_calculada" />
 
-                <com.jjlacode.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.util.android.controls.EditMaterial
                     android:id="@+id/tvfcalcudpry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -152,7 +152,7 @@
                         android:orientation="horizontal">
 
 
-                        <com.jjlacode.base.util.android.controls.EditMaterial
+                        <com.codevsolution.base.util.android.controls.EditMaterial
                             android:id="@+id/tvfacorudpry"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -178,7 +178,7 @@
                         android:layout_marginRight="5dp"
                         android:orientation="horizontal">
 
-                        <com.jjlacode.base.util.android.controls.EditMaterial
+                        <com.codevsolution.base.util.android.controls.EditMaterial
                             android:id="@+id/tvfentpresuppry"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -207,7 +207,7 @@
                 android:text="@string/partidas_proyecto"/>
 
 
-            <com.jjlacode.base.util.android.controls.EditMaterial
+            <com.codevsolution.base.util.android.controls.EditMaterial
 
                 android:id="@+id/tvffinudpry"
                 android:layout_height="wrap_content"
@@ -225,7 +225,7 @@
                 android:orientation="horizontal">
 
 
-                <com.jjlacode.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.util.android.controls.EditMaterial
                     android:id="@+id/tvimpcaludpry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -235,7 +235,7 @@
                     app:activo="false"/>
 
 
-                <com.jjlacode.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.util.android.controls.EditMaterial
                     android:id="@+id/etimpfinudpry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -254,7 +254,7 @@
                     android:layout_marginRight="5dp">
 
 
-                    <com.jjlacode.base.util.android.controls.EditMaterial
+                    <com.codevsolution.base.util.android.controls.EditMaterial
                         android:id="@+id/tvtotpartudpry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -264,7 +264,7 @@
                         app:activo="false"/>
 
 
-                    <com.jjlacode.base.util.android.controls.EditMaterial
+                    <com.codevsolution.base.util.android.controls.EditMaterial
                         android:id="@+id/tvpreciopartidasudpry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

@@ -78,7 +78,7 @@
                 android:scaleType="center"
                 android:src="@drawable/ic_enviar_blanco" />
 
-            <com.jjlacode.base.util.android.controls.EditMaterial
+            <com.codevsolution.base.util.android.controls.EditMaterial
                 android:id="@+id/etvotodetfreelance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
 
         </LinearLayout>
 
-        <com.jjlacode.base.util.android.controls.EditMaterial
+        <com.codevsolution.base.util.android.controls.EditMaterial
             android:id="@+id/etcomentdetfreelance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

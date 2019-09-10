@@ -23,7 +23,7 @@
         android:visibility="gone" />
 
 
-    <com.jjlacode.base.util.android.controls.LockableScrollView
+    <com.codevsolution.base.util.android.controls.LockableScrollView
         android:id="@+id/scrollcab"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -98,5 +98,5 @@
                 android:visibility="gone" />
 
         </LinearLayout>
-    </com.jjlacode.base.util.android.controls.LockableScrollView>
+    </com.codevsolution.base.util.android.controls.LockableScrollView>
 </LinearLayout>

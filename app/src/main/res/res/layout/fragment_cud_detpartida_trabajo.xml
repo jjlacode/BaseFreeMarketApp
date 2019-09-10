@@ -33,7 +33,7 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <com.jjlacode.base.util.android.controls.ImagenLayout
+            <com.codevsolution.base.util.android.controls.ImagenLayout
                 android:id="@+id/imgcdetpartida_trb"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -46,14 +46,14 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <com.jjlacode.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.util.android.controls.EditMaterial
                     android:id="@+id/etnombredetpartida_trb"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:hint_text="@string/nombre" />
 
 
-                <com.jjlacode.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.util.android.controls.EditMaterial
                     android:id="@+id/etdesccdetpartida_trb"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <com.jjlacode.base.util.android.controls.EditMaterial
+            <com.codevsolution.base.util.android.controls.EditMaterial
                 android:id="@+id/ettiempocdetpartida_trb"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -77,7 +77,7 @@
                 app:gravedad="centro"
                 app:tipo_dato="NUMERO|DECIMAL" />
 
-            <com.jjlacode.base.util.android.controls.EditMaterial
+            <com.codevsolution.base.util.android.controls.EditMaterial
                 android:id="@+id/etpreciocdetpartida_trb"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
                 app:tipo_dato="NUMERO|DECIMAL" />
 
 
-            <com.jjlacode.base.util.android.controls.EditMaterial
+            <com.codevsolution.base.util.android.controls.EditMaterial
                 android:id="@+id/etcanttotpartida_trb"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -105,7 +105,7 @@
             android:gravity="center" />
 
 
-        <com.jjlacode.base.util.android.controls.EditMaterial
+        <com.codevsolution.base.util.android.controls.EditMaterial
             android:id="@+id/etcompletadadetpartida_trb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

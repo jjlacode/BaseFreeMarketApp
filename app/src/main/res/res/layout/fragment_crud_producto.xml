@@ -20,7 +20,7 @@
         android:orientation="horizontal">
 
 
-        <com.jjlacode.base.util.android.controls.ImagenLayout
+        <com.codevsolution.base.util.android.controls.ImagenLayout
             android:id="@+id/imgproducto"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -33,7 +33,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <com.jjlacode.base.util.android.controls.EditMaterial
+            <com.codevsolution.base.util.android.controls.EditMaterial
                 android:id="@+id/etnombreproductos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
                 app:tipo_dato="TEXTO" />
 
 
-            <com.jjlacode.base.util.android.controls.EditMaterial
+            <com.codevsolution.base.util.android.controls.EditMaterial
                 android:id="@+id/etdescripcionproductos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <com.jjlacode.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.util.android.controls.EditMaterial
                     android:id="@+id/etnomprovproducto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <com.jjlacode.base.util.android.controls.EditMaterial
+        <com.codevsolution.base.util.android.controls.EditMaterial
             android:id="@+id/etimporte_crud_productos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
             app:hint_text="@string/importe"
             app:tipo_dato="NUMERO|DECIMAL" />
 
-        <com.jjlacode.base.util.android.controls.EditMaterial
+        <com.codevsolution.base.util.android.controls.EditMaterial
             android:id="@+id/etrefproductos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -98,7 +98,7 @@
             app:gravedad="fin"
             app:hint_text="@string/referencia_proveedor" />
 
-        <com.jjlacode.base.util.android.controls.EditMaterial
+        <com.codevsolution.base.util.android.controls.EditMaterial
             android:id="@+id/etdescprovproductos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

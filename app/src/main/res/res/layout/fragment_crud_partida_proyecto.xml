@@ -27,7 +27,7 @@
                     android:layout_weight="2.5"
                     android:orientation="vertical">
 
-                    <com.jjlacode.base.util.android.controls.ImagenLayout
+                    <com.codevsolution.base.util.android.controls.ImagenLayout
                         android:id="@+id/imgudpartida"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -83,13 +83,13 @@
                         android:textSize="@dimen/texto" />
 
 
-                    <com.jjlacode.base.util.android.controls.EditMaterial
+                    <com.codevsolution.base.util.android.controls.EditMaterial
                         android:id="@+id/etnomudpartida"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:hint_text="@string/nombre" />
 
-                    <com.jjlacode.base.util.android.controls.EditMaterial
+                    <com.codevsolution.base.util.android.controls.EditMaterial
                         android:id="@+id/etdescripcionUDpartida"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -104,7 +104,7 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <com.jjlacode.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.util.android.controls.EditMaterial
                     android:id="@+id/etcantidadUDpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -112,7 +112,7 @@
                     app:hint_text="@string/cantidad"
                     app:tipo_dato="NUMERO|DECIMAL" />
 
-                <com.jjlacode.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.util.android.controls.EditMaterial
                     android:id="@+id/ettiempoUDpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -121,7 +121,7 @@
                     app:hint_text="@string/tiempo"
                     app:tipo_dato="NUMERO|DECIMAL" />
 
-                <com.jjlacode.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.util.android.controls.EditMaterial
                     android:id="@+id/etprecioUDpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -130,7 +130,7 @@
                     app:hint_text="@string/importe"
                     app:tipo_dato="TEXTO" />
 
-                <com.jjlacode.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.util.android.controls.EditMaterial
                     android:id="@+id/etcompletadaUDpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -21,14 +21,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-        <com.jjlacode.base.util.android.controls.EditMaterial
+        <com.codevsolution.base.util.android.controls.EditMaterial
             android:id="@+id/ettitulo_nota"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             jjla:hint_text="@string/titulo"
             jjla:tipo_dato="TEXTO|ASUNTO"/>
 
-        <com.jjlacode.base.util.android.controls.EditMaterial
+        <com.codevsolution.base.util.android.controls.EditMaterial
             android:id="@+id/etdesc_nota"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -119,7 +119,7 @@
             android:scaleType="fitXY"
             android:src="@drawable/ic_ampliar_secondary_dark" />
 
-        <com.jjlacode.base.util.android.controls.ImagenLayout
+        <com.codevsolution.base.util.android.controls.ImagenLayout
             android:id="@+id/imagen_nota"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <com.jjlacode.base.util.android.controls.EditMaterial
+        <com.codevsolution.base.util.android.controls.EditMaterial
             android:id="@+id/etsuscritos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
