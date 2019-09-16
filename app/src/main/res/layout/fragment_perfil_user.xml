@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.codevsolution.base.android.controls.ImagenLayout
+            android:id="@+id/imgpubli"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2.5" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etnombrepubli"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint_text="@string/nombre"
+                app:tipo_dato="TEXTO|PERSONA" />
+
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etdireccionpubli"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint_text="@string/direccion"
+                app:tipo_dato="TEXTO|MULTI" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/ettelefonopubli"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint_text="@string/telefono"
+                app:tipo_dato="NUMERO|TELEFONO" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etemailpubli"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint_text="@string/email"
+                app:tipo_dato="TEXTO|EMAIL" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <com.codevsolution.base.android.controls.EditMaterial
+        android:id="@+id/etdescripcionpubli"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:hint_text="@string/descripcion"
+        app:tipo_dato="TEXTO|MULTI" />
+
+    <com.codevsolution.base.android.controls.EditMaterial
+        android:id="@+id/etwebpubli"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:hint_text="@string/web"
+        app:tipo_dato="TEXTO|URI" />
+
+    <com.codevsolution.base.android.controls.EditMaterial
+        android:id="@+id/etclavespubli"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:hint_text="@string/palabras_clave"
+        app:tipo_dato="TEXTO|MULTI" />
+
+</LinearLayout>

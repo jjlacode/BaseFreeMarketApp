@@ -15,7 +15,7 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <com.codevsolution.base.util.android.controls.ImagenLayout
+            <com.codevsolution.base.android.controls.ImagenLayout
                 android:id="@+id/imgformbase"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -28,7 +28,7 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <com.codevsolution.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/etnombreformbase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
                     app:hint_text="@string/nombre"
                     app:tipo_dato="TEXTO|PERSONA" />
 
-                <com.codevsolution.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/ettelefonoformbase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
                     app:activo="false"
                     app:tipo_dato="NUMERO|TELEFONO" />
 
-                <com.codevsolution.base.util.android.controls.EditMaterial
+                <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/etemailformbase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <com.codevsolution.base.util.android.controls.EditMaterial
+        <com.codevsolution.base.android.controls.EditMaterial
             android:id="@+id/etdireccionformbase"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -63,7 +63,7 @@
             app:hint_text="@string/direccion"
             app:tipo_dato="TEXTO|DIRECCION|MULTI" />
 
-        <com.codevsolution.base.util.android.controls.EditMaterial
+        <com.codevsolution.base.android.controls.EditMaterial
             android:id="@+id/etdescformbase"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
             app:activo="false"
             app:tipo_dato="TEXTO|MULTI" />
 
-        <com.codevsolution.base.util.android.controls.EditMaterial
+        <com.codevsolution.base.android.controls.EditMaterial
             android:id="@+id/etclavesformpbase"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
             app:hint_text="@string/palabras_clave"
             app:tipo_dato="TEXTO|MULTI" />
 
-        <com.codevsolution.base.util.android.controls.EditMaterial
+        <com.codevsolution.base.android.controls.EditMaterial
             android:id="@+id/etwebformbase"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

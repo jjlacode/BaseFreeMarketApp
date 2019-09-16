@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.CatalogoProdProvWeb">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_add_partida"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_detpartida"
+            android:textColor="@color/colorPrimary"
+            android:background="@drawable/boton_redondo_primary" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <com.codevsolution.base.android.controls.ImagenLayout
+                android:id="@+id/imgcatalogo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="2.5" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/etnombrecatalogo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:activo="false"
+                    app:hint_text="@string/nombre" />
+
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/etrefprovcatalogo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:activo="false"
+                    app:hint_text="@string/referencia_proveedor" />
+
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/etdesccatalogo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint_text="@string/descripcion"
+                    app:activo="false"
+                    app:tipo_dato="TEXTO|MULTI" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etpreciocatalogo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:activo="false"
+                app:hint_text="@string/importe"
+                app:tipo_dato="NUMERO|DECIMAL" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etporcdesprovcatalogo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:activo="false"
+                app:hint_text="@string/descuento_proveedor"
+                app:tipo_dato="NUMERO|DECIMAL" />
+
+        </LinearLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/lyweb"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <WebView
+                android:id="@+id/etwebcatalogo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </androidx.core.widget.NestedScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <com.codevsolution.base.android.controls.ImagenLayout
+                android:id="@+id/imgprovcatalogo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="2.5" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/etnombreprovcatalogo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:activo="false"
+                    app:hint_text="@string/proveedor" />
+
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/etdireccionprovcatalogo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:activo="false"
+                    app:hint_text="@string/direccion" />
+
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/etemailprovcatalogo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:activo="false"
+                    app:hint_text="@string/email" />
+
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/ettelefonoprovcatalogo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:activo="false"
+                    app:hint_text="@string/telefono" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etdescripprovcatalogo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:activo="false"
+            app:hint_text="@string/descripcion" />
+    </LinearLayout>
+</ScrollView>

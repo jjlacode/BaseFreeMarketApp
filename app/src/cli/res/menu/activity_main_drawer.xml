@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item
+        android:id="@+id/nav_agenda"
+        android:icon="@drawable/ic_inicio_black_24dp"
+        android:title="@string/inicio" />
+
+    <item
+        android:id="@+id/nav_clientes"
+        android:icon="@drawable/ic_people_black_24dp"
+        android:title="@string/proveedores" />
+
+    <item
+        android:id="@+id/nav_producto"
+        android:icon="@drawable/ic_producto_black_24dp"
+        android:title="@string/productos" />
+
+    <item
+        android:id="@+id/nav_perfiles"
+        android:icon="@drawable/ic_ajustes_black_24dp"
+        android:title="@string/perfil" />
+
+    <item
+        android:id="@+id/nav_tarea"
+        android:icon="@drawable/ic_menu_manage"
+        android:title="@string/configuracion" />
+
+
+</menu>

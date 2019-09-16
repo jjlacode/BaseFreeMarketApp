@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.codevsolution.base.android.controls.EditMaterial
+        android:id="@+id/etmaxpartformprodprov"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:hint_text="@string/max_participantes_sorteo"
+        app:tipo_dato="NUMERO" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_volver_sorteo_prod"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/altobtn"
+        style="@style/boton_secondary"
+        android:visibility="gone"
+        android:text="@string/sortear" />
+
+</LinearLayout>

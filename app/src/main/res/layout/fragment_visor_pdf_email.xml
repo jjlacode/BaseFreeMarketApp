@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <jjlacode.com.freelanceproject.android.controls.EditMaterial
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/etemailvisor"
+        app:hint_text="@string/email"/>
+
+    <jjlacode.com.freelanceproject.android.controls.EditMaterial
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/etasuntovisor"
+        app:hint_text="@string/asunto"/>
+
+    <jjlacode.com.freelanceproject.android.controls.EditMaterial
+        android:id="@+id/ettextovisor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:hint_text="@string/texto_mensaje"
+        app:tipo_dato="TEXTO|MULTI"
+        android:minHeight="60dp" />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnenviarvisor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/boton_redondo_primary"
+        android:textColor="@color/colorPrimary"
+        android:text="@string/enviar_pdf"/>
+
+
+</LinearLayout>

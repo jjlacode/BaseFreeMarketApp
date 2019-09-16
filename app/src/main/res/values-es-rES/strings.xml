@@ -248,6 +248,7 @@
     <string name="calendario">Calendario Eventos</string>
     <string name="tarea">Tarea</string>
     <string name="productos">Productos</string>
+    <string name="productos_cliente">Productos Cliente</string>
     <string name="importe_mo">Importe mano de obra</string>
     <string name="horas_mo">Horas mano de obra</string>
     <string name="listo_grabar">Listo para grabar</string>
@@ -345,7 +346,7 @@
     <string name="resume">Reinicio</string>
     <string name="productos_proveedor">Productos proveedor</string>
     <string name="radio">Radio de Zona en Kmts (max. 1000)</string>
-    <string name="sorteos">Sorteos</string>
+    <string name="sorteos">Sorteos Clientes</string>
     <string name="perfiles_usuario">Perfiles usuario</string>
     <string name="select_pais">Excluir paises</string>
     <string name="ocultar_pais">Ocultar lista paises</string>
@@ -376,7 +377,7 @@
     <string name="fallo_subiendo_imagen">Fallo subiendo imagen</string>
     <string name="mi_ubicacion">Mi ubicación</string>
     <string name="fallo_subiendo_registro">Fallo subiendo registro</string>
-    <string name="debe_tener_perfil">Debe tener un perfil de </string>
+    <string name="debe_tener_perfil">Debe tener un nombre o seudonimo en el perfil</string>
     <string name="productos_multiperfil">Productos Multi-Perfil</string>
     <string name="asignar_multiperfil">Asignar Multi-Perfil</string>
     <string name="multi_perfil">MULTI-PERFIL</string>
@@ -391,7 +392,7 @@
     <string name="perfil_freelance">Perfil Freelance</string>
     <string name="ocultar_noticias">Ocultar noticias</string>
     <string name="ver_noticias">Ver Noticias</string>
-    <string name="mensaje_ganador">Ha resultado ganador del sorteo de !!</string>
+    <string name="mensaje_ganador">Ha resultado ganador del sorteo de </string>
     <string name="sortear">Sortear</string>
     <string name="sorteo_creado">Sorteo creado con exito</string>
     <string name="fallo_creando_sorteo">Falló la creación del sorteo</string>
@@ -406,6 +407,34 @@
     <string name="participantes">Participantes</string>
     <string name="max_participantes_sorteo">Max. Participantes sorteo</string>
     <string name="servicios">Servicio</string>
+    <string name="usuario_erroneo">Usuario o contraseña erroneos</string>
+    <string name="correo_vacio">Escribe tu correo</string>
+    <string name="correo_no_valido">Correo no valido</string>
+    <string name="pass_vacia">Escribe tu contraseña</string>
+    <string name="productosyservicios">Productos y servicios para Clientes</string>
+    <string name="alta_productos">Gestionar Productos o Servicios a Clientes</string>
+    <string name="alta_productos_pro">Gestionar Productos o Servicios a Profesionales</string>
+    <string name="mi_perfil">Mi perfil</string>
+    <string name="mis_sorteos">Mis sorteos</string>
+    <string name="siguiendo">Siguiendo</string>
+    <string name="sorteo_finalizado">Volver a sortear</string>
+    <string name="productos_pro">Productos profesional</string>
+    <string name="productosyserviciosPro">Productos y servicios para Profesionales</string>
+    <string name="sorteos_pro">Sorteos Profesionales</string>
+    <string name="clonar_prod_a_cliente">Clonar producto a cliente</string>
+    <string name="sincronizar_clon">Sincronizar con proveedor</string>
+    <string name="servicio">Servicio</string>
+    <string name="producto_may">PRODUCTO</string>
+    <string name="servicio_may">SERVICIO</string>
+    <string name="siguiendo_pro">Siguiendo Pro</string>
+    <string name="siguiendo_prodcli">Siguiendo Prod Cli</string>
+    <string name="siguiendo_prodpro">Siguiendo Prod Pro</string>
+    <string name="mis_sorteos_cli">Mis Sorteos Prod Cli</string>
+    <string name="mis_sorteos_pro">Mis Sorteos Prod Pro</string>
+    <string name="participar">Participar</string>
+    <string name="participando">Participando</string>
+    <string name="suscrito">Suscrito</string>
+    <string name="suscripcion_pro">Suscribir Noticias y Sorteos</string>
 
 
 </resources>

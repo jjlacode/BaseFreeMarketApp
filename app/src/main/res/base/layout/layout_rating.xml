@@ -78,7 +78,7 @@
                 android:scaleType="center"
                 android:src="@drawable/ic_enviar_blanco" />
 
-            <com.codevsolution.base.util.android.controls.EditMaterial
+            <com.codevsolution.base.android.controls.EditMaterial
                 android:id="@+id/etvotodetfreelance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
 
         </LinearLayout>
 
-        <com.codevsolution.base.util.android.controls.EditMaterial
+        <com.codevsolution.base.android.controls.EditMaterial
             android:id="@+id/etcomentdetfreelance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -97,10 +97,20 @@
             app:tipo_dato="TEXTO|MULTI" />
     </LinearLayout>
 
+    <ImageButton
+        android:id="@+id/btn_comentstar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/boton_redondo_secondary"
+        android:padding="5dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_lista_notas_indigo" />
+
     <LinearLayout
         android:id="@+id/lystars"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:orientation="vertical">
 
         <LinearLayout
@@ -298,14 +308,6 @@
             android:text="@string/clasificacion"
             android:textColor="@color/Color_texto" />
 
-        <ImageButton
-            android:id="@+id/btn_comentstar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/boton_redondo_secondary"
-            android:padding="5dp"
-            android:scaleType="center"
-            android:src="@drawable/ic_lista_notas_indigo" />
 
         <RelativeLayout
             android:id="@+id/rlcomentariosstar"

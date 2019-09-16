@@ -6,5 +6,5 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".notifications.PushNotificationsActivity"
+    tools:context="com.codevsolution.base.notifications.PushNotificationsActivity"
     tools:showIn="@layout/activity_notifications" />

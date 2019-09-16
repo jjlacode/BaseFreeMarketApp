@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item
+        android:id="@+id/nav_inicio"
+        android:icon="@drawable/ic_inicio_black_24dp"
+        android:title="@string/inicio" />
+
+    <item
+        android:id="@+id/nav_mi_perfil"
+        android:icon="@drawable/ic_clientes_indigo"
+        android:title="@string/mi_perfil" />
+
+    <item
+        android:id="@+id/nav_siguiendo_pro"
+        android:icon="@drawable/ic_compartir_indigo"
+        android:title="@string/siguiendo_pro" />
+
+    <item
+        android:id="@+id/nav_siguiendo_prodcli"
+        android:icon="@drawable/ic_compartir_indigo"
+        android:title="@string/siguiendo_prodcli" />
+
+    <item
+        android:id="@+id/nav_siguiendo_prodpro"
+        android:icon="@drawable/ic_txt_pro"
+        android:title="@string/siguiendo_prodpro" />
+
+    <item
+        android:id="@+id/nav_mis_sorteos_cli"
+        android:icon="@drawable/ic_sorteo"
+        android:title="@string/mis_sorteos_cli" />
+
+    <item
+        android:id="@+id/nav_mis_sorteos_pro"
+        android:icon="@drawable/ic_sorteo"
+        android:title="@string/mis_sorteos_pro" />
+
+    <item
+        android:id="@+id/nav_salir"
+        android:icon="@drawable/ic_salir_rojo"
+        android:title="@string/salir" />
+
+
+</menu>

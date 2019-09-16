@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context="com.codevsolution.base.util.android.SplashActivity">
+    tools:context="com.codevsolution.base.android.SplashActivity">
 
-    <com.codevsolution.base.util.android.controls.ImagenLayout
+    <com.codevsolution.base.android.controls.ImagenLayout
         android:id="@+id/imgsplash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

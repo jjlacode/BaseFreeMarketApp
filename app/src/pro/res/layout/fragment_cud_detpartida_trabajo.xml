@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.FragmentCUDDetpartidaTrabajo">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Chronometer
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/chronodetpartida"
+            android:visibility="gone" />
+
+
+        <TextView
+            android:id="@+id/tvtipocdetpartida_trb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/tipo_detpartida"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <com.codevsolution.base.android.controls.ImagenLayout
+                android:id="@+id/imgcdetpartida_trb"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="2.5" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/etnombredetpartida_trb"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint_text="@string/nombre" />
+
+
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/etdesccdetpartida_trb"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint_text="@string/descripcion"
+                    app:tipo_dato="TEXTO|MULTI" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/ettiempocdetpartida_trb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:hint_text="@string/tiempo"
+                app:gravedad="centro"
+                app:tipo_dato="NUMERO|DECIMAL" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etpreciocdetpartida_trb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:hint_text="@string/importe"
+                app:tipo_dato="NUMERO|DECIMAL" />
+
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etcanttotpartida_trb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:hint_text="@string/cantidad_partida"
+                app:tipo_dato="NUMERO|DECIMAL" />
+
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvtiempototaldetpartida_trb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/texto"
+            android:gravity="center" />
+
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etcompletadadetpartida_trb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:gravedad="centro"
+            app:hint_text="@string/completada"
+            app:tipo_dato="NUMERO" />
+
+        <ProgressBar
+            android:id="@+id/progressBardetpartida_trb"
+            style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+            android:progressDrawable="@drawable/bar_ok"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <ProgressBar
+            android:id="@+id/progressBar2detpartida"
+            style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+            android:progressDrawable="@drawable/bar_notok"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvtrek"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/contador"
+            android:gravity="center"
+            android:text="@string/trek" />
+
+        <Button
+            android:id="@+id/btn_trek"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boton_redondo_primary"
+            android:textColor="@color/Color_texto_titulos"
+            android:text="@string/inicio_trek" />
+
+        <Button
+            android:id="@+id/btn_trek_pausa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boton_redondo_primary"
+            android:textColor="@color/Color_texto_titulos"
+            android:text="@string/pausa_trek" />
+
+        <Button
+            android:id="@+id/btn_trek_reset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boton_redondo_primary"
+            android:textColor="@color/colorAccent"
+            android:text="@string/reset_trek" />
+
+        <CheckBox
+            android:id="@+id/cbox_hacer_detpartida_completa_trb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/texto"
+            android:text="@string/partida_completada"
+            android:layout_gravity="center"
+            android:checked="false" />
+
+
+    </LinearLayout>
+</ScrollView>

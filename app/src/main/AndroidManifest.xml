@@ -3,14 +3,11 @@
     package="com.codevsolution.freemarketsapp">
 
     <application
-        android:name="com.codevsolution.base.util.android.AppActivity"
+        android:name="com.codevsolution.base.android.AppActivity"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher_um"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_um_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.codevsolution.base.util.android.SplashActivity">
+        <activity android:name="com.codevsolution.base.android.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,12 +15,8 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name="com.codevsolution.freemarketsapp.MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name="com.codevsolution.base.util.android.MainActivityBase" />
-        <activity android:name="com.codevsolution.base.util.login.LoginActivity" />
+        <activity android:name="com.codevsolution.base.android.MainActivityBase" />
+        <activity android:name="com.codevsolution.base.login.LoginActivity" />
 
         <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
             android:launchMode="singleTask">
@@ -34,14 +27,15 @@
                 <data android:scheme="${applicationId}.braintree" />
             </intent-filter>
         </activity>
+
         <provider
-            android:name="com.codevsolution.base.util.sqlite.ProviderPry"
+            android:name="com.codevsolution.base.sqlite.ProviderPry"
             android:authorities="${applicationId}"
             android:enabled="true"
             android:exported="false" />
 
         <provider
-            android:name="com.codevsolution.base.util.sqlite.ProviderSystem"
+            android:name="com.codevsolution.base.sqlite.ProviderSystem"
             android:authorities="${applicationId}.system"
             android:enabled="true"
             android:exported="false" />
@@ -57,33 +51,24 @@
         </provider>
         <receiver android:enabled="false"
                   android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
-            android:name="com.codevsolution.base.util.services.AutoArranque">
+            android:name="com.codevsolution.base.services.AutoArranque">
 
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.codevsolution.base.util.services.ChatReceiver">
+        <receiver android:name="com.codevsolution.base.services.ChatReceiver">
             <intent-filter>
                 <action android:name="jjlacode.com.base.util.action.AVISOMSGCHAT" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.codevsolution.freemarketsapp.services.EventosReceiver" >
-            <intent-filter>
-                <action android:name="jjlacode.com.freelanceproject.action.AVISOEVENTO" />
-                <action android:name="jjlacode.com.freelanceproject.action.POSPONER" />
-                <action android:name="jjlacode.com.freelanceproject.action.CANCELAR" />
-            </intent-filter>
-        </receiver>
+
         <service
-            android:name="com.codevsolution.base.util.services.JobServiceBase"
+            android:name="com.codevsolution.base.services.JobServiceBase"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <service android:name="com.codevsolution.base.util.fcm.IFirebaseMessagingService" />
-        <service
-            android:name="com.codevsolution.base.util.services.Jobs"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service android:name="com.codevsolution.base.fcm.IFirebaseMessagingService" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

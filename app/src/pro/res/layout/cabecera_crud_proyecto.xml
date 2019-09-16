@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:background="@color/colorPrimary">
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnpresuplpry"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.2"
+        style="?attr/buttonBarButtonStyle"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/Color_texto_titulos"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:text="@string/btn_presupuestos" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnproyectoslpry"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        style="?attr/buttonBarButtonStyle"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/Color_texto_titulos"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:text="@string/btn_proyectos" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnproycobroslpry"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        style="?attr/buttonBarButtonStyle"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/Color_texto_titulos"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:text="@string/cobros"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btngarantiapry"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        style="?attr/buttonBarButtonStyle"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/Color_texto_titulos"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:text="@string/btn_garantia" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnhistoricopry"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        style="?attr/buttonBarButtonStyle"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/Color_texto_titulos"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:text="@string/btn_historico" />
+
+</LinearLayout>
