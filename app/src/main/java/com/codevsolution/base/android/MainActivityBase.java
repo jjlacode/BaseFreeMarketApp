@@ -21,6 +21,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import com.codevsolution.base.chat.FragmentChatBase;
 import com.codevsolution.base.media.ImagenUtil;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -36,6 +37,7 @@ import com.codevsolution.freemarketsapp.R;
 import static android.Manifest.permission.RECEIVE_BOOT_COMPLETED;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.HTTPAYUDA;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.MIPERFIL;
+import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODUCTOCLI;
 
 public class MainActivityBase extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ICFragmentos,
@@ -158,10 +160,10 @@ public class MainActivityBase extends AppCompatActivity
         System.out.println("inicio = " + intent.getIntExtra(INICIO, 0));
 
         if (intent.getIntExtra(INICIO, 0) == 0) {
+        } else if (intent.getIntExtra(INICIO, 0) == 1) {
 
             inicio(0);
 
-        } else if (intent.getIntExtra(INICIO, 0) == 1) {
 
             System.out.println("Permiso boot " + CheckPermisos.validarPermisos(this, RECEIVE_BOOT_COMPLETED, 100));
             AutoArranque.scheduleJob(AppActivity.getAppContext());
@@ -185,7 +187,7 @@ public class MainActivityBase extends AppCompatActivity
             String idChat = intent.getStringExtra(EXTRA_IDCHAT);
             String idUser = intent.getStringExtra(EXTRA_IDSPCHAT);
             int secChat = intent.getIntExtra(EXTRA_SECCHAT, 0);
-            bundle.putString(ACTUAL, intent.getStringExtra(EXTRA_ACTUAL));
+            bundle.putString(ACTUAL, CHAT + intent.getStringExtra(EXTRA_ACTUAL));
             bundle.putString(CAMPO_ID, idChat);
             bundle.putString(USERID, idUser);
             bundle.putInt(CAMPO_SECUENCIA, secChat);
@@ -331,6 +333,16 @@ public class MainActivityBase extends AppCompatActivity
     }
 
     protected void recargarFragment() {
+
+        switch (bundle.getString(ACTUAL, INICIO)) {
+
+            case CHAT + CHAT:
+
+                enviarBundleAFragment(bundle, new FragmentChatBase());
+                break;
+
+
+        }
 
     }
 

@@ -220,10 +220,20 @@ public class ContratoPry implements JavaUtil.Constantes {
         String TRABAJO_TIMESTAMP = CAMPO_TIMESTAMP;
 
         String PRODUCTO_ID_PRODUCTO = CAMPO_ID + TABLA_PRODUCTO;
+        String PRODUCTO_ID_PRODFIRE = CAMPO_ID + "fire_" + TABLA_PRODUCTO;
         String PRODUCTO_ID_PROVEEDOR = CAMPO_ID + TABLA_PROVEEDOR + TABLA_PRODUCTO;
+        String PRODUCTO_ID_PROVFIRE = CAMPO_ID + "provfire_" + TABLA_PRODUCTO;
+        String PRODUCTO_ID_CLON = CAMPO_ID + "clon_" + TABLA_PRODUCTO;
         String PRODUCTO_NOMBREPROV = "nombreprov_" + TABLA_PRODUCTO;
         String PRODUCTO_DESCRIPCION = CAMPO_DESCRIPCION + TABLA_PRODUCTO;
         String PRODUCTO_NOMBRE = CAMPO_NOMBRE + TABLA_PRODUCTO;
+        String PRODUCTO_WEB = "web_" + TABLA_PRODUCTO;
+        String PRODUCTO_CATEGORIA = "categoria_" + TABLA_PRODUCTO;
+        String PRODUCTO_ALCANCE = "alcance_" + TABLA_PRODUCTO;
+        String PRODUCTO_TIPO = CAMPO_TIPO + TABLA_PRODUCTO;
+        String PRODUCTO_ACTIVO = CAMPO_ACTIVO + TABLA_PRODUCTO;
+        String PRODUCTO_SINCRO = "sincro_" + TABLA_PRODUCTO;
+        String PRODUCTO_FIRE = "fire_" + TABLA_PRODUCTO;
         String PRODUCTO_PRECIO = CAMPO_PRECIO + TABLA_PRODUCTO;
         String PRODUCTO_REFERENCIA = CAMPO_REFERENCIA + TABLA_PRODUCTO;
         String PRODUCTO_DESCPROV = "descprov_" + TABLA_PRODUCTO;
@@ -587,9 +597,16 @@ public class ContratoPry implements JavaUtil.Constantes {
         };
 
 
-        String[] CAMPOS_PRODUCTO = {"35", TABLA_PRODUCTO,
+        String[] CAMPOS_PRODUCTO = {"65", TABLA_PRODUCTO,
                 PRODUCTO_ID_PRODUCTO, "TEXT NON NULL UNIQUE", STRING,
+                PRODUCTO_ID_PRODFIRE, "TEXT", STRING,
+                PRODUCTO_ID_CLON, "TEXT", STRING,
+                PRODUCTO_ID_PROVFIRE, "TEXT", STRING,
                 PRODUCTO_ID_PROVEEDOR, "TEXT", STRING,
+                PRODUCTO_ALCANCE, "TEXT", STRING,
+                PRODUCTO_CATEGORIA, "TEXT", STRING,
+                PRODUCTO_TIPO, "TEXT", STRING,
+                PRODUCTO_WEB, "TEXT", STRING,
                 PRODUCTO_NOMBREPROV, "TEXT", STRING,
                 PRODUCTO_DESCRIPCION, "TEXT", STRING,
                 PRODUCTO_NOMBRE, "TEXT", STRING,
@@ -597,6 +614,9 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PRODUCTO_RUTAFOTO, "TEXT", STRING,
                 PRODUCTO_PRECIO, "REAL NON NULL DEFAULT 0", DOUBLE,
                 PRODUCTO_DESCPROV, "REAL NON NULL DEFAULT 0", DOUBLE,
+                PRODUCTO_ACTIVO, "INTEGER NON NULL DEFAULT 0", INT,
+                PRODUCTO_SINCRO, "INTEGER NON NULL DEFAULT 0", INT,
+                PRODUCTO_FIRE, "INTEGER NON NULL DEFAULT 0", INT,
                 PRODUCTO_CREATE, "INTEGER NON NULL DEFAULT 0", LONG,
                 PRODUCTO_TIMESTAMP, "INTEGER NON NULL DEFAULT 0", LONG
         };

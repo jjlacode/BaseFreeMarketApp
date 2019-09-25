@@ -20,6 +20,7 @@ import static com.codevsolution.base.javautil.JavaUtil.Constantes.MINUTOSLONG;
 
 public class JavaUtil {
 
+
     public interface Constantes {
 
         String ORIGEN = "origen";
@@ -39,6 +40,9 @@ public class JavaUtil {
         String AVISO = "aviso";
         String PERFIL = "perfil";
         String CONFIGURACION = "configuracion";
+        String CONFIG = "config";
+        String SITENAME = "site_name";
+        String APICB = "api_cb";
         String TITULO = "titulo";
         String CAMPO_ID = "id_";
         String IDREL = "idrel";
@@ -79,11 +83,14 @@ public class JavaUtil {
         String TSIMG = "tsimg";
         String CONTNOT = "Contador notificacion";
         String PREFERENCIAS = "preferencias";
+        String SESIONPORTAL = "sesion_portal";
         String PERFILUSER = "perfiluser";
         String PRO = "pro";
         String CLI = "cli";
         String TIMESTAMP = "timestamp";
         String TIMESTAMPDIA = "timestampdia";
+        String VERTICAL = "vertical";
+        String HORIZONTAL = "horizontal";
 
 
         long SEGUNDOSLONG = (1000);

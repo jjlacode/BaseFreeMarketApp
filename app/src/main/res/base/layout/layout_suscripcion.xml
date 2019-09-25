@@ -10,6 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        android:showText="true"
+        android:textOn="@string/on"
+        android:textOff="@string/off"
         android:text="@string/activo" />
 
     <TextView

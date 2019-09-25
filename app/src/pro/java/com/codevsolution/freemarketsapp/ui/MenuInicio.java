@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.codevsolution.base.android.FragmentGrid;
+import com.codevsolution.base.pay.chargebee.SuscripcionesChargebee;
 import com.codevsolution.freemarketsapp.R;
 import java.util.ArrayList;
 
@@ -19,6 +20,7 @@ public class MenuInicio extends FragmentGrid {
     private String suscripcion;
     private String altaProd;
     private String altaProdPro;
+    private String productos;
 
     @Override
     protected void setContext() {
@@ -41,12 +43,14 @@ public class MenuInicio extends FragmentGrid {
         suscripcion = getString(R.string.suscripcion);
         altaProd = getString(R.string.alta_productos);
         altaProdPro = getString(R.string.alta_productos_pro);
+        productos = getString(R.string.productos);
 
         lista = new ArrayList<GridModel>();
 
         lista.add(new GridModel(R.drawable.logo, um));
         lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, suscripcion));
-        lista.add(new GridModel(R.drawable.ic_producto_indigo, altaProd));
+        lista.add(new GridModel(R.drawable.ic_producto_indigo, productos));
+        lista.add(new GridModel(R.drawable.ic_txt_cli, altaProd));
         lista.add(new GridModel(R.drawable.ic_txt_pro, altaProdPro));
         lista.add(new GridModel(R.drawable.ic_marketing_indigo, marketing));
         lista.add(new GridModel(R.drawable.ic_clientes_indigo, crm));
@@ -92,7 +96,7 @@ public class MenuInicio extends FragmentGrid {
         } else if (nombre.equals(suscripcion)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new UnionMarket()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new SuscripcionesChargebee()).addToBackStack(null).commit();
 
         } else if (nombre.equals(altaProd)) {
 
@@ -104,6 +108,12 @@ public class MenuInicio extends FragmentGrid {
 
 
             icFragmentos.enviarBundleAFragment(bundle, new AltaProductosPro());
+
+
+        } else if (nombre.equals(productos)) {
+
+
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProducto());
 
 
         }

@@ -4,22 +4,29 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.speech.RecognizerIntent;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.codevsolution.base.javautil.JavaUtil;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -50,6 +57,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
     protected String idchat;
     protected RecyclerView rvMsgChat;
     protected EditText msgEnv;
+    protected EditText url;
     protected ImageButton btnEnviar;
     protected ListaModelo listaMsgChat;
     protected LinearLayout lyEnvMsg;
@@ -57,7 +65,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
     protected FirebaseFormBase firebaseFormBase;
     protected String nombreChat;
     protected String nombre;
-    protected boolean especial;
+    protected String tipo;
 
     @Override
     protected TipoViewHolder setViewHolder(View view) {
@@ -114,6 +122,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
         idchat = getStringBundle(IDCHATF, NULL);
         nombre = getStringBundle(NOMBRECHAT, NULL);
+        tipo = getStringBundle(TIPO, NULL);
 
         if (nn(id) && !id.equals(NULL)) {
 
@@ -123,19 +132,26 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
             System.out.println("idchat = " + idchat);
 
-        } else {
+        } else if (nn(idchat) && !idchat.equals(NULL)) {
 
-            valores = new ContentValues();
-            valores.put(CHAT_USUARIO, idchat);
-            valores.put(CHAT_NOMBRE, nombre);
-            valores.put(CHAT_CREATE, TimeDateUtil.ahora());
-            valores.put(CHAT_TIMESTAMP, TimeDateUtil.ahora());
-            valores.put(CHAT_ESPECIAL, 1);
-            id = CRUDutil.crearRegistroId(TABLA_CHAT, valores);
-            modelo = CRUDutil.setModelo(campos, id);
-            AndroidUtil.setSharePreference(contexto, CHAT, ID_CHAT, id);
-            especial = true;
+            ListaModelo listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
+            for (Modelo chat : listaChats.getLista()) {
+                if (chat.getString(CHAT_TIPO).equals(tipo) && chat.getString(CHAT_USUARIO).equals(idchat)) {
+                    id = chat.getString(CHAT_ID_CHAT);
+                    break;
+                }
+            }
 
+            if (id == null) {
+                valores = new ContentValues();
+                valores.put(CHAT_USUARIO, idchat);
+                valores.put(CHAT_NOMBRE, nombre);
+                valores.put(CHAT_CREATE, TimeDateUtil.ahora());
+                valores.put(CHAT_TIMESTAMP, TimeDateUtil.ahora());
+                valores.put(CHAT_TIPO, tipo);
+                id = CRUDutil.crearRegistroId(TABLA_CHAT, valores);
+                modelo = CRUDutil.setModelo(campos, id);
+            }
         }
 
         if (nn(nombre)) {
@@ -150,12 +166,12 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
     protected void setLista() {
         super.setLista();
 
-
-        activityBase.toolbar.setTitle(CHAT);
+        subTitulo = CHAT;
+        activityBase.toolbar.setSubtitle(subTitulo);
         ListaModelo listaTemp = new ListaModelo();
 
         for (Modelo chat : lista.getLista()) {
-            if (chat.getInt(CHAT_ESPECIAL) == 0) {
+            if (chat.getString(CHAT_TIPO).equals(CHAT)) {
                 listaTemp.addModelo(chat);
             }
         }
@@ -248,23 +264,16 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
         modelo = CRUDutil.setModelo(campos, id);
         activityBase.fabVoz.setSize(FloatingActionButton.SIZE_NORMAL);
         activityBase.fabInicio.setSize(FloatingActionButton.SIZE_NORMAL);
-        if (especial) {
-            activityBase.toolbar.setTitle(modelo.getString(CHAT_NOMBRE));
-            activityBase.toolbar.setSubtitle(getString(R.string.envio_noticias));
-        } else {
-            System.out.println("chat nombre " + modelo.getString(CHAT_NOMBRE));
-            activityBase.toolbar.setSubtitle(modelo.getString(CHAT_NOMBRE));
-        }
+        tipo = modelo.getString(CHAT_TIPO);
+
+        System.out.println("chat nombre " + modelo.getString(CHAT_NOMBRE));
+        subTitulo = modelo.getString(CHAT_NOMBRE);
+        activityBase.toolbar.setSubtitle(subTitulo);
         idchat = modelo.getString(CHAT_USUARIO);
 
         visible(lyEnvMsg);
         visible(actuar);
         visible(frCabecera);
-
-        if (especial) {
-            gone(btnback);
-        }
-
 
     }
 
@@ -296,6 +305,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
             valores = new ContentValues();
             valores.put(DETCHAT_MENSAJE, msgEnv.getText().toString());
+            valores.put(DETCHAT_URL, url.getText().toString());
             valores.put(DETCHAT_TIPO, ENVIADO);
             valores.put(DETCHAT_FECHA, TimeDateUtil.ahora());
             valores.put(DETCHAT_CREATE, TimeDateUtil.ahora());
@@ -311,6 +321,8 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
             MsgChat msgChat = new MsgChat();
             msgChat.setMensaje(msgEnv.getText().toString());
+            msgChat.setTipo(chat.getString(CHAT_TIPO));
+            msgChat.setUrl(url.getText().toString());
             msgChat.setNombre(nombreChat);
             msgChat.setFecha(TimeDateUtil.ahora());
             msgChat.setIdDestino(chat.getString(CHAT_USUARIO));
@@ -335,6 +347,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
         btnEnviar = view.findViewById(R.id.btn_envmsgchat_base);
         lyEnvMsg = view.findViewById(R.id.lyevnmsg_base);
         actuar = view.findViewById(R.id.tvchatactuar_base);
+        url = view.findViewById(R.id.urlchatenv_base);
 
         gone(btnsave);
 
@@ -435,16 +448,22 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
         }
     }
 
-    public class ViewHolderRVMsgChat extends BaseViewHolder implements TipoViewHolder {
+    public static class ViewHolderRVMsgChat extends BaseViewHolder implements TipoViewHolder {
 
         TextView mensaje, fecha;
         CardView card;
+        WebView webView;
+        ProgressBar progressBarWebCard;
+        NestedScrollView lylweb;
 
         public ViewHolderRVMsgChat(View itemView) {
             super(itemView);
             mensaje = itemView.findViewById(R.id.tvmsgchat_base);
             fecha = itemView.findViewById(R.id.tvmsgchatfecha_base);
             card = itemView.findViewById(R.id.cardmsgchat_base);
+            webView = itemView.findViewById(R.id.browserwebl_chat_base);
+            progressBarWebCard = itemView.findViewById(R.id.progressBarWebCardchat);
+            lylweb = itemView.findViewById(R.id.lylweb_chat_base);
 
         }
 
@@ -452,38 +471,85 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
         public void bind(Modelo modelo) {
 
             int tipo = modelo.getInt(DETCHAT_TIPO);
+            String idChat = modelo.getString(DETCHAT_ID_CHAT);
+            Modelo chat = CRUDutil.setModelo(CAMPOS_CHAT, idChat);
+            String tipoChat = chat.getString(CHAT_TIPO);
 
-            mensaje.setText(modelo.getString(DETCHAT_MENSAJE));
-            fecha.setText(TimeDateUtil.getDateTimeString(modelo.getLong(DETCHAT_FECHA)));
+            if (tipoChat.equals(CHAT)) {
+                mensaje.setText(modelo.getString(DETCHAT_MENSAJE));
+                fecha.setText(TimeDateUtil.getDateTimeString(modelo.getLong(DETCHAT_FECHA)));
 
-            if (tipo == ENVIADO) {
+                if (tipo == ENVIADO) {
 
-                card.setCardBackgroundColor(getResources().getColor(R.color.Color_msg_enviado));
-                card.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) card.getLayoutParams();
-                params.addRule(RelativeLayout.ALIGN_PARENT_END);
-                params.setMargins((int) (double) (ancho * densidad) / 5, (int) (10 * densidad), (int) (10 * densidad), 0);
+                    card.setCardBackgroundColor(getContext().getResources().getColor(R.color.Color_msg_enviado));
+                    card.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) card.getLayoutParams();
+                    params.addRule(RelativeLayout.ALIGN_PARENT_END);
+                    params.setMargins((int) (double) (ancho * densidad) / 5, (int) (10 * densidad), (int) (10 * densidad), 0);
 
-                card.setLayoutParams(params);
+                    card.setLayoutParams(params);
 
 
-                visible(card);
+                    card.setVisibility(View.VISIBLE);
 
-            } else if (tipo == RECIBIDO) {
+                } else if (tipo == RECIBIDO) {
 
-                card.setCardBackgroundColor(getResources().getColor(R.color.Color_msg_recibido));
-                card.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) card.getLayoutParams();
-                params.addRule(RelativeLayout.ALIGN_PARENT_START);
-                params.setMargins((int) (10 * densidad), (int) (10 * densidad), (int) (double) (ancho * densidad) / 5, 0);
+                    card.setCardBackgroundColor(getContext().getResources().getColor(R.color.Color_msg_recibido));
+                    card.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) card.getLayoutParams();
+                    params.addRule(RelativeLayout.ALIGN_PARENT_START);
+                    params.setMargins((int) (10 * densidad), (int) (10 * densidad), (int) (double) (ancho * densidad) / 5, 0);
 
-                card.setLayoutParams(params);
+                    card.setLayoutParams(params);
 
-                visible(card);
+                    card.setVisibility(View.VISIBLE);
 
-            } else {
-                gone(card);
+                } else {
+                    card.setVisibility(View.GONE);
 
+                }
+
+                String webprod = modelo.getString(DETCHAT_URL);
+
+
+                if (webprod != null && JavaUtil.isValidURL(webprod)) {
+
+                    lylweb.setVisibility(View.VISIBLE);
+
+                    webView.getSettings().setJavaScriptEnabled(true);
+                    webView.getSettings().setBuiltInZoomControls(true);
+                    webView.getSettings().setDisplayZoomControls(false);
+
+                    webView.setWebViewClient(new WebViewClient() {
+
+                        @Override
+                        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                            view.loadUrl(url);
+                            return true;
+                        }
+                    });
+                    // Cargamos la web
+
+
+                    webView.loadUrl(webprod);
+                    webView.setWebChromeClient(new WebChromeClient() {
+                        @Override
+                        public void onProgressChanged(WebView view, int progress) {
+                            progressBarWebCard.setProgress(0);
+                            progressBarWebCard.setVisibility(View.VISIBLE);
+                            progressBarWebCard.setProgress(progress * 1000);
+
+                            progressBarWebCard.incrementProgressBy(progress);
+
+                            if (progress == 100) {
+                                progressBarWebCard.setVisibility(View.GONE);
+                            }
+                        }
+                    });
+
+                } else {
+                    lylweb.setVisibility(View.GONE);
+                }
             }
 
             super.bind(modelo);

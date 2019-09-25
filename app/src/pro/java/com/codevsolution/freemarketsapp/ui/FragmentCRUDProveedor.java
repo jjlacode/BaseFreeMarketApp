@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,15 +15,15 @@ import androidx.cardview.widget.CardView;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
-import com.codevsolution.base.android.AppActivity;
-import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.ViewLinearLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModelo;
 import com.codevsolution.base.models.Modelo;
 import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
@@ -32,20 +33,12 @@ import static com.codevsolution.base.sqlite.ConsultaBD.checkQueryList;
 
 public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.ConstantesPry {
 
-    private EditMaterial nombre;
-    private EditMaterial direccion;
-    private EditMaterial telefono;
-    private EditMaterial email;
-    private EditMaterial contacto;
     private CheckBox activo;
     private long fechaInactivo;
     private ImageButton btnVerNotas;
     private ImageButton btnNota;
     private ImageButton btnevento;
     private ImageButton btnVerEventos;
-    private ImageButton mail;
-    private ImageButton llamada;
-    private ImageButton mapa;
     private Modelo producto;
     private Button addProducto;
     private Modelo partida;
@@ -65,6 +58,7 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
     @Override
     protected void setBundle() {
         super.setBundle();
+
         producto = (Modelo) getBundleSerial(PRODUCTO);
         partida = (Modelo) getBundleSerial(PARTIDA);
         proyecto = (Modelo) getBundleSerial(PROYECTO);
@@ -77,41 +71,6 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
         setDato(PROVEEDOR_ACTIVO, fechaInactivo);
     }
 
-    @Override
-    protected void setDatos() {
-
-        System.out.println("origen proveedor= " + origen);
-        if ((origen.equals(PARTIDA) || origen.equals(PRODUCTO))) {
-            visible(addProducto);
-        } else {
-            gone(addProducto);
-        }
-
-        visible(btnevento);
-        visible(btnNota);
-
-        fechaInactivo = modelo.getLong(PROVEEDOR_ACTIVO);
-        if (fechaInactivo > 0) {
-            activo.setChecked(true);
-        } else {
-            activo.setChecked(false);
-        }
-
-        String seleccion = EVENTO_CLIENTEREL + " = '" + id + "'";
-        if (checkQueryList(CAMPOS_EVENTO, seleccion, null)) {
-            btnVerEventos.setVisibility(View.VISIBLE);
-        } else {
-            btnVerEventos.setVisibility(View.GONE);
-        }
-
-        seleccion = NOTA_ID_RELACIONADO + " = '" + id + "'";
-        if (checkQueryList(CAMPOS_NOTA, seleccion, null)) {
-            btnVerNotas.setVisibility(View.VISIBLE);
-        } else {
-            btnVerNotas.setVisibility(View.GONE);
-        }
-
-    }
 
     @Override
     protected void setTabla() {
@@ -143,49 +102,54 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
     @Override
     protected void setLayout() {
 
-        layoutCuerpo = R.layout.fragment_crud_proveedor;
+        //layoutCuerpo = R.layout.fragment_crud_proveedor;
         layoutItem = R.layout.item_list_proveedor;
     }
 
     @Override
     protected void setInicio() {
 
-        nombre = (EditMaterial) ctrl(R.id.etnombreproveedor, PROVEEDOR_NOMBRE);
-        direccion = (EditMaterial) ctrl(R.id.etdirproveedor, PROVEEDOR_DIRECCION);
-        telefono = (EditMaterial) ctrl(R.id.ettelproveedor, PROVEEDOR_TELEFONO);
-        email = (EditMaterial) ctrl(R.id.etemailproveedor, PROVEEDOR_EMAIL);
-        contacto = (EditMaterial) ctrl(R.id.etcontproveedor, PROVEEDOR_CONTACTO);
-        activo = (CheckBox) ctrl(R.id.chactivoproveedor);
-        btnevento = (ImageButton) ctrl(R.id.btneventoproveedor);
-        btnVerEventos = (ImageButton) ctrl(R.id.btnvereventoproveedor);
-        btnNota = (ImageButton) ctrl(R.id.btn_crearnota_proveedor);
-        btnVerNotas = (ImageButton) ctrl(R.id.btn_vernotas_proveedor);
-        imagen = (ImagenLayout) ctrl(R.id.imgproveedor);
-        mapa = (ImageButton) ctrl(R.id.imgbtndirproveedor);
-        llamada = (ImageButton) ctrl(R.id.imgbtntelproveedor);
-        mail = (ImageButton) ctrl(R.id.imgbtnmailproveedor);
-        addProducto = (Button) ctrl(R.id.btn_add_proveedor_producto);
-        mapa.setFocusable(false);
-        llamada.setFocusable(false);
-        mail.setFocusable(false);
+        ViewLinearLayout vistaForm = (ViewLinearLayout) addVista(new ViewLinearLayout(contexto), frdetalleExtrasante);
+        addProducto = vistaForm.addButtonPrimary(R.string.add_producto);
+        addProducto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                modelo = CRUDutil.setModelo(campos, id);
+                bundle = new Bundle();
+                putBundle(MODELO, producto);
+                putBundle(PROVEEDOR, modelo);
+                putBundle(PARTIDA, partida);
+                putBundle(PROYECTO, proyecto);
+                putBundle(ORIGEN, origen);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProducto());
+            }
+        });
+        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
         imagen.setFocusable(false);
+        vistaForm.addEditMaterial(getString(R.string.nombre), PROVEEDOR_NOMBRE, null, null);
+        vistaForm.addEditMaterial(getString(R.string.direccion), PROVEEDOR_DIRECCION, ViewLinearLayout.MAPA, null);
+        vistaForm.addEditMaterial(getString(R.string.email), PROVEEDOR_EMAIL, ViewLinearLayout.MAIL, null);
+        vistaForm.addEditMaterial(getString(R.string.telefono), PROVEEDOR_TELEFONO, ViewLinearLayout.LLAMADA, activityBase);
+        vistaForm.addEditMaterial(getString(R.string.contacto), PROVEEDOR_CONTACTO, null, null);
+        activo = (CheckBox) vistaForm.addVista(new CheckBox(contexto));
+        activo.setText(R.string.activo);
+        activo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
-    }
+                if (!b) {
+                    fechaInactivo = TimeDateUtil.ahora();
+                } else {
+                    fechaInactivo = 0;
+                }
+            }
+        });
 
-    @Override
-    protected void setNuevo() {
-        super.setNuevo();
-        gone(btnevento);
-        gone(btnNota);
-        gone(btnVerEventos);
-        gone(btnVerNotas);
+        actualizarArrays(vistaForm);
 
-    }
-
-    @Override
-    protected void setAcciones() {
-        super.setAcciones();
-
+        ViewLinearLayout vistaBotones = (ViewLinearLayout) addVista(new ViewLinearLayout(contexto), frdetalleExtrasante);
+        vistaBotones.setOrientacion(ViewLinearLayout.HORIZONTAL);
+        btnevento = vistaBotones.addImageButtonSecundary(R.drawable.ic_evento_indigo);
         btnevento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -197,6 +161,7 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
             }
         });
 
+        btnVerEventos = vistaBotones.addImageButtonSecundary(R.drawable.ic_lista_eventos_indigo);
         btnVerEventos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -206,7 +171,7 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
             }
         });
-
+        btnNota = vistaBotones.addImageButtonSecundary(R.drawable.ic_nueva_nota_indigo);
         btnNota.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -222,7 +187,7 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevaNota());
             }
         });
-
+        btnVerNotas = vistaBotones.addImageButtonSecundary(R.drawable.ic_lista_notas_indigo);
         btnVerNotas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -239,49 +204,60 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
             }
         });
 
-        mapa.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (!direccion.getText().toString().equals("")) {
-
-                    AppActivity.viewOnMapA(contexto, direccion.getText().toString());
-
-                }
-            }
-        });
-
-        llamada.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                AppActivity.hacerLlamada(AppActivity.getAppContext()
-                        , telefono.getText().toString());
-            }
-        });
-
-        mail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                AppActivity.enviarEmail(getContext(), email.getText().toString());
-            }
-        });
-
-        addProducto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                modelo = CRUDutil.setModelo(campos, id);
-                bundle = new Bundle();
-                putBundle(MODELO, producto);
-                putBundle(PROVEEDOR, modelo);
-                putBundle(PARTIDA, partida);
-                putBundle(PROYECTO, proyecto);
-                putBundle(ORIGEN, origen);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProducto());
-            }
-        });
+        actualizarArrays(vistaBotones);
     }
+
+    @Override
+    protected void setNuevo() {
+        super.setNuevo();
+        gone(btnevento);
+        gone(btnNota);
+        gone(btnVerEventos);
+        gone(btnVerNotas);
+
+    }
+
+    @Override
+    protected void setDatos() {
+
+        if (origen == null) {
+            origen = PROVEEDOR;
+        }
+
+        System.out.println("origen proveedor= " + origen);
+        if ((origen.equals(PARTIDA) || origen.equals(PRODUCTO))) {
+            visible(addProducto);
+        } else {
+            gone(addProducto);
+        }
+
+        visible(btnevento);
+        visible(btnNota);
+
+        fechaInactivo = modelo.getLong(PROVEEDOR_ACTIVO);
+        if (fechaInactivo > 0) {
+            activo.setChecked(false);
+        } else {
+            activo.setChecked(true);
+        }
+
+        String seleccion = EVENTO_CLIENTEREL + " = '" + id + "'";
+        if (checkQueryList(CAMPOS_EVENTO, seleccion, null)) {
+            btnVerEventos.setVisibility(View.VISIBLE);
+        } else {
+            btnVerEventos.setVisibility(View.GONE);
+        }
+
+        seleccion = NOTA_ID_RELACIONADO + " = '" + id + "'";
+        if (checkQueryList(CAMPOS_NOTA, seleccion, null)) {
+            btnVerNotas.setVisibility(View.VISIBLE);
+        } else {
+            btnVerNotas.setVisibility(View.GONE);
+        }
+
+
+    }
+
 
     public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
 

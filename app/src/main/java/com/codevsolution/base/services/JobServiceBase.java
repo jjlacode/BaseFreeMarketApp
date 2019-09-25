@@ -28,7 +28,7 @@ import com.codevsolution.base.time.TimeDateUtil;
 public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
         JavaUtil.Constantes, InteractorBase.Constantes {
 
-    private String idUser;
+    protected String idUser;
     private String idChat;
     private DatabaseReference dbFirebase;
     private static String ultimoIdChild = NULL;
@@ -76,11 +76,12 @@ public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
                                             primerReg = true;
                                         }
 
-                                        if (chat.getString(CHAT_USUARIO).equals(msgChat.getIdOrigen())) {
+                                        if (chat.getString(CHAT_USUARIO).equals(msgChat.getIdOrigen()) && chat.getString(CHAT_TIPO).equals(msgChat.getTipo())) {
 
                                             values = new ContentValues();
                                             values.put(CHAT_USUARIO, msgChat.getIdOrigen());
                                             values.put(CHAT_NOMBRE, msgChat.getNombre());
+                                            values.put(CHAT_TIPO, msgChat.getTipo());
                                             values.put(CHAT_CREATE, TimeDateUtil.ahora());
                                             values.put(CHAT_TIMESTAMP, TimeDateUtil.ahora());
                                             CRUDutil.actualizarRegistro(chat, values);
@@ -89,6 +90,7 @@ public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
                                                 values = new ContentValues();
                                                 values.put(DETCHAT_ID_CHAT, idChat);
                                                 values.put(DETCHAT_MENSAJE, msgChat.getMensaje());
+                                                values.put(DETCHAT_URL, msgChat.getUrl());
                                                 values.put(DETCHAT_FECHA, msgChat.getFecha());
                                                 values.put(DETCHAT_CREATE, TimeDateUtil.ahora());
                                                 values.put(DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
@@ -110,12 +112,14 @@ public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
                                         values = new ContentValues();
                                         values.put(CHAT_USUARIO, msgChat.getIdOrigen());
                                         values.put(CHAT_NOMBRE, msgChat.getNombre());
+                                        values.put(CHAT_TIPO, msgChat.getTipo());
                                         values.put(CHAT_CREATE, TimeDateUtil.ahora());
                                         values.put(CHAT_TIMESTAMP, TimeDateUtil.ahora());
                                         idChat = ConsultaBD.idInsertRegistro(TABLA_CHAT, values);
                                         values = new ContentValues();
                                         values.put(DETCHAT_ID_CHAT, idChat);
                                         values.put(DETCHAT_MENSAJE, msgChat.getMensaje());
+                                        values.put(DETCHAT_URL, msgChat.getUrl());
                                         values.put(DETCHAT_FECHA, msgChat.getFecha());
                                         values.put(DETCHAT_CREATE, TimeDateUtil.ahora());
                                         values.put(DETCHAT_TIMESTAMP, TimeDateUtil.ahora());

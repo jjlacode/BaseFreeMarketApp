@@ -32,6 +32,31 @@
                 android:text="@string/fecha"
                 android:textSize="@dimen/texto_card" />
 
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/lylweb_chat_base"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <ProgressBar
+                        android:id="@+id/progressBarWebCardchat"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <WebView
+                        android:id="@+id/browserwebl_chat_base"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
 
         </LinearLayout>
 

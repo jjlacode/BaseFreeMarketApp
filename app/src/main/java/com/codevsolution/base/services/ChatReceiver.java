@@ -32,7 +32,7 @@ public class ChatReceiver extends ReceiverBase implements InteractorBase.Constan
 
             if (detChat.getInt(DETCHAT_NOTIFICADO) == 0) {
                 String idchat = AndroidUtil.getSharePreference(context, PREFERENCIAS, IDCHATF, NULL);
-                String actual = CHAT;
+                String actual = chat.getString(CHAT_TIPO);
 
                 if (!idchat.equals(chat.getString(CHAT_USUARIO))) {
 

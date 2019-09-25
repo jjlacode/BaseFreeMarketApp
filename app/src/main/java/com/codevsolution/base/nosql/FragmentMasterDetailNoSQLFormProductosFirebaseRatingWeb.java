@@ -17,14 +17,25 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 
+import com.chargebee.Environment;
+import com.chargebee.ListResult;
+import com.chargebee.models.Subscription;
+import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.chat.EnviarNoticias;
 import com.codevsolution.base.chat.FragmentChatBase;
+import com.codevsolution.base.media.GlideApp;
+import com.codevsolution.base.models.Rating;
+import com.codevsolution.base.pay.chargebee.SuscripcionesChargebee;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -67,18 +78,25 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
     protected EditMaterial descuento;
     protected EditMaterial claves;
     protected EditMaterial etWeb;
+    protected EditMaterial limitProdAct;
+    protected EditMaterial prodActUsados;
+    protected EditMaterial limitProd;
+    protected EditMaterial prodUsados;
     protected RadioGroup radioGroupProd;
     protected RadioButton radioButtonProd1;
     protected RadioButton radioButtonProd2;
 
-    protected int contadorProdActivo;
-    protected int contadorProdTotal;
-    protected int limiteProdActivos = 100;
-    protected int limiteProdTotal = 150;
+    protected long contadorProdActivo;
+    protected long contadorProdTotal;
+    protected long limiteProdActivos;
+    protected long limiteProdTotal;
     protected Productos prodProv;
     protected Button btnSortear;
     protected Button btnClonar;
+    protected Button btnClonarPro;
     protected Switch sincronizaClon;
+    protected String idClon;
+    private ArrayList<Subscription> listaSus;
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
@@ -89,7 +107,6 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             ((ViewGroup) viewFB.getParent()).removeView(viewFB); // <- fix
         }
         frdetalleExtrasante.addView(viewFB);
-
 
         nombre = (EditMaterial) ctrl(R.id.etnombreformprodprov);
         descripcion = (EditMaterial) ctrl(R.id.etdescformprodprov);
@@ -106,10 +123,12 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         radioButtonProd2 = (RadioButton) ctrl(R.id.radioButtonserv);
         btnSortear = (Button) ctrl(R.id.btn_sorteo_prod);
         btnClonar = (Button) ctrl(R.id.btn_clonar_prod);
+        btnClonarPro = (Button) ctrl(R.id.btn_clonar_prod_pro);
         sincronizaClon = (Switch) ctrl(R.id.sw_sincroniza_clon);
 
+
         if (tipoForm.equals(NUEVO)) {
-            gone(frCabecera);
+            visible(frCabecera);
             nombre.setActivo(true);
             descripcion.setActivo(true);
             referencia.setActivo(true);
@@ -117,11 +136,14 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             precio.setActivo(true);
             etWeb.setActivo(true);
             zona.setActivo(true);
+            comprobarSuscripciones();
 
         } else {
+            gone(frCabecera);
             gone(btnEnviarNoticias);
             gone(chActivo);
             btnClonar.setEnabled(false);
+            btnClonarPro.setEnabled(false);
 
         }
 
@@ -131,11 +153,6 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
     protected void setLayoutItem() {
 
         layoutItem = R.layout.item_list_firebase_formproducto_rating_web;
-
-    }
-
-    @Override
-    protected void setLayout() {
 
     }
 
@@ -204,11 +221,27 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot2) {
 
 
-                                        Productos prodProv = dataSnapshot2.getValue(Productos.class);
-                                        lista.add(prodProv);
+                                        final Productos prodProv = dataSnapshot2.getValue(Productos.class);
+                                        DatabaseReference dbproduser = FirebaseDatabase.getInstance().getReference();
+                                        dbproduser.child(prodProv.getIdprov()).child(SUSESTADO).addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                String estado = dataSnapshot.getValue(String.class);
+                                                if (estado.equals(Subscription.Status.ACTIVE)) {
 
-                                        System.out.println("lista.size() = " + lista.size());
-                                        setRv();
+                                                    lista.add(prodProv);
+
+                                                    System.out.println("lista.size() = " + lista.size());
+                                                    setRv();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+
 
                                     }
 
@@ -248,12 +281,6 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
                     for (DataSnapshot prod : dataSnapshot.getChildren()) {
 
-                        contadorProdTotal++;
-
-                        if ((boolean) prod.getValue()) {
-                            contadorProdActivo++;
-                        }
-
                         DatabaseReference db = FirebaseDatabase.getInstance().getReference();
                         Query querydb = db.child(tipo).child(prod.getKey());
 
@@ -267,18 +294,6 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
                                 setRv();
 
-                                if (contadorProdTotal < limiteProdTotal) {
-                                    activityBase.fabNuevo.show();
-                                } else {
-                                    activityBase.fabNuevo.hide();
-                                }
-
-                                if (contadorProdActivo < limiteProdActivos) {
-                                    chActivo.setEnabled(true);
-                                } else {
-                                    chActivo.setEnabled(false);
-                                    chActivo.setChecked(false);
-                                }
 
                             }
 
@@ -305,12 +320,90 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             }
 
         }
+    }
+
+    public void comprobarSuscripciones() {
+
+        final DatabaseReference db = FirebaseDatabase.getInstance().getReference().child(CONFIG);
+        db.child(SITENAME).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                final String siteName = dataSnapshot.getValue(String.class);
+                db.child(APICB).addListenerForSingleValueEvent(new ValueEventListener() {
+                    private ListResult result;
+
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String apiCB = dataSnapshot.getValue(String.class);
+                        Environment.configure(siteName, apiCB);
+
+                        final String idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
+                        listaSus = new ArrayList<>();
+
+                        //Environment.configure("codevsolution-test","test_RqYREPeEdnp7KP16xeQTDRfzAg7cdB7xt");
+                        Thread th = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    result = Subscription.list()
+                                            .customerId().is(idUser)
+                                            .request();
+                                    System.out.println("result = " + result);
+                                    for (ListResult.Entry entry : result) {
+
+                                        Subscription subscription = entry.subscription();
+                                        System.out.println("subscription = " + subscription.planQuantity());
+                                        limiteProdActivos = subscription.planQuantity();
+                                        limiteProdTotal = Math.round(limiteProdActivos * 1.5);
+
+                                        if (!subscription.status().equals(Subscription.Status.CANCELLED)) {
+                                            listaSus.add(subscription);
+                                        }
+                                        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child(idUser);
+                                        db.child(SUSESTADO).setValue(subscription.status());
+                                        activityBase.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                alComprobarSuscripciones();
+                                            }
+                                        });
+
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                        th.start();
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+    protected void alComprobarSuscripciones() {
 
     }
 
     @Override
     protected void cargarBundle() {
         super.cargarBundle();
+
 
         if (tipoForm.equals(NUEVO)) {
             getFirebaseFormBase();
@@ -374,6 +467,12 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             visible(suscritos);
             gone(lyChat);
             visible(btnSortear);
+            if (contadorProdActivo < limiteProdActivos) {
+                chActivo.setEnabled(true);
+            } else {
+                chActivo.setEnabled(false);
+                chActivo.setChecked(false);
+            }
 
 
         } else {
@@ -389,7 +488,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             if (idChat == null) {
                 ListaModelo listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
                 for (Modelo chat : listaChats.getLista()) {
-                    if (chat.getString(CHAT_USUARIO).equals(id)) {
+                    if (chat.getString(CHAT_USUARIO).equals(id) && chat.getString(CHAT_TIPO).equals(tipo)) {
                         idChat = chat.getString(CHAT_ID_CHAT);
                     }
                 }
@@ -404,6 +503,10 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         }
 
         if (prodProv != null && !nuevo) {
+
+            if (nn(prodProv.getIdClon())) {
+                visible(sincronizaClon);
+            }
 
             if (prodProv.isSincronizado()) {
                 sincronizaClon.setChecked(true);
@@ -428,6 +531,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             claves.setText(prodProv.getAlcance());
             web = prodProv.getWeb();
             etWeb.setText(prodProv.getWeb());
+            idClon = prodProv.getIdClon();
 
             id = prodProv.getId();
 
@@ -498,7 +602,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
                     if (b && nn(prodProv)) {
-                        sincronizarClon(prodProv);
+                        //    sincronizarClon(prodProv);
                     }
                 }
             });
@@ -515,16 +619,10 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                 }
             });
 
+
         } else {
 
-            btnClonar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
 
-                    clonarProd();
-
-                }
-            });
         }
 
     }
@@ -555,6 +653,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         prodProv.setProveedor(firebaseFormBase.getNombreBase());
         prodProv.setAlcance(claves.getTexto());
         prodProv.setWeb(etWeb.getTexto());
+        prodProv.setTimeStamp(TimeDateUtil.ahora());
 
         if (sincronizaClon.isChecked()) {
             prodProv.setSincronizado(true);
@@ -567,7 +666,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
         if (idSorteo != null) {
 
-            db.child(SORTEO).child(idSorteo).setValue(JavaUtil.comprobarDouble(precio.getTexto()) * 100);
+            db.child(SORTEO).child(idSorteo).setValue(0L);
             final String finalSorteo = sorteo;
             db.child(sorteo).child(idSorteo).setValue(prodProv).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
@@ -641,11 +740,14 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         prodProv.setCategoria(tipo);
         prodProv.setNombre(nombre.getTexto());
         prodProv.setIdprov(idUser);
+        prodProv.setIdClon(idClon);
         prodProv.setActivo(chActivo.isChecked());
+        prodProv.setSincronizado(sincronizaClon.isChecked());
         prodProv.setDescripcion(descripcion.getTexto());
         prodProv.setPrecio(JavaUtil.comprobarDouble(precio.getTexto()));
         prodProv.setDescProv(JavaUtil.comprobarDouble(descuento.getTexto()));
         prodProv.setRefprov(referencia.getTexto());
+        prodProv.setTimeStamp(TimeDateUtil.ahora());
         if (tipo.equals(SORTEOCLI) || tipo.equals(SORTEOPRO)) {
             prodProv.setProveedor(proveedor.getTexto());
         } else {
@@ -654,7 +756,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         prodProv.setAlcance(claves.getTexto());
         prodProv.setWeb(etWeb.getTexto());
 
-        if (nuevo) {
+        if (nuevo || id == null) {
             id = db.child(tipo).push().getKey();
         }
         prodProv.setId(id);
@@ -716,17 +818,23 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                 db.child(INDICE + tipo).child(idUser).child(id).setValue(false);
             }
 
+            if (prodProv.getRutafoto() != null) {
+                guardarImagen(prodProv.getRutafoto());
+            }
+
+            alGuardar(prodProv);
+
         } else {
             Toast.makeText(contexto, getString(R.string.fallo_subiendo_registro), Toast.LENGTH_SHORT).show();
         }
     }
 
-    protected String setTipoProdClon() {
 
-        return null;
+    protected void alGuardar(Productos prodProv) {
+
     }
 
-    protected void clonarProd() {
+    protected void clonarProd(final String tipoClon) {
 
         DatabaseReference db = FirebaseDatabase.getInstance().getReference();
 
@@ -738,18 +846,19 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             prodProv.setTipo(SERVICIOS);
         }
 
-        final String tipoClon = setTipoProdClon();
+
         prodProv.setCategoria(tipoClon);
         prodProv.setNombre(nombre.getTexto());
         prodProv.setIdprov(idUser);
         prodProv.setIdClon(id);
-        prodProv.setActivo(chActivo.isChecked());
+        prodProv.setActivo(false);
         prodProv.setDescripcion(descripcion.getTexto());
         prodProv.setPrecio(JavaUtil.comprobarDouble(precio.getTexto()));
         prodProv.setRefprov(referencia.getTexto());
         prodProv.setProveedor(firebaseFormBase.getNombreBase());
         prodProv.setAlcance(claves.getTexto());
         prodProv.setWeb(etWeb.getTexto());
+        prodProv.setTimeStamp(TimeDateUtil.ahora());
 
         final String idnew = db.child(tipoClon).push().getKey();
         prodProv.setId(idnew);
@@ -812,14 +921,6 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
     }
 
     @Override
-    protected String setTipoRating() {
-        if (nn(prodProv)) {
-            return prodProv.getCategoria();
-        }
-        return null;
-    }
-
-    @Override
     protected String setIdRating() {
         if (nn(prodProv)) {
             return prodProv.getId();
@@ -828,13 +929,53 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
     }
 
     @Override
+    protected void enviarVoto(Context contexto, final String id, float valor, String comentario) {
+
+        perfilUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
+        idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
+
+        if (nombreVoto != null) {
+
+            Rating rat = new Rating(valor, perfilUser, id, idUser, nombreVoto, comentario, TimeDateUtil.ahora());
+            FirebaseDatabase.getInstance().getReference().child(RATING).child(id).child(idUser + perfilUser).setValue(rat, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                    recuperarVotos(ratingBar, id);
+                }
+            });
+        } else {
+            Toast.makeText(contexto, "Debe tener un perfil de " + perfilUser + " para votar", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    @Override
     public void setOnClickRV(Object object) {
 
         prodProv = (Productos) object;
         id = prodProv.getId();
         esDetalle = true;
+        if (nn(id)) {
 
-        selector();
+            DatabaseReference dbproductosprov = FirebaseDatabase.getInstance().getReference().
+                    child(tipo).child(id);
+
+            dbproductosprov.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    prodProv = dataSnapshot.getValue(Productos.class);
+                    selector();
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        }
 
     }
 
@@ -1018,6 +1159,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                                 values.put(CHAT_USUARIO, firebaseFormBase.getIdchatBase());
                                 values.put(CHAT_CREATE, TimeDateUtil.ahora());
                                 values.put(CHAT_TIMESTAMP, TimeDateUtil.ahora());
+                                values.put(CHAT_TIPO, CHAT);
 
                                 idChat = CRUDutil.crearRegistroId(TABLA_CHAT, values);
                             } else {
@@ -1039,11 +1181,11 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             }
 
             ratingBarCard.setRating(0);
-            recuperarVotos(ratingBarCard, prodProv.getCategoria(), prodProv.getId());
+            recuperarVotos(ratingBarCard, prodProv.getId());
             ratingBarCard.setIsIndicator(true);
 
             ratingBarUserCard.setRating(0);
-            recuperarVotoUsuario(ratingBarUserCard, contexto, prodProv.getCategoria(), prodProv.getId());
+            recuperarVotoUsuario(ratingBarUserCard, contexto, prodProv.getId());
             ratingBarUserCard.setIsIndicator(true);
 
 
@@ -1056,4 +1198,99 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         }
     }
 
+    public static class ViewHolderRVMsgChat extends BaseViewHolder implements TipoViewHolder {
+
+        TextView mensaje, fecha;
+        CardView card;
+        WebView webView;
+        ProgressBar progressBarWebCard;
+        NestedScrollView lylweb;
+
+        public ViewHolderRVMsgChat(View itemView) {
+            super(itemView);
+            mensaje = itemView.findViewById(R.id.tvmsgchat_base);
+            fecha = itemView.findViewById(R.id.tvmsgchatfecha_base);
+            card = itemView.findViewById(R.id.cardmsgchat_base);
+            webView = itemView.findViewById(R.id.browserwebl_chat_base);
+            progressBarWebCard = itemView.findViewById(R.id.progressBarWebCardchat);
+            lylweb = itemView.findViewById(R.id.lylweb_chat_base);
+
+        }
+
+        @Override
+        public void bind(Modelo modelo) {
+
+            int tipo = modelo.getInt(DETCHAT_TIPO);
+
+            mensaje.setText(modelo.getString(DETCHAT_MENSAJE));
+            fecha.setText(TimeDateUtil.getDateTimeString(modelo.getLong(DETCHAT_FECHA)));
+
+            if (tipo == RECIBIDO) {
+
+                card.setCardBackgroundColor(getContext().getResources().getColor(R.color.Color_msg_recibido));
+                card.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) card.getLayoutParams();
+                params.addRule(RelativeLayout.ALIGN_PARENT_START);
+                params.setMargins((int) (10 * densidad), (int) (10 * densidad), (int) (10 * densidad), 0);
+
+                card.setLayoutParams(params);
+
+                card.setVisibility(View.VISIBLE);
+
+            } else {
+                card.setVisibility(View.GONE);
+
+            }
+
+            String webprod = modelo.getString(DETCHAT_URL);
+
+
+            if (webprod != null && JavaUtil.isValidURL(webprod)) {
+
+                lylweb.setVisibility(View.VISIBLE);
+
+                webView.getSettings().setJavaScriptEnabled(true);
+                webView.getSettings().setBuiltInZoomControls(true);
+                webView.getSettings().setDisplayZoomControls(false);
+
+                webView.setWebViewClient(new WebViewClient() {
+
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                        view.loadUrl(url);
+                        return true;
+                    }
+                });
+                // Cargamos la web
+
+
+                webView.loadUrl(webprod);
+                webView.setWebChromeClient(new WebChromeClient() {
+                    @Override
+                    public void onProgressChanged(WebView view, int progress) {
+                        progressBarWebCard.setProgress(0);
+                        progressBarWebCard.setVisibility(View.VISIBLE);
+                        progressBarWebCard.setProgress(progress * 1000);
+
+                        progressBarWebCard.incrementProgressBy(progress);
+
+                        if (progress == 100) {
+                            progressBarWebCard.setVisibility(View.GONE);
+                        }
+                    }
+                });
+
+            } else {
+                lylweb.setVisibility(View.GONE);
+            }
+
+            super.bind(modelo);
+
+        }
+
+        @Override
+        public BaseViewHolder holder(View view) {
+            return new ViewHolderRVMsgChat(view);
+        }
+    }
 }

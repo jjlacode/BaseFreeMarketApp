@@ -381,7 +381,7 @@
     <string name="productos_multiperfil">Productos Multi-Perfil</string>
     <string name="asignar_multiperfil">Asignar Multi-Perfil</string>
     <string name="multi_perfil">MULTI-PERFIL</string>
-    <string name="suscripcion">Suscribirse a Producto</string>
+    <string name="suscripcion">Suscripción FreeMarketApp</string>
     <string name="suscriptores">Suscriptores</string>
     <string name="msg_subscribed">Suscrito correctamente</string>
     <string name="msg_subscribe_failed">Fallo en la suscripción</string>
@@ -399,8 +399,8 @@
     <string name="producto_sorteado">Producto o servicio sorteado</string>
     <string name="valor_producto">Valor del producto o servicio</string>
     <string name="referencia_sorteo">Referencia Sorteo</string>
-    <string name="en_sorteo">En sorteo</string>
-    <string name="empezar_sorteo">Empezar sorteo</string>
+    <string name="en_sorteo">Parar</string>
+    <string name="empezar_sorteo">Empezar</string>
     <string name="envio_prod_sorteo">Por favor, responda este mensaje para acordar la entrega del premio</string>
     <string name="mensaje_no_ganador">Lo sentimos esta vez no ha ganado el sorteo</string>
     <string name="proximo_sorteo">Suscribase al producto para estar informado de nuevos sorteos</string>
@@ -435,6 +435,23 @@
     <string name="participando">Participando</string>
     <string name="suscrito">Suscrito</string>
     <string name="suscripcion_pro">Suscribir Noticias y Sorteos</string>
+    <string name="url">URL</string>
+    <string name="clonar_prod_a_pro">Clonar producto a Pro</string>
+    <string name="chat_ganador">Chat ganador</string>
+    <string name="chat_prov">Chat Proveedor</string>
+    <string name="mensual">Mensual</string>
+    <string name="trimestral">Trimestral</string>
+    <string name="semestral">Semestral</string>
+    <string name="anual">Anual</string>
+    <string name="importe_perido">Importe periodo</string>
+    <string name="num_prod_sus">Numero de productos (min. 50)</string>
+    <string name="crear_suscripcion">Crear suscripcion</string>
+    <string name="limitact">Prod act disponibles</string>
+    <string name="limitactusados">Prod act. usados</string>
+    <string name="limitprod">Prod tot disponibles</string>
+    <string name="limitprodusados">Prod tot usados</string>
+    <string name="add_prodwebcli">Export. prod. web CLI</string>
+    <string name="add_prodwebpro">Export. prod web PRO</string>
 
 
 </resources>

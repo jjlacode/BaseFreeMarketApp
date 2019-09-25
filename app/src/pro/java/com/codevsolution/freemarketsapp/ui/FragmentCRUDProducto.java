@@ -1,6 +1,7 @@
 package com.codevsolution.freemarketsapp.ui;
 // Created by jjlacode on 10/06/19. 
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +14,7 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.models.Modelo;
 import com.codevsolution.base.sqlite.ContratoPry;
@@ -31,6 +33,8 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     EditMaterial descProv;
     ImageView btnProv;
     Button addPartida;
+    Button exportCLI;
+    Button exportPRO;
 
     private Modelo proveedor;
     private Modelo partida;
@@ -118,6 +122,9 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         partida = (Modelo) getBundleSerial(PARTIDA);
         proyecto = (Modelo) getBundleSerial(PROYECTO);
 
+        if (origen == null) {
+            origen = PRODUCTO;
+        }
     }
 
     @Override
@@ -141,6 +148,8 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         btnProv = (ImageView) ctrl(R.id.imgbtnprovproducto);
         addPartida = (Button) ctrl(R.id.btn_add_producto_partida);
         imagen = (ImagenLayout) ctrl(R.id.imgproducto);
+        exportCLI = (Button) ctrl(R.id.btn_add_prodwebcli);
+        exportPRO = (Button) ctrl(R.id.btn_add_prodwebpro);
     }
 
     @Override
@@ -168,6 +177,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         addPartida.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                update();
                 bundle = new Bundle();
                 putBundle(PARTIDA, partida);
                 putBundle(PROYECTO, proyecto);
@@ -175,6 +185,31 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
                 putBundle(ORIGEN, PARTIDA);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaProducto());
 
+            }
+        });
+
+        exportCLI.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                update();
+                valores = new ContentValues();
+                valores.put(PRODUCTO_CATEGORIA, PRODUCTOCLI);
+                CRUDutil.actualizarRegistro(modelo, valores);
+                bundle = new Bundle();
+                putBundle(CRUD, modelo);
+                icFragmentos.enviarBundleAFragment(bundle, new AltaProductosCli());
+            }
+        });
+
+        exportPRO.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                update();
+                valores.put(PRODUCTO_CATEGORIA, PRODUCTOPRO);
+                CRUDutil.actualizarRegistro(modelo, valores);
+                bundle = new Bundle();
+                putBundle(CRUD, modelo);
+                icFragmentos.enviarBundleAFragment(bundle, new AltaProductosPro());
             }
         });
     }

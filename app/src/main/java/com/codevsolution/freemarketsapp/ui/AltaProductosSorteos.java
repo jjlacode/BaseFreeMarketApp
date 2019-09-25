@@ -1,15 +1,19 @@
 package com.codevsolution.freemarketsapp.ui;
 
+import android.os.Bundle;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.codevsolution.base.chat.FragmentChatBase;
 import com.codevsolution.base.models.Productos;
+import com.codevsolution.base.time.TimeDateUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -34,6 +38,7 @@ public abstract class AltaProductosSorteos extends FragmentMasterDetailNoSQLForm
     protected boolean sorteo;
     protected EditMaterial maxParticipantes;
     protected Button volverSortear;
+    protected Button chatGanador;
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
@@ -75,11 +80,12 @@ public abstract class AltaProductosSorteos extends FragmentMasterDetailNoSQLForm
 
         maxParticipantes = (EditMaterial) ctrl(R.id.etmaxpartformprodprov);
         volverSortear = (Button) ctrl(R.id.btn_volver_sorteo_prod);
+        chatGanador = (Button) ctrl(R.id.btn_chat_ganador_sorteo_prod);
         referencia.setHint(getString(R.string.referencia_sorteo));
         nombre.setHint(getString(R.string.producto_sorteado));
         precio.setHint(getString(R.string.valor_producto));
-        chActivo.setTextOn(getString(R.string.en_sorteo));
-        chActivo.setTextOff(getString(R.string.empezar_sorteo));
+        chActivo.setShowText(true);
+        chActivo.setText(getString(R.string.empezar_sorteo));
         suscritos.setHint(getString(R.string.participantes));
 
     }
@@ -100,6 +106,7 @@ public abstract class AltaProductosSorteos extends FragmentMasterDetailNoSQLForm
             comprobarGanador();
         }
 
+        /*
         visible(maxParticipantes);
         maxParticipantes.setHint(getString(R.string.max_participantes_sorteo) + " " +
                 Math.round(JavaUtil.comprobarDouble(precio.getTexto()) * 100));
@@ -118,6 +125,8 @@ public abstract class AltaProductosSorteos extends FragmentMasterDetailNoSQLForm
 
             }
         });
+
+         */
     }
 
     @Override
@@ -144,6 +153,7 @@ public abstract class AltaProductosSorteos extends FragmentMasterDetailNoSQLForm
                     if (ganador != null && !ganador.equals(NULL)) {
                         volverSortear.setText(getString(R.string.sorteo_finalizado));
                         visible(volverSortear);
+                        visible(chatGanador);
                     }
                 }
             }
@@ -160,6 +170,7 @@ public abstract class AltaProductosSorteos extends FragmentMasterDetailNoSQLForm
     protected void acciones() {
         super.acciones();
 
+        /*
         maxParticipantes.setAlCambiarListener(new EditMaterial.AlCambiarListener() {
             @Override
             public void antesCambio(CharSequence s, int start, int count, int after) {
@@ -198,6 +209,8 @@ public abstract class AltaProductosSorteos extends FragmentMasterDetailNoSQLForm
             }
         });
 
+         */
+
         volverSortear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -206,10 +219,42 @@ public abstract class AltaProductosSorteos extends FragmentMasterDetailNoSQLForm
                 db.child(GANADORSORTEO).child(id).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        gone(volverSortear);
+                        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                        db.child(SORTEO).child(id).setValue(TimeDateUtil.ahora()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                gone(volverSortear);
+                                gone(chatGanador);
+                            }
+                        });
                     }
                 });
 
+            }
+        });
+
+        chActivo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+
+                if (b) {
+                    db.child(SORTEO).child(id).setValue(TimeDateUtil.ahora());
+                } else {
+                    db.child(SORTEO).child(id).setValue(0L);
+                }
+            }
+        });
+
+        chatGanador.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bundle = new Bundle();
+                putBundle(IDCHATF, ganador);
+                putBundle(NOMBRECHAT, getString(R.string.chat_ganador));
+                putBundle(TIPO, CHAT);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentChatBase());
             }
         });
     }

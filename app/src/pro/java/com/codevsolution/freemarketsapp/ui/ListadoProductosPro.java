@@ -3,13 +3,12 @@ package com.codevsolution.freemarketsapp.ui;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.codevsolution.base.nosql.FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb;
-
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODUCTOCLI;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODUCTOPRO;
 
 public class ListadoProductosPro extends FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb {
+
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
@@ -43,6 +42,7 @@ public class ListadoProductosPro extends FragmentMasterDetailNoSQLFormProductosF
         visible(descuento);
         gone(sincronizaClon);
         visible(btnClonar);
+        visible(btnClonarPro);
 
         super.setDatos();
     }
@@ -52,10 +52,33 @@ public class ListadoProductosPro extends FragmentMasterDetailNoSQLFormProductosF
         super.onFirebaseFormBase();
 
         btnClonar.setEnabled(true);
+        btnClonarPro.setEnabled(true);
     }
 
     @Override
-    protected String setTipoProdClon() {
-        return PRODUCTOCLI;
+    protected void acciones() {
+        super.acciones();
+
+        if (tipoForm.equals(LISTA)) {
+
+            btnClonar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    clonarProd(PRODUCTOCLI);
+
+                }
+            });
+
+            btnClonarPro.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    clonarProd(PRODUCTOPRO);
+
+                }
+            });
+        }
     }
+
 }

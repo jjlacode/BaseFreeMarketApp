@@ -390,7 +390,7 @@ public class ImagenLayout extends RelativeLayout {
 
             ancho = metrics.widthPixels;
             alto = metrics.heightPixels;
-            ImagenUtil.setImageUri(uri, imagen, (int) (ancho * 0.25), (int) (alto * 0.20));
+            ImagenUtil.setImageUri(uri, imagen, (int) (ancho), (int) (alto * 0.50));
             System.out.println("imagenAuto");
 
         } else {

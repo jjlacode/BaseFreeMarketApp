@@ -30,6 +30,7 @@ import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -338,6 +339,22 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         for (Object o : camposEdit) {
             if (((Map) o).get("materialEdit") == editMaterial) {
                 valores = new ContentValues();
+                valores.put((String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
+                if (secuencia > 0) {
+                    int i = ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+                    System.out.println("guardados = " + i);
+                } else {
+                    int x = ConsultaBD.updateRegistro(tabla, id, valores);
+                    System.out.println("guardados = " + x);
+                }
+            }
+        }
+    }
+
+    protected void guardarEdit(ArrayList<Map> camposEdit, EditMaterial editMaterial, String tabla, String id, int secuencia) {
+        for (Object o : camposEdit) {
+            if (((Map) o).get("materialEdit") == editMaterial) {
+                ContentValues valores = new ContentValues();
                 valores.put((String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
                 if (secuencia > 0) {
                     int i = ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);

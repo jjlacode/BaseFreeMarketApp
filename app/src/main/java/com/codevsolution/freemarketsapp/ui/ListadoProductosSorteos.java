@@ -1,8 +1,12 @@
 package com.codevsolution.freemarketsapp.ui;
 
 
+import android.os.Bundle;
+import android.view.View;
+
 import androidx.annotation.NonNull;
 
+import com.codevsolution.base.chat.FragmentChatBase;
 import com.codevsolution.base.models.Productos;
 import com.codevsolution.base.nosql.FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb;
 import com.codevsolution.freemarketsapp.R;
@@ -35,9 +39,18 @@ public abstract class ListadoProductosSorteos extends FragmentMasterDetailNoSQLF
     }
 
     @Override
+    protected String setIdRating() {
+        if (nn(prodProv)) {
+            return prodProv.getIdprov();
+        }
+        return id;
+    }
+
+    @Override
     protected void setDatos() {
 
         suscripcion.setText(getString(R.string.participar));
+        visible(chatProv);
 
         super.setDatos();
 
@@ -111,5 +124,21 @@ public abstract class ListadoProductosSorteos extends FragmentMasterDetailNoSQLF
             }
         });
 
+    }
+
+    @Override
+    protected void acciones() {
+        super.acciones();
+
+        chatProv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bundle = new Bundle();
+                putBundle(IDCHATF, prodProv.getIdprov());
+                putBundle(TIPO, CHAT);
+                putBundle(NOMBRECHAT, prodProv.getProveedor());
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentChatBase());
+            }
+        });
     }
 }

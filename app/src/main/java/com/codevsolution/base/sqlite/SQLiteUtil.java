@@ -258,7 +258,7 @@ public class SQLiteUtil {
         return checkDB != null;
     }
 
-    public boolean isTableExists(String nombreTabla, SQLiteDatabase db) {
+    public static boolean isTableExists(String nombreTabla, SQLiteDatabase db) {
         boolean isExist = false;
         Cursor cursor = db.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '" + nombreTabla + "'", null);
         if (cursor != null) {

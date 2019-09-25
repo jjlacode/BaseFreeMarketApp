@@ -17,6 +17,14 @@
         android:textColor="@color/colorSecondaryDark"
         android:textSize="@dimen/texto" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_chat_prov"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/altobtn"
+        style="@style/boton_secondary"
+        android:visibility="gone"
+        android:text="@string/chat_prov" />
+
     <LinearLayout
         android:id="@+id/ly_chat"
         android:layout_width="match_parent"

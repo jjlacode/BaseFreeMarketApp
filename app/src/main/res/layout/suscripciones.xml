@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/lysus"
+    android:visibility="gone"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.codevsolution.base.android.controls.EditMaterial
+        android:id="@+id/etcant_suscripcion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:hint_text="@string/num_prod_sus"
+        app:tipo_dato="NUMERO" />
+
+    <RadioGroup
+        android:id="@+id/radio_group_sus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radioButtonsus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/mensual" />
+
+        <RadioButton
+            android:id="@+id/radioButtonsus1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/trimestral" />
+
+        <RadioButton
+            android:id="@+id/radioButtonsus2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/semestral" />
+
+        <RadioButton
+            android:id="@+id/radioButtonsus3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/anual" />
+
+    </RadioGroup>
+
+    <com.codevsolution.base.android.controls.EditMaterial
+        android:id="@+id/etimporte_suscripcion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:activo="false"
+        app:hint_text="@string/importe_perido"
+        app:tipo_dato="NUMERO|DECIMAL" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_checkout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/altobtn"
+        style="@style/boton_secondary"
+        android:text="@string/crear_suscripcion" />
+
+</LinearLayout>

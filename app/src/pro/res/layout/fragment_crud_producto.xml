@@ -13,24 +13,15 @@
         android:textColor="@color/colorPrimary"
         android:background="@drawable/boton_redondo_primary" />
 
-
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-
         <com.codevsolution.base.android.controls.ImagenLayout
             android:id="@+id/imgproducto"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_weight="2.5" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:orientation="vertical">
 
             <com.codevsolution.base.android.controls.EditMaterial
@@ -51,7 +42,8 @@
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/etnomprovproducto"
@@ -74,7 +66,7 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-    </androidx.appcompat.widget.LinearLayoutCompat>
+
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -109,4 +101,20 @@
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_add_prodwebcli"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_prodwebcli"
+        android:textColor="@color/colorPrimary"
+        android:background="@drawable/boton_redondo_primary" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_add_prodwebpro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_prodwebpro"
+        android:textColor="@color/colorPrimary"
+        android:background="@drawable/boton_redondo_primary" />
 </LinearLayout>

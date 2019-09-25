@@ -33,24 +33,19 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.media.ImagenUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.RVAdapter;
@@ -58,7 +53,7 @@ import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.LockableScrollView;
-import com.codevsolution.base.chat.FragmentChatProductoEnviar;
+import com.codevsolution.base.chat.EnviarNoticias;
 import com.codevsolution.base.localizacion.LocalizacionUtils;
 import com.codevsolution.base.localizacion.MapUtil;
 import com.codevsolution.base.models.FirebaseFormBase;
@@ -72,6 +67,9 @@ import com.codevsolution.freemarketsapp.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.CAMPOS_CHAT;
+import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.CHAT_ID_CHAT;
+import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.CHAT_TIPO;
 import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.DETCHAT_FECHA;
 import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.DETCHAT_MENSAJE;
 import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.DETCHAT_TIPO;
@@ -99,7 +97,6 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
     protected LinearLayout lystars;
     private ArrayList<Rating> listaVotos;
     private float votoUser;
-    protected String tipoRating;
     protected String idRating;
     private ArrayList<Rating> listaComents;
     private TextView ultimoVoto;
@@ -159,6 +156,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
     protected EditMaterial suscritos;
     protected String nombreChat;
     protected ToggleButton noticias;
+    protected Button chatProv;
     protected boolean location;
 
 
@@ -238,6 +236,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         suscritos = (EditMaterial) ctrl(R.id.etsuscritos);
         rvMsgChat = (RecyclerView) ctrl(R.id.rvdetmsgchat_base);
         noticias = (ToggleButton) ctrl(R.id.btn_vernoticias);
+        chatProv = (Button) ctrl(R.id.btn_chat_prov);
         lyChat = (LinearLayout) ctrl(R.id.ly_chat);
         zona.grabarEnable(false);
         gone(rvMsgChat);
@@ -331,7 +330,6 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         super.setLayoutExtra();
         layoutCabecera = R.layout.cabecera_elegir_ubicacion;
 
-
     }
 
     @Override
@@ -351,7 +349,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
             setDatos();
             if (!tipoForm.equals(NUEVO)) {
 
-                recuperarVotoUsuario(ratingBarUser, contexto, tipoRating, idRating);
+                recuperarVotoUsuario(ratingBarUser, contexto, idRating);
                 AndroidUtil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, id);
             } else {
                 AndroidUtil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, NULL);
@@ -360,9 +358,8 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
             if (!nuevo) {
                 if (nn(firebaseFormBase)) {
                     idRating = setIdRating();
-                    tipoRating = setTipoRating();
-                    recuperarVotos(ratingBar, tipoRating, idRating);
-                    recuperarComentarios(tipoRating, idRating);
+                    recuperarVotos(ratingBar, idRating);
+                    recuperarComentarios(idRating);
                 }
             }
 
@@ -704,27 +701,28 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
                                 public void run() {
 
                                     System.out.println("snapshotChild = " + dataSnapshot.getValue());
+                                    if (dataSnapshot.getValue() != null) {
 
-                                    Marcador marc = dataSnapshot.getValue(Marcador.class);
-                                    Marker marker = mapa.crearMarcadorMap((double) (marc.getLatitud() / 1000), (double) (marc.getLongitud() / 1000), 5, "", "", true);
-                                    marc.setIdMark(marker.getId());
-                                    for (Marcador marcadore : listaMarcadores) {
-                                        Marker mark = getMarker(marcadore, mapa);
-                                        mark.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                                        Marcador marc = dataSnapshot.getValue(Marcador.class);
+                                        Marker marker = mapa.crearMarcadorMap((double) (marc.getLatitud() / 1000), (double) (marc.getLongitud() / 1000), 5, "", "", true);
+                                        marc.setIdMark(marker.getId());
+                                        for (Marcador marcadore : listaMarcadores) {
+                                            Marker mark = getMarker(marcadore, mapa);
+                                            mark.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                                        }
+                                        listaMarcadores.add(marc);
+                                        marcador = setMarcador(marker);
+                                        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                                        mapa.moverCamara(marker.getPosition().latitude, marker.getPosition().longitude, 5, true, true);
+                                        alcance = marcador.getAlcance();
+                                        setAlcance(marcador);
+                                        setLugarZona(marcador);
+                                        StringBuilder textoZona = new StringBuilder();
+                                        for (String s : zonaList) {
+                                            textoZona.append(s).append(" ");
+                                        }
+                                        zona.setText(textoZona.toString());
                                     }
-                                    listaMarcadores.add(marc);
-                                    marcador = setMarcador(marker);
-                                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-                                    mapa.moverCamara(marker.getPosition().latitude, marker.getPosition().longitude, 5, true, true);
-                                    alcance = marcador.getAlcance();
-                                    setAlcance(marcador);
-                                    setLugarZona(marcador);
-                                    StringBuilder textoZona = new StringBuilder();
-                                    for (String s : zonaList) {
-                                        textoZona.append(s).append(" ");
-                                    }
-                                    zona.setText(textoZona.toString());
-
                                 }
                             });
 
@@ -904,13 +902,16 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         String ciudad;
         String postalCode;
         List<Address> direcciones;
+        zonaList = new ArrayList<>();
+
         DatabaseReference db = FirebaseDatabase.getInstance().getReference();
 
         direcciones = LocalizacionUtils.getAddressListGeoCoord(contexto,
                 (double) (latitud) / 1000, (double) (longitud) / 1000);
+        System.out.println("direcciones = " + direcciones.toString());
         if (direcciones != null && direcciones.size() > 0) {
 
-            zonaList = new ArrayList<>();
+
             for (Address address : direcciones) {
 
                 ciudad = address.getLocality();
@@ -959,6 +960,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
             StringBuilder textoZona = new StringBuilder();
 
+            System.out.println("zonaList.size() = " + zonaList.size());
             for (String s : zonaList) {
                 db.child(LUGARES).child(marcador.getTipo()).child(s).child(marcador.getId()).setValue(true);
                 textoZona.append(s).append(" ");
@@ -1114,7 +1116,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
     protected void updateMarcador(Marcador marcador) {
 
         DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-        if (db != null) {
+        if (marcador != null) {
             db.child(MARC).child(marcador.getId()).child(marcador.getKey()).setValue(marcador);
             for (Marcador marcadore : listaMarcadores) {
                 if (marcadore.getIdMark().equals(marcador.getIdMark())) {
@@ -1203,8 +1205,6 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
     }
 
-    protected abstract String setTipoRating();
-
     protected abstract String setIdRating();
 
     protected abstract String setTipoForm();
@@ -1243,7 +1243,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
             public void onClick(View view) {
 
                 gone(lyvoto);
-                enviarVoto(contexto, tipoRating, idRating, votoUser, comentario.getTexto());
+                enviarVoto(contexto, idRating, votoUser, comentario.getTexto());
             }
         });
 
@@ -1255,7 +1255,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
                     gone(lyvoto);
                 } else {
                     visible(lyvoto);
-                    recuperarVotoUsuario(ratingBarUser, contexto, tipoRating, idRating);
+                    recuperarVotoUsuario(ratingBarUser, contexto, idRating);
                 }
 
             }
@@ -1270,7 +1270,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
                     gone(lystars);
                 } else {
 
-                    recuperarComentarios(tipoRating, idRating);
+                    recuperarComentarios(idRating);
                     visible(rlcoment);
                     visible(lystars);
 
@@ -1328,7 +1328,8 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
                 @Override
                 public void onCheckedChanged(RadioGroup radioGroup, int i) {
 
-                    if (tipoForm.equals(NUEVO) && marcador != null && zonaList != null) {
+                    if (tipoForm.equals(NUEVO) && marcador != null && zonaList != null &&
+                            marcador.getTipo() != null && marcador.getId() != null) {
 
                         for (String s : zonaList) {
                             DatabaseReference db = FirebaseDatabase.getInstance().getReference();
@@ -1365,13 +1366,20 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
             btnEnviarNoticias.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    System.out.println("id not= " + id);
+
                     bundle = new Bundle();
-                    putBundle(CAMPO_ID, AndroidUtil.getSharePreference(contexto, CHAT, tipo, NULL));
+
+                    ListaModelo listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
+                    for (Modelo chat : listaChats.getLista()) {
+                        if (chat.getString(CHAT_TIPO).equals(tipo)) {
+                            putBundle(CAMPO_ID, chat.getString(CHAT_ID_CHAT));
+
+                        }
+                    }
                     putBundle(TIPO, tipo);
                     putBundle(IDCHATF, id);
                     putBundle(NOMBRECHAT, nombreChat);
-                    icFragmentos.enviarBundleAFragment(bundle, new FragmentChatProductoEnviar());
+                    icFragmentos.enviarBundleAFragment(bundle, new EnviarNoticias());
                 }
             });
 
@@ -1504,7 +1512,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
     }
 
-    public void enviarVoto(Context contexto, final String tipo, final String id, float valor, String comentario) {
+    protected void enviarVoto(Context contexto, final String id, float valor, String comentario) {
 
         perfilUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
         idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
@@ -1512,10 +1520,10 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         if (nombreVoto != null) {
 
             Rating rat = new Rating(valor, perfilUser, id, idUser, nombreVoto, comentario, TimeDateUtil.ahora());
-            FirebaseDatabase.getInstance().getReference().child(RATING).child(tipo).child(id).child(idUser + perfilUser).setValue(rat, new DatabaseReference.CompletionListener() {
+            FirebaseDatabase.getInstance().getReference().child(RATING).child(id).child(idUser + perfilUser).setValue(rat, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                    recuperarVotos(ratingBar, tipo, id);
+                    recuperarVotos(ratingBar, id);
                 }
             });
         } else {
@@ -1524,7 +1532,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
     }
 
-    protected void recuperarVotos(final RatingBar ratingBar, final String tipo, final String id) {
+    protected void recuperarVotos(final RatingBar ratingBar, final String id) {
 
         ratingBar.setRating(0.0f);
         Drawable progressDrawable = ratingBar.getProgressDrawable();
@@ -1533,8 +1541,8 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
                     contexto.getResources().getColor(R.color.color_star_defecto));
         }
 
-        if (id != null && tipo != null) {
-            db = FirebaseDatabase.getInstance().getReference().child(RATING).child(tipo).child(id);
+        if (id != null) {
+            db = FirebaseDatabase.getInstance().getReference().child(RATING).child(id);
 
 
             ValueEventListener valueEventListener = new ValueEventListener() {
@@ -1638,7 +1646,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
     }
 
-    public void recuperarVotoUsuario(final RatingBar ratingBarUser, final Context contexto, final String tipo, final String id) {
+    public void recuperarVotoUsuario(final RatingBar ratingBarUser, final Context contexto, final String id) {
 
         idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
         perfilUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
@@ -1648,7 +1656,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         ratingBarUser.setRating(votoUser);
 
         if (id != null && tipo != null) {
-            db = FirebaseDatabase.getInstance().getReference().child(RATING).child(tipo).child(id).child(idUser + perfilUser);
+            db = FirebaseDatabase.getInstance().getReference().child(RATING).child(id).child(idUser + perfilUser);
 
 
             ValueEventListener valueEventListener = new ValueEventListener() {
@@ -1691,11 +1699,11 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         }
     }
 
-    protected void recuperarComentarios(final String tipo, final String id) {
+    protected void recuperarComentarios(final String id) {
 
 
-        if (id != null && tipo != null) {
-            db = FirebaseDatabase.getInstance().getReference().child(RATING).child(tipo).child(id);
+        if (id != null) {
+            db = FirebaseDatabase.getInstance().getReference().child(RATING).child(id);
 
 
             ValueEventListener valueEventListener = new ValueEventListener() {
@@ -1740,7 +1748,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
     @Override
     protected void setOnRigthSwipeCuerpo() {
         super.setOnRigthSwipeCuerpo();
-        if (posicion > 0) {
+        if (posicion > 0 && lista.size() > posicion) {
             posicion--;
             setOnClickRV(lista.get(posicion));
             System.out.println("posicion = " + posicion);
@@ -1839,67 +1847,6 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         @Override
         public BaseViewHolder holder(View view) {
             return new ViewHolderRVComents(view);
-        }
-    }
-
-    public class ViewHolderRVMsgChat extends BaseViewHolder implements TipoViewHolder {
-
-        TextView mensaje, fecha;
-        CardView card;
-
-        public ViewHolderRVMsgChat(View itemView) {
-            super(itemView);
-            mensaje = itemView.findViewById(R.id.tvmsgchat_base);
-            fecha = itemView.findViewById(R.id.tvmsgchatfecha_base);
-            card = itemView.findViewById(R.id.cardmsgchat_base);
-
-        }
-
-        @Override
-        public void bind(Modelo modelo) {
-
-            int tipo = modelo.getInt(DETCHAT_TIPO);
-
-            mensaje.setText(modelo.getString(DETCHAT_MENSAJE));
-            fecha.setText(TimeDateUtil.getDateTimeString(modelo.getLong(DETCHAT_FECHA)));
-
-            if (tipo == ENVIADO) {
-
-                card.setCardBackgroundColor(getResources().getColor(R.color.Color_msg_enviado));
-                card.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) card.getLayoutParams();
-                params.addRule(RelativeLayout.ALIGN_PARENT_END);
-                params.setMargins((int) (double) (ancho * densidad) / 5, (int) (10 * densidad), (int) (10 * densidad), 0);
-
-                card.setLayoutParams(params);
-
-
-                visible(card);
-
-            } else if (tipo == RECIBIDO) {
-
-                card.setCardBackgroundColor(getResources().getColor(R.color.Color_msg_recibido));
-                card.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) card.getLayoutParams();
-                params.addRule(RelativeLayout.ALIGN_PARENT_START);
-                params.setMargins((int) (10 * densidad), (int) (10 * densidad), (int) (double) (ancho * densidad) / 5, 0);
-
-                card.setLayoutParams(params);
-
-                visible(card);
-
-            } else {
-                gone(card);
-
-            }
-
-            super.bind(modelo);
-
-        }
-
-        @Override
-        public BaseViewHolder holder(View view) {
-            return new ViewHolderRVMsgChat(view);
         }
     }
 

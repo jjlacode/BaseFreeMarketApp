@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,9 +16,12 @@ import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.CheckPermisos;
 import com.codevsolution.base.android.MainActivityBase;
 import com.codevsolution.base.chat.FragmentChatBase;
+import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.login.LoginActivity;
 import com.codevsolution.base.media.VisorPDFEmail;
+import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.Modelo;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.SQLiteUtil;
 import com.codevsolution.base.web.FragmentWebView;
@@ -26,6 +30,7 @@ import com.codevsolution.freemarketsapp.services.AutoArranquePro;
 import com.codevsolution.freemarketsapp.settings.SettingsActivityPro;
 import com.codevsolution.freemarketsapp.ui.AltaPerfilesFirebaseCli;
 import com.codevsolution.freemarketsapp.ui.AltaPerfilesFirebasePro;
+import com.codevsolution.freemarketsapp.ui.AltaSorteosCli;
 import com.codevsolution.freemarketsapp.ui.AltaSorteosPro;
 import com.codevsolution.freemarketsapp.ui.FragmentCRUDAmortizacion;
 import com.codevsolution.freemarketsapp.ui.FragmentCRUDCliente;
@@ -40,6 +45,7 @@ import com.codevsolution.freemarketsapp.ui.FragmentCRUDTrabajo;
 import com.codevsolution.freemarketsapp.ui.ListadoProductosCli;
 import com.codevsolution.freemarketsapp.ui.ListadoProductosPro;
 import com.codevsolution.freemarketsapp.ui.ListadoSorteosCli;
+import com.codevsolution.freemarketsapp.ui.ListadosPerfilesFirebasePro;
 import com.codevsolution.freemarketsapp.ui.MisSorteosCli;
 import com.codevsolution.freemarketsapp.ui.MisSuscripcionesPro;
 import com.codevsolution.freemarketsapp.ui.MisSuscripcionesProductosCli;
@@ -131,9 +137,21 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
             return false;
 
+        } else {
+
+            SQLiteDatabase db = SQLiteDatabase.openDatabase(getDatabasePath(BASEDATOS).getAbsolutePath(),
+                    null, SQLiteDatabase.OPEN_READONLY);
+            if (SQLiteUtil.isTableExists(TABLA_PERFIL, db)) {
+
+                db.close();
+                ListaModelo listaModelo = CRUDutil.setListaModelo(CAMPOS_PERFIL);
+                if (listaModelo.getLista().size() > 0 && listaModelo.getLista().get(0).getString(PERFIL_NOMBRE).equals("Defecto")) {
+                    return true;
+                }
+            }
         }
 
-        return true;
+        return false;
     }
 
     private boolean iniciarDB() {
@@ -338,24 +356,16 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
                 enviarBundleAFragment(bundle, new FragmentCRUDProducto());
                 break;
 
-            case CHAT:
 
-                enviarBundleAFragment(bundle, new FragmentChatBase());
-                break;
 
             case SORTEOPRO:
 
-                enviarBundleAFragment(bundle, new ListadoSorteosPro());
+                enviarBundleAFragment(bundle, new AltaSorteosPro());
                 break;
 
             case SORTEOCLI:
 
-                enviarBundleAFragment(bundle, new ListadoSorteosCli());
-                break;
-
-            case SORTEO:
-
-                enviarBundleAFragment(bundle, new AltaSorteosPro());
+                enviarBundleAFragment(bundle, new AltaSorteosCli());
                 break;
 
             case MISSORTEOSPRO:
@@ -394,6 +404,36 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
+
+            case CHAT + PRO:
+
+                bundle.putBoolean(AVISO, true);
+                enviarBundleAFragment(bundle, new ListadosPerfilesFirebasePro());
+                break;
+
+            case CHAT + PRODUCTOCLI:
+
+                bundle.putBoolean(AVISO, true);
+                enviarBundleAFragment(bundle, new ListadoProductosCli());
+                break;
+
+            case CHAT + PRODUCTOPRO:
+
+                bundle.putBoolean(AVISO, true);
+                enviarBundleAFragment(bundle, new ListadoProductosPro());
+                break;
+
+            case CHAT + SORTEOCLI:
+
+                bundle.putBoolean(AVISO, true);
+                enviarBundleAFragment(bundle, new ListadoSorteosCli());
+                break;
+
+            case CHAT + SORTEOPRO:
+
+                bundle.putBoolean(AVISO, true);
+                enviarBundleAFragment(bundle, new ListadoSorteosPro());
+                break;
 
 
         }

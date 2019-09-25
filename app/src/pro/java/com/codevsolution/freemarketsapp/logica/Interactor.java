@@ -312,14 +312,14 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
     }
 
     public static void notificationSorteo(Context contexto, Class<?> clase, String idGanador,
-                                          String idSorteo, int id, int iconId, String titulo, String contenido) {
+                                          String idSorteo, String actual, int id, int iconId, String titulo, String contenido) {
 
         RemoteViews remoteView = new RemoteViews(contexto.getPackageName(), R.layout.notificacion_chat);
         remoteView.setTextViewText(R.id.tvdescnotchat, contenido);
 
         Intent intentVerChat = new Intent(contexto, clase);
         intentVerChat.setAction(ACCION_VERSORTEO);
-        intentVerChat.putExtra(EXTRA_ACTUAL, SORTEO);
+        intentVerChat.putExtra(EXTRA_ACTUAL, actual);
         intentVerChat.putExtra(EXTRA_SORTEO, idSorteo);
         intentVerChat.putExtra(EXTRA_GANADOR, idGanador);
         intentVerChat.putExtra(EXTRA_ID, id);

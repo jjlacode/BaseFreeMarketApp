@@ -31,8 +31,9 @@ public class SorteosReceiver extends ReceiverBase implements JavaUtil.Constantes
             String idGanador = (String) intent.getExtras().get(GANADORSORTEO);
             String idSorteo = (String) intent.getExtras().get(SORTEO);
             String contenido = (String) intent.getExtras().get(PRODUCTO);
+            String actual = (String) intent.getExtras().get(ACTUAL);
 
-            Interactor.notificationSorteo(context, MainActivity.class, idGanador, idSorteo,
+            Interactor.notificationSorteo(context, MainActivity.class, idGanador, idSorteo, actual,
                     contnot, R.drawable.logo, "Sorteo finalizado",
                     contenido);
 

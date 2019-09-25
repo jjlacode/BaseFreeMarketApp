@@ -8,6 +8,8 @@ public class MsgChat implements Serializable {
     private String idDestino;
     private String nombre;
     private String mensaje;
+    private String url;
+    private String tipo;
     private long fecha;
 
     public MsgChat() {
@@ -53,4 +55,19 @@ public class MsgChat implements Serializable {
         this.fecha = fecha;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
 }

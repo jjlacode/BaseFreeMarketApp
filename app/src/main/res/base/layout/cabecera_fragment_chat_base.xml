@@ -33,4 +33,13 @@
         android:layout_weight="5" />
     </LinearLayout>
 
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/urlchatenv_base"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:hint="@string/url"
+        android:background="@drawable/boton_redondo_secondary"
+        android:inputType="textMultiLine" />
+
 </LinearLayout>

@@ -6,17 +6,22 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 
+import com.codevsolution.base.chat.EnviarNoticias;
 import com.codevsolution.base.chat.FragmentChatBase;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -218,6 +223,9 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                     firebaseFormBase = dataSnapshot.getValue(FirebaseFormBase.class);
+                    if (firebaseFormBase == null) {
+                        nuevo = true;
+                    }
                     esDetalle = true;
                     selector();
 
@@ -226,6 +234,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                    nuevo = true;
                 }
 
             });
@@ -269,7 +278,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             visible(suscritos);
             gone(lyChat);
             gone(btnback);
-            if (id == null && tipo.equals(PRO)) {
+            if (id == null) {
                 id = idUser;
             }
 
@@ -286,7 +295,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             if (idChat == null) {
                 ListaModelo listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
                 for (Modelo chat : listaChats.getLista()) {
-                    if (chat.getString(CHAT_USUARIO).equals(id)) {
+                    if (chat.getString(CHAT_USUARIO).equals(id) && chat.getString(CHAT_TIPO).equals(tipo)) {
                         idChat = chat.getString(CHAT_ID_CHAT);
                     }
                 }
@@ -345,7 +354,6 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
                         db.child(tipo).child(idUser).removeValue();
                         db.child(PERFIL).child(tipo).child(idUser).removeValue();
                         db.child(RATING).child(tipo).child(idUser).removeValue();
-                        db.child(INDICEMARC + tipo).child(id);
                         ImagenUtil.deleteImagefirestore(idUser);
 
                         db.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -408,16 +416,11 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             @Override
             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
 
+                nuevo = false;
             }
         });
         db.child(PERFIL).child(tipo).child(idUser).setValue(true);
 
-    }
-
-
-    @Override
-    protected String setTipoRating() {
-        return firebaseFormBase.getTipoBase();
     }
 
     @Override
@@ -601,11 +604,11 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             });
 
             ratingBarCard.setRating(0);
-            recuperarVotos(ratingBarCard, firebaseFormBase.getTipoBase(), firebaseFormBase.getIdchatBase());
+            recuperarVotos(ratingBarCard, firebaseFormBase.getIdchatBase());
             ratingBarCard.setIsIndicator(true);
 
             ratingBarUserCard.setRating(0);
-            recuperarVotoUsuario(ratingBarUserCard, contexto, firebaseFormBase.getTipoBase(), firebaseFormBase.getIdchatBase());
+            recuperarVotoUsuario(ratingBarUserCard, contexto, firebaseFormBase.getIdchatBase());
             ratingBarUserCard.setIsIndicator(true);
 
 
@@ -618,4 +621,99 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
         }
     }
 
+    public static class ViewHolderRVMsgChat extends BaseViewHolder implements TipoViewHolder {
+
+        TextView mensaje, fecha;
+        CardView card;
+        WebView webView;
+        ProgressBar progressBarWebCard;
+        NestedScrollView lylweb;
+
+        public ViewHolderRVMsgChat(View itemView) {
+            super(itemView);
+            mensaje = itemView.findViewById(R.id.tvmsgchat_base);
+            fecha = itemView.findViewById(R.id.tvmsgchatfecha_base);
+            card = itemView.findViewById(R.id.cardmsgchat_base);
+            webView = itemView.findViewById(R.id.browserwebl_chat_base);
+            progressBarWebCard = itemView.findViewById(R.id.progressBarWebCardchat);
+            lylweb = itemView.findViewById(R.id.lylweb_chat_base);
+
+        }
+
+        @Override
+        public void bind(Modelo modelo) {
+
+            int tipo = modelo.getInt(DETCHAT_TIPO);
+
+            mensaje.setText(modelo.getString(DETCHAT_MENSAJE));
+            fecha.setText(TimeDateUtil.getDateTimeString(modelo.getLong(DETCHAT_FECHA)));
+
+            if (tipo == RECIBIDO) {
+
+                card.setCardBackgroundColor(getContext().getResources().getColor(R.color.Color_msg_recibido));
+                card.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) card.getLayoutParams();
+                params.addRule(RelativeLayout.ALIGN_PARENT_START);
+                params.setMargins((int) (10 * densidad), (int) (10 * densidad), (int) (10 * densidad), 0);
+
+                card.setLayoutParams(params);
+
+                card.setVisibility(View.VISIBLE);
+
+            } else {
+                card.setVisibility(View.GONE);
+
+            }
+
+            String webprod = modelo.getString(DETCHAT_URL);
+
+
+            if (webprod != null && JavaUtil.isValidURL(webprod)) {
+
+                lylweb.setVisibility(View.VISIBLE);
+
+                webView.getSettings().setJavaScriptEnabled(true);
+                webView.getSettings().setBuiltInZoomControls(true);
+                webView.getSettings().setDisplayZoomControls(false);
+
+                webView.setWebViewClient(new WebViewClient() {
+
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                        view.loadUrl(url);
+                        return true;
+                    }
+                });
+                // Cargamos la web
+
+
+                webView.loadUrl(webprod);
+                webView.setWebChromeClient(new WebChromeClient() {
+                    @Override
+                    public void onProgressChanged(WebView view, int progress) {
+                        progressBarWebCard.setProgress(0);
+                        progressBarWebCard.setVisibility(View.VISIBLE);
+                        progressBarWebCard.setProgress(progress * 1000);
+
+                        progressBarWebCard.incrementProgressBy(progress);
+
+                        if (progress == 100) {
+                            progressBarWebCard.setVisibility(View.GONE);
+                        }
+                    }
+                });
+
+            } else {
+                lylweb.setVisibility(View.GONE);
+            }
+
+            super.bind(modelo);
+
+        }
+
+        @Override
+        public BaseViewHolder holder(View view) {
+            return new ViewHolderRVMsgChat(view);
+        }
+    }
 }

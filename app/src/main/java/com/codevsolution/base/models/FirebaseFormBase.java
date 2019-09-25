@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class FirebaseFormBase implements Serializable {
 
     private String nombreBase;
+    private String apellidosBase;
     private String descripcionBase;
     private String direccionBase;
     private String emailBase;
@@ -19,11 +20,12 @@ public class FirebaseFormBase implements Serializable {
     public FirebaseFormBase() {
     }
 
-    public FirebaseFormBase(String nombreBase, String descripcionBase,
+    public FirebaseFormBase(String nombreBase, String apellidosBase, String descripcionBase,
                             String direccionBase, String emailBase, String telefonoBase,
                             String webBase, String clavesBase, String idchatBase,
                             String tipoBase, boolean multi, boolean activo) {
         this.nombreBase = nombreBase;
+        this.apellidosBase = apellidosBase;
         this.descripcionBase = descripcionBase;
         this.direccionBase = direccionBase;
         this.emailBase = emailBase;
@@ -42,6 +44,14 @@ public class FirebaseFormBase implements Serializable {
 
     public void setNombreBase(String nombreBase) {
         this.nombreBase = nombreBase;
+    }
+
+    public String getApellidosBase() {
+        return apellidosBase;
+    }
+
+    public void setApellidosBase(String apellidosBase) {
+        this.apellidosBase = apellidosBase;
     }
 
     public String getDescripcionBase() {

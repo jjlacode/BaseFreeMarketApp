@@ -36,12 +36,18 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
     public interface Constantes {
 
         String USERID = "userid";
+        String PLANMENSUAL = "plan_mensual";
+        String PLANTRIMESTRAL = "plan_trimestral";
+        String PLANSEMESTRAL = "plan_semestral";
+        String PLANANUAL = "plan_anual";
+        String SUSESTADO = "estado_suscripcion";
         String LOCALIZACION = "localizacion";
         String USERS = "users";
         String ANON = "anonimo";
         String PERFILES = "perfiles";
         String SERVICIOS = "servicios";
         String PRODUCTOS = "productos";
+        String NUMPRODSUS = "num_productos_suscritos";
         String INDICE = "indice";
         String LUGARES = "lugares";
         String MIUBICACION = "miUbicacion";
@@ -65,6 +71,7 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
         String SALIR = "salir";
         String TABLAS = "tablas";
         String NUEVO = getAppContext().getString(R.string.nuevo);
+        String CRUD = "crud";
         String SORTEO = "sorteo";
         String SORTEOPRO = "sorteo_pro";
         String SORTEOCLI = "sorteo_cli";

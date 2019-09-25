@@ -199,6 +199,7 @@ public class AppActivity extends Application {
                 Intent intent = new Intent(Intent.ACTION_CALL, uri);
                 intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
+                System.out.println("llamando a " + phoneNo);
             } else {
                 Toast.makeText(context, "El numero no es valido", Toast.LENGTH_SHORT).show();
             }

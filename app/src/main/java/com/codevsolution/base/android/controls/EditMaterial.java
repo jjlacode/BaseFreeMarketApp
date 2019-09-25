@@ -6,31 +6,42 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.codevsolution.base.android.AppActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.codevsolution.freemarketsapp.MainActivity;
 import com.codevsolution.freemarketsapp.R;
 
 public class EditMaterial extends LinearLayoutCompat {
 
     private TextInputEditText editText;
     private TextInputLayout textInputLayout;
-    private ImageButton grabar;
+    private ImageButton btnInicio;
+    private ImageButton btnAccion;
+    private ImageButton btnAccion2;
+    private Button btnText;
     private AlCambiarListener listener;
     private AudioATexto grabarListener;
     private CambioFocoEdit listenerFoco;
+    private ClickAccion listenerAccion;
+    private ClickAccion2 listenerAccion2;
+    private ClickAccionTxt listenerAccionTxt;
     private int posicion;
     DisplayMetrics metrics = new DisplayMetrics();
     private boolean textoCambiado;
     private String textoEdit;
+    private AppCompatActivity activity;
+    private int weight = 5;
 
     public EditMaterial(Context context) {
         super(context);
@@ -49,7 +60,6 @@ public class EditMaterial extends LinearLayoutCompat {
         inicializar();
 
         setAtributos(attrs);
-
     }
 
     private void inicializar() {
@@ -61,9 +71,13 @@ public class EditMaterial extends LinearLayoutCompat {
 
         editText = findViewById(R.id.et_material);
         textInputLayout = findViewById(R.id.ti_material);
-        grabar = findViewById(R.id.imgmaterial);
+        btnInicio = findViewById(R.id.imgmaterial);
+        btnAccion = findViewById(R.id.imgmaterialder);
+        btnAccion2 = findViewById(R.id.imgmaterialder2);
+        btnText = findViewById(R.id.imgmaterialder3);
 
         asignarEventos();
+        setWeigthLayout();
 
     }
 
@@ -90,9 +104,11 @@ public class EditMaterial extends LinearLayoutCompat {
         editText.setInputType(tipoDato);
         editText.setGravity(gravedad);
         editText.setEnabled(activo);
-        grabar.setFocusable(false);
+        btnInicio.setFocusable(false);
+        btnAccion.setFocusable(false);
 
         a.recycle();
+        setWeigthLayout();
 
     }
 
@@ -106,6 +122,18 @@ public class EditMaterial extends LinearLayoutCompat {
 
     public void setCambioFocoListener(CambioFocoEdit listener) {
         listenerFoco = listener;
+    }
+
+    public void setClickAccion(ClickAccion listener) {
+        listenerAccion = listener;
+    }
+
+    public void setClickAccion2(ClickAccion2 listener) {
+        listenerAccion2 = listener;
+    }
+
+    public void setClickAccionTxt(ClickAccionTxt listener) {
+        listenerAccionTxt = listener;
     }
 
     private void asignarEventos() {
@@ -143,11 +171,44 @@ public class EditMaterial extends LinearLayoutCompat {
             }
         });
 
-        grabar.setOnClickListener(new OnClickListener() {
+        btnInicio.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 grabarListener.onGrabar(view, posicion);
+            }
+        });
+
+        btnAccion.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (listenerAccion != null) {
+                    listenerAccion.onClickAccion(view);
+                }
+
+            }
+        });
+
+        btnAccion2.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (listenerAccion2 != null) {
+                    listenerAccion2.onClickAccion2(view);
+                }
+
+            }
+        });
+
+        btnText.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (listenerAccionTxt != null) {
+                    listenerAccionTxt.onClickAccionTxt(view);
+                }
+
             }
         });
 
@@ -179,6 +240,50 @@ public class EditMaterial extends LinearLayoutCompat {
 
     }
 
+    private void setWeigthLayout() {
+
+        int vis = btnInicio.getVisibility() + btnAccion.getVisibility() + btnAccion2.getVisibility() + btnText.getVisibility();
+
+        switch (vis) {
+
+            case 24:
+                weight = 10;
+                break;
+            case 20:
+                weight = 5;
+                break;
+            case 16:
+                weight = 5;
+                break;
+            case 8:
+                weight = 4;
+                break;
+        }
+        System.out.println("weight = " + weight);
+
+        LinearLayoutCompat.LayoutParams params = new LinearLayoutCompat.LayoutParams(LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT, weight);
+        params.gravity = Gravity.CENTER_VERTICAL;
+        btnInicio.setLayoutParams(params);
+        btnAccion.setLayoutParams(params);
+        btnAccion2.setLayoutParams(params);
+        params = new LinearLayoutCompat.LayoutParams(LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT, weight - 2);
+        params.gravity = Gravity.CENTER_VERTICAL;
+        btnText.setLayoutParams(params);
+        btnText.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
+
+        if (btnText.getVisibility() == View.VISIBLE) {
+            params = new LinearLayoutCompat.LayoutParams(LayoutParams.MATCH_PARENT,
+                    LayoutParams.WRAP_CONTENT, weight - 2);
+            textInputLayout.setLayoutParams(params);
+        } else {
+            params = new LinearLayoutCompat.LayoutParams(LayoutParams.MATCH_PARENT,
+                    LayoutParams.WRAP_CONTENT, 1);
+            textInputLayout.setLayoutParams(params);
+        }
+    }
+
     public void setFondo(int colorFondo) {
         textInputLayout.setBoxBackgroundColor(colorFondo);
 
@@ -206,10 +311,149 @@ public class EditMaterial extends LinearLayoutCompat {
     public void grabarEnable(boolean enable) {
 
         if (enable) {
-            grabar.setVisibility(View.VISIBLE);
+            btnInicio.setVisibility(View.VISIBLE);
         } else {
-            grabar.setVisibility(View.GONE);
+            btnInicio.setVisibility(View.GONE);
         }
+        setWeigthLayout();
+    }
+
+    public void btnInicioEnable(boolean enable) {
+
+        if (enable) {
+            btnInicio.setVisibility(View.VISIBLE);
+        } else {
+            btnInicio.setVisibility(View.GONE);
+        }
+        setWeigthLayout();
+
+    }
+
+    public void btnInicioInvisible(boolean enable) {
+
+        if (enable) {
+            btnInicio.setVisibility(View.VISIBLE);
+        } else {
+            btnInicio.setVisibility(View.INVISIBLE);
+        }
+        setWeigthLayout();
+
+    }
+
+    public void btnAccionEnable(boolean enable) {
+
+        if (enable) {
+            btnAccion.setVisibility(View.VISIBLE);
+        } else {
+            btnAccion.setVisibility(View.GONE);
+        }
+        setWeigthLayout();
+
+    }
+
+    public void btnAccionInvisible(boolean enable) {
+
+        if (enable) {
+            btnAccion.setVisibility(View.VISIBLE);
+        } else {
+            btnAccion.setVisibility(View.INVISIBLE);
+        }
+        setWeigthLayout();
+
+    }
+
+    public void btnAccion2Invisible(boolean enable) {
+
+        if (enable) {
+            btnAccion2.setVisibility(View.VISIBLE);
+        } else {
+            btnAccion2.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public void btnAccion2Enable(boolean enable) {
+
+        if (enable) {
+            btnAccion2.setVisibility(View.VISIBLE);
+        } else {
+            btnAccion2.setVisibility(View.GONE);
+        }
+        setWeigthLayout();
+
+    }
+
+    public void btnAccionTxtEnable(boolean enable) {
+
+        if (enable) {
+            btnText.setVisibility(View.VISIBLE);
+        } else {
+            btnText.setVisibility(View.GONE);
+        }
+        setWeigthLayout();
+
+    }
+
+    public void setImgBtnAccion(int recurso) {
+
+        btnAccion.setImageResource(recurso);
+    }
+
+    public void setImgBtnAccion2(int recurso) {
+
+        btnAccion2.setImageResource(recurso);
+    }
+
+    public void setTextBtnTxt(String textoBtn) {
+
+        btnText.setText(textoBtn);
+    }
+
+    public void setTextBtnTxt(int recursoString) {
+
+        btnText.setText(recursoString);
+    }
+
+    public void setAccionLlamada(AppCompatActivity activityCompat, ClickAccion listenerAccion) {
+
+        btnAccionEnable(true);
+        setImgBtnAccion(R.drawable.ic_llamada_indigo);
+        activity = activityCompat;
+        this.listenerAccion = listenerAccion;
+    }
+
+    public void setAccionVerMapa(ClickAccion listenerAccion) {
+
+        btnAccionEnable(true);
+        setImgBtnAccion(R.drawable.ic_lugar_indigo);
+        this.listenerAccion = listenerAccion;
+    }
+
+    public void setAccionEnviarMail(ClickAccion listenerAccion) {
+
+        btnAccionEnable(true);
+        setImgBtnAccion(R.drawable.ic_email_indigo);
+        this.listenerAccion = listenerAccion;
+    }
+
+    public void enviarEmail() {
+
+        AppActivity.enviarEmail(getContext(), getTexto());
+
+    }
+
+    public void verEnMapa() {
+
+        if (!getTexto().equals("")) {
+
+            AppActivity.viewOnMapA(getContext(), getTexto());
+
+        }
+    }
+
+    public void llamar() {
+
+        AppActivity.hacerLlamada(getContext(), getTexto(), activity);
+
     }
 
     public void setText(String text) {
@@ -221,10 +465,9 @@ public class EditMaterial extends LinearLayoutCompat {
         editText.setGravity(gravedad);
     }
 
-    public void setTextSize(MainActivity activityCompat) {
+    public void setTextSize(AppCompatActivity activityCompat) {
 
         activityCompat.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
 
         boolean land = getResources().getBoolean(R.bool.esLand);
         boolean tablet = getResources().getBoolean(R.bool.esTablet);
@@ -233,6 +476,7 @@ public class EditMaterial extends LinearLayoutCompat {
 
         float size = ((float) (alto * ancho) / (metrics.densityDpi * 300));
         editText.setTextSize(size);
+        activity = activityCompat;
     }
 
     public void setTextSize(FragmentActivity activityCompat) {
@@ -309,6 +553,21 @@ public class EditMaterial extends LinearLayoutCompat {
 
         void despuesCambio(Editable s);
 
+    }
+
+    public interface ClickAccion {
+
+        void onClickAccion(View view);
+    }
+
+    public interface ClickAccion2 {
+
+        void onClickAccion2(View view);
+    }
+
+    public interface ClickAccionTxt {
+
+        void onClickAccionTxt(View view);
     }
 
 }

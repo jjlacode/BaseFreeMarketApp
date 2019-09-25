@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.codevsolution.base.android.controls.ViewLinearLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.LockableScrollView;
@@ -70,7 +71,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected boolean tablet;
     protected DisplayMetrics metrics;
 
-    protected int ancho;
+    protected static int ancho;
     protected int anchoReal;
     protected int alto;
     protected int altoReal;
@@ -108,7 +109,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected ImageButton btndelete;
     protected OneFrameLayout frameAnimationCuerpo;
     protected LockableScrollView scrollDetalle;
-    protected float densidad;
+    protected static float densidad;
     protected static final int RECOGNIZE_SPEECH_ACTIVITY = 30;
     protected String grabarVoz;
     protected String origen;
@@ -129,7 +130,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     private SensorEventListener sensorLuzListener;
     private boolean listenerSensorLuz;
     private float valorLuz;
-    protected ArrayList camposEdit;
+    protected ArrayList<Map> camposEdit;
     protected Timer timer;
     protected String perfilUser;
     protected String idUser;
@@ -140,8 +141,6 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         Log.d(TAG, getMetodo());
 
         setLayout();
-        System.out.println("layoutCabecera = " + layoutCabecera);
-
         setLayoutExtra();
         setContext();
 
@@ -255,6 +254,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         contexto = activityBase;
 
         frameAnimationCuerpo = view.findViewById(R.id.frameanimationcuerpo);
+        System.out.println("frameAnimationCuerpo = " + frameAnimationCuerpo);
 
         frameAnimationCuerpo.setAncho((int) (ancho * densidad));
 
@@ -1020,5 +1020,35 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         activityBase.getSupportFragmentManager().beginTransaction()
                 .remove(fragment).commit();
+    }
+
+    protected View addVista(int layout, ViewGroup viewGroup) {
+
+        View view = null;
+        if (layout > 0) {
+            view = inflaterMain.inflate(layout, containerMain, false);
+            if (view.getParent() != null) {
+                ((ViewGroup) view.getParent()).removeView(view); // <- fix
+            }
+            viewGroup.addView(view);
+            visible(viewGroup);
+
+        } else {
+            gone(viewGroup);
+        }
+        return view;
+    }
+
+    protected View addVista(View view, ViewGroup viewGroup) {
+
+        viewGroup.addView(view);
+
+        return view;
+    }
+
+    protected void actualizarArrays(ViewLinearLayout vista) {
+        vistas.addAll(vista.getVistas());
+        materialEdits.addAll(vista.getEditMaterials());
+        camposEdit.addAll(vista.getCamposEdit());
     }
 }

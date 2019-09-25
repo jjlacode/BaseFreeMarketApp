@@ -6,6 +6,8 @@ public class Productos implements Serializable {
 
     private String id;
 
+    private String idCrud;
+
     private String idClon;
 
     private String refprov;
@@ -36,15 +38,18 @@ public class Productos implements Serializable {
 
     private String rutafoto;
 
+    private long timeStamp;
+
 
     public Productos() {
     }
 
-    public Productos(String id, String refprov, String nombre, String descripcion, String web,
+    public Productos(String id, String idCrud, String refprov, String nombre, String descripcion, String web,
                      double descProv, double precio, String proveedor, String categoria,
                      String idprov, String alcance, String tipo, boolean activo,
-                     String idClon, String rutafoto, boolean sincronizado) {
+                     String idClon, String rutafoto, boolean sincronizado, long timeStamp) {
         this.id = id;
+        this.idCrud = idCrud;
         this.refprov = refprov;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -60,6 +65,7 @@ public class Productos implements Serializable {
         this.rutafoto = rutafoto;
         this.idClon = idClon;
         this.sincronizado = sincronizado;
+        this.timeStamp = timeStamp;
     }
 
     public String getId() {
@@ -68,6 +74,14 @@ public class Productos implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getIdCrud() {
+        return idCrud;
+    }
+
+    public void setIdCrud(String idCrud) {
+        this.idCrud = idCrud;
     }
 
     public String getRefprov() {
@@ -188,6 +202,14 @@ public class Productos implements Serializable {
 
     public void setSincronizado(boolean sincronizado) {
         this.sincronizado = sincronizado;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
     }
 }
 

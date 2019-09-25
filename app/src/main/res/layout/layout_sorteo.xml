@@ -14,6 +14,14 @@
         app:tipo_dato="NUMERO" />
 
     <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_chat_ganador_sorteo_prod"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/altobtn"
+        style="@style/boton_secondary"
+        android:visibility="gone"
+        android:text="@string/chat_ganador" />
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_volver_sorteo_prod"
         android:layout_width="match_parent"
         android:layout_height="@dimen/altobtn"

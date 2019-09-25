@@ -64,6 +64,8 @@
             <flag name="top" value="48"/>
             <flag name="bottom" value="80"/>
         </attr>
+        <attr name="img_accion" format="integer" />
+
     </declare-styleable>
 
 </resources>

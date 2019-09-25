@@ -44,7 +44,7 @@ public class ContratoSystem implements JavaUtil.Constantes {
         String CHAT_ID_CHAT = CAMPO_ID + TABLA_CHAT;
         String CHAT_USUARIO = CAMPO_USUARIO + TABLA_CHAT;
         String CHAT_NOMBRE = CAMPO_NOMBRE + TABLA_CHAT;
-        String CHAT_ESPECIAL = "especial_" + TABLA_CHAT;
+        String CHAT_TIPO = CAMPO_TIPO + TABLA_CHAT;
         String CHAT_CREATE = CAMPO_CREATEREG;
         String CHAT_TIMESTAMP = CAMPO_TIMESTAMP;
 
@@ -52,6 +52,7 @@ public class ContratoSystem implements JavaUtil.Constantes {
         String DETCHAT_SECUENCIA = CAMPO_SECUENCIA;
         String DETCHAT_TIPO = CAMPO_TIPO + TABLA_DETCHAT;
         String DETCHAT_MENSAJE = "mensaje_" + TABLA_DETCHAT;
+        String DETCHAT_URL = "url" + TABLA_DETCHAT;
         String DETCHAT_NOTIFICADO = CAMPO_NOTIFICADO + TABLA_DETCHAT;
         String DETCHAT_FECHA = CAMPO_FECHA + TABLA_DETCHAT;
         String DETCHAT_CREATE = CAMPO_CREATEREG;
@@ -75,16 +76,17 @@ public class ContratoSystem implements JavaUtil.Constantes {
                 CHAT_ID_CHAT, "TEXT NON NULL UNIQUE", STRING,
                 CHAT_USUARIO, "TEXT NON NULL", STRING,
                 CHAT_NOMBRE, "TEXT NON NULL", STRING,
-                CHAT_ESPECIAL, "INTEGER NON NULL DEFAULT 0", INT,
+                CHAT_TIPO, "TEXT NON NULL DEFAULT 'chat'", STRING,
                 CHAT_CREATE, "INTEGER NON NULL DEFAULT 0", LONG,
                 CHAT_TIMESTAMP, "INTEGER NON NULL DEFAULT 0", LONG
         };
 
-        String[] CAMPOS_DETCHAT = {"26", TABLA_DETCHAT,
+        String[] CAMPOS_DETCHAT = {"29", TABLA_DETCHAT,
                 DETCHAT_ID_CHAT, String.format("TEXT NON NULL %s", ID_CHAT), STRING,
                 DETCHAT_SECUENCIA, "INTEGER NON NULL", INT,
                 DETCHAT_TIPO, "INTEGER NON NULL", INT,
                 DETCHAT_MENSAJE, "TEXT", STRING,
+                DETCHAT_URL, "TEXT", STRING,
                 DETCHAT_NOTIFICADO, "INTEGER NON NULL DEFAULT 0", INT,
                 DETCHAT_FECHA, "INTEGER NON NULL DEFAULT 0", LONG,
                 DETCHAT_CREATE, "INTEGER NON NULL DEFAULT 0", LONG,

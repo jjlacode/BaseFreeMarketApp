@@ -10,6 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        android:showText="true"
+        android:textOn="@string/on"
+        android:textOff="@string/off"
         android:text="@string/sincronizar_clon" />
 
     <RadioGroup
@@ -131,6 +134,14 @@
             style="@style/boton_secondary"
             android:visibility="gone"
             android:text="@string/clonar_prod_a_cliente" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_clonar_prod_pro"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/altobtn"
+            style="@style/boton_secondary"
+            android:visibility="gone"
+            android:text="@string/clonar_prod_a_pro" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_sorteo_prod"
