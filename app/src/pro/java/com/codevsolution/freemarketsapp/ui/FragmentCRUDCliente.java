@@ -52,6 +52,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     private ImageButton mail;
     private Button btnclientes;
     private Button btnprospectos;
+    private Button crearPresup;
     private CheckBox activo;
     private String idTipoCliente = null;
     private ArrayList<Modelo> objTiposCli;
@@ -64,6 +65,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     private ImageButton btnNota;
     private ImageButton btnVerNotas;
     private ImagenLayout imagenPeso;
+    private Button crearProyecto;
 
 
     public FragmentCRUDCliente() {
@@ -418,6 +420,28 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             }
         });
 
+        crearPresup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bundle = new Bundle();
+                putBundle(NUEVOREGISTRO, true);
+                putBundle(ACTUAL, PRESUPUESTO);
+                putBundle(CLIENTE, modelo);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
+            }
+        });
+
+        crearProyecto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bundle = new Bundle();
+                putBundle(NUEVOREGISTRO, true);
+                putBundle(ACTUAL, PROYECTO);
+                putBundle(CLIENTE, modelo);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
+            }
+        });
+
     }
 
     @Override
@@ -456,6 +480,8 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
         btnNota = (ImageButton) ctrl(R.id.btn_crearnota_cliente);
         btnVerNotas = (ImageButton) ctrl(R.id.btn_vernotas_cliente);
         activo = (CheckBox) ctrl(R.id.chactivocliente);
+        crearPresup = (Button) ctrl(R.id.btn_crear_presup);
+        crearProyecto = (Button) ctrl(R.id.btn_crear_proy);
 
     }
 
@@ -559,7 +585,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     @Override
     protected void setcambioFragment() {
 
-        subTitulo = setNamefdef();
+        subTitulo = getString(tituloSingular);
         activityBase.toolbar.setSubtitle(subTitulo);
     }
 

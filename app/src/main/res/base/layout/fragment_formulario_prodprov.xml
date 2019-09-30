@@ -5,6 +5,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_add_prod"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/altobtn"
+        style="@style/boton_secondary"
+        android:visibility="gone"
+        android:text="@string/clonar_prod_a_partidabase" />
+
     <Switch
         android:id="@+id/sw_sincroniza_clon"
         android:layout_width="match_parent"
@@ -36,28 +44,14 @@
             android:text="@string/servicios" />
     </RadioGroup>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
 
             <com.codevsolution.base.android.controls.ImagenLayout
                 android:id="@+id/imgformprodprov"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="2.5" />
+                android:layout_height="wrap_content" />
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
 
                 <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/etrefformprodprov"
@@ -83,10 +77,8 @@
                     app:activo="false"
                     app:tipo_dato="TEXTO|PERSONA" />
 
-            </LinearLayout>
-        </LinearLayout>
 
-        <com.codevsolution.base.android.controls.EditMaterial
+    <com.codevsolution.base.android.controls.EditMaterial
             android:id="@+id/etdescformprodprov"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -151,5 +143,5 @@
             android:visibility="gone"
             android:text="@string/sortear" />
 
-    </LinearLayout>
+
 </LinearLayout>

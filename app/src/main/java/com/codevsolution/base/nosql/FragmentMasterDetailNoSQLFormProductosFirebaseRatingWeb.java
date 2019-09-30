@@ -171,6 +171,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
         gone(lyChat);
 
+        System.out.println("paisUser = " + paisUser);
         if (tipoForm.equals(LISTA) && paisUser != null && paisUser.size() > 0) {
 
             lista = new ArrayList<Productos>();

@@ -118,7 +118,8 @@ public abstract class FragmentCRUD extends FragmentCUD {
             modelo = null;
             secuencia = 0;
             if (tituloNuevo > 0) {
-                activityBase.toolbar.setSubtitle(tituloNuevo);
+                subTitulo = getString(tituloNuevo);
+                activityBase.toolbar.setSubtitle(subTitulo);
             }
             vaciarControles();
             path = null;
@@ -134,10 +135,8 @@ public abstract class FragmentCRUD extends FragmentCUD {
                 secuencia = modelo.getInt(CAMPO_SECUENCIA);
             }
             datos();
-
-            if (subTitulo == null) {
-                activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
-            }
+            subTitulo = getString(tituloPlural);
+            activityBase.toolbar.setSubtitle(subTitulo);
 
         } else if (id != null && (secuencia > 0 || tablaCab == null)) {
 
@@ -148,17 +147,14 @@ public abstract class FragmentCRUD extends FragmentCUD {
             }
 
             datos();
-
-            if (subTitulo == null) {
-                activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
-            }
+            subTitulo = getString(tituloPlural);
+            activityBase.toolbar.setSubtitle(subTitulo);
 
         } else {
 
             back = false;
-            if (subTitulo == null) {
-                activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
-            }
+            subTitulo = getString(tituloPlural);
+            activityBase.toolbar.setSubtitle(subTitulo);
 
         }
 
@@ -326,7 +322,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
     protected boolean onUpdate() {
         Log.d(TAG, getMetodo());
 
-        if (update()) {
+        if (comprobarDatos() && update()) {
             selector();
             return true;
         }
@@ -501,39 +497,42 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
         Log.d(TAG, getMetodo());
 
-        if (layoutCabecera > 0) {
-            visible(frCabecera);
-        }
-        visible(frLista);
-        visible(rv);
-        visible(refreshLayout);
-        gone(frameAnimationCuerpo);
-        gone(frPie);
 
         if (nuevo) {
-            if (layoutCabecera > 0) {
+            if (layoutCabecera > 0 || cabecera) {
                 gone(frCabecera);
             }
             gone(frLista);
             gone(rv);
             gone(refreshLayout);
             visible(frameAnimationCuerpo);
+            visible(frdetalle);
             visible(frPie);
             activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_MINI);
             activityBase.fabVoz.setSize(FloatingActionButton.SIZE_MINI);
         } else if ((id != null && secuencia > 0) || (id != null && tablaCab == null) || (modelo != null)) {
-            if (layoutCabecera > 0) {
+            if (layoutCabecera > 0 || cabecera) {
                 gone(frCabecera);
             }
             gone(frLista);
             gone(rv);
             gone(refreshLayout);
             visible(frameAnimationCuerpo);
+            visible(frdetalle);
             visible(frPie);
             activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_MINI);
             activityBase.fabVoz.setSize(FloatingActionButton.SIZE_MINI);
 
         } else {
+
+            if (layoutCabecera > 0 || cabecera) {
+                visible(frCabecera);
+            }
+            visible(frLista);
+            visible(rv);
+            visible(refreshLayout);
+            gone(frameAnimationCuerpo);
+            gone(frPie);
             activityBase.fabVoz.show();
             activityBase.fabNuevo.show();
             activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_NORMAL);
@@ -571,7 +570,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
         visible(frameAnimationCuerpo);
         visible(frdetalle);
         visible(frPie);
-        if (layoutCabecera > 0) {
+        if (layoutCabecera > 0 || cabecera) {
             visible(frCabecera);
         } else {
             gone(frCabecera);
@@ -741,26 +740,29 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
         back = true;
 
-        if (id != null && (tablaCab == null || secuencia > 0)) {
-            update();
-        }
-        modelo = null;
-        if (tablaCab == null) {
-            id = null;
-        }
-        secuencia = 0;
-        nuevo = false;
         cambiarFragment();
         selector();
 
-        activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
+        subTitulo = getString(tituloPlural);
+        activityBase.toolbar.setSubtitle(subTitulo);
         return true;
+    }
+
+    @Override
+    protected boolean setBack() {
+        return back;
     }
 
     protected void cambiarFragment() {
 
         Log.d(TAG, getMetodo());
 
+        modelo = null;
+        if (tablaCab == null) {
+            id = null;
+        }
+        secuencia = 0;
+        nuevo = false;
         enviarBundle();
         setcambioFragment();
         listaRV();

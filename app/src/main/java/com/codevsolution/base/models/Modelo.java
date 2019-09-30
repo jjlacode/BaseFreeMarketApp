@@ -211,7 +211,7 @@ public class Modelo implements Serializable {
     }
 
     public String getCampoID() {
-        return this.campos[2];
+        return this.campos[0];
     }
 
     public String getCampos(String campo) {

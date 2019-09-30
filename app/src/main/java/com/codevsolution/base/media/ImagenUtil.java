@@ -575,6 +575,16 @@ public class ImagenUtil {
         Glide.with(context).load(uri).apply(options).into(imagen);
     }
 
+    public static void setImageUriCircle(int recurso, ImageView imagen) {
+
+        RequestOptions options = new RequestOptions()
+                .placeholder(logo)
+                .circleCrop()
+                .error(error);
+
+        Glide.with(context).load(recurso).apply(options).into(imagen);
+    }
+
     public static void setImageUriCircle(int recurso, ImageView imagen, float multiplicador) {
 
         RequestOptions options = new RequestOptions()

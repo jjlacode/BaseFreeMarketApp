@@ -85,6 +85,18 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
         String ACCION_VERSORTEO = "jjlacode.com.base.util.action.VERSORTEO";
         String EXTRA_ID = "jjlacode.com.base.util.EXTRA_ID";
         String ACCION_AVISOMSGCHAT = "jjlacode.com.base.util.action.AVISOMSGCHAT";
+        String COLOR = "color";
+        String DRAWABLE = "drawable";
+        String STRING = "string";
+        String LAYOUT = "layout";
+        String BTNPRIMARY = "boton_redondo_primary";
+        String BTNSECONDARY = "boton_redondo_secondary";
+        String BTNTRANSPARENTE = "boton_redondo_blanco";
+        String COLORPRIMARY = "colorPrimary";
+        String COLORSECONDARY = "colorSecondary";
+        String COLORSECONDARYDARK = "colorSecondaryDark";
+        String COLOREDITVACIO = "Color_edit_vacio";
+        String COLORTEXTO = "Color_texto";
 
 
     }

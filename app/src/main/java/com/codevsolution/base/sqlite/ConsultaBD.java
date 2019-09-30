@@ -7,6 +7,7 @@ import android.net.Uri;
 
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.time.TimeDateUtil;
 
 import java.util.ArrayList;
 
@@ -2492,7 +2493,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
 
     public static int secInsertRegistroDetalle(String[] campos, String id, String tablaCab, ContentValues valores) {
 
-        valores.put(CAMPO_TIMESTAMP, JavaUtil.hoy());
+        valores.put(CAMPO_TIMESTAMP, TimeDateUtil.ahora());
+        valores.put(CAMPO_CREATEREG, TimeDateUtil.ahora());
 
         ArrayList<Modelo> lista = queryListDetalle(campos, id, tablaCab, null, null);
 

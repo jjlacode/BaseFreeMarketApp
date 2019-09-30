@@ -34,6 +34,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.codevsolution.base.android.controls.EditMaterialLayout;
+import com.codevsolution.base.android.controls.ViewLayout;
 import com.codevsolution.base.android.controls.ViewLinearLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
@@ -56,6 +58,7 @@ import static android.Manifest.permission.READ_CONTACTS;
 import static android.Manifest.permission.WRITE_CONTACTS;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.SENSOR_SERVICE;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.STRING;
 
 public abstract class FragmentBase extends Fragment implements JavaUtil.Constantes,
         InteractorBase.Constantes {
@@ -80,6 +83,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected boolean multiPanel;
     protected ArrayList<View> vistas;
     protected ArrayList<EditMaterial> materialEdits;
+    protected ArrayList<EditMaterialLayout> materialEditLayouts;
     protected ArrayList<Integer> recursos;
 
     protected RelativeLayout frPrincipal;
@@ -100,6 +104,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected int layoutCuerpo;
     protected int layoutCabecera;
     protected int layoutPie;
+    protected boolean cabecera;
     private Chronometer timerg;
     private boolean onTimer;
     protected LayoutInflater inflaterMain;
@@ -162,10 +167,11 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         System.out.println("sizeText = " + sizeText);
 
         materialEdits = new ArrayList<>();
+        materialEditLayouts = new ArrayList<>();
         vistas = new ArrayList<>();
         recursos = new ArrayList<>();
         camposEdit = new ArrayList();
-        TAG = getClass().getSimpleName();
+        TAG = setTAG();
 
         perfilUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), PREFERENCIAS, PERFILUSER, NULL);
         idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
@@ -312,8 +318,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
     }
 
-    protected void setTAG() {
-        TAG = getClass().getSimpleName();
+    protected String setTAG() {
+        return getClass().getSimpleName();
     }
 
     @Override
@@ -397,7 +403,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         code = 10000;
         contCode = 0;
-        codigo = new int[materialEdits.size() + 1];
+        codigo = new int[materialEdits.size() + materialEditLayouts.size() + 1];
         codigo[contCode] = code;
         for (EditMaterial materialEdit : materialEdits) {
 
@@ -405,6 +411,26 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
                 materialEdit.grabarEnable(true);
                 materialEdit.setPosicion(contCode);
                 materialEdit.setGrabarListener(new EditMaterial.AudioATexto() {
+                    @Override
+                    public void onGrabar(View view, int posicion) {
+
+                        reconocimientoVoz(codigo[posicion]);
+
+                    }
+
+                });
+                code++;
+                contCode++;
+                codigo[contCode] = code;
+            }
+        }
+
+        for (EditMaterialLayout materialEdit : materialEditLayouts) {
+
+            if (materialEdit.getActivo()) {
+                materialEdit.grabarEnable(true);
+                materialEdit.setPosicion(contCode);
+                materialEdit.setGrabarListener(new EditMaterialLayout.AudioATexto() {
                     @Override
                     public void onGrabar(View view, int posicion) {
 
@@ -625,12 +651,20 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
             }
         }
 
+        for (EditMaterialLayout materialEditLayout : materialEditLayouts) {
+            materialEditLayout.setText("");
+        }
+
     }
 
     protected void vaciarEditMaterial() {
 
         for (EditMaterial vista : materialEdits) {
             vista.setText("");
+        }
+
+        for (EditMaterialLayout materialEditLayout : materialEditLayouts) {
+            materialEditLayout.setText("");
         }
     }
 
@@ -648,6 +682,10 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
             } else if (vista instanceof TextView) {
                 ((TextView) vista).setTextSize(sizeText);
             }
+        }
+
+        for (EditMaterialLayout materialEditLayout : materialEditLayouts) {
+            materialEditLayout.setTextSize(activityBase);
         }
 
     }
@@ -939,6 +977,22 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
                 }
                 code++;
             }
+
+            for (EditMaterialLayout materialEdit : materialEditLayouts) {
+
+                if (requestCode == code) {
+                    ArrayList<String> speech = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    String strSpeech2Text = speech.get(0);
+                    grabarVoz = strSpeech2Text;
+
+                    materialEdit.setText(grabarVoz);
+                    alCambiarCampos(materialEdit);
+                    break;
+
+                }
+                code++;
+            }
         }
     }
 
@@ -975,6 +1029,11 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
     }
 
+    protected void alCambiarCampos(EditMaterialLayout editMaterial) {
+
+
+    }
+
     protected void llamarContacto(String contacto) {
 
         ContentResolver cr = contexto.getContentResolver();
@@ -991,17 +1050,11 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     }
 
     protected boolean nn(Object object) {
-        if (object != null) {
-            return true;
-        }
-        return false;
+        return object != null;
     }
 
-    protected boolean nn(String string) {
-        if (string != null && !string.equals(NULL)) {
-            return true;
-        }
-        return false;
+    protected boolean nnn(String string) {
+        return string != null && !string.equals(NULL);
     }
 
     protected void changeFragment(Fragment fragment) {
@@ -1046,9 +1099,12 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         return view;
     }
 
-    protected void actualizarArrays(ViewLinearLayout vista) {
+    protected void actualizarArrays(ViewLayout vista) {
         vistas.addAll(vista.getVistas());
         materialEdits.addAll(vista.getEditMaterials());
         camposEdit.addAll(vista.getCamposEdit());
+        materialEditLayouts.addAll(vista.getEditMaterialLayouts());
     }
+
+
 }

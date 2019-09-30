@@ -2,8 +2,8 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:orientation="vertical"
-    tools:context=".ui.FragmentCUDDetpartidaBase">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -35,43 +35,34 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                    android:id="@+id/autocatbase"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/cuadro_texto"
-                    android:textSize="@dimen/texto"
-                    android:hint="@string/categoria"/>
-
-                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
-                    android:id="@+id/autoprovbase"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/cuadro_texto"
-                    android:textSize="@dimen/texto"
-                    android:hint="@string/proveedor"/>
-
-                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/etnomcdetpartidabase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/cuadro_texto"
-                    android:textSize="@dimen/texto"
-                    android:hint="@string/nombre" />
+                    app:hint_text="@string/nombre"
+                    app:activo="false" />
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/tvrefprovcdetpartidabase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/texto"
-                    android:text="@string/referencia_proveedor" />
+                    app:hint_text="@string/referencia_proveedor"
+                    app:activo="false" />
+
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/tvnomprovcdetpartidabase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:hint_text="@string/proveedor"
+                    app:activo="false" />
 
                 <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/etdesccdetpartidabase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:hint_text="@string/descripcion"
-                    app:tipo_dato="TEXTO|MULTI"/>
+                    app:activo="false" />
+
             </androidx.appcompat.widget.LinearLayoutCompat>
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -81,13 +72,21 @@
             android:orientation="horizontal">
 
             <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etcantcdetpartidabase"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:hint_text="@string/cantidad"
+                app:activo="true" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
                 android:id="@+id/ettiempocdetpartidabase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 app:hint_text="@string/tiempo"
                 app:gravedad="centro"
-                app:tipo_dato="NUMERO|DECIMAL" />
+                app:activo="false" />
 
             <com.codevsolution.base.android.controls.EditMaterial
                 android:id="@+id/etpreciocdetpartidabase"
@@ -95,7 +94,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 app:hint_text="@string/importe"
-                app:tipo_dato="NUMERO|DECIMAL" />
+                app:activo="false" />
+
 
             <com.codevsolution.base.android.controls.EditMaterial
                 android:id="@+id/etdescprovcdetpartidabase"
@@ -103,19 +103,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 app:hint_text="@string/descuento_proveedor"
-                app:tipo_dato="NUMERO|DECIMAL" />
+                app:activo="false" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <com.google.android.material.circularreveal.CircularRevealRelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvcdetpartidabase"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </com.google.android.material.circularreveal.CircularRevealRelativeLayout>
-
     </androidx.appcompat.widget.LinearLayoutCompat>
+
 </androidx.core.widget.NestedScrollView>

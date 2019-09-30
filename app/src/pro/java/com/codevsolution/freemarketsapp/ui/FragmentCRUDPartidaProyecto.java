@@ -1,17 +1,16 @@
 package com.codevsolution.freemarketsapp.ui;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.Filter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -22,6 +21,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
@@ -32,15 +32,14 @@ import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.media.MediaUtil;
+import com.codevsolution.base.models.ListaModelo;
 import com.codevsolution.base.models.Modelo;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import static com.codevsolution.base.sqlite.ConsultaBD.insertRegistroDetalle;
 import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryListDetalle;
@@ -52,21 +51,14 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
     private Long retraso;
     private EditMaterial nombrePartida;
-    private AutoCompleteTextView autoClonarPartida;
     private EditMaterial descripcionPartida;
     private EditMaterial tiempoPartida;
     private EditMaterial importePartida;
     private EditMaterial cantidadPartida;
     private EditMaterial completadaPartida;
-    private Button btnNuevaTrabajo;
-    private Button btnNuevoProd;
-    private Button btnNuevoProdProv;
-    private Button btnNuevaPartida;
-    private Button btnNuevaPartidaBase;
-    private LinearLayout lyImagen;
+    private Button btnPartidaBase;
 
     private ImageView imagenret;
-    private ImageView buscar;
     private RecyclerView rvdetalles;
     private ProgressBar progressBarPartida;
     private ArrayList<Modelo> listaDetpartidas;
@@ -115,76 +107,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     @Override
     protected void setAcciones() {
 
-        btnNuevaTrabajo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                update();
-                modelo = CRUDutil.setModelo(CAMPOS_PARTIDA, id, secuencia);
-                bundle = new Bundle();
-                bundle.putSerializable(PROYECTO, proyecto);
-                bundle.putSerializable(PARTIDA, modelo);
-                bundle.putString(ORIGEN, PARTIDA);
-                bundle.putString(SUBTITULO, proyecto.getString(PROYECTO_NOMBRE));
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDTrabajo());
-
-            }
-
-        });
-
-        btnNuevoProd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                update();
-                modelo = CRUDutil.setModelo(CAMPOS_PARTIDA, id, secuencia);
-                bundle = new Bundle();
-                bundle.putSerializable(PROYECTO, proyecto);
-                bundle.putSerializable(PARTIDA, modelo);
-                bundle.putString(ORIGEN, PARTIDA);
-                bundle.putString(SUBTITULO, proyecto.getString(PROYECTO_NOMBRE));
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProducto());
-
-            }
-
-        });
-
-        btnNuevoProdProv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                update();
-                modelo = queryObjectDetalle(CAMPOS_PARTIDA, id, secuencia);
-                bundle = new Bundle();
-                bundle.putSerializable(PROYECTO, proyecto);
-                bundle.putSerializable(PARTIDA, modelo);
-                bundle.putString(ORIGEN, PARTIDA);
-                bundle.putString(SUBTITULO, proyecto.getString(PROYECTO_NOMBRE));
-                icFragmentos.enviarBundleAFragment(bundle, new CatalogoProdProvWeb());
-
-            }
-
-        });
-
-        btnNuevaPartida.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                update();
-                modelo = queryObjectDetalle(CAMPOS_PARTIDA, id, secuencia);
-                bundle = new Bundle();
-                bundle.putSerializable(PROYECTO, proyecto);
-                bundle.putSerializable(PARTIDA, modelo);
-                bundle.putString(CAMPO_ID, modelo.getString(PARTIDA_ID_PARTIDA));
-                bundle.putString(ORIGEN, PARTIDA);
-                bundle.putString(SUBTITULO, subTitulo);
-                bundle.putString(TIPO, TIPOPARTIDA);
-                bundle.putBoolean(NUEVOREGISTRO, true);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
-
-            }
-
-        });
 
         btnVolverProy.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,12 +124,14 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
             }
         });
 
-        btnNuevaPartidaBase.setOnClickListener(new View.OnClickListener() {
+        btnPartidaBase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                bundle.putString(ORIGEN,PARTIDA);
-                bundle.putBoolean(NUEVOREGISTRO, true);
+                AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDA_ID_PARTIDA, id);
+                AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDA_SECUENCIA, secuencia);
+
+                putBundle(CAMPO_ID, modelo.getString(PARTIDA_ID_PARTIDABASE));
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDPartidaBase());
             }
         });
@@ -224,35 +149,11 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     @Override
     protected void setNuevo() {
 
-        allGone();
-        visible(autoClonarPartida);
-        visible(btnNuevaPartidaBase);
-        visible(nombrePartida);
-        visible(descripcionPartida);
-        visible(cantidadPartida);
 
-        new Interactor.Calculos.TareaSincronizarPartidasBase().execute();
-
-        setAdaptadorAuto(autoClonarPartida);
-
-        autoClonarPartida.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Modelo clon = (Modelo) autoClonarPartida.getAdapter().getItem(position);
-
-                clonarPartidaBase(clon);
-
-            }
-
-        });
-
-        if (idpartidabase!=null){
-
-            gone(autoClonarPartida);
-            clonarPartidaBase(CRUDutil.setModelo(CAMPOS_PARTIDABASE,idpartidabase));
-        }
-
+        bundle = new Bundle();
+        AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDA_ID_PARTIDA, id);
+        AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDA_SECUENCIA, 0);
+        icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDPartidaBase());
 
     }
 
@@ -269,26 +170,18 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     protected void setInicio() {
 
         nombrePartida = (EditMaterial) ctrl(R.id.etnomudpartida, PARTIDA_NOMBRE);
-        autoClonarPartida = (AutoCompleteTextView) ctrl(R.id.autonomudpartida);
         descripcionPartida = (EditMaterial) ctrl(R.id.etdescripcionUDpartida, PARTIDA_DESCRIPCION);
         tiempoPartida = (EditMaterial) ctrl(R.id.ettiempoUDpartida, PARTIDA_TIEMPO);
         importePartida = (EditMaterial) ctrl(R.id.etprecioUDpartida, PARTIDA_PRECIO);
         cantidadPartida = (EditMaterial) ctrl(R.id.etcantidadUDpartida, PARTIDA_CANTIDAD);
         completadaPartida = (EditMaterial) ctrl(R.id.etcompletadaUDpartida, PARTIDA_COMPLETADA);
-        btnNuevaPartidaBase = (Button) ctrl(R.id.btn_npartidabase);
-        btnNuevaTrabajo = (Button) ctrl(R.id.btntareaudpartida);
-        btnNuevoProd = (Button) ctrl(R.id.btnprodudpartida);
-        btnNuevoProdProv = (Button) ctrl(R.id.btnprovudpartida);
-        btnNuevaPartida = (Button) ctrl(R.id.btnpartudpartida);
+        btnPartidaBase = (Button) ctrl(R.id.btn_npartidabase);
         progressBarPartida = (ProgressBar) ctrl(R.id.progressBarUDpartida);
         imagen = (ImagenLayout) ctrl(R.id.imgudpartida);
         imagenret = (ImageView) ctrl(R.id.imgretudpartida);
-        buscar = (ImageView) ctrl(R.id.imgbuscarpartida);
         rvdetalles = (RecyclerView) ctrl(R.id.rvdetalleUDpartida);
         btnVolverProy = (Button) ctrl(R.id.btn_volverproy);
-        lyImagen = (LinearLayout) ctrl(R.id.lyimgpartidaproy);
         gone(btnVolverProy);
-        gone(btnNuevaPartida);
         tiempoPartida.setActivo(false);
         importePartida.setActivo(false);
 
@@ -320,18 +213,26 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     protected void setBundle() {
 
         System.out.println("bundle = " + bundle);
+        AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDA_ID_PARTIDA, NULL);
+        AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDA_SECUENCIA, 0);
 
         idpartidabase = getStringBundle(IDREL,null);
         proyecto = (Modelo) bundle.getSerializable(PROYECTO);
         System.out.println("proyecto = " + proyecto);
-        activityBase.toolbar.setSubtitle(proyecto.getString(PROYECTO_NOMBRE));
+        if (proyecto == null && nn(id)) {
+            proyecto = CRUDutil.setModelo(CAMPOS_PROYECTO, id);
+        }
+        if (nn(proyecto)) {
+            activityBase.toolbar.setSubtitle(proyecto.getString(PROYECTO_NOMBRE));
+        }
+
+
 
     }
 
     @Override
     protected void setDatos() {
 
-        visible(lyImagen);
         visible(imagen);
         tiempoPartida.setVisibility(View.VISIBLE);
         importePartida.setVisibility(View.VISIBLE);
@@ -339,13 +240,9 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         btndelete.setVisibility(View.VISIBLE);
         nombrePartida.setVisibility(View.VISIBLE);
         rvdetalles.setVisibility(View.VISIBLE);
-        btnNuevaTrabajo.setVisibility(View.VISIBLE);
-        btnNuevoProd.setVisibility(View.VISIBLE);
-        btnNuevoProdProv.setVisibility(View.VISIBLE);
         progressBarPartida.setVisibility(View.VISIBLE);
         imagenret.setVisibility(View.VISIBLE);
-        btnNuevaPartidaBase.setVisibility(View.GONE);
-        autoClonarPartida.setVisibility(View.GONE);
+        btnPartidaBase.setVisibility(View.GONE);
         gone(buscar);
         tiempo = (modelo.getDouble(PARTIDA_TIEMPO)*HORASLONG)/1000;
         completada = modelo.getDouble(PARTIDA_COMPLETADA);
@@ -449,6 +346,69 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     }
 
     @Override
+    protected void setOnClickRV(Modelo modelo) {
+        super.setOnClickRV(modelo);
+
+        if (nn(id) && secuencia > 0) {
+            new TareaSincroPartidaProy().execute(id, String.valueOf(secuencia));
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public class TareaSincroPartidaProy extends AsyncTask<String, Float, Modelo> {
+
+        @Override
+        protected Modelo doInBackground(String... strings) {
+
+            Interactor.Calculos.sincroPartidaBaseToPartidaProy(strings[0], strings[1]);
+            return CRUDutil.setModelo(CAMPOS_PARTIDA, strings[0], strings[1]);
+        }
+
+        @Override
+        protected void onPostExecute(Modelo modelo) {
+            super.onPostExecute(modelo);
+            new TareaActualizaProdProvPartidaProy().execute(modelo);
+
+        }
+
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public class TareaActualizaProdProvPartidaProy extends AsyncTask<Modelo, Float, Modelo> {
+
+        @Override
+        protected Modelo doInBackground(Modelo... modelos) {
+
+            Interactor.Calculos.actualizarProdProvPartidaProy(modelos[0].getString(PARTIDA_ID_PARTIDA));
+            return modelos[0];
+        }
+
+        @Override
+        protected void onPostExecute(Modelo modelo) {
+            super.onPostExecute(modelo);
+            new TareaActualizaPartidaProy().execute(modelo.getString(PARTIDA_ID_PARTIDA));
+
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public class TareaActualizaPartidaProy extends AsyncTask<String, Float, Integer> {
+
+        @Override
+        protected Integer doInBackground(String... strings) {
+
+            Interactor.Calculos.actualizarPartidaProyecto(strings[0]);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+            selector();
+        }
+    }
+
+    @Override
     protected void setcambioFragment() {
 
         new Interactor.Calculos.TareaActualizaProy().execute(id);
@@ -468,13 +428,10 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     @Override
     protected void setContenedor() {
 
-        setDato(PARTIDA_NOMBRE, nombrePartida.getText().toString());
-        setDato(PARTIDA_DESCRIPCION, descripcionPartida.getText().toString());
         setDato(PARTIDA_TIEMPO, JavaUtil.comprobarDouble(tiempoPartida.getText().toString()));
         setDato(PARTIDA_PRECIO, JavaUtil.comprobarDouble(importePartida.getText().toString()));
         setDato(PARTIDA_CANTIDAD, JavaUtil.comprobarDouble(cantidadPartida.getText().toString()));
         setDato(PARTIDA_COMPLETADA, JavaUtil.comprobarDouble(completadaPartida.getText().toString()));
-        setDato(PARTIDA_RUTAFOTO, path);
         setDato(PARTIDA_ID_PROYECTO, id);
         System.out.println("id = " + id);
         System.out.println("idDetPartida = " + idDetPartida);
@@ -650,210 +607,6 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         }
     }
 
-    private void setAdaptadorAuto(AutoCompleteTextView autoCompleteTextView) {
-
-
-        ArrayList<Modelo> lista = queryList(CAMPOS_PARTIDABASE);
-        //ArrayList<Modelo> listabase = consulta.queryList(CAMPOS_PARTIDABASE);
-        //lista.addAllLista(listabase);
-
-
-        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltroPartidas(getContext(),
-                R.layout.item_list_partidabase, lista) {
-            @Override
-            public void onEntrada(Modelo entrada, View view) {
-
-                ImageView imagen = view.findViewById(R.id.imglpartidabase);
-                TextView descripcion = view.findViewById(R.id.tvdescripcionpartidabase);
-                TextView tiempo = view.findViewById(R.id.tvtiempopartidabase);
-                TextView importe = view.findViewById(R.id.tvimppartidabase);
-                TextView ltiempo = view.findViewById(R.id.lhoraspartidabase);
-                TextView limporte = view.findViewById(R.id.limppartidabase);
-
-
-                descripcion.setText(entrada.getString(PARTIDABASE_DESCRIPCION));
-                tiempo.setText(entrada.getString(PARTIDABASE_TIEMPO));
-                importe.setText(JavaUtil.formatoMonedaLocal(entrada.getDouble(PARTIDABASE_PRECIO)));
-                ltiempo.setText("h.");
-                limporte.setVisibility(View.GONE);
-
-                if (entrada.getString(PARTIDABASE_RUTAFOTO) != null) {
-                    MediaUtil imagenUtil = new MediaUtil(contexto);
-                    imagenUtil.setImageUriCircle(entrada.getString(PARTIDABASE_RUTAFOTO), imagen);
-                    //imagenTarea.setImageURI(entrada.getUri(PARTIDABASE_RUTAFOTO));
-                }
-
-            }
-
-        });
-
-    }
-
-    public abstract class ListaAdaptadorFiltroPartidas extends ArrayAdapter<Modelo> {
-
-        private ArrayList<Modelo> entradas;
-        private ArrayList<Modelo> entradasfiltro;
-        private int R_layout_IdView;
-        private Context contexto;
-
-        ListaAdaptadorFiltroPartidas(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas) {
-            super(contexto, R_layout_IdView, entradas);
-            this.contexto = contexto;
-            this.entradas = entradas;
-            this.entradasfiltro = new ArrayList<>(entradas);
-            this.R_layout_IdView = R_layout_IdView;
-        }
-
-        @NonNull
-        @Override
-        public View getView(int posicion, View view, @NonNull ViewGroup pariente) {
-            if (view == null) {
-                LayoutInflater vi = (LayoutInflater) contexto.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                view = vi.inflate(R_layout_IdView, null);
-            }
-            onEntrada(entradasfiltro.get(posicion), view);
-            System.out.println("entradasfiltro = " + entradasfiltro.get(posicion));
-            return view;
-        }
-
-        @Override
-        public int getCount() {
-            return entradasfiltro.size();
-        }
-
-
-        @NonNull
-        @Override
-        public Filter getFilter() {
-
-            Filter filter;
-            filter = new Filter() {
-                @Override
-                protected FilterResults performFiltering(CharSequence constraint) {
-
-                    FilterResults results = new FilterResults();
-                    List<Modelo> suggestion = new ArrayList<>();
-                    if (constraint != null) {
-
-                        for (Modelo item : entradas) {
-
-                                if (item.getCampos(PARTIDABASE_NOMBRE).toLowerCase().contains(constraint.toString().toLowerCase())) {
-
-                                    suggestion.add(item);
-                                } else if (item.getCampos(PARTIDABASE_DESCRIPCION).toLowerCase().contains(constraint.toString().toLowerCase())) {
-
-                                    suggestion.add(item);
-                                }
-
-                        }
-                        // Query the autocomplete API for the entered constraint
-                        // Results
-                        results.values = suggestion;
-                        results.count = suggestion.size();
-                    }
-                    return results;
-                }
-
-                @SuppressWarnings("unchecked")
-                @Override
-                protected void publishResults(CharSequence constraint, FilterResults results) {
-
-                    entradasfiltro.clear();
-
-                    if (results != null && results.count > 0) {
-                        for (Modelo item : (List<Modelo>) results.values) {
-                            entradasfiltro.add(item);
-                        }
-                        notifyDataSetChanged();
-                    } else if (constraint == null) {
-                        // no filter, addModelo entire original list back in
-                        entradasfiltro.addAll(entradas);
-                        notifyDataSetInvalidated();
-                    }
-                }
-            };
-            return filter;
-        }
-
-        @Override
-        public Modelo getItem(int posicion) {
-            return entradasfiltro.get(posicion);
-        }
-
-        @Override
-        public long getItemId(int posicion) {
-            return posicion;
-        }
-
-        /**
-         * Devuelve cada una de las entradas con cada una de las vistas a la que debe de ser asociada
-         *
-         * @param entrada La entrada que será la asociada a la view. La entrada es del tipo del paquete/handler
-         * @param view    View particular que contendrá los datos del paquete/handler
-         */
-        public abstract void onEntrada(Modelo entrada, View view);
-    }
-
-    private void clonarPartidaBase(Modelo modelo) {
-
-
-        valores = new ContentValues();
-        String idPartidaBase = modelo.getString(PARTIDABASE_ID_PARTIDABASE);
-        valores.put(PARTIDA_ID_PARTIDABASE, idPartidaBase);
-        valores.put(PARTIDA_CANTIDAD, 0);
-        valores.put(PARTIDA_DESCRIPCION, modelo.getString(PARTIDABASE_DESCRIPCION));
-        valores.put(PARTIDA_NOMBRE, modelo.getString(PARTIDABASE_NOMBRE));
-        valores.put(PARTIDA_PRECIO, modelo.getString(PARTIDABASE_PRECIO));
-        valores.put(PARTIDA_TIEMPO, modelo.getString(PARTIDABASE_TIEMPO));
-        valores.put(PARTIDA_RUTAFOTO, modelo.getString(PARTIDABASE_RUTAFOTO));
-        valores.put(PARTIDA_ID_PROYECTO, id);
-        valores.put(PARTIDA_ID_ESTADO, proyecto.getString(PROYECTO_ID_ESTADO));
-        valores.put(PARTIDA_ID_PARTIDA, idPartida);
-
-        uri = insertRegistroDetalle(CAMPOS_PARTIDA, id,
-                TABLA_PROYECTO, valores);
-        System.out.println("uri = " + uri);
-
-        partida = queryObjectDetalle(CAMPOS_PARTIDA, uri);
-        secuencia = partida.getInt(PARTIDA_SECUENCIA);
-
-        nombrePartida.setText(partida.getString(PARTIDA_NOMBRE));
-        descripcionPartida.setText(partida.getString(PARTIDA_DESCRIPCION));
-
-        if (partida.getString(PARTIDA_RUTAFOTO) != null) {
-            setImagenUri(contexto, partida.getString(PARTIDA_RUTAFOTO));
-            path = partida.getString(PARTIDA_RUTAFOTO);
-        }
-
-
-        ArrayList<Modelo> listaclon = queryListDetalle
-                (CAMPOS_DETPARTIDABASE, modelo.getString(PARTIDABASE_ID_PARTIDABASE), TABLA_PARTIDABASE);
-
-        for (Modelo clonpart : listaclon) {
-
-            valores = new ContentValues();
-            valores.put(DETPARTIDA_ID_PARTIDA, idPartida);
-            valores.put(DETPARTIDA_NOMBRE, clonpart.getString(DETPARTIDABASE_NOMBRE));
-            valores.put(DETPARTIDA_DESCRIPCION, clonpart.getString(DETPARTIDABASE_DESCRIPCION));
-            valores.put(DETPARTIDA_BENEFICIO, clonpart.getString(DETPARTIDABASE_BENEFICIO));
-            valores.put(DETPARTIDA_DESCUENTOPROVCAT, clonpart.getString(DETPARTIDABASE_DESCUENTOPROVCAT));
-            valores.put(DETPARTIDA_PRECIO, clonpart.getString(DETPARTIDABASE_PRECIO));
-            valores.put(DETPARTIDA_ID_DETPARTIDA, clonpart.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
-            valores.put(DETPARTIDA_REFPROVCAT, clonpart.getString(DETPARTIDABASE_REFPROVCAT));
-            valores.put(DETPARTIDA_TIEMPO, clonpart.getString(DETPARTIDABASE_TIEMPO));
-            valores.put(DETPARTIDA_RUTAFOTO, clonpart.getString(DETPARTIDABASE_RUTAFOTO));
-            valores.put(DETPARTIDA_TIPO, clonpart.getString(DETPARTIDABASE_TIPO));
-            valores.remove(DETPARTIDABASE_SECUENCIA);
-
-            insertRegistroDetalle(CAMPOS_DETPARTIDA, idPartida
-                    , TABLA_PARTIDA, valores);
-        }
-
-        this.modelo = queryObjectDetalle(campos, id, secuencia);
-        btnNuevaPartidaBase.setVisibility(View.GONE);
-        selector();
-
-    }
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
@@ -959,7 +712,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
                 imagenret.setImageResource(R.drawable.alert_box_v);
             }
 
-            if (origen.equals(PRESUPUESTO)) {
+            if (proyecto.getInt(PROYECTO_TIPOESTADO) < TPROYECTEJECUCION) {
 
                 progressBarPartida.setVisibility(View.GONE);
 

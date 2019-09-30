@@ -15,89 +15,50 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <com.codevsolution.base.android.controls.ImagenLayout
+                android:id="@+id/imgudpartida"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_npartidabase"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/boton_redondo_primary"
+                android:text="@string/modificar_partidabase"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/texto" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <LinearLayout
-                    android:id="@+id/lyimgpartidaproy"
+                <ImageView
+                    android:id="@+id/imgretudpartida"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="2.5"
-                    android:orientation="vertical">
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/alert_box_v" />
 
-                    <com.codevsolution.base.android.controls.ImagenLayout
-                        android:id="@+id/imgudpartida"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_weight="1" />
-
-                    <ImageView
-                        android:id="@+id/imgretudpartida"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_weight="3"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/alert_box_v" />
-                </LinearLayout>
-
-                <LinearLayout
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/etnomudpartida"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/autonomudpartida"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:hint="@string/clonarpartida"
-                            android:textSize="@dimen/texto" />
-
-                        <ImageView
-                            android:id="@+id/imgbuscarpartida"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="5"
-                            android:src="@drawable/ic_search_black_24dp" />
-
-                    </LinearLayout>
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/btn_npartidabase"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/boton_redondo_primary"
-                        android:textColor="@color/colorPrimary"
-                        android:text="@string/nueva_partidabase"
-                        android:textSize="@dimen/texto" />
-
-
-                    <com.codevsolution.base.android.controls.EditMaterial
-                        android:id="@+id/etnomudpartida"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:hint_text="@string/nombre" />
-
-                    <com.codevsolution.base.android.controls.EditMaterial
-                        android:id="@+id/etdescripcionUDpartida"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:hint_text="@string/descripcion_tipo_cliente"
-                        app:tipo_dato="TEXTO|MULTI" />
-                </LinearLayout>
-
+                    app:hint_text="@string/nombre" />
             </LinearLayout>
+
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etdescripcionUDpartida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint_text="@string/descripcion_tipo_cliente"
+                app:tipo_dato="TEXTO|MULTI" />
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -140,55 +101,11 @@
                     app:tipo_dato="NUMERO" />
             </LinearLayout>
 
-
             <ProgressBar
                 android:id="@+id/progressBarUDpartida"
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btntareaudpartida"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/boton_redondo_primary"
-                    android:text="@string/nueva_tarea"
-                    android:textColor="@color/Color_texto_titulos" />
-
-                <Button
-                    android:id="@+id/btnprodudpartida"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/boton_redondo_primary"
-                    android:text="@string/nuevo_producto"
-                    android:textColor="@color/Color_texto_titulos" />
-
-                <Button
-                    android:id="@+id/btnprovudpartida"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/boton_redondo_primary"
-                    android:text="@string/nuevo_producto_proveedor"
-                    android:textColor="@color/Color_texto_titulos" />
-
-                <Button
-                    android:id="@+id/btnpartudpartida"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/boton_redondo_primary"
-                    android:text="@string/nueva_partida"
-                    android:textColor="@color/Color_texto_titulos" />
-
-            </LinearLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -200,8 +117,9 @@
                     android:layout_height="match_parent" />
 
             </RelativeLayout>
-        </LinearLayout>
 
+
+        </LinearLayout>
     </ScrollView>
 
 </FrameLayout>

@@ -25,7 +25,7 @@
     <string name="importe_final">Precio final</string>
     <string name="partidas_proyecto">Partidas proyecto</string>
     <string name="gastos_proyecto">Gasto project</string>
-    <string name="total_partidas">Total partidas</string>
+    <string name="total_partidas">Total Trabajos</string>
     <string name="total_gastos">Total gastos</string>
     <string name="sinpartidas">Sin partidas</string>
     <string name="singastos">Sin gastos</string>
@@ -452,6 +452,12 @@
     <string name="limitprodusados">Prod tot usados</string>
     <string name="add_prodwebcli">Export. prod. web CLI</string>
     <string name="add_prodwebpro">Export. prod web PRO</string>
+    <string name="proyectos_y_presupuestos">Proyectos y presupuestos</string>
+    <string name="crear_presup">Nuevo presupuesto</string>
+    <string name="crear_proyecto">Nuevo proyecto</string>
+    <string name="modificar_partidabase">Modificar partida base</string>
+    <string name="clonar_prod_a_partidabase">Asignar a Partida Base</string>
+    <string name="tiempo_partidas">Tiempo total partidas</string>
 
 
 </resources>

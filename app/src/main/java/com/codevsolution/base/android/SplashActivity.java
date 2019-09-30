@@ -39,13 +39,18 @@ public class SplashActivity extends AppCompatActivity {
         imagen = findViewById(R.id.imgsplash);
         imagen.setActivity(this);
 
-        imagen.setImageResource(R.drawable.fonfo_cds_512x512, anchoReal / 2, altoReal / 3);
+        imagen.setImageResource(getResources().
+                        getIdentifier("logo_cds_512_a", "drawable",
+                                getApplicationContext().getPackageName())
+                , (int) (anchoReal * 0.9), (int) (altoReal * 0.5));
         imagen.setVisibleTitulo(true);
         imagen.setVisiblePie(true);
-        imagen.setTextPie(R.string.auth);
-        imagen.setTextTitulo(R.string.app_name);
+        imagen.setTextPie(getResources().
+                getIdentifier("auth", "string", getApplicationContext().getPackageName()));
+        imagen.setTextTitulo(getResources().
+                getIdentifier("app_name", "string", getApplicationContext().getPackageName()));
         imagen.setColorTextoTitulo(getResources().getColor(R.color.colorSecondaryDark));
-        imagen.setColorTextoPie(getResources().getColor(R.color.colorPrimary));
+        imagen.setColorTextoPie(getResources().getColor(R.color.colorSecondaryDark));
         imagen.setTextAutoSizeTitulo(this, 3f);
         imagen.setTextAutoSizePie(this, 1.5f);
 

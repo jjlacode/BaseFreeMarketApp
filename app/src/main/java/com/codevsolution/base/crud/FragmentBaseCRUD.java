@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.FragmentBase;
@@ -110,8 +111,8 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
 
     @Override
-    protected void setTAG() {
-        TAG = getClass().getSimpleName();
+    protected String setTAG() {
+        return getClass().getSimpleName();
     }
 
     protected boolean onUpdate() {
@@ -191,15 +192,23 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         try {
             if (tablaCab == null) {
 
-                id = modelo.getString(campoID);
-                modelo = CRUDutil.setModelo(campos, id);
+                if (nn(modelo)) {
+                    id = modelo.getString(campoID);
+                }
+                if (nn(id)) {
+                    modelo = CRUDutil.setModelo(campos, id);
+                }
 
             } else {
 
-                id = modelo.getString(campoID);
-                secuencia = modelo.getInt(campoSecuencia);
-                modelo = CRUDutil.setModelo(campos, id, secuencia);
-
+                if (nn(modelo)) {
+                    id = modelo.getString(campoID);
+                    secuencia = modelo.getInt(campoSecuencia);
+                }
+                if (nn(id) && secuencia > 0) {
+                    modelo = CRUDutil.setModelo(campos, id, secuencia);
+                }
+                System.out.println("modelo = " + modelo);
             }
             setDatos();
             obtenerDatosEdit();
@@ -215,8 +224,10 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
         try {
 
-            if (modelo == null && id != null) {
+            if (modelo == null && id != null && tablaCab == null) {
                 modelo = CRUDutil.setModelo(campos, id);
+            } else if (modelo == null && id != null && tablaCab != null && secuencia > 0) {
+                modelo = CRUDutil.setModelo(campos, id, secuencia);
             }
 
             if (modelo != null && modelo.getString(campoImagen) != null) {
@@ -229,12 +240,17 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
                 //imagen.setImageUri(path, (int)(anchoReal*0.25f),(int)(altoReal*0.15f));
                 imagen.setImageUriPerfil(activityBase, path);
+                imagen.setIcfragmentos(icFragmentos);
+                imagen.setVisibleBtn();
+                imagen.setFocusable(false);
 
             } else {
 
                 try {
 
                     imagen.setImageResource(R.drawable.logo, (int) (anchoReal * 0.25f), (int) (altoReal * 0.15f));
+                    imagen.setGoneBtn();
+                    imagen.setFocusable(false);
 
                 } catch (Exception er) {
                     er.printStackTrace();
@@ -249,13 +265,19 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
                 //imagen.setImageUri(path, (int)(anchoReal*0.25f),(int)(altoReal*0.15f));
                 imagen.setImageUriPerfil(activityBase, path);
+                imagen.setIcfragmentos(icFragmentos);
+                imagen.setVisibleBtn();
+                imagen.setFocusable(false);
+
 
 
             } else {
 
                 try {
 
-                    imagen.setImageResource(R.drawable.ic_add_a_photo_black_24dp, (int) (anchoReal * 0.25f), (int) (altoReal * 0.15f));
+                    imagen.setImageResource(R.drawable.logo, (int) (anchoReal * 0.25f), (int) (altoReal * 0.15f));
+                    imagen.setGoneBtn();
+                    imagen.setFocusable(false);
 
 
                 } catch (Exception er) {
@@ -273,7 +295,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
             editMaterial.setCambioFocoListener(new EditMaterial.CambioFocoEdit() {
                 @Override
                 public void alPerderFoco(View view) {
-                    alCambiarCampos(editMaterial);
                     if (editMaterial.getNextFocusDownId() == 0) {
                         AndroidUtil.ocultarTeclado(contexto, view);
                     }
@@ -306,8 +327,63 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                     timer.schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            if (((id != null && (tablaCab == null || secuencia > 0)) || back) && !temp.toString().equals("")) {
-                                guardarEdit(editMaterial);
+                            if (!temp.toString().equals("")) {
+                                activityBase.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        alCambiarCampos(editMaterial);
+                                    }
+                                });
+                            }
+                        }
+                    }, 1000);
+                }
+            });
+        }
+
+        for (final EditMaterialLayout editMaterial : materialEditLayouts) {
+            editMaterial.setCambioFocoListener(new EditMaterialLayout.CambioFocoEdit() {
+                @Override
+                public void alPerderFoco(View view) {
+                    if (editMaterial.getLinearLayout().getNextFocusDownId() == 0) {
+                        AndroidUtil.ocultarTeclado(contexto, view);
+                    }
+                }
+
+                @Override
+                public void alRecibirFoco(View view) {
+                    editMaterial.finalTexto();
+                }
+            });
+
+            editMaterial.setAlCambiarListener(new EditMaterialLayout.AlCambiarListener() {
+                @Override
+                public void antesCambio(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void cambiando(CharSequence s, int start, int before, int count) {
+
+                    if (timer != null) {
+                        timer.cancel();
+                    }
+                }
+
+                @Override
+                public void despuesCambio(Editable s) {
+                    final Editable temp = s;
+                    timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            if (!temp.toString().equals("")) {
+                                activityBase.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        alCambiarCampos(editMaterial);
+                                    }
+                                });
                             }
                         }
                     }, 1000);
@@ -319,6 +395,10 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
     }
 
+    protected boolean setBack() {
+        return back;
+    }
+
     @Override
     protected void alCambiarCampos(EditMaterial editMaterial) {
         super.alCambiarCampos(editMaterial);
@@ -326,8 +406,28 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         if ((id != null && (tablaCab == null || secuencia > 0))) {
             guardarEdit(editMaterial);
         } else {
-            if (!back) {
-                update();
+
+            System.out.println("back base= " + back);
+            if (!setBack()) {
+                onUpdate();
+                if (id != null && (tablaCab == null || secuencia > 0)) {
+                    guardarEdit(editMaterial);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void alCambiarCampos(EditMaterialLayout editMaterial) {
+        super.alCambiarCampos(editMaterial);
+
+        if ((id != null && (tablaCab == null || secuencia > 0))) {
+            guardarEdit(editMaterial);
+        } else {
+
+            System.out.println("back base= " + back);
+            if (!setBack()) {
+                onUpdate();
                 if (id != null && (tablaCab == null || secuencia > 0)) {
                     guardarEdit(editMaterial);
                 }
@@ -336,6 +436,8 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     }
 
     protected void guardarEdit(EditMaterial editMaterial) {
+
+        //if (editMaterial.getValido()) {
         for (Object o : camposEdit) {
             if (((Map) o).get("materialEdit") == editMaterial) {
                 valores = new ContentValues();
@@ -349,6 +451,26 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                 }
             }
         }
+        //}
+    }
+
+    protected void guardarEdit(EditMaterialLayout editMaterial) {
+
+        //if (editMaterial.getValido()) {
+        for (Object o : camposEdit) {
+            if (((Map) o).get("materialEdit") == editMaterial) {
+                valores = new ContentValues();
+                valores.put((String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
+                if (secuencia > 0) {
+                    int i = ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+                    System.out.println("guardados = " + i);
+                } else {
+                    int x = ConsultaBD.updateRegistro(tabla, id, valores);
+                    System.out.println("guardados = " + x);
+                }
+            }
+        }
+        //}
     }
 
     protected void guardarEdit(ArrayList<Map> camposEdit, EditMaterial editMaterial, String tabla, String id, int secuencia) {
@@ -380,6 +502,38 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                 }
             }
         }
+
+        for (EditMaterialLayout materialEdit : materialEditLayouts) {
+
+
+            for (Object o : camposEdit) {
+
+                if (((Map) o).get("materialEdit") == materialEdit) {
+                    materialEdit.setText(modelo.getString((String) ((Map) o).get("campoEdit")));
+
+                }
+            }
+        }
+    }
+
+    protected boolean comprobarDatos() {
+
+        /*
+        for (EditMaterial editMaterial : materialEdits) {
+            if (!editMaterial.getValido()){
+                return false;
+            }
+        }
+
+         */
+
+        for (EditMaterial editMaterial : materialEdits) {
+            if (editMaterial.getTexto().equals("")) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     protected void enviarAct() {
@@ -464,6 +618,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
             enviarBundle();
             enviarAct();
         }
+
 
     }
 
@@ -744,7 +899,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     protected void mostrarDialogDelete() {
         Log.d(TAG, getMetodo());
 
-        String selDelete = null;
+        String selDelete;
 
         if (nuevo) {
             selDelete = getString(R.string.limpiar_formulario);

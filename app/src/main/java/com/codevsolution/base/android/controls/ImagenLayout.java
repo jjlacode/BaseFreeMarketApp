@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.codevsolution.base.android.AndroidUtil;
@@ -33,12 +35,13 @@ import static com.codevsolution.base.javautil.JavaUtil.Constantes.PERSISTENCIA;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TIPO;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TSIMG;
 
-public class ImagenLayout extends RelativeLayout {
+public class ImagenLayout extends LinearLayoutCompat {
 
     TextView titulo;
     TextView pie;
     ImageView imagen;
     ImageButton btn;
+    Button btnTxt;
     DisplayMetrics metrics = new DisplayMetrics();
     AppCompatActivity mainActivity;
     ICFragmentos icFragmentos;
@@ -77,6 +80,9 @@ public class ImagenLayout extends RelativeLayout {
         titulo = findViewById(R.id.tituloImgLy);
         pie = findViewById(R.id.pieImgLy);
         btn = findViewById(R.id.btn_img);
+        btnTxt = findViewById(R.id.btn_img_txt);
+        titulo.setVisibility(GONE);
+        pie.setVisibility(GONE);
 
         asignarEventos();
 
@@ -98,15 +104,15 @@ public class ImagenLayout extends RelativeLayout {
                 R.styleable.ImagenLayout_recpie, 0);
 
 
-        if (recTitulo == 0) {
+        if (recTitulo == 0 && txtTitulo != null && !txtTitulo.equals("")) {
             setTextTitulo(txtTitulo);
-        } else {
+        } else if (recTitulo > 0) {
             setTextTitulo(recTitulo);
         }
 
-        if (recPie == 0) {
+        if (recPie == 0 && txtPie != null && !txtPie.equals("")) {
             setTextPie(txtPie);
-        } else {
+        } else if (recPie > 0) {
             setTextPie(recPie);
         }
 
@@ -118,8 +124,12 @@ public class ImagenLayout extends RelativeLayout {
 
         if (mainActivity != null) {
 
-            setTextAutoSizePie(mainActivity);
-            setTextAutoSizeTitulo(mainActivity);
+            if (pie.getVisibility() == VISIBLE) {
+                setTextAutoSizePie(mainActivity);
+            }
+            if (titulo.getVisibility() == VISIBLE) {
+                setTextAutoSizeTitulo(mainActivity);
+            }
         }
 
         imagen.setOnClickListener(new OnClickListener() {
@@ -149,6 +159,25 @@ public class ImagenLayout extends RelativeLayout {
         });
     }
 
+    public ImageView getImagen() {
+        return imagen;
+    }
+
+    public TextView getTitulo() {
+        return titulo;
+    }
+
+    public TextView getPie() {
+        return pie;
+    }
+
+    public ImageButton getBtn() {
+        return btn;
+    }
+
+    public Button getBtnTxt() {
+        return btnTxt;
+    }
     public void setMaxHeight(int maxHeight) {
 
         imagen.setMaxHeight(maxHeight);
@@ -171,18 +200,23 @@ public class ImagenLayout extends RelativeLayout {
     }
 
     public void setTextTitulo(String txtTitulo) {
+        titulo.setVisibility(VISIBLE);
         titulo.setText(txtTitulo);
     }
 
     public void setTextTitulo(int string) {
+
+        titulo.setVisibility(VISIBLE);
         titulo.setText(string);
     }
 
     public void setTextPie(String txtPie) {
+        pie.setVisibility(VISIBLE);
         pie.setText(txtPie);
     }
 
     public void setTextPie(int string) {
+        pie.setVisibility(VISIBLE);
         pie.setText(string);
     }
 
@@ -215,6 +249,16 @@ public class ImagenLayout extends RelativeLayout {
     public void setGoneBtn() {
 
         btn.setVisibility(View.GONE);
+    }
+
+    public void setVisibleBtnTxt() {
+
+        btnTxt.setVisibility(View.VISIBLE);
+    }
+
+    public void setGoneBtnTxt() {
+
+        btnTxt.setVisibility(View.GONE);
     }
 
     public void setSizeTextTitulo(float sizeTextTitulo) {
@@ -390,7 +434,7 @@ public class ImagenLayout extends RelativeLayout {
 
             ancho = metrics.widthPixels;
             alto = metrics.heightPixels;
-            ImagenUtil.setImageUri(uri, imagen, (int) (ancho), (int) (alto * 0.50));
+            ImagenUtil.setImageUri(uri, imagen, (int) (ancho), (int) (alto * 0.40));
             System.out.println("imagenAuto");
 
         } else {
@@ -411,7 +455,7 @@ public class ImagenLayout extends RelativeLayout {
 
             ancho = metrics.widthPixels;
             alto = metrics.heightPixels;
-            ImagenUtil.setImageUri(recurso, imagen, (int) (ancho * 0.25), (int) (alto * 0.20));
+            ImagenUtil.setImageUri(recurso, imagen, (int) (ancho), (int) (alto * 0.40));
             System.out.println("imagenAuto");
 
         } else {
@@ -436,9 +480,9 @@ public class ImagenLayout extends RelativeLayout {
             alto = metrics.heightPixels;
             long ts = AndroidUtil.getSharePreference(AppActivity.getAppContext(), PERSISTENCIA, TSIMG, TimeDateUtil.ahora());
             if (ts + (15 * MINUTOSLONG) > TimeDateUtil.ahora()) {
-                ImagenUtil.setImageFireStore(uri, imagen, (int) (ancho * 0.25), (int) (alto * 0.20), true);
+                ImagenUtil.setImageFireStore(uri, imagen, (int) (ancho), (int) (alto * 0.40), true);
             } else {
-                ImagenUtil.setImageFireStore(uri, imagen, (int) (ancho * 0.25), (int) (alto * 0.20));
+                ImagenUtil.setImageFireStore(uri, imagen, (int) (ancho), (int) (alto * 0.40));
             }
             System.out.println("imagenAuto");
 
@@ -461,7 +505,7 @@ public class ImagenLayout extends RelativeLayout {
 
             ancho = metrics.widthPixels;
             alto = metrics.heightPixels;
-            ImagenUtil.setImageUriCircle(uri, imagen, (int) (ancho * 0.25), (int) (alto * 0.20));
+            ImagenUtil.setImageUriCircle(uri, imagen, (int) (ancho * 0.20), (int) (alto * 0.20));
             System.out.println("imagenAuto");
 
         } else {
@@ -482,7 +526,9 @@ public class ImagenLayout extends RelativeLayout {
 
             ancho = metrics.widthPixels;
             alto = metrics.heightPixels;
-            ImagenUtil.setImageUriCircle(recurso, imagen, (int) (ancho * 0.25), (int) (alto * 0.20));
+            LinearLayoutCompat.LayoutParams params = new LinearLayoutCompat.LayoutParams((int) (ancho * 0.25), (int) (alto * 0.20));
+            imagen.setLayoutParams(params);
+            ImagenUtil.setImageUriCircle(recurso, imagen);
             System.out.println("imagenAuto");
 
         } else {

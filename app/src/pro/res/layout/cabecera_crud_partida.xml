@@ -9,6 +9,6 @@
         android:layout_height="@dimen/altobtn"
         android:text="@string/volver_a_proyecto"
         android:background="@drawable/boton_redondo_primary"
-        android:textColor="@color/Color_texto_titulos"/>
+        android:textColor="@color/colorPrimary" />
 
 </LinearLayout>

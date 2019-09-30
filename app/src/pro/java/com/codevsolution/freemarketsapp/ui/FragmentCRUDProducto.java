@@ -12,8 +12,10 @@ import android.widget.TextView;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
-import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.ViewLinearLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.models.Modelo;
@@ -23,22 +25,14 @@ import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
 
+import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
+import static com.codevsolution.freemarketsapp.logica.Interactor.TiposDetPartida.TIPOPRODUCTO;
+
 public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.ConstantesPry, ContratoPry.Tablas {
 
-    EditMaterial nombre;
-    EditMaterial descripcion;
-    EditMaterial precio;
-    EditMaterial nombreProv;
-    EditMaterial referencia;
-    EditMaterial descProv;
-    ImageView btnProv;
-    Button addPartida;
-    Button exportCLI;
-    Button exportPRO;
-
     private Modelo proveedor;
-    private Modelo partida;
-    private Modelo proyecto;
+    private EditMaterialLayout nombreProv;
+    private Button addPartida;
 
     public FragmentCRUDProducto() {
         // Required empty public constructor
@@ -87,7 +81,8 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             update();
             nombreProv.setText(proveedor.getString(PROVEEDOR_NOMBRE));
         }
-        if (origen.equals(PARTIDA)) {
+        String idPartidabase = AndroidUtil.getSharePreference(contexto, PERSISTENCIA, PARTIDABASE_ID_PARTIDABASE, NULL);
+        if (nnn(idPartidabase)) {
 
             visible(addPartida);
 
@@ -105,7 +100,8 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         if (proveedor != null) {
             nombreProv.setText(proveedor.getString(PROVEEDOR_NOMBRE));
         }
-        gone(addPartida);
+        onUpdate();
+
     }
 
     @Override
@@ -119,8 +115,6 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     protected void setBundle() {
         super.setBundle();
         proveedor = (Modelo) getBundleSerial(PROVEEDOR);
-        partida = (Modelo) getBundleSerial(PARTIDA);
-        proyecto = (Modelo) getBundleSerial(PROYECTO);
 
         if (origen == null) {
             origen = PRODUCTO;
@@ -130,7 +124,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     @Override
     protected void setLayout() {
 
-        layoutCuerpo = R.layout.fragment_crud_producto;
+        //layoutCuerpo = R.layout.fragment_crud_producto;
         layoutItem = R.layout.item_list_producto;
         //layoutCabecera = ;
 
@@ -139,55 +133,47 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     @Override
     protected void setInicio() {
 
-        nombre = (EditMaterial) ctrl(R.id.etnombreproductos, PRODUCTO_NOMBRE);
-        descripcion = (EditMaterial) ctrl(R.id.etdescripcionproductos, PRODUCTO_DESCRIPCION);
-        precio = (EditMaterial) ctrl(R.id.etimporte_crud_productos, PRODUCTO_PRECIO);
-        nombreProv = (EditMaterial) ctrl(R.id.etnomprovproducto, PRODUCTO_NOMBREPROV);
-        referencia = (EditMaterial) ctrl(R.id.etrefproductos, PRODUCTO_REFERENCIA);
-        descProv = (EditMaterial) ctrl(R.id.etdescprovproductos, PRODUCTO_DESCPROV);
-        btnProv = (ImageView) ctrl(R.id.imgbtnprovproducto);
-        addPartida = (Button) ctrl(R.id.btn_add_producto_partida);
-        imagen = (ImagenLayout) ctrl(R.id.imgproducto);
-        exportCLI = (Button) ctrl(R.id.btn_add_prodwebcli);
-        exportPRO = (Button) ctrl(R.id.btn_add_prodwebpro);
-    }
+        ViewLinearLayout vistaForm = new ViewLinearLayout(contexto, frdetalleExtrasante);
 
-    @Override
-    protected void setAcciones() {
-        super.setAcciones();
-
-        btnProv.setOnClickListener(new View.OnClickListener() {
+        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
+        imagen.setFocusable(false);
+        vistaForm.addEditMaterialLayout(getString(R.string.nombre), PRODUCTO_NOMBRE, null, null);
+        vistaForm.addEditMaterialLayout(getString(R.string.descripcion), PRODUCTO_DESCRIPCION, null, null);
+        EditMaterialLayout precio = vistaForm.addEditMaterialLayout(getString(R.string.importe), PRODUCTO_PRECIO, null, null);
+        precio.setTipo(EditMaterialLayout.NUMERO | EditMaterialLayout.DECIMAL);
+        nombreProv = vistaForm.addEditMaterialLayout(getString(R.string.nombre_producto_proveedor), PRODUCTO_NOMBREPROV, null, null);
+        nombreProv.setImgBtnAccion(R.drawable.ic_clientes_indigo);
+        nombreProv.setActivo(false);
+        nombreProv.setClickAccion(new EditMaterialLayout.ClickAccion() {
             @Override
-            public void onClick(View view) {
-
+            public void onClickAccion(View view) {
                 bundle = new Bundle();
 
-                if (origen == PARTIDA) {
-                    putBundle(PARTIDA, partida);
-                    putBundle(PROYECTO, proyecto);
-                } else {
-                    origen = PRODUCTO;
-                }
                 putBundle(PRODUCTO, modelo);
-                putBundle(ORIGEN, origen);
+                putBundle(ORIGEN, PRODUCTO);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProveedor());
             }
         });
+        vistaForm.addEditMaterialLayout(getString(R.string.referencia_proveedor), PRODUCTO_REFERENCIA, null, null);
+        vistaForm.addEditMaterialLayout(getString(R.string.referencia_proveedor), PRODUCTO_DESCPROV, null, null);
 
+        addPartida = vistaForm.addButtonPrimary(R.string.add_detpartida);
         addPartida.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 update();
                 bundle = new Bundle();
-                putBundle(PARTIDA, partida);
-                putBundle(PROYECTO, proyecto);
-                putBundle(PRODUCTO, modelo);
-                putBundle(ORIGEN, PARTIDA);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaProducto());
-
+                String idPartidabase = AndroidUtil.getSharePreference(contexto, PERSISTENCIA, PARTIDABASE_ID_PARTIDABASE, NULL);
+                if (nnn(idPartidabase)) {
+                    putBundle(CAMPO_ID, idPartidabase);
+                    putBundle(CAMPO_SECUENCIA, crearProductoBase(idPartidabase));
+                    AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDABASE_ID_PARTIDABASE, NULL);
+                    icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaBaseProducto());
+                }
             }
         });
 
+        Button exportCLI = vistaForm.addButtonSecondary(R.string.add_prodwebcli);
         exportCLI.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -201,6 +187,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             }
         });
 
+        Button exportPRO = vistaForm.addButtonSecondary(R.string.add_prodwebpro);
         exportPRO.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -212,6 +199,18 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
                 icFragmentos.enviarBundleAFragment(bundle, new AltaProductosPro());
             }
         });
+        actualizarArrays(vistaForm);
+
+
+    }
+
+    private int crearProductoBase(String idPartidabase) {
+        ContentValues valores = new ContentValues();
+        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_DETPARTIDABASE, modelo.getString(PRODUCTO_ID_PRODUCTO));
+        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_TIPO, TIPOPRODUCTO);
+        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_PARTIDABASE, idPartidabase);
+        return CRUDutil.crearRegistroSec(CAMPOS_DETPARTIDABASE, idPartidabase, TABLA_PARTIDABASE, valores);
+
     }
 
     @Override
@@ -228,12 +227,6 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     protected void setcambioFragment() {
         super.setcambioFragment();
 
-        if (origen.equals(PARTIDA)) {
-            bundle = new Bundle();
-            putBundle(PARTIDA, partida);
-            putBundle(PRODUCTO, modelo);
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaProducto());
-        }
     }
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {

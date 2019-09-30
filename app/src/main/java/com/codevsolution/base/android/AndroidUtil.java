@@ -28,6 +28,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.freemarketsapp.R;
 
 import java.io.File;
@@ -75,6 +76,30 @@ public class AndroidUtil extends AppCompatActivity {
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
+    public static int getId(Context context, String nombre, String tipo) {
+        return context.getResources()
+                .getIdentifier(nombre, tipo, context.getPackageName());
+    }
+
+    public static int getIdDrawable(Context context, String nombre) {
+        return context.getResources()
+                .getIdentifier(nombre, InteractorBase.Constantes.DRAWABLE, context.getPackageName());
+    }
+
+    public static int getIdStrig(Context context, String nombre) {
+        return context.getResources()
+                .getIdentifier(nombre, InteractorBase.Constantes.STRING, context.getPackageName());
+    }
+
+    public static int getIdColor(Context context, String nombre) {
+        return context.getResources()
+                .getIdentifier(nombre, InteractorBase.Constantes.COLOR, context.getPackageName());
+    }
+
+    public static int getIdLayout(Context context, String nombre) {
+        return context.getResources()
+                .getIdentifier(nombre, InteractorBase.Constantes.LAYOUT, context.getPackageName());
+    }
     public static void sinFoco(EditText editText) {
 
         editText.setFocusable(false);

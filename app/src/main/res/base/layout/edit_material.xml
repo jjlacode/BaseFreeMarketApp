@@ -15,7 +15,8 @@
             android:id="@+id/imgmaterial"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scaleType="center"
+            android:maxHeight="@dimen/altobtnico"
+            android:scaleType="centerInside"
             android:layout_gravity="center"
             android:visibility="invisible"
             android:src="@drawable/ic_rec_indigo"
@@ -25,15 +26,19 @@
         android:id="@+id/ti_material"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
         app:boxBackgroundColor="@color/colorPrimary"
-        app:hintTextColor="@color/colorAccent"
-        app:errorTextColor="@color/colorAccent">
+        app:hintTextAppearance="@style/Hint"
+        app:counterTextAppearance="@style/Counter"
+        app:counterOverflowTextAppearance="@style/CounterOverFlow"
+        app:errorTextAppearance="@style/Error">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_material"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textCursorDrawable="@drawable/cursor_primary_dark"
+            android:textCursorDrawable="@drawable/cursor_secondary_dark"
+            android:shadowColor="@color/colorSecondary"
             android:textSize="@dimen/texto"/>
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -42,7 +47,8 @@
             android:id="@+id/imgmaterialder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scaleType="center"
+            android:maxHeight="@dimen/altobtnico"
+            android:scaleType="centerInside"
             android:layout_gravity="center"
             android:visibility="invisible"
             android:src="@drawable/ic_ayuda_indigo"
@@ -52,16 +58,18 @@
             android:id="@+id/imgmaterialder2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scaleType="center"
+            android:maxHeight="@dimen/altobtnico"
+            android:scaleType="centerInside"
             android:layout_gravity="center"
             android:visibility="gone"
             android:src="@drawable/ic_ayuda_indigo"
-            android:background="@drawable/boton_redondo_secondary" />
+            android:background="@drawable/boton_redondo_blanco" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/imgmaterialder3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxHeight="@dimen/altobtn"
             android:layout_gravity="top"
             android:visibility="gone"
             android:text="@string/ayuda"

@@ -13,23 +13,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
                 <com.codevsolution.base.android.controls.ImagenLayout
                     android:id="@+id/imudpry"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="3"
                     android:minHeight="80dp" />
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
 
                     <com.codevsolution.base.android.controls.EditMaterial
                         android:id="@+id/etnomudpry"
@@ -45,62 +33,26 @@
                         app:gravedad="top"
                         app:hint_text="@string/descripcion"
                         app:tipo_dato="MULTI|TEXTO" />
-                </androidx.appcompat.widget.LinearLayoutCompat>
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <com.codevsolution.base.android.controls.ScalableImageView
-                    android:id="@+id/imgbtntipocliudpry"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="10"
-                    app:srcCompat="@drawable/ic_person_add_black_24dp" />
-
-
-                <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+            <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/sptipocliudpry"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.2"
-                    android:hint="@string/cliente" />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:orientation="horizontal">
-
-                <com.codevsolution.base.android.controls.ScalableImageView
-                    android:id="@+id/imgbtnestudpry"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="10"
-                    app:srcCompat="@drawable/alert_box_v" />
+                android:layout_height="@dimen/edit"
+                app:activo="false"
+                app:hint_text="@string/cliente" />
 
                 <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/tvestudproy"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.2"
-                    app:hint_text="@string/estado"
-                    app:gravedad="centro"/>
+                    android:layout_height="@dimen/edit"
+                    app:activo="false"
+                    app:hint_text="@string/estado" />
 
                 <Spinner
                     android:id="@+id/spestudpry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/texto"
-                    android:layout_weight="1" />
-
-            </LinearLayout>
+                    android:textSize="@dimen/texto" />
 
             <com.codevsolution.base.android.controls.EditMaterial
                 android:id="@+id/proyecto_ud_tv_fecha_entrada"

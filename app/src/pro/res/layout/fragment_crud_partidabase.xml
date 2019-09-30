@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.FragmentCRUDPartidaBase">
 
     <ScrollView
@@ -14,109 +15,62 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_asignar_a_partidaproy_partidabase"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:background="@drawable/boton_redondo_primary"
+                android:visibility="gone"
+                android:textColor="@color/colorPrimary"
+                android:text="@string/add_detpartida" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="2.5"
-                    android:orientation="vertical">
 
-                    <ImageView
-                        android:id="@+id/imgudpartidabase"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:adjustViewBounds="true"
-                        android:src="@drawable/ic_add_a_photo_black_24dp" />
+            <com.codevsolution.base.android.controls.ImagenLayout
+                android:id="@+id/imgudpartidabase"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_add_a_photo_black_24dp" />
 
-                    <ImageView
-                        android:id="@+id/imgretudpartidabase"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_weight="3"
-                        android:adjustViewBounds="true"
-                        android:scaleType="center"
-                        android:src="@drawable/alert_box_v" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
 
                     <AutoCompleteTextView
                         android:id="@+id/autonompartidabase"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/nombre"/>
-                    <EditText
+
+            <com.codevsolution.base.android.controls.EditMaterial
                         android:id="@+id/etnomudpartidabase"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/nombre"
-                        android:textSize="16sp" />
+                app:hint_text="@string/nombre" />
 
-                    <EditText
+            <com.codevsolution.base.android.controls.EditMaterial
                         android:id="@+id/etdescripcionUDpartidabase"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/descripcion_tipo_cliente"
-                        android:inputType="textMultiLine"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-            </LinearLayout>
+                app:hint_text="@string/descripcion"
+                app:tipo_dato="TEXTO|MULTI" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/ltiempoUDpartidabase"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/horas" />
-
-                <TextView
-                    android:id="@+id/lprecioUDpartidabase"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/importe" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <TextView
+                <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/ettiempoUDpartidabase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:ems="10"
-                    android:hint="@string/tiempo" />
+                    app:activo="false"
+                    app:hint_text="horas" />
 
-
-                <TextView
+                <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/etprecioUDpartidabase"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:ems="10"
-                    android:hint="@string/importe"/>
+                    app:activo="false"
+                    app:hint_text="@string/importe" />
             </LinearLayout>
 
             <LinearLayout
@@ -124,42 +78,29 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <Button
+                <ImageButton
                     android:id="@+id/btntareaudpartidabase"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/boton_redondo_primary"
-                    android:textColor="@color/Color_texto_titulos"
-                    android:text="@string/nueva_tarea_base" />
+                    android:background="@drawable/boton_redondo_secondary"
+                    android:src="@drawable/ic_tareas_indigo" />
 
-                <Button
+                <ImageButton
                     android:id="@+id/btnprodudpartidabase"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/boton_redondo_primary"
-                    android:textColor="@color/Color_texto_titulos"
-                    android:text="@string/nuevo_producto" />
+                    android:background="@drawable/boton_redondo_secondary"
+                    android:src="@drawable/ic_producto_indigo" />
 
-                <Button
+                <ImageButton
                     android:id="@+id/btnprovudpartidabase"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/boton_redondo_primary"
-                    android:textColor="@color/Color_texto_titulos"
-                    android:text="@string/nuevo_producto_proveedor" />
-
-                <Button
-                    android:id="@+id/btnpartudpartidabase"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/boton_redondo_primary"
-                    android:textColor="@color/Color_texto_titulos"
-                    android:text="@string/nueva_partidabase" />
-
+                    android:background="@drawable/boton_redondo_secondary"
+                    android:src="@drawable/ic_catalogo_indigo" />
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView

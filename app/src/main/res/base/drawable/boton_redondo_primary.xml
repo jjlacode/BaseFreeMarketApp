@@ -13,7 +13,7 @@
         android:right="1dp"
         android:bottom="4dp"/>
 
-    <corners android:radius="30px"/>
+    <corners android:radius="20px" />
 </shape>
     </item>
 
@@ -28,7 +28,7 @@
                 android:right="1dp"
                 android:bottom="4dp"/>
 
-            <corners android:radius="30px"/>
+            <corners android:radius="20px" />
         </shape>
     </item>
 

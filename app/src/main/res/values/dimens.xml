@@ -11,7 +11,7 @@
     <dimen name="altobtn">45dp</dimen>
     <dimen name="contador">24sp</dimen>
     <dimen name="texto">18sp</dimen>
-    <dimen name="edit">65dp</dimen>
+    <dimen name="edit">55dp</dimen>
     <dimen name="texto_card">12sp</dimen>
     <dimen name="texto_boton">16sp</dimen>
     <dimen name="texto_doble">70dp</dimen>

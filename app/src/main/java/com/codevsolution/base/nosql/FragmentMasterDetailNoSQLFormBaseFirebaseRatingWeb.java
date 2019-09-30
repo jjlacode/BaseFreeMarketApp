@@ -83,6 +83,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
         etWeb = (EditMaterial) ctrl(R.id.etwebformbase);
         imagen = (ImagenLayout) ctrl(R.id.imgformbase);
         imagen.setIcfragmentos(icFragmentos);
+        imagen.setVisibleBtn();
 
 
         if (tipoForm.equals(NUEVO)) {

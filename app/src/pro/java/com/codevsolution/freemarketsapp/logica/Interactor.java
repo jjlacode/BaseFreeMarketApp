@@ -16,6 +16,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.codevsolution.base.crud.CRUDutil;
+import com.codevsolution.base.models.Productos;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -51,6 +53,7 @@ import static android.content.Intent.EXTRA_SUBJECT;
 import static android.content.Intent.EXTRA_TEXT;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.codevsolution.base.android.AppActivity.getAppContext;
+import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.ACCION_CANCELAR;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.ACCION_POSPONER;
@@ -80,6 +83,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
     public static String agendaTemp;
     public static String namesubdef;
     public static boolean grabar;
+
 
     public static Fragment fragmentMenuInicio = new MenuInicio();
 
@@ -848,7 +852,6 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
     public static class Calculos implements ConstantesPry, TiposDetPartida {
 
-
         public static ArrayList<Modelo> comprobarEventos() {
 
             long hoy = JavaUtil.hoy();
@@ -1134,124 +1137,53 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
         }
 
-        public static boolean sincronizarPartidaBase(String idPartidabase) {
+        public static void actualizarProdProvPartidaProy(String idPartida) {
 
             ArrayList<Modelo> listaDetPartida;
-            ContentValues valores = null;
-            listaDetPartida = ConsultaBD.queryListDetalle(CAMPOS_DETPARTIDABASE, idPartidabase, TABLA_PARTIDABASE);
-
+            listaDetPartida = ConsultaBD.queryListDetalle(CAMPOS_DETPARTIDA, idPartida, TABLA_PARTIDA);
+            final Modelo partida = ConsultaBD.queryObject(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, idPartida, null,
+                    JavaUtil.Constantes.IGUAL, null);
             for (final Modelo detPartida : listaDetPartida) {
 
-                final String id = detPartida.getString(DETPARTIDABASE_ID_DETPARTIDABASE);
+                if (detPartida.getString(DETPARTIDA_TIPO).equals(TIPOPRODUCTOPROV)) {
 
-                if (id == null) {
-                    System.out.println("Id nulo");
-                    return false;
-                }
+                    DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                    db.child(PRODUCTOPRO).child(detPartida.getString(DETPARTIDA_ID_DETPARTIDA)).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                String tipo = detPartida.getString(DETPARTIDABASE_TIPO);
+                            Productos prodProv = dataSnapshot.getValue(Productos.class);
 
-                System.out.println("iddepbase = " + id);
+                            ContentValues valores = new ContentValues();
 
+                            valores.put(DETPARTIDA_NOMBRE, prodProv.getNombre());
+                            valores.put(DETPARTIDA_DESCRIPCION, prodProv.getDescripcion());
+                            valores.put(DETPARTIDA_REFPROVCAT, prodProv.getRefprov());
+                            valores.put(DETPARTIDA_RUTAFOTO, prodProv.getRutafoto());
 
-                switch (tipo) {
-
-                    case TIPOTRABAJO:
-
-                        Modelo tarea = ConsultaBD.queryObject(CAMPOS_TRABAJO, id);
-
-                        if (tarea != null && tarea.getLong(TRABAJO_TIMESTAMP) > detPartida.getLong(DETPARTIDABASE_TIMESTAMP)) {
-
-                            valores = new ContentValues();
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_DESCRIPCION, tarea.getString(TRABAJO_DESCRIPCION));
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_NOMBRE, tarea.getString(TRABAJO_NOMBRE));
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_TIEMPO, tarea.getString(TRABAJO_TIEMPO));
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_RUTAFOTO, tarea.getString(TRABAJO_RUTAFOTO));
-
-                            ConsultaBD.updateRegistroDetalle(TABLA_DETPARTIDABASE, detPartida.getString(DETPARTIDABASE_ID_PARTIDABASE), detPartida.getInt(DETPARTIDA_SECUENCIA), valores);
-                        }
-                        break;
-
-                    case TIPOPRODUCTO:
-
-                        Modelo producto = ConsultaBD.queryObject(CAMPOS_PRODUCTO, id);
-                        if (producto != null && producto.getLong(PRODUCTO_TIMESTAMP) > detPartida.getLong(DETPARTIDABASE_TIMESTAMP)) {
-                            valores = new ContentValues();
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_DESCRIPCION, producto.getString(PRODUCTO_DESCRIPCION));
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_NOMBRE, producto.getString(PRODUCTO_NOMBRE));
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_PRECIO, producto.getString(PRODUCTO_PRECIO));
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_RUTAFOTO, producto.getString(PRODUCTO_RUTAFOTO));
-
-                            ConsultaBD.updateRegistroDetalle(TABLA_DETPARTIDABASE, detPartida.getString(DETPARTIDABASE_ID_PARTIDABASE), detPartida.getInt(DETPARTIDA_SECUENCIA), valores);
-                        }
-
-                        break;
-
-                    case TIPOPARTIDA:
-
-                        Modelo partida = ConsultaBD.queryObject(CAMPOS_PARTIDABASE, id);
-                        if (partida != null && partida.getLong(PARTIDABASE_TIMESTAMP) > detPartida.getLong(DETPARTIDABASE_TIMESTAMP)) {
-                            valores = new ContentValues();
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_DESCRIPCION, partida.getString(PARTIDABASE_DESCRIPCION));
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_NOMBRE, partida.getString(PARTIDABASE_NOMBRE));
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_TIEMPO, partida.getString(PARTIDABASE_TIEMPO));
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_PRECIO, partida.getString(PARTIDABASE_PRECIO));
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_RUTAFOTO, partida.getString(PARTIDABASE_RUTAFOTO));
-
-                            ConsultaBD.updateRegistroDetalle(TABLA_DETPARTIDABASE, detPartida.getString(DETPARTIDABASE_ID_PARTIDABASE), detPartida.getInt(DETPARTIDA_SECUENCIA), valores);
-                        }
-
-                        break;
-
-
-                    case TIPOPRODUCTOPROV:
-
-
-                        DatabaseReference dbProveedor =
-                                FirebaseDatabase.getInstance().getReference()
-                                        .child("productos");
-
-                        ValueEventListener eventListener = new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                                    if (ds.getRef().getKey().equals(id)) {
-                                        ProdProv prodProv = ds.getValue(ProdProv.class);
-                                        if (prodProv != null) {
-                                            System.out.println("prodProv = " + prodProv.getNombre());
-                                            ContentValues valores = new ContentValues();
-                                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_DESCRIPCION, prodProv.getDescripcion());
-                                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_NOMBRE, prodProv.getNombre());
-                                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_REFPROVCAT, prodProv.getRefprov());
-                                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_PRECIO, prodProv.getPrecio());
-                                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_RUTAFOTO, prodProv.getRutafoto());
-
-                                            ConsultaBD.updateRegistroDetalle(TABLA_DETPARTIDABASE, detPartida.getString(DETPARTIDABASE_ID_PARTIDABASE), detPartida.getInt(DETPARTIDA_SECUENCIA), valores);
-                                        }
-                                        break;
-                                    }
-
-                                }
+                            if (partida.getInt(PARTIDA_TIPO_ESTADO) == 1) {
+                                valores.put(DETPARTIDA_PRECIO, prodProv.getPrecio());
+                                valores.put(DETPARTIDA_DESCUENTOPROVCAT, prodProv.getDescProv());
                             }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                            int res = CRUDutil.actualizarRegistro(detPartida, valores);
+                            System.out.println("detpartidas actualizadas = " + res);
 
-                            }
-                        };
+                        }
 
-                        dbProveedor.addValueEventListener(eventListener);
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
                 }
+
             }
-            if (actualizarPartidaBase(idPartidabase)) {
-                System.out.println("Partida base actualizada " + idPartidabase);
-                return true;
-            }
-            return false;
+
         }
 
-        public static boolean actualizarPartidaProyecto(String idPartida) {
+        public static void actualizarPartidaProyecto(String idPartida) {
 
             double tiempoPartida = 0;
             double importeProductosPartida = 0;
@@ -1260,7 +1192,42 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             double totalPartida = 0;
             ArrayList<Modelo> listaDetPartida;
             listaDetPartida = ConsultaBD.queryListDetalle(CAMPOS_DETPARTIDA, idPartida, TABLA_PARTIDA);
+            Modelo partida = ConsultaBD.queryObject(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, idPartida, null,
+                    JavaUtil.Constantes.IGUAL, null);
             for (Modelo detPartida : listaDetPartida) {
+
+
+                ContentValues valores = new ContentValues();
+
+                if (detPartida.getString(DETPARTIDA_TIPO).equals(TIPOTRABAJO)) {
+
+                    Modelo trabajo = CRUDutil.setModelo(CAMPOS_TRABAJO, detPartida.getString(DETPARTIDA_ID_DETPARTIDA));
+                    valores.put(DETPARTIDA_NOMBRE, trabajo.getString(TRABAJO_NOMBRE));
+                    valores.put(DETPARTIDA_DESCRIPCION, trabajo.getString(TRABAJO_DESCRIPCION));
+                    valores.put(DETPARTIDA_RUTAFOTO, trabajo.getString(TRABAJO_RUTAFOTO));
+
+                    if (partida.getInt(PARTIDA_TIPO_ESTADO) == 1) {
+                        valores.put(DETPARTIDA_TIEMPO, trabajo.getDouble(TRABAJO_TIEMPO));
+                        valores.put(DETPARTIDA_PRECIO, trabajo.getDouble(TRABAJO_TIEMPO) * hora);
+                    }
+
+                } else if (detPartida.getString(DETPARTIDA_TIPO).equals(TIPOPRODUCTO)) {
+
+                    Modelo producto = CRUDutil.setModelo(CAMPOS_PRODUCTO, detPartida.getString(DETPARTIDA_ID_DETPARTIDA));
+                    valores.put(DETPARTIDA_NOMBRE, producto.getString(PRODUCTO_NOMBRE));
+                    valores.put(DETPARTIDA_DESCRIPCION, producto.getString(PRODUCTO_DESCRIPCION));
+                    valores.put(DETPARTIDA_REFPROVEEDOR, producto.getString(PRODUCTO_REFERENCIA));
+                    valores.put(DETPARTIDA_RUTAFOTO, producto.getString(PRODUCTO_RUTAFOTO));
+
+                    if (partida.getInt(PARTIDA_TIPO_ESTADO) == 1) {
+                        valores.put(DETPARTIDA_PRECIO, producto.getDouble(PRODUCTO_PRECIO));
+                        valores.put(DETPARTIDA_DESCUENTOPROVEEDOR, producto.getDouble(PRODUCTO_DESCPROV));
+                    }
+                }
+
+                System.out.println("valores = " + valores);
+                int res = CRUDutil.actualizarRegistro(detPartida, valores);
+                System.out.println("detpartidas actualizadas = " + res);
 
                 if (detPartida.getDouble(DETPARTIDA_TIEMPO) > 0) {
                     tiempoPartida += detPartida.getDouble(DETPARTIDA_TIEMPO) * detPartida.getDouble(DETPARTIDA_CANTIDAD);
@@ -1282,8 +1249,6 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             importeTiempoPartida = tiempoPartida * Interactor.hora;
             totalPartida = importeProductosPartida + importeTiempoPartida;
 
-            Modelo partida = ConsultaBD.queryObject(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, idPartida, null,
-                    JavaUtil.Constantes.IGUAL, null);
 
             double cantidadPartida = partida.getDouble(PARTIDA_CANTIDAD);
 
@@ -1298,69 +1263,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             int i = ConsultaBD.updateRegistroDetalle(TABLA_PARTIDA, idProyecto_Partida, secuenciaPartida, valores);
             if (i > 0) {
                 System.out.println("Partidas actualizadas = " + i);
-                return true;
             }
-
-            return false;
-        }
-
-        public static void sincronizarPartidasBase() {
-
-            ListaModelo listaPartidasBase = new ListaModelo(CAMPOS_PARTIDABASE);
-            if (listaPartidasBase.chechLista()) {
-                for (Modelo partidasBase : listaPartidasBase.getLista()) {
-
-                    String id = partidasBase.getString(PARTIDABASE_ID_PARTIDABASE);
-                    sincronizarPartidaBase(id);
-
-                }
-
-            }
-        }
-
-        public static boolean actualizarPartidaBase(String idPartidabase) {
-
-            double tiempoPartida = 0;
-            double importeProductosPartida = 0;
-            double coste = 0;
-            double importeTiempoPartida = 0;
-            double totalPartida = 0;
-            ArrayList<Modelo> listaDetPartida;
-            listaDetPartida = ConsultaBD.queryListDetalle(CAMPOS_DETPARTIDABASE, idPartidabase, TABLA_PARTIDABASE);
-            for (Modelo detPartida : listaDetPartida) {
-
-                if (detPartida.getDouble(DETPARTIDABASE_TIEMPO) > 0) {
-                    tiempoPartida += detPartida.getDouble(DETPARTIDABASE_TIEMPO);
-                } else {
-                    double importedet = detPartida.getDouble(DETPARTIDABASE_PRECIO) * detPartida.getDouble(DETPARTIDABASE_CANTIDAD);
-                    if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOPRODUCTO)) {
-                        importeProductosPartida += importedet + ((importedet / 100) * detPartida.getDouble(DETPARTIDABASE_BENEFICIO));
-                    } else {
-                        importeProductosPartida += importedet;
-                    }
-                    if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOPRODUCTOPROV)) {
-                        coste += importedet - ((importedet / 100) * detPartida.getDouble(DETPARTIDABASE_DESCUENTOPROVCAT));
-                    } else {
-                        coste += importedet;
-                    }
-                }
-            }
-
-
-            coste += (tiempoPartida * calculoCosteHora());
-            importeTiempoPartida = tiempoPartida * Interactor.hora;
-            System.out.println("hora = " + Interactor.hora);
-            System.out.println("tiempoPartida = " + tiempoPartida);
-            totalPartida = importeProductosPartida + importeTiempoPartida;
-
-            ContentValues valores = new ContentValues();
-            ConsultaBD.putDato(valores, CAMPOS_PARTIDABASE, PARTIDABASE_TIEMPO, tiempoPartida);
-            ConsultaBD.putDato(valores, CAMPOS_PARTIDABASE, PARTIDABASE_PRECIO, totalPartida);
-            ConsultaBD.putDato(valores, CAMPOS_PARTIDABASE, PARTIDABASE_COSTE, coste);
-
-            int i = ConsultaBD.updateRegistro(TABLA_PARTIDABASE, idPartidabase, valores);
-
-            return i > 0;
 
         }
 
@@ -1500,6 +1403,65 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             return 0;
         }
 
+        public static void sincroPartidaBaseToPartidaProy(final String id, final String secuencia) {
+
+            try {
+
+                Modelo modelo = CRUDutil.setModelo(CAMPOS_PARTIDA, id, secuencia);
+                Modelo partidaBase = CRUDutil.setModelo(CAMPOS_PARTIDABASE, modelo.getString(PARTIDA_ID_PARTIDABASE));
+                ContentValues valores = new ContentValues();
+
+                putDato(valores, CAMPOS_PARTIDA, PARTIDA_NOMBRE, partidaBase.getString(PARTIDABASE_NOMBRE));
+                putDato(valores, CAMPOS_PARTIDA, PARTIDA_DESCRIPCION, partidaBase.getString(PARTIDABASE_DESCRIPCION));
+                putDato(valores, CAMPOS_PARTIDA, PARTIDA_RUTAFOTO, partidaBase.getString(PARTIDABASE_RUTAFOTO));
+
+                CRUDutil.actualizarRegistro(TABLA_PARTIDA, id, secuencia, valores);
+
+                String iddetpartida = modelo.getString(PARTIDA_ID_PARTIDA);
+                String iddetpartidabase = partidaBase.getString(PARTIDABASE_ID_PARTIDABASE);
+                ListaModelo listaDetPartidabase = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, iddetpartidabase, TABLA_PARTIDABASE);
+                for (Modelo detPartidaBase : listaDetPartidabase.getLista()) {
+
+                    valores = new ContentValues();
+
+                    putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_ID_PARTIDA, iddetpartida);
+                    putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_ID_DETPARTIDA, detPartidaBase.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
+                    putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_TIPO, detPartidaBase.getString(DETPARTIDABASE_TIPO));
+                    putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_CANTIDAD, detPartidaBase.getString(DETPARTIDABASE_CANTIDAD));
+                    boolean detnuevo = true;
+                    ListaModelo listaDetPartida = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida, TABLA_PARTIDA);
+                    for (Modelo detPartida : listaDetPartida.getLista()) {
+
+                        if (detPartida.getString(DETPARTIDA_ID_DETPARTIDA).equals(detPartidaBase.getString(DETPARTIDABASE_ID_DETPARTIDABASE))) {
+                            CRUDutil.actualizarRegistro(TABLA_DETPARTIDA, iddetpartida, detPartida.getInt(DETPARTIDA_SECUENCIA), valores);
+                            detnuevo = false;
+                        }
+                    }
+                    if (detnuevo) {
+                        CRUDutil.crearRegistroSec(CAMPOS_DETPARTIDA, iddetpartida, TABLA_PARTIDA, valores);
+
+                    }
+                }
+
+                ListaModelo listaDetPartida = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida, TABLA_PARTIDA);
+                for (Modelo detPartida : listaDetPartida.getLista()) {
+                    boolean cambio = true;
+                    for (Modelo detPartidaBase : listaDetPartidabase.getLista()) {
+
+                        if (detPartida.getString(DETPARTIDA_ID_DETPARTIDA).equals(detPartidaBase.getString(DETPARTIDABASE_ID_DETPARTIDABASE))) {
+                            cambio = false;
+                        }
+                    }
+                    if (cambio) {
+                        CRUDutil.borrarRegistro(TABLA_DETPARTIDA, detPartida.getString(DETPARTIDA_ID_PARTIDA), detPartida.getInt(DETPARTIDA_SECUENCIA));
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         public static class Tareafechas extends AsyncTask<Void, Float, Integer> {
 
             @Override
@@ -1544,12 +1506,31 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
         }
 
-        public static class TareaSincronizarPartidasBase extends AsyncTask<Void, Float, Integer> {
+        public static class TareaSincroPartidaProy extends AsyncTask<String, Float, Modelo> {
 
             @Override
-            protected Integer doInBackground(Void... voids) {
+            protected Modelo doInBackground(String... strings) {
 
-                sincronizarPartidasBase();
+                sincroPartidaBaseToPartidaProy(strings[0], strings[1]);
+                return CRUDutil.setModelo(CAMPOS_PARTIDA, strings[0], strings[1]);
+            }
+
+            @Override
+            protected void onPostExecute(Modelo modelo) {
+                super.onPostExecute(modelo);
+                new Interactor.Calculos.TareaActualizaPartidaProy().execute(modelo.getString(PARTIDA_ID_PARTIDA));
+
+            }
+
+        }
+
+
+        public static class TareaActualizaPartidaProy extends AsyncTask<String, Float, Integer> {
+
+            @Override
+            protected Integer doInBackground(String... strings) {
+
+                actualizarPartidaProyecto(strings[0]);
                 return null;
             }
 

@@ -15,6 +15,7 @@ import androidx.cardview.widget.CardView;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewLinearLayout;
 import com.codevsolution.base.crud.CRUDutil;
@@ -43,6 +44,7 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
     private Button addProducto;
     private Modelo partida;
     private Modelo proyecto;
+    private EditMaterialLayout nombre;
 
 
     @Override
@@ -109,7 +111,7 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
     @Override
     protected void setInicio() {
 
-        ViewLinearLayout vistaForm = (ViewLinearLayout) addVista(new ViewLinearLayout(contexto), frdetalleExtrasante);
+        ViewLinearLayout vistaForm = new ViewLinearLayout(contexto, frdetalle);
         addProducto = vistaForm.addButtonPrimary(R.string.add_producto);
         addProducto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,11 +128,11 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
         });
         imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
         imagen.setFocusable(false);
-        vistaForm.addEditMaterial(getString(R.string.nombre), PROVEEDOR_NOMBRE, null, null);
-        vistaForm.addEditMaterial(getString(R.string.direccion), PROVEEDOR_DIRECCION, ViewLinearLayout.MAPA, null);
-        vistaForm.addEditMaterial(getString(R.string.email), PROVEEDOR_EMAIL, ViewLinearLayout.MAIL, null);
-        vistaForm.addEditMaterial(getString(R.string.telefono), PROVEEDOR_TELEFONO, ViewLinearLayout.LLAMADA, activityBase);
-        vistaForm.addEditMaterial(getString(R.string.contacto), PROVEEDOR_CONTACTO, null, null);
+        nombre = vistaForm.addEditMaterialLayout(getString(R.string.nombre), PROVEEDOR_NOMBRE, null, null);
+        vistaForm.addEditMaterialLayout(getString(R.string.direccion), PROVEEDOR_DIRECCION, ViewLinearLayout.MAPA, null);
+        vistaForm.addEditMaterialLayout(getString(R.string.email), PROVEEDOR_EMAIL, ViewLinearLayout.MAIL, null);
+        vistaForm.addEditMaterialLayout(getString(R.string.telefono), PROVEEDOR_TELEFONO, ViewLinearLayout.LLAMADA, activityBase);
+        vistaForm.addEditMaterialLayout(getString(R.string.contacto), PROVEEDOR_CONTACTO, null, null);
         activo = (CheckBox) vistaForm.addVista(new CheckBox(contexto));
         activo.setText(R.string.activo);
         activo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -147,7 +149,7 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
 
         actualizarArrays(vistaForm);
 
-        ViewLinearLayout vistaBotones = (ViewLinearLayout) addVista(new ViewLinearLayout(contexto), frdetalleExtrasante);
+        ViewLinearLayout vistaBotones = new ViewLinearLayout(contexto, frdetalle);
         vistaBotones.setOrientacion(ViewLinearLayout.HORIZONTAL);
         btnevento = vistaBotones.addImageButtonSecundary(R.drawable.ic_evento_indigo);
         btnevento.setOnClickListener(new View.OnClickListener() {
@@ -214,6 +216,7 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
         gone(btnNota);
         gone(btnVerEventos);
         gone(btnVerNotas);
+        nombre.setText(getString(R.string.nuevo_proveedor));
 
     }
 

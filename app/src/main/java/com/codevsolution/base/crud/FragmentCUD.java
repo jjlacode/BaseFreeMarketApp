@@ -63,6 +63,11 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
 
     }
 
+    @Override
+    protected boolean setBack() {
+        return back;
+    }
+
     protected void onClickNuevo() {
         nuevo = true;
         setOnClickNuevo();
@@ -134,7 +139,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
     protected boolean onUpdate() {
         Log.d(TAG, getMetodo());
 
-        if (update()) {
+        if (comprobarDatos() && update()) {
             datos();
             return true;
         }
@@ -164,12 +169,6 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
         cambiarFragment();
 
         return true;
-    }
-
-    @Override
-    protected void alCambiarCampos(EditMaterial editMaterial) {
-        super.alCambiarCampos(editMaterial);
-
     }
 
     protected void acciones() {
@@ -231,7 +230,11 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
                     @Override
                     public void onClick(View v) {
 
-                        mostrarDialogoOpcionesImagen(contexto);
+                        if (id != null) {
+                            mostrarDialogoOpcionesImagen(contexto);
+                        } else {
+                            Toast.makeText(contexto, "El registro debe estar creado para elegir la imagen", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
             }
@@ -313,7 +316,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
         Log.d(TAG, getMetodo());
 
         icFragmentos.fabVisible();
-        activityBase.toolbar.setSubtitle(setNamefdef());
+        activityBase.toolbar.setSubtitle(tituloPlural);
         setcambioFragment();
         if (bundle != null) {
             enviarBundle();
@@ -324,6 +327,9 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
     protected void setcambioFragment() {
         Log.d(TAG, getMetodo());
 
+        id = null;
+        modelo = null;
+        secuencia = 0;
         bundle = new Bundle();
 
     }

@@ -16,13 +16,6 @@ public class UnionMarket extends FragmentGrid {
     private String sorteos;
     private String sorteosPro;
 
-
-    @Override
-    protected void setContext() {
-        contexto = getContext();
-    }
-
-
     @Override
     protected void setLista() {
 

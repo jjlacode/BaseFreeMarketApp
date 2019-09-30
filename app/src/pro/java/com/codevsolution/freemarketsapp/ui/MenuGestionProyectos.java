@@ -30,7 +30,7 @@ public class MenuGestionProyectos extends FragmentGrid implements ContratoPry.Ta
     private String trabajos;
     private String salir;
     private String catalogo;
-    private String home;
+    private String proyectos;
 
     @Override
     protected void setContext() {
@@ -51,11 +51,12 @@ public class MenuGestionProyectos extends FragmentGrid implements ContratoPry.Ta
         treking = getString(R.string.treking);
         trabajos = getString(R.string.trabajos);
         salir = getString(R.string.salir);
-        catalogo = getString(R.string.catalogo);
-        home = getString(R.string.inicio);
+        catalogo = getString(R.string.partidas_base);
+        proyectos = getString(R.string.proyectos_y_presupuestos);
 
         lista = new ArrayList<GridModel>();
 
+        lista.add(new GridModel(R.drawable.logofp, proyectos));
         lista.add(new GridModel(R.drawable.ic_proy_curso_indigo, proyectosCurso));
         lista.add(new GridModel(R.drawable.ic_tareas_indigo, tareasEjecucion));
         lista.add(new GridModel(R.drawable.ic_treking_indigo, treking));
@@ -64,9 +65,8 @@ public class MenuGestionProyectos extends FragmentGrid implements ContratoPry.Ta
         lista.add(new GridModel(R.drawable.ic_cobros_indigo, pendienteCobro));
         lista.add(new GridModel(R.drawable.ic_tareas_indigo, trabajos));
         lista.add(new GridModel(R.drawable.ic_producto_indigo, productos));
-        lista.add(new GridModel(R.drawable.ic_catalogo_indigo, catalogo));
+        lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, catalogo));
         lista.add(new GridModel(R.drawable.ic_proveedor_indigo, proveedores));
-        lista.add(new GridModel(R.drawable.ic_inicio_black_24dp, home));
         lista.add(new GridModel(R.drawable.ic_salir_rojo, salir));
 
     }
@@ -120,12 +120,12 @@ public class MenuGestionProyectos extends FragmentGrid implements ContratoPry.Ta
         } else if (nombre.equals(catalogo)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new CatalogoProdProvWeb()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new FragmentCRUDPartidaBase()).addToBackStack(null).commit();
 
-        } else if (nombre.equals(home)) {
+        } else if (nombre.equals(proyectos)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new MenuInicio()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new FragmentCRUDProyecto()).addToBackStack(null).commit();
 
         } else if (nombre.equals(salir)) {
 

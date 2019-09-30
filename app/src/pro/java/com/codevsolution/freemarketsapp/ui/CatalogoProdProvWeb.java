@@ -1,5 +1,6 @@
 package com.codevsolution.freemarketsapp.ui;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +11,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.crud.CRUDutil;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,6 +34,12 @@ import com.codevsolution.freemarketsapp.model.Proveedores;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
+import static com.codevsolution.base.sqlite.ContratoPry.Tablas.CAMPOS_DETPARTIDABASE;
+import static com.codevsolution.base.sqlite.ContratoPry.Tablas.DETPARTIDABASE_ID_DETPARTIDABASE;
+import static com.codevsolution.base.sqlite.ContratoPry.Tablas.PARTIDABASE_ID_PARTIDABASE;
+import static com.codevsolution.base.sqlite.ContratoPry.Tablas.TABLA_PARTIDABASE;
+import static com.codevsolution.base.sqlite.ContratoPry.Tablas.TRABAJO_ID_TRABAJO;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PARTIDA;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODPROVCAT;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PROYECTO;
@@ -254,15 +263,20 @@ public class CatalogoProdProvWeb extends FragmentMasterDetailNoSQL {
             @Override
             public void onClick(View view) {
 
-                if (origen.equals(PARTIDA)) {
-                    bundle = new Bundle();
-                    putBundle(PRODPROVCAT, prodProv);
-                    putBundle(PARTIDA, partida);
-                    putBundle(PROYECTO, proyecto);
-                    icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaProdProvCat());
-                }
+                bundle = new Bundle();
+                String idPartidabase = AndroidUtil.getSharePreference(contexto, PERSISTENCIA, PARTIDABASE_ID_PARTIDABASE, NULL);
+                putBundle(CAMPO_ID, idPartidabase);
+                putBundle(CAMPO_SECUENCIA, crearProdProvBase(idPartidabase));
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaBaseProdProvCat());
             }
         });
+
+    }
+
+    private int crearProdProvBase(String idPartidabase) {
+        ContentValues valores = new ContentValues();
+        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_DETPARTIDABASE, prodProv.getId());
+        return CRUDutil.crearRegistroSec(CAMPOS_DETPARTIDABASE, TABLA_PARTIDABASE, idPartidabase, valores);
 
     }
 

@@ -3,16 +3,12 @@ package com.codevsolution.freemarketsapp.ui;
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
@@ -22,17 +18,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.LinearLayoutCompat;
 
+import com.codevsolution.base.android.controls.EditMaterialLayout;
+import com.codevsolution.base.android.controls.ViewLinearLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
-import com.codevsolution.base.adapter.ListaAdaptadorFiltro;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ImagenLayout;
-import com.codevsolution.base.android.controls.ScalableImageView;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.media.MediaUtil;
@@ -46,7 +42,6 @@ import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.codevsolution.freemarketsapp.templates.PresupuestoPDF;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 import static com.codevsolution.base.sqlite.ConsultaBD.checkQueryList;
@@ -62,21 +57,19 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         implements Interactor.ConstantesPry, ContratoPry.Tablas, Interactor.Estados,
         Interactor.TiposEstados {
 
-    private ScalableImageView imagenTipoClienteProyecto;
-    private ImageView btnfechaentrega;
-    private AutoCompleteTextView spClienteProyecto;
-    private EditMaterial nombrePry;
-    private EditMaterial descripcionPry;
-    private EditMaterial estadoProyecto;
-    private EditMaterial fechaEntregaPresup;
-    private EditMaterial fechaAcordadaPry;
-    private EditMaterial importeFinalPry;
-    private EditMaterial fechaEntradaPry;
-    private EditMaterial fechaCalculadaPry;
-    private EditMaterial fechaFinalPry;
-    private EditMaterial totalPartidasPry;
-    private EditMaterial pvpPartidas;
-    private EditMaterial importeCalculadoPry;
+    private EditMaterialLayout spClienteProyecto;
+    private EditMaterialLayout nombrePry;
+    private EditMaterialLayout descripcionPry;
+    private EditMaterialLayout estadoProyecto;
+    private EditMaterialLayout fechaEntregaPresup;
+    private EditMaterialLayout fechaAcordadaPry;
+    private EditMaterialLayout importeFinalPry;
+    private EditMaterialLayout fechaEntradaPry;
+    private EditMaterialLayout fechaCalculadaPry;
+    private EditMaterialLayout fechaFinalPry;
+    private EditMaterialLayout totalPartidasPry;
+    private EditMaterialLayout pvpPartidas;
+    private EditMaterialLayout importeCalculadoPry;
     private ImageButton btnEvento;
     private Button btnPartidasPry;
     private Button btnActualizar;
@@ -85,8 +78,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private ImageButton btnVerPdf;
     private ImageButton btnenviarPdf;
     private ImageButton btnVerEventos;
-    private ScalableImageView btnimgEstadoPry;
-    private ImageView btnfechaacord;
     private Spinner spEstadoProyecto;
 
 
@@ -121,14 +112,15 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private ImageButton btnVerNotas;
     public static String rutaPdf;
     private boolean enGarantia;
+    private Modelo cliente;
 
     public FragmentCRUDProyecto() {
         // Required empty public constructor
     }
 
     @Override
-    protected void setTAG() {
-        TAG = getClass().getSimpleName();
+    protected String setTAG() {
+        return getClass().getSimpleName();
     }
 
     @Override
@@ -227,9 +219,10 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setLayout() {
 
-        layoutCuerpo = R.layout.fragment_crud_proyecto;
-        layoutCabecera = R.layout.cabecera_crud_proyecto;
+        //layoutCuerpo = R.layout.fragment_crud_proyecto;
+        //layoutCabecera = R.layout.cabecera_crud_proyecto;
         layoutItem = R.layout.item_list_proyecto;
+        cabecera = true;
 
     }
 
@@ -257,8 +250,14 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
 
         if(bundle.containsKey(CLIENTE)){
-            idCliente = bundle.getString(CLIENTE);
-            System.out.println("idCliente bundle = " + idCliente);
+            cliente = (Modelo) bundle.getSerializable(CLIENTE);
+            idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
+            if (actual.equals(PRESUPUESTO)) {
+                idEstado = getIdEstado(TNUEVOPRESUP);
+            } else {
+                idEstado = getIdEstado(TPROYECTEJECUCION);
+            }
+            onUpdate();
 
         }
 
@@ -323,6 +322,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 Toast.makeText(getContext(),PRESUPUESTOS, Toast.LENGTH_SHORT).show();
                 actual = PRESUPUESTO;
                 activityBase.toolbar.setTitle(R.string.presupuestos);
+                imagen.setTextTitulo(R.string.presupuestos);
                 actualtemp = actual;
                 selector();
             }
@@ -336,6 +336,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 actual = PROYECTO;
                 actualtemp = actual;
                 activityBase.toolbar.setTitle(R.string.proyectos);
+                imagen.setTextTitulo(R.string.proyectos);
+
                 selector();
             }
         });
@@ -348,6 +350,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 actual = COBROS;
                 actualtemp = PROYECTO;
                 activityBase.toolbar.setTitle(R.string.cobros);
+                imagen.setTextTitulo(R.string.proyectos_cobros);
+
                 selector();
             }
         });
@@ -360,6 +364,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 actual = GARANTIA;
                 actualtemp = PROYECTO;
                 activityBase.toolbar.setTitle(R.string.garantia);
+                imagen.setTextTitulo(R.string.proyectos_garantia);
+
                 selector();
             }
         });
@@ -372,167 +378,14 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 actual = HISTORICO;
                 actualtemp = PROYECTO;
                 activityBase.toolbar.setTitle(R.string.historico);
+                imagen.setTextTitulo(R.string.proyectos_historico);
+
                 selector();
             }
         });
 
-
-        btnVerPdf.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (modelo.getString(PROYECTO_RUTAPDF)!=null) {
-                    AppActivity.mostrarPDF(modelo.getString(PROYECTO_RUTAPDF));
-                }else{
-                    update();
-                }
-
-            }
-        });
-
-        btnenviarPdf.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (modelo.getString(PROYECTO_RUTAPDF)!=null) {
-
-                    Modelo cliente = CRUDutil.setModelo(CAMPOS_CLIENTE, idCliente);
-                    String email = cliente.getString(CLIENTE_EMAIL);
-                    String asunto = "Presupuesto solicitado";
-                    String mensaje = "Envio presupuesto" + modelo.getString(PROYECTO_NOMBRE) + "solicitado por usted";
-                    PresupuestoPDF presupuestoPDF = new PresupuestoPDF();
-                    presupuestoPDF.buscarPDF(modelo.getString(PROYECTO_RUTAPDF));
-                    presupuestoPDF.enviarPDFEmail(contexto, modelo.getString(PROYECTO_RUTAPDF), email, asunto, mensaje);
-                }else{
-                    update();
-                }
-
-            }
-        });
-
-        btncompartirPdf.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (modelo.getString(PROYECTO_RUTAPDF)!=null) {
-
-                    AppActivity.compartirPdf(modelo.getString(PROYECTO_RUTAPDF));
-
-                }else{
-                    update();
-                }
-
-            }
-        });
-
-        btnEvento.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                nuevoEvento();
-            }
-        });
-
-        btnVerEventos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                verEventos();
-            }
-        });
-
-        btnPartidasPry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                verPartidas();
-
-            }
-        });
-
-        btnActualizar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                modificarEstado();
-                update();
-
-                if (peso > 6) {
-                    imagenTipoClienteProyecto.setImageResource(R.drawable.clientev);
-                } else if (peso > 3) {
-                    imagenTipoClienteProyecto.setImageResource(R.drawable.clientea);
-                } else if (peso > 0) {
-                    imagenTipoClienteProyecto.setImageResource(R.drawable.clienter);
-                } else {
-                    imagenTipoClienteProyecto.setImageResource(R.drawable.cliente);
-                }
-
-                setDatos();
-
-            }
-        });
-        btnActualizar2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                modificarEstadoNoAceptado();
-                update();
-                setDatos();
-            }
-        });
-        imagenTipoClienteProyecto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                nuevoCliente();
-            }
-        });
-
-        btnfechaacord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                showDatePickerDialogAcordada();
-
-            }
-        });
-
-        btnfechaentrega.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                showDatePickerDialogEntrega();
-
-            }
-        });
-
-        btnNota.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                nuevaNota();
-            }
-        });
-
-        btnVerNotas.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                verNotas();
-            }
-        });
-
-
     }
 
-    private void nuevoCliente() {
-        //mostrarDialogoTipoCliente();
-        bundle = new Bundle();
-        bundle.putBoolean(NUEVOREGISTRO, true);
-        bundle.putString(ACTUAL, PROSPECTO);
-        bundle.putString(ORIGEN, actualtemp);
-        icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDCliente());
-    }
 
     private void nuevoEvento() {
         update();
@@ -684,42 +537,211 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setInicio() {
 
-        imagen = (ImagenLayout) ctrl(R.id.imudpry);
-        imagenTipoClienteProyecto = (ScalableImageView) ctrl(R.id.imgbtntipocliudpry);
-        btnimgEstadoPry = (ScalableImageView) ctrl(R.id.imgbtnestudpry);
-        nombrePry = (EditMaterial) ctrl(R.id.etnomudpry, PROYECTO_NOMBRE);
-        descripcionPry = (EditMaterial) ctrl(R.id.etdescudpry, PROYECTO_DESCRIPCION);
-        spClienteProyecto = (AutoCompleteTextView) ctrl(R.id.sptipocliudpry);
-        spEstadoProyecto = (Spinner) ctrl(R.id.spestudpry);
-        estadoProyecto = (EditMaterial) ctrl(R.id.tvestudproy);
-        fechaEntradaPry = (EditMaterial) ctrl(R.id.proyecto_ud_tv_fecha_entrada);
-        fechaEntregaPresup = (EditMaterial) ctrl(R.id.tvfentpresuppry);
-        fechaCalculadaPry = (EditMaterial) ctrl(R.id.tvfcalcudpry);
-        fechaAcordadaPry = (EditMaterial) ctrl(R.id.tvfacorudpry);
-        fechaFinalPry = (EditMaterial) ctrl(R.id.tvffinudpry);
-        totalPartidasPry = (EditMaterial) ctrl(R.id.tvtotpartudpry);
-        pvpPartidas = (EditMaterial) ctrl(R.id.tvpreciopartidasudpry);
-        importeCalculadoPry = (EditMaterial) ctrl(R.id.tvimpcaludpry);
-        importeFinalPry = (EditMaterial) ctrl(R.id.etimpfinudpry);
-        btnEvento = (ImageButton) ctrl(R.id.btneventoudpry);
-        btnPartidasPry = (Button) ctrl(R.id.btnpartudpry);
-        btnActualizar = (Button) ctrl(R.id.btnactualizar);
-        btnActualizar2 = (Button) ctrl(R.id.btnactualizar2);
-        btnfechaacord = (ImageView) ctrl(R.id.btnfechaacord);
-        btnfechaentrega = (ImageView) ctrl(R.id.btnfechaentrega);
-        btnVerPdf = (ImageButton) ctrl(R.id.btnverpdfudpry);
-        btnenviarPdf = (ImageButton) ctrl(R.id.btnenviarpdfudpry);
-        btncompartirPdf = (ImageButton) ctrl(R.id.btncompartirpdfudpry);
-        btnpresupuestos = (Button) ctrl(R.id.btnpresuplpry);
-        btnproyectos = (Button) ctrl(R.id.btnproyectoslpry);
-        btncobros = (Button) ctrl(R.id.btnproycobroslpry);
-        btnhistorico = (Button) ctrl(R.id.btnhistoricopry);
-        btngarantias = (Button) ctrl(R.id.btngarantiapry);
-        btnVerEventos = (ImageButton) ctrl(R.id.btnvereventosudpry);
-        btnNota = (ImageButton) ctrl(R.id.btn_crearnota_proy);
-        btnVerNotas = (ImageButton) ctrl(R.id.btn_vernotas_proy);
+        ViewLinearLayout vistaForm = new ViewLinearLayout(contexto, frdetalle);
+
+        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
+        imagen.setFocusable(false);
+        imagen.setTextTitulo(tituloSingular);
+        nombrePry = vistaForm.addEditMaterialLayout(getString(R.string.nombre), PROYECTO_NOMBRE, null, null);
+        descripcionPry = vistaForm.addEditMaterialLayout(getString(R.string.descripcion), PROYECTO_DESCRIPCION, null, null);
+        spClienteProyecto = vistaForm.addEditMaterialLayout(getString(R.string.cliente));
+        spClienteProyecto.setActivo(false);
+        spClienteProyecto.btnInicioInvisible(false);
+        spClienteProyecto.btnAccion2Enable(true);
+        spClienteProyecto.setImgBtnAccion2(R.drawable.cliente);
+        spEstadoProyecto = (Spinner) vistaForm.addVista(new Spinner(contexto));
+        estadoProyecto = vistaForm.addEditMaterialLayout(R.string.estado);
+        estadoProyecto.btnAccion2Enable(true);
+        estadoProyecto.btnInicioInvisible(false);
+        estadoProyecto.setImgBtnAccion2(R.drawable.alert_box_v);
+        fechaEntradaPry = vistaForm.addEditMaterialLayout(R.string.fecha_entrada);
+        fechaEntradaPry.setActivo(false);
+        fechaEntradaPry.btnInicioInvisible(false);
+        fechaEntregaPresup = vistaForm.addEditMaterialLayout(R.string.fecha_entrega_presup);
+        fechaEntregaPresup.setActivo(false);
+        fechaEntregaPresup.btnInicioInvisible(false);
+        fechaEntregaPresup.btnAccionEnable(true);
+        fechaEntregaPresup.setImgBtnAccion(R.drawable.ic_search_black_24dp);
+        fechaEntregaPresup.setClickAccion(new EditMaterialLayout.ClickAccion() {
+            @Override
+            public void onClickAccion(View view) {
+                showDatePickerDialogEntrega();
+            }
+        });
+        fechaCalculadaPry = vistaForm.addEditMaterialLayout(R.string.fecha_calculada);
+        fechaCalculadaPry.setActivo(false);
+        fechaCalculadaPry.btnInicioInvisible(false);
+        fechaAcordadaPry = vistaForm.addEditMaterialLayout(R.string.fecha_acordada);
+        fechaAcordadaPry.setActivo(false);
+        fechaAcordadaPry.btnInicioInvisible(false);
+        fechaAcordadaPry.btnAccionEnable(true);
+        fechaAcordadaPry.setImgBtnAccion(R.drawable.ic_search_black_24dp);
+        fechaAcordadaPry.setClickAccion(new EditMaterialLayout.ClickAccion() {
+            @Override
+            public void onClickAccion(View view) {
+                showDatePickerDialogAcordada();
+            }
+        });
+        fechaFinalPry = vistaForm.addEditMaterialLayout(R.string.fecha_final);
+        fechaFinalPry.setActivo(false);
+        fechaFinalPry.btnInicioInvisible(false);
+        ViewLinearLayout vistaImportepartidas = new ViewLinearLayout(contexto, vistaForm.getViewGroup());
+        vistaImportepartidas.setOrientacion(LinearLayoutCompat.HORIZONTAL);
+        totalPartidasPry = vistaImportepartidas.addEditMaterialLayout(R.string.tiempo_partidas);
+        totalPartidasPry.setActivo(false);
+        totalPartidasPry.btnInicioInvisible(false);
+        pvpPartidas = vistaImportepartidas.addEditMaterialLayout(R.string.total_partidas);
+        pvpPartidas.setActivo(false);
+        pvpPartidas.btnInicioInvisible(false);
+        actualizarArrays(vistaImportepartidas);
+        ViewLinearLayout vistaImporte = new ViewLinearLayout(contexto, vistaForm.getViewGroup());
+        vistaImporte.setOrientacion(LinearLayoutCompat.HORIZONTAL);
+        importeCalculadoPry = vistaImporte.addEditMaterialLayout(R.string.importe_calculado);
+        importeCalculadoPry.setActivo(false);
+        importeCalculadoPry.btnInicioInvisible(false);
+        importeFinalPry = vistaImporte.addEditMaterialLayout(R.string.importe_final);
+        actualizarArrays(vistaImporte);
+        btnPartidasPry = vistaForm.addButtonPrimary(R.string.partidas_proyecto);
+        btnPartidasPry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                verPartidas();
+            }
+        });
+        ViewLinearLayout vistabtn = new ViewLinearLayout(contexto, vistaForm.getViewGroup());
+        vistabtn.setOrientacion(LinearLayoutCompat.HORIZONTAL);
+
+        btnEvento = vistabtn.addImageButtonSecundary(R.drawable.ic_evento_indigo);
+        btnEvento.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                nuevoEvento();
+            }
+        });
+        btnVerEventos = vistabtn.addImageButtonSecundary(R.drawable.ic_lista_eventos_indigo);
+        btnVerEventos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                verEventos();
+            }
+        });
+        btnNota = vistabtn.addImageButtonSecundary(R.drawable.ic_nueva_nota_indigo);
+        btnNota.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                nuevaNota();
+            }
+        });
+        btnVerNotas = vistabtn.addImageButtonSecundary(R.drawable.ic_lista_notas_indigo);
+        btnVerNotas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                verNotas();
+            }
+        });
+        actualizarArrays(vistabtn);
+        btnActualizar = vistaForm.addButtonPrimary(R.string.estado);
+        btnActualizar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                modificarEstado();
+                update();
+
+                if (peso > 6) {
+                    spClienteProyecto.setImgBtnAccion2(R.drawable.clientev);
+                } else if (peso > 3) {
+                    spClienteProyecto.setImgBtnAccion2(R.drawable.clientea);
+                } else if (peso > 0) {
+                    spClienteProyecto.setImgBtnAccion2(R.drawable.clienter);
+                } else {
+                    spClienteProyecto.setImgBtnAccion2(R.drawable.cliente);
+                }
+
+                setDatos();
+            }
+        });
+        btnActualizar2 = vistaForm.addButtonPrimary(R.string.estado);
+        btnActualizar2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                modificarEstadoNoAceptado();
+                update();
+                setDatos();
+            }
+        });
+        btnVerPdf = vistaForm.addImageButtonSecundary(R.drawable.ic_pdf_indigo);
+        btnVerPdf.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (modelo.getString(PROYECTO_RUTAPDF) != null) {
+                    AppActivity.mostrarPDF(modelo.getString(PROYECTO_RUTAPDF));
+                } else {
+                    update();
+                }
+
+            }
+        });
+
+        btnenviarPdf = vistaForm.addImageButtonSecundary(R.drawable.ic_txt_pdf_indigo);
+        btnenviarPdf.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (modelo.getString(PROYECTO_RUTAPDF) != null) {
+
+                    Modelo cliente = CRUDutil.setModelo(CAMPOS_CLIENTE, idCliente);
+                    String email = cliente.getString(CLIENTE_EMAIL);
+                    String asunto = "Presupuesto solicitado";
+                    String mensaje = "Envio presupuesto" + modelo.getString(PROYECTO_NOMBRE) + "solicitado por usted";
+                    PresupuestoPDF presupuestoPDF = new PresupuestoPDF();
+                    presupuestoPDF.buscarPDF(modelo.getString(PROYECTO_RUTAPDF));
+                    presupuestoPDF.enviarPDFEmail(contexto, modelo.getString(PROYECTO_RUTAPDF), email, asunto, mensaje);
+                } else {
+                    update();
+                }
+            }
+        });
+        btncompartirPdf = vistaForm.addImageButtonSecundary(R.drawable.ic_compartir_indigo);
+        btncompartirPdf.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (modelo.getString(PROYECTO_RUTAPDF) != null) {
+
+                    AppActivity.compartirPdf(modelo.getString(PROYECTO_RUTAPDF));
+
+                } else {
+                    update();
+                }
+            }
+        });
+
+        actualizarArrays(vistaForm);
+
+        ViewLinearLayout vistaCab = new ViewLinearLayout(contexto, frCabecera);
+        vistaCab.setOrientacion(ViewLinearLayout.HORIZONTAL);
+
+        btnpresupuestos = vistaCab.addButtonSecondary(R.string.presupuesto);
+        btnproyectos = vistaCab.addButtonSecondary(R.string.proyecto);
+        btncobros = vistaCab.addButtonSecondary(R.string.cobros);
+        btnhistorico = vistaCab.addButtonSecondary(R.string.historico);
+        btnhistorico.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getContext(), PROYHISTORICO, Toast.LENGTH_SHORT).show();
+                actual = HISTORICO;
+                actualtemp = PROYECTO;
+                activityBase.toolbar.setTitle(R.string.historico);
+                imagen.setTextTitulo(R.string.proyectos_historico);
+
+                selector();
+            }
+        });
+        btngarantias = vistaCab.addButtonSecondary(R.string.garantia);
+
+        actualizarArrays(vistaCab);
 
         estadoProyecto.setActivo(false);
+        //nombrePry.setCounterEnable(true);
+        //nombrePry.setCounterMax(30);
 
         gone(btnpresupuestos);
         gone(btnproyectos);
@@ -747,21 +769,18 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         btndelete.setVisibility(View.VISIBLE);
         btnEvento.setVisibility(View.VISIBLE);
         btnPartidasPry.setVisibility(View.VISIBLE);
-        estadoProyecto.setVisibility(View.VISIBLE);
-        fechaAcordadaPry.setVisibility(View.VISIBLE);
-        fechaCalculadaPry.setVisibility(View.VISIBLE);
-        btnfechaacord.setVisibility(View.VISIBLE);
-        btnfechaentrega.setVisibility(View.VISIBLE);
+        estadoProyecto.getLinearLayout().setVisibility(View.VISIBLE);
+        fechaAcordadaPry.getLinearLayout().setVisibility(View.VISIBLE);
+        fechaCalculadaPry.getLinearLayout().setVisibility(View.VISIBLE);
         btnActualizar.setVisibility(View.VISIBLE);
         btnActualizar2.setVisibility(View.VISIBLE);
-        pvpPartidas.setVisibility(View.VISIBLE);
-        fechaEntregaPresup.setVisibility(View.VISIBLE);
-        fechaFinalPry.setVisibility(View.VISIBLE);
-        totalPartidasPry.setVisibility(View.VISIBLE);
-        importeFinalPry.setVisibility(View.VISIBLE);
-        importeCalculadoPry.setVisibility(View.VISIBLE);
-        btnimgEstadoPry.setVisibility(View.VISIBLE);
-        fechaEntradaPry.setVisibility(View.VISIBLE);
+        pvpPartidas.getLinearLayout().setVisibility(View.VISIBLE);
+        fechaEntregaPresup.getLinearLayout().setVisibility(View.VISIBLE);
+        fechaFinalPry.getLinearLayout().setVisibility(View.VISIBLE);
+        totalPartidasPry.getLinearLayout().setVisibility(View.VISIBLE);
+        importeFinalPry.getLinearLayout().setVisibility(View.VISIBLE);
+        importeCalculadoPry.getLinearLayout().setVisibility(View.VISIBLE);
+        fechaEntradaPry.getLinearLayout().setVisibility(View.VISIBLE);
         visible(btnNota);
         visible(imagen);
 
@@ -779,33 +798,18 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             btnVerNotas.setVisibility(View.GONE);
         }
 
-        /*
-        if (actualtemp.equals(PRESUPUESTO)|| actualtemp.equals(PROYECTO) ) {
-            frLista.setVisibility(View.VISIBLE);
-            rv.setVisibility(View.GONE);
-        }
-
-
-
-        if (modelo.getString(PROYECTO_RUTAFOTO)!=null){
-            path = modelo.getString(PROYECTO_RUTAFOTO);
-            setImagenUri(contexto,path);
-        }
-
-         */
-
         nombrePry.setText(modelo.getString(PROYECTO_NOMBRE));
         descripcionPry.setText(modelo.getString(PROYECTO_DESCRIPCION));
         idCliente = modelo.getString(PROYECTO_ID_CLIENTE);
         peso = modelo.getInt(PROYECTO_CLIENTE_PESOTIPOCLI);//cliente.getInt(CLIENTE_PESOTIPOCLI);
         if (peso > 6) {
-            imagenTipoClienteProyecto.setImageResource(R.drawable.clientev);
+            spClienteProyecto.setImgBtnAccion2(R.drawable.clientev);
         } else if (peso > 3) {
-            imagenTipoClienteProyecto.setImageResource(R.drawable.clientea);
+            spClienteProyecto.setImgBtnAccion2(R.drawable.clientea);
         } else if (peso > 0) {
-            imagenTipoClienteProyecto.setImageResource(R.drawable.clienter);
+            spClienteProyecto.setImgBtnAccion2(R.drawable.clienter);
         } else {
-            imagenTipoClienteProyecto.setImageResource(R.drawable.cliente);
+            spClienteProyecto.setImgBtnAccion2(R.drawable.cliente);
         }
 
         idEstado = modelo.getString(PROYECTO_ID_ESTADO);
@@ -828,26 +832,22 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         if (preciototal == 0) {
 
-            fechaAcordadaPry.setVisibility(View.GONE);
-            fechaCalculadaPry.setVisibility(View.GONE);
-            btnfechaacord.setVisibility(View.GONE);
-            btnfechaentrega.setVisibility(View.GONE);
+            gone(fechaAcordadaPry.getLinearLayout());
+            gone(fechaCalculadaPry.getLinearLayout());
             btnActualizar.setVisibility(View.GONE);
             btnActualizar2.setVisibility(View.GONE);
-            pvpPartidas.setVisibility(View.GONE);
-            fechaEntregaPresup.setVisibility(View.GONE);
-            totalPartidasPry.setVisibility(View.GONE);
+            gone(pvpPartidas.getLinearLayout());
+            gone(fechaEntregaPresup.getLinearLayout());
+            gone(totalPartidasPry.getLinearLayout());
 
         } else {
 
-            fechaAcordadaPry.setVisibility(View.VISIBLE);
-            fechaCalculadaPry.setVisibility(View.VISIBLE);
-            btnfechaacord.setVisibility(View.VISIBLE);
-            btnActualizar.setVisibility(View.VISIBLE);
-            pvpPartidas.setVisibility(View.VISIBLE);
-            btnfechaentrega.setVisibility(View.GONE);
-            fechaEntregaPresup.setVisibility(View.GONE);
-            totalPartidasPry.setVisibility(View.VISIBLE);
+            visible(fechaAcordadaPry.getLinearLayout());
+            visible(fechaCalculadaPry.getLinearLayout());
+            visible(btnActualizar);
+            visible(pvpPartidas.getLinearLayout());
+            gone(fechaEntregaPresup.getLinearLayout());
+            visible(totalPartidasPry.getLinearLayout());
 
             if (modelo.getLong(PROYECTO_FECHAENTREGAACORDADA) == 0) {
 
@@ -862,8 +862,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 btnActualizar.setVisibility(View.VISIBLE);
                 if (modelo.getInt(PROYECTO_TIPOESTADO) > 2) {
 
-                    btnfechaentrega.setVisibility(View.VISIBLE);
-                    fechaEntregaPresup.setVisibility(View.VISIBLE);
+                    visible(fechaEntregaPresup.getLinearLayout());
                 }
 
             }
@@ -875,25 +874,25 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
 
         if (modelo.getLong(PROYECTO_FECHAFINAL) == 0) {
-            fechaFinalPry.setVisibility(View.GONE);
+            gone(fechaFinalPry.getLinearLayout());
         } else {
-            fechaFinalPry.setVisibility(View.VISIBLE);
+            visible(fechaFinalPry.getLinearLayout());
             fechaFinalPry.setText(JavaUtil.getDate(modelo.getLong(PROYECTO_FECHAFINAL)));
         }
 
 
         if (preciototal == 0) {
-            importeCalculadoPry.setVisibility(View.GONE);
+            gone(importeCalculadoPry.getLinearLayout());
         } else {
-            importeCalculadoPry.setVisibility(View.VISIBLE);
+            visible(importeCalculadoPry.getLinearLayout());
             importeCalculadoPry.setText(JavaUtil.formatoMonedaLocal
                     (preciototal));
         }
 
         if (modelo.getInt(PROYECTO_TIPOESTADO) < 4) {
-            importeFinalPry.setVisibility(View.GONE);
+            gone(importeFinalPry.getLinearLayout());
         } else {
-            importeFinalPry.setVisibility(View.VISIBLE);
+            visible(importeFinalPry.getLinearLayout());
             importeFinalPry.setText(JavaUtil.formatoMonedaLocal(modelo.getDouble(PROYECTO_IMPORTEFINAL)));
         }
 
@@ -902,11 +901,11 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
             long retraso = modelo.getLong(PROYECTO_RETRASO);
         if (retraso > 3 * Interactor.DIASLONG) {
-                btnimgEstadoPry.setImageResource(R.drawable.alert_box_r);
+            estadoProyecto.setImgBtnAccion2(R.drawable.alert_box_r);
         } else if (retraso > Interactor.DIASLONG) {
-                btnimgEstadoPry.setImageResource(R.drawable.alert_box_a);
+            estadoProyecto.setImgBtnAccion2(R.drawable.alert_box_a);
             } else {
-                btnimgEstadoPry.setImageResource(R.drawable.alert_box_v);
+            estadoProyecto.setImgBtnAccion2(R.drawable.alert_box_v);
             }
 
         if (modelo.getInt(PROYECTO_TIPOESTADO)>=TPRESUPPENDENTREGA){
@@ -923,142 +922,12 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         comprobarEstado();
 
-        setAdaptadorClientes(spClienteProyecto);
 
         if (idCliente!=null) {
             Modelo cliente = queryObject(CAMPOS_CLIENTE, idCliente);
             nombreCliente = cliente.getString(CLIENTE_NOMBRE);
             spClienteProyecto.setText(nombreCliente);
         }
-
-        spClienteProyecto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Modelo cliente = (Modelo) spClienteProyecto.getAdapter().getItem(position);
-                idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
-                nombreCliente = cliente.getString(CLIENTE_NOMBRE);
-                spClienteProyecto.setText(nombreCliente);
-                peso = cliente.getInt(CLIENTE_PESOTIPOCLI);
-                if (peso>6){imagenTipoClienteProyecto.setImageResource(R.drawable.clientev);}
-                else if (peso>3){imagenTipoClienteProyecto.setImageResource(R.drawable.clientea);}
-                else if (peso>0){imagenTipoClienteProyecto.setImageResource(R.drawable.clienter);}
-                else {imagenTipoClienteProyecto.setImageResource(R.drawable.cliente);}
-
-            }
-
-        });
-
-    }
-
-    @Override
-    protected void setOnClickNuevo() {
-        super.setOnClickNuevo();
-        idCliente = null;
-    }
-
-    @Override
-    protected void setNuevo() {
-
-        if (actual.equals(PRESUPUESTO)) {
-            tituloNuevo = R.string.nuevo_presupuesto;
-        }else{
-            tituloNuevo = R.string.nuevo_proyecto;
-        }
-
-        imagenTipoClienteProyecto.setImageResource(R.drawable.ic_person_add_black_24dp);
-
-        activityBase.toolbar.setSubtitle(tituloNuevo);
-
-        allGone();
-        visible(imagenTipoClienteProyecto);
-        visible(spClienteProyecto);
-        gone(imagen);
-
-        listaObjetosEstados();
-
-        ArrayAdapter<String> adaptadorEstado = new ArrayAdapter<>
-                (contexto,android.R.layout.simple_spinner_item,listaEstados);
-
-        spEstadoProyecto.setAdapter(adaptadorEstado);
-
-        if (actual.equals(PRESUPUESTO)){
-
-            spEstadoProyecto.setSelection(TNUEVOPRESUP);
-            idEstado = objEstados.get(TNUEVOPRESUP-1).getString(ESTADO_ID_ESTADO);
-        }else {
-
-            spEstadoProyecto.setSelection(TPROYECTEJECUCION);
-            idEstado = objEstados.get(TPROYECTEJECUCION-1).getString(ESTADO_ID_ESTADO);
-        }
-
-        spEstadoProyecto.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                if (position>0){
-
-                    idEstado = objEstados.get(position-1).getString(ESTADO_ID_ESTADO);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        setAdaptadorClientes(spClienteProyecto);
-        spClienteProyecto.setText("");
-
-        System.out.println("idCliente = " + idCliente);
-
-        if (idCliente!=null) {
-            Modelo cliente = queryObject(CAMPOS_CLIENTE, idCliente);
-            nombreCliente = cliente.getString(CLIENTE_NOMBRE);
-            spClienteProyecto.setText(nombreCliente);
-            nombrePry.setVisibility(View.VISIBLE);
-            descripcionPry.setVisibility(View.VISIBLE);
-            spEstadoProyecto.setVisibility(View.VISIBLE);
-            btnsave.setVisibility(View.VISIBLE);
-            peso = cliente.getInt(CLIENTE_PESOTIPOCLI);
-            if (peso>6){imagenTipoClienteProyecto.setImageResource(R.drawable.clientev);}
-            else if (peso>3){imagenTipoClienteProyecto.setImageResource(R.drawable.clientea);}
-            else if (peso>0){imagenTipoClienteProyecto.setImageResource(R.drawable.clienter);}
-            else {imagenTipoClienteProyecto.setImageResource(R.drawable.cliente);}
-
-        }
-
-
-        spClienteProyecto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Modelo cliente = (Modelo) spClienteProyecto.getAdapter().getItem(position);
-                idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
-                nombreCliente = cliente.getString(CLIENTE_NOMBRE);
-                spClienteProyecto.setText(nombreCliente);
-                peso = cliente.getInt(CLIENTE_PESOTIPOCLI);
-                if (peso>6){imagenTipoClienteProyecto.setImageResource(R.drawable.clientev);}
-                else if (peso>3){imagenTipoClienteProyecto.setImageResource(R.drawable.clientea);}
-                else if (peso>0){imagenTipoClienteProyecto.setImageResource(R.drawable.clienter);}
-                else {imagenTipoClienteProyecto.setImageResource(R.drawable.cliente);}
-                if (idCliente!=null) {
-                    nombrePry.setVisibility(View.VISIBLE);
-                    descripcionPry.setVisibility(View.VISIBLE);
-                    imagen.setVisibility(View.VISIBLE);
-                    btnsave.setVisibility(View.VISIBLE);
-                    if (idEstado!=null){update();}
-                }else{
-                    nombrePry.setVisibility(View.GONE);
-                    descripcionPry.setVisibility(View.GONE);
-                    imagen.setVisibility(View.GONE);
-                    btnsave.setVisibility(View.GONE);
-                }
-
-            }
-
-        });
 
     }
 
@@ -1144,7 +1013,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                     btnActualizar2.setText(String.format("%s %s", convertir, PRESUPNOACEPTADO));
                     break;
                 case TPRESUPACEPTADO:
-                    importeFinalPry.setVisibility(View.VISIBLE);
+                    visible(importeFinalPry.getLinearLayout());
                     importeFinalPry.setText(JavaUtil.formatoMonedaLocal
                             (proyecto.getDouble(PROYECTO_IMPORTEFINAL)));
                     btnActualizar.setText(String.format("%s %s", convertir, PROYECTEJECUCION));
@@ -1222,8 +1091,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             estadoProyecto.setText(PRESUPESPERA);
             idEstado = idPresupEnEspera;
             //showDatePickerDialogEntrega();
-            btnfechaentrega.setVisibility(View.VISIBLE);
-            fechaEntregaPresup.setVisibility(View.VISIBLE);
+            visible(fechaEntregaPresup.getLinearLayout());
 
         } else if (idEstado.equals(idPresupEnEspera) && fechaEntregaP >0) {
 
@@ -1408,8 +1276,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         setDato(PROYECTO_NOMBRE,nombrePry.getText().toString());
         setDato(PROYECTO_DESCRIPCION,descripcionPry.getText().toString());
-        setDato(PROYECTO_ID_CLIENTE, JavaUtil.noNuloString(idCliente));
-        setDato(PROYECTO_ID_ESTADO, JavaUtil.noNuloString(idEstado));
+        setDato(PROYECTO_ID_CLIENTE, idCliente);
+        setDato(PROYECTO_ID_ESTADO, idEstado);
         setDato(PROYECTO_FECHAENTREGAACORDADA,fechaAcordada);
         setDato(PROYECTO_FECHAENTREGAACORDADAF, JavaUtil.getDate(fechaAcordada));
 
@@ -1452,6 +1320,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setcambioFragment() {
 
+        id = null;
     }
 
     private void listaObjetosEstados() {
@@ -1488,107 +1357,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     }
 
 
-    private void setAdaptadorClientes(final AutoCompleteTextView autoCompleteTextView) {
-
-        listaClientes = queryList(CAMPOS_CLIENTE);
-
-        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
-                R.layout.item_list_cliente, listaClientes) {
-
-            @Override
-            public void onEntrada(Object entrada, View view) {
-
-                ImagenLayout imgcli = view.findViewById(R.id.imglcliente);
-                ImagenLayout imgcliPeso = view.findViewById(R.id.imglclientepeso);
-                TextView nombreCli = view.findViewById(R.id.tvnomclilcliente);
-                TextView contactoCli = view.findViewById(R.id.tvcontacclilcliente);
-                TextView telefonoCli = view.findViewById(R.id.tvtelclilcliente);
-                TextView emailCli = view.findViewById(R.id.tvemailclilcliente);
-                TextView dirCli = view.findViewById(R.id.tvdirclilcliente);
-
-                dirCli.setText(((Modelo) entrada).getString(CLIENTE_DIRECCION));
-
-                int peso = ((Modelo) entrada).getInt
-                        (CLIENTE_PESOTIPOCLI);
-
-                if (peso > 6) {
-                    imgcliPeso.setImageResource(R.drawable.clientev);
-                } else if (peso > 3) {
-                    imgcliPeso.setImageResource(R.drawable.clientea);
-                } else if (peso > 0) {
-                    imgcliPeso.setImageResource(R.drawable.clienter);
-                } else {
-                    imgcliPeso.setImageResource(R.drawable.cliente);
-                }
-
-                nombreCli.setText(((Modelo) entrada).getString(CLIENTE_NOMBRE));
-                contactoCli.setText(((Modelo) entrada).getString(CLIENTE_CONTACTO));
-                telefonoCli.setText(((Modelo) entrada).getString(CLIENTE_TELEFONO));
-                emailCli.setText(((Modelo) entrada).getString(CLIENTE_EMAIL));
-                imgcli.setImageUriPerfil(activityBase, ((Modelo) entrada).getString(CLIENTE_RUTAFOTO));
-
-            }
-
-            @Override
-            public List onFilter(ArrayList entradas, CharSequence constraint) {
-
-                List suggestion = new ArrayList();
-
-                for (Object item : entradas) {
-
-                    for (int i = 2; i < CAMPOS_CLIENTE.length; i += 3) {
-
-
-                        if (((Modelo) item).getString(CAMPOS_CLIENTE[i]) != null && !((Modelo) item).getString(CAMPOS_CLIENTE[i]).equals("")) {
-                            if (((Modelo) item).getString(CAMPOS_CLIENTE[i]).toLowerCase().contains(constraint.toString().toLowerCase())) {
-
-                                suggestion.add(item);
-                                break;
-                            }
-                        }
-                    }
-
-                }
-
-                return null;
-            }
-
-        });
-
-    }
-
-    private void mostrarDialogoTipoCliente() {
-
-        final CharSequence[] opciones = {"Nuevo cliente","Nuevo prospecto","Cancelar"};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Elige una opción");
-        builder.setItems(opciones, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                if (opciones[which].equals("Nuevo cliente")){
-
-                    bundle = new Bundle();
-                    bundle.putBoolean(NUEVOREGISTRO,true);
-                    bundle.putString(ACTUAL,CLIENTE);
-                    bundle.putString(ORIGEN, actualtemp);
-                    icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDCliente());
-
-                }else if (opciones[which].equals("Nuevo prospecto")){
-
-                    bundle = new Bundle();
-                    bundle.putBoolean(NUEVOREGISTRO,true);
-                    bundle.putString(ACTUAL,PROSPECTO);
-                    bundle.putString(ORIGEN, actualtemp);
-                    icFragmentos.enviarBundleAFragment(bundle,new FragmentCRUDCliente());
-
-                }else {
-                    dialog.dismiss();
-                }
-            }
-        });
-        builder.show();
-    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1656,9 +1424,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                     } else if (grabarVoz.equals("ver notas")) {
 
                         verNotas();
-                    } else if (grabarVoz.equals("nuevo cliente") || grabarVoz.equals("nuevo prospecto")) {
-
-                        nuevoCliente();
                     }
             }
         }
@@ -1675,8 +1440,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         fechaAcordada = JavaUtil.fechaALong(year, month, day);
                         if (fechaAcordada>0){
-                            fechaEntregaPresup.setVisibility(View.VISIBLE);
-                            btnfechaentrega.setVisibility(View.VISIBLE);
+                            visible(fechaEntregaPresup.getLinearLayout());
                         }
                         String selectedDate = JavaUtil.getDate(fechaAcordada);
                         fechaAcordadaPry.setText(selectedDate);

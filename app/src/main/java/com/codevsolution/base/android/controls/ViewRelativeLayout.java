@@ -1,23 +1,40 @@
 package com.codevsolution.base.android.controls;
 
 import android.content.Context;
-import android.util.AttributeSet;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
-public class ViewRelativeLayout extends RelativeLayout {
-    public ViewRelativeLayout(Context context) {
-        super(context);
+public class ViewRelativeLayout extends ViewLayout {
+    private RelativeLayout lyViewRelativeLayout;
+
+    public ViewRelativeLayout(Context context, ViewGroup viewGroup) {
+        super(context, viewGroup);
     }
 
-    public ViewRelativeLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    @Override
+    protected void setViewGroup() {
+
+        viewGroup = new RelativeLayout(context);
     }
 
-    public ViewRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+    protected void inicializar() {
+
     }
 
-    public ViewRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+    protected void asignarEventos() {
+
+
+    }
+
+    @Override
+    protected void setLayoutParams(ViewGroup viewGroup, View view) {
+
+        RelativeLayout.LayoutParams params;
+        params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.MATCH_PARENT);
+
+        params.setMargins(5, 5, 5, 5);
+        view.setLayoutParams(params);
     }
 }

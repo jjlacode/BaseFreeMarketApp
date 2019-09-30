@@ -10,23 +10,10 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <LinearLayout
+        <com.codevsolution.base.android.controls.ImagenLayout
+            android:id="@+id/imgformbase"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <com.codevsolution.base.android.controls.ImagenLayout
-                android:id="@+id/imgformbase"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="2.5" />
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+            android:layout_height="wrap_content" />
 
                 <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/etnombreformbase"
@@ -52,8 +39,6 @@
                     app:activo="false"
                     app:tipo_dato="TEXTO|EMAIL" />
 
-            </LinearLayout>
-        </LinearLayout>
 
         <com.codevsolution.base.android.controls.EditMaterial
             android:id="@+id/etdireccionformbase"

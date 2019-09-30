@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">FreeMarketsApp</string>
     <string name="app_name_min" translatable="false">freemarketsapp</string>
-    <string name="auth" translatable="false"></string>
+    <string name="auth" translatable="false">by JjlaCode</string>
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
     <string name="nav_header_title" translatable="false">FreeMarketsApp</string>
@@ -35,7 +35,7 @@
     <string name="importe_final">Final price</string>
     <string name="partidas_proyecto">Project task</string>
     <string name="gastos_proyecto">Gasto project</string>
-    <string name="total_partidas">Total Tasks</string>
+    <string name="total_partidas">Total Jobs</string>
     <string name="total_gastos">Total gasto</string>
     <string name="sinpartidas">No tasks</string>
     <string name="singastos">No gastos</string>
@@ -477,6 +477,12 @@
     <string name="limitprodusados">Prod tot usados</string>
     <string name="add_prodwebcli">Export. prod. web CLI</string>
     <string name="add_prodwebpro">Export. prod web PRO</string>
+    <string name="proyectos_y_presupuestos">Proyectos y presupuestos</string>
+    <string name="crear_presup">Nuevo presupuesto</string>
+    <string name="crear_proyecto">Nuevo proyecto</string>
+    <string name="modificar_partidabase">Modificar partida base</string>
+    <string name="clonar_prod_a_partidabase">Asignar a Partida Base</string>
+    <string name="tiempo_partidas">Tiempo total partidas</string>
 
 
 </resources>

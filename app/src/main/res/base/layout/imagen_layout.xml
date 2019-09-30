@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="10dp">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/tituloImgLy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
         android:visibility="gone"
         android:gravity="center"
         android:textColor="@color/Color_texto"
@@ -18,20 +16,17 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imglayout"
-        android:layout_below="@+id/tituloImgLy"
-        android:layout_above="@id/pieImgLy"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:minHeight="@dimen/altobtn"
-        android:minWidth="@dimen/altobtn"
-        android:layout_centerHorizontal="true" />
+        android:minWidth="@dimen/altobtn" />
 
     <TextView
         android:id="@+id/pieImgLy"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/btn_img"
-        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
         android:visibility="gone"
         android:gravity="center"
         android:textColor="@color/Color_texto"
@@ -42,12 +37,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="@dimen/altobtnico"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
         android:visibility="gone"
         android:background="@drawable/boton_redondo_secondary"
         android:src="@drawable/ic_search_black_24dp"
         android:textColor="@color/Color_texto_titulos" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_img_txt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/altobtnico"
+        android:visibility="gone"
+        android:background="@drawable/boton_redondo_secondary"
+        android:textColor="@color/Color_texto_titulos" />
 
-</RelativeLayout>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

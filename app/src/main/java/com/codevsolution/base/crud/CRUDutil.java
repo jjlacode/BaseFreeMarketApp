@@ -92,7 +92,9 @@ public class CRUDutil {
 
         if (ContratoPry.getTabCab(tabla) != null) {
 
+            System.out.println("id = " + id);
             int secuencia = modelo.getInt(CAMPO_SECUENCIA);
+            System.out.println("secuencia = " + secuencia);
             return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
 
         }

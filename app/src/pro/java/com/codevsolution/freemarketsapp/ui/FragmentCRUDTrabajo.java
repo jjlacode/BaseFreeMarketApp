@@ -1,6 +1,7 @@
 package com.codevsolution.freemarketsapp.ui;
 // Created by jjlacode on 9/06/19. 
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -9,11 +10,14 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
+import com.codevsolution.base.android.controls.ViewLinearLayout;
+import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
-import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.media.MediaUtil;
@@ -25,16 +29,14 @@ import com.codevsolution.freemarketsapp.logica.Interactor;
 import java.util.ArrayList;
 
 import static com.codevsolution.base.sqlite.ConsultaBD.checkQueryList;
+import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
+import static com.codevsolution.freemarketsapp.logica.Interactor.TiposDetPartida.TIPOTRABAJO;
 
 public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.ConstantesPry, ContratoPry.Tablas {
 
-    private EditMaterial tiempo, nombre, descripcion;
     private ImageButton btnNota;
     private ImageButton btnVerNotas;
     private Button addPartida;
-    private String idRel;
-    private Modelo proyecto;
-    private Modelo partida;
 
     public FragmentCRUDTrabajo() {
         // Required empty public constructor
@@ -82,10 +84,6 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
     @Override
     protected void setDatos() {
 
-        nombre.setText(modelo.getString(TRABAJO_NOMBRE));
-        descripcion.setText(modelo.getString(TRABAJO_DESCRIPCION));
-        tiempo.setText(modelo.getString(TRABAJO_TIEMPO));
-
         String seleccion = NOTA_ID_RELACIONADO + " = '" + id + "'";
         if (checkQueryList(CAMPOS_NOTA, seleccion, null)) {
             btnVerNotas.setVisibility(View.VISIBLE);
@@ -93,7 +91,7 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
             btnVerNotas.setVisibility(View.GONE);
         }
 
-        if (origen.equals(PARTIDA)) {
+        if (nnn(AndroidUtil.getSharePreference(contexto, PERSISTENCIA, PARTIDABASE_ID_PARTIDABASE, NULL))) {
 
             visible(addPartida);
             gone(btnNota);
@@ -106,6 +104,12 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
     }
 
     @Override
+    protected void setNuevo() {
+        super.setNuevo();
+        onUpdate();
+    }
+
+    @Override
     protected void onClickRV(View v) {
         super.onClickRV(v);
 
@@ -114,26 +118,44 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
     @Override
     protected void setBundle() {
         super.setBundle();
-        idRel = getStringBundle(IDREL, "");
-        proyecto = (Modelo) getBundleSerial(PROYECTO);
-        partida = (Modelo) getBundleSerial(PARTIDA);
+    }
+
+
+    private int crearTrabajoBase(String idPartidabase) {
+
+        ContentValues valores = new ContentValues();
+        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_DETPARTIDABASE, modelo.getString(TRABAJO_ID_TRABAJO));
+        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_TIPO, TIPOTRABAJO);
+        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_PARTIDABASE, idPartidabase);
+        return CRUDutil.crearRegistroSec(CAMPOS_DETPARTIDABASE, idPartidabase, TABLA_PARTIDABASE, valores);
     }
 
     @Override
-    protected void setAcciones() {
+    protected void setInicio() {
 
+        ViewLinearLayout vistaForm = new ViewLinearLayout(contexto, frdetalle);
+
+        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
+        imagen.setFocusable(false);
+        vistaForm.addEditMaterialLayout(getString(R.string.nombre), TRABAJO_NOMBRE, null, null);
+        vistaForm.addEditMaterialLayout(getString(R.string.descripcion), TRABAJO_DESCRIPCION, null, null);
+        EditMaterialLayout tiempo = vistaForm.addEditMaterialLayout(getString(R.string.tiempo), TRABAJO_TIEMPO, null, null);
+        tiempo.setTipo(EditMaterialLayout.NUMERO | EditMaterialLayout.DECIMAL);
+        addPartida = vistaForm.addButtonPrimary(R.string.add_detpartida);
         addPartida.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 bundle = new Bundle();
-                putBundle(TRABAJO, modelo);
-                putBundle(PROYECTO, proyecto);
-                putBundle(PARTIDA, partida);
-                putBundle(ORIGEN, PARTIDA);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
+                String idPartidabase = AndroidUtil.getSharePreference(contexto, PERSISTENCIA, PARTIDABASE_ID_PARTIDABASE, NULL);
+                if (nnn(idPartidabase)) {
+                    putBundle(CAMPO_ID, idPartidabase);
+                    putBundle(CAMPO_SECUENCIA, crearTrabajoBase(idPartidabase));
+                    AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDABASE_ID_PARTIDABASE, NULL);
+                    icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaBaseTrabajo());
+                }
             }
         });
-
+        btnNota = vistaForm.addImageButtonSecundary(R.drawable.ic_nueva_nota_indigo);
         btnNota.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,7 +170,7 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevaNota());
             }
         });
-
+        btnVerNotas = vistaForm.addImageButtonSecundary(R.drawable.ic_lista_notas_indigo);
         btnVerNotas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -163,25 +185,13 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
             }
         });
 
-    }
-
-    @Override
-    protected void setInicio() {
-
-        nombre = (EditMaterial) ctrl(R.id.etnombretarea, TRABAJO_NOMBRE);
-        descripcion = (EditMaterial) ctrl(R.id.etdesctarea, TRABAJO_DESCRIPCION);
-        tiempo = (EditMaterial) ctrl(R.id.ettiempotarea, TRABAJO_TIEMPO);
-        imagen = (ImagenLayout) ctrl(R.id.imgtarea);
-        btnNota = (ImageButton) ctrl(R.id.btn_crearnota_tarea);
-        btnVerNotas = (ImageButton) ctrl(R.id.btn_vernotas_tarea);
-        addPartida = (Button) ctrl(R.id.btn_add_trabajo_partida);
-
+        actualizarArrays(vistaForm);
     }
 
     @Override
     protected void setLayout() {
 
-        layoutCuerpo = R.layout.fragment_crud_trabajo;
+        //layoutCuerpo = R.layout.fragment_crud_trabajo;
         layoutItem = R.layout.item_list_trabajo;
 
     }
@@ -189,7 +199,6 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
     @Override
     protected boolean update() {
         if (super.update()){
-            new Interactor.Calculos.TareaSincronizarPartidasBase().execute();
             return true;
         }
         return false;
@@ -198,10 +207,7 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
     @Override
     protected void setContenedor() {
 
-        setDato(TRABAJO_NOMBRE,nombre.getText().toString());
-        setDato(TRABAJO_DESCRIPCION,descripcion.getText().toString());
-        setDato(TRABAJO_TIEMPO,tiempo.getText().toString(),DOUBLE);
-        setDato(TRABAJO_RUTAFOTO,path);
+        //setDato(TRABAJO_RUTAFOTO,path);
 
     }
 

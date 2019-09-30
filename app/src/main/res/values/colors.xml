@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#FFFFFF</color>
-    <color name="colorSecondary">#80008080</color>
-    <color name="colorSecondaryCenter">#BE008080</color>
-    <color name="colorSecondaryDark">#008080</color>
-    <color name="textColorPrimary">#008080</color>
-    <color name="colorAccent">#D81B60</color>
-    <color name="ColorBotonF">#008080</color>
-    <color name="Color_texto_titulos">#008080</color>
-    <color name="Color_texto">#008080</color>
+    <color name="colorSecondary">#00FFFF</color>
+    <color name="colorSecondaryCenter">#009688</color>
+    <color name="colorSecondaryDark">#3F51B5</color>
+    <color name="textColorPrimary">#3F51B5</color>
+    <color name="textColorSecondary">#00FFFF</color>
+    <color name="colorAccent">#E91E63</color>
+    <color name="ColorBotonF">#00FFFF</color>
+    <color name="Color_texto_titulos">#3F51B5</color>
+    <color name="Color_texto">#3F51B5</color>
     <color name="Color_fondo_edit">#09008577</color>
     <color name="Color_card_ok">#6500FF00</color>
     <color name="Color_card_acept">#7BFFFF00</color>
@@ -21,7 +22,7 @@
     <color name="Color_star_small_notok">#41FC0000</color>
     <color name="color_star_defecto">#5E3949AB</color>
     <color name="Color_card_tarea">#09008577</color>
-    <color name="Color_card_defecto">#09008577</color>
+    <color name="Color_card_defecto">#2700FFFF</color>
     <color name="Color_msg_recibido">#23FC0000</color>
     <color name="Color_msg_enviado">#2A37FC00</color>
     <color name="Color_contador_ok">#FA00FF00</color>
