@@ -24,67 +24,52 @@
             android:text="@string/tipo_detpartida"
             android:textSize="18sp" />
 
-        <LinearLayout
+        <com.codevsolution.base.android.controls.ImagenLayout
+            android:id="@+id/imgcdetpartida_prod"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"/>
 
-            <ImageView
-                android:id="@+id/imgcdetpartida_prod"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_weight="2.5"
-                android:adjustViewBounds="true"
-                android:src="@drawable/ic_add_a_photo_black_24dp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <com.codevsolution.base.android.controls.EditMaterial
+        <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/etnombredetpartida_prod"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:activo="false"
                     app:hint_text="@string/nombre" />
 
                 <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/tvrefprovcdetpartida_prod"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:activo="false"
                     app:hint_text="@string/referencia_proveedor" />
+
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/tvnomprovcdetpartida_prod"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:activo="false"
+                    app:hint_text="@string/proveedor" />
 
                 <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/etdesccdetpartida_prod"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:hint_text="@string/descripcion"
+                    app:activo="false"
                     app:tipo_dato="TEXTO|MULTI" />
-
-            </LinearLayout>
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-
-            <com.codevsolution.base.android.controls.EditMaterial
-                android:id="@+id/etpreciocdetpartida_prod"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:hint_text="@string/importe"
-                app:tipo_dato="NUMERO|DECIMAL"/>
-
             <com.codevsolution.base.android.controls.EditMaterial
                 android:id="@+id/etcantcdetpartida_prod"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                app:activo="false"
                 app:hint_text="@string/cantidad"
                 app:tipo_dato="NUMERO|DECIMAL" />
 
@@ -93,6 +78,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                app:activo="false"
                 app:hint_text="@string/cantidad_partida"
                 app:tipo_dato="NUMERO|DECIMAL" />
 
@@ -105,6 +91,31 @@
                 app:tipo_dato="NUMERO|DECIMAL" />
 
         </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etpreciocdetpartida_prod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:activo="false"
+            app:hint_text="@string/importe"
+            app:tipo_dato="NUMERO|DECIMAL"/>
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etpreciototcdetpartida_prod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:activo="false"
+            app:hint_text="@string/importe_total"
+            app:tipo_dato="NUMERO|DECIMAL"/>
+
+    </LinearLayout>
 
         <com.codevsolution.base.android.controls.EditMaterial
                 android:id="@+id/etcompletadadetpartida_prod"

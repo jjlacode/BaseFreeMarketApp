@@ -15,9 +15,10 @@ import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
-import com.codevsolution.base.android.controls.ViewLinearLayout;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
+import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.Modelo;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
@@ -92,6 +93,14 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
         }
 
+        imagen.setTextTitulo(modelo.getString(PRODUCTO_CATEGORIA).toUpperCase());
+
+        if (!modelo.getString(PRODUCTO_CATEGORIA).equals(PRODUCTOLOCAL)){
+
+            imagen.getImagen().setClickable(false);
+            imagen.setImageFirestore(modelo.getString(PRODUCTO_ID_PRODFIRE));
+        }
+
     }
 
     @Override
@@ -115,7 +124,6 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     protected void setBundle() {
         super.setBundle();
         proveedor = (Modelo) getBundleSerial(PROVEEDOR);
-
         if (origen == null) {
             origen = PRODUCTO;
         }
@@ -133,7 +141,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     @Override
     protected void setInicio() {
 
-        ViewLinearLayout vistaForm = new ViewLinearLayout(contexto, frdetalleExtrasante);
+        ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalleExtrasante);
 
         imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
         imagen.setFocusable(false);
@@ -219,6 +227,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         if (proveedor != null) {
             setDato(PRODUCTO_ID_PROVEEDOR, proveedor.getString(PROVEEDOR_ID_PROVEEDOR));
             setDato(PRODUCTO_NOMBREPROV, proveedor.getString(PROVEEDOR_NOMBRE));
+            setDato(PRODUCTO_CATEGORIA, PRODUCTOLOCAL);
         }
 
     }
@@ -247,7 +256,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             descripcionProd.setText(entrada.get(posicion).getString(PRODUCTO_DESCRIPCION));
             importeProd.setText(entrada.get(posicion).getString(PRODUCTO_PRECIO));
             String path = entrada.get(posicion).getString(PRODUCTO_RUTAFOTO);
-            if (path != null) {
+            if (nnn(path)) {
                 setImagenUriCircle(contexto, path, imagenProd);
             }
 
@@ -258,7 +267,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
 
         TextView nombreProd, descripcionProd, importeProd;
-        ImageView imagenProd;
+        ImagenLayout imagenProd;
 
         public ViewHolderRV(View itemView) {
             super(itemView);
@@ -277,8 +286,13 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             descripcionProd.setText(modelo.getString(PRODUCTO_DESCRIPCION));
             importeProd.setText(modelo.getString(PRODUCTO_PRECIO));
             String path = modelo.getString(PRODUCTO_RUTAFOTO);
-            if (path != null) {
-                setImagenUriCircle(contexto, path, imagenProd);
+            System.out.println("path = " + path);
+            if (nnn(path) && modelo.getString(PRODUCTO_CATEGORIA).equals(PRODUCTOLOCAL)) {
+                imagenProd.setImageUriCard(activityBase,path);
+            }else if (nnn(modelo.getString(PRODUCTO_ID_PRODFIRE))){
+                imagenProd.setImageFirestoreCircle(modelo.getString(PRODUCTO_ID_PRODFIRE));
+            }else {
+                gone(imagenProd);
             }
 
             super.bind(modelo);

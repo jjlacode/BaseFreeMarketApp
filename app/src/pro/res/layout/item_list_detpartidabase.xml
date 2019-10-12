@@ -64,6 +64,14 @@
                             android:textSize="@dimen/texto_card_tit" />
 
                         <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/lcantidadldetpartidabase"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/cantidad"
+                            android:textSize="@dimen/texto_card_tit" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/limpldetpartidabase"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -83,6 +91,14 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="@string/tiempo"
+                            android:textSize="@dimen/texto_card" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvcantidadldetpartidabase"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/cantidad"
                             android:textSize="@dimen/texto_card" />
 
                         <androidx.appcompat.widget.AppCompatTextView

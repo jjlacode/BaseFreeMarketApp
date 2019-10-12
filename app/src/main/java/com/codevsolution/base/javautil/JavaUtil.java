@@ -60,6 +60,8 @@ public class JavaUtil {
         String CAMPO_EMAIL = "email_";
         String CAMPO_CONTACTO = "contacto_";
         String CAMPO_ACTIVO = "activo_";
+        String CAMPO_MULTI = "multi";
+        String CAMPO_VALOR = "valor_";
         String CAMPO_DESCRIPCION = "descripcion_";
         String CAMPO_CANTIDAD = "cantidad_";
         String CAMPO_PRECIO = "precio_";
@@ -328,6 +330,17 @@ public class JavaUtil {
         c.set(Calendar.MILLISECOND, 0);
         return c.getTimeInMillis();
     }
+
+    public static long soloHora(long fecha) {
+
+        Calendar c = new GregorianCalendar();
+        c.setTimeInMillis(fecha);
+        c.set(Calendar.YEAR, 0);
+        c.set(Calendar.MONTH, 0);
+        c.set(Calendar.DAY_OF_WEEK, 0);
+        return c.getTimeInMillis();
+    }
+
 
     public static long hoyHora() {
 

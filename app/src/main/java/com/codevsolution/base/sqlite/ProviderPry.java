@@ -113,12 +113,8 @@ public class ProviderPry extends ContentProvider
     public static final int PEDIDOCLIENTE = 153;
     public static final int PEDIDOCLIENTE_ID = 154;
 
-    public static final int CHAT = 155;
-    public static final int CHAT_ID = 156;
-    public static final int CHAT_ID_DETCHAT = 157;
-
-    public static final int DETCHAT = 158;
-    public static final int DETCHAT_ID = 159;
+    public static final int AGENDA = 155;
+    public static final int AGENDA_ID = 156;
 
     public static final String AUTORIDAD = AUTORIDAD_CONTENIDO;//"jjlacode.com.freelanceproject2";
 
@@ -196,6 +192,9 @@ public class ProviderPry extends ContentProvider
 
         uriMatcher.addURI(AUTORIDAD, TABLA_PEDIDOCLIENTE, PEDIDOCLIENTE);
         uriMatcher.addURI(AUTORIDAD, TABLA_PEDIDOCLIENTE + "/*", PEDIDOCLIENTE_ID);
+
+        uriMatcher.addURI(AUTORIDAD, TABLA_AGENDA, AGENDA);
+        uriMatcher.addURI(AUTORIDAD, TABLA_AGENDA + "/*", AGENDA_ID);
 
     }
 
@@ -353,10 +352,10 @@ public class ProviderPry extends ContentProvider
                 return generarMime(TABLA_PEDIDOCLIENTE);
             case PEDIDOCLIENTE_ID:
                 return generarMimeItem(TABLA_PEDIDOCLIENTE);
-            case CHAT:
-                return generarMime(TABLA_CHAT);
-            case CHAT_ID:
-                return generarMimeItem(TABLA_CHAT);
+            case AGENDA:
+                return generarMime(TABLA_AGENDA);
+            case AGENDA_ID:
+                return generarMimeItem(TABLA_AGENDA);
             default:
                 throw new UnsupportedOperationException("Uri desconocida =>" + uri);
         }
@@ -852,6 +851,26 @@ public class ProviderPry extends ContentProvider
                 setTablas = tabla;
                 proyeccion = tabla + ".*";
                 idTabla = PEDIDOCLIENTE_ID_PEDIDOCLIENTE;
+                esId = true;
+                esDetalle = false;
+                break;
+
+            case AGENDA:
+                // Generar Pk
+                tabla = TABLA_AGENDA;
+                setTablas = tabla;
+                proyeccion = tabla + ".*";
+                idTabla = AGENDA_ID_AGENDA;
+                esId = false;
+                esDetalle = false;
+                break;
+
+            case AGENDA_ID:
+
+                tabla = TABLA_AGENDA;
+                setTablas = tabla;
+                proyeccion = tabla + ".*";
+                idTabla = AGENDA_ID_AGENDA;
                 esId = true;
                 esDetalle = false;
                 break;

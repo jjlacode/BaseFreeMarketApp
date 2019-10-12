@@ -2103,6 +2103,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
     public static int updateRegistro(String tabla, String id, ContentValues valores) {
 
         valores.put(CAMPO_TIMESTAMP, JavaUtil.hoy());
+        System.out.println(JavaUtil.hoy());
 
         return resolver.update(crearUriTabla(id, tabla)
                 , valores, null, null);
@@ -2449,6 +2450,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
     public static Uri insertRegistro(String tabla, ContentValues valores) {
 
         valores.put(CAMPO_TIMESTAMP, JavaUtil.hoy());
+        valores.put(CAMPO_CREATEREG, JavaUtil.hoy());
 
         return resolver.insert(obtenerUriContenido(tabla), valores);
 
@@ -2457,6 +2459,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
     public static String idInsertRegistro(String tabla, ContentValues valores) {
 
         valores.put(CAMPO_TIMESTAMP, JavaUtil.hoy());
+        valores.put(CAMPO_CREATEREG, JavaUtil.hoy());
         Uri uri = null;
         try {
             uri = resolver.insert(obtenerUriContenido(tabla), valores);
@@ -2474,6 +2477,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
     public static Uri insertRegistroDetalle(String[] campos, String id, String tablaCab, ContentValues valores) {
 
         valores.put(CAMPO_TIMESTAMP, JavaUtil.hoy());
+        valores.put(CAMPO_CREATEREG, JavaUtil.hoy());
 
         ArrayList<Modelo> lista = queryListDetalle(campos, id, tablaCab, null, null);
 

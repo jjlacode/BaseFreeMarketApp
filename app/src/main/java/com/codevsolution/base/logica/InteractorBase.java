@@ -42,6 +42,8 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
         String PLANANUAL = "plan_anual";
         String SUSESTADO = "estado_suscripcion";
         String LOCALIZACION = "localizacion";
+        String ORDENASCENDENTE = " ASC";
+        String ORDENDESCENDENTE = " DESC";
         String USERS = "users";
         String ANON = "anonimo";
         String PERFILES = "perfiles";
@@ -112,7 +114,7 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
         RemoteViews remoteView = new RemoteViews(contexto.getPackageName(), R.layout.notificacion_chat);
         remoteView.setTextViewText(R.id.tvdescnotchat, contenido);
 
-        Modelo chat = CRUDutil.setModelo(CAMPOS_CHAT, detchat.getString(DETCHAT_ID_CHAT));
+        Modelo chat = CRUDutil.updateModelo(CAMPOS_CHAT, detchat.getString(DETCHAT_ID_CHAT));
         Intent intentVerChat = new Intent(contexto, clase);
         intentVerChat.setAction(ACCION_VERCHAT);
         intentVerChat.putExtra(EXTRA_IDSPCHAT, chat.getString(CHAT_USUARIO));

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,7 +25,6 @@ import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltro;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.models.Modelo;
 import com.codevsolution.base.nosql.FragmentMasterDetailNoSQL;
 import com.codevsolution.freemarketsapp.R;
@@ -39,9 +39,7 @@ import static com.codevsolution.base.sqlite.ContratoPry.Tablas.CAMPOS_DETPARTIDA
 import static com.codevsolution.base.sqlite.ContratoPry.Tablas.DETPARTIDABASE_ID_DETPARTIDABASE;
 import static com.codevsolution.base.sqlite.ContratoPry.Tablas.PARTIDABASE_ID_PARTIDABASE;
 import static com.codevsolution.base.sqlite.ContratoPry.Tablas.TABLA_PARTIDABASE;
-import static com.codevsolution.base.sqlite.ContratoPry.Tablas.TRABAJO_ID_TRABAJO;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PARTIDA;
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODPROVCAT;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PROYECTO;
 
 public class CatalogoProdProvWeb extends FragmentMasterDetailNoSQL {

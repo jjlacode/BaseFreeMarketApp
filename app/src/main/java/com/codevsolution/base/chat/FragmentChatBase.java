@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.speech.RecognizerIntent;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -126,7 +125,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
         if (nn(id) && !id.equals(NULL)) {
 
-            modelo = CRUDutil.setModelo(campos, id);
+            modelo = CRUDutil.updateModelo(campos, id);
             idchat = modelo.getString(CHAT_USUARIO);
             AndroidUtil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, modelo.getString(CHAT_USUARIO));
 
@@ -150,7 +149,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
                 valores.put(CHAT_TIMESTAMP, TimeDateUtil.ahora());
                 valores.put(CHAT_TIPO, tipo);
                 id = CRUDutil.crearRegistroId(TABLA_CHAT, valores);
-                modelo = CRUDutil.setModelo(campos, id);
+                modelo = CRUDutil.updateModelo(campos, id);
             }
         }
 
@@ -261,7 +260,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
         rvMsgChat.setAdapter(adaptadorDetChat);
         gone(activityBase.fabNuevo);
 
-        modelo = CRUDutil.setModelo(campos, id);
+        modelo = CRUDutil.updateModelo(campos, id);
         activityBase.fabVoz.setSize(FloatingActionButton.SIZE_NORMAL);
         activityBase.fabInicio.setSize(FloatingActionButton.SIZE_NORMAL);
         tipo = modelo.getString(CHAT_TIPO);
@@ -317,7 +316,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
             RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
             rvMsgChat.setAdapter(adaptadorDetChat);
 
-            Modelo chat = CRUDutil.setModelo(campos, id);
+            Modelo chat = CRUDutil.updateModelo(campos, id);
 
             MsgChat msgChat = new MsgChat();
             msgChat.setMensaje(msgEnv.getText().toString());
@@ -337,6 +336,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
     protected void setTitulo() {
 
         tituloSingular = R.string.chat;
+        tituloPlural = tituloSingular;
     }
 
     @Override
@@ -472,7 +472,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
             int tipo = modelo.getInt(DETCHAT_TIPO);
             String idChat = modelo.getString(DETCHAT_ID_CHAT);
-            Modelo chat = CRUDutil.setModelo(CAMPOS_CHAT, idChat);
+            Modelo chat = CRUDutil.updateModelo(CAMPOS_CHAT, idChat);
             String tipoChat = chat.getString(CHAT_TIPO);
 
             if (tipoChat.equals(CHAT)) {

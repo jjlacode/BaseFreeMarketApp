@@ -1,5 +1,6 @@
 package com.codevsolution.freemarketsapp.ui;
 
+import android.os.Bundle;
 import android.view.View;
 
 import com.codevsolution.base.android.FragmentGrid;
@@ -78,6 +79,7 @@ public class FragmentNuevaNota extends FragmentGrid implements Interactor.TiposN
 
         }
         if (tipoNota!=null) {
+            bundle = new Bundle();
             bundle.putString(TIPO, tipoNota);
             bundle.putString(ACTUAL, NOTA);
 

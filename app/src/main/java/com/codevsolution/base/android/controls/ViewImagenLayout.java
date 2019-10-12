@@ -1,12 +1,10 @@
 package com.codevsolution.base.android.controls;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -14,7 +12,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -25,7 +22,6 @@ import com.codevsolution.base.interfaces.ICFragmentos;
 import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.media.VisorImagen;
 import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.freemarketsapp.R;
 
 import java.io.ByteArrayInputStream;
 
@@ -34,9 +30,15 @@ import static com.codevsolution.base.javautil.JavaUtil.Constantes.PATH;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.PERSISTENCIA;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TIPO;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TSIMG;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.BTNSECONDARY;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.COLOR;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.COLORPRIMARY;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.COLORSECONDARY;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.DRAWABLE;
 
-public class ImagenLayout extends LinearLayoutCompat {
+public class ViewImagenLayout {
 
+    ViewGroupLayout linearLayoutCompat;
     TextView titulo;
     TextView pie;
     ImageView imagen;
@@ -48,81 +50,43 @@ public class ImagenLayout extends LinearLayoutCompat {
     private String path;
     private boolean fire;
     long timestamp;
+    Context context;
+    ViewGroup viewGroup;
 
-    public ImagenLayout(Context context) {
-        super(context);
+    public ViewImagenLayout(ViewGroup viewGroup, Context context) {
+        this.context = context;
+        this.viewGroup = viewGroup;
         inicializar();
-    }
-
-    public ImagenLayout(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-        inicializar();
-
-        setAtributos(attrs);
-    }
-
-    public ImagenLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        inicializar();
-
-        setAtributos(attrs);
-
     }
 
     private void inicializar() {
 
-        String infService = Context.LAYOUT_INFLATER_SERVICE;
-        LayoutInflater li =
-                (LayoutInflater) getContext().getSystemService(infService);
-        li.inflate(R.layout.imagen_layout, this, true);
-
-        imagen = findViewById(R.id.imglayout);
-        titulo = findViewById(R.id.tituloImgLy);
-        pie = findViewById(R.id.pieImgLy);
-        btn = findViewById(R.id.btn_img);
-        btnTxt = findViewById(R.id.btn_img_txt);
-        titulo.setVisibility(GONE);
-        pie.setVisibility(GONE);
-        imagen.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        imagen.setAdjustViewBounds(true);
-
-        LinearLayoutCompat.LayoutParams layoutParams = new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(5,10,5,5);
-        btn.setLayoutParams(layoutParams);
+        setViewGroup();
         asignarEventos();
 
     }
 
+    public void setViewGroup() {
 
-    private void setAtributos(AttributeSet attrs) {
+        linearLayoutCompat = new ViewGroupLayout(context,viewGroup);
+        linearLayoutCompat.setOrientacion(LinearLayoutCompat.VERTICAL);
 
-        TypedArray a =
-                getContext().obtainStyledAttributes(attrs,
-                        R.styleable.ImagenLayout);
+        titulo = linearLayoutCompat.addTextView(null);
+        titulo.setVisibility(View.GONE);
 
+        imagen = new ImageView(context);
+        linearLayoutCompat.addVista(imagen);
 
-        String txtTitulo = a.getString(R.styleable.ImagenLayout_titulo);
-        String txtPie = a.getString(R.styleable.ImagenLayout_pie);
-        int recTitulo = a.getInt(
-                R.styleable.ImagenLayout_rectitulo, 0);
-        int recPie = a.getInt(
-                R.styleable.ImagenLayout_recpie, 0);
+        pie = linearLayoutCompat.addTextView(null);
+        pie.setVisibility(View.GONE);
 
+        btn = linearLayoutCompat.addImageButtonSecundary(context.getResources().
+                getIdentifier("ic_search_black_24dp", DRAWABLE, context.getPackageName()));
+        btn.setVisibility(View.GONE);
+        btn.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
-        if (recTitulo == 0 && txtTitulo != null && !txtTitulo.equals("")) {
-            setTextTitulo(txtTitulo);
-        } else if (recTitulo > 0) {
-            setTextTitulo(recTitulo);
-        }
-
-        if (recPie == 0 && txtPie != null && !txtPie.equals("")) {
-            setTextPie(txtPie);
-        } else if (recPie > 0) {
-            setTextPie(recPie);
-        }
-
-        a.recycle();
+        btnTxt = linearLayoutCompat.addButtonSecondary(null);
+        btnTxt.setVisibility(View.GONE);
 
     }
 
@@ -130,15 +94,15 @@ public class ImagenLayout extends LinearLayoutCompat {
 
         if (mainActivity != null) {
 
-            if (pie.getVisibility() == VISIBLE) {
+            if (pie.getVisibility() == View.VISIBLE) {
                 setTextAutoSizePie(mainActivity);
             }
-            if (titulo.getVisibility() == VISIBLE) {
+            if (titulo.getVisibility() == View.VISIBLE) {
                 setTextAutoSizeTitulo(mainActivity);
             }
         }
 
-        imagen.setOnClickListener(new OnClickListener() {
+        imagen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -148,7 +112,7 @@ public class ImagenLayout extends LinearLayoutCompat {
             }
         });
 
-        btn.setOnClickListener(new OnClickListener() {
+        btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -163,6 +127,10 @@ public class ImagenLayout extends LinearLayoutCompat {
 
             }
         });
+    }
+
+    public LinearLayoutCompat getLinearLayoutCompat(){
+        return (LinearLayoutCompat) linearLayoutCompat.getViewGroup();
     }
 
     public ImageView getImagen() {
@@ -206,23 +174,23 @@ public class ImagenLayout extends LinearLayoutCompat {
     }
 
     public void setTextTitulo(String txtTitulo) {
-        titulo.setVisibility(VISIBLE);
+        titulo.setVisibility(View.VISIBLE);
         titulo.setText(txtTitulo);
     }
 
     public void setTextTitulo(int string) {
 
-        titulo.setVisibility(VISIBLE);
+        titulo.setVisibility(View.VISIBLE);
         titulo.setText(string);
     }
 
     public void setTextPie(String txtPie) {
-        pie.setVisibility(VISIBLE);
+        pie.setVisibility(View.VISIBLE);
         pie.setText(txtPie);
     }
 
     public void setTextPie(int string) {
-        pie.setVisibility(VISIBLE);
+        pie.setVisibility(View.VISIBLE);
         pie.setText(string);
     }
 
@@ -387,9 +355,9 @@ public class ImagenLayout extends LinearLayoutCompat {
     public void setVisibleTitulo(boolean visible) {
 
         if (visible) {
-            titulo.setVisibility(VISIBLE);
+            titulo.setVisibility(View.VISIBLE);
         } else {
-            titulo.setVisibility(GONE);
+            titulo.setVisibility(View.GONE);
         }
 
     }
@@ -397,11 +365,18 @@ public class ImagenLayout extends LinearLayoutCompat {
     public void setVisiblePie(boolean visible) {
 
         if (visible) {
-            titulo.setVisibility(VISIBLE);
+            titulo.setVisibility(View.VISIBLE);
         } else {
-            titulo.setVisibility(GONE);
+            titulo.setVisibility(View.GONE);
         }
 
+    }
+
+    public void setBackground(String color){
+
+        getLinearLayoutCompat().setBackground(context.getResources().getDrawable(context.getResources().
+                getIdentifier(color, COLOR,
+                        context.getPackageName())));
     }
 
     public void setImage(String uri) {
@@ -511,8 +486,40 @@ public class ImagenLayout extends LinearLayoutCompat {
 
             ancho = metrics.widthPixels;
             alto = metrics.heightPixels;
-            LayoutParams params = new LayoutParams((int) (ancho * 0.20), ViewGroup.LayoutParams.MATCH_PARENT);
+            LinearLayoutCompat.LayoutParams params = new LinearLayoutCompat.
+                    LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.gravity = Gravity.CENTER;
             imagen.setLayoutParams(params);
+            ImagenUtil.setImageUriCircle(uri, imagen);
+            imagen.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            imagen.setAdjustViewBounds(true);
+
+            System.out.println("imagenAuto");
+
+        } else {
+            ImagenUtil.setImageUriCircle(uri, imagen);
+            System.out.println("imagenNormal");
+
+        }
+    }
+
+    public void setImageUriCard(AppCompatActivity mainActivity, String uri, float multi) {
+
+        path = uri;
+        float ancho;
+        float alto;
+
+        if (mainActivity != null) {
+
+            mainActivity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+            ancho = metrics.widthPixels;
+            alto = metrics.heightPixels;
+
+            LinearLayoutCompat.LayoutParams params = new LinearLayoutCompat.
+                    LayoutParams((int)((ancho/100)*multi), ViewGroup.LayoutParams.MATCH_PARENT);
+            getLinearLayoutCompat().setLayoutParams(params);
+
             ImagenUtil.setImageUriCircle(uri, imagen);
             imagen.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             imagen.setAdjustViewBounds(true);
@@ -537,7 +544,9 @@ public class ImagenLayout extends LinearLayoutCompat {
 
             ancho = metrics.widthPixels;
             alto = metrics.heightPixels;
-            LayoutParams params = new LayoutParams((int) (ancho * 0.20), ViewGroup.LayoutParams.MATCH_PARENT);
+            LinearLayoutCompat.LayoutParams params = new LinearLayoutCompat.
+                    LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.gravity = Gravity.CENTER;
             imagen.setLayoutParams(params);
             ImagenUtil.setImageUriCircle(recurso, imagen);
             imagen.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -552,9 +561,8 @@ public class ImagenLayout extends LinearLayoutCompat {
         }
     }
 
-    public void setImageFirestoreCard(AppCompatActivity mainActivity, String uri) {
+    public void setImageResourceCard(AppCompatActivity mainActivity, int recurso, float multi) {
 
-        path = uri;
         float ancho;
         float alto;
 
@@ -564,20 +572,27 @@ public class ImagenLayout extends LinearLayoutCompat {
 
             ancho = metrics.widthPixels;
             alto = metrics.heightPixels;
-            LayoutParams params = new LayoutParams((int) (ancho * 0.20), ViewGroup.LayoutParams.MATCH_PARENT);
+            LinearLayoutCompat.LayoutParams params = new LinearLayoutCompat.
+                    LayoutParams((int)((ancho/100)*multi), ViewGroup.LayoutParams.MATCH_PARENT);
+            getLinearLayoutCompat().setLayoutParams(params);
+
+            params = new LinearLayoutCompat.
+                    LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,1);
+            params.gravity = Gravity.CENTER;
             imagen.setLayoutParams(params);
-            ImagenUtil.setImageFireStoreCircle(uri, imagen);
-            imagen.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            imagen.setAdjustViewBounds(true);
+
+            ImagenUtil.setImageUriCircle(recurso, imagen);
+
 
             System.out.println("imagenAuto");
 
         } else {
-            ImagenUtil.setImageUriCircle(uri, imagen);
+            ImagenUtil.setImageUriCircle(recurso, imagen, 1);
             System.out.println("imagenNormal");
 
         }
     }
+
 
 
     public void setImageUri(String uri, int resourcedef) {
@@ -695,9 +710,9 @@ public class ImagenLayout extends LinearLayoutCompat {
         return ImagenUtil.bitmapToInputStream(imagen, 250, 250);
     }
 
-    OnClickListener listener;
+    View.OnClickListener listener;
 
-    public void setOnClickListener(OnClickListener listener) {
+    public void setOnClickListener(View.OnClickListener listener) {
         this.listener = listener;
     }
 

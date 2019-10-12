@@ -378,7 +378,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
     protected void onSetDatos() {
 
-        if (web != null && JavaUtil.isValidURL(web)) {
+        if (web != null && !web.equals("") && JavaUtil.isValidURL(web)) {
 
             visible(lyweb);
 

@@ -5,17 +5,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Filter;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,16 +27,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
-import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
-import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModelo;
 import com.codevsolution.base.models.Modelo;
 import com.codevsolution.base.sqlite.ContratoPry;
@@ -50,10 +40,8 @@ import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
-import static com.codevsolution.base.sqlite.ConsultaBD.insertRegistro;
 import static com.codevsolution.base.sqlite.ConsultaBD.insertRegistroDetalle;
 import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
@@ -159,6 +147,9 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
         super.setBundle();
 
         System.out.println("id = " + id);
+        if (nn(id)){
+            modelo = CRUDutil.updateModelo(campos,id);
+        }
     }
 
     @Override
@@ -166,6 +157,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
         calcularPrecioProdProv(id);
         visible(autoNombrePartida);
+        autoNombrePartida.setText("");
         if (lista != null && lista.sizeLista() == 0) {
             gone(autoNombrePartida);
         }
@@ -180,15 +172,11 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
         if (nnn(idPartida)) {
             visible(btnpart);
             if (secPartida > 0) {
-                btnpart.setText(getString(R.string.sincronizar_clon));
+                btnpart.setText(getString(R.string.sincronizar_clon_partida));
             }
         }
         descripcionPartida.setText(modelo.getString(PARTIDABASE_DESCRIPCION));
         nombrePartida.setText(modelo.getString(PARTIDABASE_NOMBRE));
-
-        tiempoPartida.setText(JavaUtil.getDecimales(calcularTiempo(id)));
-        importePartida.setText(JavaUtil.formatoMonedaLocal(calcularPrecio(id)));
-
 
         listaDetpartidas = new ListaModelo(CAMPOS_DETPARTIDABASE, id,TABLA_PARTIDABASE,null,null);
 
@@ -214,12 +202,16 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                     bundle.putInt(CAMPO_SECUENCIA, detpartidabase.getInt(DETPARTIDABASE_SECUENCIA));
                     bundle.putString(ORIGEN, PARTIDABASE);
 
-                    if (tipo.equals(TIPOTRABAJO)) {
-                        icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaBaseTrabajo());
-                    } else if (tipo.equals(TIPOPRODUCTO)) {
-                        icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaBaseProducto());
-                    } else if (tipo.equals(TIPOPRODUCTOPROV)) {
-                        icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaBaseProdProvCat());
+                    switch (tipo) {
+                        case TIPOTRABAJO:
+                            icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaBaseTrabajo());
+                            break;
+                        case TIPOPRODUCTO:
+                            icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaBaseProducto());
+                            break;
+                        case TIPOPRODUCTOPROV:
+                            icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaBaseProdProvCat());
+                            break;
                     }
 
 
@@ -240,11 +232,11 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
         for (Modelo detPartida : listadet.getLista()) {
 
             if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOTRABAJO)) {
-                Modelo trabajo = CRUDutil.setModelo(CAMPOS_TRABAJO, detPartida.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
+                Modelo trabajo = CRUDutil.updateModelo(CAMPOS_TRABAJO, detPartida.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
                 precio += (trabajo.getDouble(TRABAJO_TIEMPO) * Interactor.hora);
             } else if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOPRODUCTO)) {
-                Modelo producto = CRUDutil.setModelo(CAMPOS_PRODUCTO, detPartida.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
-                precio += producto.getDouble(PRODUCTO_PRECIO);
+                Modelo producto = CRUDutil.updateModelo(CAMPOS_PRODUCTO, detPartida.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
+                precio += producto.getDouble(PRODUCTO_PRECIO)*detPartida.getDouble(DETPARTIDABASE_CANTIDAD);
             }
         }
 
@@ -258,23 +250,23 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
             if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOPRODUCTOPROV)) {
                 DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                db.child(PRODUCTOPRO).child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+                db.child(PRODUCTOPRO).child(detPartida.getString(DETPARTIDABASE_ID_DETPARTIDABASE))
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
 
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                        System.out.println("dataSnapshot = " + dataSnapshot.getValue());
                         Productos prodProv = dataSnapshot.getValue(Productos.class);
-                        precioprodProv += prodProv.getPrecio();
+                        if (nn(prodProv)) {
+                            precioprodProv += prodProv.getPrecio() * detPartida.getDouble(DETPARTIDABASE_CANTIDAD);
+                            imagen.setImageFirestore(prodProv.getId());
 
-                        tiempoPartida.setText(JavaUtil.getDecimales(calcularTiempo(detPartida.getString(DETPARTIDABASE_ID_DETPARTIDABASE))));
-                        importePartida.setText(JavaUtil.formatoMonedaLocal(calcularPrecio(detPartida.getString(DETPARTIDABASE_ID_DETPARTIDABASE))));
-
-                        if (modelo.getString(PARTIDABASE_RUTAFOTO) != null) {
-
-                            path = modelo.getString(PARTIDABASE_RUTAFOTO);
-                            setImagenUriCircle(contexto, path);
-
+                            tiempoPartida.setText(JavaUtil.getDecimales(calcularTiempo(detPartida.getString(DETPARTIDABASE_ID_PARTIDABASE))));
+                            importePartida.setText(JavaUtil.formatoMonedaLocal(
+                                    calcularPrecio(detPartida.getString(DETPARTIDABASE_ID_PARTIDABASE))+precioprodProv));
                         }
+
 
                     }
 
@@ -284,6 +276,10 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                     }
 
                 });
+            }else {
+                tiempoPartida.setText(JavaUtil.getDecimales(calcularTiempo(detPartida.getString(DETPARTIDABASE_ID_PARTIDABASE))));
+                importePartida.setText(JavaUtil.formatoMonedaLocal(calcularPrecio(detPartida.getString(DETPARTIDABASE_ID_PARTIDABASE))));
+
             }
         }
     }
@@ -295,7 +291,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
         for (Modelo detPartida : listadet.getLista()) {
 
             if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOTRABAJO)) {
-                Modelo trabajo = CRUDutil.setModelo(CAMPOS_TRABAJO, detPartida.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
+                Modelo trabajo = CRUDutil.updateModelo(CAMPOS_TRABAJO, detPartida.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
                 if (nn(trabajo)) {
                     tiempo += (trabajo.getDouble(TRABAJO_TIEMPO));
                 }
@@ -383,7 +379,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                 @Override
                 public void run() {
 
-                    modelo = CRUDutil.setModelo(campos, id);
+                    modelo = CRUDutil.updateModelo(campos, id);
                     idPartida = AndroidUtil.getSharePreference(contexto, PERSISTENCIA, PARTIDA_ID_PARTIDA, NULL);
                     secPartida = AndroidUtil.getSharePreference(contexto, PERSISTENCIA, PARTIDA_SECUENCIA, 0);
 
@@ -399,13 +395,14 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                         putDato(valores, CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, ContratoPry.generarIdTabla(TABLA_PARTIDA));
                         putDato(valores, CAMPOS_PARTIDA, PARTIDA_ID_PROYECTO, idPartida);
                         putDato(valores, CAMPOS_PARTIDA, PARTIDA_ID_PARTIDABASE, modelo.getString(PARTIDABASE_ID_PARTIDABASE));
-                        Modelo proyecto = CRUDutil.setModelo(CAMPOS_PROYECTO, idPartida);
+                        Modelo proyecto = CRUDutil.updateModelo(CAMPOS_PROYECTO, idPartida);
                         putDato(valores, CAMPOS_PARTIDA, PARTIDA_ID_ESTADO, proyecto.getString(PROYECTO_ID_ESTADO));
+                        System.out.println("valores = " + valores);
 
                         secPartida = CRUDutil.crearRegistroSec(CAMPOS_PARTIDA, idPartida, TABLA_PROYECTO, valores);
                     }
 
-                    Modelo partida = CRUDutil.setModelo(CAMPOS_PARTIDA, idPartida, secPartida);
+                    Modelo partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, idPartida, secPartida);
                     String iddetpartida = partida.getString(PARTIDA_ID_PARTIDA);
                     ListaModelo listaDetPartidabase = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id, TABLA_PARTIDABASE);
                     for (Modelo detPartidaBase : listaDetPartidabase.getLista()) {
@@ -415,6 +412,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                         putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_ID_PARTIDA, iddetpartida);
                         putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_ID_DETPARTIDA, detPartidaBase.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
                         putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_TIPO, detPartidaBase.getString(DETPARTIDABASE_TIPO));
+                        putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_CANTIDAD, detPartidaBase.getString(DETPARTIDABASE_CANTIDAD));
                         boolean detnuevo = true;
                         ListaModelo listaDetPartida = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida, TABLA_PARTIDA);
                         for (Modelo detPartida : listaDetPartida.getLista()) {
@@ -502,9 +500,13 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
                         valores = clon.contenido();
                         valores.remove(PARTIDABASE_ID_PARTIDABASE);
+                        String nombre = valores.getAsString(PARTIDABASE_NOMBRE);
+                        valores.remove(PARTIDABASE_NOMBRE);
+                        valores.put(PARTIDABASE_NOMBRE,nombre + " clon");
 
                     if (nn(id)) {
                         CRUDutil.actualizarRegistro(tabla, id, valores);
+                        partidabase = CRUDutil.updateModelo(campos,id);
                     } else {
                         Uri uri = CRUDutil.crearRegistro(tabla, valores);
                         partidabase = queryObject(campos, uri);
@@ -513,8 +515,8 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                     }
 
 
-                    if (partidabase.getString(PARTIDABASE_RUTAFOTO)!=null){
-                        imagen.setImageUri(partidabase.getString(PARTIDABASE_RUTAFOTO));
+                    if (nnn(partidabase.getString(PARTIDABASE_RUTAFOTO))){
+                        imagen.setImageUriPerfil(activityBase,partidabase.getString(PARTIDABASE_RUTAFOTO));
                         path = partidabase.getString(PARTIDABASE_RUTAFOTO);
                     }
 
@@ -524,6 +526,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                         for (Modelo clonpart : listaclon) {
 
                             valores = clonpart.contenido();//AndroidUtil.clonarSinRef(clonpart);
+                            valores.remove(DETPARTIDABASE_ID_PARTIDABASE);
                             valores.put(DETPARTIDABASE_ID_PARTIDABASE,id);
                             valores.remove(DETPARTIDABASE_SECUENCIA);
 
@@ -545,7 +548,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
     class ViewHolderDetPartida extends BaseViewHolder implements TipoViewHolder {
 
-        TextView tipo, nombre, ltiempo, limporte, tiempo, importe;
+        TextView tipo, nombre, ltiempo, lcantidad, limporte, tiempo, cantidad, importe;
         ImagenLayout imagen;
 
         public ViewHolderDetPartida(View itemView) {
@@ -553,22 +556,24 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
             tipo = itemView.findViewById(R.id.tvtipoldetpaetidabase);
             nombre = itemView.findViewById(R.id.tvnomldetpartidabase);
             ltiempo = itemView.findViewById(R.id.ltiempoldetpartidabase);
+            lcantidad =itemView.findViewById(R.id.lcantidadldetpartidabase);
             limporte = itemView.findViewById(R.id.limpldetpartidabase);
             tiempo = itemView.findViewById(R.id.tvtiempoldetpartidabase);
             importe = itemView.findViewById(R.id.tvimpldetpartidabase);
+            cantidad = itemView.findViewById(R.id.tvcantidadldetpartidabase);
             imagen = itemView.findViewById(R.id.imgldetpartidabase);
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(final Modelo modelo) {
 
             String tipodetpartida = modelo.getString(DETPARTIDABASE_TIPO);
             String idDetPartidaBase = modelo.getString(DETPARTIDABASE_ID_DETPARTIDABASE);
 
             if (tipodetpartida.equals(TIPOTRABAJO)) {
 
-                Modelo trabajo = CRUDutil.setModelo(CAMPOS_TRABAJO, idDetPartidaBase);
-
+                Modelo trabajo = CRUDutil.updateModelo(CAMPOS_TRABAJO, idDetPartidaBase);
+                gone(cantidad);
                 nombre.setText(trabajo.getString(TRABAJO_NOMBRE));
                 tiempo.setText(JavaUtil.getDecimales(trabajo.getDouble(TRABAJO_TIEMPO)));
                 importe.setText(JavaUtil.formatoMonedaLocal(
@@ -582,9 +587,11 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
             } else if (tipodetpartida.equals(TIPOPRODUCTO)) {
 
-                Modelo producto = CRUDutil.setModelo(CAMPOS_PRODUCTO, idDetPartidaBase);
+                Modelo producto = CRUDutil.updateModelo(CAMPOS_PRODUCTO, idDetPartidaBase);
+                cantidad.setText(JavaUtil.getDecimales(modelo.getDouble(DETPARTIDABASE_CANTIDAD)));
                 nombre.setText(producto.getString(PRODUCTO_NOMBRE));
-                importe.setText(JavaUtil.getDecimales(producto.getDouble(PRODUCTO_PRECIO)));
+                importe.setText(JavaUtil.formatoMonedaLocal(producto.getDouble(PRODUCTO_PRECIO)*
+                        modelo.getDouble(DETPARTIDABASE_CANTIDAD)));
                 String path = producto.getString(PRODUCTO_RUTAFOTO);
                 if (nn(path)) {
                     imagen.setImageUriCard(activityBase, path);
@@ -592,10 +599,10 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
             } else if (tipodetpartida.equals(TIPOPRODUCTOPROV)) {
 
-                DatabaseReference dbproductosprov = FirebaseDatabase.getInstance().getReference().
-                        child(PRODUCTOPRO).child(idDetPartidaBase);
+                DatabaseReference dbproductosprov = FirebaseDatabase.getInstance().getReference();
 
-                dbproductosprov.addListenerForSingleValueEvent(new ValueEventListener() {
+                dbproductosprov.child(PRODUCTOPRO).child(idDetPartidaBase)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -604,11 +611,13 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                         if (prodProv != null) {
 
                             nombre.setText(prodProv.getNombre());
-                            importe.setText(JavaUtil.formatoMonedaLocal(prodProv.getPrecio()));
-                            String path = prodProv.getRutafoto();
+                            cantidad.setText(JavaUtil.getDecimales(modelo.getDouble(DETPARTIDABASE_CANTIDAD)));
+                            importe.setText(JavaUtil.formatoMonedaLocal
+                                    ((prodProv.getPrecio()*modelo.getDouble(DETPARTIDABASE_CANTIDAD))));
+                            String path = prodProv.getId();
 
                             if (path != null) {
-                                imagen.setImageFirestoreCircle(path);
+                                imagen.setImageFirestoreCard(activityBase,path);
                             }
 
                         }
@@ -655,7 +664,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
         @Override
         public void bind(Modelo modelo) {
 
-            String id = modelo.getString(DETPARTIDABASE_ID_PARTIDABASE);
+            String id = modelo.getString(PARTIDABASE_ID_PARTIDABASE);
             descripcionPartida.setText(modelo.getString(PARTIDABASE_DESCRIPCION));
             System.out.println("descripcionPartida = " + descripcionPartida);
             if (nnn(modelo.getString(PARTIDABASE_RUTAFOTO))) {
@@ -665,15 +674,15 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                 gone(imagenPartida);
             }
 
-            calcularPrecioProdProv(id);
+            calcularPrecioProdProvCard(id);
 
             super.bind(modelo);
         }
 
-        private void calcularPrecioProdProv(final String id) {
+        private void calcularPrecioProdProvCard(final String id) {
 
             final ListaModelo listadet = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id, TABLA_PARTIDABASE);
-            for (Modelo detPartida : listadet.getLista()) {
+            for (final Modelo detPartida : listadet.getLista()) {
 
                 if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOPRODUCTOPROV)) {
                     DatabaseReference db = FirebaseDatabase.getInstance().getReference();
@@ -683,10 +692,11 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                             Productos prodProv = dataSnapshot.getValue(Productos.class);
-                            precioprodProv += prodProv.getPrecio();
-                            tiempoPartida.setText(JavaUtil.getDecimales(calcularTiempo(id)));
-                            importePartida.setText(JavaUtil.formatoMonedaLocal(calcularPrecio(id)));
-
+                            if (nn(prodProv)) {
+                                precioprodProv += prodProv.getPrecio()* detPartida.getDouble(DETPARTIDABASE_CANTIDAD);
+                                tiempoPartida.setText(JavaUtil.getDecimales(calcularTiempo(id)));
+                                importePartida.setText(JavaUtil.formatoMonedaLocal(calcularPrecio(id)));
+                            }
                         }
 
                         @Override
@@ -729,25 +739,54 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
         @Override
         protected void setEntradas(int posicion, View view, ArrayList<Modelo> entrada) {
 
-            ImagenLayout imagen = view.findViewById(R.id.imglpartidabase);
-            TextView descripcion = view.findViewById(R.id.tvdescripcionpartidabase);
-            TextView tiempo = view.findViewById(R.id.tvtiempopartidabase);
-            TextView importe = view.findViewById(R.id.tvimppartidabase);
+            ImagenLayout imagenPartida = view.findViewById(R.id.imglpartidabase);
+            TextView descripcionPartida = view.findViewById(R.id.tvdescripcionpartidabase);
+            final TextView tiempoPartida = view.findViewById(R.id.tvtiempopartidabase);
+            final TextView importePartida = view.findViewById(R.id.tvimppartidabase);
+            final String id = entrada.get(posicion).getString(PARTIDABASE_ID_PARTIDABASE);
+            descripcionPartida.setText(entrada.get(posicion).getString(PARTIDABASE_DESCRIPCION));
+            System.out.println("descripcionPartida = " + descripcionPartida);
+            if (nnn(entrada.get(posicion).getString(PARTIDABASE_RUTAFOTO))) {
 
-            String id = entrada.get(posicion).getString(PARTIDABASE_ID_PARTIDABASE);
+                imagenPartida.setImageUriCard(activityBase, entrada.get(posicion).getString(PARTIDABASE_RUTAFOTO));
 
-            descripcion.setText(entrada.get(posicion).getString(PARTIDABASE_DESCRIPCION));
-            tiempo.setText(JavaUtil.getDecimales(calcularTiempo(id)));
-            importe.setText(JavaUtil.formatoMonedaLocal(calcularPrecio(id)));
+            } else {
+                gone(imagenPartida);
+            }
 
+            final ListaModelo listadet = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id, TABLA_PARTIDABASE);
+            for (Modelo detPartida : listadet.getLista()) {
 
-            if (entrada.get(posicion).getString(PARTIDABASE_RUTAFOTO) != null) {
-                imagen.setImageUriCard(activityBase, entrada.get(posicion).getString(PARTIDABASE_RUTAFOTO));
+                if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOPRODUCTOPROV)) {
+                    DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                    db.child(PRODUCTOPRO).child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            Productos prodProv = dataSnapshot.getValue(Productos.class);
+                            precioprodProv += prodProv.getPrecio();
+                            tiempoPartida.setText(JavaUtil.getDecimales(calcularTiempo(id)));
+                            importePartida.setText(JavaUtil.formatoMonedaLocal(calcularPrecio(id)));
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+
+                    });
+                } else {
+                    tiempoPartida.setText(JavaUtil.getDecimales(calcularTiempo(id)));
+                    importePartida.setText(JavaUtil.formatoMonedaLocal(calcularPrecio(id)));
+
                 }
-
+            }
 
             super.setEntradas(posicion, view, entrada);
         }
+
     }
 
 }

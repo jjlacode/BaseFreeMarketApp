@@ -53,7 +53,7 @@ public abstract class DiaCalBase extends FragmentRV {
     @Override
     protected void setAcciones() {
 
-        btnBack.setOnClickListener(new View.OnClickListener() {
+        btnback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setOnBack();
@@ -218,9 +218,15 @@ public abstract class DiaCalBase extends FragmentRV {
         public void settHoraCal(String tHoraCal) {
             this.tHoraCal = tHoraCal;
         }
+
     }
 
-    public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
+    protected int setColorCard(long fecha, long horaCal) {
+        return R.color.Color_card_defecto;
+    }
+
+
+        public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
 
         TextView hora;
         CardView card;
@@ -254,6 +260,8 @@ public abstract class DiaCalBase extends FragmentRV {
 
                 }
             });
+
+            card.setCardBackgroundColor(getResources().getColor(setColorCard(fecha,horaCal)));
 
             super.bind(lista, position);
         }

@@ -32,11 +32,11 @@
                 android:src="@drawable/ic_add_a_photo_black_24dp" />
 
 
-                    <AutoCompleteTextView
-                        android:id="@+id/autonompartidabase"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/nombre"/>
+                <AutoCompleteTextView
+                    android:id="@+id/autonompartidabase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/partida_clon"/>
 
             <com.codevsolution.base.android.controls.EditMaterial
                         android:id="@+id/etnomudpartidabase"

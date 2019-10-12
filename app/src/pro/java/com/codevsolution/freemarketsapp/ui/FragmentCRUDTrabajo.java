@@ -12,13 +12,13 @@ import android.widget.TextView;
 
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
-import com.codevsolution.base.android.controls.ViewLinearLayout;
+import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.Modelo;
@@ -133,7 +133,7 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
     @Override
     protected void setInicio() {
 
-        ViewLinearLayout vistaForm = new ViewLinearLayout(contexto, frdetalle);
+        ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
 
         imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
         imagen.setFocusable(false);

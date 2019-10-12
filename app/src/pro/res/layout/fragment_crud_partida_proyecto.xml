@@ -30,6 +30,31 @@
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/texto" />
 
+
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etnomudpartida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:activo="false"
+                app:hint_text="@string/nombre" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etdescripcionUDpartida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint_text="@string/descripcion_tipo_cliente"
+                app:activo="false"
+                app:tipo_dato="TEXTO|MULTI" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etordenUDpartida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint_text="@string/orden_ejecucion"
+                app:tipo_dato="NUMERO" />
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -42,28 +67,8 @@
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
                     android:scaleType="fitCenter"
+                    android:layout_weight="1"
                     android:src="@drawable/alert_box_v" />
-
-                <com.codevsolution.base.android.controls.EditMaterial
-                    android:id="@+id/etnomudpartida"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:hint_text="@string/nombre" />
-            </LinearLayout>
-
-
-            <com.codevsolution.base.android.controls.EditMaterial
-                android:id="@+id/etdescripcionUDpartida"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:hint_text="@string/descripcion_tipo_cliente"
-                app:tipo_dato="TEXTO|MULTI" />
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
 
                 <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/etcantidadUDpartida"

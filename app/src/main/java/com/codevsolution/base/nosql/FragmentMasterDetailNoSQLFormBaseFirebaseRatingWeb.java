@@ -21,7 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 
-import com.codevsolution.base.chat.EnviarNoticias;
+import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.chat.FragmentChatBase;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,7 +36,6 @@ import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.media.ImagenUtil;

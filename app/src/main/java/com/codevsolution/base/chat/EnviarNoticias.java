@@ -5,10 +5,8 @@ import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -133,7 +131,7 @@ public class EnviarNoticias extends FragmentChatBase implements
             valores.put(DETCHAT_ID_CHAT, id);
             secuencia = CRUDutil.crearRegistroSec(CAMPOS_DETCHAT, id, TABLA_CHAT, valores);
 
-            Modelo chat = CRUDutil.setModelo(campos, id);
+            Modelo chat = CRUDutil.updateModelo(campos, id);
 
             MsgChat msgChat = new MsgChat();
             msgChat.setMensaje(msgEnv.getText().toString());

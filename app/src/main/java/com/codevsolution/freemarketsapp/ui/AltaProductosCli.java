@@ -19,6 +19,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import static com.codevsolution.base.logica.InteractorBase.Constantes.SORTEOCLI;
+
 public class AltaProductosCli extends AltaProductosFirebase
         implements Interactor.ConstantesPry, ContratoPry.Tablas {
 

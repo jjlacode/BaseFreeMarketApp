@@ -17,11 +17,11 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AlertDialog;
 
 import com.codevsolution.base.android.controls.EditMaterialLayout;
+import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModelo;
 import com.codevsolution.base.models.Modelo;
@@ -83,6 +83,10 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         btnback = view.findViewById(R.id.btn_back);
         btnsave = view.findViewById(R.id.btn_save);
         btndelete = view.findViewById(R.id.btn_del);
+
+        if (autoGuardado){
+            gone(btnsave);
+        }
 
         activityBase.fabInicio.hide();
 
@@ -196,7 +200,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                     id = modelo.getString(campoID);
                 }
                 if (nn(id)) {
-                    modelo = CRUDutil.setModelo(campos, id);
+                    modelo = CRUDutil.updateModelo(campos, id);
                 }
 
             } else {
@@ -206,7 +210,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                     secuencia = modelo.getInt(campoSecuencia);
                 }
                 if (nn(id) && secuencia > 0) {
-                    modelo = CRUDutil.setModelo(campos, id, secuencia);
+                    modelo = CRUDutil.updateModelo(campos, id, secuencia);
                 }
                 System.out.println("modelo = " + modelo);
             }
@@ -225,9 +229,9 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         try {
 
             if (modelo == null && id != null && tablaCab == null) {
-                modelo = CRUDutil.setModelo(campos, id);
+                modelo = CRUDutil.updateModelo(campos, id);
             } else if (modelo == null && id != null && tablaCab != null && secuencia > 0) {
-                modelo = CRUDutil.setModelo(campos, id, secuencia);
+                modelo = CRUDutil.updateModelo(campos, id, secuencia);
             }
 
             if (modelo != null && modelo.getString(campoImagen) != null) {
@@ -236,8 +240,9 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
             }
 
-            if (path != null) {
+            if (nnn(path)) {
 
+                System.out.println("path = " + path);
                 //imagen.setImageUri(path, (int)(anchoReal*0.25f),(int)(altoReal*0.15f));
                 imagen.setImageUriPerfil(activityBase, path);
                 imagen.setIcfragmentos(icFragmentos);
@@ -306,39 +311,41 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                 }
             });
 
-            editMaterial.setAlCambiarListener(new EditMaterial.AlCambiarListener() {
-                @Override
-                public void antesCambio(CharSequence s, int start, int count, int after) {
+            if (autoGuardado) {
+                editMaterial.setAlCambiarListener(new EditMaterial.AlCambiarListener() {
+                    @Override
+                    public void antesCambio(CharSequence s, int start, int count, int after) {
 
-                }
-
-                @Override
-                public void cambiando(CharSequence s, int start, int before, int count) {
-
-                    if (timer != null) {
-                        timer.cancel();
                     }
-                }
 
-                @Override
-                public void despuesCambio(Editable s) {
-                    final Editable temp = s;
-                    timer = new Timer();
-                    timer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            if (!temp.toString().equals("")) {
-                                activityBase.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        alCambiarCampos(editMaterial);
-                                    }
-                                });
-                            }
+                    @Override
+                    public void cambiando(CharSequence s, int start, int before, int count) {
+
+                        if (timer != null) {
+                            timer.cancel();
                         }
-                    }, 1000);
-                }
-            });
+                    }
+
+                    @Override
+                    public void despuesCambio(Editable s) {
+                        final Editable temp = s;
+                        timer = new Timer();
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                if (!temp.toString().equals("")) {
+                                    activityBase.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            alCambiarCampos(editMaterial);
+                                        }
+                                    });
+                                }
+                            }
+                        }, tiempoGuardado * 1000);
+                    }
+                });
+            }
         }
 
         for (final EditMaterialLayout editMaterial : materialEditLayouts) {
@@ -356,39 +363,41 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                 }
             });
 
-            editMaterial.setAlCambiarListener(new EditMaterialLayout.AlCambiarListener() {
-                @Override
-                public void antesCambio(CharSequence s, int start, int count, int after) {
+            if (autoGuardado) {
+                editMaterial.setAlCambiarListener(new EditMaterialLayout.AlCambiarListener() {
+                    @Override
+                    public void antesCambio(CharSequence s, int start, int count, int after) {
 
-                }
-
-                @Override
-                public void cambiando(CharSequence s, int start, int before, int count) {
-
-                    if (timer != null) {
-                        timer.cancel();
                     }
-                }
 
-                @Override
-                public void despuesCambio(Editable s) {
-                    final Editable temp = s;
-                    timer = new Timer();
-                    timer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            if (!temp.toString().equals("")) {
-                                activityBase.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        alCambiarCampos(editMaterial);
-                                    }
-                                });
-                            }
+                    @Override
+                    public void cambiando(CharSequence s, int start, int before, int count) {
+
+                        if (timer != null) {
+                            timer.cancel();
                         }
-                    }, 1000);
-                }
-            });
+                    }
+
+                    @Override
+                    public void despuesCambio(Editable s) {
+                        final Editable temp = s;
+                        timer = new Timer();
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                if (!temp.toString().equals("")) {
+                                    activityBase.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            alCambiarCampos(editMaterial);
+                                        }
+                                    });
+                                }
+                            }
+                        }, tiempoGuardado * 1000);
+                    }
+                });
+            }
         }
 
         setAcciones();
@@ -407,7 +416,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
             guardarEdit(editMaterial);
         } else {
 
-            System.out.println("back base= " + back);
             if (!setBack()) {
                 onUpdate();
                 if (id != null && (tablaCab == null || secuencia > 0)) {
@@ -425,7 +433,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
             guardarEdit(editMaterial);
         } else {
 
-            System.out.println("back base= " + back);
             if (!setBack()) {
                 onUpdate();
                 if (id != null && (tablaCab == null || secuencia > 0)) {
@@ -444,9 +451,11 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                 valores.put((String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
                 if (secuencia > 0) {
                     int i = ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+                    modelo = CRUDutil.updateModelo(campos,id,secuencia);
                     System.out.println("guardados = " + i);
                 } else {
                     int x = ConsultaBD.updateRegistro(tabla, id, valores);
+                    modelo = CRUDutil.updateModelo(campos,id);
                     System.out.println("guardados = " + x);
                 }
             }
@@ -463,9 +472,11 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                 valores.put((String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
                 if (secuencia > 0) {
                     int i = ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+                    modelo = CRUDutil.updateModelo(campos,id,secuencia);
                     System.out.println("guardados = " + i);
                 } else {
                     int x = ConsultaBD.updateRegistro(tabla, id, valores);
+                    modelo = CRUDutil.updateModelo(campos,id);
                     System.out.println("guardados = " + x);
                 }
             }

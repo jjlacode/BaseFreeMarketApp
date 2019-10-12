@@ -1,6 +1,7 @@
 package com.codevsolution.freemarketsapp.ui;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -16,27 +17,28 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.codevsolution.base.android.controls.EditMaterialLayout;
-import com.codevsolution.base.android.controls.ViewLinearLayout;
+import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
-import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
-import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModelo;
 import com.codevsolution.base.models.Modelo;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.DatePickerFragment;
+import com.codevsolution.base.time.TimeDateUtil;
+import com.codevsolution.base.time.TimePickerFragment;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.codevsolution.freemarketsapp.templates.PresupuestoPDF;
@@ -44,6 +46,7 @@ import com.codevsolution.freemarketsapp.templates.PresupuestoPDF;
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
+import static com.codevsolution.base.javautil.JavaUtil.getTime;
 import static com.codevsolution.base.sqlite.ConsultaBD.checkQueryList;
 import static com.codevsolution.base.sqlite.ConsultaBD.insertRegistro;
 import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
@@ -62,10 +65,11 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private EditMaterialLayout descripcionPry;
     private EditMaterialLayout estadoProyecto;
     private EditMaterialLayout fechaEntregaPresup;
-    private EditMaterialLayout fechaAcordadaPry;
+    private EditMaterialLayout horaInicioCalculadaPry;
     private EditMaterialLayout importeFinalPry;
     private EditMaterialLayout fechaEntradaPry;
     private EditMaterialLayout fechaCalculadaPry;
+    private EditMaterialLayout fechaInicioCalculadaPry;
     private EditMaterialLayout fechaFinalPry;
     private EditMaterialLayout totalPartidasPry;
     private EditMaterialLayout pvpPartidas;
@@ -94,6 +98,10 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private int totcompletada = 0;
 
     private long fechaCalculada = 0;
+    private long fechaInicioCalculada = 0;
+    private long horaInicioCalculada = 0;
+    private long horaInicioAcordada = 0;
+    private long fechaInicioAcordada = 0;
     private long fechaAcordada = 0;
     private long fechaEntregaP = 0;
 
@@ -138,6 +146,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setLista() {
 
+        activityBase.fabNuevo.hide();
+
         actualizarConsultas();
 
     }
@@ -152,8 +162,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             inicio.setVisibility(View.VISIBLE);
             lista = CRUDutil.clonaListaModelo(campos,listab);
         }
-
-        System.out.println("lista.sizeLista() = " + lista.sizeLista());
 
         if (lista.chechLista()) {
 
@@ -178,7 +186,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                             if (estado > 3 && estado <= 6) {
                                 listatemp.add(item);
                             }
-                        System.out.println("estado = " + estado);
 
                         break;
 
@@ -207,11 +214,10 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                         break;
                 }
             }
-            System.out.println("listatemp = " + listatemp.size());
             lista = CRUDutil.clonaListaModelo(campos,listatemp);
-            System.out.println("lista final= " + lista.sizeLista());
 
             enviarAct();
+            setSubtitulo(actual);
         }
 
     }
@@ -262,7 +268,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         }
 
         if (id !=null) {
-                modelo = CRUDutil.setModelo(campos,id);
+                modelo = CRUDutil.updateModelo(campos,id);
                 idCliente = modelo.getString(PROYECTO_ID_CLIENTE);
             new Interactor.Calculos.TareaActualizaProy().execute(id);
         }
@@ -272,37 +278,61 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         }
 
         if (actual.equals(PRESUPUESTO)) {
-            activityBase.toolbar.setTitle(R.string.presupuestos);
             if (actualtemp==null) {
                 actualtemp = actual;
             }
         }else if (actual.equals(PROYECTO)){
-            activityBase.toolbar.setTitle(R.string.proyectos);
             if (actualtemp==null) {
                 actualtemp = actual;
             }
         }else if (actual.equals(COBROS)){
-            activityBase.toolbar.setTitle(R.string.cobros);
             if (actualtemp==null) {
                 actualtemp = PROYECTO;
             }
         }else if (actual.equals(HISTORICO)){
-            activityBase.toolbar.setTitle(R.string.historico);
             if (actualtemp==null) {
                 actualtemp = PROYECTO;
             }
         } else if (actual.equals(GARANTIA)) {
-            activityBase.toolbar.setTitle(R.string.garantia);
             if (actualtemp == null) {
                 actualtemp = PROYECTO;
             }
         }else{
-            activityBase.toolbar.setTitle(R.string.proyectos);
             if (actualtemp==null) {
                 actualtemp = actual;
             }
 
         }
+        setSubtitulo(actual);
+
+    }
+
+    private void setSubtitulo(String actual){
+
+        switch (actual) {
+            case PRESUPUESTO:
+                subTitulo = getString(R.string.presupuestos);
+                break;
+            case PROYECTO:
+                subTitulo = getString(R.string.proyectos);
+                break;
+            case COBROS:
+                subTitulo = getString(R.string.cobros);
+                break;
+            case HISTORICO:
+                subTitulo = getString(R.string.historico);
+                break;
+            case GARANTIA:
+                subTitulo = getString(R.string.garantia);
+                break;
+            default:
+                subTitulo = getString(R.string.proyectos);
+
+                break;
+        }
+
+        activityBase.toolbar.setSubtitle(subTitulo);
+        imagen.setTextTitulo(subTitulo);
 
     }
 
@@ -321,8 +351,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
                 Toast.makeText(getContext(),PRESUPUESTOS, Toast.LENGTH_SHORT).show();
                 actual = PRESUPUESTO;
-                activityBase.toolbar.setTitle(R.string.presupuestos);
-                imagen.setTextTitulo(R.string.presupuestos);
+                setSubtitulo(actual);
                 actualtemp = actual;
                 selector();
             }
@@ -335,8 +364,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 Toast.makeText(getContext(),PROYECTOS, Toast.LENGTH_SHORT).show();
                 actual = PROYECTO;
                 actualtemp = actual;
-                activityBase.toolbar.setTitle(R.string.proyectos);
-                imagen.setTextTitulo(R.string.proyectos);
+                setSubtitulo(actual);
 
                 selector();
             }
@@ -349,8 +377,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 Toast.makeText(getContext(),PROYCOBROS, Toast.LENGTH_SHORT).show();
                 actual = COBROS;
                 actualtemp = PROYECTO;
-                activityBase.toolbar.setTitle(R.string.cobros);
-                imagen.setTextTitulo(R.string.proyectos_cobros);
+                setSubtitulo(actual);
 
                 selector();
             }
@@ -363,8 +390,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 Toast.makeText(getContext(), PROYGARANTIA, Toast.LENGTH_SHORT).show();
                 actual = GARANTIA;
                 actualtemp = PROYECTO;
-                activityBase.toolbar.setTitle(R.string.garantia);
-                imagen.setTextTitulo(R.string.proyectos_garantia);
+                setSubtitulo(actual);
 
                 selector();
             }
@@ -377,8 +403,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 Toast.makeText(getContext(),PROYHISTORICO, Toast.LENGTH_SHORT).show();
                 actual = HISTORICO;
                 actualtemp = PROYECTO;
-                activityBase.toolbar.setTitle(R.string.historico);
-                imagen.setTextTitulo(R.string.proyectos_historico);
+                setSubtitulo(actual);
 
                 selector();
             }
@@ -450,12 +475,13 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setOnLeftSwipe() {
 
+        if (id == null) {
             switch (actual) {
 
                 case GARANTIA:
                     Toast.makeText(getContext(), PROYHISTORICO, Toast.LENGTH_SHORT).show();
                     actual = HISTORICO;
-                    activityBase.toolbar.setTitle(R.string.historico);
+                    setSubtitulo(actual);
                     actualtemp = PROYECTO;
                     selector();
                     break;
@@ -463,64 +489,67 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 case COBROS:
                     Toast.makeText(getContext(), PROYGARANTIA, Toast.LENGTH_SHORT).show();
                     actual = GARANTIA;
-                    activityBase.toolbar.setTitle(R.string.garantia);
+                    setSubtitulo(actual);
                     actualtemp = PROYECTO;
                     selector();
                     break;
 
                 case PRESUPUESTO:
-                    Toast.makeText(getContext(),PROYECTOS, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), PROYECTOS, Toast.LENGTH_SHORT).show();
                     actual = PROYECTO;
                     actualtemp = actual;
-                    activityBase.toolbar.setTitle(R.string.proyectos);
+                    setSubtitulo(actual);
                     selector();
                     break;
                 case PROYECTO:
-                    Toast.makeText(getContext(),PROYCOBROS, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), PROYCOBROS, Toast.LENGTH_SHORT).show();
                     actual = COBROS;
                     actualtemp = PROYECTO;
-                    activityBase.toolbar.setTitle(R.string.cobros);
+                    setSubtitulo(actual);
                     selector();
                     break;
             }
+        }
     }
 
 
     @Override
     protected void setOnRightSwipe() {
 
-        switch (actual) {
+        if (id == null) {
+            switch (actual) {
 
-            case PROYECTO:
-                Toast.makeText(getContext(), PRESUPUESTOS, Toast.LENGTH_SHORT).show();
-                actual = PRESUPUESTO;
-                activityBase.toolbar.setTitle(R.string.presupuestos);
-                actualtemp = actual;
-                selector();
-                break;
+                case PROYECTO:
+                    Toast.makeText(getContext(), PRESUPUESTOS, Toast.LENGTH_SHORT).show();
+                    actual = PRESUPUESTO;
+                    setSubtitulo(actual);
+                    actualtemp = actual;
+                    selector();
+                    break;
 
-            case COBROS:
-                Toast.makeText(getContext(),PROYECTOS, Toast.LENGTH_SHORT).show();
-                actual = PROYECTO;
-                actualtemp = actual;
-                activityBase.toolbar.setTitle(R.string.proyectos);
-                selector();
-                break;
-            case GARANTIA:
-                Toast.makeText(getContext(),PROYCOBROS, Toast.LENGTH_SHORT).show();
-                actual = COBROS;
-                actualtemp = PROYECTO;
-                activityBase.toolbar.setTitle(R.string.cobros);
-                selector();
-                break;
+                case COBROS:
+                    Toast.makeText(getContext(), PROYECTOS, Toast.LENGTH_SHORT).show();
+                    actual = PROYECTO;
+                    actualtemp = actual;
+                    setSubtitulo(actual);
+                    selector();
+                    break;
+                case GARANTIA:
+                    Toast.makeText(getContext(), PROYCOBROS, Toast.LENGTH_SHORT).show();
+                    actual = COBROS;
+                    actualtemp = PROYECTO;
+                    setSubtitulo(actual);
+                    selector();
+                    break;
 
-            case HISTORICO:
-                Toast.makeText(getContext(), PROYGARANTIA, Toast.LENGTH_SHORT).show();
-                actual = GARANTIA;
-                actualtemp = PROYECTO;
-                activityBase.toolbar.setTitle(R.string.garantia);
-                selector();
-                break;
+                case HISTORICO:
+                    Toast.makeText(getContext(), PROYGARANTIA, Toast.LENGTH_SHORT).show();
+                    actual = GARANTIA;
+                    actualtemp = PROYECTO;
+                    setSubtitulo(actual);
+                    selector();
+                    break;
+            }
         }
     }
 
@@ -537,29 +566,32 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setInicio() {
 
-        ViewLinearLayout vistaForm = new ViewLinearLayout(contexto, frdetalle);
+        new Tareafechas().execute(false);
+
+        ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
 
         imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
         imagen.setFocusable(false);
         imagen.setTextTitulo(tituloSingular);
         nombrePry = vistaForm.addEditMaterialLayout(getString(R.string.nombre), PROYECTO_NOMBRE, null, null);
         descripcionPry = vistaForm.addEditMaterialLayout(getString(R.string.descripcion), PROYECTO_DESCRIPCION, null, null);
+        descripcionPry.setTipo(EditMaterialLayout.TEXTO|EditMaterialLayout.MULTI);
         spClienteProyecto = vistaForm.addEditMaterialLayout(getString(R.string.cliente));
         spClienteProyecto.setActivo(false);
-        spClienteProyecto.btnInicioInvisible(false);
+        spClienteProyecto.btnInicioVisible(false);
         spClienteProyecto.btnAccion2Enable(true);
         spClienteProyecto.setImgBtnAccion2(R.drawable.cliente);
         spEstadoProyecto = (Spinner) vistaForm.addVista(new Spinner(contexto));
         estadoProyecto = vistaForm.addEditMaterialLayout(R.string.estado);
         estadoProyecto.btnAccion2Enable(true);
-        estadoProyecto.btnInicioInvisible(false);
+        estadoProyecto.btnInicioVisible(false);
         estadoProyecto.setImgBtnAccion2(R.drawable.alert_box_v);
         fechaEntradaPry = vistaForm.addEditMaterialLayout(R.string.fecha_entrada);
         fechaEntradaPry.setActivo(false);
-        fechaEntradaPry.btnInicioInvisible(false);
+        fechaEntradaPry.btnInicioVisible(false);
         fechaEntregaPresup = vistaForm.addEditMaterialLayout(R.string.fecha_entrega_presup);
         fechaEntregaPresup.setActivo(false);
-        fechaEntregaPresup.btnInicioInvisible(false);
+        fechaEntregaPresup.btnInicioVisible(false);
         fechaEntregaPresup.btnAccionEnable(true);
         fechaEntregaPresup.setImgBtnAccion(R.drawable.ic_search_black_24dp);
         fechaEntregaPresup.setClickAccion(new EditMaterialLayout.ClickAccion() {
@@ -568,37 +600,84 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 showDatePickerDialogEntrega();
             }
         });
-        fechaCalculadaPry = vistaForm.addEditMaterialLayout(R.string.fecha_calculada);
-        fechaCalculadaPry.setActivo(false);
-        fechaCalculadaPry.btnInicioInvisible(false);
-        fechaAcordadaPry = vistaForm.addEditMaterialLayout(R.string.fecha_acordada);
-        fechaAcordadaPry.setActivo(false);
-        fechaAcordadaPry.btnInicioInvisible(false);
-        fechaAcordadaPry.btnAccionEnable(true);
-        fechaAcordadaPry.setImgBtnAccion(R.drawable.ic_search_black_24dp);
-        fechaAcordadaPry.setClickAccion(new EditMaterialLayout.ClickAccion() {
+        ViewGroupLayout vistaAcordada = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaAcordada.setOrientacion(LinearLayoutCompat.HORIZONTAL);
+        fechaInicioCalculadaPry = vistaAcordada.addEditMaterialLayout(R.string.fecha_acordada);
+        fechaInicioCalculadaPry.setActivo(false);
+        fechaInicioCalculadaPry.btnInicioVisible(false);
+        fechaInicioCalculadaPry.btnAccionEnable(true);
+        fechaInicioCalculadaPry.setImgBtnAccion(R.drawable.ic_search_black_24dp);
+        fechaInicioCalculadaPry.setClickAccion(new EditMaterialLayout.ClickAccion() {
             @Override
             public void onClickAccion(View view) {
-                showDatePickerDialogAcordada();
+
+                if (fechaInicioCalculada==0){
+                    fechaInicioCalculada = TimeDateUtil.ahora();
+                }
+                    showDatePickerDialogAcordada();
             }
         });
+        fechaInicioCalculadaPry.btnAccion2Enable(true);
+        fechaInicioCalculadaPry.setImgBtnAccion2(R.drawable.ic_autorenew_black_24dp);
+        fechaInicioCalculadaPry.setClickAccion2(new EditMaterialLayout.ClickAccion2() {
+            @Override
+            public void onClickAccion2(View view) {
+                ContentValues values = new ContentValues();
+                values.put(PROYECTO_FECHAINICIOCALCULADA,modelo.getLong(PROYECTO_FECHAINICIOACORDADA));
+                CRUDutil.actualizarRegistro(modelo,values);
+                modelo = CRUDutil.updateModelo(modelo);
+                new TareaFechasDatos().execute(false);
+            }
+        });
+        horaInicioCalculadaPry = vistaAcordada.addEditMaterialLayout(R.string.hora_acordada);
+        horaInicioCalculadaPry.setActivo(false);
+        horaInicioCalculadaPry.btnInicioVisible(false);
+        horaInicioCalculadaPry.btnAccionEnable(true);
+        horaInicioCalculadaPry.setImgBtnAccion(R.drawable.ic_search_black_24dp);
+        horaInicioCalculadaPry.setClickAccion(new EditMaterialLayout.ClickAccion() {
+            @Override
+            public void onClickAccion(View view) {
+
+                if (horaInicioCalculada==0){
+                    horaInicioCalculada = TimeDateUtil.ahora();
+                }
+
+                showTimePickerDialogAcordada();
+            }
+        });
+        horaInicioCalculadaPry.btnAccion2Enable(true);
+        horaInicioCalculadaPry.setImgBtnAccion2(R.drawable.ic_autorenew_black_24dp);
+        horaInicioCalculadaPry.setClickAccion2(new EditMaterialLayout.ClickAccion2() {
+            @Override
+            public void onClickAccion2(View view) {
+                ContentValues values = new ContentValues();
+                values.put(PROYECTO_HORAINICIOCALCULADA,modelo.getLong(PROYECTO_HORAINICIOACORDADA));
+                CRUDutil.actualizarRegistro(modelo,values);
+                modelo = CRUDutil.updateModelo(modelo);
+                new TareaFechasDatos().execute(false);
+            }
+        });
+        actualizarArrays(vistaAcordada);
+        fechaCalculadaPry = vistaForm.addEditMaterialLayout(R.string.fecha_calculada);
+        fechaCalculadaPry.setActivo(false);
+        fechaCalculadaPry.btnInicioVisible(false);
         fechaFinalPry = vistaForm.addEditMaterialLayout(R.string.fecha_final);
         fechaFinalPry.setActivo(false);
-        fechaFinalPry.btnInicioInvisible(false);
-        ViewLinearLayout vistaImportepartidas = new ViewLinearLayout(contexto, vistaForm.getViewGroup());
+        fechaFinalPry.btnInicioVisible(false);
+        ViewGroupLayout vistaImportepartidas = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
         vistaImportepartidas.setOrientacion(LinearLayoutCompat.HORIZONTAL);
         totalPartidasPry = vistaImportepartidas.addEditMaterialLayout(R.string.tiempo_partidas);
         totalPartidasPry.setActivo(false);
-        totalPartidasPry.btnInicioInvisible(false);
+        totalPartidasPry.btnInicioVisible(false);
         pvpPartidas = vistaImportepartidas.addEditMaterialLayout(R.string.total_partidas);
         pvpPartidas.setActivo(false);
-        pvpPartidas.btnInicioInvisible(false);
+        pvpPartidas.btnInicioVisible(false);
         actualizarArrays(vistaImportepartidas);
-        ViewLinearLayout vistaImporte = new ViewLinearLayout(contexto, vistaForm.getViewGroup());
+        ViewGroupLayout vistaImporte = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
         vistaImporte.setOrientacion(LinearLayoutCompat.HORIZONTAL);
         importeCalculadoPry = vistaImporte.addEditMaterialLayout(R.string.importe_calculado);
         importeCalculadoPry.setActivo(false);
-        importeCalculadoPry.btnInicioInvisible(false);
+        importeCalculadoPry.btnInicioVisible(false);
         importeFinalPry = vistaImporte.addEditMaterialLayout(R.string.importe_final);
         actualizarArrays(vistaImporte);
         btnPartidasPry = vistaForm.addButtonPrimary(R.string.partidas_proyecto);
@@ -608,7 +687,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 verPartidas();
             }
         });
-        ViewLinearLayout vistabtn = new ViewLinearLayout(contexto, vistaForm.getViewGroup());
+        ViewGroupLayout vistabtn = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
         vistabtn.setOrientacion(LinearLayoutCompat.HORIZONTAL);
 
         btnEvento = vistabtn.addImageButtonSecundary(R.drawable.ic_evento_indigo);
@@ -688,7 +767,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             public void onClick(View view) {
                 if (modelo.getString(PROYECTO_RUTAPDF) != null) {
 
-                    Modelo cliente = CRUDutil.setModelo(CAMPOS_CLIENTE, idCliente);
+                    Modelo cliente = CRUDutil.updateModelo(CAMPOS_CLIENTE, idCliente);
                     String email = cliente.getString(CLIENTE_EMAIL);
                     String asunto = "Presupuesto solicitado";
                     String mensaje = "Envio presupuesto" + modelo.getString(PROYECTO_NOMBRE) + "solicitado por usted";
@@ -716,25 +795,13 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         actualizarArrays(vistaForm);
 
-        ViewLinearLayout vistaCab = new ViewLinearLayout(contexto, frCabecera);
-        vistaCab.setOrientacion(ViewLinearLayout.HORIZONTAL);
+        ViewGroupLayout vistaCab = new ViewGroupLayout(contexto, frCabecera);
+        vistaCab.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
 
-        btnpresupuestos = vistaCab.addButtonSecondary(R.string.presupuesto);
+        btnpresupuestos = vistaCab.addButtonSecondary("Presup");
         btnproyectos = vistaCab.addButtonSecondary(R.string.proyecto);
         btncobros = vistaCab.addButtonSecondary(R.string.cobros);
         btnhistorico = vistaCab.addButtonSecondary(R.string.historico);
-        btnhistorico.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getContext(), PROYHISTORICO, Toast.LENGTH_SHORT).show();
-                actual = HISTORICO;
-                actualtemp = PROYECTO;
-                activityBase.toolbar.setTitle(R.string.historico);
-                imagen.setTextTitulo(R.string.proyectos_historico);
-
-                selector();
-            }
-        });
         btngarantias = vistaCab.addButtonSecondary(R.string.garantia);
 
         actualizarArrays(vistaCab);
@@ -755,6 +822,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         }
 
+
+
         }
 
 
@@ -762,7 +831,10 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setDatos() {
 
-        //if (id!=null){ modelo = consulta.queryObject(campos,id);}
+        Interactor.Calculos.actualizarPresupuesto(id);
+        new TareaFechasDatos().execute(false);
+
+        activityBase.fabNuevo.hide();
 
         spEstadoProyecto.setVisibility(View.GONE);
 
@@ -770,8 +842,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         btnEvento.setVisibility(View.VISIBLE);
         btnPartidasPry.setVisibility(View.VISIBLE);
         estadoProyecto.getLinearLayout().setVisibility(View.VISIBLE);
-        fechaAcordadaPry.getLinearLayout().setVisibility(View.VISIBLE);
         fechaCalculadaPry.getLinearLayout().setVisibility(View.VISIBLE);
+        fechaInicioCalculadaPry.getLinearLayout().setVisibility(View.VISIBLE);
+        horaInicioCalculadaPry.getLinearLayout().setVisibility(View.VISIBLE);
         btnActualizar.setVisibility(View.VISIBLE);
         btnActualizar2.setVisibility(View.VISIBLE);
         pvpPartidas.getLinearLayout().setVisibility(View.VISIBLE);
@@ -832,8 +905,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         if (preciototal == 0) {
 
-            gone(fechaAcordadaPry.getLinearLayout());
             gone(fechaCalculadaPry.getLinearLayout());
+            gone(fechaInicioCalculadaPry.getLinearLayout());
             btnActualizar.setVisibility(View.GONE);
             btnActualizar2.setVisibility(View.GONE);
             gone(pvpPartidas.getLinearLayout());
@@ -842,24 +915,40 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         } else {
 
-            visible(fechaAcordadaPry.getLinearLayout());
             visible(fechaCalculadaPry.getLinearLayout());
+            visible(fechaInicioCalculadaPry.getLinearLayout());
             visible(btnActualizar);
             visible(pvpPartidas.getLinearLayout());
             gone(fechaEntregaPresup.getLinearLayout());
             visible(totalPartidasPry.getLinearLayout());
+            fechaCalculada = modelo.getLong(PROYECTO_FECHAENTREGACALCULADA);
+            fechaInicioCalculada = modelo.getLong(PROYECTO_FECHAINICIOCALCULADA);
+            horaInicioCalculada = modelo.getLong(PROYECTO_HORAINICIOCALCULADA);
 
-            if (modelo.getLong(PROYECTO_FECHAENTREGAACORDADA) == 0) {
+            if (modelo.getInt(PROYECTO_TIPOESTADO)==TNUEVOPRESUP){
+                valores = new ContentValues();
+                setDato(PROYECTO_PRECIOHORA, Interactor.hora);
+                setDato(PROYECTO_FECHAENTREGAACORDADA,fechaCalculada);
+                CRUDutil.actualizarRegistro(modelo,valores);
+                modelo = CRUDutil.updateModelo(modelo);
+            }
 
-                fechaAcordadaPry.setText(getString(R.string.sin_asignar));
-                btnActualizar.setVisibility(View.GONE);
+            if (modelo.getLong(PROYECTO_HORAINICIOCALCULADA) == 0) {
+                horaInicioCalculadaPry.setText(getString(R.string.sin_asignar));
+            }else{
+                horaInicioCalculadaPry.setText(JavaUtil.getTime(horaInicioCalculada));
+            }
+
+            if (modelo.getLong(PROYECTO_FECHAINICIOCALCULADA) == 0) {
+
+                fechaInicioCalculadaPry.setText(getString(R.string.sin_asignar));
+                fechaCalculadaPry.setText(JavaUtil.getDateTime(fechaCalculada));
 
 
             } else {
 
-                fechaAcordada = modelo.getLong(PROYECTO_FECHAENTREGAACORDADA);
-                fechaAcordadaPry.setText(JavaUtil.getDate(fechaAcordada));
-                btnActualizar.setVisibility(View.VISIBLE);
+                fechaCalculadaPry.setText(JavaUtil.getDateTime(fechaCalculada));
+                fechaInicioCalculadaPry.setText(TimeDateUtil.getDateString(fechaInicioCalculada));
                 if (modelo.getInt(PROYECTO_TIPOESTADO) > 2) {
 
                     visible(fechaEntregaPresup.getLinearLayout());
@@ -867,8 +956,12 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
             }
 
-            fechaCalculada = modelo.getLong(PROYECTO_FECHAENTREGACALCULADA);
-            fechaCalculadaPry.setText(JavaUtil.getDate(fechaCalculada));
+            if (modelo.getLong(PROYECTO_FECHAINICIOACORDADA) > 0 &&
+                    modelo.getLong(PROYECTO_HORAINICIOACORDADA) > 0) {
+                btnActualizar.setVisibility(View.VISIBLE);
+            }else{
+                btnActualizar.setVisibility(View.GONE);
+            }
 
         }
 
@@ -935,6 +1028,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private void calculoTotales() {
 
         ArrayList<Modelo> listaPartidas = queryListDetalle(CAMPOS_PARTIDA, id,TABLA_PROYECTO);
+        double precioHora;
 
         int x = 0;
         for (int i = 0; i < listaPartidas.size(); i++) {
@@ -948,20 +1042,38 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         totcompletada = (int) (Math.round(((double) totcompletada) / (double) x));
 
         totPartidas = modelo.getDouble(PROYECTO_TIEMPO);
-        precioPartidas = totPartidas * Interactor.hora;
+        precioPartidas = totPartidas * modelo.getDouble(PROYECTO_PRECIOHORA);
         preciototal = modelo.getDouble(PROYECTO_IMPORTEPRESUPUESTO);
 
         Log.d(TAG,"calculosTotales");
+
 
     }
 
     @Override
     protected boolean update() {
 
-        new Interactor.Calculos.Tareafechas().execute();
+        new Tareafechas().execute(false);
         if (modelo!=null) {
             fechaCalculada = modelo.getLong(PROYECTO_FECHAENTREGACALCULADA);
-            calculoTotales();
+            fechaInicioCalculada = modelo.getLong(PROYECTO_FECHAINICIOCALCULADA);
+            horaInicioCalculada = modelo.getLong(PROYECTO_HORAINICIOCALCULADA);
+            if (modelo.getInt(PROYECTO_TIPOESTADO)==TNUEVOPRESUP){
+                valores = new ContentValues();
+                setDato(PROYECTO_PRECIOHORA, Interactor.hora);
+                setDato(PROYECTO_FECHAENTREGACALCULADA,fechaCalculada);
+                CRUDutil.actualizarRegistro(modelo,valores);
+                modelo = CRUDutil.updateModelo(modelo);
+            }else if (modelo.getInt(PROYECTO_TIPOESTADO)>=TPRESUPACEPTADO){
+                valores = new ContentValues();
+                setDato(PROYECTO_FECHAENTREGAACORDADA,fechaCalculada);
+                setDato(PROYECTO_FECHAINICIOACORDADA,fechaInicioCalculada);
+                setDato(PROYECTO_HORAINICIOACORDADA,horaInicioCalculada);
+                CRUDutil.actualizarRegistro(modelo,valores);
+                modelo = CRUDutil.updateModelo(modelo);
+            }
+
+                calculoTotales();
         }
 
         if (idCliente!=null && idEstado!=null) {
@@ -982,7 +1094,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected boolean delete() {
 
-        new Interactor.Calculos.Tareafechas().execute();
+        new Tareafechas().execute(false);
 
         return super.delete();
     }
@@ -1097,7 +1209,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
             estadoProyecto.setText(PRESUPACEPTADO);
             idEstado = idPresupAceptado;
-            actualizarVinculoPartidaBase();
+
 
         } else if (idEstado.equals(idPresupEnEspera) && fechaEntregaP == 0) {
 
@@ -1107,6 +1219,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
             estadoProyecto.setText(PROYECTEJECUCION);
             idEstado = idProyEnEjecucion;
+            new TareaFechasGuardar().execute(true);
 
         } else if (idEstado.equals(idProyEnEjecucion)) {
 
@@ -1201,7 +1314,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         PresupuestoPDF presupuestoPDF = new PresupuestoPDF();
         presupuestoPDF.setNombreArchivo(id);
-        Modelo modelo = CRUDutil.setModelo(CAMPOS_PROYECTO,id);
+        Modelo modelo = CRUDutil.updateModelo(CAMPOS_PROYECTO,id);
         presupuestoPDF.crearPdf(id,modelo.getString(PROYECTO_RUTAFOTO));
         ContentValues valores = new ContentValues();
         putDato(valores,CAMPOS_PROYECTO,PROYECTO_RUTAPDF,presupuestoPDF.getRutaArchivo());
@@ -1356,7 +1469,77 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         }
     }
 
+    public class TareaFechasGuardar extends AsyncTask<Boolean, Float, Integer> {
 
+        @Override
+        protected Integer doInBackground(Boolean... booleans) {
+
+            System.out.println("EJECUTANDO TAREA FECHAS FECHAS");
+            Interactor.Calculos.recalcularFechas(booleans[0]);
+            return 0;
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+
+            valores = new ContentValues();
+            setDato(PROYECTO_FECHAENTREGAACORDADA,fechaCalculada);
+            setDato(PROYECTO_FECHAINICIOACORDADA,fechaInicioCalculada);
+            setDato(PROYECTO_HORAINICIOACORDADA,horaInicioCalculada);
+            CRUDutil.actualizarRegistro(modelo,valores);
+            modelo = CRUDutil.updateModelo(modelo);
+
+            System.out.println("TAREA FECHAS GUARDAR EJECUTADO");
+        }
+
+    }
+
+    public static class Tareafechas extends AsyncTask<Boolean, Float, Integer> {
+
+        @Override
+        protected Integer doInBackground(Boolean... booleans) {
+
+            System.out.println("EJECUTANDO TAREA FECHAS");
+            Interactor.Calculos.recalcularFechas(booleans[0]);
+            return 0;
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+
+
+            System.out.println("TAREA FECHAS EJECUTADO");
+        }
+
+    }
+
+    public class TareaFechasDatos extends AsyncTask<Boolean, Float, Integer> {
+
+        @Override
+        protected Integer doInBackground(Boolean... booleans) {
+
+            System.out.println("TAREA FECHAS DATOS EJECUTANDO");
+            Interactor.Calculos.recalcularFechas(booleans[0]);
+            return 0;
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+
+            actualizarFechas();
+            System.out.println("TAREA FECHAS DATOS EJECUTADO");
+        }
+    }
+
+    private void actualizarFechas(){
+
+        System.out.println("TAREA FECHAS DATOS EJECUTADO");
+        fechaInicioCalculadaPry.setText(modelo.getString(PROYECTO_FECHAINICIOCALCULADAF));
+        fechaCalculadaPry.setText(modelo.getString(PROYECTO_FECHAENTREGACALCULADAF));
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1382,7 +1565,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
                         Toast.makeText(getContext(), PRESUPUESTOS, Toast.LENGTH_SHORT).show();
                         actual = PRESUPUESTO;
-                        activityBase.toolbar.setTitle(R.string.presupuestos);
+                        setSubtitulo(actual);
                         actualtemp = actual;
                         selector();
 
@@ -1390,7 +1573,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
                         Toast.makeText(getContext(), PROYECTOS, Toast.LENGTH_SHORT).show();
                         actual = PROYECTO;
-                        activityBase.toolbar.setTitle(R.string.proyectos);
+                        setSubtitulo(actual);
                         actualtemp = actual;
                         selector();
 
@@ -1399,18 +1582,24 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                         Toast.makeText(getContext(), PROYCOBROS, Toast.LENGTH_SHORT).show();
                         actual = COBROS;
                         actualtemp = PROYECTO;
-                        activityBase.toolbar.setTitle(R.string.cobros);
+                        setSubtitulo(actual);
                         selector();
 
                     } else if (grabarVoz.equals("historico")) {
 
                         Toast.makeText(getContext(), PROYHISTORICO, Toast.LENGTH_SHORT).show();
                         actual = HISTORICO;
-                        activityBase.toolbar.setTitle(R.string.historico);
+                        setSubtitulo(actual);
                         actualtemp = PROYECTO;
                         selector();
 
                     } else if (grabarVoz.equals("garantias")) {
+
+                        Toast.makeText(getContext(), GARANTIA, Toast.LENGTH_SHORT).show();
+                        actual = GARANTIA;
+                        setSubtitulo(actual);
+                        actualtemp = PROYECTO;
+                        selector();
 
                     } else if (grabarVoz.equals("nuevo evento")) {
 
@@ -1431,26 +1620,50 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     }
 
+    public void showTimePickerDialogAcordada(){
+
+        TimePickerFragment newFragment = TimePickerFragment.newInstance
+                (horaInicioCalculada, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+
+                        horaInicioCalculada = JavaUtil.sumaHoraMin(JavaUtil.horaALong(hourOfDay,minute));
+                        String selectedHour = TimeDateUtil.getTimeString(horaInicioCalculada);
+                        horaInicioCalculadaPry.setText(selectedHour);
+                        valores = new ContentValues();
+                        setDato(PROYECTO_HORAINICIOCALCULADA,horaInicioCalculada);
+                        setDato(PROYECTO_HORAINICIOCALCULADAF,selectedHour);
+                        updateRegistro(tabla,id,valores);
+                        Interactor.Calculos.recalcularFechas(false);
+                        System.out.println("modelo.getString(PROYECTO_FECHAENTREGACALCULADAF) = " + modelo.getString(PROYECTO_FECHAENTREGACALCULADAF));
+                        fechaCalculadaPry.setText(modelo.getString(PROYECTO_FECHAENTREGACALCULADAF));
+
+                    }
+                });
+        newFragment.show(getActivity().getSupportFragmentManager(),"timePicker");
+
+    }
 
 
     private void showDatePickerDialogAcordada() {
         DatePickerFragment newFragment = DatePickerFragment.newInstance
-                (fechaCalculada, new DatePickerDialog.OnDateSetListener() {
+                (JavaUtil.soloFecha(fechaInicioCalculada), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                        fechaAcordada = JavaUtil.fechaALong(year, month, day);
-                        if (fechaAcordada>0){
+                        fechaInicioCalculada = JavaUtil.fechaALong(year, month, day);
+                        if (fechaInicioCalculada>0){
                             visible(fechaEntregaPresup.getLinearLayout());
                         }
-                        String selectedDate = JavaUtil.getDate(fechaAcordada);
-                        fechaAcordadaPry.setText(selectedDate);
+                        String selectedDate = TimeDateUtil.getDateString(fechaInicioCalculada);
+                        fechaInicioCalculadaPry.setText(selectedDate);
                         btnActualizar.setVisibility(View.VISIBLE);
                         valores = new ContentValues();
-                        setDato(PROYECTO_FECHAENTREGAACORDADA,fechaAcordada);
-                        setDato(PROYECTO_FECHAENTREGAACORDADAF,selectedDate);
+                        setDato(PROYECTO_FECHAINICIOCALCULADA,fechaInicioCalculada);
+                        setDato(PROYECTO_FECHAINICIOCALCULADAF,selectedDate);
                         updateRegistro(tabla,id,valores);
-
-                        new Interactor.Calculos.Tareafechas().execute();
+                        Interactor.Calculos.recalcularFechas(false);
+                        System.out.println("modelo.getString(PROYECTO_FECHAENTREGACALCULADAF) = " + modelo.getString(PROYECTO_FECHAENTREGACALCULADAF));
+                        fechaCalculadaPry.setText(modelo.getString(PROYECTO_FECHAENTREGACALCULADAF));
 
                     }
                 });
@@ -1470,7 +1683,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                         setDato(PROYECTO_FECHAENTREGAPRESUPF,selectedDate);
                         updateRegistro(tabla,id,valores);
 
-                        new Interactor.Calculos.Tareafechas().execute();
+                        new Tareafechas().execute(false);
 
                     }
                 });
@@ -1481,7 +1694,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
 
-        ImageView imagenProyecto, imagenEstado, imagenCliente;
+        ImagenLayout imagenProyecto;
+        ImageView imagenEstado, imagenCliente;
         TextView nombreProyecto,descripcionProyecto,clienteProyecto, estadoProyecto,
                 importe;
         ProgressBar progressBarProyecto;
@@ -1527,8 +1741,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
             }
             if (modelo.getString(PROYECTO_RUTAFOTO)!=null) {
-                MediaUtil imagenUtil =new MediaUtil(AppActivity.getAppContext());
-                imagenUtil.setImageUriCircle(modelo.getString(PROYECTO_RUTAFOTO),imagenProyecto);
+                imagenProyecto.setImageUriCard(activityBase,modelo.getString(PROYECTO_RUTAFOTO));
             }
             int peso = modelo.getInt(PROYECTO_CLIENTE_PESOTIPOCLI);
 
@@ -1556,7 +1769,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         @Override
         protected void setEntradas(int posicion, View view, ArrayList<Modelo> entrada) {
 
-            ImageView imagen = view.findViewById(R.id.imglistaproyectos);
+            ImagenLayout imagen = view.findViewById(R.id.imglistaproyectos);
             TextView nombre = view.findViewById(R.id.tvnombrelistaproyectos);
             TextView descripcion = view.findViewById(R.id.tvdesclistaproyectos);
             ImageView imgcli = view.findViewById(R.id.imgclientelistaproyectos);
@@ -1589,8 +1802,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             if (entrada.get(posicion).getCampos(ContratoPry.Tablas.PROYECTO_RUTAFOTO) != null) {
                 //imagenTarea.setImageURI(Uri.parse(entrada.getCampos
                 //        (ContratoPry.Tablas.PROYECTO_RUTAFOTO)));
-                mediaUtil = new MediaUtil(contexto);
-                mediaUtil.setImageUriCircle(entrada.get(posicion).getString(PROYECTO_RUTAFOTO),imagen);
+                imagen.setImageUriCard(activityBase,entrada.get(posicion).getString(PROYECTO_RUTAFOTO));
             }
             int peso = Integer.parseInt(entrada.get(posicion).getCampos
                     (ContratoPry.Tablas.CLIENTE_PESOTIPOCLI));

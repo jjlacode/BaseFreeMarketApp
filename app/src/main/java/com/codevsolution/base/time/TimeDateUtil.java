@@ -319,11 +319,20 @@ public class TimeDateUtil {
 
     public static long soloHora(long date) {
 
-        Calendar c = new GregorianCalendar(Locale.getDefault());
+        Calendar c = new GregorianCalendar();
         c.setTimeInMillis(date);
-        long horas = c.get(Calendar.HOUR_OF_DAY);
+        System.out.println("getDateTimeString(date) = " + getDateTimeString(date));
+        long horas = c.get(Calendar.HOUR_OF_DAY)-1;
         long minutos = c.get(Calendar.MINUTE);
+        System.out.println("date = " + date);
+        System.out.println("minutos = " + minutos);
+        System.out.println("horas = " + horas);
+        if (date>=0){
         return (horas * HORASLONG) + (minutos * MINUTOSLONG);
+        }else{
+            return date;
+        }
+
     }
 
     public static long ahora() {

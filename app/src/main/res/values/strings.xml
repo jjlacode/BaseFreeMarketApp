@@ -483,6 +483,11 @@
     <string name="modificar_partidabase">Modificar partida base</string>
     <string name="clonar_prod_a_partidabase">Asignar a Partida Base</string>
     <string name="tiempo_partidas">Tiempo total partidas</string>
+    <string name="partida_clon">Partidabase a clonar</string>
+    <string name="sincronizar_clon_partida">Sincronizar partidas proyectos</string>
+    <string name="fecha_inicio_calculada">Fecha inicio trabajos calculada</string>
+    <string name="hora_acordada">Hora entrega acordada</string>
+    <string name="orden_ejecucion">Orden de ejecución</string>
 
 
 </resources>

@@ -25,6 +25,7 @@ import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public abstract class FragmentRV extends FragmentBase {
 
@@ -45,16 +46,11 @@ public abstract class FragmentRV extends FragmentBase {
     protected String subTitulo;
     protected ArrayList listab;
     protected ArrayList lista;
-    protected Context contexto;
     protected int tituloPlural;
     protected String[] campos;
     protected Modelo modelo;
-    protected ImageButton btnBack;
-    protected ImageButton btnSave;
-    protected ImageButton btnDelete;
     protected OneFrameLayout fragment_container;
     protected RecyclerView.LayoutManager layoutManager;
-    private OneFrameLayout frameAnimation;
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
@@ -76,7 +72,7 @@ public abstract class FragmentRV extends FragmentBase {
         inicio = view.findViewById(R.id.imginicio);
         lupa = view.findViewById(R.id.imgsearch);
         voz = view.findViewById(R.id.imgvoz);
-        frameAnimation = view.findViewById(R.id.frameanimation);
+        fragment_container = view.findViewById(R.id.frameanimation);
         btnback = view.findViewById(R.id.btn_back);
         btndelete = view.findViewById(R.id.btn_del);
         btnsave = view.findViewById(R.id.btn_save);
@@ -124,7 +120,7 @@ public abstract class FragmentRV extends FragmentBase {
     }
 
     protected void acciones() {
-
+        super.acciones();
 
         refreshLayout.setOnRefreshListener(
                 new SwipeRefreshLayout.OnRefreshListener() {
@@ -248,7 +244,6 @@ public abstract class FragmentRV extends FragmentBase {
         rv.setLayoutManager(layoutManager);
         adaptadorRV = new RVAdapter(setViewHolder(view), lista, layoutItem);
         rv.setAdapter(adaptadorRV);
-        System.out.println("adaptadorRV = " + adaptadorRV);
 
         adaptadorRV.setOnClickListener(new View.OnClickListener() {
             @Override

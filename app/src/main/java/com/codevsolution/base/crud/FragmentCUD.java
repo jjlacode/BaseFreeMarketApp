@@ -10,13 +10,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.codevsolution.base.android.CheckPermisos;
-import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.models.ListaModelo;
 import com.codevsolution.base.models.Modelo;
 import com.codevsolution.base.sqlite.ConsultaBD;
-import com.codevsolution.base.time.TimeDateUtil;
-
-import java.util.GregorianCalendar;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
@@ -55,6 +51,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
             setNuevo();
             setImagen();
         } else {
+            setImagen();
             datos();
         }
         back = false;
@@ -91,9 +88,9 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
                 id = modeloSW.getString(campoID);
                 if (tablaCab != null) {
                     secuencia = modeloSW.getInt(CAMPO_SECUENCIA);
-                    modelo = CRUDutil.setModelo(campos, id, secuencia);
+                    modelo = CRUDutil.updateModelo(campos, id, secuencia);
                 } else {
-                    modelo = CRUDutil.setModelo(campos, id);
+                    modelo = CRUDutil.updateModelo(campos, id);
                 }
                 System.out.println("swipe derecha");
                 selector();
@@ -118,10 +115,10 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
                     id = modeloAnt.getString(campoID);
                     if (tablaCab != null) {
                         secuencia = modeloAnt.getInt(CAMPO_SECUENCIA);
-                        modelo = CRUDutil.setModelo(campos, id, secuencia);
+                        modelo = CRUDutil.updateModelo(campos, id, secuencia);
 
                     } else {
-                        modelo = CRUDutil.setModelo(campos, id);
+                        modelo = CRUDutil.updateModelo(campos, id);
                     }
                 }
                 selector();
@@ -273,12 +270,6 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
     protected boolean registrar() {
         Log.d(TAG, getMetodo());
 
-        //valores = new ContentValues();
-
-        //setDato(CAMPO_TIMESTAMP, TimeDateUtil.getDateLong(new GregorianCalendar()));
-        setDato(CAMPO_CREATEREG, TimeDateUtil.getDateLong(new GregorianCalendar()));
-        //setContenedor();
-
         try {
 
             if (tablaCab != null) {
@@ -339,7 +330,6 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
 
         valores = new ContentValues();
 
-        setDato(CAMPO_TIMESTAMP, TimeDateUtil.getDateLong(new GregorianCalendar()));
         comprobarRutaFoto();
         setContenedor();
 

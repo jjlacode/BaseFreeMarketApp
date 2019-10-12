@@ -12,13 +12,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.media.AudioPlayRec;
@@ -83,9 +83,15 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
             lista = CRUDutil.setListaModelo(campos,NOTA_ID_RELACIONADO,null,IGUAL);
 
         }
+        if (origen==null){
+            origen = NULL;
+        }
 
-        if (!origen.equals(NOTAS)){
+        System.out.println("origen = " + origen);
+        if (!origen.equals(NULL)){
             visibleSoloBtnBack();
+        }else{
+            gone(btnback);
         }
     }
 
@@ -108,7 +114,6 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
 
                 visible(titulo);
                 visible(descripcion);
-                visible(btnsave);
                 break;
 
             case NOTAAUDIO:
@@ -206,7 +211,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
     protected void setDatos() {
 
         if (id!=null) {
-            modelo = CRUDutil.setModelo(campos, id);
+            modelo = CRUDutil.updateModelo(campos, id);
             btnsave.setVisibility(View.VISIBLE);
             btndelete.setVisibility(View.VISIBLE);
         }
@@ -235,6 +240,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
 
                     visible(titulo);
                     visible(descripcion);
+                    gone(btnsave);
 
                     break;
 
@@ -419,8 +425,8 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
     @Override
     protected void setInicio() {
 
-        titulo = (EditMaterial) ctrl(R.id.ettitulo_nota);
-        descripcion = (EditMaterial) ctrl(R.id.etdesc_nota);
+        titulo = (EditMaterial) ctrl(R.id.ettitulo_nota, NOTA_TITULO);
+        descripcion = (EditMaterial) ctrl(R.id.etdesc_nota, NOTA_DESCRIPCION);
         imagen = (ImagenLayout) ctrl(R.id.imagen_nota);
         playVideo = (ImageView) ctrl(R.id.btn_play_video);
         recVideo = (ImageView) ctrl(R.id.btn_grabar_video);
@@ -515,7 +521,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
 
             enviarBundle();
             bundle.putString(CAMPO_ID, idrelacionado);
-            Modelo evento = CRUDutil.setModelo(CAMPOS_EVENTO,idrelacionado);
+            Modelo evento = CRUDutil.updateModelo(CAMPOS_EVENTO,idrelacionado);
             bundle.putSerializable(MODELO, evento);
             bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
@@ -524,7 +530,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
 
             enviarBundle();
             bundle.putString(CAMPO_ID, idrelacionado);
-            bundle.putSerializable(MODELO, CRUDutil.setModelo(CAMPOS_PROYECTO,idrelacionado));
+            bundle.putSerializable(MODELO, CRUDutil.updateModelo(CAMPOS_PROYECTO,idrelacionado));
             bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
 
@@ -532,7 +538,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
 
             enviarBundle();
             bundle.putString(CAMPO_ID, idrelacionado);
-            bundle.putSerializable(MODELO, CRUDutil.setModelo(CAMPOS_PROYECTO,idrelacionado));
+            bundle.putSerializable(MODELO, CRUDutil.updateModelo(CAMPOS_PROYECTO,idrelacionado));
             bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
 
@@ -540,7 +546,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
 
             enviarBundle();
             bundle.putString(CAMPO_ID, idrelacionado);
-            bundle.putSerializable(MODELO, CRUDutil.setModelo(CAMPOS_CLIENTE,idrelacionado));
+            bundle.putSerializable(MODELO, CRUDutil.updateModelo(CAMPOS_CLIENTE,idrelacionado));
             bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDCliente());
 
@@ -548,7 +554,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
 
             enviarBundle();
             bundle.putString(CAMPO_ID, idrelacionado);
-            bundle.putSerializable(MODELO, CRUDutil.setModelo(CAMPOS_CLIENTE,idrelacionado));
+            bundle.putSerializable(MODELO, CRUDutil.updateModelo(CAMPOS_CLIENTE,idrelacionado));
             bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDCliente());
 

@@ -9,6 +9,7 @@ import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.CAMPO_SECUENCIA;
 
@@ -58,19 +59,67 @@ public class CRUDutil {
         return new ListaModelo(campos, campo, valor, null, flag, null);
     }
 
+    public static ListaModelo setListaModelo(String[] campos, String campo, String valor, int flag, String orden) {
+        return new ListaModelo(campos, campo, valor, null, flag, orden);
+    }
 
-    public static Modelo setModelo(String[] campos, String id) {
+    public static ListaModelo setListaModelo(String[] campos, String campo, String valor, String valor2, int flag) {
+        return new ListaModelo(campos, campo, valor, valor2, flag, null);
+    }
+
+    public static ListaModelo setListaModelo(String[] campos, String campo, String valor, String valor2, int flag, String orden) {
+        return new ListaModelo(campos, campo, valor, valor2, flag, orden);
+    }
+
+    public static Modelo updateModelo(Modelo modelo) {
+
+        if (modelo.getInt(CAMPO_SECUENCIA)>0){
+            return ConsultaBD.queryObjectDetalle(modelo.getEstructura(), modelo.getString(modelo.getCampoID()), modelo.getInt(CAMPO_SECUENCIA));
+        }
+        return ConsultaBD.queryObject(modelo.getEstructura(), modelo.getString(modelo.getCampoID()));
+    }
+
+    public static Modelo updateModelo(String[] campos, String id) {
 
         return ConsultaBD.queryObject(campos, id);
     }
 
+    public static Modelo updateModelo(String[] campos, String campo, String valor, String valor2, int flag, String orden) {
 
-    public static Modelo setModelo(String[] campos, String id, int secuencia) {
+        return ConsultaBD.queryObject(campos, campo,valor,valor2,flag,orden);
+    }
+
+    public static Modelo updateModelo(String[] campos, String campo, int valor, int valor2, int flag, String orden) {
+
+        return ConsultaBD.queryObject(campos, campo,valor,valor2,flag,orden);
+    }
+
+    public static Modelo updateModelo(String[] campos, String campo, long valor, long valor2, int flag, String orden) {
+
+        return ConsultaBD.queryObject(campos, campo,valor,valor2,flag,orden);
+    }
+
+    public static Modelo updateModelo(String[] campos, String campo, double valor, double valor2, int flag, String orden) {
+
+        return ConsultaBD.queryObject(campos, campo,valor,valor2,flag,orden);
+    }
+
+    public static Modelo updateModelo(String[] campos, String campo, float valor, float valor2, int flag, String orden) {
+
+        return ConsultaBD.queryObject(campos, campo,valor,valor2,flag,orden);
+    }
+
+    public static Modelo updateModelo(String[] campos, String campo, short valor, short valor2, int flag, String orden) {
+
+        return ConsultaBD.queryObject(campos, campo,valor,valor2,flag,orden);
+    }
+
+    public static Modelo updateModelo(String[] campos, String id, int secuencia) {
 
         return ConsultaBD.queryObjectDetalle(campos, id, secuencia);
     }
 
-    public static Modelo setModelo(String[] campos, String id, String secuencia) {
+    public static Modelo updateModelo(String[] campos, String id, String secuencia) {
         return ConsultaBD.queryObjectDetalle(campos, id, secuencia);
     }
 

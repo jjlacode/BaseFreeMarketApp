@@ -1,31 +1,18 @@
 package com.codevsolution.freemarketsapp.ui;
 
-import android.content.ContentValues;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.Chronometer;
-import android.widget.CompoundButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCUD;
 import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.Modelo;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
-import static com.codevsolution.base.javautil.JavaUtil.hoy;
 import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryObject;
@@ -37,6 +24,7 @@ public class FragmentCUDDetpartidaBaseTrabajo extends FragmentCUD implements Int
 
     private EditMaterial descripcion;
     private EditMaterial precio;
+    private EditMaterial cantidad;
     private TextView tipoDetPartida;
     private EditMaterial tiempoDet;
     private String tipo;
@@ -82,20 +70,17 @@ public class FragmentCUDDetpartidaBaseTrabajo extends FragmentCUD implements Int
     @Override
     protected void setDatos() {
 
-        allGone();
 
-        visible(nombre);
-        visible(descripcion);
         visible(tiempoDet);
-        visible(precio);
-        visible(tipoDetPartida);
+        visible(cantidad);
         gone(btnsave);
 
-        modelo = CRUDutil.setModelo(campos, id, secuencia);
-        trabajo = CRUDutil.setModelo(CAMPOS_TRABAJO, modelo.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
+        modelo = CRUDutil.updateModelo(campos, id, secuencia);
+        trabajo = CRUDutil.updateModelo(CAMPOS_TRABAJO, modelo.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
 
         tipo = TRABAJO;
         tipoDetPartida.setText(tipo.toUpperCase());
+        //cantidad.setText(JavaUtil.getDecimales(modelo.getDouble(DETPARTIDABASE_CANTIDAD)));
         nombre.setText(trabajo.getString(TRABAJO_NOMBRE));
         descripcion.setText(trabajo.getString(TRABAJO_DESCRIPCION));
         precio.setText(JavaUtil.formatoMonedaLocal(trabajo.getDouble(TRABAJO_TIEMPO) * Interactor.hora));
@@ -103,7 +88,7 @@ public class FragmentCUDDetpartidaBaseTrabajo extends FragmentCUD implements Int
         path = trabajo.getString(TRABAJO_RUTAFOTO);
 
         if (nn(path)) {
-            imagen.setImageUri(path);
+            imagen.setImageUriPerfil(activityBase,path);
         }
 
     }
@@ -132,18 +117,18 @@ public class FragmentCUDDetpartidaBaseTrabajo extends FragmentCUD implements Int
 
         descripcion = (EditMaterial) ctrl(R.id.etdesccdetpartidabase);
         precio = (EditMaterial) ctrl(R.id.etpreciocdetpartidabase);
+        cantidad = (EditMaterial) ctrl(R.id.etcantcdetpartidabase,DETPARTIDABASE_CANTIDAD);
         nombre = (EditMaterial) ctrl(R.id.etnomcdetpartidabase);
         tiempoDet = (EditMaterial) ctrl(R.id.ettiempocdetpartidabase);
         imagen = (ImagenLayout) ctrl(R.id.imgcdetpartidabase);
         tipoDetPartida = (TextView) ctrl(R.id.tvtipocdetpartidabase);
-        imagen.setClickable(false);
+        imagen.getImagen().setClickable(false);
 
     }
 
     @Override
     protected void setContenedor() {
 
-        putDato(valores, campos, DETPARTIDABASE_CANTIDAD, 1);
     }
 
     @Override

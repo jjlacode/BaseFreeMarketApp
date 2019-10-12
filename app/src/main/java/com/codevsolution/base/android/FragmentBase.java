@@ -35,8 +35,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.codevsolution.base.android.controls.EditMaterialLayout;
-import com.codevsolution.base.android.controls.ViewLayout;
-import com.codevsolution.base.android.controls.ViewLinearLayout;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.LockableScrollView;
@@ -58,7 +57,6 @@ import static android.Manifest.permission.READ_CONTACTS;
 import static android.Manifest.permission.WRITE_CONTACTS;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.SENSOR_SERVICE;
-import static com.codevsolution.base.logica.InteractorBase.Constantes.STRING;
 
 public abstract class FragmentBase extends Fragment implements JavaUtil.Constantes,
         InteractorBase.Constantes {
@@ -139,6 +137,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected Timer timer;
     protected String perfilUser;
     protected String idUser;
+    protected boolean autoGuardado = true;
+    protected int tiempoGuardado = 1;
 
 
     @Override
@@ -147,7 +147,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         setLayout();
         setLayoutExtra();
-        setContext();
+        contexto = activityBase;
 
         metrics = new DisplayMetrics();
         activityBase.getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -366,6 +366,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         if (context instanceof MainActivityBase) {
             this.activityBase = (MainActivityBase) context;
             icFragmentos = this.activityBase;
+
         }
 
     }
@@ -400,6 +401,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     }
 
     protected void acciones() {
+        Log.d(TAG, getMetodo());
 
         code = 10000;
         contCode = 0;
@@ -1099,7 +1101,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         return view;
     }
 
-    protected void actualizarArrays(ViewLayout vista) {
+    protected void actualizarArrays(ViewGroupLayout vista) {
         vistas.addAll(vista.getVistas());
         materialEdits.addAll(vista.getEditMaterials());
         camposEdit.addAll(vista.getCamposEdit());

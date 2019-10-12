@@ -19,7 +19,6 @@
             android:id="@+id/chronodetpartida"
             android:visibility="gone" />
 
-
         <TextView
             android:id="@+id/tvtipocdetpartida_trb"
             android:layout_width="match_parent"
@@ -28,30 +27,17 @@
             android:text="@string/tipo_detpartida"
             android:textSize="18sp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
             <com.codevsolution.base.android.controls.ImagenLayout
                 android:id="@+id/imgcdetpartida_trb"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_weight="2.5" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_gravity="center"/>
 
                 <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/etnombredetpartida_trb"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:hint_text="@string/nombre" />
-
 
                 <com.codevsolution.base.android.controls.EditMaterial
                     android:id="@+id/etdesccdetpartida_trb"
@@ -60,12 +46,16 @@
                     app:hint_text="@string/descripcion"
                     app:tipo_dato="TEXTO|MULTI" />
 
-            </LinearLayout>
-        </LinearLayout>
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etordencdetpartida_trb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hint_text="@string/orden_ejecucion"
+            app:tipo_dato="NUMERO" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <com.codevsolution.base.android.controls.EditMaterial
@@ -75,6 +65,14 @@
                 android:layout_weight="1"
                 app:hint_text="@string/tiempo"
                 app:gravedad="centro"
+                app:tipo_dato="NUMERO|DECIMAL" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etcantcdetpartida_trb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:hint_text="@string/cantidad"
                 app:tipo_dato="NUMERO|DECIMAL" />
 
             <com.codevsolution.base.android.controls.EditMaterial
@@ -96,6 +94,30 @@
 
 
         </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etbenefcdetpartida_trb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:hint_text="@string/beneficio"
+            app:gravedad="centro"
+            app:tipo_dato="NUMERO|DECIMAL" />
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etpreciofinalcdetpartida_trb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:hint_text="@string/importe_final"
+            app:tipo_dato="NUMERO|DECIMAL" />
+
+    </LinearLayout>
 
         <TextView
             android:id="@+id/tvtiempototaldetpartida_trb"

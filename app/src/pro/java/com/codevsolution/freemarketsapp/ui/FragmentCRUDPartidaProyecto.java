@@ -6,13 +6,12 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -22,13 +21,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.media.MediaUtil;
@@ -39,6 +38,8 @@ import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
@@ -56,6 +57,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     private EditMaterial importePartida;
     private EditMaterial cantidadPartida;
     private EditMaterial completadaPartida;
+    private EditMaterial etOrden;
     private Button btnPartidaBase;
 
     private ImageView imagenret;
@@ -94,12 +96,11 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     @Override
     protected void setLista() {
 
-        System.out.println("proyecto = " + proyecto);
-        System.out.println("id = " + id);
-
-        if (id!=null || proyecto!=null) {
+        if (nn(id) || nn(proyecto)) {
             visible(btnVolverProy);
             visible(viewCabecera);
+            activityBase.toolbar.setSubtitle(proyecto.getString(PROYECTO_NOMBRE));
+
         }
 
     }
@@ -107,18 +108,14 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     @Override
     protected void setAcciones() {
 
-
-
         btnVolverProy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new Interactor.Calculos.TareaActualizaProy().execute(id);
-                System.out.println("origen = " + origen);
                 bundle.putSerializable(MODELO, proyecto);
                 bundle.putString(ACTUAL,origen);
                 bundle.putString(ACTUALTEMP,origen);
                 bundle.putString(ORIGEN,PARTIDA);
-                System.out.println("id = " + id);
                 bundle.putString(CAMPO_ID,id);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
             }
@@ -131,8 +128,52 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
                 AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDA_ID_PARTIDA, id);
                 AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDA_SECUENCIA, secuencia);
 
+                System.out.println("modelo.getString(PARTIDA_ID_PARTIDABASE) = " + modelo.getString(PARTIDA_ID_PARTIDABASE));
                 putBundle(CAMPO_ID, modelo.getString(PARTIDA_ID_PARTIDABASE));
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDPartidaBase());
+            }
+        });
+
+        cantidadPartida.setAlCambiarListener(new EditMaterial.AlCambiarListener() {
+            @Override
+            public void antesCambio(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void cambiando(CharSequence s, int start, int before, int count) {
+
+                if (nn(timer)){
+                    timer.cancel();
+                }
+            }
+
+            @Override
+            public void despuesCambio(Editable s) {
+
+                final Editable temp = s;
+                timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+
+                        activityBase.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                if (!temp.toString().equals("")) {
+
+                                    update();
+                                    setRvDetallePartida();
+                                }
+
+                            }
+                        });
+
+
+                    }
+                }, 2000);
+
             }
         });
 
@@ -169,12 +210,13 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     @Override
     protected void setInicio() {
 
-        nombrePartida = (EditMaterial) ctrl(R.id.etnomudpartida, PARTIDA_NOMBRE);
-        descripcionPartida = (EditMaterial) ctrl(R.id.etdescripcionUDpartida, PARTIDA_DESCRIPCION);
-        tiempoPartida = (EditMaterial) ctrl(R.id.ettiempoUDpartida, PARTIDA_TIEMPO);
-        importePartida = (EditMaterial) ctrl(R.id.etprecioUDpartida, PARTIDA_PRECIO);
+        nombrePartida = (EditMaterial) ctrl(R.id.etnomudpartida);
+        descripcionPartida = (EditMaterial) ctrl(R.id.etdescripcionUDpartida);
+        tiempoPartida = (EditMaterial) ctrl(R.id.ettiempoUDpartida);
+        importePartida = (EditMaterial) ctrl(R.id.etprecioUDpartida);
         cantidadPartida = (EditMaterial) ctrl(R.id.etcantidadUDpartida, PARTIDA_CANTIDAD);
         completadaPartida = (EditMaterial) ctrl(R.id.etcompletadaUDpartida, PARTIDA_COMPLETADA);
+        etOrden = (EditMaterial) ctrl(R.id.etordenUDpartida,PARTIDA_ORDEN);
         btnPartidaBase = (Button) ctrl(R.id.btn_npartidabase);
         progressBarPartida = (ProgressBar) ctrl(R.id.progressBarUDpartida);
         imagen = (ImagenLayout) ctrl(R.id.imgudpartida);
@@ -220,29 +262,26 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         proyecto = (Modelo) bundle.getSerializable(PROYECTO);
         System.out.println("proyecto = " + proyecto);
         if (proyecto == null && nn(id)) {
-            proyecto = CRUDutil.setModelo(CAMPOS_PROYECTO, id);
+            proyecto = CRUDutil.updateModelo(CAMPOS_PROYECTO, id);
         }
         if (nn(proyecto)) {
             activityBase.toolbar.setSubtitle(proyecto.getString(PROYECTO_NOMBRE));
         }
-
-
 
     }
 
     @Override
     protected void setDatos() {
 
-        visible(imagen);
-        tiempoPartida.setVisibility(View.VISIBLE);
-        importePartida.setVisibility(View.VISIBLE);
+        if (nn(proyecto)) {
+            activityBase.toolbar.setSubtitle(proyecto.getString(PROYECTO_NOMBRE));
+        }
+        imagen.setTextTitulo(getString(R.string.partida)+" "+secuencia);
         completadaPartida.setVisibility(View.VISIBLE);
-        btndelete.setVisibility(View.VISIBLE);
         nombrePartida.setVisibility(View.VISIBLE);
         rvdetalles.setVisibility(View.VISIBLE);
         progressBarPartida.setVisibility(View.VISIBLE);
-        imagenret.setVisibility(View.VISIBLE);
-        btnPartidaBase.setVisibility(View.GONE);
+
         gone(buscar);
         tiempo = (modelo.getDouble(PARTIDA_TIEMPO)*HORASLONG)/1000;
         completada = modelo.getDouble(PARTIDA_COMPLETADA);
@@ -250,6 +289,22 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         tiemporeal = (modelo.getDouble(PARTIDA_TIEMPOREAL)*HORASLONG)/1000;
         secuenciatemp = secuencia;
 
+        etOrden.setText(String.valueOf(modelo.getInt(DETPARTIDA_ORDEN)));
+        int orden = 0;
+        if (modelo.getInt(PARTIDA_ORDEN)==0){
+
+            for (Modelo partida : lista.getLista()) {
+                if (partida.getInt(PARTIDA_ORDEN)>orden){
+                    orden = partida.getInt(PARTIDA_ORDEN);
+                }
+            }
+            valores = new ContentValues();
+            putDato(valores,campos,PARTIDA_ORDEN,orden+1);
+            CRUDutil.actualizarRegistro(modelo,valores);
+            modelo = CRUDutil.updateModelo(modelo);
+            etOrden.setText(String.valueOf(modelo.getInt(DETPARTIDA_ORDEN)));
+
+        }
 
         if (getTipoEstado(modelo.getString(PARTIDA_ID_ESTADO))<=TPRESUPACEPTADO) {
 
@@ -274,8 +329,6 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         importePartida.setText(JavaUtil.formatoMonedaLocal((modelo.getDouble(PARTIDA_PRECIO) *
                 modelo.getDouble(PARTIDA_CANTIDAD))));
         cantidadPartida.setText(modelo.getString(PARTIDA_CANTIDAD));
-        //completadaPartida.setText(modelo.getString(PARTIDA_COMPLETADA));
-        //progressBarPartida.setProgress(modelo.getInt(PARTIDA_COMPLETADA));
         idDetPartida = modelo.getString(PARTIDA_ID_PARTIDA);
 
         retraso = modelo.getLong(PARTIDA_PROYECTO_RETRASO);
@@ -287,6 +340,12 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
             imagenret.setImageResource(R.drawable.alert_box_v);
         }
 
+        setRvDetallePartida();
+
+    }
+
+    private void setRvDetallePartida() {
+
         listaDetpartidas = queryListDetalle(CAMPOS_DETPARTIDA, idDetPartida, tabla);
 
         if (listaDetpartidas != null && listaDetpartidas.size() > 0) {
@@ -297,52 +356,48 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
             rvdetalles.setAdapter(adapter);
 
-                adapter.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+            adapter.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-                        idDetPartida = (listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v)).
-                                getString(DETPARTIDA_ID_PARTIDA));
-                        int secuenciadetpartida = (listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v)).
-                                getInt(DETPARTIDA_SECUENCIA));
-                        String tipo = (listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v)).
-                                getString(DETPARTIDA_TIPO));
-                        Modelo detpartida = listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v));
+                    idDetPartida = (listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v)).
+                            getString(DETPARTIDA_ID_PARTIDA));
+                    int secuenciadetpartida = (listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v)).
+                            getInt(DETPARTIDA_SECUENCIA));
+                    String tipo = (listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v)).
+                            getString(DETPARTIDA_TIPO));
+                    Modelo detpartida = listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v));
 
-                        bundle = new Bundle();
-                        bundle.putSerializable(TABLA_PROYECTO, proyecto);
-                        bundle.putSerializable(TABLA_PARTIDA, modelo);
-                        bundle.putSerializable(MODELO, detpartida);
-                        bundle.putString(CAMPO_ID, idDetPartida);
-                        bundle.putInt(CAMPO_SECUENCIA, secuenciadetpartida);
-                        bundle.putString(ORIGEN, PARTIDA);
-                        bundle.putString(SUBTITULO, subTitulo);
-                        bundle.putString(TIPO, tipo);
-                        switch (tipo) {
+                    bundle = new Bundle();
+                    bundle.putSerializable(TABLA_PROYECTO, proyecto);
+                    bundle.putSerializable(TABLA_PARTIDA, modelo);
+                    bundle.putSerializable(MODELO, detpartida);
+                    bundle.putString(CAMPO_ID, idDetPartida);
+                    bundle.putInt(CAMPO_SECUENCIA, secuenciadetpartida);
+                    bundle.putString(ORIGEN, PARTIDA);
+                    bundle.putString(SUBTITULO, subTitulo);
+                    bundle.putString(TIPO, tipo);
+                    switch (tipo) {
 
-                            case TIPOTRABAJO:
-                                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
-                                break;
-                            case TIPOPRODUCTO:
-                                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaProducto());
-                                break;
-                            case TIPOPRODUCTOPROV:
-                                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaProdProvCat());
-                                break;
-                            case TIPOPARTIDA:
-                                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
-                                break;
+                        case TIPOTRABAJO:
+                            icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
+                            break;
+                        case TIPOPRODUCTO:
+                            icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaProducto());
+                            break;
+                        case TIPOPRODUCTOPROV:
+                            icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaProdProvCat());
+                            break;
 
-                        }
+
                     }
-                });
+                }
+            });
 
         } else {
 
             rvdetalles.setVisibility(View.GONE);
         }
-
-
     }
 
     @Override
@@ -361,7 +416,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         protected Modelo doInBackground(String... strings) {
 
             Interactor.Calculos.sincroPartidaBaseToPartidaProy(strings[0], strings[1]);
-            return CRUDutil.setModelo(CAMPOS_PARTIDA, strings[0], strings[1]);
+            return CRUDutil.updateModelo(CAMPOS_PARTIDA, strings[0], strings[1]);
         }
 
         @Override
@@ -428,8 +483,6 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     @Override
     protected void setContenedor() {
 
-        setDato(PARTIDA_TIEMPO, JavaUtil.comprobarDouble(tiempoPartida.getText().toString()));
-        setDato(PARTIDA_PRECIO, JavaUtil.comprobarDouble(importePartida.getText().toString()));
         setDato(PARTIDA_CANTIDAD, JavaUtil.comprobarDouble(cantidadPartida.getText().toString()));
         setDato(PARTIDA_COMPLETADA, JavaUtil.comprobarDouble(completadaPartida.getText().toString()));
         setDato(PARTIDA_ID_PROYECTO, id);
@@ -475,16 +528,16 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         new Interactor.Calculos.Tareafechas().execute();
         new Interactor.Calculos.TareaActualizaProy().execute(id);
 
+        if (Double.parseDouble(cantidadPartida.getTexto())==0){
+            valores = new ContentValues();
+            setDato(PARTIDA_CANTIDAD,1);
+            CRUDutil.actualizarRegistro(modelo,valores);
+            modelo = CRUDutil.updateModelo(modelo);
+        }
         super.update();
 
-
-            valores = new ContentValues();
-            putDato(valores, campos, PARTIDA_ID_PARTIDABASE, idpartidabase);
-            updateRegistroDetalle(tabla, id, secuencia, valores);
-            modelo = queryObjectDetalle(campos,id,secuencia);
-
         if (proyecto==null && id!=null){
-            proyecto = CRUDutil.setModelo(CAMPOS_PROYECTO,id);
+            proyecto = CRUDutil.updateModelo(CAMPOS_PROYECTO,id);
         }
         if (proyecto != null && id != null && Interactor.getTipoEstado(proyecto.getString(PROYECTO_ID_ESTADO)) >= TPRESUPPENDENTREGA) {
             new FragmentCRUDProyecto.TareaGenerarPdf().execute(id);
@@ -531,22 +584,23 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
             detpartidaViewHolder.tipo.setText(tipodetpartida.toUpperCase());
             detpartidaViewHolder.nombre.setText(listDetpartida.get(position).getString(DETPARTIDA_NOMBRE));
             detpartidaViewHolder.tiempo.setText(listDetpartida.get(position).getString(DETPARTIDA_TIEMPO));
-            if (tipodetpartida.equals(TIPOTRABAJO)) {
-                detpartidaViewHolder.cantidad.setText(JavaUtil.getDecimales(
-                        Double.parseDouble(listDetpartida.get(position).
-                                getString(DETPARTIDA_TIEMPO)) * Double.parseDouble(cantidadPartida.getText().toString())));
-            } else {
-                detpartidaViewHolder.cantidad.setText(JavaUtil.getDecimales(
-                        Double.parseDouble(listDetpartida.get(position).
-                                getString(DETPARTIDA_CANTIDAD)) * Double.parseDouble(cantidadPartida.getText().toString())));
-
-            }
+            detpartidaViewHolder.cantidad.setText(JavaUtil.getDecimales(
+                        listDetpartida.get(position).
+                                getDouble(DETPARTIDA_CANTIDAD) * Double.parseDouble(cantidadPartida.getText().toString())));
             if (listDetpartida.get(position).getString(DETPARTIDA_TIPO).equals(TIPOTRABAJO)) {
                 detpartidaViewHolder.importe.setText(JavaUtil.formatoMonedaLocal(
-                        (listDetpartida.get(position).getDouble(DETPARTIDA_TIEMPO) * Interactor.hora * Double.parseDouble(cantidadPartida.getText().toString()))));
+                        (listDetpartida.get(position).getDouble(DETPARTIDA_TIEMPO)
+                        * listDetpartida.get(position).getDouble(DETPARTIDA_CANTIDAD)
+                        * proyecto.getDouble(PROYECTO_PRECIOHORA)
+                        * Double.parseDouble(cantidadPartida.getText().toString())
+                        *(1+((listaDetpartidas.get(position).getDouble(DETPARTIDA_BENEFICIO))/100)))));
+                System.out.println("listDetpartida.get(position).getDouble(DETPARTIDA_CANTIDAD) = " + listDetpartida.get(position).getDouble(DETPARTIDA_CANTIDAD));
             } else {
-                detpartidaViewHolder.importe.setText(JavaUtil.formatoMonedaLocal(Double.parseDouble(
-                        listDetpartida.get(position).getString(DETPARTIDA_PRECIO)) * Double.parseDouble(cantidadPartida.getText().toString())));
+                detpartidaViewHolder.importe.setText(JavaUtil.formatoMonedaLocal((
+                        listDetpartida.get(position).getDouble(DETPARTIDA_PRECIO)
+                        * listDetpartida.get(position).getDouble(DETPARTIDA_CANTIDAD)
+                        * Double.parseDouble(cantidadPartida.getText().toString())
+                        *(1+((listaDetpartidas.get(position).getDouble(DETPARTIDA_BENEFICIO))/100)))));
             }
             if (listDetpartida.get(position).getString(DETPARTIDA_RUTAFOTO) != null) {
                 if (tipodetpartida.equals(TIPOPRODUCTOPROV)) {

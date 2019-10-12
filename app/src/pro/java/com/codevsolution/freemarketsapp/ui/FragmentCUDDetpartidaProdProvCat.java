@@ -6,9 +6,9 @@ import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCUD;
 import com.codevsolution.base.media.MediaUtil;
@@ -113,7 +113,7 @@ public class FragmentCUDDetpartidaProdProvCat extends FragmentCUD implements Int
     @Override
     protected void setDatos() {
 
-        modelo = CRUDutil.setModelo(campos, id, secuencia);
+        modelo = CRUDutil.updateModelo(campos, id, secuencia);
 
         tipo = modelo.getString(DETPARTIDA_TIPO);
         btndelete.setVisibility(View.VISIBLE);

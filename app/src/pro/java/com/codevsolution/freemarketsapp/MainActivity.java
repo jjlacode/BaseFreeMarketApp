@@ -165,12 +165,43 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
                 SharedPreferences.Editor editor = preferences.edit();
 
                 ContentValues valoresPer = new ContentValues();
+                String [] campos = CAMPOS_PERFIL;
 
-                ConsultaBD.putDato(valoresPer, CAMPOS_PERFIL, PERFIL_NOMBRE, "Defecto");
-                ConsultaBD.putDato(valoresPer, CAMPOS_PERFIL, PERFIL_DESCRIPCION,
+                ConsultaBD.putDato(valoresPer, campos, PERFIL_NOMBRE, "Defecto");
+                ConsultaBD.putDato(valoresPer, campos, PERFIL_DESCRIPCION,
                         "Perfil por defecto, jornada normal de 8 horas diarias" +
                                 " de lunes a viernes y 30 dias de vacaciones al año, " +
                                 " y un sueldo anual de " + JavaUtil.formatoMonedaLocal(20000));
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAIMLUNES,9*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFMLUNES,14*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAITLUNES,16*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFTLUNES,20*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAIMMARTES,9*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFMMARTES,14*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAITMARTES,16*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFTMARTES,20*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAIMMIERCOLES,9*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFMMIERCOLES,14*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAITMIERCOLES,16*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFTMIERCOLES,20*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAIMJUEVES,9*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFMJUEVES,14*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAITJUEVES,16*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFTJUEVES,20*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAIMVIERNES,9*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFMVIERNES,14*HORASLONG);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAITVIERNES,-1);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFTVIERNES,-1);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAIMSABADO,-1);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFMSABADO,-1);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAITSABADO,-1);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFTSABADO,-1);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAIMDOMINGO,-1);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFMDOMINGO,-1);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAITDOMINGO,-1);
+                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFTDOMINGO,-1);
+
+
                 Uri reg = ConsultaBD.insertRegistro(TABLA_PERFIL, valoresPer);
                 System.out.println(reg);
 

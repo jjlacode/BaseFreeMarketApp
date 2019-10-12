@@ -1,9 +1,6 @@
 package com.codevsolution.freemarketsapp.ui;
 
 import android.os.Bundle;
-import android.view.View;
-import android.widget.CheckBox;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.codevsolution.base.android.controls.EditMaterial;
@@ -12,7 +9,6 @@ import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCUD;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.Modelo;
-import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
@@ -75,20 +71,16 @@ public class FragmentCUDDetpartidaBaseProducto extends FragmentCUD implements In
     @Override
     protected void setDatos() {
 
-        allGone();
 
-        visible(nombre);
-        visible(descripcion);
         visible(refProv);
         visible(nomProv);
-        visible(precio);
         visible(tipoDetPartida);
         visible(cantidad);
         gone(btnsave);
 
-        modelo = CRUDutil.setModelo(campos, id, secuencia);
+        modelo = CRUDutil.updateModelo(campos, id, secuencia);
 
-        producto = CRUDutil.setModelo(CAMPOS_PRODUCTO, modelo.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
+        producto = CRUDutil.updateModelo(CAMPOS_PRODUCTO, modelo.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
 
         tipo = TIPOPRODUCTO;
 
@@ -103,10 +95,11 @@ public class FragmentCUDDetpartidaBaseProducto extends FragmentCUD implements In
             path = producto.getString(PRODUCTO_RUTAFOTO);
         }
 
+        System.out.println("path = " + path);
         tipoDetPartida.setText(tipo.toUpperCase());
 
         if (nn(path)) {
-            imagen.setImageUri(path);
+            imagen.setImageUriPerfil(activityBase,path);
         }
 
     }
@@ -145,7 +138,7 @@ public class FragmentCUDDetpartidaBaseProducto extends FragmentCUD implements In
         descProv = (EditMaterial) ctrl(R.id.etdescprovcdetpartidabase);
         cantidad = (EditMaterial) ctrl(R.id.etcantcdetpartidabase, DETPARTIDABASE_CANTIDAD);
 
-        imagen.setClickable(false);
+        //imagen.setClickable(false);
     }
 
     @Override

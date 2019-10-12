@@ -34,10 +34,8 @@ import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.BuildConfig;
 import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.model.ProdProv;
 import com.codevsolution.freemarketsapp.services.EventosReceiver;
 import com.codevsolution.freemarketsapp.ui.CalendarioEventos;
-import com.codevsolution.freemarketsapp.ui.FragmentNuevoEvento;
 import com.codevsolution.freemarketsapp.ui.MenuInicio;
 
 import java.net.URLEncoder;
@@ -83,6 +81,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
     public static String agendaTemp;
     public static String namesubdef;
     public static boolean grabar;
+    public static long offsetInicioTrabajos = HORASLONG;
 
 
     public static Fragment fragmentMenuInicio = new MenuInicio();
@@ -141,13 +140,14 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
         String PRODUCTO = "producto";
         String PRODUCTOPRO = "producto_pro";
         String PRODUCTOCLI = "producto_cli";
+        String PRODUCTOLOCAL = "producto_local";
         String TAREA = "tarea";
         String GASTOFIJO = "gastofijo";
         String DETPARTIDABASE = "detpartidabase";
         String DETPARTIDA = "detpartida";
-        String PROVCAT = "provcat";
+        String PROVCAT = "proveedor_web";
         String USADO = "usado";
-        String PRODPROVCAT = "prodprovcat";
+        String PRODPROVCAT = "producto_web";
         String PEDIDOPROVCAT = "pedido_prov_cat";
         String DETPEDIDOPROVCAT = "detalle_pedido_prov_cat";
         String PEDIDOPROVEEDOR = "pedido_proveedor";
@@ -748,89 +748,452 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
     }
 
 
-    public static long fechaEntregaCalculada(double horastrabajos, double hlunes, double hmartes,
-                                             double hmiercoles, double hjueves, double hviernes,
-                                             double hsabado, double hdomingo) {
+    public static long fechaEntregaCalculada(double horastrabajos, String idProyecto) {
 
+        Modelo perfilActivo = ConsultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila, null, IGUAL, null);
+        Modelo proyecto = CRUDutil.updateModelo(CAMPOS_PROYECTO,idProyecto);
+        long horaHoy = 0;
+        long fechahoy = 0;
         TimeZone timezone = TimeZone.getDefault();
         Calendar calendar = new GregorianCalendar(timezone);
+        if (idProyecto!=null && proyecto.getLong(PROYECTO_FECHAINICIOACORDADA)>0){
+            calendar.setTimeInMillis(proyecto.getLong(PROYECTO_FECHAINICIOACORDADA));
+            fechahoy = TimeDateUtil.soloFecha(proyecto.getLong(PROYECTO_FECHAINICIOACORDADA));
+            System.out.println("CALCULO FECHA FINAL");
+        }else if(idProyecto!=null && proyecto.getLong(PROYECTO_FECHAINICIOCALCULADA)> 0){
+            calendar.setTimeInMillis(proyecto.getLong(PROYECTO_FECHAINICIOCALCULADA));
+            fechahoy = TimeDateUtil.soloFecha(proyecto.getLong(PROYECTO_FECHAINICIOCALCULADA));
+            System.out.println("CALCULO FECHA FINAL");
+        }else{
+            fechahoy = TimeDateUtil.soloFecha(TimeDateUtil.ahora());
+            System.out.println("CALCULO FECHA INICIO");
+        }
+        if (proyecto!=null) {
+            System.out.println("fecha inicio acordada " + TimeDateUtil.getDateString(proyecto.getLong(PROYECTO_FECHAINICIOACORDADA)));
+            System.out.println("hora inicio acordada " + TimeDateUtil.getTimeString(proyecto.getLong(PROYECTO_HORAINICIOACORDADA)));
+        }
+        if (idProyecto!=null && proyecto.getLong(PROYECTO_HORAINICIOACORDADA)>0){
+            horaHoy = proyecto.getLong(PROYECTO_HORAINICIOACORDADA);
+        }else if(idProyecto!=null && proyecto.getLong(PROYECTO_FECHAINICIOCALCULADA)> 0){
+            horaHoy = TimeDateUtil.soloHora(proyecto.getLong(PROYECTO_FECHAINICIOCALCULADA));
+        }else{
+            horaHoy = JavaUtil.sumaHoraMin(TimeDateUtil.ahora())  + offsetInicioTrabajos;
+        }
         int diahoy = calendar.get(Calendar.DAY_OF_WEEK) - 1;
         long totaldias = 0;
-        while (horastrabajos > 1) {
+        boolean primero =false;
+        System.out.println("horas trabajos al entrar = " + horastrabajos);
+        if (horastrabajos==0){
+            primero = true;
+
+        }
+        String IM = null;
+        String FM = null;
+        String IT = null;
+        String FT = null;
+
+        while (horastrabajos > 0 || primero) {
 
             switch (diahoy) {
+
+                case 0:
+
+                    IM = PERFIL_HORAIMDOMINGO;
+                    FM = PERFIL_HORAFMDOMINGO;
+                    IT = PERFIL_HORAITDOMINGO;
+                    FT = PERFIL_HORAFTDOMINGO;
+
+                    System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                    System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                    System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                    System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                    System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                    System.out.println("horastrabajos antes= " + horastrabajos);
+
+
+                    while (((perfilActivo.getLong(FT) > 0 &&
+                            horaHoy < perfilActivo.getLong(FT)) ||
+                            (perfilActivo.getLong(FM) > 0 &&
+                                    horaHoy < perfilActivo.getLong(FM))) && (horastrabajos > 0 || primero)){
+
+                        if ((horaHoy >= perfilActivo.getLong(IT) &&
+                                perfilActivo.getLong(FT) > 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (horaHoy >= perfilActivo.getLong(IM) &&
+                                        perfilActivo.getLong(FM) > 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))){
+                            System.out.println("horaHoy%HORASLONG = " + horaHoy%HORASLONG);
+                            System.out.println("minutos "+((double)(horaHoy%HORASLONG)/MINUTOSLONG));
+                            System.out.println("Fraccion "+(1/(60/((double)(horaHoy%HORASLONG)/MINUTOSLONG))));
+                            primero = false;
+                            if (horaHoy%HORASLONG>0){
+                                horastrabajos-=(1/(60/((double)(HORASLONG-(horaHoy%HORASLONG))/MINUTOSLONG)));
+                                horaHoy+=(HORASLONG-(horaHoy%HORASLONG));
+                            }else {
+                                horastrabajos--;
+                                horaHoy += HORASLONG;
+                            }
+
+                        } else {
+                            horaHoy += HORASLONG;
+                        }
+
+                        System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("horastrabajos = " + horastrabajos);
+
+                    }
+
+                    if (horastrabajos <= 0) {
+                        break;
+                    }else{
+                        horaHoy = perfilActivo.getLong(PERFIL_HORAIMLUNES);
+                        totaldias++;
+
+                    }
+
                 case 1:
-                    horastrabajos -= hmartes;
-                    totaldias++;
-                    if (horastrabajos < 1) {
-                        if (hmartes <= 0) {
-                            horastrabajos++;
+
+                    IM = PERFIL_HORAIMLUNES;
+                    FM = PERFIL_HORAFMLUNES;
+                    IT = PERFIL_HORAITLUNES;
+                    FT = PERFIL_HORAFTLUNES;
+
+                    System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                    System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                    System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                    System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                    System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                    System.out.println("horastrabajos antes= " + horastrabajos);
+
+
+                    while (((perfilActivo.getLong(FT) > 0 &&
+                            horaHoy < perfilActivo.getLong(FT)) ||
+                            (perfilActivo.getLong(FM) > 0 &&
+                                    horaHoy < perfilActivo.getLong(FM))) && (horastrabajos > 0 || primero)){
+
+                        if ((horaHoy >= perfilActivo.getLong(IT) &&
+                                perfilActivo.getLong(FT) > 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (horaHoy >= perfilActivo.getLong(IM) &&
+                                        perfilActivo.getLong(FM) > 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))){
+                            System.out.println("horaHoy%HORASLONG = " + horaHoy%HORASLONG);
+                            System.out.println("minutos "+((double)(horaHoy%HORASLONG)/MINUTOSLONG));
+                            System.out.println("Fraccion "+(1/(60/((double)(horaHoy%HORASLONG)/MINUTOSLONG))));
+                            primero = false;
+                            if (horaHoy%HORASLONG>0){
+                                horastrabajos-=(1/(60/((double)(HORASLONG-(horaHoy%HORASLONG))/MINUTOSLONG)));
+                                horaHoy+=(HORASLONG-(horaHoy%HORASLONG));
+                            }else {
+                                horastrabajos--;
+                                horaHoy += HORASLONG;
+                            }
+
                         } else {
-                            break;
+                            horaHoy += HORASLONG;
                         }
+
+                        System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("horastrabajos = " + horastrabajos);
+
                     }
+
+
+                    if (horastrabajos <= 0) {
+                        break;
+                    }else{
+                        horaHoy = perfilActivo.getLong(PERFIL_HORAIMMARTES);
+                        totaldias++;
+
+                    }
+
+
                 case 2:
-                    horastrabajos -= hmiercoles;
-                    totaldias++;
-                    if (horastrabajos < 1) {
-                        if (hmiercoles <= 0) {
-                            horastrabajos++;
+
+
+                    IM = PERFIL_HORAIMMARTES;
+                    FM = PERFIL_HORAFMMARTES;
+                    IT = PERFIL_HORAITMARTES;
+                    FT = PERFIL_HORAFTMARTES;
+
+                    System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                    System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                    System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                    System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                    System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                    System.out.println("horastrabajos antes= " + horastrabajos);
+
+
+                    while (((perfilActivo.getLong(FT) > 0 &&
+                            horaHoy < perfilActivo.getLong(FT)) ||
+                            (perfilActivo.getLong(FM) > 0 &&
+                                    horaHoy < perfilActivo.getLong(FM))) && (horastrabajos > 0 || primero)){
+
+                        if ((horaHoy >= perfilActivo.getLong(IT) &&
+                                perfilActivo.getLong(FT) > 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (horaHoy >= perfilActivo.getLong(IM) &&
+                                        perfilActivo.getLong(FM) > 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))){
+                            System.out.println("horaHoy%HORASLONG = " + horaHoy%HORASLONG);
+                            System.out.println("minutos "+((double)(horaHoy%HORASLONG)/MINUTOSLONG));
+                            System.out.println("Fraccion "+(1/(60/((double)(horaHoy%HORASLONG)/MINUTOSLONG))));
+                            primero = false;
+                            if (horaHoy%HORASLONG>0){
+                                horastrabajos-=(1/(60/((double)(HORASLONG-(horaHoy%HORASLONG))/MINUTOSLONG)));
+                                horaHoy+=(HORASLONG-(horaHoy%HORASLONG));
+                            }else {
+                                horastrabajos--;
+                                horaHoy += HORASLONG;
+                            }
+
                         } else {
-                            break;
+                            horaHoy += HORASLONG;
                         }
+
+                        System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("horastrabajos = " + horastrabajos);
+
                     }
+
+                    if (horastrabajos <= 0) {
+                        break;
+                    }else{
+                        horaHoy = perfilActivo.getLong(PERFIL_HORAIMMIERCOLES);
+                        totaldias++;
+
+                    }
+
+
                 case 3:
-                    horastrabajos -= hjueves;
-                    totaldias++;
-                    if (horastrabajos < 1) {
-                        if (hjueves <= 0) {
-                            horastrabajos++;
+
+                    IM = PERFIL_HORAIMMIERCOLES;
+                    FM = PERFIL_HORAFMMIERCOLES;
+                    IT = PERFIL_HORAITMIERCOLES;
+                    FT = PERFIL_HORAFTMIERCOLES;
+
+                    System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                    System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                    System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                    System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                    System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                    System.out.println("horastrabajos antes= " + horastrabajos);
+
+
+                    while (((perfilActivo.getLong(FT) > 0 &&
+                            horaHoy < perfilActivo.getLong(FT)) ||
+                            (perfilActivo.getLong(FM) > 0 &&
+                                    horaHoy < perfilActivo.getLong(FM))) && (horastrabajos > 0 || primero)){
+
+                        if ((horaHoy >= perfilActivo.getLong(IT) &&
+                                perfilActivo.getLong(FT) > 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (horaHoy >= perfilActivo.getLong(IM) &&
+                                        perfilActivo.getLong(FM) > 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))){
+                            System.out.println("horaHoy%HORASLONG = " + horaHoy%HORASLONG);
+                            System.out.println("minutos "+((double)(horaHoy%HORASLONG)/MINUTOSLONG));
+                            System.out.println("Fraccion "+(1/(60/((double)(horaHoy%HORASLONG)/MINUTOSLONG))));
+                            primero = false;
+                            if (horaHoy%HORASLONG>0){
+                                horastrabajos-=(1/(60/((double)(HORASLONG-(horaHoy%HORASLONG))/MINUTOSLONG)));
+                                horaHoy+=(HORASLONG-(horaHoy%HORASLONG));
+                            }else {
+                                horastrabajos--;
+                                horaHoy += HORASLONG;
+                            }
+
                         } else {
-                            break;
+                            horaHoy += HORASLONG;
                         }
+
+                        System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("horastrabajos = " + horastrabajos);
+
                     }
+
+
+                    if (horastrabajos <= 0) {
+                        break;
+                    }else{
+                        horaHoy = perfilActivo.getLong(PERFIL_HORAIMJUEVES);
+                        totaldias++;
+
+                    }
+
                 case 4:
-                    horastrabajos -= hviernes;
-                    totaldias++;
-                    if (horastrabajos < 1) {
-                        if (hviernes <= 0) {
-                            horastrabajos++;
+
+                    IM = PERFIL_HORAIMJUEVES;
+                    FM = PERFIL_HORAFMJUEVES;
+                    IT = PERFIL_HORAITJUEVES;
+                    FT = PERFIL_HORAFTJUEVES;
+
+                    System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                    System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                    System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                    System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                    System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                    System.out.println("horastrabajos antes= " + horastrabajos);
+
+
+                    while (((perfilActivo.getLong(FT) > 0 &&
+                            horaHoy < perfilActivo.getLong(FT)) ||
+                            (perfilActivo.getLong(FM) > 0 &&
+                                    horaHoy < perfilActivo.getLong(FM))) && (horastrabajos > 0 || primero)){
+
+                        if ((horaHoy >= perfilActivo.getLong(IT) &&
+                                perfilActivo.getLong(FT) > 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (horaHoy >= perfilActivo.getLong(IM) &&
+                                        perfilActivo.getLong(FM) > 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))){
+                            System.out.println("horaHoy%HORASLONG = " + horaHoy%HORASLONG);
+                            System.out.println("minutos "+((double)(horaHoy%HORASLONG)/MINUTOSLONG));
+                            System.out.println("Fraccion "+(1/(60/((double)(horaHoy%HORASLONG)/MINUTOSLONG))));
+                            primero = false;
+                            if (horaHoy%HORASLONG>0){
+                                horastrabajos-=(1/(60/((double)(HORASLONG-(horaHoy%HORASLONG))/MINUTOSLONG)));
+                                horaHoy+=(HORASLONG-(horaHoy%HORASLONG));
+                            }else {
+                                horastrabajos--;
+                                horaHoy += HORASLONG;
+                            }
+
                         } else {
-                            break;
+                            horaHoy += HORASLONG;
                         }
+
+                        System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("horastrabajos = " + horastrabajos);
+
                     }
+
+
+                    if (horastrabajos <= 0) {
+                        break;
+                    }else{
+                        horaHoy = perfilActivo.getLong(PERFIL_HORAIMVIERNES);
+                        totaldias++;
+
+                    }
+
                 case 5:
-                    horastrabajos -= hsabado;
-                    totaldias++;
-                    if (horastrabajos < 1) {
-                        if (hsabado <= 0) {
-                            horastrabajos++;
+
+                    IM = PERFIL_HORAIMVIERNES;
+                    FM = PERFIL_HORAFMVIERNES;
+                    IT = PERFIL_HORAITVIERNES;
+                    FT = PERFIL_HORAFTVIERNES;
+
+                    System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                    System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                    System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                    System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                    System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                    System.out.println("horastrabajos antes= " + horastrabajos);
+
+
+                    while (((perfilActivo.getLong(FT) > 0 &&
+                            horaHoy < perfilActivo.getLong(FT)) ||
+                            (perfilActivo.getLong(FM) > 0 &&
+                                    horaHoy < perfilActivo.getLong(FM))) && (horastrabajos > 0 || primero)){
+
+                        if ((horaHoy >= perfilActivo.getLong(IT) &&
+                                perfilActivo.getLong(FT) > 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (horaHoy >= perfilActivo.getLong(IM) &&
+                                        perfilActivo.getLong(FM) > 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))){
+                            System.out.println("horaHoy%HORASLONG = " + horaHoy%HORASLONG);
+                            System.out.println("minutos "+((double)(horaHoy%HORASLONG)/MINUTOSLONG));
+                            System.out.println("Fraccion "+(1/(60/((double)(horaHoy%HORASLONG)/MINUTOSLONG))));
+                            primero = false;
+                            if (horaHoy%HORASLONG>0){
+                                horastrabajos-=(1/(60/((double)(HORASLONG-(horaHoy%HORASLONG))/MINUTOSLONG)));
+                                horaHoy+=(HORASLONG-(horaHoy%HORASLONG));
+                            }else {
+                                horastrabajos--;
+                                horaHoy += HORASLONG;
+                            }
+
                         } else {
-                            break;
+                            horaHoy += HORASLONG;
                         }
+
+                        System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("horastrabajos = " + horastrabajos);
+
                     }
+
+                    if (horastrabajos <= 0) {
+                        break;
+                    }else{
+                        horaHoy = perfilActivo.getLong(PERFIL_HORAIMSABADO);
+                        totaldias++;
+
+                    }
+
+
                 case 6:
-                    horastrabajos -= hdomingo;
-                    totaldias++;
-                    if (horastrabajos < 1) {
-                        if (hdomingo <= 0) {
-                            horastrabajos++;
+
+                    IM = PERFIL_HORAIMSABADO;
+                    FM = PERFIL_HORAFMSABADO;
+                    IT = PERFIL_HORAITSABADO;
+                    FT = PERFIL_HORAFTSABADO;
+
+                    System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                    System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                    System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                    System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                    System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                    System.out.println("horastrabajos antes= " + horastrabajos);
+
+
+                    while (((perfilActivo.getLong(FT) > 0 &&
+                            horaHoy < perfilActivo.getLong(FT)) ||
+                            (perfilActivo.getLong(FM) > 0 &&
+                                    horaHoy < perfilActivo.getLong(FM))) && (horastrabajos > 0 || primero)){
+
+                        if ((horaHoy >= perfilActivo.getLong(IT) &&
+                                perfilActivo.getLong(FT) > 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (horaHoy >= perfilActivo.getLong(IM) &&
+                                        perfilActivo.getLong(FM) > 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))){
+                            System.out.println("horaHoy%HORASLONG = " + horaHoy%HORASLONG);
+                            System.out.println("minutos "+((double)(horaHoy%HORASLONG)/MINUTOSLONG));
+                            System.out.println("Fraccion "+(1/(60/((double)(horaHoy%HORASLONG)/MINUTOSLONG))));
+                            primero = false;
+                            if (horaHoy%HORASLONG>0){
+                                horastrabajos-=(1/(60/((double)(HORASLONG-(horaHoy%HORASLONG))/MINUTOSLONG)));
+                                horaHoy+=(HORASLONG-(horaHoy%HORASLONG));
+                            }else {
+                                horastrabajos--;
+                                horaHoy += HORASLONG;
+                            }
+
                         } else {
-                            break;
+                            horaHoy += HORASLONG;
                         }
+
+                        System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("horastrabajos = " + horastrabajos);
+
                     }
-                case 7:
-                    horastrabajos -= hlunes;
-                    totaldias++;
-                    if (horastrabajos < 1) {
-                        if (hlunes <= 0) {
-                            horastrabajos++;
-                        }
+                    if (horastrabajos <= 0) {
+                        break;
+                    }else{
+                        horaHoy = perfilActivo.getLong(PERFIL_HORAIMDOMINGO);
+                        totaldias++;
+
                     }
+
             }
-            diahoy = 1;
+            diahoy = 0;
+            primero = false;
         }
-        long fechahoy = calendar.getTimeInMillis();
+        fechahoy +=horaHoy;
+        System.out.println("fechahoy = " + fechahoy);
+        System.out.println("totaldias = " + totaldias);
         return fechahoy + (totaldias * 24 * 60 * 60 * 1000);
 
     }
@@ -952,70 +1315,1855 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
         }
 
-        public static void recalcularFechas() {
+        public static void recalcularAgenda(long inicio, long fin, int anios){
 
-            Modelo perfilActivo = ConsultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila, null, IGUAL, null);
+            String ordenAgenda = AGENDA_VALOR + Constantes.ORDENASCENDENTE;
+            if (anios == 0){anios=1;}
+            if (inicio==0){
+                inicio = (TimeDateUtil.ahora()-(ANIOSLONG * anios));
+            }
+            if (fin==0){
 
-            String ordenProyectosFecha = PROYECTO_FECHAENTRADA + " ASC";
+                fin = (TimeDateUtil.ahora()+(ANIOSLONG * anios));
+            }
+            ListaModelo listaMinutos = CRUDutil.setListaModelo(CAMPOS_AGENDA,AGENDA_VALOR,
+                    String.valueOf(inicio),String.valueOf(fin),ENTRE,ordenAgenda);
+            System.out.println("inicio = " + inicio);
+            System.out.println("fin = " + fin);
 
-            ArrayList<Modelo> listaProyectos = ConsultaBD.queryList(CAMPOS_PROYECTO, null, ordenProyectosFecha);
+            System.out.println("listaMinutosre = " + listaMinutos.sizeLista());
+            for (int i = 0; i < listaMinutos.getLista().size(); i++) {
+                ContentValues values = new ContentValues();
+                boolean multi = false;
+                Modelo minutoActual= listaMinutos.getLista().get(i);
+                Modelo partida = CRUDutil.updateModelo(CAMPOS_PARTIDA,minutoActual.getString(AGENDA_ID_PARTIDA)
+                        ,minutoActual.getString(AGENDA_SECUENCIA_PARTIDA));
+                if (partida==null){
+                    CRUDutil.borrarRegistro(TABLA_AGENDA,minutoActual.getString(AGENDA_ID_AGENDA));
+                    recalcularAgenda(inicio,fin,anios);
+                    return;
+                }else{
 
-            for (int i = 0; i < listaProyectos.size(); i++) {
-
-                double horasTrabajoPendientes = 0;
-
-                Modelo proyecto = listaProyectos.get(i);
-
-                if (proyecto.getInt(PROYECTO_TIPOESTADO) != 0) {
-
-                    if (proyecto.getInt(PROYECTO_TIPOESTADO) > 6) {
-
-                        if (proyecto.getLong(PROYECTO_FECHAFINAL) == 0) {
-
-                            ContentValues valores = new ContentValues();
-                            ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAFINAL, JavaUtil.hoy());
-                            ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAFINALF, JavaUtil.getDate(JavaUtil.hoy()));
-                            ConsultaBD.updateRegistro(TABLA_PROYECTO, proyecto.getString(PROYECTO_ID_PROYECTO), valores);
-
+                        Modelo detPartida = CRUDutil.updateModelo(CAMPOS_DETPARTIDA,minutoActual.getString(AGENDA_ID_PARTIDA)
+                                ,minutoActual.getString(AGENDA_SECUENCIA_DETPARTIDA));
+                        if (detPartida == null && listaMinutos.getLista().size()>1){
+                            CRUDutil.borrarRegistro(TABLA_AGENDA,minutoActual.getString(AGENDA_ID_AGENDA));
+                            recalcularAgenda(inicio,fin,anios);
+                            return;
                         }
 
-                    } else {
+                }
+                long valorActual = minutoActual.getLong(AGENDA_VALOR);
+                if (i>0){
+                    Modelo minutoAnterior= listaMinutos.getLista().get(i-1);
+                    long valorAnterior = minutoAnterior.getLong(AGENDA_VALOR);
+                    if (valorActual==valorAnterior && !minutoActual.getString(AGENDA_ID_DETPARTIDA)
+                            .equals(minutoAnterior.getString(AGENDA_ID_DETPARTIDA))){multi = true;}
 
-                        for (int x = i; x < listaProyectos.size(); x++) {
+                    values.put(AGENDA_VALORANT,valorAnterior);
+                    values.put(AGENDA_ID_MINANT,minutoAnterior.getString(AGENDA_ID_AGENDA));
 
-                            Modelo proyecto2 = listaProyectos.get(x);
+                    if (valorActual!=valorAnterior){
+                        values.put(AGENDA_INICIO,1);
+                    }else{
+                        values.put(AGENDA_INICIO,0);
+                    }
+                    values.put(AGENDA_ESPACIOANT,calculoEspacioEntreMinutos
+                            (minutoAnterior.getLong(AGENDA_VALOR),minutoActual.getLong(AGENDA_VALOR)));
+                }
+                if (i<listaMinutos.getLista().size()-1){
+                    Modelo minutoSiguiente = listaMinutos.getLista().get(i+1);
+                    long valorSiguiente = minutoSiguiente.getLong(AGENDA_VALOR);
+                    if (valorActual==valorSiguiente && !minutoActual.getString(AGENDA_ID_DETPARTIDA)
+                            .equals(minutoSiguiente.getString(AGENDA_ID_DETPARTIDA))){multi = true;}
 
-                            if ((proyecto2.getInt(PROYECTO_CLIENTE_PESOTIPOCLI) >=
-                                    proyecto.getInt(PROYECTO_CLIENTE_PESOTIPOCLI)) || (!prioridad)) {
+                    values.put(AGENDA_VALORSIG,valorSiguiente);
+                    values.put(AGENDA_ID_MINSIG,minutoSiguiente.getString(AGENDA_ID_AGENDA));
+
+                    if (valorActual!=valorSiguiente){
+                        values.put(AGENDA_FIN,1);
+                    }else{
+                        values.put(AGENDA_FIN,0);
+                    }
+                    values.put(AGENDA_ESPACIOSIG,calculoEspacioEntreMinutos
+                            (minutoActual.getLong(AGENDA_VALOR),minutoSiguiente.getLong(AGENDA_VALOR)));
+                }
+                if (multi){
+                    values.put(AGENDA_MULTI,1);
+                }else{
+                    values.put(AGENDA_MULTI,0);
+                }
+
+            }
+        }
+
+        public static void recalcularFechas(boolean guardar) {
+
+            long inicio = 0;
+            long fin = 0;
+            int anios = 0;
+            recalcularAgenda(inicio,fin,anios);
+            long fechaInicio = 0;
+            long fechaFin = 0;
+            String ordenProyectosNuevos = PROYECTO_FECHAENTRADA + Constantes.ORDENDESCENDENTE;
+
+            ListaModelo listaProyectosnuevos = CRUDutil.setListaModelo(CAMPOS_PROYECTO, PROYECTO_FECHAINICIOACORDADA, "0", IGUAL,ordenProyectosNuevos);
 
 
-                                double horasrealizadas =
-                                        (proyecto2.getDouble(PROYECTO_TIEMPO) / 100)
-                                                * proyecto2.getInt(PROYECTO_TOTCOMPLETADO);
+            for (int i = 0; i < listaProyectosnuevos.getLista().size(); i++) {
 
-                                horasTrabajoPendientes += proyecto2.getDouble(PROYECTO_TIEMPO)
-                                        - horasrealizadas;
+                Modelo proyectoNuevo = listaProyectosnuevos.getLista().get(i);
+                String ordenPartidas = PARTIDA_ORDEN + Constantes.ORDENASCENDENTE;
+                ListaModelo listaPartidas = CRUDutil.setListaModelo(CAMPOS_PARTIDA,PARTIDA_ID_PROYECTO,proyectoNuevo.getString(PROYECTO_ID_PROYECTO),IGUAL,ordenPartidas);
 
+                int ultimaPartida = 0;
+                for (Modelo partida : listaPartidas.getLista()) {
+                    if (partida.getInt(PARTIDA_ORDEN)>ultimaPartida){
+                        ultimaPartida = partida.getInt(PARTIDA_ORDEN);
+                    }
+                }
+                for (int x = 0; x < listaPartidas.sizeLista(); x++) {
+                    Modelo partida = listaPartidas.getLista().get(x);
+                    String ordenDetPartidas = DETPARTIDA_ORDEN + Constantes.ORDENASCENDENTE;
+                    ListaModelo listaDetPartidas = CRUDutil.setListaModelo(CAMPOS_DETPARTIDA, DETPARTIDA_ID_PARTIDA, partida.getString(PARTIDA_ID_PARTIDA), IGUAL, ordenDetPartidas);
+                    int ultimaDetPartida = 0;
+                    for (Modelo detPartida : listaDetPartidas.getLista()) {
+                        if (detPartida.getInt(DETPARTIDA_ORDEN) > ultimaDetPartida) {
+                            ultimaDetPartida = detPartida.getInt(DETPARTIDA_ORDEN);
+                        }
+                    }
+                    for (int y = 0; y < listaDetPartidas.sizeLista(); y++) {
+
+                        Modelo detPartida = listaDetPartidas.getLista().get(y);
+
+                        if (detPartida.getInt(DETPARTIDA_ORDEN)>0){
+
+                            String ordenAgenda = AGENDA_VALOR + Constantes.ORDENASCENDENTE;
+                            if (partida.getInt(PARTIDA_ORDEN) == 1) {
+                                if (detPartida.getInt(DETPARTIDA_ORDEN) == 1) {
+                                    inicio = TimeDateUtil.soloFecha(proyectoNuevo.getLong(PROYECTO_FECHAINICIOCALCULADA)) +
+                                            TimeDateUtil.soloHora(proyectoNuevo.getLong(PROYECTO_HORAINICIOCALCULADA));
+                                }
+                            } else if (partida.getInt(PARTIDA_ORDEN) > 1) {
+
+                                if (detPartida.getInt(DETPARTIDA_ORDEN) == 1) {
+                                    Modelo partidaAnt = null;
+                                    for (Modelo partidatemp : listaPartidas.getLista()) {
+                                        if (partidatemp.getInt(PARTIDA_ORDEN) == partida.getInt(PARTIDA_ORDEN) - 1) {
+                                            partidaAnt = partidatemp.clonar(false);
+                                        }
+                                    }
+                                    if (partidaAnt != null) {
+                                        inicio = partidaAnt.getLong(PARTIDA_FECHAENTREGACALCULADA);
+                                    }
+                                }
+                            }
+
+                            if (inicio == 0 && detPartida.getInt(DETPARTIDA_ORDEN) == 1) {
+                                inicio = detPartida.getLong(DETPARTIDA_FECHAINICIOCALCULADA) + detPartida.getLong(DETPARTIDA_HORAINICIOCALCULADA);
+                            } else if (inicio == 0 && detPartida.getInt(DETPARTIDA_ORDEN) > 1) {
+
+                                Modelo detPartidaAnt = null;
+                                for (Modelo detPartidatemp : listaDetPartidas.getLista()) {
+                                    if (detPartidatemp.getInt(DETPARTIDA_ORDEN) == detPartida.getInt(DETPARTIDA_ORDEN) - 1) {
+                                        detPartidaAnt = detPartidatemp.clonar(false);
+                                    }
+                                }
+                                if (detPartidaAnt != null) {
+                                    inicio = detPartidaAnt.getLong(DETPARTIDA_FECHAENTREGACALCULADA);
+                                }
+                            }
+
+                            if (inicio == 0) {
+                                inicio = TimeDateUtil.ahora() ;
+                            }
+                            if (fin == 0) {
+                                if (anios == 0) {
+                                    anios = 1;
+                                }
+                                fin = (TimeDateUtil.ahora() + (ANIOSLONG * anios)) ;
+                            }
+                            System.out.println("inicio = " + inicio);
+                            System.out.println("TimeDateUtil.getDateTimeString(inicio) = " + TimeDateUtil.getDateTimeString(inicio));
+                            System.out.println("fin = " + fin);
+                            ListaModelo listaMinutos = CRUDutil.setListaModelo(CAMPOS_AGENDA, AGENDA_VALOR,
+                                    String.valueOf(inicio), String.valueOf(fin), ENTRE, ordenAgenda);
+
+                            System.out.println("listaMinutos = " + listaMinutos.sizeLista());
+
+                            boolean split = false;
+                            if (detPartida.getInt(DETPARTIDA_SPLIT)== 1){split = true;}
+
+                            if (listaMinutos.sizeLista() > 0) {
+                                for (int m = 0; m < listaMinutos.getLista().size(); m++) {
+
+                                    Modelo minuto = listaMinutos.getLista().get(m);
+                                    System.out.println("minuto.getLong(AGENDA_VALOR) = " + minuto.getLong(AGENDA_VALOR));
+                                    System.out.println("minuto.getLong(AGENDA_VALORANT) = " + minuto.getLong(AGENDA_VALORANT));
+                                    System.out.println("minuto.getLong(AGENDA_VALORSIG) = " + minuto.getLong(AGENDA_VALORSIG));
+                                    System.out.println("minuto.getLong(AGENDA_ESPACIOSIG) = " + minuto.getLong(AGENDA_ESPACIOSIG));
+
+                                    if (listaMinutos.getLista().get(0).getInt(AGENDA_FIN)==0){
+                                        fechaFin = 0;
+                                    }else if (minuto.getInt(AGENDA_FIN) == 1 && ( split || minuto.getDouble(AGENDA_ESPACIOSIG) > detPartida.getDouble(DETPARTIDA_TIEMPO))) {
+
+                                            fechaInicio = minuto.getLong(AGENDA_VALOR)+MINUTOSLONG;
+                                            fechaFin = calculoMinutoFinDetPartida(fechaInicio, minuto, detPartida,split, guardar);
+                                            break;
+                                    }
+                                }
+                                if (fechaFin == 0) {
+                                    fechaInicio = inicio + detPartida.getLong(DETPARTIDA_OFFSET);
+                                    fechaFin = calculoMinutoFinDetPartida(fechaInicio, listaMinutos.getLista().get(0), detPartida,split, guardar);
+
+                                }
+                            } else {
+
+                                fechaInicio = inicio + detPartida.getLong(DETPARTIDA_OFFSET);
+                                fechaFin = calculoMinutoFinDetPartida(fechaInicio,null, detPartida,split,guardar);
 
                             }
-                        }
-                        System.out.println("horasTrabajoPendientes = " + horasTrabajoPendientes);
-                        long fecha = fechaEntregaCalculada(horasTrabajoPendientes,
-                                perfilActivo.getDouble(PERFIL_HORASLUNES),
-                                perfilActivo.getDouble(PERFIL_HORASMARTES),
-                                perfilActivo.getDouble(PERFIL_HORASMIERCOLES),
-                                perfilActivo.getDouble(PERFIL_HORASJUEVES),
-                                perfilActivo.getDouble(PERFIL_HORASVIERNES),
-                                perfilActivo.getDouble(PERFIL_HORASSABADO),
-                                perfilActivo.getDouble(PERFIL_HORASDOMINGO));
+                            ContentValues valores = new ContentValues();
+                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAINICIOCALCULADA, fechaInicio);
+                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(fechaInicio));
+                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_HORAINICIOCALCULADA, fechaInicio);
+                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(fechaInicio));
+                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAENTREGACALCULADA, fechaFin);
+                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
+                            ConsultaBD.updateRegistroDetalle(TABLA_DETPARTIDA, detPartida.getString(DETPARTIDA_ID_PARTIDA), detPartida.getInt(DETPARTIDA_SECUENCIA), valores);
+                            if (partida.getInt(PARTIDA_ORDEN) == 1) {
+                                valores = new ContentValues();
+                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAINICIOCALCULADA, fechaInicio);
+                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(fechaInicio));
+                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_HORAINICIOCALCULADA, fechaInicio);
+                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(fechaInicio));
+                                ConsultaBD.updateRegistroDetalle(TABLA_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO), partida.getInt(PARTIDA_SECUENCIA), valores);
+                                if (detPartida.getInt(DETPARTIDA_ORDEN) == 1) {
+                                    valores = new ContentValues();
+                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAINICIOCALCULADA, fechaInicio);
+                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(fechaInicio));
+                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_HORAINICIOCALCULADA, fechaInicio);
+                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(fechaInicio));
+                                    ConsultaBD.updateRegistro(TABLA_PROYECTO, proyectoNuevo.getString(PROYECTO_ID_PROYECTO), valores);
+                                }
+                            }
+                            if (partida.getInt(PARTIDA_ORDEN) == ultimaPartida) {
+                                valores = new ContentValues();
+                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAENTREGACALCULADA, fechaFin);
+                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
+                                ConsultaBD.updateRegistroDetalle(TABLA_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO), partida.getInt(PARTIDA_SECUENCIA), valores);
 
-                        ContentValues valores = new ContentValues();
-                        ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAENTREGACALCULADA, fecha);
-                        ConsultaBD.updateRegistro(TABLA_PROYECTO, proyecto.getString(PROYECTO_ID_PROYECTO), valores);
+                                if (detPartida.getInt(DETPARTIDA_ORDEN) == ultimaDetPartida) {
+                                    valores = new ContentValues();
+                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAENTREGACALCULADA, fechaFin);
+                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
+                                    ConsultaBD.updateRegistro(TABLA_PROYECTO, proyectoNuevo.getString(PROYECTO_ID_PROYECTO), valores);
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+
+        }
+
+        private static long calculoFinDetPartida(Modelo minutoini, Modelo detPartida, boolean guardar) {
+
+            double horastrabajos = detPartida.getDouble(DETPARTIDA_TIEMPO);
+            long min = 0;
+            double horasAnt = 0;
+            Modelo partida = null;
+            long bloqueMin = 1;
+
+            System.out.println("minutoini = " + minutoini);
+            if (minutoini==null){
+                guardar = false;
+                ContentValues values = new ContentValues();
+                values.put(AGENDA_VALOR, TimeDateUtil.ahora());
+                values.put(AGENDA_ESPACIOSIG,horastrabajos);
+                Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                System.out.println("Uri 1er registro tabla AGENDA = " + uri);
+                minutoini = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+            }
+
+            if (guardar){
+                partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA,
+                        detPartida.getString(DETPARTIDA_ID_PARTIDA),null,IGUAL,null);
+                if (minutoini.getLong(AGENDA_VALORSIG)>minutoini.getLong(AGENDA_VALOR)+bloqueMin) {
+                    ContentValues values = new ContentValues();
+                    values.put(AGENDA_VALOR, minutoini.getLong(AGENDA_VALOR) + bloqueMin);
+                    values.put(AGENDA_ID_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO));
+                    values.put(AGENDA_ID_DETPARTIDA, partida.getString(PARTIDA_ID_PARTIDA));
+                    values.put(AGENDA_SECUENCIA_PARTIDA, partida.getInt(PARTIDA_SECUENCIA));
+                    values.put(AGENDA_SECUENCIA_DETPARTIDA, detPartida.getInt(DETPARTIDA_SECUENCIA));
+
+                    CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                }
+            }
+
+            Modelo minutoSig = minutoini.clonar(false);
+
+            while (horastrabajos > 0 ) {
+
+                horasAnt = horastrabajos;
+                horastrabajos -= minutoSig.getDouble(AGENDA_ESPACIOSIG);
+                System.out.println("horastrabajos = " + horastrabajos);
+
+                if (horastrabajos > 0){
+                    min += Math.round((minutoSig.getDouble(AGENDA_ESPACIOSIG)*1000)*((double)(HORASLONG)/1000));
+                    while (minutoSig.getInt(AGENDA_FIN)==0 && minutoSig.getString(AGENDA_ID_MINSIG)!=null &&
+                            minutoSig.getLong(AGENDA_VALORSIG)<=minutoSig.getLong(AGENDA_VALOR)+bloqueMin){
+                        minutoSig = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoSig.getString(AGENDA_ID_MINSIG));
+                        if (guardar && minutoSig.getInt(AGENDA_FIN)==1 &&
+                                minutoSig.getLong(AGENDA_VALORANT)<minutoSig.getLong(AGENDA_VALOR)-bloqueMin){
+                            partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA,
+                                    detPartida.getString(DETPARTIDA_ID_PARTIDA),null,IGUAL,null);
+                            if (minutoSig.getLong(AGENDA_VALORSIG)>minutoSig.getLong(AGENDA_VALOR)+bloqueMin) {
+                                ContentValues values = new ContentValues();
+                                values.put(AGENDA_VALOR, minutoSig.getLong(AGENDA_VALOR) + bloqueMin);
+                                values.put(AGENDA_ID_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO));
+                                values.put(AGENDA_ID_DETPARTIDA, partida.getString(PARTIDA_ID_PARTIDA));
+                                values.put(AGENDA_SECUENCIA_PARTIDA, partida.getInt(PARTIDA_SECUENCIA));
+                                values.put(AGENDA_SECUENCIA_DETPARTIDA, detPartida.getInt(DETPARTIDA_SECUENCIA));
+                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                            }
+                        }
+                    }
+                }else{
+                    min += Math.round((horasAnt*1000)*((double)(HORASLONG)/1000))+Math.round((horastrabajos*1000)*((double)(HORASLONG)/1000));
+                }
+
+            }
+
+            System.out.println("min = " + min);
+            System.out.println("return fechafin "+TimeDateUtil.getDateTimeString(minutoini.getLong(AGENDA_VALOR)+min));
+            return minutoini.getLong(AGENDA_VALOR)+min;
+
+        }
+
+        private static long calculoMinutoFinDetPartida(long inicio, Modelo minutoini, Modelo detPartida, boolean split, boolean guardar) {
+
+            Modelo perfilActivo = ConsultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila, null, IGUAL, null);
+            long horaHoy = 0;
+            long fechahoy = 0;
+            long fechaIni = 0;
+            Modelo ultimoMinuto = null;
+            Modelo partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA,
+                    detPartida.getString(DETPARTIDA_ID_PARTIDA),null,IGUAL,null);
+            int secuenciaPartida = partida.getInt(PARTIDA_SECUENCIA);
+            String idPartida = partida.getString(PARTIDA_ID_PROYECTO);
+            String idDetPartida = detPartida.getString(DETPARTIDA_ID_PARTIDA);
+            int secuenciaDetPartida = detPartida.getInt(DETPARTIDA_SECUENCIA);
+            if (minutoini==null){
+                ContentValues values = new ContentValues();
+                values.put(AGENDA_VALOR, inicio);
+                if (guardar){
+                    values.put(AGENDA_ID_PARTIDA, idPartida);
+                    values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                    values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                    values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                }
+                Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                System.out.println("Uri 1er registro tabla AGENDA = " + uri);
+                minutoini = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+                fechaIni = minutoini.getLong(AGENDA_VALOR);
+            }
+            double minutosTrabajos = detPartida.getDouble(DETPARTIDA_TIEMPO)*60;
+            TimeZone timezone = TimeZone.getDefault();
+            Calendar calendar = new GregorianCalendar(timezone);
+            if (fechaIni>0){
+                calendar.setTimeInMillis(fechaIni);
+                fechahoy = TimeDateUtil.soloFecha(fechaIni);
+                horaHoy = TimeDateUtil.soloHora(fechaIni);
+            }else{
+                fechahoy = TimeDateUtil.soloFecha(TimeDateUtil.ahora()) + ((int)(detPartida.getLong(DETPARTIDA_OFFSET)/DIASLONG))*DIASLONG;
+                horaHoy = TimeDateUtil.soloHora(TimeDateUtil.ahora()) + (detPartida.getLong(DETPARTIDA_OFFSET)
+                        - (((int)(detPartida.getLong(DETPARTIDA_OFFSET)/DIASLONG))*DIASLONG));
+            }
+
+            long fechaTemp = fechaIni;
+            int diahoy = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+            long totaldias = 0;
+            System.out.println("minutos trabajos al entrar = " + minutosTrabajos);
+
+            long IM = 0;
+            long FM = 0;
+            long IT = 0;
+            long FT = 0;
+            long IMP = 0;
+
+            while (minutosTrabajos > 0 ) {
+
+                for (int dia = diahoy;dia<=6;dia++){
+
+                    switch (dia) {
+
+
+                        case 0:
+
+                            IM = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAIMDOMINGO));
+                            FM = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAFMDOMINGO));
+                            IT = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAITDOMINGO));
+                            FT = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAFTDOMINGO));
+                            IMP = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAIMLUNES));
+                            break;
+
+                        case 1:
+
+                            IM = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAIMLUNES));
+                            FM = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAFMLUNES));
+                            IT = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAITLUNES));
+                            FT = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAFTLUNES));
+                            IMP = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAIMMARTES));
+
+                            break;
+
+                        case 2:
+
+                            IM = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAIMMARTES));
+                            FM = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAFMMARTES));
+                            IT = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAITMARTES));
+                            FT = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAFTMARTES));
+                            IMP = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAIMMIERCOLES));
+
+                            break;
+
+                        case 3:
+
+                            IM = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAIMMIERCOLES));
+                            FM = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAFMMIERCOLES));
+                            IT = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAITMIERCOLES));
+                            FT = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAFTMIERCOLES));
+                            IMP = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAIMJUEVES));
+
+                            break;
+
+                        case 4:
+
+                            IM = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAIMJUEVES));
+                            FM = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAFMJUEVES));
+                            IT = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAITJUEVES));
+                            FT = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAFTJUEVES));
+                            IMP = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAIMVIERNES));
+
+                            break;
+
+                        case 5:
+
+                            IM = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAIMVIERNES));
+                            FM = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAFMVIERNES));
+                            IT = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAITVIERNES));
+                            FT = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAFTVIERNES));
+                            IMP = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAIMSABADO));
+
+                            break;
+
+                        case 6:
+
+                            IM = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAIMSABADO));
+                            FM = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAFMSABADO));
+                            IT = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAITSABADO));
+                            FT = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAFTSABADO));
+                            IMP = TimeDateUtil.soloHora(perfilActivo.getLong(PERFIL_HORAIMDOMINGO));
+
+                    }
+
+                    System.out.println("IM = " + TimeDateUtil.getTimeString(IM));
+                    System.out.println("FM = " + TimeDateUtil.getTimeString(FM));
+                    System.out.println("IT = " + TimeDateUtil.getTimeString(IT));
+                    System.out.println("FT = " + TimeDateUtil.getTimeString(FT));
+                    System.out.println("IMP = " + TimeDateUtil.getTimeString(IMP));
+
+                    System.out.println("IM = " + IM);
+                    System.out.println("FM = " + FM);
+                    System.out.println("IT = " + IT);
+                    System.out.println("FT = " + FT);
+                    System.out.println("IMP = " + IMP);
+
+                    if (IM >0 && horaHoy<IM){horaHoy = IM;}
+
+                    while (((IT >= 0 && horaHoy >= FM) ||(IT >= 0 && horaHoy >= IT && FT >= 0 && horaHoy < FT) ||
+                            (IM >= 0 && horaHoy >= IM && FM >= 0 && horaHoy < FM)) && (minutosTrabajos > 0)){
+
+                        System.out.println("minutoini = " + TimeDateUtil.getDateTimeString(minutoini.getLong(AGENDA_VALOR)));
+                        System.out.println("minutoini Sig= " + TimeDateUtil.getDateTimeString(minutoini.getLong(AGENDA_VALORSIG)));
+                        System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("fechaTemp = " + TimeDateUtil.getDateTimeString(fechaTemp));
+
+                        if (((horaHoy >= IT && FT >= 0 && horaHoy < FT)) && fechaTemp>=minutoini.getLong(AGENDA_VALOR)
+                                && (fechaTemp<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
+
+                            if (minutosTrabajos >= (double) (FT-horaHoy)/MINUTOSLONG) {
+                                minutosTrabajos -= (double) (FT - horaHoy) / MINUTOSLONG;
+                                    horaHoy = FT;
+                            }else{
+                                horaHoy += minutosTrabajos* MINUTOSLONG;
+                                minutosTrabajos = 0;
+
+                            }
+
+
+                        } else if (((horaHoy >= IM && FM >= 0 && horaHoy < FM)) && fechaTemp>=minutoini.getLong(AGENDA_VALOR)
+                                && (fechaTemp<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
+
+                            if (minutosTrabajos >= (double) (FM-horaHoy)/MINUTOSLONG) {
+                                minutosTrabajos -= (double) (FM - horaHoy) / MINUTOSLONG;
+                                if (IT>=0) {
+                                    horaHoy = IT;
+                                }else{
+                                        horaHoy = FM;
+                                }
+                            }else{
+                                horaHoy += minutosTrabajos* MINUTOSLONG;
+                                minutosTrabajos = 0;
+                            }
+
+
+                        } else {
+
+                            if (IT>=0 && minutosTrabajos>0) {
+
+                                horaHoy = IT;
+                            }
+
+                        }
+
+                        if (minutoini.getLong(AGENDA_VALORSIG)>0 && fechaTemp>=minutoini.getLong(AGENDA_VALORSIG)){
+
+                            minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoini.getString(AGENDA_ID_MINSIG));
+                            while (minutoini.getInt(AGENDA_FIN)==0 && minutoini.getString(AGENDA_ID_MINSIG)!=null) {
+                                minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoini.getString(AGENDA_ID_MINSIG));
+                            }
+
+                            if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)==null &&
+                                    minutoini.getLong(AGENDA_VALORSIG)==0 ){
+                                ContentValues values = new ContentValues();
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
+                                values.put(AGENDA_ID_PARTIDA, idPartida);
+                                values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
+
+                                Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+
+                            }else if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)!=null &&
+                                    minutoini.getLong(AGENDA_VALORSIG)>0 ){
+
+                                ContentValues values = new ContentValues();
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,minutoini.getLong(AGENDA_VALOR));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG,minutoini.getLong(AGENDA_VALORSIG)-1);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
+                                values.put(AGENDA_ID_PARTIDA, idPartida);
+                                values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
+
+                                Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+
+                            }
+
+                        }
+
+                        fechaTemp +=horaHoy;
+                        System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("minutosTrabajos = " + minutosTrabajos);
+
+
+                    }
+
+                    if (minutosTrabajos <= 0) {
+
+                        if (guardar){
+                            ContentValues values = new ContentValues();
+                            putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,fechaTemp);
+                            putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,ultimoMinuto.getLong(AGENDA_VALOR));
+                            putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG, minutoini.getLong(AGENDA_VALORSIG));
+                            putDato(values,CAMPOS_AGENDA,AGENDA_FIN,1);
+                            values.put(AGENDA_ID_PARTIDA, idPartida);
+                            values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                            values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                            values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                            putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,ultimoMinuto.getString(AGENDA_ID_AGENDA));
+                            putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINSIG,minutoini.getString(AGENDA_ID_MINSIG));
+
+                            CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                        }
+                        break;
+                    }else{
+
+                        totaldias++;
+                        fechaTemp += DIASLONG;
+                        if (split && fechahoy+(totaldias * DIASLONG )+((horaHoy-TimeDateUtil.
+                                soloHora(TimeDateUtil.ahora()))/MINUTOSLONG)>minutoini.getLong(AGENDA_VALORSIG)){
+
+                        }
+                        if (IMP>=0) {
+                            horaHoy = IMP;
+                        }else {
+                            horaHoy = 0;
+                        }
+
                     }
 
                 }
+                diahoy = 0;
             }
+
+            return fechahoy+(totaldias * DIASLONG )+ horaHoy;//((horaHoy-TimeDateUtil.soloHora(TimeDateUtil.ahora()))/MINUTOSLONG);
+
+        }
+
+                /*
+                switch (diahoy) {
+
+                    case 0:
+
+                        IM = PERFIL_HORAIMDOMINGO;
+                        FM = PERFIL_HORAFMDOMINGO;
+                        IT = PERFIL_HORAITDOMINGO;
+                        FT = PERFIL_HORAFTDOMINGO;
+                        IMP = PERFIL_HORAIMLUNES;
+
+                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("minutosTrabajos antes= " + minutosTrabajos);
+
+
+                        while (((perfilActivo.getLong(FT) > 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (perfilActivo.getLong(FM) > 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))) && (minutosTrabajos > 0 || primero)){
+
+                            if (((horaHoy >= perfilActivo.getLong(IT) &&
+                                    perfilActivo.getLong(FT) > 0 &&
+                                    horaHoy < perfilActivo.getLong(FT)) ||
+                                    (horaHoy >= perfilActivo.getLong(IM) &&
+                                            perfilActivo.getLong(FM) > 0 &&
+                                            horaHoy < perfilActivo.getLong(FM))) && fechahoy>=minutoini.getLong(AGENDA_VALOR)
+                                    && (fechahoy<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
+                                primero = false;
+
+                                minutosTrabajos--;
+                                horaHoy += MINUTOSLONG;
+
+
+                            } else {
+                                horaHoy += MINUTOSLONG;
+                                if (minutoini.getLong(AGENDA_VALORSIG)>0 && fechahoy>=minutoini.getLong(AGENDA_VALORSIG)){
+
+                                    minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoini.getString(AGENDA_ID_MINSIG));
+                                    while (minutoini.getInt(AGENDA_FIN)==0 && minutoini.getString(AGENDA_ID_MINSIG)!=null) {
+                                        minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoini.getString(AGENDA_ID_MINSIG));
+                                    }
+
+                                    if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)==null &&
+                                            minutoini.getLong(AGENDA_VALORSIG)==0 ){
+                                        ContentValues values = new ContentValues();
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
+                                        values.put(AGENDA_ID_PARTIDA, idPartida);
+                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
+
+                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+
+                                    }else if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)!=null &&
+                                            minutoini.getLong(AGENDA_VALORSIG)>0 ){
+
+                                        ContentValues values = new ContentValues();
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,minutoini.getLong(AGENDA_VALOR));
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG,minutoini.getLong(AGENDA_VALORSIG)-1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
+                                        values.put(AGENDA_ID_PARTIDA, idPartida);
+                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
+
+                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+
+                                    }
+
+                                }
+                            }
+
+                            fechaTemp +=horaHoy;
+                            System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
+                            System.out.println("minutosTrabajos = " + minutosTrabajos);
+
+
+                        }
+
+                        if (minutosTrabajos <= 0) {
+
+                            if (guardar){
+                                ContentValues values = new ContentValues();
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,fechaTemp);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,ultimoMinuto.getLong(AGENDA_VALOR));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG, minutoini.getLong(AGENDA_VALORSIG));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_FIN,1);
+                                values.put(AGENDA_ID_PARTIDA, idPartida);
+                                values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,ultimoMinuto.getString(AGENDA_ID_AGENDA));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINSIG,minutoini.getString(AGENDA_ID_MINSIG));
+
+                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                            }
+                            break;
+                        }else{
+                            totaldias++;
+                            if (split && fechahoy+(totaldias * 24 * 60 )+((horaHoy-TimeDateUtil.
+                                    soloHora(TimeDateUtil.ahora()))/MINUTOSLONG)>minutoini.getLong(AGENDA_VALORSIG)){
+
+                            }
+                            horaHoy = perfilActivo.getLong(IMP);
+
+                        }
+
+                    case 1:
+
+                        IM = PERFIL_HORAIMLUNES;
+                        FM = PERFIL_HORAFMLUNES;
+                        IT = PERFIL_HORAITLUNES;
+                        FT = PERFIL_HORAFTLUNES;
+                        IMP = PERFIL_HORAIMMARTES;
+
+                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("minutosTrabajos antes= " + minutosTrabajos);
+
+
+                        while (((perfilActivo.getLong(FT) > 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (perfilActivo.getLong(FM) > 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))) && (minutosTrabajos > 0 || primero)){
+
+                            if (((horaHoy >= perfilActivo.getLong(IT) &&
+                                    perfilActivo.getLong(FT) > 0 &&
+                                    horaHoy < perfilActivo.getLong(FT)) ||
+                                    (horaHoy >= perfilActivo.getLong(IM) &&
+                                            perfilActivo.getLong(FM) > 0 &&
+                                            horaHoy < perfilActivo.getLong(FM))) && fechahoy>=minutoini.getLong(AGENDA_VALOR)
+                                    && (fechahoy<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
+                                primero = false;
+
+                                minutosTrabajos--;
+                                horaHoy += MINUTOSLONG;
+
+
+                            } else {
+                                horaHoy += MINUTOSLONG;
+                                if (minutoini.getLong(AGENDA_VALORSIG)>0 && fechahoy>=minutoini.getLong(AGENDA_VALORSIG)){
+
+                                    minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoini.getString(AGENDA_ID_MINSIG));
+                                    while (minutoini.getInt(AGENDA_FIN)==0 && minutoini.getString(AGENDA_ID_MINSIG)!=null) {
+                                        minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoini.getString(AGENDA_ID_MINSIG));
+                                    }
+
+                                    if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)==null &&
+                                            minutoini.getLong(AGENDA_VALORSIG)==0 ){
+                                        ContentValues values = new ContentValues();
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
+                                        values.put(AGENDA_ID_PARTIDA, idPartida);
+                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
+
+                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+
+                                    }else if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)!=null &&
+                                            minutoini.getLong(AGENDA_VALORSIG)>0 ){
+
+                                        ContentValues values = new ContentValues();
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,minutoini.getLong(AGENDA_VALOR));
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG,minutoini.getLong(AGENDA_VALORSIG)-1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
+                                        values.put(AGENDA_ID_PARTIDA, idPartida);
+                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
+
+                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+
+                                    }
+
+                                }
+                            }
+
+                            fechaTemp +=horaHoy;
+                            System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
+                            System.out.println("minutosTrabajos = " + minutosTrabajos);
+
+
+                        }
+
+                        if (minutosTrabajos <= 0) {
+
+                            if (guardar){
+                                ContentValues values = new ContentValues();
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,fechaTemp);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,ultimoMinuto.getLong(AGENDA_VALOR));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG, minutoini.getLong(AGENDA_VALORSIG));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_FIN,1);
+                                values.put(AGENDA_ID_PARTIDA, idPartida);
+                                values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,ultimoMinuto.getString(AGENDA_ID_AGENDA));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINSIG,minutoini.getString(AGENDA_ID_MINSIG));
+
+                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                            }
+                            break;
+                        }else{
+                            totaldias++;
+                            if (split && fechahoy+(totaldias * 24 * 60 )+((horaHoy-TimeDateUtil.
+                                    soloHora(TimeDateUtil.ahora()))/MINUTOSLONG)>minutoini.getLong(AGENDA_VALORSIG)){
+
+                            }
+                            horaHoy = perfilActivo.getLong(IMP);
+
+                        }
+
+
+                    case 2:
+
+
+                        IM = PERFIL_HORAIMMARTES;
+                        FM = PERFIL_HORAFMMARTES;
+                        IT = PERFIL_HORAITMARTES;
+                        FT = PERFIL_HORAFTMARTES;
+                        IMP = PERFIL_HORAIMMIERCOLES;
+
+                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("minutosTrabajos antes= " + minutosTrabajos);
+
+
+                        while (((perfilActivo.getLong(FT) > 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (perfilActivo.getLong(FM) > 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))) && (minutosTrabajos > 0 || primero)){
+
+                            if (((horaHoy >= perfilActivo.getLong(IT) &&
+                                    perfilActivo.getLong(FT) > 0 &&
+                                    horaHoy < perfilActivo.getLong(FT)) ||
+                                    (horaHoy >= perfilActivo.getLong(IM) &&
+                                            perfilActivo.getLong(FM) > 0 &&
+                                            horaHoy < perfilActivo.getLong(FM))) && fechahoy>=minutoini.getLong(AGENDA_VALOR)
+                                    && (fechahoy<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
+                                primero = false;
+
+                                minutosTrabajos--;
+                                horaHoy += MINUTOSLONG;
+
+
+                            } else {
+                                horaHoy += MINUTOSLONG;
+                                if (minutoini.getLong(AGENDA_VALORSIG)>0 && fechahoy>=minutoini.getLong(AGENDA_VALORSIG)){
+
+                                    minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoini.getString(AGENDA_ID_MINSIG));
+                                    while (minutoini.getInt(AGENDA_FIN)==0 && minutoini.getString(AGENDA_ID_MINSIG)!=null) {
+                                        minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoini.getString(AGENDA_ID_MINSIG));
+                                    }
+
+                                    if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)==null &&
+                                            minutoini.getLong(AGENDA_VALORSIG)==0 ){
+                                        ContentValues values = new ContentValues();
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
+                                        values.put(AGENDA_ID_PARTIDA, idPartida);
+                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
+
+                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+
+                                    }else if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)!=null &&
+                                            minutoini.getLong(AGENDA_VALORSIG)>0 ){
+
+                                        ContentValues values = new ContentValues();
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,minutoini.getLong(AGENDA_VALOR));
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG,minutoini.getLong(AGENDA_VALORSIG)-1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
+                                        values.put(AGENDA_ID_PARTIDA, idPartida);
+                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
+
+                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+
+                                    }
+
+                                }
+                            }
+
+                            fechaTemp +=horaHoy;
+                            System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
+                            System.out.println("minutosTrabajos = " + minutosTrabajos);
+
+
+                        }
+
+                        if (minutosTrabajos <= 0) {
+
+                            if (guardar){
+                                ContentValues values = new ContentValues();
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,fechaTemp);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,ultimoMinuto.getLong(AGENDA_VALOR));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG, minutoini.getLong(AGENDA_VALORSIG));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_FIN,1);
+                                values.put(AGENDA_ID_PARTIDA, idPartida);
+                                values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,ultimoMinuto.getString(AGENDA_ID_AGENDA));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINSIG,minutoini.getString(AGENDA_ID_MINSIG));
+
+                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                            }
+                            break;
+                        }else{
+                            totaldias++;
+                            if (split && fechahoy+(totaldias * 24 * 60 )+((horaHoy-TimeDateUtil.
+                                    soloHora(TimeDateUtil.ahora()))/MINUTOSLONG)>minutoini.getLong(AGENDA_VALORSIG)){
+
+                            }
+                            horaHoy = perfilActivo.getLong(IMP);
+
+                        }
+
+
+
+                    case 3:
+
+                        IM = PERFIL_HORAIMMIERCOLES;
+                        FM = PERFIL_HORAFMMIERCOLES;
+                        IT = PERFIL_HORAITMIERCOLES;
+                        FT = PERFIL_HORAFTMIERCOLES;
+                        IMP = PERFIL_HORAIMJUEVES;
+
+                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("minutosTrabajos antes= " + minutosTrabajos);
+
+
+                        while (((perfilActivo.getLong(FT) > 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (perfilActivo.getLong(FM) > 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))) && (minutosTrabajos > 0 || primero)){
+
+                            if (((horaHoy >= perfilActivo.getLong(IT) &&
+                                    perfilActivo.getLong(FT) > 0 &&
+                                    horaHoy < perfilActivo.getLong(FT)) ||
+                                    (horaHoy >= perfilActivo.getLong(IM) &&
+                                            perfilActivo.getLong(FM) > 0 &&
+                                            horaHoy < perfilActivo.getLong(FM))) && fechahoy>=minutoini.getLong(AGENDA_VALOR)
+                                    && (fechahoy<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
+                                primero = false;
+
+                                minutosTrabajos--;
+                                horaHoy += MINUTOSLONG;
+
+
+                            } else {
+                                horaHoy += MINUTOSLONG;
+                                if (minutoini.getLong(AGENDA_VALORSIG)>0 && fechahoy>=minutoini.getLong(AGENDA_VALORSIG)){
+
+                                    minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoini.getString(AGENDA_ID_MINSIG));
+                                    while (minutoini.getInt(AGENDA_FIN)==0 && minutoini.getString(AGENDA_ID_MINSIG)!=null) {
+                                        minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoini.getString(AGENDA_ID_MINSIG));
+                                    }
+
+                                    if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)==null &&
+                                            minutoini.getLong(AGENDA_VALORSIG)==0 ){
+                                        ContentValues values = new ContentValues();
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
+                                        values.put(AGENDA_ID_PARTIDA, idPartida);
+                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
+
+                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+
+                                    }else if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)!=null &&
+                                            minutoini.getLong(AGENDA_VALORSIG)>0 ){
+
+                                        ContentValues values = new ContentValues();
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,minutoini.getLong(AGENDA_VALOR));
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG,minutoini.getLong(AGENDA_VALORSIG)-1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
+                                        values.put(AGENDA_ID_PARTIDA, idPartida);
+                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
+
+                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+
+                                    }
+
+                                }
+                            }
+
+                            fechaTemp +=horaHoy;
+                            System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
+                            System.out.println("minutosTrabajos = " + minutosTrabajos);
+
+
+                        }
+
+                        if (minutosTrabajos <= 0) {
+
+                            if (guardar){
+                                ContentValues values = new ContentValues();
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,fechaTemp);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,ultimoMinuto.getLong(AGENDA_VALOR));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG, minutoini.getLong(AGENDA_VALORSIG));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_FIN,1);
+                                values.put(AGENDA_ID_PARTIDA, idPartida);
+                                values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,ultimoMinuto.getString(AGENDA_ID_AGENDA));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINSIG,minutoini.getString(AGENDA_ID_MINSIG));
+
+                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                            }
+                            break;
+                        }else{
+                            totaldias++;
+                            if (split && fechahoy+(totaldias * 24 * 60 )+((horaHoy-TimeDateUtil.
+                                    soloHora(TimeDateUtil.ahora()))/MINUTOSLONG)>minutoini.getLong(AGENDA_VALORSIG)){
+
+                            }
+                            horaHoy = perfilActivo.getLong(IMP);
+
+                        }
+
+
+                    case 4:
+
+                        IM = PERFIL_HORAIMJUEVES;
+                        FM = PERFIL_HORAFMJUEVES;
+                        IT = PERFIL_HORAITJUEVES;
+                        FT = PERFIL_HORAFTJUEVES;
+                        IMP = PERFIL_HORAIMVIERNES;
+
+                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("minutosTrabajos antes= " + minutosTrabajos);
+
+
+                        while (((perfilActivo.getLong(FT) > 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (perfilActivo.getLong(FM) > 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))) && (minutosTrabajos > 0 || primero)){
+
+                            if (((horaHoy >= perfilActivo.getLong(IT) &&
+                                    perfilActivo.getLong(FT) > 0 &&
+                                    horaHoy < perfilActivo.getLong(FT)) ||
+                                    (horaHoy >= perfilActivo.getLong(IM) &&
+                                            perfilActivo.getLong(FM) > 0 &&
+                                            horaHoy < perfilActivo.getLong(FM))) && fechahoy>=minutoini.getLong(AGENDA_VALOR)
+                                    && (fechahoy<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
+                                primero = false;
+
+                                minutosTrabajos--;
+                                horaHoy += MINUTOSLONG;
+
+
+                            } else {
+                                horaHoy += MINUTOSLONG;
+                                if (minutoini.getLong(AGENDA_VALORSIG)>0 && fechahoy>=minutoini.getLong(AGENDA_VALORSIG)){
+
+                                    minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoini.getString(AGENDA_ID_MINSIG));
+                                    while (minutoini.getInt(AGENDA_FIN)==0 && minutoini.getString(AGENDA_ID_MINSIG)!=null) {
+                                        minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoini.getString(AGENDA_ID_MINSIG));
+                                    }
+
+                                    if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)==null &&
+                                            minutoini.getLong(AGENDA_VALORSIG)==0 ){
+                                        ContentValues values = new ContentValues();
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
+                                        values.put(AGENDA_ID_PARTIDA, idPartida);
+                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
+
+                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+
+                                    }else if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)!=null &&
+                                            minutoini.getLong(AGENDA_VALORSIG)>0 ){
+
+                                        ContentValues values = new ContentValues();
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,minutoini.getLong(AGENDA_VALOR));
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG,minutoini.getLong(AGENDA_VALORSIG)-1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
+                                        values.put(AGENDA_ID_PARTIDA, idPartida);
+                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
+
+                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+
+                                    }
+
+                                }
+                            }
+
+                            fechaTemp +=horaHoy;
+                            System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
+                            System.out.println("minutosTrabajos = " + minutosTrabajos);
+
+
+                        }
+
+                        if (minutosTrabajos <= 0) {
+
+                            if (guardar){
+                                ContentValues values = new ContentValues();
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,fechaTemp);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,ultimoMinuto.getLong(AGENDA_VALOR));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG, minutoini.getLong(AGENDA_VALORSIG));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_FIN,1);
+                                values.put(AGENDA_ID_PARTIDA, idPartida);
+                                values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,ultimoMinuto.getString(AGENDA_ID_AGENDA));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINSIG,minutoini.getString(AGENDA_ID_MINSIG));
+
+                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                            }
+                            break;
+                        }else{
+                            totaldias++;
+                            if (split && fechahoy+(totaldias * 24 * 60 )+((horaHoy-TimeDateUtil.
+                                    soloHora(TimeDateUtil.ahora()))/MINUTOSLONG)>minutoini.getLong(AGENDA_VALORSIG)){
+
+                            }
+                            horaHoy = perfilActivo.getLong(IMP);
+
+                        }
+
+                    case 5:
+
+                        IM = PERFIL_HORAIMVIERNES;
+                        FM = PERFIL_HORAFMVIERNES;
+                        IT = PERFIL_HORAITVIERNES;
+                        FT = PERFIL_HORAFTVIERNES;
+                        IMP = PERFIL_HORAIMSABADO;
+
+                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("minutosTrabajos antes= " + minutosTrabajos);
+
+
+                        while (((perfilActivo.getLong(FT) > 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (perfilActivo.getLong(FM) > 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))) && (minutosTrabajos > 0 || primero)){
+
+                            if (((horaHoy >= perfilActivo.getLong(IT) &&
+                                    perfilActivo.getLong(FT) > 0 &&
+                                    horaHoy < perfilActivo.getLong(FT)) ||
+                                    (horaHoy >= perfilActivo.getLong(IM) &&
+                                            perfilActivo.getLong(FM) > 0 &&
+                                            horaHoy < perfilActivo.getLong(FM))) && fechahoy>=minutoini.getLong(AGENDA_VALOR)
+                                    && (fechahoy<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
+                                primero = false;
+
+                                minutosTrabajos--;
+                                horaHoy += MINUTOSLONG;
+
+
+                            } else {
+                                horaHoy += MINUTOSLONG;
+                                if (minutoini.getLong(AGENDA_VALORSIG)>0 && fechahoy>=minutoini.getLong(AGENDA_VALORSIG)){
+
+                                    minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoini.getString(AGENDA_ID_MINSIG));
+                                    while (minutoini.getInt(AGENDA_FIN)==0 && minutoini.getString(AGENDA_ID_MINSIG)!=null) {
+                                        minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoini.getString(AGENDA_ID_MINSIG));
+                                    }
+
+                                    if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)==null &&
+                                            minutoini.getLong(AGENDA_VALORSIG)==0 ){
+                                        ContentValues values = new ContentValues();
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
+                                        values.put(AGENDA_ID_PARTIDA, idPartida);
+                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
+
+                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+
+                                    }else if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)!=null &&
+                                            minutoini.getLong(AGENDA_VALORSIG)>0 ){
+
+                                        ContentValues values = new ContentValues();
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,minutoini.getLong(AGENDA_VALOR));
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG,minutoini.getLong(AGENDA_VALORSIG)-1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
+                                        values.put(AGENDA_ID_PARTIDA, idPartida);
+                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
+
+                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+
+                                    }
+
+                                }
+                            }
+
+                            fechaTemp +=horaHoy;
+                            System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
+                            System.out.println("minutosTrabajos = " + minutosTrabajos);
+
+
+                        }
+
+                        if (minutosTrabajos <= 0) {
+
+                            if (guardar){
+                                ContentValues values = new ContentValues();
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,fechaTemp);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,ultimoMinuto.getLong(AGENDA_VALOR));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG, minutoini.getLong(AGENDA_VALORSIG));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_FIN,1);
+                                values.put(AGENDA_ID_PARTIDA, idPartida);
+                                values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,ultimoMinuto.getString(AGENDA_ID_AGENDA));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINSIG,minutoini.getString(AGENDA_ID_MINSIG));
+
+                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                            }
+                            break;
+                        }else{
+                            totaldias++;
+                            if (split && fechahoy+(totaldias * 24 * 60 )+((horaHoy-TimeDateUtil.
+                                    soloHora(TimeDateUtil.ahora()))/MINUTOSLONG)>minutoini.getLong(AGENDA_VALORSIG)){
+
+                            }
+                            horaHoy = perfilActivo.getLong(IMP);
+
+                        }
+
+
+
+                    case 6:
+
+                        IM = PERFIL_HORAIMSABADO;
+                        FM = PERFIL_HORAFMSABADO;
+                        IT = PERFIL_HORAITSABADO;
+                        FT = PERFIL_HORAFTSABADO;
+                        IMP = PERFIL_HORAIMDOMINGO;
+
+                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("minutosTrabajos antes= " + minutosTrabajos);
+
+
+                        while (((perfilActivo.getLong(FT) > 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (perfilActivo.getLong(FM) > 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))) && (minutosTrabajos > 0 || primero)){
+
+                            if (((horaHoy >= perfilActivo.getLong(IT) &&
+                                    perfilActivo.getLong(FT) > 0 &&
+                                    horaHoy < perfilActivo.getLong(FT)) ||
+                                    (horaHoy >= perfilActivo.getLong(IM) &&
+                                            perfilActivo.getLong(FM) > 0 &&
+                                            horaHoy < perfilActivo.getLong(FM))) && fechahoy>=minutoini.getLong(AGENDA_VALOR)
+                                    && (fechahoy<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
+                                primero = false;
+
+                                minutosTrabajos--;
+                                horaHoy += MINUTOSLONG;
+
+
+                            } else {
+                                horaHoy += MINUTOSLONG;
+                                if (minutoini.getLong(AGENDA_VALORSIG)>0 && fechahoy>=minutoini.getLong(AGENDA_VALORSIG)){
+
+                                    minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoini.getString(AGENDA_ID_MINSIG));
+                                    while (minutoini.getInt(AGENDA_FIN)==0 && minutoini.getString(AGENDA_ID_MINSIG)!=null) {
+                                        minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoini.getString(AGENDA_ID_MINSIG));
+                                    }
+
+                                    if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)==null &&
+                                            minutoini.getLong(AGENDA_VALORSIG)==0 ){
+                                        ContentValues values = new ContentValues();
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
+                                        values.put(AGENDA_ID_PARTIDA, idPartida);
+                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
+
+                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+
+                                    }else if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)!=null &&
+                                            minutoini.getLong(AGENDA_VALORSIG)>0 ){
+
+                                        ContentValues values = new ContentValues();
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,minutoini.getLong(AGENDA_VALOR));
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG,minutoini.getLong(AGENDA_VALORSIG)-1);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
+                                        values.put(AGENDA_ID_PARTIDA, idPartida);
+                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
+
+                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
+
+                                    }
+
+                                }
+                            }
+
+                            fechaTemp +=horaHoy;
+                            System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
+                            System.out.println("minutosTrabajos = " + minutosTrabajos);
+
+
+                        }
+
+                        if (minutosTrabajos <= 0) {
+
+                            if (guardar){
+                                ContentValues values = new ContentValues();
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,fechaTemp);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,ultimoMinuto.getLong(AGENDA_VALOR));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG, minutoini.getLong(AGENDA_VALORSIG));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_FIN,1);
+                                values.put(AGENDA_ID_PARTIDA, idPartida);
+                                values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
+                                values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
+                                values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,ultimoMinuto.getString(AGENDA_ID_AGENDA));
+                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINSIG,minutoini.getString(AGENDA_ID_MINSIG));
+
+                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                            }
+                            break;
+                        }else{
+                            totaldias++;
+                            if (split && fechahoy+(totaldias * 24 * 60 )+((horaHoy-TimeDateUtil.
+                                    soloHora(TimeDateUtil.ahora()))/MINUTOSLONG)>minutoini.getLong(AGENDA_VALORSIG)){
+
+                            }
+                            horaHoy = perfilActivo.getLong(IMP);
+
+                        }
+
+                }
+                diahoy = 0;
+                primero = false;
+            }
+
+
+
+            return fechahoy+(totaldias * DIASLONG )+((horaHoy-TimeDateUtil.soloHora(TimeDateUtil.ahora()))/MINUTOSLONG);
+
+        }
+
+                 */
+
+
+        private static double calculoEspacioEntreMinutos(long fechaIni, long fechaFin) {
+
+            Modelo perfilActivo = ConsultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila, null, IGUAL, null);
+            long horaHoy = 0;
+            long fechahoy = 0;
+            double horastrabajos = 0;
+            TimeZone timezone = TimeZone.getDefault();
+            Calendar calendar = new GregorianCalendar(timezone);
+            if (fechaIni>0){
+                calendar.setTimeInMillis(fechaIni);
+                fechahoy = TimeDateUtil.soloFecha(fechaIni);
+                horaHoy = TimeDateUtil.soloHora(fechaIni);
+            }else{
+                fechahoy = TimeDateUtil.soloFecha(TimeDateUtil.ahora());
+                horaHoy = TimeDateUtil.soloHora(TimeDateUtil.ahora());
+            }
+
+            int diahoy = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+
+            String IM = null;
+            String FM = null;
+            String IT = null;
+            String FT = null;
+
+            while (fechahoy < fechaFin) {
+
+                switch (diahoy) {
+
+                    case 0:
+
+                        IM = PERFIL_HORAIMDOMINGO;
+                        FM = PERFIL_HORAFMDOMINGO;
+                        IT = PERFIL_HORAITDOMINGO;
+                        FT = PERFIL_HORAFTDOMINGO;
+
+                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("horastrabajos antes= " + horastrabajos);
+
+
+                        while (((perfilActivo.getLong(FT) >= 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (perfilActivo.getLong(FM) >= 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))) && fechahoy<fechaFin){
+
+                            if ((horaHoy >= perfilActivo.getLong(IT) &&
+                                    perfilActivo.getLong(FT) >= 0 &&
+                                    horaHoy < perfilActivo.getLong(FT)) ||
+                                    (horaHoy >= perfilActivo.getLong(IM) &&
+                                            perfilActivo.getLong(FM) >= 0 &&
+                                            horaHoy < perfilActivo.getLong(FM))){
+                                System.out.println("horaHoy%HORASLONG = " + horaHoy%HORASLONG);
+                                System.out.println("minutos "+((double)(horaHoy%HORASLONG)/MINUTOSLONG));
+                                System.out.println("Fraccion "+(1/(60/((double)(horaHoy%HORASLONG)/MINUTOSLONG))));
+                                if (horaHoy%HORASLONG>0){
+                                    horastrabajos+=(1/(60/((double)(HORASLONG-(horaHoy%HORASLONG))/MINUTOSLONG)));
+                                    horaHoy+=(HORASLONG-(horaHoy%HORASLONG));
+                                }else {
+                                    horastrabajos++;
+                                    horaHoy += HORASLONG;
+                                }
+
+                            } else {
+                                horaHoy += HORASLONG;
+                            }
+
+                            System.out.println("horastrabajos = " + horastrabajos);
+                            fechahoy += horaHoy;
+                            System.out.println("fechahoy = " + fechahoy);
+                            System.out.println("fechaFin = " + fechaFin);
+                        }
+
+                        if (fechahoy >= fechaFin) {
+                            break;
+                        }else{
+                            horaHoy = perfilActivo.getLong(PERFIL_HORAIMLUNES);
+
+                        }
+
+                    case 1:
+
+                        IM = PERFIL_HORAIMLUNES;
+                        FM = PERFIL_HORAFMLUNES;
+                        IT = PERFIL_HORAITLUNES;
+                        FT = PERFIL_HORAFTLUNES;
+
+                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("horastrabajos antes= " + horastrabajos);
+
+
+                        while (((perfilActivo.getLong(FT) >= 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (perfilActivo.getLong(FM) >= 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))) && fechahoy<fechaFin){
+
+                            if ((horaHoy >= perfilActivo.getLong(IT) &&
+                                    perfilActivo.getLong(FT) >= 0 &&
+                                    horaHoy < perfilActivo.getLong(FT)) ||
+                                    (horaHoy >= perfilActivo.getLong(IM) &&
+                                            perfilActivo.getLong(FM) >= 0 &&
+                                            horaHoy < perfilActivo.getLong(FM))){
+                                System.out.println("horaHoy%HORASLONG = " + horaHoy%HORASLONG);
+                                System.out.println("minutos "+((double)(horaHoy%HORASLONG)/MINUTOSLONG));
+                                System.out.println("Fraccion "+(1/(60/((double)(horaHoy%HORASLONG)/MINUTOSLONG))));
+                                if (horaHoy%HORASLONG>0){
+                                    horastrabajos+=(1/(60/((double)(HORASLONG-(horaHoy%HORASLONG))/MINUTOSLONG)));
+                                    horaHoy+=(HORASLONG-(horaHoy%HORASLONG));
+                                }else {
+                                    horastrabajos++;
+                                    horaHoy += HORASLONG;
+                                }
+
+                            } else {
+                                horaHoy += HORASLONG;
+                            }
+
+                            System.out.println("horastrabajos = " + horastrabajos);
+                            fechahoy += horaHoy;
+                            System.out.println("fechahoy = " + fechahoy);
+                            System.out.println("fechaFin = " + fechaFin);
+
+                        }
+
+                        if (fechahoy >= fechaFin) {
+                            break;
+                        }else{
+                            horaHoy = perfilActivo.getLong(PERFIL_HORAIMMARTES);
+
+                        }
+
+
+                    case 2:
+
+
+                        IM = PERFIL_HORAIMMARTES;
+                        FM = PERFIL_HORAFMMARTES;
+                        IT = PERFIL_HORAITMARTES;
+                        FT = PERFIL_HORAFTMARTES;
+
+                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("horastrabajos antes= " + horastrabajos);
+
+
+                        while (((perfilActivo.getLong(FT) >= 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (perfilActivo.getLong(FM) >= 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))) && fechahoy<fechaFin){
+
+                            if ((horaHoy >= perfilActivo.getLong(IT) &&
+                                    perfilActivo.getLong(FT) >= 0 &&
+                                    horaHoy < perfilActivo.getLong(FT)) ||
+                                    (horaHoy >= perfilActivo.getLong(IM) &&
+                                            perfilActivo.getLong(FM) >= 0 &&
+                                            horaHoy < perfilActivo.getLong(FM))){
+                                System.out.println("horaHoy%HORASLONG = " + horaHoy%HORASLONG);
+                                System.out.println("minutos "+((double)(horaHoy%HORASLONG)/MINUTOSLONG));
+                                System.out.println("Fraccion "+(1/(60/((double)(horaHoy%HORASLONG)/MINUTOSLONG))));
+                                if (horaHoy%HORASLONG>0){
+                                    horastrabajos+=(1/(60/((double)(HORASLONG-(horaHoy%HORASLONG))/MINUTOSLONG)));
+                                    horaHoy+=(HORASLONG-(horaHoy%HORASLONG));
+                                }else {
+                                    horastrabajos++;
+                                    horaHoy += HORASLONG;
+                                }
+
+                            } else {
+                                horaHoy += HORASLONG;
+                            }
+
+                            System.out.println("horastrabajos = " + horastrabajos);
+                            fechahoy += horaHoy;
+                            System.out.println("fechahoy = " + fechahoy);
+                            System.out.println("fechaFin = " + fechaFin);
+
+                        }
+
+                        if (fechahoy >= fechaFin) {
+                            break;
+                        }else{
+                            horaHoy = perfilActivo.getLong(PERFIL_HORAIMMIERCOLES);
+
+                        }
+
+
+                    case 3:
+
+                        IM = PERFIL_HORAIMMIERCOLES;
+                        FM = PERFIL_HORAFMMIERCOLES;
+                        IT = PERFIL_HORAITMIERCOLES;
+                        FT = PERFIL_HORAFTMIERCOLES;
+
+                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("horastrabajos antes= " + horastrabajos);
+
+
+                        while (((perfilActivo.getLong(FT) >= 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (perfilActivo.getLong(FM) >= 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))) && fechahoy<fechaFin){
+
+                            if ((horaHoy >= perfilActivo.getLong(IT) &&
+                                    perfilActivo.getLong(FT) >= 0 &&
+                                    horaHoy < perfilActivo.getLong(FT)) ||
+                                    (horaHoy >= perfilActivo.getLong(IM) &&
+                                            perfilActivo.getLong(FM) >= 0 &&
+                                            horaHoy < perfilActivo.getLong(FM))){
+                                System.out.println("horaHoy%HORASLONG = " + horaHoy%HORASLONG);
+                                System.out.println("minutos "+((double)(horaHoy%HORASLONG)/MINUTOSLONG));
+                                System.out.println("Fraccion "+(1/(60/((double)(horaHoy%HORASLONG)/MINUTOSLONG))));
+                                if (horaHoy%HORASLONG>0){
+                                    horastrabajos+=(1/(60/((double)(HORASLONG-(horaHoy%HORASLONG))/MINUTOSLONG)));
+                                    horaHoy+=(HORASLONG-(horaHoy%HORASLONG));
+                                }else {
+                                    horastrabajos++;
+                                    horaHoy += HORASLONG;
+                                }
+
+                            } else {
+                                horaHoy += HORASLONG;
+                            }
+
+                            System.out.println("horastrabajos = " + horastrabajos);
+                            fechahoy += horaHoy;
+                            System.out.println("fechahoy = " + fechahoy);
+                            System.out.println("fechaFin = " + fechaFin);
+
+                        }
+
+                        if (fechahoy >= fechaFin) {
+                            break;
+                        }else{
+                            horaHoy = perfilActivo.getLong(PERFIL_HORAIMJUEVES);
+
+                        }
+
+                    case 4:
+
+                        IM = PERFIL_HORAIMJUEVES;
+                        FM = PERFIL_HORAFMJUEVES;
+                        IT = PERFIL_HORAITJUEVES;
+                        FT = PERFIL_HORAFTJUEVES;
+
+                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("horastrabajos antes= " + horastrabajos);
+
+
+                        while (((perfilActivo.getLong(FT) >= 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (perfilActivo.getLong(FM) >= 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))) && fechahoy<fechaFin){
+
+                            if ((horaHoy >= perfilActivo.getLong(IT) &&
+                                    perfilActivo.getLong(FT) >= 0 &&
+                                    horaHoy < perfilActivo.getLong(FT)) ||
+                                    (horaHoy >= perfilActivo.getLong(IM) &&
+                                            perfilActivo.getLong(FM) >= 0 &&
+                                            horaHoy < perfilActivo.getLong(FM))){
+                                System.out.println("horaHoy%HORASLONG = " + horaHoy%HORASLONG);
+                                System.out.println("minutos "+((double)(horaHoy%HORASLONG)/MINUTOSLONG));
+                                System.out.println("Fraccion "+(1/(60/((double)(horaHoy%HORASLONG)/MINUTOSLONG))));
+                                if (horaHoy%HORASLONG>0){
+                                    horastrabajos+=(1/(60/((double)(HORASLONG-(horaHoy%HORASLONG))/MINUTOSLONG)));
+                                    horaHoy+=(HORASLONG-(horaHoy%HORASLONG));
+                                }else {
+                                    horastrabajos++;
+                                    horaHoy += HORASLONG;
+                                }
+
+                            } else {
+                                horaHoy += HORASLONG;
+                            }
+
+                            System.out.println("horastrabajos = " + horastrabajos);
+                            fechahoy += horaHoy;
+                            System.out.println("fechahoy = " + fechahoy);
+                            System.out.println("fechaFin = " + fechaFin);
+
+                        }
+
+                        if (fechahoy >= fechaFin) {
+                            break;
+                        }else{
+                            horaHoy = perfilActivo.getLong(PERFIL_HORAIMVIERNES);
+
+                        }
+
+                    case 5:
+
+                        IM = PERFIL_HORAIMVIERNES;
+                        FM = PERFIL_HORAFMVIERNES;
+                        IT = PERFIL_HORAITVIERNES;
+                        FT = PERFIL_HORAFTVIERNES;
+
+                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("horastrabajos antes= " + horastrabajos);
+
+
+                        while (((perfilActivo.getLong(FT) >= 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (perfilActivo.getLong(FM) >= 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))) && fechahoy<fechaFin){
+
+                            if ((horaHoy >= perfilActivo.getLong(IT) &&
+                                    perfilActivo.getLong(FT) >= 0 &&
+                                    horaHoy < perfilActivo.getLong(FT)) ||
+                                    (horaHoy >= perfilActivo.getLong(IM) &&
+                                            perfilActivo.getLong(FM) >= 0 &&
+                                            horaHoy < perfilActivo.getLong(FM))){
+                                System.out.println("horaHoy%HORASLONG = " + horaHoy%HORASLONG);
+                                System.out.println("minutos "+((double)(horaHoy%HORASLONG)/MINUTOSLONG));
+                                System.out.println("Fraccion "+(1/(60/((double)(horaHoy%HORASLONG)/MINUTOSLONG))));
+                                if (horaHoy%HORASLONG>0){
+                                    horastrabajos+=(1/(60/((double)(HORASLONG-(horaHoy%HORASLONG))/MINUTOSLONG)));
+                                    horaHoy+=(HORASLONG-(horaHoy%HORASLONG));
+                                }else {
+                                    horastrabajos++;
+                                    horaHoy += HORASLONG;
+                                }
+
+                            } else {
+                                horaHoy += HORASLONG;
+                            }
+
+                            System.out.println("horastrabajos = " + horastrabajos);
+                            fechahoy += horaHoy;
+                            System.out.println("fechahoy = " + fechahoy);
+                            System.out.println("fechaFin = " + fechaFin);
+
+                        }
+
+                        if (fechahoy >= fechaFin) {
+                            break;
+                        }else{
+                            horaHoy = perfilActivo.getLong(PERFIL_HORAIMSABADO);
+
+                        }
+
+
+                    case 6:
+
+                        IM = PERFIL_HORAIMSABADO;
+                        FM = PERFIL_HORAFMSABADO;
+                        IT = PERFIL_HORAITSABADO;
+                        FT = PERFIL_HORAFTSABADO;
+
+                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
+                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
+                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
+                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
+                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
+                        System.out.println("horastrabajos antes= " + horastrabajos);
+
+
+                        while (((perfilActivo.getLong(FT) >= 0 &&
+                                horaHoy < perfilActivo.getLong(FT)) ||
+                                (perfilActivo.getLong(FM) >= 0 &&
+                                        horaHoy < perfilActivo.getLong(FM))) && fechahoy<fechaFin){
+
+                            if ((horaHoy >= perfilActivo.getLong(IT) &&
+                                    perfilActivo.getLong(FT) >= 0 &&
+                                    horaHoy < perfilActivo.getLong(FT)) ||
+                                    (horaHoy >= perfilActivo.getLong(IM) &&
+                                            perfilActivo.getLong(FM) >= 0 &&
+                                            horaHoy < perfilActivo.getLong(FM))){
+                                System.out.println("horaHoy%HORASLONG = " + horaHoy%HORASLONG);
+                                System.out.println("minutos "+((double)(horaHoy%HORASLONG)/MINUTOSLONG));
+                                System.out.println("Fraccion "+(1/(60/((double)(horaHoy%HORASLONG)/MINUTOSLONG))));
+                                if (horaHoy%HORASLONG>0){
+                                    horastrabajos+=(1/(60/((double)(HORASLONG-(horaHoy%HORASLONG))/MINUTOSLONG)));
+                                    horaHoy+=(HORASLONG-(horaHoy%HORASLONG));
+                                }else {
+                                    horastrabajos++;
+                                    horaHoy += HORASLONG;
+                                }
+
+                            } else {
+                                horaHoy += HORASLONG;
+                            }
+
+                            System.out.println("horastrabajos = " + horastrabajos);
+                            fechahoy += horaHoy;
+                            System.out.println("fechahoy = " + fechahoy);
+                            System.out.println("fechaFin = " + fechaFin);
+
+                        }
+
+                        if (fechahoy >= fechaFin) {
+                            break;
+                        }else{
+                            horaHoy = perfilActivo.getLong(PERFIL_HORAIMDOMINGO);
+
+                        }
+
+                }
+                diahoy = 0;
+            }
+
+            return horastrabajos;
+
         }
 
 
@@ -1194,26 +3342,34 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             listaDetPartida = ConsultaBD.queryListDetalle(CAMPOS_DETPARTIDA, idPartida, TABLA_PARTIDA);
             Modelo partida = ConsultaBD.queryObject(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, idPartida, null,
                     JavaUtil.Constantes.IGUAL, null);
-            for (Modelo detPartida : listaDetPartida) {
 
+            double precioHora;
+            if (partida.getInt(PARTIDA_TIPO_ESTADO)==TiposEstados.TNUEVOPRESUP){
+                precioHora = hora;
+            }else{
+                Modelo proyecto = CRUDutil.updateModelo(CAMPOS_PROYECTO,partida.getString(PARTIDA_ID_PROYECTO));
+                precioHora = proyecto.getDouble(PROYECTO_PRECIOHORA);
+            }
+
+            for (Modelo detPartida : listaDetPartida) {
 
                 ContentValues valores = new ContentValues();
 
                 if (detPartida.getString(DETPARTIDA_TIPO).equals(TIPOTRABAJO)) {
 
-                    Modelo trabajo = CRUDutil.setModelo(CAMPOS_TRABAJO, detPartida.getString(DETPARTIDA_ID_DETPARTIDA));
+                    Modelo trabajo = CRUDutil.updateModelo(CAMPOS_TRABAJO, detPartida.getString(DETPARTIDA_ID_DETPARTIDA));
                     valores.put(DETPARTIDA_NOMBRE, trabajo.getString(TRABAJO_NOMBRE));
                     valores.put(DETPARTIDA_DESCRIPCION, trabajo.getString(TRABAJO_DESCRIPCION));
                     valores.put(DETPARTIDA_RUTAFOTO, trabajo.getString(TRABAJO_RUTAFOTO));
 
                     if (partida.getInt(PARTIDA_TIPO_ESTADO) == 1) {
                         valores.put(DETPARTIDA_TIEMPO, trabajo.getDouble(TRABAJO_TIEMPO));
-                        valores.put(DETPARTIDA_PRECIO, trabajo.getDouble(TRABAJO_TIEMPO) * hora);
+                        valores.put(DETPARTIDA_PRECIO, trabajo.getDouble(TRABAJO_TIEMPO) * precioHora);
                     }
 
                 } else if (detPartida.getString(DETPARTIDA_TIPO).equals(TIPOPRODUCTO)) {
 
-                    Modelo producto = CRUDutil.setModelo(CAMPOS_PRODUCTO, detPartida.getString(DETPARTIDA_ID_DETPARTIDA));
+                    Modelo producto = CRUDutil.updateModelo(CAMPOS_PRODUCTO, detPartida.getString(DETPARTIDA_ID_DETPARTIDA));
                     valores.put(DETPARTIDA_NOMBRE, producto.getString(PRODUCTO_NOMBRE));
                     valores.put(DETPARTIDA_DESCRIPCION, producto.getString(PRODUCTO_DESCRIPCION));
                     valores.put(DETPARTIDA_REFPROVEEDOR, producto.getString(PRODUCTO_REFERENCIA));
@@ -1246,7 +3402,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                 }
             }
             coste += (tiempoPartida * calculoCosteHora());
-            importeTiempoPartida = tiempoPartida * Interactor.hora;
+            importeTiempoPartida = tiempoPartida * precioHora;
             totalPartida = importeProductosPartida + importeTiempoPartida;
 
 
@@ -1256,7 +3412,6 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_TIEMPO, tiempoPartida * cantidadPartida);
             ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_PRECIO, totalPartida * cantidadPartida);
             ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_COSTE, coste * cantidadPartida);
-            ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_PRECIOHORA, Interactor.hora);
 
             String idProyecto_Partida = partida.getString(PARTIDA_ID_PROYECTO);
             int secuenciaPartida = partida.getInt(PARTIDA_SECUENCIA);
@@ -1279,7 +3434,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             for (Modelo itemPartida : listaPartidas) {
                 actualizarPartidaProyecto(itemPartida.getString(PARTIDA_ID_PARTIDA));
                 double cantidad = itemPartida.getDouble(PARTIDA_CANTIDAD);
-                totalTiempo += itemPartida.getDouble(PARTIDA_TIEMPO) * cantidad;
+                totalTiempo += itemPartida.getDouble(PARTIDA_TIEMPO) ;
                 totalPrecio += itemPartida.getDouble(PARTIDA_PRECIO) * cantidad;
                 totcompletada += itemPartida.getInt(PARTIDA_COMPLETADA);
                 totalcoste += itemPartida.getDouble(PARTIDA_COSTE) * cantidad;
@@ -1308,7 +3463,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             for (Modelo itemPartida : listaPartidas) {
                 actualizarPartidaProyecto(itemPartida.getString(PARTIDA_ID_PARTIDA));
                 double cantidad = itemPartida.getDouble(PARTIDA_CANTIDAD);
-                totalTiempo += itemPartida.getDouble(PARTIDA_TIEMPO) * cantidad;
+                totalTiempo += itemPartida.getDouble(PARTIDA_TIEMPO) ;
                 totalPrecio += itemPartida.getDouble(PARTIDA_PRECIO) * cantidad;
                 totcompletada += itemPartida.getInt(PARTIDA_COMPLETADA);
                 totalcoste += itemPartida.getDouble(PARTIDA_COSTE) * cantidad;
@@ -1348,7 +3503,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                 for (Modelo itemPartida : listaPartidas) {
                     actualizarPartidaProyecto(itemPartida.getString(PARTIDA_ID_PARTIDA));
                     double cantidad = itemPartida.getDouble(PARTIDA_CANTIDAD);
-                    totalTiempo += itemPartida.getDouble(PARTIDA_TIEMPO) * cantidad;
+                    totalTiempo += itemPartida.getDouble(PARTIDA_TIEMPO) ;
                     totalPrecio += itemPartida.getDouble(PARTIDA_PRECIO) * cantidad;
                     totcompletada += itemPartida.getInt(PARTIDA_COMPLETADA);
                     totalcoste += itemPartida.getDouble(PARTIDA_COSTE) * cantidad;
@@ -1407,8 +3562,8 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
             try {
 
-                Modelo modelo = CRUDutil.setModelo(CAMPOS_PARTIDA, id, secuencia);
-                Modelo partidaBase = CRUDutil.setModelo(CAMPOS_PARTIDABASE, modelo.getString(PARTIDA_ID_PARTIDABASE));
+                Modelo modelo = CRUDutil.updateModelo(CAMPOS_PARTIDA, id, secuencia);
+                Modelo partidaBase = CRUDutil.updateModelo(CAMPOS_PARTIDABASE, modelo.getString(PARTIDA_ID_PARTIDABASE));
                 ContentValues valores = new ContentValues();
 
                 putDato(valores, CAMPOS_PARTIDA, PARTIDA_NOMBRE, partidaBase.getString(PARTIDABASE_NOMBRE));
@@ -1462,12 +3617,12 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             }
         }
 
-        public static class Tareafechas extends AsyncTask<Void, Float, Integer> {
+        public static class Tareafechas extends AsyncTask<Boolean, Float, Integer> {
 
             @Override
-            protected Integer doInBackground(Void... voids) {
+            protected Integer doInBackground(Boolean... booleans) {
 
-                recalcularFechas();
+                recalcularFechas(booleans[0]);
                 return null;
             }
 
@@ -1512,7 +3667,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             protected Modelo doInBackground(String... strings) {
 
                 sincroPartidaBaseToPartidaProy(strings[0], strings[1]);
-                return CRUDutil.setModelo(CAMPOS_PARTIDA, strings[0], strings[1]);
+                return CRUDutil.updateModelo(CAMPOS_PARTIDA, strings[0], strings[1]);
             }
 
             @Override

@@ -57,7 +57,7 @@ public class EventosReceiver extends ReceiverBase implements JavaUtil.Constantes
             System.out.println("Accion posponer");
             String idEvento = intent.getExtras().getString(EXTRA_IDEVENTO);
 
-            Modelo evento = CRUDutil.setModelo(CAMPOS_EVENTO, idEvento);
+            Modelo evento = CRUDutil.updateModelo(CAMPOS_EVENTO, idEvento);
             ConsultaBD consulta = new ConsultaBD();
             ContentValues valores = new ContentValues();
             long minhoy = JavaUtil.sumaHoraMin(JavaUtil.hoy());

@@ -13,7 +13,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -23,7 +22,6 @@ import com.codevsolution.base.android.AppActivity;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import static com.codevsolution.base.logica.InteractorBase.Constantes.BTNPRIMARY;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.BTNSECONDARY;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.BTNTRANSPARENTE;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.COLOR;
@@ -425,7 +423,7 @@ public class EditMaterialLayout {
 
     }
 
-    public void btnInicioInvisible(boolean enable) {
+    public void btnInicioVisible(boolean enable) {
 
         if (enable) {
             btnInicio.setVisibility(View.VISIBLE);
@@ -447,7 +445,7 @@ public class EditMaterialLayout {
 
     }
 
-    public void btnAccionInvisible(boolean enable) {
+    public void btnAccionVisible(boolean enable) {
 
         if (enable) {
             btnAccion.setVisibility(View.VISIBLE);
@@ -458,7 +456,7 @@ public class EditMaterialLayout {
 
     }
 
-    public void btnAccion2Invisible(boolean enable) {
+    public void btnAccion2Visible(boolean enable) {
 
         if (enable) {
             btnAccion2.setVisibility(View.VISIBLE);
@@ -774,6 +772,9 @@ public class EditMaterialLayout {
 
     public void setActivo(boolean activo) {
         editText.setEnabled(activo);
+        if (!activo){
+            btnInicioVisible(false);
+        }
     }
 
     public boolean getActivo() {

@@ -105,8 +105,9 @@ public abstract class FragmentCRUD extends FragmentCUD {
     protected void selector() {
 
         Log.d(TAG, getMetodo());
-        System.out.println("id = " + id);
-        System.out.println("modelo = " + modelo);
+
+        subTitulo = getString(tituloPlural);
+        activityBase.toolbar.setSubtitle(subTitulo);
 
         maestroDetalle();
 
@@ -135,26 +136,20 @@ public abstract class FragmentCRUD extends FragmentCUD {
                 secuencia = modelo.getInt(CAMPO_SECUENCIA);
             }
             datos();
-            subTitulo = getString(tituloPlural);
-            activityBase.toolbar.setSubtitle(subTitulo);
 
         } else if (id != null && (secuencia > 0 || tablaCab == null)) {
 
             if (tablaCab != null) {
-                modelo = CRUDutil.setModelo(campos, id, secuencia);
+                modelo = CRUDutil.updateModelo(campos, id, secuencia);
             } else {
-                modelo = CRUDutil.setModelo(campos, id);
+                modelo = CRUDutil.updateModelo(campos, id);
             }
 
             datos();
-            subTitulo = getString(tituloPlural);
-            activityBase.toolbar.setSubtitle(subTitulo);
 
         } else {
 
             back = false;
-            subTitulo = getString(tituloPlural);
-            activityBase.toolbar.setSubtitle(subTitulo);
 
         }
 
@@ -390,7 +385,6 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
         setOnItemClickAuto();
 
-        //if (lista.chechLista()) {
         rv.setVisibility(View.VISIBLE);
         auto.setVisibility(View.VISIBLE);
         buscar.setVisibility(View.VISIBLE);
@@ -398,10 +392,8 @@ public abstract class FragmentCRUD extends FragmentCUD {
         inicio.setVisibility(View.VISIBLE);
         lupa.setVisibility(View.VISIBLE);
 
-        //}else {
-        //auto.setVisibility(View.GONE);
         buscar.setVisibility(View.GONE);
-        //renovar.setVisibility(View.GONE);
+
         if (listab == null) {
             inicio.setVisibility(View.GONE);
         }
@@ -740,6 +732,11 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
         back = true;
 
+        System.out.println("modelo.getLong(campoTimeStamp) = " + modelo.getLong(CAMPO_TIMESTAMP));
+        System.out.println("modelo.getLong(campoCreate) = " + modelo.getLong(CAMPO_CREATEREG));
+        if (modelo.getLong(CAMPO_CREATEREG)==modelo.getLong(CAMPO_TIMESTAMP)){
+            delete();
+        }
         cambiarFragment();
         selector();
 

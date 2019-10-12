@@ -6,9 +6,9 @@ import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCUD;
 import com.codevsolution.base.models.Modelo;
@@ -44,6 +44,7 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
     private EditMaterial cantidadPartida;
     private String idProv;
     private EditMaterial nomProv;
+    private EditMaterial preciotot;
 
 
     public FragmentCUDDetpartidaProducto() {
@@ -81,43 +82,66 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
     protected void setBundle() {
 
         proyecto = (Modelo) bundle.getSerializable(PROYECTO);
-        partida = (Modelo) bundle.getSerializable(PARTIDA);
-        producto = (Modelo) bundle.getSerializable(PRODUCTO);
+        partida = (Modelo) bundle.getSerializable(TABLA_PARTIDA);
+        if (nn(partida) && partida.getInt(PARTIDA_TIPO_ESTADO)==TNUEVOPRESUP) {
+            producto = CRUDutil.updateModelo(CAMPOS_PRODUCTO, modelo.getString(DETPARTIDA_ID_DETPARTIDA));
+        }
 
-        if (partida != null) {
+        if (nn(partida)) {
             secuenciaPartida = partida.getInt(PARTIDA_SECUENCIA);
             idProyecto_Partida = partida.getString(PARTIDA_ID_PROYECTO);
+            cantidadPartida.setText(JavaUtil.getDecimales(partida.getDouble(PARTIDA_CANTIDAD)));
+
         }
         tipo = TIPOPRODUCTO;
 
-        if (producto != null) {
-            nombre.setText(producto.getString(PRODUCTO_NOMBRE));
-            descripcion.setText(producto.getString(PRODUCTO_DESCRIPCION));
-            precio.setText(JavaUtil.formatoMonedaLocal(producto.getDouble(PRODUCTO_PRECIO)));
-            refProv.setText(producto.getString(PRODUCTO_REFERENCIA));
-            nomProv.setText(producto.getString(PRODUCTO_NOMBREPROV));
-            idDetPartida = producto.getString(PRODUCTO_ID_PRODUCTO);
-            idProv = producto.getString(PRODUCTO_ID_PROVEEDOR);
-            path = producto.getString(PRODUCTO_RUTAFOTO);
-        }
 
     }
 
     @Override
     protected void setDatos() {
 
-        modelo = CRUDutil.setModelo(campos, id, secuencia);
+        modelo = CRUDutil.updateModelo(campos, id, secuencia);
 
         tipoDetPartida.setText(tipo.toUpperCase());
 
         completadaPartida.setVisibility(View.VISIBLE);
         progressBarPartida.setVisibility(View.VISIBLE);
         completada = modelo.getDouble(DETPARTIDA_COMPLETADA);
+        cantidad.setText(modelo.getString(DETPARTIDA_CANTIDAD));
+        if (nn(producto)) {
+            nombre.setText(producto.getString(PRODUCTO_NOMBRE));
+            descripcion.setText(producto.getString(PRODUCTO_DESCRIPCION));
+            precio.setText(JavaUtil.formatoMonedaLocal(producto.getDouble(PRODUCTO_PRECIO)));
+            refProv.setText(producto.getString(PRODUCTO_REFERENCIA));
+            nomProv.setText(producto.getString(PRODUCTO_NOMBREPROV));
+            descProv.setText(producto.getString(PRODUCTO_DESCPROV));
+            idDetPartida = producto.getString(PRODUCTO_ID_PRODUCTO);
+            idProv = producto.getString(PRODUCTO_ID_PROVEEDOR);
+            path = producto.getString(PRODUCTO_RUTAFOTO);
 
+        } else{
+
+            nombre.setText(modelo.getString(DETPARTIDA_NOMBRE));
+            descripcion.setText(modelo.getString(DETPARTIDA_DESCRIPCION));
+            precio.setText(JavaUtil.formatoMonedaLocal(modelo.getDouble(DETPARTIDA_PRECIO)));
+            refProv.setText(modelo.getString(DETPARTIDA_REFPROVEEDOR));
+            nomProv.setText(modelo.getString(DETPARTIDA_PROVEEDOR));
+            descProv.setText(modelo.getString(DETPARTIDA_DESCUENTOPROVEEDOR));
+            idDetPartida = modelo.getString(DETPARTIDA_ID_DETPARTIDA);
+            idProv = modelo.getString(DETPARTIDA_ID_PROVEEDOR);
+            path = modelo.getString(DETPARTIDA_RUTAFOTO);
+
+        }
 
         if (modelo.getString(DETPARTIDA_RUTAFOTO) != null) {
             path = modelo.getString(DETPARTIDA_RUTAFOTO);
             imagen.setImageUri(modelo.getString(DETPARTIDA_RUTAFOTO));
+        }
+        if (nn(partida) && nn(producto)) {
+            preciotot.setText(JavaUtil.formatoMonedaLocal
+                    ((partida.getDouble(PARTIDA_CANTIDAD) * producto.getDouble(PRODUCTO_PRECIO)
+                            *modelo.getDouble(DETPARTIDA_CANTIDAD))));
         }
 
     }
@@ -145,15 +169,17 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
     @Override
     protected void setInicio() {
 
-        descripcion = (EditMaterial) ctrl(R.id.etdesccdetpartida_prod, DETPARTIDA_DESCRIPCION);
-        precio = (EditMaterial) ctrl(R.id.etpreciocdetpartida_prod, DETPARTIDA_PRECIO);
-        cantidad = (EditMaterial) ctrl(R.id.etcantcdetpartida_prod, DETPARTIDA_CANTIDAD);
+        descripcion = (EditMaterial) ctrl(R.id.etdesccdetpartida_prod);
+        precio = (EditMaterial) ctrl(R.id.etpreciocdetpartida_prod);
+        preciotot = (EditMaterial) ctrl(R.id.etpreciototcdetpartida_prod);
+        cantidad = (EditMaterial) ctrl(R.id.etcantcdetpartida_prod);
         cantidadPartida = (EditMaterial) ctrl(R.id.etcanttotpartida_prod);
-        nombre = (EditMaterial) ctrl(R.id.etnombredetpartida_prod, DETPARTIDA_NOMBRE);
+        nombre = (EditMaterial) ctrl(R.id.etnombredetpartida_prod);
         imagen = (ImagenLayout) ctrl(R.id.imgcdetpartida_prod);
-        refProv = (EditMaterial) ctrl(R.id.tvrefprovcdetpartida_prod, DETPARTIDA_REFPROVEEDOR);
-        descProv = (EditMaterial) ctrl(R.id.etporcdesprovcdetpartida_prod, DETPARTIDA_DESCUENTOPROVEEDOR);
-        tipoDetPartida = (TextView) ctrl(R.id.tvtipocdetpartida_prod, DETPARTIDA_TIPO);
+        refProv = (EditMaterial) ctrl(R.id.tvrefprovcdetpartida_prod);
+        nomProv = (EditMaterial) ctrl(R.id.tvnomprovcdetpartida_prod);
+        descProv = (EditMaterial) ctrl(R.id.etporcdesprovcdetpartida_prod);
+        tipoDetPartida = (TextView) ctrl(R.id.tvtipocdetpartida_prod);
         partida_completada = (CheckBox) ctrl(R.id.cbox_hacer_detpartida_completa_prod);
         progressBarPartida = (ProgressBar) ctrl(R.id.progressBardetpartida_prod);
         completadaPartida = (EditMaterial) ctrl(R.id.etcompletadadetpartida_prod);
@@ -169,6 +195,14 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
         setDato(DETPARTIDA_ID_DETPARTIDA, idDetPartida);
         setDato(DETPARTIDA_ID_PARTIDA, id);
         setDato(DETPARTIDA_TIPO, tipo);
+        setDato(DETPARTIDA_NOMBRE,nombre.getTexto());
+        setDato(DETPARTIDA_DESCRIPCION,descripcion.getTexto());
+        setDato(DETPARTIDA_PRECIO,JavaUtil.comprobarDouble(precio.getTexto()));
+        setDato(DETPARTIDA_REFPROVEEDOR,refProv.getTexto());
+        setDato(DETPARTIDA_PROVEEDOR,nomProv.getTexto());
+        setDato(DETPARTIDA_DESCUENTOPROVEEDOR,descProv.getTexto());
+        setDato(DETPARTIDA_ID_PROVEEDOR,idProv);
+        setDato(DETPARTIDA_RUTAFOTO,path);
 
         if (partida_completada.isChecked()) {
             setDato(DETPARTIDA_COMPLETA, 1);

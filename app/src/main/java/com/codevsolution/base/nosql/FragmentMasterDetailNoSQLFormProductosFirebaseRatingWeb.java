@@ -31,11 +31,9 @@ import com.chargebee.Environment;
 import com.chargebee.ListResult;
 import com.chargebee.models.Subscription;
 import com.codevsolution.base.android.AppActivity;
-import com.codevsolution.base.chat.EnviarNoticias;
+import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.chat.FragmentChatBase;
-import com.codevsolution.base.media.GlideApp;
 import com.codevsolution.base.models.Rating;
-import com.codevsolution.base.pay.chargebee.SuscripcionesChargebee;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -52,7 +50,6 @@ import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.media.ImagenUtil;
@@ -203,6 +200,8 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
                 }
 
+                System.out.println("lugar = " + lugar);
+
                 DatabaseReference db = FirebaseDatabase.getInstance().getReference();
                 Query querydb = db.child(LUGARES).child(tipo).child(lugar.toLowerCase());
 
@@ -228,7 +227,9 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                 String estado = dataSnapshot.getValue(String.class);
-                                                if (estado.equals(Subscription.Status.ACTIVE)) {
+                                                System.out.println("estado = " + estado);
+                                                System.out.println("estado active = "+Subscription.Status.ACTIVE);
+                                                if (estado.equals("ACTIVE")) {
 
                                                     lista.add(prodProv);
 
@@ -445,6 +446,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
     protected void setDatos() {
 
+        imagen.setTextTitulo(tipo.toUpperCase());
 
         if (tipoForm.equals(NUEVO)) {
 
@@ -477,6 +479,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
 
         } else {
+
             gone(opcionesZona);
             visible(proveedor);
             comprobarSuscripcion();
@@ -759,8 +762,12 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
         if (nuevo || id == null) {
             id = db.child(tipo).push().getKey();
+            prodProv.setId(id);
+
+            crearProdCrud(prodProv);
+        }else {
+            actualizarProdCrud(prodProv);
         }
-        prodProv.setId(id);
 
         if (id != null) {
 
@@ -830,6 +837,10 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         }
     }
 
+    protected void actualizarProdCrud(Productos prodProv) {
+
+    }
+
 
     protected void alGuardar(Productos prodProv) {
 
@@ -861,8 +872,12 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         prodProv.setWeb(etWeb.getTexto());
         prodProv.setTimeStamp(TimeDateUtil.ahora());
 
+
+
         final String idnew = db.child(tipoClon).push().getKey();
         prodProv.setId(idnew);
+
+        prodProv.setIdCrud(crearProdCrud(prodProv));
 
         if (nn(id) && nn(idnew)) {
 
@@ -914,6 +929,11 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         } else {
             Toast.makeText(contexto, getString(R.string.fallo_subiendo_registro), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    protected String crearProdCrud(Productos prodProv) {
+
+        return null;
     }
 
     protected void sincronizarClon(final Productos prodProv) {

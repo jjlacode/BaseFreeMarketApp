@@ -24,6 +24,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 
+import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltro;
@@ -31,7 +32,6 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.media.MediaUtil;
@@ -370,7 +370,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
             }
 
             ConsultaBD.updateRegistro(TABLA_EVENTO, id, valores);
-            modelo = CRUDutil.setModelo(campos,id);
+            modelo = CRUDutil.updateModelo(campos,id);
 
             if (repeticiones.isChecked()) {
 
@@ -452,7 +452,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
             Toast.makeText(contexto, "Registro actualizado", Toast.LENGTH_SHORT).show();
 
-            modelo = CRUDutil.setModelo(campos,id);
+            modelo = CRUDutil.updateModelo(campos,id);
             setDatos();
             return true;
         }
@@ -1406,7 +1406,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
             if (modelo!=null) {
                 Toast.makeText(getContext(), "Registro creado",
                         Toast.LENGTH_SHORT).show();
-                modelo = CRUDutil.setModelo(campos,id);
+                modelo = CRUDutil.updateModelo(campos,id);
                 nuevo = false;
                 return true;
             }
@@ -1519,7 +1519,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                         valores = new ContentValues();
                         valores.putNull(EVENTO_IDMULTI);
                         ConsultaBD.updateRegistro(tabla,idEvento,valores);
-                        modelo = CRUDutil.setModelo(campos,idEvento);
+                        modelo = CRUDutil.updateModelo(campos,idEvento);
                         idMulti = null;
                         Toast.makeText(contexto, "Regitros borrados", Toast.LENGTH_SHORT).show();
                         listab = null;
@@ -2016,8 +2016,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
             @Override
             public void onEntrada(Object entrada, View view) {
 
-                ImagenLayout imgcli = view.findViewById(R.id.imglcliente);
-                ImagenLayout imgcliPeso = view.findViewById(R.id.imglclientepeso);
+                //ImagenLayout imgcli = view.findViewById(R.id.imglcliente);
+                //ImagenLayout imgcliPeso = view.findViewById(R.id.imglclientepeso);
                 TextView nombreCli = view.findViewById(R.id.tvnomclilcliente);
                 TextView contactoCli = view.findViewById(R.id.tvcontacclilcliente);
                 TextView telefonoCli = view.findViewById(R.id.tvtelclilcliente);
@@ -2029,6 +2029,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                 int peso = ((Modelo) entrada).getInt
                         (CLIENTE_PESOTIPOCLI);
 
+                /*
                 if (peso > 6) {
                     imgcliPeso.setImageResource(R.drawable.clientev);
                 } else if (peso > 3) {
@@ -2039,11 +2040,13 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                     imgcliPeso.setImageResource(R.drawable.cliente);
                 }
 
+                 */
+
                 nombreCli.setText(((Modelo) entrada).getString(CLIENTE_NOMBRE));
                 contactoCli.setText(((Modelo) entrada).getString(CLIENTE_CONTACTO));
                 telefonoCli.setText(((Modelo) entrada).getString(CLIENTE_TELEFONO));
                 emailCli.setText(((Modelo) entrada).getString(CLIENTE_EMAIL));
-                imgcli.setImageUriPerfil(activityBase, ((Modelo) entrada).getString(CLIENTE_RUTAFOTO));
+                //imgcli.setImageUriPerfil(activityBase, ((Modelo) entrada).getString(CLIENTE_RUTAFOTO));
 
 
             }
