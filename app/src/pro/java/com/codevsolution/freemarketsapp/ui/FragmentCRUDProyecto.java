@@ -605,58 +605,11 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         fechaInicioCalculadaPry = vistaAcordada.addEditMaterialLayout(R.string.fecha_acordada);
         fechaInicioCalculadaPry.setActivo(false);
         fechaInicioCalculadaPry.btnInicioVisible(false);
-        fechaInicioCalculadaPry.btnAccionEnable(true);
-        fechaInicioCalculadaPry.setImgBtnAccion(R.drawable.ic_search_black_24dp);
-        fechaInicioCalculadaPry.setClickAccion(new EditMaterialLayout.ClickAccion() {
-            @Override
-            public void onClickAccion(View view) {
 
-                if (fechaInicioCalculada==0){
-                    fechaInicioCalculada = TimeDateUtil.ahora();
-                }
-                    showDatePickerDialogAcordada();
-            }
-        });
-        fechaInicioCalculadaPry.btnAccion2Enable(true);
-        fechaInicioCalculadaPry.setImgBtnAccion2(R.drawable.ic_autorenew_black_24dp);
-        fechaInicioCalculadaPry.setClickAccion2(new EditMaterialLayout.ClickAccion2() {
-            @Override
-            public void onClickAccion2(View view) {
-                ContentValues values = new ContentValues();
-                values.put(PROYECTO_FECHAINICIOCALCULADA,modelo.getLong(PROYECTO_FECHAINICIOACORDADA));
-                CRUDutil.actualizarRegistro(modelo,values);
-                modelo = CRUDutil.updateModelo(modelo);
-                new TareaFechasDatos().execute(false);
-            }
-        });
         horaInicioCalculadaPry = vistaAcordada.addEditMaterialLayout(R.string.hora_acordada);
         horaInicioCalculadaPry.setActivo(false);
         horaInicioCalculadaPry.btnInicioVisible(false);
-        horaInicioCalculadaPry.btnAccionEnable(true);
-        horaInicioCalculadaPry.setImgBtnAccion(R.drawable.ic_search_black_24dp);
-        horaInicioCalculadaPry.setClickAccion(new EditMaterialLayout.ClickAccion() {
-            @Override
-            public void onClickAccion(View view) {
 
-                if (horaInicioCalculada==0){
-                    horaInicioCalculada = TimeDateUtil.ahora();
-                }
-
-                showTimePickerDialogAcordada();
-            }
-        });
-        horaInicioCalculadaPry.btnAccion2Enable(true);
-        horaInicioCalculadaPry.setImgBtnAccion2(R.drawable.ic_autorenew_black_24dp);
-        horaInicioCalculadaPry.setClickAccion2(new EditMaterialLayout.ClickAccion2() {
-            @Override
-            public void onClickAccion2(View view) {
-                ContentValues values = new ContentValues();
-                values.put(PROYECTO_HORAINICIOCALCULADA,modelo.getLong(PROYECTO_HORAINICIOACORDADA));
-                CRUDutil.actualizarRegistro(modelo,values);
-                modelo = CRUDutil.updateModelo(modelo);
-                new TareaFechasDatos().execute(false);
-            }
-        });
         actualizarArrays(vistaAcordada);
         fechaCalculadaPry = vistaForm.addEditMaterialLayout(R.string.fecha_calculada);
         fechaCalculadaPry.setActivo(false);
@@ -832,7 +785,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     protected void setDatos() {
 
         Interactor.Calculos.actualizarPresupuesto(id);
-        new TareaFechasDatos().execute(false);
+        //new TareaFechasDatos().execute(false);
 
         activityBase.fabNuevo.hide();
 
@@ -933,13 +886,13 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 modelo = CRUDutil.updateModelo(modelo);
             }
 
-            if (modelo.getLong(PROYECTO_HORAINICIOCALCULADA) == 0) {
+            if (horaInicioCalculada == 0) {
                 horaInicioCalculadaPry.setText(getString(R.string.sin_asignar));
             }else{
-                horaInicioCalculadaPry.setText(JavaUtil.getTime(horaInicioCalculada));
+                horaInicioCalculadaPry.setText(TimeDateUtil.getTimeString(horaInicioCalculada));
             }
 
-            if (modelo.getLong(PROYECTO_FECHAINICIOCALCULADA) == 0) {
+            if (fechaInicioCalculada == 0) {
 
                 fechaInicioCalculadaPry.setText(getString(R.string.sin_asignar));
                 fechaCalculadaPry.setText(JavaUtil.getDateTime(fechaCalculada));
@@ -1627,7 +1580,10 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
-                        horaInicioCalculada = JavaUtil.sumaHoraMin(JavaUtil.horaALong(hourOfDay,minute));
+                        System.out.println("hourOfDay = " + hourOfDay);
+                        System.out.println("minute = " + minute);
+                        horaInicioCalculada = JavaUtil.horaALong(hourOfDay, minute);
+                        System.out.println("hora a long " + JavaUtil.horaALong(hourOfDay, minute));
                         String selectedHour = TimeDateUtil.getTimeString(horaInicioCalculada);
                         horaInicioCalculadaPry.setText(selectedHour);
                         valores = new ContentValues();
@@ -1637,6 +1593,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                         Interactor.Calculos.recalcularFechas(false);
                         System.out.println("modelo.getString(PROYECTO_FECHAENTREGACALCULADAF) = " + modelo.getString(PROYECTO_FECHAENTREGACALCULADAF));
                         fechaCalculadaPry.setText(modelo.getString(PROYECTO_FECHAENTREGACALCULADAF));
+                        setDatos();
 
                     }
                 });
@@ -1647,7 +1604,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     private void showDatePickerDialogAcordada() {
         DatePickerFragment newFragment = DatePickerFragment.newInstance
-                (JavaUtil.soloFecha(fechaInicioCalculada), new DatePickerDialog.OnDateSetListener() {
+                (TimeDateUtil.ahora(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         fechaInicioCalculada = JavaUtil.fechaALong(year, month, day);
@@ -1664,6 +1621,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                         Interactor.Calculos.recalcularFechas(false);
                         System.out.println("modelo.getString(PROYECTO_FECHAENTREGACALCULADAF) = " + modelo.getString(PROYECTO_FECHAENTREGACALCULADAF));
                         fechaCalculadaPry.setText(modelo.getString(PROYECTO_FECHAENTREGACALCULADAF));
+                        setDatos();
 
                     }
                 });

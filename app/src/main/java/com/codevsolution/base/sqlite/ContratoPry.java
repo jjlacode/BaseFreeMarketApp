@@ -37,7 +37,6 @@ import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.T
 public class ContratoPry implements JavaUtil.Constantes {
 
     public static final String AUTORIDAD_CONTENIDO = AppActivity.getNombreApp();
-    ;
 
     public static final Uri URI_BASE = Uri.parse("content://" + AUTORIDAD_CONTENIDO);
 
@@ -464,12 +463,14 @@ public class ContratoPry implements JavaUtil.Constantes {
         String AGENDA_ID_MINSIG = "minsig_" + CAMPO_ID + TABLA_AGENDA;
         String AGENDA_ID_DETPARTIDA = TABLA_DETPARTIDA + CAMPO_ID + TABLA_AGENDA;
         String AGENDA_SECUENCIA_DETPARTIDA = TABLA_DETPARTIDA + CAMPO_SECUENCIA + TABLA_AGENDA;
-        String AGENDA_VALOR = CAMPO_VALOR + TABLA_AGENDA;
+        String AGENDA_VALORENTRADA = CAMPO_VALOR + "entrada_" + TABLA_AGENDA;
+        String AGENDA_VALORSALIDA = CAMPO_VALOR + "salida_" + TABLA_AGENDA;
         String AGENDA_VALORANT = CAMPO_VALOR + "ant_" + TABLA_AGENDA;
         String AGENDA_VALORSIG = CAMPO_VALOR + "sig_" + TABLA_AGENDA;
         String AGENDA_ACTIVO = CAMPO_ACTIVO + TABLA_AGENDA;
         String AGENDA_MULTI = CAMPO_MULTI + TABLA_AGENDA;
         String AGENDA_INICIO = "inicio_" + TABLA_AGENDA;
+        String AGENDA_ESPACIO = "espacio_" + TABLA_AGENDA;
         String AGENDA_ESPACIOANT = "espacioant_" + TABLA_AGENDA;
         String AGENDA_ESPACIOSIG = "espaciosig_" + TABLA_AGENDA;
         String AGENDA_FIN = "fin_" + TABLA_AGENDA;
@@ -940,7 +941,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PEDIDOCLIENTE_TIMESTAMP, "INTEGER NON NULL DEFAULT 0", LONG
         };
 
-        String[] CAMPOS_AGENDA = {"56", TABLA_AGENDA,
+        String[] CAMPOS_AGENDA = {"62", TABLA_AGENDA,
                 AGENDA_ID_AGENDA, "TEXT NON NULL UNIQUE", STRING,
                 AGENDA_ID_PARTIDA, "TEXT NON NULL", STRING,
                 AGENDA_ID_DETPARTIDA, "TEXT NON NULL", STRING,
@@ -948,9 +949,11 @@ public class ContratoPry implements JavaUtil.Constantes {
                 AGENDA_ID_MINSIG, "TEXT", STRING,
                 AGENDA_SECUENCIA_PARTIDA, "INTEGER NON NULL DEFAULT 0", INT,
                 AGENDA_SECUENCIA_DETPARTIDA, "INTEGER NON NULL DEFAULT 0", INT,
-                AGENDA_VALOR, "INTEGER NON NULL DEFAULT 0", LONG,
+                AGENDA_VALORENTRADA, "INTEGER NON NULL DEFAULT 0", LONG,
+                AGENDA_VALORSALIDA, "INTEGER NON NULL DEFAULT 0", LONG,
                 AGENDA_VALORANT, "INTEGER NON NULL DEFAULT 0", LONG,
                 AGENDA_VALORSIG, "INTEGER NON NULL DEFAULT 0", LONG,
+                AGENDA_ESPACIO, "REAL NON NULL DEFAULT 0", DOUBLE,
                 AGENDA_ESPACIOANT, "REAL NON NULL DEFAULT 0", DOUBLE,
                 AGENDA_ESPACIOSIG, "REAL NON NULL DEFAULT 0", DOUBLE,
                 AGENDA_ACTIVO, "INTEGER NON NULL DEFAULT 0", INT,

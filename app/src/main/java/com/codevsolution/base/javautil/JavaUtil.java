@@ -253,18 +253,14 @@ public class JavaUtil {
 
     public static long fechaALong(int anio, int mes, int dia) {
 
-        //Date date = new Date(anio,mes,dia);
         Calendar calendar = new GregorianCalendar(anio, mes, dia);
 
-        return calendar.getTimeInMillis();//date.getTime();
+        return calendar.getTimeInMillis();
     }
 
     public static long horaALong(int hora, int minuto) {
 
-        Calendar calendar = new GregorianCalendar(0, 0, 0, hora, minuto);
-        calendar.set(Calendar.MILLISECOND, 0);
-        calendar.setTimeZone(TimeZone.getDefault());
-        return calendar.getTimeInMillis();
+        return (hora * HORASLONG) + (minuto * MINUTOSLONG);
     }
 
     public static String longAFecha(long fecha) {
@@ -335,10 +331,9 @@ public class JavaUtil {
 
         Calendar c = new GregorianCalendar();
         c.setTimeInMillis(fecha);
-        c.set(Calendar.YEAR, 0);
-        c.set(Calendar.MONTH, 0);
-        c.set(Calendar.DAY_OF_WEEK, 0);
-        return c.getTimeInMillis();
+        long hora = c.get(Calendar.HOUR_OF_DAY);
+        long min = c.get(Calendar.MINUTE);
+        return (hora * HORASLONG) + (min * MINUTOSLONG);
     }
 
 
@@ -381,7 +376,7 @@ public class JavaUtil {
         DateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
         Date date2 = null;
         try {
-            date2 = (Date) formatter.parse(date);
+            date2 = formatter.parse(date);
         } catch (ParseException e) {
             e.printStackTrace();
         }

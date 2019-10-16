@@ -194,21 +194,34 @@ public class TimeDateUtil {
 
     public static String getDateString(long date) {
 
-        Date fecha = new Date(date);
+        Calendar c = new GregorianCalendar();
+        c.setTimeInMillis(date);
+        Date fecha = c.getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM yyyy ", Locale.getDefault());
 
         return sdf.format(fecha);
     }
 
     public static String getDateTimeString(long datetime) {
-        Date date = new Date(datetime);
+
+        if (datetime < DIASLONG)
+            datetime -= HORASLONG;
+        Calendar c = new GregorianCalendar();
+        c.setTimeInMillis(datetime);
+        Date date = c.getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM yyyy HH:mm", Locale.getDefault());
 
         return sdf.format(date);
     }
 
     public static String getTimeString(long time) {
-        Date date = new Date(time - 3600000);
+        long hoy = soloFecha(ahora());
+        if (time < DIASLONG)
+            time += hoy;
+        Calendar c = new GregorianCalendar();
+        c.setTimeInMillis(time);
+        Date date = c.getTime();
+        System.out.println("date.getHours = " + date.getHours());
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm ", Locale.getDefault());
 
         return sdf.format(date);
@@ -275,7 +288,7 @@ public class TimeDateUtil {
         DateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
         Date date2 = null;
         try {
-            date2 = (Date) formatter.parse(date);
+            date2 = formatter.parse(date);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -293,7 +306,7 @@ public class TimeDateUtil {
         DateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
         Date date2 = null;
         try {
-            date2 = (Date) formatter.parse(date);
+            date2 = formatter.parse(date);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -306,7 +319,7 @@ public class TimeDateUtil {
         DateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
         Date date2 = null;
         try {
-            date2 = (Date) formatter.parse(date);
+            date2 = formatter.parse(date);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -320,13 +333,12 @@ public class TimeDateUtil {
     public static long soloHora(long date) {
 
         Calendar c = new GregorianCalendar();
+        long hoy = soloFecha(ahora());
+        if (date < DIASLONG)
+            date += hoy;
         c.setTimeInMillis(date);
-        System.out.println("getDateTimeString(date) = " + getDateTimeString(date));
-        long horas = c.get(Calendar.HOUR_OF_DAY)-1;
+        long horas = c.get(Calendar.HOUR_OF_DAY);
         long minutos = c.get(Calendar.MINUTE);
-        System.out.println("date = " + date);
-        System.out.println("minutos = " + minutos);
-        System.out.println("horas = " + horas);
         if (date>=0){
         return (horas * HORASLONG) + (minutos * MINUTOSLONG);
         }else{

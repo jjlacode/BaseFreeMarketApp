@@ -16,12 +16,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
@@ -34,6 +37,7 @@ import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModelo;
 import com.codevsolution.base.models.Modelo;
 import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
@@ -51,13 +55,17 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         ContratoPry.Tablas, Interactor.TiposDetPartida, Interactor.TiposEstados {
 
     private Long retraso;
-    private EditMaterial nombrePartida;
-    private EditMaterial descripcionPartida;
-    private EditMaterial tiempoPartida;
-    private EditMaterial importePartida;
-    private EditMaterial cantidadPartida;
-    private EditMaterial completadaPartida;
-    private EditMaterial etOrden;
+    private EditMaterialLayout nombrePartida;
+    private EditMaterialLayout descripcionPartida;
+    private EditMaterialLayout tiempoPartida;
+    private EditMaterialLayout importePartida;
+    private EditMaterialLayout cantidadPartida;
+    private EditMaterialLayout completadaPartida;
+    private EditMaterialLayout etOrden;
+    private EditMaterialLayout etFechaInicioCalculada;
+    private EditMaterialLayout etHoraInicioCalculada;
+    private EditMaterialLayout etFechaCalculada;
+
     private Button btnPartidaBase;
 
     private ImageView imagenret;
@@ -77,6 +85,9 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     private int secuenciatemp;
     private boolean clonada;
     private String idpartidabase;
+    private long horaInicioCalculada;
+    private long fechaInicioCalculada;
+    private long fechaCalculada;
 
     public FragmentCRUDPartidaProyecto() {
         // Required empty public constructor
@@ -98,7 +109,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
         if (nn(id) || nn(proyecto)) {
             visible(btnVolverProy);
-            visible(viewCabecera);
+            visible(frCabecera);
             activityBase.toolbar.setSubtitle(proyecto.getString(PROYECTO_NOMBRE));
 
         }
@@ -134,7 +145,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
             }
         });
 
-        cantidadPartida.setAlCambiarListener(new EditMaterial.AlCambiarListener() {
+        cantidadPartida.setAlCambiarListener(new EditMaterialLayout.AlCambiarListener() {
             @Override
             public void antesCambio(CharSequence s, int start, int count, int after) {
 
@@ -201,31 +212,68 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     @Override
     protected void setLayout() {
 
-        layoutCuerpo = R.layout.fragment_crud_partida_proyecto;
-        layoutCabecera = R.layout.cabecera_crud_partida;
+        //layoutCuerpo = R.layout.fragment_crud_partida_proyecto;
+        //layoutCabecera = R.layout.cabecera_crud_partida;
         layoutItem = R.layout.item_list_partida;
-
+        cabecera = true;
     }
 
     @Override
     protected void setInicio() {
 
-        nombrePartida = (EditMaterial) ctrl(R.id.etnomudpartida);
-        descripcionPartida = (EditMaterial) ctrl(R.id.etdescripcionUDpartida);
-        tiempoPartida = (EditMaterial) ctrl(R.id.ettiempoUDpartida);
-        importePartida = (EditMaterial) ctrl(R.id.etprecioUDpartida);
-        cantidadPartida = (EditMaterial) ctrl(R.id.etcantidadUDpartida, PARTIDA_CANTIDAD);
-        completadaPartida = (EditMaterial) ctrl(R.id.etcompletadaUDpartida, PARTIDA_COMPLETADA);
-        etOrden = (EditMaterial) ctrl(R.id.etordenUDpartida,PARTIDA_ORDEN);
-        btnPartidaBase = (Button) ctrl(R.id.btn_npartidabase);
-        progressBarPartida = (ProgressBar) ctrl(R.id.progressBarUDpartida);
-        imagen = (ImagenLayout) ctrl(R.id.imgudpartida);
-        imagenret = (ImageView) ctrl(R.id.imgretudpartida);
-        rvdetalles = (RecyclerView) ctrl(R.id.rvdetalleUDpartida);
-        btnVolverProy = (Button) ctrl(R.id.btn_volverproy);
-        gone(btnVolverProy);
+        ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
+
+        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
+        imagen.setFocusable(false);
+        imagen.getImagen().setClickable(false);
+        imagen.setTextTitulo(tituloSingular);
+        btnPartidaBase = vistaForm.addButtonPrimary(R.string.modificar_partidabase);
+        nombrePartida = vistaForm.addEditMaterialLayout(getString(R.string.nombre));
+        nombrePartida.setActivo(false);
+        nombrePartida.btnInicioVisible(false);
+        descripcionPartida = vistaForm.addEditMaterialLayout(getString(R.string.descripcion));
+        descripcionPartida.setActivo(false);
+        descripcionPartida.btnInicioVisible(false);
+
+        ViewGroupLayout vistaCant = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaCant.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+        imagenret = (ImageView) vistaCant.addVista(new ImageView(contexto));
+        imagenret.setFocusable(false);
+        cantidadPartida = vistaCant.addEditMaterialLayout(getString(R.string.cantidad), PARTIDA_CANTIDAD);
+        tiempoPartida = vistaCant.addEditMaterialLayout(R.string.tiempo);
         tiempoPartida.setActivo(false);
+        tiempoPartida.btnInicioVisible(false);
+        importePartida = vistaCant.addEditMaterialLayout(R.string.importe);
         importePartida.setActivo(false);
+        importePartida.btnInicioVisible(false);
+
+        actualizarArrays(vistaCant);
+
+        etOrden = vistaForm.addEditMaterialLayout(R.string.orden_ejecucion);
+        ViewGroupLayout vistaAcordada = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaAcordada.setOrientacion(LinearLayoutCompat.HORIZONTAL);
+        etFechaInicioCalculada = vistaAcordada.addEditMaterialLayout(R.string.fecha_acordada);
+        etFechaInicioCalculada.setActivo(false);
+        etFechaInicioCalculada.btnInicioVisible(false);
+
+        etHoraInicioCalculada = vistaAcordada.addEditMaterialLayout(R.string.hora_acordada);
+        etHoraInicioCalculada.setActivo(false);
+        etHoraInicioCalculada.btnInicioVisible(false);
+
+        actualizarArrays(vistaAcordada);
+
+        etFechaCalculada = vistaForm.addEditMaterialLayout(R.string.fecha_calculada);
+        etFechaCalculada.setActivo(false);
+        etFechaCalculada.btnInicioVisible(false);
+        progressBarPartida = (ProgressBar) vistaForm.addVista(new ProgressBar(contexto, null, R.style.ProgressBarStyleAcept));
+        completadaPartida = vistaForm.addEditMaterialLayout(R.string.completada);
+
+        rvdetalles = (RecyclerView) vistaForm.addVista(new RecyclerView(contexto));
+        actualizarArrays(vistaForm);
+
+        ViewGroupLayout vistaCab = new ViewGroupLayout(contexto, frCabecera);
+        btnVolverProy = vistaCab.addButtonPrimary(R.string.volver_a_proyecto);
+        actualizarArrays(vistaCab);
 
     }
 
@@ -277,8 +325,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
             activityBase.toolbar.setSubtitle(proyecto.getString(PROYECTO_NOMBRE));
         }
         imagen.setTextTitulo(getString(R.string.partida)+" "+secuencia);
-        completadaPartida.setVisibility(View.VISIBLE);
-        nombrePartida.setVisibility(View.VISIBLE);
+        completadaPartida.getLinearLayout().setVisibility(View.VISIBLE);
+        nombrePartida.getLinearLayout().setVisibility(View.VISIBLE);
         rvdetalles.setVisibility(View.VISIBLE);
         progressBarPartida.setVisibility(View.VISIBLE);
 
@@ -288,14 +336,42 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         completadaPartida.setText(JavaUtil.getDecimales(completada));
         tiemporeal = (modelo.getDouble(PARTIDA_TIEMPOREAL)*HORASLONG)/1000;
         secuenciatemp = secuencia;
+        horaInicioCalculada = modelo.getLong(PARTIDA_HORAINICIOCALCULADA);
+        fechaInicioCalculada = modelo.getLong(PARTIDA_HORAINICIOCALCULADA);
+        fechaCalculada = modelo.getLong(PARTIDA_FECHAENTREGACALCULADA);
+
+        if (horaInicioCalculada == 0) {
+            etHoraInicioCalculada.setText(getString(R.string.sin_asignar));
+        } else {
+            etHoraInicioCalculada.setText(TimeDateUtil.getTimeString(horaInicioCalculada));
+        }
+
+        if (fechaInicioCalculada == 0) {
+
+            etFechaInicioCalculada.setText(getString(R.string.sin_asignar));
+            etFechaCalculada.setText(JavaUtil.getDateTime(fechaCalculada));
+
+
+        } else {
+
+            etFechaCalculada.setText(JavaUtil.getDateTime(fechaCalculada));
+            etFechaInicioCalculada.setText(TimeDateUtil.getDateString(fechaInicioCalculada));
+
+        }
 
         etOrden.setText(String.valueOf(modelo.getInt(DETPARTIDA_ORDEN)));
         int orden = 0;
         if (modelo.getInt(PARTIDA_ORDEN)==0){
 
-            for (Modelo partida : lista.getLista()) {
-                if (partida.getInt(PARTIDA_ORDEN)>orden){
-                    orden = partida.getInt(PARTIDA_ORDEN);
+            if (lista == null) {
+                lista = CRUDutil.setListaModelo(campos);
+            }
+
+            if (lista.sizeLista() > 0) {
+                for (Modelo partida : lista.getLista()) {
+                    if (partida.getInt(PARTIDA_ORDEN) > orden) {
+                        orden = partida.getInt(PARTIDA_ORDEN);
+                    }
                 }
             }
             valores = new ContentValues();
@@ -309,11 +385,11 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         if (getTipoEstado(modelo.getString(PARTIDA_ID_ESTADO))<=TPRESUPACEPTADO) {
 
             progressBarPartida.setVisibility(View.GONE);
-            completadaPartida.setVisibility(View.GONE);
+            completadaPartida.getLinearLayout().setVisibility(View.GONE);
         }else{
 
             progressBarPartida.setVisibility(View.VISIBLE);
-            completadaPartida.setVisibility(View.VISIBLE);
+            completadaPartida.getLinearLayout().setVisibility(View.VISIBLE);
 
             if (modelo.getInt(PARTIDA_COMPLETA) == 1) {
                 tiempoPartida.setText(JavaUtil.getDecimales(modelo.getDouble(PARTIDA_TIEMPOREAL)));
@@ -474,7 +550,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     @Override
     protected boolean delete() {
 
-        new Interactor.Calculos.Tareafechas().execute();
+        new Interactor.Calculos.Tareafechas().execute(false);
         new Interactor.Calculos.TareaActualizaProy().execute(id);
 
         return super.delete();
@@ -525,7 +601,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     @Override
     protected boolean update() {
 
-        new Interactor.Calculos.Tareafechas().execute();
+        new Interactor.Calculos.Tareafechas().execute(false);
         new Interactor.Calculos.TareaActualizaProy().execute(id);
 
         if (Double.parseDouble(cantidadPartida.getTexto())==0){

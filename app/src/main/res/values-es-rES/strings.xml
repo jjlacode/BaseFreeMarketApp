@@ -463,6 +463,7 @@
     <string name="fecha_inicio_calculada">Fecha inicio trabajos calculada</string>
     <string name="hora_acordada">Hora entrega acordada</string>
     <string name="orden_ejecucion">Orden de ejecución</string>
+    <string name="offset">Tiempo de preparación (horas)</string>
 
 
 </resources>

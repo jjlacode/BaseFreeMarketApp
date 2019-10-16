@@ -1317,7 +1317,8 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
         public static void recalcularAgenda(long inicio, long fin, int anios){
 
-            String ordenAgenda = AGENDA_VALOR + Constantes.ORDENASCENDENTE;
+            String ordenAgenda = AGENDA_VALORENTRADA + Constantes.ORDENASCENDENTE;
+
             if (anios == 0){anios=1;}
             if (inicio==0){
                 inicio = (TimeDateUtil.ahora()-(ANIOSLONG * anios));
@@ -1326,73 +1327,55 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
                 fin = (TimeDateUtil.ahora()+(ANIOSLONG * anios));
             }
-            ListaModelo listaMinutos = CRUDutil.setListaModelo(CAMPOS_AGENDA,AGENDA_VALOR,
+            ListaModelo listaMinutos = CRUDutil.setListaModelo(CAMPOS_AGENDA, AGENDA_VALORENTRADA,
                     String.valueOf(inicio),String.valueOf(fin),ENTRE,ordenAgenda);
-            System.out.println("inicio = " + inicio);
-            System.out.println("fin = " + fin);
 
-            System.out.println("listaMinutosre = " + listaMinutos.sizeLista());
             for (int i = 0; i < listaMinutos.getLista().size(); i++) {
+
                 ContentValues values = new ContentValues();
-                boolean multi = false;
-                Modelo minutoActual= listaMinutos.getLista().get(i);
-                Modelo partida = CRUDutil.updateModelo(CAMPOS_PARTIDA,minutoActual.getString(AGENDA_ID_PARTIDA)
-                        ,minutoActual.getString(AGENDA_SECUENCIA_PARTIDA));
-                if (partida==null){
-                    CRUDutil.borrarRegistro(TABLA_AGENDA,minutoActual.getString(AGENDA_ID_AGENDA));
-                    recalcularAgenda(inicio,fin,anios);
-                    return;
-                }else{
-
-                        Modelo detPartida = CRUDutil.updateModelo(CAMPOS_DETPARTIDA,minutoActual.getString(AGENDA_ID_PARTIDA)
-                                ,minutoActual.getString(AGENDA_SECUENCIA_DETPARTIDA));
-                        if (detPartida == null && listaMinutos.getLista().size()>1){
-                            CRUDutil.borrarRegistro(TABLA_AGENDA,minutoActual.getString(AGENDA_ID_AGENDA));
-                            recalcularAgenda(inicio,fin,anios);
-                            return;
-                        }
-
+                Modelo segmento = listaMinutos.getItem(i);
+                Modelo segmentoAnt = CRUDutil.updateModelo(CAMPOS_AGENDA, segmento.getString(AGENDA_ID_MINANT));
+                if (i > 0 && segmentoAnt == null) {
+                    segmentoAnt = listaMinutos.getItem(i - 1);
                 }
-                long valorActual = minutoActual.getLong(AGENDA_VALOR);
-                if (i>0){
-                    Modelo minutoAnterior= listaMinutos.getLista().get(i-1);
-                    long valorAnterior = minutoAnterior.getLong(AGENDA_VALOR);
-                    if (valorActual==valorAnterior && !minutoActual.getString(AGENDA_ID_DETPARTIDA)
-                            .equals(minutoAnterior.getString(AGENDA_ID_DETPARTIDA))){multi = true;}
+                Modelo partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, segmento.getString(AGENDA_ID_PARTIDA)
+                        , segmento.getString(AGENDA_SECUENCIA_PARTIDA));
+                Modelo detPartida = CRUDutil.updateModelo(CAMPOS_DETPARTIDA, segmento.getString(AGENDA_ID_DETPARTIDA)
+                        , segmento.getString(AGENDA_SECUENCIA_DETPARTIDA));
+                boolean activo = false;
+                if (detPartida != null && partida != null && partida.getInt(PARTIDA_TIPO_ESTADO) > TiposEstados.TPRESUPESPERA &&
+                        partida.getInt(PARTIDA_TIPO_ESTADO) < TiposEstados.TPROYECPENDENTREGA) {
+                    activo = true;
+                }
 
-                    values.put(AGENDA_VALORANT,valorAnterior);
-                    values.put(AGENDA_ID_MINANT,minutoAnterior.getString(AGENDA_ID_AGENDA));
+                long valorEntrada = segmento.getLong(AGENDA_VALORENTRADA);
+                long valorSalida = segmento.getLong(AGENDA_VALORSALIDA);
 
-                    if (valorActual!=valorAnterior){
-                        values.put(AGENDA_INICIO,1);
-                    }else{
-                        values.put(AGENDA_INICIO,0);
-                    }
-                    values.put(AGENDA_ESPACIOANT,calculoEspacioEntreMinutos
-                            (minutoAnterior.getLong(AGENDA_VALOR),minutoActual.getLong(AGENDA_VALOR)));
+
+                if (segmentoAnt != null) {
+                    long valorAnterior = segmentoAnt.getLong(AGENDA_VALORSALIDA);
+
+                    values.put(AGENDA_VALORANT, valorAnterior);
+                    values.put(AGENDA_ID_MINANT, segmentoAnt.getString(AGENDA_ID_AGENDA));
+                    values.put(AGENDA_ESPACIOANT, calculoEspacioEntreMinutos(valorAnterior, valorEntrada));
+
                 }
                 if (i<listaMinutos.getLista().size()-1){
-                    Modelo minutoSiguiente = listaMinutos.getLista().get(i+1);
-                    long valorSiguiente = minutoSiguiente.getLong(AGENDA_VALOR);
-                    if (valorActual==valorSiguiente && !minutoActual.getString(AGENDA_ID_DETPARTIDA)
-                            .equals(minutoSiguiente.getString(AGENDA_ID_DETPARTIDA))){multi = true;}
+                    Modelo segmentoSig = listaMinutos.getItem(i + 1);
+                    long valorSiguiente = segmentoSig.getLong(AGENDA_VALORENTRADA);
 
                     values.put(AGENDA_VALORSIG,valorSiguiente);
-                    values.put(AGENDA_ID_MINSIG,minutoSiguiente.getString(AGENDA_ID_AGENDA));
-
-                    if (valorActual!=valorSiguiente){
-                        values.put(AGENDA_FIN,1);
-                    }else{
-                        values.put(AGENDA_FIN,0);
-                    }
+                    values.put(AGENDA_ID_MINSIG, segmentoSig.getString(AGENDA_ID_AGENDA));
                     values.put(AGENDA_ESPACIOSIG,calculoEspacioEntreMinutos
-                            (minutoActual.getLong(AGENDA_VALOR),minutoSiguiente.getLong(AGENDA_VALOR)));
+                            (valorSalida, valorSiguiente));
                 }
-                if (multi){
-                    values.put(AGENDA_MULTI,1);
+
+                if (activo) {
+                    values.put(AGENDA_ACTIVO, 1);
                 }else{
-                    values.put(AGENDA_MULTI,0);
+                    values.put(AGENDA_ACTIVO, 0);
                 }
+                CRUDutil.actualizarRegistro(segmento, values);
 
             }
         }
@@ -1403,9 +1386,8 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             long fin = 0;
             int anios = 0;
             recalcularAgenda(inicio,fin,anios);
-            long fechaInicio = 0;
             long fechaFin = 0;
-            String ordenProyectosNuevos = PROYECTO_FECHAENTRADA + Constantes.ORDENDESCENDENTE;
+            String ordenProyectosNuevos = PROYECTO_FECHAENTRADA + Constantes.ORDENASCENDENTE;
 
             ListaModelo listaProyectosnuevos = CRUDutil.setListaModelo(CAMPOS_PROYECTO, PROYECTO_FECHAINICIOACORDADA, "0", IGUAL,ordenProyectosNuevos);
 
@@ -1438,12 +1420,12 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
                         if (detPartida.getInt(DETPARTIDA_ORDEN)>0){
 
-                            String ordenAgenda = AGENDA_VALOR + Constantes.ORDENASCENDENTE;
                             if (partida.getInt(PARTIDA_ORDEN) == 1) {
                                 if (detPartida.getInt(DETPARTIDA_ORDEN) == 1) {
-                                    inicio = TimeDateUtil.soloFecha(proyectoNuevo.getLong(PROYECTO_FECHAINICIOCALCULADA)) +
-                                            TimeDateUtil.soloHora(proyectoNuevo.getLong(PROYECTO_HORAINICIOCALCULADA));
+                                    inicio = TimeDateUtil.soloFecha(detPartida.getLong(DETPARTIDA_FECHAINICIOCALCULADA)) +
+                                            TimeDateUtil.soloHora(detPartida.getLong(DETPARTIDA_HORAINICIOCALCULADA));
                                 }
+
                             } else if (partida.getInt(PARTIDA_ORDEN) > 1) {
 
                                 if (detPartida.getInt(DETPARTIDA_ORDEN) == 1) {
@@ -1451,6 +1433,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                                     for (Modelo partidatemp : listaPartidas.getLista()) {
                                         if (partidatemp.getInt(PARTIDA_ORDEN) == partida.getInt(PARTIDA_ORDEN) - 1) {
                                             partidaAnt = partidatemp.clonar(false);
+                                            break;
                                         }
                                     }
                                     if (partidaAnt != null) {
@@ -1459,9 +1442,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                                 }
                             }
 
-                            if (inicio == 0 && detPartida.getInt(DETPARTIDA_ORDEN) == 1) {
-                                inicio = detPartida.getLong(DETPARTIDA_FECHAINICIOCALCULADA) + detPartida.getLong(DETPARTIDA_HORAINICIOCALCULADA);
-                            } else if (inicio == 0 && detPartida.getInt(DETPARTIDA_ORDEN) > 1) {
+                            if (inicio == 0 && detPartida.getInt(DETPARTIDA_ORDEN) > 1) {
 
                                 Modelo detPartidaAnt = null;
                                 for (Modelo detPartidatemp : listaDetPartidas.getLista()) {
@@ -1474,77 +1455,35 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                                 }
                             }
 
-                            if (inicio == 0) {
-                                inicio = TimeDateUtil.ahora() ;
-                            }
-                            if (fin == 0) {
-                                if (anios == 0) {
-                                    anios = 1;
-                                }
-                                fin = (TimeDateUtil.ahora() + (ANIOSLONG * anios)) ;
-                            }
-                            System.out.println("inicio = " + inicio);
-                            System.out.println("TimeDateUtil.getDateTimeString(inicio) = " + TimeDateUtil.getDateTimeString(inicio));
-                            System.out.println("fin = " + fin);
-                            ListaModelo listaMinutos = CRUDutil.setListaModelo(CAMPOS_AGENDA, AGENDA_VALOR,
-                                    String.valueOf(inicio), String.valueOf(fin), ENTRE, ordenAgenda);
+                            fechaFin = calculoMinutoFinDetPartida(inicio, detPartida, guardar);
 
-                            System.out.println("listaMinutos = " + listaMinutos.sizeLista());
-
-                            boolean split = false;
-                            if (detPartida.getInt(DETPARTIDA_SPLIT)== 1){split = true;}
-
-                            if (listaMinutos.sizeLista() > 0) {
-                                for (int m = 0; m < listaMinutos.getLista().size(); m++) {
-
-                                    Modelo minuto = listaMinutos.getLista().get(m);
-                                    System.out.println("minuto.getLong(AGENDA_VALOR) = " + minuto.getLong(AGENDA_VALOR));
-                                    System.out.println("minuto.getLong(AGENDA_VALORANT) = " + minuto.getLong(AGENDA_VALORANT));
-                                    System.out.println("minuto.getLong(AGENDA_VALORSIG) = " + minuto.getLong(AGENDA_VALORSIG));
-                                    System.out.println("minuto.getLong(AGENDA_ESPACIOSIG) = " + minuto.getLong(AGENDA_ESPACIOSIG));
-
-                                    if (listaMinutos.getLista().get(0).getInt(AGENDA_FIN)==0){
-                                        fechaFin = 0;
-                                    }else if (minuto.getInt(AGENDA_FIN) == 1 && ( split || minuto.getDouble(AGENDA_ESPACIOSIG) > detPartida.getDouble(DETPARTIDA_TIEMPO))) {
-
-                                            fechaInicio = minuto.getLong(AGENDA_VALOR)+MINUTOSLONG;
-                                            fechaFin = calculoMinutoFinDetPartida(fechaInicio, minuto, detPartida,split, guardar);
-                                            break;
-                                    }
-                                }
-                                if (fechaFin == 0) {
-                                    fechaInicio = inicio + detPartida.getLong(DETPARTIDA_OFFSET);
-                                    fechaFin = calculoMinutoFinDetPartida(fechaInicio, listaMinutos.getLista().get(0), detPartida,split, guardar);
-
-                                }
-                            } else {
-
-                                fechaInicio = inicio + detPartida.getLong(DETPARTIDA_OFFSET);
-                                fechaFin = calculoMinutoFinDetPartida(fechaInicio,null, detPartida,split,guardar);
-
-                            }
                             ContentValues valores = new ContentValues();
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAINICIOCALCULADA, fechaInicio);
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(fechaInicio));
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_HORAINICIOCALCULADA, fechaInicio);
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(fechaInicio));
+                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAINICIOCALCULADA, inicio);
+                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(inicio));
+                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_HORAINICIOCALCULADA, inicio);
+                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(inicio));
                             ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAENTREGACALCULADA, fechaFin);
                             ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
                             ConsultaBD.updateRegistroDetalle(TABLA_DETPARTIDA, detPartida.getString(DETPARTIDA_ID_PARTIDA), detPartida.getInt(DETPARTIDA_SECUENCIA), valores);
+                            System.out.println("valores detpartida= " + valores);
                             if (partida.getInt(PARTIDA_ORDEN) == 1) {
                                 valores = new ContentValues();
-                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAINICIOCALCULADA, fechaInicio);
-                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(fechaInicio));
-                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_HORAINICIOCALCULADA, fechaInicio);
-                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(fechaInicio));
+                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAINICIOCALCULADA, inicio);
+                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(inicio));
+                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_HORAINICIOCALCULADA, inicio);
+                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(inicio));
                                 ConsultaBD.updateRegistroDetalle(TABLA_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO), partida.getInt(PARTIDA_SECUENCIA), valores);
+                                System.out.println("valores inicio partida= " + valores);
+
                                 if (detPartida.getInt(DETPARTIDA_ORDEN) == 1) {
                                     valores = new ContentValues();
-                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAINICIOCALCULADA, fechaInicio);
-                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(fechaInicio));
-                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_HORAINICIOCALCULADA, fechaInicio);
-                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(fechaInicio));
+                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAINICIOCALCULADA, inicio);
+                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(inicio));
+                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_HORAINICIOCALCULADA, inicio);
+                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(inicio));
                                     ConsultaBD.updateRegistro(TABLA_PROYECTO, proyectoNuevo.getString(PROYECTO_ID_PROYECTO), valores);
+                                    System.out.println("valores inicio proyecto= " + valores);
+
                                 }
                             }
                             if (partida.getInt(PARTIDA_ORDEN) == ultimaPartida) {
@@ -1552,12 +1491,14 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                                 ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAENTREGACALCULADA, fechaFin);
                                 ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
                                 ConsultaBD.updateRegistroDetalle(TABLA_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO), partida.getInt(PARTIDA_SECUENCIA), valores);
-
+                                System.out.println("valores fin partida= " + valores);
                                 if (detPartida.getInt(DETPARTIDA_ORDEN) == ultimaDetPartida) {
                                     valores = new ContentValues();
                                     ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAENTREGACALCULADA, fechaFin);
                                     ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
                                     ConsultaBD.updateRegistro(TABLA_PROYECTO, proyectoNuevo.getString(PROYECTO_ID_PROYECTO), valores);
+                                    System.out.println("valores fin proyecto= " + valores);
+
                                 }
                             }
 
@@ -1568,108 +1509,113 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
         }
 
-        private static long calculoFinDetPartida(Modelo minutoini, Modelo detPartida, boolean guardar) {
 
-            double horastrabajos = detPartida.getDouble(DETPARTIDA_TIEMPO);
-            long min = 0;
-            double horasAnt = 0;
-            Modelo partida = null;
-            long bloqueMin = 1;
-
-            System.out.println("minutoini = " + minutoini);
-            if (minutoini==null){
-                guardar = false;
-                ContentValues values = new ContentValues();
-                values.put(AGENDA_VALOR, TimeDateUtil.ahora());
-                values.put(AGENDA_ESPACIOSIG,horastrabajos);
-                Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                System.out.println("Uri 1er registro tabla AGENDA = " + uri);
-                minutoini = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
-            }
-
-            if (guardar){
-                partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA,
-                        detPartida.getString(DETPARTIDA_ID_PARTIDA),null,IGUAL,null);
-                if (minutoini.getLong(AGENDA_VALORSIG)>minutoini.getLong(AGENDA_VALOR)+bloqueMin) {
-                    ContentValues values = new ContentValues();
-                    values.put(AGENDA_VALOR, minutoini.getLong(AGENDA_VALOR) + bloqueMin);
-                    values.put(AGENDA_ID_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO));
-                    values.put(AGENDA_ID_DETPARTIDA, partida.getString(PARTIDA_ID_PARTIDA));
-                    values.put(AGENDA_SECUENCIA_PARTIDA, partida.getInt(PARTIDA_SECUENCIA));
-                    values.put(AGENDA_SECUENCIA_DETPARTIDA, detPartida.getInt(DETPARTIDA_SECUENCIA));
-
-                    CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                }
-            }
-
-            Modelo minutoSig = minutoini.clonar(false);
-
-            while (horastrabajos > 0 ) {
-
-                horasAnt = horastrabajos;
-                horastrabajos -= minutoSig.getDouble(AGENDA_ESPACIOSIG);
-                System.out.println("horastrabajos = " + horastrabajos);
-
-                if (horastrabajos > 0){
-                    min += Math.round((minutoSig.getDouble(AGENDA_ESPACIOSIG)*1000)*((double)(HORASLONG)/1000));
-                    while (minutoSig.getInt(AGENDA_FIN)==0 && minutoSig.getString(AGENDA_ID_MINSIG)!=null &&
-                            minutoSig.getLong(AGENDA_VALORSIG)<=minutoSig.getLong(AGENDA_VALOR)+bloqueMin){
-                        minutoSig = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoSig.getString(AGENDA_ID_MINSIG));
-                        if (guardar && minutoSig.getInt(AGENDA_FIN)==1 &&
-                                minutoSig.getLong(AGENDA_VALORANT)<minutoSig.getLong(AGENDA_VALOR)-bloqueMin){
-                            partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA,
-                                    detPartida.getString(DETPARTIDA_ID_PARTIDA),null,IGUAL,null);
-                            if (minutoSig.getLong(AGENDA_VALORSIG)>minutoSig.getLong(AGENDA_VALOR)+bloqueMin) {
-                                ContentValues values = new ContentValues();
-                                values.put(AGENDA_VALOR, minutoSig.getLong(AGENDA_VALOR) + bloqueMin);
-                                values.put(AGENDA_ID_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO));
-                                values.put(AGENDA_ID_DETPARTIDA, partida.getString(PARTIDA_ID_PARTIDA));
-                                values.put(AGENDA_SECUENCIA_PARTIDA, partida.getInt(PARTIDA_SECUENCIA));
-                                values.put(AGENDA_SECUENCIA_DETPARTIDA, detPartida.getInt(DETPARTIDA_SECUENCIA));
-                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                            }
-                        }
-                    }
-                }else{
-                    min += Math.round((horasAnt*1000)*((double)(HORASLONG)/1000))+Math.round((horastrabajos*1000)*((double)(HORASLONG)/1000));
-                }
-
-            }
-
-            System.out.println("min = " + min);
-            System.out.println("return fechafin "+TimeDateUtil.getDateTimeString(minutoini.getLong(AGENDA_VALOR)+min));
-            return minutoini.getLong(AGENDA_VALOR)+min;
-
-        }
-
-        private static long calculoMinutoFinDetPartida(long inicio, Modelo minutoini, Modelo detPartida, boolean split, boolean guardar) {
+        private static long calculoMinutoFinDetPartida(long inicio, Modelo detPartida, boolean guardar) {
 
             Modelo perfilActivo = ConsultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila, null, IGUAL, null);
             long horaHoy = 0;
             long fechahoy = 0;
             long fechaIni = 0;
-            Modelo ultimoMinuto = null;
+            long fin = TimeDateUtil.ahora() + ANIOSLONG;
+            Modelo segmento = null;
+            Modelo segmentoAnt = null;
+            Modelo segmentoSig = null;
+
+            if (inicio == 0) {
+                inicio = TimeDateUtil.ahora();
+            }
+
+            String ordenAgenda = AGENDA_VALORENTRADA + Constantes.ORDENASCENDENTE;
+            ListaModelo listaMinutos = CRUDutil.setListaModelo(CAMPOS_AGENDA, AGENDA_VALORENTRADA,
+                    String.valueOf(inicio), String.valueOf(fin), ENTRE, ordenAgenda);
+
+            System.out.println("listaMinutos = " + listaMinutos.sizeLista());
+
+            boolean split = false;
+            if (detPartida.getInt(DETPARTIDA_SPLIT) == 1) {
+                split = true;
+            }
+
+            if (listaMinutos.sizeLista() > 0) {
+                for (int m = 0; m < listaMinutos.getLista().size(); m++) {
+
+                    segmento = listaMinutos.getLista().get(m);
+                    segmentoAnt = CRUDutil.updateModelo(CAMPOS_AGENDA, segmento.getString(AGENDA_ID_MINANT));
+                    segmentoSig = CRUDutil.updateModelo(CAMPOS_AGENDA, segmento.getString(AGENDA_ID_MINSIG));
+
+                    double espacioTotal = 0;
+                    for (Modelo segmentoTmp : listaMinutos.getLista()) {
+                        if (espacioTotal > 0 || segmentoTmp.getInt(AGENDA_ACTIVO) == 0) {
+                            if (segmentoTmp.getInt(AGENDA_ACTIVO) == 0) {
+                                espacioTotal += segmentoTmp.getDouble(AGENDA_ESPACIO);
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+
+                    if (segmento.getInt(AGENDA_ACTIVO) == 1 && segmentoAnt == null &&
+                            (split || calculoEspacioEntreMinutos(segmento.getLong(AGENDA_VALORENTRADA), inicio) + espacioTotal
+                                    > detPartida.getDouble(DETPARTIDA_TIEMPO))) {
+
+                        fechaIni = inicio;
+
+                        break;
+
+                    } else if (segmento.getInt(AGENDA_ACTIVO) == 1 && segmentoAnt != null && segmentoAnt.getInt(AGENDA_ACTIVO) == 0 &&
+                            (split || calculoEspacioEntreMinutos(segmento.getLong(AGENDA_VALORENTRADA), inicio) + espacioTotal
+                                    > detPartida.getDouble(DETPARTIDA_TIEMPO))) {
+
+                        fechaIni = inicio;
+                        break;
+
+                    } else if (segmento.getInt(AGENDA_ACTIVO) == 0) {
+
+
+                        if (segmentoAnt != null && segmentoAnt.getInt(AGENDA_ACTIVO) == 1 &&
+                                (split || espacioTotal > detPartida.getDouble(DETPARTIDA_TIEMPO))) {
+
+                            fechaIni = segmento.getLong(AGENDA_VALORENTRADA);
+                            break;
+
+                        } else if (segmentoAnt != null && segmentoAnt.getInt(AGENDA_ACTIVO) == 0 &&
+                                (split || calculoEspacioEntreMinutos(segmentoAnt.getLong(AGENDA_VALORSALIDA), inicio) +
+                                        espacioTotal > detPartida.getDouble(DETPARTIDA_TIEMPO))) {
+
+                            fechaIni = inicio;
+                            break;
+
+                        }
+                    }
+                }
+
+            } else {
+
+                fechaIni = inicio;
+
+            }
+            System.out.println("fechaIni = " + TimeDateUtil.getDateTimeString(fechaIni));
+            ContentValues values = new ContentValues();
             Modelo partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA,
                     detPartida.getString(DETPARTIDA_ID_PARTIDA),null,IGUAL,null);
             int secuenciaPartida = partida.getInt(PARTIDA_SECUENCIA);
             String idPartida = partida.getString(PARTIDA_ID_PROYECTO);
             String idDetPartida = detPartida.getString(DETPARTIDA_ID_PARTIDA);
             int secuenciaDetPartida = detPartida.getInt(DETPARTIDA_SECUENCIA);
-            if (minutoini==null){
-                ContentValues values = new ContentValues();
-                values.put(AGENDA_VALOR, inicio);
-                if (guardar){
+            if (guardar) {
+
+                values.put(AGENDA_VALORENTRADA, inicio);
+                values.put(AGENDA_INICIO, 1);
                     values.put(AGENDA_ID_PARTIDA, idPartida);
                     values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
                     values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
                     values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                }
-                Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                System.out.println("Uri 1er registro tabla AGENDA = " + uri);
-                minutoini = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
-                fechaIni = minutoini.getLong(AGENDA_VALOR);
+
             }
-            double minutosTrabajos = detPartida.getDouble(DETPARTIDA_TIEMPO)*60;
+            double cantPartida = partida.getDouble(PARTIDA_CANTIDAD);
+            double minutosTrabajos = detPartida.getDouble(DETPARTIDA_TIEMPO) *
+                    detPartida.getDouble(DETPARTIDA_CANTIDAD) * 60 * cantPartida;
+            System.out.println("minutosTrabajos entrada= " + minutosTrabajos);
             TimeZone timezone = TimeZone.getDefault();
             Calendar calendar = new GregorianCalendar(timezone);
             if (fechaIni>0){
@@ -1677,7 +1623,8 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                 fechahoy = TimeDateUtil.soloFecha(fechaIni);
                 horaHoy = TimeDateUtil.soloHora(fechaIni);
             }else{
-                fechahoy = TimeDateUtil.soloFecha(TimeDateUtil.ahora()) + ((int)(detPartida.getLong(DETPARTIDA_OFFSET)/DIASLONG))*DIASLONG;
+                fechahoy = TimeDateUtil.soloFecha(TimeDateUtil.ahora()) +
+                        ((int) (detPartida.getLong(DETPARTIDA_OFFSET) / DIASLONG)) * DIASLONG;
                 horaHoy = TimeDateUtil.soloHora(TimeDateUtil.ahora()) + (detPartida.getLong(DETPARTIDA_OFFSET)
                         - (((int)(detPartida.getLong(DETPARTIDA_OFFSET)/DIASLONG))*DIASLONG));
             }
@@ -1685,7 +1632,6 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             long fechaTemp = fechaIni;
             int diahoy = calendar.get(Calendar.DAY_OF_WEEK) - 1;
             long totaldias = 0;
-            System.out.println("minutos trabajos al entrar = " + minutosTrabajos);
 
             long IM = 0;
             long FM = 0;
@@ -1769,30 +1715,20 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
                     }
 
-                    System.out.println("IM = " + TimeDateUtil.getTimeString(IM));
-                    System.out.println("FM = " + TimeDateUtil.getTimeString(FM));
-                    System.out.println("IT = " + TimeDateUtil.getTimeString(IT));
-                    System.out.println("FT = " + TimeDateUtil.getTimeString(FT));
-                    System.out.println("IMP = " + TimeDateUtil.getTimeString(IMP));
+                    if (IM >= 0 && horaHoy < IM) {
+                        horaHoy = IM;
+                    }
+                    if (IT >= 0 && horaHoy > FM && horaHoy < IT) {
+                        horaHoy = IT;
+                    }
 
-                    System.out.println("IM = " + IM);
-                    System.out.println("FM = " + FM);
-                    System.out.println("IT = " + IT);
-                    System.out.println("FT = " + FT);
-                    System.out.println("IMP = " + IMP);
-
-                    if (IM >0 && horaHoy<IM){horaHoy = IM;}
-
-                    while (((IT >= 0 && horaHoy >= FM) ||(IT >= 0 && horaHoy >= IT && FT >= 0 && horaHoy < FT) ||
+                    //Si la fecha está entre el inicio del horario y el final y quedan minutos de trabajo por restar
+                    while (((IT >= 0 && horaHoy >= FM && horaHoy < IT) || (IT >= 0 && horaHoy >= IT && FT >= 0 && horaHoy < FT) ||
                             (IM >= 0 && horaHoy >= IM && FM >= 0 && horaHoy < FM)) && (minutosTrabajos > 0)){
 
-                        System.out.println("minutoini = " + TimeDateUtil.getDateTimeString(minutoini.getLong(AGENDA_VALOR)));
-                        System.out.println("minutoini Sig= " + TimeDateUtil.getDateTimeString(minutoini.getLong(AGENDA_VALORSIG)));
-                        System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
-                        System.out.println("fechaTemp = " + TimeDateUtil.getDateTimeString(fechaTemp));
-
-                        if (((horaHoy >= IT && FT >= 0 && horaHoy < FT)) && fechaTemp>=minutoini.getLong(AGENDA_VALOR)
-                                && (fechaTemp<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
+                        //Si la fecha está en horario de tarde
+                        if (horaHoy >= IT && FT >= 0 && horaHoy < FT && (segmento == null || (fechaTemp >= segmento.getLong(AGENDA_VALORENTRADA) &&
+                                (segmento.getInt(AGENDA_ACTIVO) == 0 && fechaTemp < segmento.getLong(AGENDA_VALORSALIDA))))) {
 
                             if (minutosTrabajos >= (double) (FT-horaHoy)/MINUTOSLONG) {
                                 minutosTrabajos -= (double) (FT - horaHoy) / MINUTOSLONG;
@@ -1803,9 +1739,9 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
                             }
 
-
-                        } else if (((horaHoy >= IM && FM >= 0 && horaHoy < FM)) && fechaTemp>=minutoini.getLong(AGENDA_VALOR)
-                                && (fechaTemp<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
+                            //Si la fecha está en horario de mañana
+                        } else if (((horaHoy >= IM && FM >= 0 && horaHoy < FM)) && (segmento == null || (fechaTemp >= segmento.getLong(AGENDA_VALORENTRADA) &&
+                                (segmento.getInt(AGENDA_ACTIVO) == 0 && fechaTemp < segmento.getLong(AGENDA_VALORSALIDA))))) {
 
                             if (minutosTrabajos >= (double) (FM-horaHoy)/MINUTOSLONG) {
                                 minutosTrabajos -= (double) (FM - horaHoy) / MINUTOSLONG;
@@ -1829,69 +1765,63 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
                         }
 
-                        if (minutoini.getLong(AGENDA_VALORSIG)>0 && fechaTemp>=minutoini.getLong(AGENDA_VALORSIG)){
+                        if (split && segmento != null && segmento.getLong(AGENDA_VALORSALIDA) > 0 && fechaTemp >= segmento.getLong(AGENDA_VALORSALIDA)) {
 
-                            minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoini.getString(AGENDA_ID_MINSIG));
-                            while (minutoini.getInt(AGENDA_FIN)==0 && minutoini.getString(AGENDA_ID_MINSIG)!=null) {
-                                minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoini.getString(AGENDA_ID_MINSIG));
+                            if (guardar) {
+
+                                putDato(values, CAMPOS_AGENDA, AGENDA_VALORSALIDA, fechaTemp);
+                                putDato(values, CAMPOS_AGENDA, AGENDA_FIN, 0);
+
+                                if (segmentoAnt != null) {
+
+                                    putDato(values, CAMPOS_AGENDA, AGENDA_VALORANT, segmentoAnt.getLong(AGENDA_VALORENTRADA));
+                                    putDato(values, CAMPOS_AGENDA, AGENDA_ID_MINANT, segmentoAnt.getString(AGENDA_ID_AGENDA));
+
+                                }
+
+                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
+
+                                Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                segmentoAnt = ConsultaBD.queryObject(CAMPOS_AGENDA, uri);
                             }
 
-                            if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)==null &&
-                                    minutoini.getLong(AGENDA_VALORSIG)==0 ){
-                                ContentValues values = new ContentValues();
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
+                            segmento = CRUDutil.updateModelo(CAMPOS_AGENDA, segmento.getString(AGENDA_ID_MINSIG));
+                            while (segmento != null && segmento.getInt(AGENDA_ACTIVO) == 1 && segmento.getString(AGENDA_ID_MINSIG) != null) {
+                                segmento = CRUDutil.updateModelo(CAMPOS_AGENDA, segmento.getString(AGENDA_ID_MINSIG));
+                            }
+
+                            if (guardar) {
+                                values = new ContentValues();
+                                putDato(values, CAMPOS_AGENDA, AGENDA_VALORENTRADA, segmentoAnt.getLong(AGENDA_VALORSALIDA));
+                                putDato(values, CAMPOS_AGENDA, AGENDA_INICIO, 0);
                                 values.put(AGENDA_ID_PARTIDA, idPartida);
                                 values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
                                 values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
                                 values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
+                                putDato(values, CAMPOS_AGENDA, AGENDA_ID_MINANT, segmentoAnt.getString(AGENDA_ID_AGENDA));
 
-                                Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                                ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
-
-                            }else if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)!=null &&
-                                    minutoini.getLong(AGENDA_VALORSIG)>0 ){
-
-                                ContentValues values = new ContentValues();
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,minutoini.getLong(AGENDA_VALOR));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG,minutoini.getLong(AGENDA_VALORSIG)-1);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
-                                values.put(AGENDA_ID_PARTIDA, idPartida);
-                                values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
-
-                                Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                                ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
 
                             }
 
                         }
 
-                        fechaTemp +=horaHoy;
-                        System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
-                        System.out.println("minutosTrabajos = " + minutosTrabajos);
-
+                        fechaTemp = TimeDateUtil.soloFecha(fechaTemp) + horaHoy;
 
                     }
 
                     if (minutosTrabajos <= 0) {
 
                         if (guardar){
-                            ContentValues values = new ContentValues();
-                            putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,fechaTemp);
-                            putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,ultimoMinuto.getLong(AGENDA_VALOR));
-                            putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG, minutoini.getLong(AGENDA_VALORSIG));
+
+                            putDato(values, CAMPOS_AGENDA, AGENDA_VALORSALIDA, fechaTemp);
                             putDato(values,CAMPOS_AGENDA,AGENDA_FIN,1);
-                            values.put(AGENDA_ID_PARTIDA, idPartida);
-                            values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                            values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                            values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                            putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,ultimoMinuto.getString(AGENDA_ID_AGENDA));
-                            putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINSIG,minutoini.getString(AGENDA_ID_MINSIG));
+
+                            if (segmentoAnt != null) {
+
+                                putDato(values, CAMPOS_AGENDA, AGENDA_VALORANT, segmentoAnt.getLong(AGENDA_VALORENTRADA));
+                                putDato(values, CAMPOS_AGENDA, AGENDA_ID_MINANT, segmentoAnt.getString(AGENDA_ID_AGENDA));
+
+                            }
 
                             CRUDutil.crearRegistro(TABLA_AGENDA, values);
                         }
@@ -1901,7 +1831,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                         totaldias++;
                         fechaTemp += DIASLONG;
                         if (split && fechahoy+(totaldias * DIASLONG )+((horaHoy-TimeDateUtil.
-                                soloHora(TimeDateUtil.ahora()))/MINUTOSLONG)>minutoini.getLong(AGENDA_VALORSIG)){
+                                soloHora(TimeDateUtil.ahora())) / MINUTOSLONG) > segmento.getLong(AGENDA_VALORSIG)) {
 
                         }
                         if (IMP>=0) {
@@ -1916,830 +1846,83 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                 diahoy = 0;
             }
 
-            return fechahoy+(totaldias * DIASLONG )+ horaHoy;//((horaHoy-TimeDateUtil.soloHora(TimeDateUtil.ahora()))/MINUTOSLONG);
+            return fechahoy + (totaldias * DIASLONG) + TimeDateUtil.soloHora(horaHoy);//((horaHoy-TimeDateUtil.soloHora(TimeDateUtil.ahora()))/MINUTOSLONG);
 
         }
 
-                /*
-                switch (diahoy) {
-
-                    case 0:
-
-                        IM = PERFIL_HORAIMDOMINGO;
-                        FM = PERFIL_HORAFMDOMINGO;
-                        IT = PERFIL_HORAITDOMINGO;
-                        FT = PERFIL_HORAFTDOMINGO;
-                        IMP = PERFIL_HORAIMLUNES;
-
-                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
-                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
-                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
-                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
-                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
-                        System.out.println("minutosTrabajos antes= " + minutosTrabajos);
-
-
-                        while (((perfilActivo.getLong(FT) > 0 &&
-                                horaHoy < perfilActivo.getLong(FT)) ||
-                                (perfilActivo.getLong(FM) > 0 &&
-                                        horaHoy < perfilActivo.getLong(FM))) && (minutosTrabajos > 0 || primero)){
-
-                            if (((horaHoy >= perfilActivo.getLong(IT) &&
-                                    perfilActivo.getLong(FT) > 0 &&
-                                    horaHoy < perfilActivo.getLong(FT)) ||
-                                    (horaHoy >= perfilActivo.getLong(IM) &&
-                                            perfilActivo.getLong(FM) > 0 &&
-                                            horaHoy < perfilActivo.getLong(FM))) && fechahoy>=minutoini.getLong(AGENDA_VALOR)
-                                    && (fechahoy<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
-                                primero = false;
-
-                                minutosTrabajos--;
-                                horaHoy += MINUTOSLONG;
-
-
-                            } else {
-                                horaHoy += MINUTOSLONG;
-                                if (minutoini.getLong(AGENDA_VALORSIG)>0 && fechahoy>=minutoini.getLong(AGENDA_VALORSIG)){
-
-                                    minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoini.getString(AGENDA_ID_MINSIG));
-                                    while (minutoini.getInt(AGENDA_FIN)==0 && minutoini.getString(AGENDA_ID_MINSIG)!=null) {
-                                        minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoini.getString(AGENDA_ID_MINSIG));
-                                    }
-
-                                    if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)==null &&
-                                            minutoini.getLong(AGENDA_VALORSIG)==0 ){
-                                        ContentValues values = new ContentValues();
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
-                                        values.put(AGENDA_ID_PARTIDA, idPartida);
-                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
-
-                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
-
-                                    }else if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)!=null &&
-                                            minutoini.getLong(AGENDA_VALORSIG)>0 ){
-
-                                        ContentValues values = new ContentValues();
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,minutoini.getLong(AGENDA_VALOR));
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG,minutoini.getLong(AGENDA_VALORSIG)-1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
-                                        values.put(AGENDA_ID_PARTIDA, idPartida);
-                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
-
-                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
-
-                                    }
-
-                                }
-                            }
-
-                            fechaTemp +=horaHoy;
-                            System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
-                            System.out.println("minutosTrabajos = " + minutosTrabajos);
-
-
-                        }
-
-                        if (minutosTrabajos <= 0) {
-
-                            if (guardar){
-                                ContentValues values = new ContentValues();
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,fechaTemp);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,ultimoMinuto.getLong(AGENDA_VALOR));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG, minutoini.getLong(AGENDA_VALORSIG));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_FIN,1);
-                                values.put(AGENDA_ID_PARTIDA, idPartida);
-                                values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,ultimoMinuto.getString(AGENDA_ID_AGENDA));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINSIG,minutoini.getString(AGENDA_ID_MINSIG));
-
-                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                            }
-                            break;
-                        }else{
-                            totaldias++;
-                            if (split && fechahoy+(totaldias * 24 * 60 )+((horaHoy-TimeDateUtil.
-                                    soloHora(TimeDateUtil.ahora()))/MINUTOSLONG)>minutoini.getLong(AGENDA_VALORSIG)){
-
-                            }
-                            horaHoy = perfilActivo.getLong(IMP);
-
-                        }
-
-                    case 1:
-
-                        IM = PERFIL_HORAIMLUNES;
-                        FM = PERFIL_HORAFMLUNES;
-                        IT = PERFIL_HORAITLUNES;
-                        FT = PERFIL_HORAFTLUNES;
-                        IMP = PERFIL_HORAIMMARTES;
-
-                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
-                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
-                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
-                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
-                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
-                        System.out.println("minutosTrabajos antes= " + minutosTrabajos);
-
-
-                        while (((perfilActivo.getLong(FT) > 0 &&
-                                horaHoy < perfilActivo.getLong(FT)) ||
-                                (perfilActivo.getLong(FM) > 0 &&
-                                        horaHoy < perfilActivo.getLong(FM))) && (minutosTrabajos > 0 || primero)){
-
-                            if (((horaHoy >= perfilActivo.getLong(IT) &&
-                                    perfilActivo.getLong(FT) > 0 &&
-                                    horaHoy < perfilActivo.getLong(FT)) ||
-                                    (horaHoy >= perfilActivo.getLong(IM) &&
-                                            perfilActivo.getLong(FM) > 0 &&
-                                            horaHoy < perfilActivo.getLong(FM))) && fechahoy>=minutoini.getLong(AGENDA_VALOR)
-                                    && (fechahoy<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
-                                primero = false;
-
-                                minutosTrabajos--;
-                                horaHoy += MINUTOSLONG;
-
-
-                            } else {
-                                horaHoy += MINUTOSLONG;
-                                if (minutoini.getLong(AGENDA_VALORSIG)>0 && fechahoy>=minutoini.getLong(AGENDA_VALORSIG)){
-
-                                    minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoini.getString(AGENDA_ID_MINSIG));
-                                    while (minutoini.getInt(AGENDA_FIN)==0 && minutoini.getString(AGENDA_ID_MINSIG)!=null) {
-                                        minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoini.getString(AGENDA_ID_MINSIG));
-                                    }
-
-                                    if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)==null &&
-                                            minutoini.getLong(AGENDA_VALORSIG)==0 ){
-                                        ContentValues values = new ContentValues();
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
-                                        values.put(AGENDA_ID_PARTIDA, idPartida);
-                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
-
-                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
-
-                                    }else if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)!=null &&
-                                            minutoini.getLong(AGENDA_VALORSIG)>0 ){
-
-                                        ContentValues values = new ContentValues();
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,minutoini.getLong(AGENDA_VALOR));
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG,minutoini.getLong(AGENDA_VALORSIG)-1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
-                                        values.put(AGENDA_ID_PARTIDA, idPartida);
-                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
-
-                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
-
-                                    }
-
-                                }
-                            }
-
-                            fechaTemp +=horaHoy;
-                            System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
-                            System.out.println("minutosTrabajos = " + minutosTrabajos);
-
-
-                        }
-
-                        if (minutosTrabajos <= 0) {
-
-                            if (guardar){
-                                ContentValues values = new ContentValues();
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,fechaTemp);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,ultimoMinuto.getLong(AGENDA_VALOR));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG, minutoini.getLong(AGENDA_VALORSIG));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_FIN,1);
-                                values.put(AGENDA_ID_PARTIDA, idPartida);
-                                values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,ultimoMinuto.getString(AGENDA_ID_AGENDA));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINSIG,minutoini.getString(AGENDA_ID_MINSIG));
-
-                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                            }
-                            break;
-                        }else{
-                            totaldias++;
-                            if (split && fechahoy+(totaldias * 24 * 60 )+((horaHoy-TimeDateUtil.
-                                    soloHora(TimeDateUtil.ahora()))/MINUTOSLONG)>minutoini.getLong(AGENDA_VALORSIG)){
-
-                            }
-                            horaHoy = perfilActivo.getLong(IMP);
-
-                        }
-
-
-                    case 2:
-
-
-                        IM = PERFIL_HORAIMMARTES;
-                        FM = PERFIL_HORAFMMARTES;
-                        IT = PERFIL_HORAITMARTES;
-                        FT = PERFIL_HORAFTMARTES;
-                        IMP = PERFIL_HORAIMMIERCOLES;
-
-                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
-                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
-                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
-                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
-                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
-                        System.out.println("minutosTrabajos antes= " + minutosTrabajos);
-
-
-                        while (((perfilActivo.getLong(FT) > 0 &&
-                                horaHoy < perfilActivo.getLong(FT)) ||
-                                (perfilActivo.getLong(FM) > 0 &&
-                                        horaHoy < perfilActivo.getLong(FM))) && (minutosTrabajos > 0 || primero)){
-
-                            if (((horaHoy >= perfilActivo.getLong(IT) &&
-                                    perfilActivo.getLong(FT) > 0 &&
-                                    horaHoy < perfilActivo.getLong(FT)) ||
-                                    (horaHoy >= perfilActivo.getLong(IM) &&
-                                            perfilActivo.getLong(FM) > 0 &&
-                                            horaHoy < perfilActivo.getLong(FM))) && fechahoy>=minutoini.getLong(AGENDA_VALOR)
-                                    && (fechahoy<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
-                                primero = false;
-
-                                minutosTrabajos--;
-                                horaHoy += MINUTOSLONG;
-
-
-                            } else {
-                                horaHoy += MINUTOSLONG;
-                                if (minutoini.getLong(AGENDA_VALORSIG)>0 && fechahoy>=minutoini.getLong(AGENDA_VALORSIG)){
-
-                                    minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoini.getString(AGENDA_ID_MINSIG));
-                                    while (minutoini.getInt(AGENDA_FIN)==0 && minutoini.getString(AGENDA_ID_MINSIG)!=null) {
-                                        minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoini.getString(AGENDA_ID_MINSIG));
-                                    }
-
-                                    if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)==null &&
-                                            minutoini.getLong(AGENDA_VALORSIG)==0 ){
-                                        ContentValues values = new ContentValues();
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
-                                        values.put(AGENDA_ID_PARTIDA, idPartida);
-                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
-
-                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
-
-                                    }else if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)!=null &&
-                                            minutoini.getLong(AGENDA_VALORSIG)>0 ){
-
-                                        ContentValues values = new ContentValues();
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,minutoini.getLong(AGENDA_VALOR));
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG,minutoini.getLong(AGENDA_VALORSIG)-1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
-                                        values.put(AGENDA_ID_PARTIDA, idPartida);
-                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
-
-                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
-
-                                    }
-
-                                }
-                            }
-
-                            fechaTemp +=horaHoy;
-                            System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
-                            System.out.println("minutosTrabajos = " + minutosTrabajos);
-
-
-                        }
-
-                        if (minutosTrabajos <= 0) {
-
-                            if (guardar){
-                                ContentValues values = new ContentValues();
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,fechaTemp);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,ultimoMinuto.getLong(AGENDA_VALOR));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG, minutoini.getLong(AGENDA_VALORSIG));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_FIN,1);
-                                values.put(AGENDA_ID_PARTIDA, idPartida);
-                                values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,ultimoMinuto.getString(AGENDA_ID_AGENDA));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINSIG,minutoini.getString(AGENDA_ID_MINSIG));
-
-                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                            }
-                            break;
-                        }else{
-                            totaldias++;
-                            if (split && fechahoy+(totaldias * 24 * 60 )+((horaHoy-TimeDateUtil.
-                                    soloHora(TimeDateUtil.ahora()))/MINUTOSLONG)>minutoini.getLong(AGENDA_VALORSIG)){
-
-                            }
-                            horaHoy = perfilActivo.getLong(IMP);
-
-                        }
-
-
-
-                    case 3:
-
-                        IM = PERFIL_HORAIMMIERCOLES;
-                        FM = PERFIL_HORAFMMIERCOLES;
-                        IT = PERFIL_HORAITMIERCOLES;
-                        FT = PERFIL_HORAFTMIERCOLES;
-                        IMP = PERFIL_HORAIMJUEVES;
-
-                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
-                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
-                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
-                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
-                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
-                        System.out.println("minutosTrabajos antes= " + minutosTrabajos);
-
-
-                        while (((perfilActivo.getLong(FT) > 0 &&
-                                horaHoy < perfilActivo.getLong(FT)) ||
-                                (perfilActivo.getLong(FM) > 0 &&
-                                        horaHoy < perfilActivo.getLong(FM))) && (minutosTrabajos > 0 || primero)){
-
-                            if (((horaHoy >= perfilActivo.getLong(IT) &&
-                                    perfilActivo.getLong(FT) > 0 &&
-                                    horaHoy < perfilActivo.getLong(FT)) ||
-                                    (horaHoy >= perfilActivo.getLong(IM) &&
-                                            perfilActivo.getLong(FM) > 0 &&
-                                            horaHoy < perfilActivo.getLong(FM))) && fechahoy>=minutoini.getLong(AGENDA_VALOR)
-                                    && (fechahoy<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
-                                primero = false;
-
-                                minutosTrabajos--;
-                                horaHoy += MINUTOSLONG;
-
-
-                            } else {
-                                horaHoy += MINUTOSLONG;
-                                if (minutoini.getLong(AGENDA_VALORSIG)>0 && fechahoy>=minutoini.getLong(AGENDA_VALORSIG)){
-
-                                    minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoini.getString(AGENDA_ID_MINSIG));
-                                    while (minutoini.getInt(AGENDA_FIN)==0 && minutoini.getString(AGENDA_ID_MINSIG)!=null) {
-                                        minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoini.getString(AGENDA_ID_MINSIG));
-                                    }
-
-                                    if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)==null &&
-                                            minutoini.getLong(AGENDA_VALORSIG)==0 ){
-                                        ContentValues values = new ContentValues();
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
-                                        values.put(AGENDA_ID_PARTIDA, idPartida);
-                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
-
-                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
-
-                                    }else if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)!=null &&
-                                            minutoini.getLong(AGENDA_VALORSIG)>0 ){
-
-                                        ContentValues values = new ContentValues();
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,minutoini.getLong(AGENDA_VALOR));
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG,minutoini.getLong(AGENDA_VALORSIG)-1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
-                                        values.put(AGENDA_ID_PARTIDA, idPartida);
-                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
-
-                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
-
-                                    }
-
-                                }
-                            }
-
-                            fechaTemp +=horaHoy;
-                            System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
-                            System.out.println("minutosTrabajos = " + minutosTrabajos);
-
-
-                        }
-
-                        if (minutosTrabajos <= 0) {
-
-                            if (guardar){
-                                ContentValues values = new ContentValues();
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,fechaTemp);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,ultimoMinuto.getLong(AGENDA_VALOR));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG, minutoini.getLong(AGENDA_VALORSIG));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_FIN,1);
-                                values.put(AGENDA_ID_PARTIDA, idPartida);
-                                values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,ultimoMinuto.getString(AGENDA_ID_AGENDA));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINSIG,minutoini.getString(AGENDA_ID_MINSIG));
-
-                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                            }
-                            break;
-                        }else{
-                            totaldias++;
-                            if (split && fechahoy+(totaldias * 24 * 60 )+((horaHoy-TimeDateUtil.
-                                    soloHora(TimeDateUtil.ahora()))/MINUTOSLONG)>minutoini.getLong(AGENDA_VALORSIG)){
-
-                            }
-                            horaHoy = perfilActivo.getLong(IMP);
-
-                        }
-
-
-                    case 4:
-
-                        IM = PERFIL_HORAIMJUEVES;
-                        FM = PERFIL_HORAFMJUEVES;
-                        IT = PERFIL_HORAITJUEVES;
-                        FT = PERFIL_HORAFTJUEVES;
-                        IMP = PERFIL_HORAIMVIERNES;
-
-                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
-                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
-                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
-                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
-                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
-                        System.out.println("minutosTrabajos antes= " + minutosTrabajos);
-
-
-                        while (((perfilActivo.getLong(FT) > 0 &&
-                                horaHoy < perfilActivo.getLong(FT)) ||
-                                (perfilActivo.getLong(FM) > 0 &&
-                                        horaHoy < perfilActivo.getLong(FM))) && (minutosTrabajos > 0 || primero)){
-
-                            if (((horaHoy >= perfilActivo.getLong(IT) &&
-                                    perfilActivo.getLong(FT) > 0 &&
-                                    horaHoy < perfilActivo.getLong(FT)) ||
-                                    (horaHoy >= perfilActivo.getLong(IM) &&
-                                            perfilActivo.getLong(FM) > 0 &&
-                                            horaHoy < perfilActivo.getLong(FM))) && fechahoy>=minutoini.getLong(AGENDA_VALOR)
-                                    && (fechahoy<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
-                                primero = false;
-
-                                minutosTrabajos--;
-                                horaHoy += MINUTOSLONG;
-
-
-                            } else {
-                                horaHoy += MINUTOSLONG;
-                                if (minutoini.getLong(AGENDA_VALORSIG)>0 && fechahoy>=minutoini.getLong(AGENDA_VALORSIG)){
-
-                                    minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoini.getString(AGENDA_ID_MINSIG));
-                                    while (minutoini.getInt(AGENDA_FIN)==0 && minutoini.getString(AGENDA_ID_MINSIG)!=null) {
-                                        minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoini.getString(AGENDA_ID_MINSIG));
-                                    }
-
-                                    if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)==null &&
-                                            minutoini.getLong(AGENDA_VALORSIG)==0 ){
-                                        ContentValues values = new ContentValues();
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
-                                        values.put(AGENDA_ID_PARTIDA, idPartida);
-                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
-
-                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
-
-                                    }else if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)!=null &&
-                                            minutoini.getLong(AGENDA_VALORSIG)>0 ){
-
-                                        ContentValues values = new ContentValues();
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,minutoini.getLong(AGENDA_VALOR));
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG,minutoini.getLong(AGENDA_VALORSIG)-1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
-                                        values.put(AGENDA_ID_PARTIDA, idPartida);
-                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
-
-                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
-
-                                    }
-
-                                }
-                            }
-
-                            fechaTemp +=horaHoy;
-                            System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
-                            System.out.println("minutosTrabajos = " + minutosTrabajos);
-
-
-                        }
-
-                        if (minutosTrabajos <= 0) {
-
-                            if (guardar){
-                                ContentValues values = new ContentValues();
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,fechaTemp);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,ultimoMinuto.getLong(AGENDA_VALOR));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG, minutoini.getLong(AGENDA_VALORSIG));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_FIN,1);
-                                values.put(AGENDA_ID_PARTIDA, idPartida);
-                                values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,ultimoMinuto.getString(AGENDA_ID_AGENDA));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINSIG,minutoini.getString(AGENDA_ID_MINSIG));
-
-                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                            }
-                            break;
-                        }else{
-                            totaldias++;
-                            if (split && fechahoy+(totaldias * 24 * 60 )+((horaHoy-TimeDateUtil.
-                                    soloHora(TimeDateUtil.ahora()))/MINUTOSLONG)>minutoini.getLong(AGENDA_VALORSIG)){
-
-                            }
-                            horaHoy = perfilActivo.getLong(IMP);
-
-                        }
-
-                    case 5:
-
-                        IM = PERFIL_HORAIMVIERNES;
-                        FM = PERFIL_HORAFMVIERNES;
-                        IT = PERFIL_HORAITVIERNES;
-                        FT = PERFIL_HORAFTVIERNES;
-                        IMP = PERFIL_HORAIMSABADO;
-
-                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
-                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
-                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
-                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
-                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
-                        System.out.println("minutosTrabajos antes= " + minutosTrabajos);
-
-
-                        while (((perfilActivo.getLong(FT) > 0 &&
-                                horaHoy < perfilActivo.getLong(FT)) ||
-                                (perfilActivo.getLong(FM) > 0 &&
-                                        horaHoy < perfilActivo.getLong(FM))) && (minutosTrabajos > 0 || primero)){
-
-                            if (((horaHoy >= perfilActivo.getLong(IT) &&
-                                    perfilActivo.getLong(FT) > 0 &&
-                                    horaHoy < perfilActivo.getLong(FT)) ||
-                                    (horaHoy >= perfilActivo.getLong(IM) &&
-                                            perfilActivo.getLong(FM) > 0 &&
-                                            horaHoy < perfilActivo.getLong(FM))) && fechahoy>=minutoini.getLong(AGENDA_VALOR)
-                                    && (fechahoy<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
-                                primero = false;
-
-                                minutosTrabajos--;
-                                horaHoy += MINUTOSLONG;
-
-
-                            } else {
-                                horaHoy += MINUTOSLONG;
-                                if (minutoini.getLong(AGENDA_VALORSIG)>0 && fechahoy>=minutoini.getLong(AGENDA_VALORSIG)){
-
-                                    minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoini.getString(AGENDA_ID_MINSIG));
-                                    while (minutoini.getInt(AGENDA_FIN)==0 && minutoini.getString(AGENDA_ID_MINSIG)!=null) {
-                                        minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoini.getString(AGENDA_ID_MINSIG));
-                                    }
-
-                                    if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)==null &&
-                                            minutoini.getLong(AGENDA_VALORSIG)==0 ){
-                                        ContentValues values = new ContentValues();
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
-                                        values.put(AGENDA_ID_PARTIDA, idPartida);
-                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
-
-                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
-
-                                    }else if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)!=null &&
-                                            minutoini.getLong(AGENDA_VALORSIG)>0 ){
-
-                                        ContentValues values = new ContentValues();
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,minutoini.getLong(AGENDA_VALOR));
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG,minutoini.getLong(AGENDA_VALORSIG)-1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
-                                        values.put(AGENDA_ID_PARTIDA, idPartida);
-                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
-
-                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
-
-                                    }
-
-                                }
-                            }
-
-                            fechaTemp +=horaHoy;
-                            System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
-                            System.out.println("minutosTrabajos = " + minutosTrabajos);
-
-
-                        }
-
-                        if (minutosTrabajos <= 0) {
-
-                            if (guardar){
-                                ContentValues values = new ContentValues();
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,fechaTemp);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,ultimoMinuto.getLong(AGENDA_VALOR));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG, minutoini.getLong(AGENDA_VALORSIG));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_FIN,1);
-                                values.put(AGENDA_ID_PARTIDA, idPartida);
-                                values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,ultimoMinuto.getString(AGENDA_ID_AGENDA));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINSIG,minutoini.getString(AGENDA_ID_MINSIG));
-
-                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                            }
-                            break;
-                        }else{
-                            totaldias++;
-                            if (split && fechahoy+(totaldias * 24 * 60 )+((horaHoy-TimeDateUtil.
-                                    soloHora(TimeDateUtil.ahora()))/MINUTOSLONG)>minutoini.getLong(AGENDA_VALORSIG)){
-
-                            }
-                            horaHoy = perfilActivo.getLong(IMP);
-
-                        }
-
-
-
-                    case 6:
-
-                        IM = PERFIL_HORAIMSABADO;
-                        FM = PERFIL_HORAFMSABADO;
-                        IT = PERFIL_HORAITSABADO;
-                        FT = PERFIL_HORAFTSABADO;
-                        IMP = PERFIL_HORAIMDOMINGO;
-
-                        System.out.println("perfilActivo.getLong(IM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IM)));
-                        System.out.println("perfilActivo.getLong(FM) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FM)));
-                        System.out.println("perfilActivo.getLong(IT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(IT)));
-                        System.out.println("perfilActivo.getLong(FT) = " + TimeDateUtil.getTimeString(perfilActivo.getLong(FT)));
-                        System.out.println("horaHoy antes= " + TimeDateUtil.getTimeString(horaHoy));
-                        System.out.println("minutosTrabajos antes= " + minutosTrabajos);
-
-
-                        while (((perfilActivo.getLong(FT) > 0 &&
-                                horaHoy < perfilActivo.getLong(FT)) ||
-                                (perfilActivo.getLong(FM) > 0 &&
-                                        horaHoy < perfilActivo.getLong(FM))) && (minutosTrabajos > 0 || primero)){
-
-                            if (((horaHoy >= perfilActivo.getLong(IT) &&
-                                    perfilActivo.getLong(FT) > 0 &&
-                                    horaHoy < perfilActivo.getLong(FT)) ||
-                                    (horaHoy >= perfilActivo.getLong(IM) &&
-                                            perfilActivo.getLong(FM) > 0 &&
-                                            horaHoy < perfilActivo.getLong(FM))) && fechahoy>=minutoini.getLong(AGENDA_VALOR)
-                                    && (fechahoy<minutoini.getLong(AGENDA_VALORSIG) || minutoini.getLong(AGENDA_VALORSIG)==0)){
-                                primero = false;
-
-                                minutosTrabajos--;
-                                horaHoy += MINUTOSLONG;
-
-
-                            } else {
-                                horaHoy += MINUTOSLONG;
-                                if (minutoini.getLong(AGENDA_VALORSIG)>0 && fechahoy>=minutoini.getLong(AGENDA_VALORSIG)){
-
-                                    minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA,minutoini.getString(AGENDA_ID_MINSIG));
-                                    while (minutoini.getInt(AGENDA_FIN)==0 && minutoini.getString(AGENDA_ID_MINSIG)!=null) {
-                                        minutoini = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoini.getString(AGENDA_ID_MINSIG));
-                                    }
-
-                                    if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)==null &&
-                                            minutoini.getLong(AGENDA_VALORSIG)==0 ){
-                                        ContentValues values = new ContentValues();
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
-                                        values.put(AGENDA_ID_PARTIDA, idPartida);
-                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
-
-                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
-
-                                    }else if (guardar && minutoini.getInt(AGENDA_FIN)==1 && minutoini.getString(AGENDA_ID_MINSIG)!=null &&
-                                            minutoini.getLong(AGENDA_VALORSIG)>0 ){
-
-                                        ContentValues values = new ContentValues();
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,minutoini.getLong(AGENDA_VALOR)+1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,minutoini.getLong(AGENDA_VALOR));
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG,minutoini.getLong(AGENDA_VALORSIG)-1);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_INICIO,1);
-                                        values.put(AGENDA_ID_PARTIDA, idPartida);
-                                        values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                        values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                        values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                        putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,minutoini.getString(AGENDA_ID_AGENDA));
-
-                                        Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                                        ultimoMinuto = ConsultaBD.queryObject(CAMPOS_AGENDA,uri);
-
-                                    }
-
-                                }
-                            }
-
-                            fechaTemp +=horaHoy;
-                            System.out.println("horaHoy = " + TimeDateUtil.getTimeString(horaHoy));
-                            System.out.println("minutosTrabajos = " + minutosTrabajos);
-
-
-                        }
-
-                        if (minutosTrabajos <= 0) {
-
-                            if (guardar){
-                                ContentValues values = new ContentValues();
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALOR,fechaTemp);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORANT,ultimoMinuto.getLong(AGENDA_VALOR));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_VALORSIG, minutoini.getLong(AGENDA_VALORSIG));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_FIN,1);
-                                values.put(AGENDA_ID_PARTIDA, idPartida);
-                                values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
-                                values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
-                                values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
-                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINANT,ultimoMinuto.getString(AGENDA_ID_AGENDA));
-                                putDato(values,CAMPOS_AGENDA,AGENDA_ID_MINSIG,minutoini.getString(AGENDA_ID_MINSIG));
-
-                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                            }
-                            break;
-                        }else{
-                            totaldias++;
-                            if (split && fechahoy+(totaldias * 24 * 60 )+((horaHoy-TimeDateUtil.
-                                    soloHora(TimeDateUtil.ahora()))/MINUTOSLONG)>minutoini.getLong(AGENDA_VALORSIG)){
-
-                            }
-                            horaHoy = perfilActivo.getLong(IMP);
-
-                        }
-
-                }
-                diahoy = 0;
-                primero = false;
+        private static long calculoFinDetPartida(Modelo minutoini, Modelo detPartida, boolean guardar) {
+
+            double horastrabajos = detPartida.getDouble(DETPARTIDA_TIEMPO);
+            long min = 0;
+            double horasAnt = 0;
+            Modelo partida = null;
+            long bloqueMin = 1;
+
+            System.out.println("minutoini = " + minutoini);
+            if (minutoini == null) {
+                guardar = false;
+                ContentValues values = new ContentValues();
+                values.put(AGENDA_VALORENTRADA, TimeDateUtil.ahora());
+                values.put(AGENDA_ESPACIOSIG, horastrabajos);
+                Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                System.out.println("Uri 1er registro tabla AGENDA = " + uri);
+                minutoini = ConsultaBD.queryObject(CAMPOS_AGENDA, uri);
             }
 
+            if (guardar) {
+                partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA,
+                        detPartida.getString(DETPARTIDA_ID_PARTIDA), null, IGUAL, null);
+                if (minutoini.getLong(AGENDA_VALORSIG) > minutoini.getLong(AGENDA_VALORENTRADA) + bloqueMin) {
+                    ContentValues values = new ContentValues();
+                    values.put(AGENDA_VALORENTRADA, minutoini.getLong(AGENDA_VALORENTRADA) + bloqueMin);
+                    values.put(AGENDA_ID_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO));
+                    values.put(AGENDA_ID_DETPARTIDA, partida.getString(PARTIDA_ID_PARTIDA));
+                    values.put(AGENDA_SECUENCIA_PARTIDA, partida.getInt(PARTIDA_SECUENCIA));
+                    values.put(AGENDA_SECUENCIA_DETPARTIDA, detPartida.getInt(DETPARTIDA_SECUENCIA));
 
+                    CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                }
+            }
 
-            return fechahoy+(totaldias * DIASLONG )+((horaHoy-TimeDateUtil.soloHora(TimeDateUtil.ahora()))/MINUTOSLONG);
+            Modelo minutoSig = minutoini.clonar(false);
+
+            while (horastrabajos > 0) {
+
+                horasAnt = horastrabajos;
+                horastrabajos -= minutoSig.getDouble(AGENDA_ESPACIOSIG);
+                System.out.println("horastrabajos = " + horastrabajos);
+
+                if (horastrabajos > 0) {
+                    min += Math.round((minutoSig.getDouble(AGENDA_ESPACIOSIG) * 1000) * ((double) (HORASLONG) / 1000));
+                    while (minutoSig.getInt(AGENDA_FIN) == 0 && minutoSig.getString(AGENDA_ID_MINSIG) != null &&
+                            minutoSig.getLong(AGENDA_VALORSIG) <= minutoSig.getLong(AGENDA_VALORENTRADA) + bloqueMin) {
+                        minutoSig = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoSig.getString(AGENDA_ID_MINSIG));
+                        if (guardar && minutoSig.getInt(AGENDA_FIN) == 1 &&
+                                minutoSig.getLong(AGENDA_VALORANT) < minutoSig.getLong(AGENDA_VALORENTRADA) - bloqueMin) {
+                            partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA,
+                                    detPartida.getString(DETPARTIDA_ID_PARTIDA), null, IGUAL, null);
+                            if (minutoSig.getLong(AGENDA_VALORSIG) > minutoSig.getLong(AGENDA_VALORENTRADA) + bloqueMin) {
+                                ContentValues values = new ContentValues();
+                                values.put(AGENDA_VALORENTRADA, minutoSig.getLong(AGENDA_VALORENTRADA) + bloqueMin);
+                                values.put(AGENDA_ID_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO));
+                                values.put(AGENDA_ID_DETPARTIDA, partida.getString(PARTIDA_ID_PARTIDA));
+                                values.put(AGENDA_SECUENCIA_PARTIDA, partida.getInt(PARTIDA_SECUENCIA));
+                                values.put(AGENDA_SECUENCIA_DETPARTIDA, detPartida.getInt(DETPARTIDA_SECUENCIA));
+                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                            }
+                        }
+                    }
+                } else {
+                    min += Math.round((horasAnt * 1000) * ((double) (HORASLONG) / 1000)) + Math.round((horastrabajos * 1000) * ((double) (HORASLONG) / 1000));
+                }
+
+            }
+
+            System.out.println("min = " + min);
+            System.out.println("return fechafin " + TimeDateUtil.getDateTimeString(minutoini.getLong(AGENDA_VALORENTRADA) + min));
+            return minutoini.getLong(AGENDA_VALORENTRADA) + min;
 
         }
-
-                 */
 
 
         private static double calculoEspacioEntreMinutos(long fechaIni, long fechaFin) {
