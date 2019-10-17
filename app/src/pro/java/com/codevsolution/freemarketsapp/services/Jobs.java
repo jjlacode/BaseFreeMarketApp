@@ -4,24 +4,24 @@ import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
+import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.ImagenUtil;
+import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.models.MsgChat;
+import com.codevsolution.base.models.Productos;
 import com.codevsolution.base.services.JobServiceBase;
+import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.sqlite.SQLiteUtil;
+import com.codevsolution.base.time.TimeDateUtil;
+import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.android.AndroidUtil;
-import com.codevsolution.base.models.Modelo;
-import com.codevsolution.base.models.MsgChat;
-import com.codevsolution.base.models.Productos;
-import com.codevsolution.base.sqlite.ContratoPry;
-import com.codevsolution.base.sqlite.SQLiteUtil;
-import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -103,9 +103,9 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
 
         if (ahora > time2) {
 
-            ArrayList<Modelo> listaEventos = Interactor.Calculos.comprobarEventos();
+            ArrayList<ModeloSQL> listaEventos = Interactor.Calculos.comprobarEventos();
 
-            for (Modelo evento : listaEventos) {
+            for (ModeloSQL evento : listaEventos) {
 
 
                 if (evento != null && evento.getLong(EVENTO_AVISO) > 0 &&
@@ -208,7 +208,6 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
                                                                                     msgChat.setFecha(TimeDateUtil.ahora());
                                                                                     msgChat.setIdDestino(idGanador);
                                                                                     msgChat.setIdOrigen(prod.getId());
-                                                                                    ;
 
                                                                                     FirebaseDatabase.getInstance().getReference().child(CHAT).child(idGanador).push().setValue(msgChat);
                                                                                     FirebaseDatabase.getInstance().getReference().child(GANADORSORTEO).child(sorteo.getKey()).setValue(idGanador);
@@ -399,7 +398,6 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
                                                                                     msgChat.setFecha(TimeDateUtil.ahora());
                                                                                     msgChat.setIdDestino(idGanador);
                                                                                     msgChat.setIdOrigen(prod.getId());
-                                                                                    ;
 
                                                                                     FirebaseDatabase.getInstance().getReference().child(CHAT).child(idGanador).push().setValue(msgChat);
                                                                                     FirebaseDatabase.getInstance().getReference().child(GANADORSORTEO).child(sorteo.getKey()).setValue(idGanador);

@@ -17,34 +17,33 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.codevsolution.base.adapter.BaseViewHolder;
+import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.RVAdapter;
+import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.crud.CRUDutil;
+import com.codevsolution.base.crud.FragmentCRUD;
+import com.codevsolution.base.javautil.JavaUtil;
+import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.Productos;
+import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.adapter.BaseViewHolder;
-import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
-import com.codevsolution.base.adapter.TipoViewHolder;
-import com.codevsolution.base.crud.CRUDutil;
-import com.codevsolution.base.crud.FragmentCRUD;
-import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
-import com.codevsolution.base.sqlite.ContratoPry;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 import static com.codevsolution.base.sqlite.ConsultaBD.insertRegistroDetalle;
 import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
-import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryListDetalle;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryObject;
 
@@ -63,7 +62,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
     private RecyclerView rvdetalles;
     private ListaModelo listaDetpartidas;
-    private Modelo partidabase;
+    private ModeloSQL partidabase;
     private double precioprodProv;
     private String idPartida;
     private int secPartida;
@@ -80,7 +79,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
@@ -117,7 +116,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
         btnpart = (Button) ctrl(R.id.btn_asignar_a_partidaproy_partidabase);
         imagen = (ImagenLayout) ctrl(R.id.imgudpartidabase);
         rvdetalles = (RecyclerView) ctrl(R.id.rvdetalleUDpartidabase);
-        autoNombrePartida = (AutoCompleteTextView) view.findViewById(R.id.autonompartidabase);
+        autoNombrePartida = view.findViewById(R.id.autonompartidabase);
 
 
     }
@@ -148,7 +147,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
         System.out.println("id = " + id);
         if (nn(id)){
-            modelo = CRUDutil.updateModelo(campos,id);
+            modeloSQL = CRUDutil.updateModelo(campos, id);
         }
     }
 
@@ -175,8 +174,8 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                 btnpart.setText(getString(R.string.sincronizar_clon_partida));
             }
         }
-        descripcionPartida.setText(modelo.getString(PARTIDABASE_DESCRIPCION));
-        nombrePartida.setText(modelo.getString(PARTIDABASE_NOMBRE));
+        descripcionPartida.setText(modeloSQL.getString(PARTIDABASE_DESCRIPCION));
+        nombrePartida.setText(modeloSQL.getString(PARTIDABASE_NOMBRE));
 
         listaDetpartidas = new ListaModelo(CAMPOS_DETPARTIDABASE, id,TABLA_PARTIDABASE,null,null);
 
@@ -196,7 +195,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
                     String tipo = (listaDetpartidas.getItem(rvdetalles.getChildAdapterPosition(v)).
                             getString(DETPARTIDABASE_TIPO));
-                    Modelo detpartidabase = listaDetpartidas.getItem(rvdetalles.getChildAdapterPosition(v));
+                    ModeloSQL detpartidabase = listaDetpartidas.getItem(rvdetalles.getChildAdapterPosition(v));
                     bundle = new Bundle();
                     bundle.putString(CAMPO_ID, detpartidabase.getString(DETPARTIDABASE_ID_PARTIDABASE));
                     bundle.putInt(CAMPO_SECUENCIA, detpartidabase.getInt(DETPARTIDABASE_SECUENCIA));
@@ -229,13 +228,13 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
         double precio = 0;
         ListaModelo listadet = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id, TABLA_PARTIDABASE);
-        for (Modelo detPartida : listadet.getLista()) {
+        for (ModeloSQL detPartida : listadet.getLista()) {
 
             if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOTRABAJO)) {
-                Modelo trabajo = CRUDutil.updateModelo(CAMPOS_TRABAJO, detPartida.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
+                ModeloSQL trabajo = CRUDutil.updateModelo(CAMPOS_TRABAJO, detPartida.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
                 precio += (trabajo.getDouble(TRABAJO_TIEMPO) * Interactor.hora);
             } else if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOPRODUCTO)) {
-                Modelo producto = CRUDutil.updateModelo(CAMPOS_PRODUCTO, detPartida.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
+                ModeloSQL producto = CRUDutil.updateModelo(CAMPOS_PRODUCTO, detPartida.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
                 precio += producto.getDouble(PRODUCTO_PRECIO)*detPartida.getDouble(DETPARTIDABASE_CANTIDAD);
             }
         }
@@ -246,7 +245,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
     private void calcularPrecioProdProv(final String id) {
 
         final ListaModelo listadet = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id, TABLA_PARTIDABASE);
-        for (final Modelo detPartida : listadet.getLista()) {
+        for (final ModeloSQL detPartida : listadet.getLista()) {
 
             if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOPRODUCTOPROV)) {
                 DatabaseReference db = FirebaseDatabase.getInstance().getReference();
@@ -288,10 +287,10 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
         double tiempo = 0;
         ListaModelo listadet = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id, TABLA_PARTIDABASE);
-        for (Modelo detPartida : listadet.getLista()) {
+        for (ModeloSQL detPartida : listadet.getLista()) {
 
             if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOTRABAJO)) {
-                Modelo trabajo = CRUDutil.updateModelo(CAMPOS_TRABAJO, detPartida.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
+                ModeloSQL trabajo = CRUDutil.updateModelo(CAMPOS_TRABAJO, detPartida.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
                 if (nn(trabajo)) {
                     tiempo += (trabajo.getDouble(TRABAJO_TIEMPO));
                 }
@@ -310,7 +309,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Modelo partidaclon = (Modelo) autoNombrePartida.getAdapter().getItem(position);
+                ModeloSQL partidaclon = (ModeloSQL) autoNombrePartida.getAdapter().getItem(position);
                 autoNombrePartida.setText(partidaclon.getString(PARTIDABASE_NOMBRE));
                 mostrarDialogoClonarPartidabase(partidaclon);
             }
@@ -379,33 +378,33 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                 @Override
                 public void run() {
 
-                    modelo = CRUDutil.updateModelo(campos, id);
+                    modeloSQL = CRUDutil.updateModelo(campos, id);
                     idPartida = AndroidUtil.getSharePreference(contexto, PERSISTENCIA, PARTIDA_ID_PARTIDA, NULL);
                     secPartida = AndroidUtil.getSharePreference(contexto, PERSISTENCIA, PARTIDA_SECUENCIA, 0);
 
                     ContentValues valores = new ContentValues();
 
-                    putDato(valores, CAMPOS_PARTIDA, PARTIDA_NOMBRE, modelo.getString(PARTIDABASE_NOMBRE));
-                    putDato(valores, CAMPOS_PARTIDA, PARTIDA_DESCRIPCION, modelo.getString(PARTIDABASE_DESCRIPCION));
-                    putDato(valores, CAMPOS_PARTIDA, PARTIDA_RUTAFOTO, modelo.getString(PARTIDABASE_RUTAFOTO));
+                    putDato(valores, CAMPOS_PARTIDA, PARTIDA_NOMBRE, modeloSQL.getString(PARTIDABASE_NOMBRE));
+                    putDato(valores, CAMPOS_PARTIDA, PARTIDA_DESCRIPCION, modeloSQL.getString(PARTIDABASE_DESCRIPCION));
+                    putDato(valores, CAMPOS_PARTIDA, PARTIDA_RUTAFOTO, modeloSQL.getString(PARTIDABASE_RUTAFOTO));
 
                     if (nn(secPartida) && secPartida > 0) {
                         CRUDutil.actualizarRegistro(TABLA_PARTIDA, idPartida, secPartida, valores);
                     } else {
                         putDato(valores, CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, ContratoPry.generarIdTabla(TABLA_PARTIDA));
                         putDato(valores, CAMPOS_PARTIDA, PARTIDA_ID_PROYECTO, idPartida);
-                        putDato(valores, CAMPOS_PARTIDA, PARTIDA_ID_PARTIDABASE, modelo.getString(PARTIDABASE_ID_PARTIDABASE));
-                        Modelo proyecto = CRUDutil.updateModelo(CAMPOS_PROYECTO, idPartida);
+                        putDato(valores, CAMPOS_PARTIDA, PARTIDA_ID_PARTIDABASE, modeloSQL.getString(PARTIDABASE_ID_PARTIDABASE));
+                        ModeloSQL proyecto = CRUDutil.updateModelo(CAMPOS_PROYECTO, idPartida);
                         putDato(valores, CAMPOS_PARTIDA, PARTIDA_ID_ESTADO, proyecto.getString(PROYECTO_ID_ESTADO));
                         System.out.println("valores = " + valores);
 
                         secPartida = CRUDutil.crearRegistroSec(CAMPOS_PARTIDA, idPartida, TABLA_PROYECTO, valores);
                     }
 
-                    Modelo partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, idPartida, secPartida);
+                    ModeloSQL partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, idPartida, secPartida);
                     String iddetpartida = partida.getString(PARTIDA_ID_PARTIDA);
                     ListaModelo listaDetPartidabase = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id, TABLA_PARTIDABASE);
-                    for (Modelo detPartidaBase : listaDetPartidabase.getLista()) {
+                    for (ModeloSQL detPartidaBase : listaDetPartidabase.getLista()) {
 
                         valores = new ContentValues();
 
@@ -415,7 +414,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                         putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_CANTIDAD, detPartidaBase.getString(DETPARTIDABASE_CANTIDAD));
                         boolean detnuevo = true;
                         ListaModelo listaDetPartida = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida, TABLA_PARTIDA);
-                        for (Modelo detPartida : listaDetPartida.getLista()) {
+                        for (ModeloSQL detPartida : listaDetPartida.getLista()) {
 
                             if (detPartida.getString(DETPARTIDA_ID_DETPARTIDA).equals(detPartidaBase.getString(DETPARTIDABASE_ID_DETPARTIDABASE))) {
                                 CRUDutil.actualizarRegistro(TABLA_DETPARTIDA, iddetpartida, detPartida.getInt(DETPARTIDA_SECUENCIA), valores);
@@ -429,9 +428,9 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                     }
 
                     ListaModelo listaDetPartida = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida, TABLA_PARTIDA);
-                    for (Modelo detPartida : listaDetPartida.getLista()) {
+                    for (ModeloSQL detPartida : listaDetPartida.getLista()) {
                         boolean cambio = true;
-                        for (Modelo detPartidaBase : listaDetPartidabase.getLista()) {
+                        for (ModeloSQL detPartidaBase : listaDetPartidabase.getLista()) {
 
                             if (detPartida.getString(DETPARTIDA_ID_DETPARTIDA).equals(detPartidaBase.getString(DETPARTIDABASE_ID_DETPARTIDABASE))) {
                                 cambio = false;
@@ -485,7 +484,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
     }
 
-    private void mostrarDialogoClonarPartidabase(final Modelo clon) {
+    private void mostrarDialogoClonarPartidabase(final ModeloSQL clon) {
 
         final CharSequence[] opciones = {"Clonar partida base","Cancelar"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
@@ -520,10 +519,10 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                         path = partidabase.getString(PARTIDABASE_RUTAFOTO);
                     }
 
-                        ArrayList<Modelo> listaclon = queryListDetalle
+                    ArrayList<ModeloSQL> listaclon = queryListDetalle
                                 (CAMPOS_DETPARTIDABASE,clon.getString(PARTIDABASE_ID_PARTIDABASE),TABLA_PARTIDABASE);
 
-                        for (Modelo clonpart : listaclon) {
+                    for (ModeloSQL clonpart : listaclon) {
 
                             valores = clonpart.contenido();//AndroidUtil.clonarSinRef(clonpart);
                             valores.remove(DETPARTIDABASE_ID_PARTIDABASE);
@@ -565,14 +564,14 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
         }
 
         @Override
-        public void bind(final Modelo modelo) {
+        public void bind(final ModeloSQL modeloSQL) {
 
-            String tipodetpartida = modelo.getString(DETPARTIDABASE_TIPO);
-            String idDetPartidaBase = modelo.getString(DETPARTIDABASE_ID_DETPARTIDABASE);
+            String tipodetpartida = modeloSQL.getString(DETPARTIDABASE_TIPO);
+            String idDetPartidaBase = modeloSQL.getString(DETPARTIDABASE_ID_DETPARTIDABASE);
 
             if (tipodetpartida.equals(TIPOTRABAJO)) {
 
-                Modelo trabajo = CRUDutil.updateModelo(CAMPOS_TRABAJO, idDetPartidaBase);
+                ModeloSQL trabajo = CRUDutil.updateModelo(CAMPOS_TRABAJO, idDetPartidaBase);
                 gone(cantidad);
                 nombre.setText(trabajo.getString(TRABAJO_NOMBRE));
                 tiempo.setText(JavaUtil.getDecimales(trabajo.getDouble(TRABAJO_TIEMPO)));
@@ -587,11 +586,11 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
             } else if (tipodetpartida.equals(TIPOPRODUCTO)) {
 
-                Modelo producto = CRUDutil.updateModelo(CAMPOS_PRODUCTO, idDetPartidaBase);
-                cantidad.setText(JavaUtil.getDecimales(modelo.getDouble(DETPARTIDABASE_CANTIDAD)));
+                ModeloSQL producto = CRUDutil.updateModelo(CAMPOS_PRODUCTO, idDetPartidaBase);
+                cantidad.setText(JavaUtil.getDecimales(modeloSQL.getDouble(DETPARTIDABASE_CANTIDAD)));
                 nombre.setText(producto.getString(PRODUCTO_NOMBRE));
                 importe.setText(JavaUtil.formatoMonedaLocal(producto.getDouble(PRODUCTO_PRECIO)*
-                        modelo.getDouble(DETPARTIDABASE_CANTIDAD)));
+                        modeloSQL.getDouble(DETPARTIDABASE_CANTIDAD)));
                 String path = producto.getString(PRODUCTO_RUTAFOTO);
                 if (nn(path)) {
                     imagen.setImageUriCard(activityBase, path);
@@ -611,9 +610,9 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                         if (prodProv != null) {
 
                             nombre.setText(prodProv.getNombre());
-                            cantidad.setText(JavaUtil.getDecimales(modelo.getDouble(DETPARTIDABASE_CANTIDAD)));
+                            cantidad.setText(JavaUtil.getDecimales(modeloSQL.getDouble(DETPARTIDABASE_CANTIDAD)));
                             importe.setText(JavaUtil.formatoMonedaLocal
-                                    ((prodProv.getPrecio()*modelo.getDouble(DETPARTIDABASE_CANTIDAD))));
+                                    ((prodProv.getPrecio() * modeloSQL.getDouble(DETPARTIDABASE_CANTIDAD))));
                             String path = prodProv.getId();
 
                             if (path != null) {
@@ -639,7 +638,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                 tiempo.setVisibility(View.GONE);
             }
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override
@@ -662,27 +661,27 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
-            String id = modelo.getString(PARTIDABASE_ID_PARTIDABASE);
-            descripcionPartida.setText(modelo.getString(PARTIDABASE_DESCRIPCION));
+            String id = modeloSQL.getString(PARTIDABASE_ID_PARTIDABASE);
+            descripcionPartida.setText(modeloSQL.getString(PARTIDABASE_DESCRIPCION));
             System.out.println("descripcionPartida = " + descripcionPartida);
-            if (nnn(modelo.getString(PARTIDABASE_RUTAFOTO))) {
+            if (nnn(modeloSQL.getString(PARTIDABASE_RUTAFOTO))) {
 
-                imagenPartida.setImageUriCard(activityBase, modelo.getString(PARTIDABASE_RUTAFOTO));
+                imagenPartida.setImageUriCard(activityBase, modeloSQL.getString(PARTIDABASE_RUTAFOTO));
             } else {
                 gone(imagenPartida);
             }
 
             calcularPrecioProdProvCard(id);
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         private void calcularPrecioProdProvCard(final String id) {
 
             final ListaModelo listadet = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id, TABLA_PARTIDABASE);
-            for (final Modelo detPartida : listadet.getLista()) {
+            for (final ModeloSQL detPartida : listadet.getLista()) {
 
                 if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOPRODUCTOPROV)) {
                     DatabaseReference db = FirebaseDatabase.getInstance().getReference();
@@ -732,12 +731,12 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View view, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View view, ArrayList<ModeloSQL> entrada) {
 
             ImagenLayout imagenPartida = view.findViewById(R.id.imglpartidabase);
             TextView descripcionPartida = view.findViewById(R.id.tvdescripcionpartidabase);
@@ -755,7 +754,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
             }
 
             final ListaModelo listadet = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id, TABLA_PARTIDABASE);
-            for (Modelo detPartida : listadet.getLista()) {
+            for (ModeloSQL detPartida : listadet.getLista()) {
 
                 if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOPRODUCTOPROV)) {
                     DatabaseReference db = FirebaseDatabase.getInstance().getReference();

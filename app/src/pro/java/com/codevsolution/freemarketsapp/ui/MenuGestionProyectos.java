@@ -6,7 +6,7 @@ import android.widget.Toast;
 
 import com.codevsolution.base.android.FragmentGridImagen;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
@@ -138,13 +138,13 @@ public class MenuGestionProyectos extends FragmentGridImagen implements Contrato
 
     private void obtenerTareas() {
 
-        ArrayList<Modelo> lista;
+        ArrayList<ModeloSQL> lista;
         ListaModelo listaPartidasSinCompletar = new ListaModelo(CAMPOS_PARTIDA);
         listaPartidasSinCompletar.clearLista();
 
         lista = ConsultaBD.queryList(CAMPOS_PARTIDA);
 
-        for (Modelo item : lista) {
+        for (ModeloSQL item : lista) {
 
             if (item.getInt(PARTIDA_CONTADOR) > 0) {
 
@@ -171,13 +171,13 @@ public class MenuGestionProyectos extends FragmentGridImagen implements Contrato
 
     private void obtenerDeptpartidasTreking() {
 
-        ArrayList<Modelo> lista;
+        ArrayList<ModeloSQL> lista;
         ListaModelo listaPartidasSinCompletar = new ListaModelo(CAMPOS_DETPARTIDA);
         listaPartidasSinCompletar.clearLista();
 
         lista = ConsultaBD.queryList(CAMPOS_DETPARTIDA);
 
-        for (Modelo item : lista) {
+        for (ModeloSQL item : lista) {
 
             if (item.getLong(DETPARTIDA_CONTADOR) > 0) {
 

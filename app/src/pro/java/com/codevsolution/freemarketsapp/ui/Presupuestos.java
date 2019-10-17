@@ -15,7 +15,7 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.time.Day;
 import com.codevsolution.base.time.ListaDays;
 import com.codevsolution.base.time.TimeDateUtil;
@@ -38,19 +38,19 @@ public class Presupuestos extends FragmentMes {
         ListaModelo listatemp = new ListaModelo(CAMPOS_PROYECTO);
         listabase = new ListaModelo();
 
-        for (Modelo modelo : listatemp.getLista()) {
-            if ((modelo.getInt(PROYECTO_TIPOESTADO) >= TNUEVOPRESUP) &&
-                    (modelo.getInt(PROYECTO_TIPOESTADO) < TPRESUPACEPTADO)) {
-                listabase.addModelo(modelo);
+        for (ModeloSQL modeloSQL : listatemp.getLista()) {
+            if ((modeloSQL.getInt(PROYECTO_TIPOESTADO) >= TNUEVOPRESUP) &&
+                    (modeloSQL.getInt(PROYECTO_TIPOESTADO) < TPRESUPACEPTADO)) {
+                listabase.addModelo(modeloSQL);
             }
         }
 
-        for (Modelo modelo : listabase.getLista()) {
+        for (ModeloSQL modeloSQL : listabase.getLista()) {
 
-            if (TimeDateUtil.soloFecha(modelo.getLong(PROYECTO_FECHAENTRADA))
+            if (TimeDateUtil.soloFecha(modeloSQL.getLong(PROYECTO_FECHAENTRADA))
                     >= TimeDateUtil.soloFecha(fecha)) {
 
-                listaDia.addModelo(modelo);
+                listaDia.addModelo(modeloSQL);
             }
         }
 
@@ -154,7 +154,7 @@ public class Presupuestos extends FragmentMes {
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new ListaAdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
@@ -180,16 +180,16 @@ public class Presupuestos extends FragmentMes {
         }
 
         @Override
-        public void bind(final Modelo modelo) {
+        public void bind(final ModeloSQL modeloSQL) {
 
 
-            double completada = modelo.getDouble(PROYECTO_TOTCOMPLETADO);
-            descripcion.setText(modelo.getString(PROYECTO_DESCRIPCION));
+            double completada = modeloSQL.getDouble(PROYECTO_TOTCOMPLETADO);
+            descripcion.setText(modeloSQL.getString(PROYECTO_DESCRIPCION));
             pbar.setProgress((int) completada);
-            cliente.setText(modelo.getString(PROYECTO_CLIENTE_NOMBRE));
+            cliente.setText(modeloSQL.getString(PROYECTO_CLIENTE_NOMBRE));
             MediaUtil imagenUtil = new MediaUtil(getContext());
             try {
-                imagenUtil.setImageUri(modelo.getString(PROYECTO_RUTAFOTO), imagen);
+                imagenUtil.setImageUri(modeloSQL.getString(PROYECTO_RUTAFOTO), imagen);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -200,7 +200,7 @@ public class Presupuestos extends FragmentMes {
             }
 
 
-            long retraso = modelo.getLong(PROYECTO_RETRASO);
+            long retraso = modeloSQL.getLong(PROYECTO_RETRASO);
 
             if (retraso > 3 * Interactor.DIASLONG) {
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
@@ -216,17 +216,17 @@ public class Presupuestos extends FragmentMes {
                 public void onClick(View v) {
 
                     bundle = new Bundle();
-                    bundle.putSerializable(MODELO, modelo);
-                    bundle.putString(CAMPO_ID, modelo.getString(PROYECTO_ID_PROYECTO));
+                    bundle.putSerializable(MODELO, modeloSQL);
+                    bundle.putString(CAMPO_ID, modeloSQL.getString(PROYECTO_ID_PROYECTO));
                     bundle.putString(ORIGEN, PRESUPUESTOS);
-                    bundle.putString(SUBTITULO, modelo.getString(PROYECTO_NOMBRE));
+                    bundle.putString(SUBTITULO, modeloSQL.getString(PROYECTO_NOMBRE));
                     bundle.putString(ACTUAL, PRESUPUESTO);
                     icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
 
                 }
             });
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override

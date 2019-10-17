@@ -31,7 +31,7 @@ import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.DatePickerFragment;
@@ -82,8 +82,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
 
     private ArrayList<String> listaEstados;
-    private ArrayList<Modelo> listaClientes;
-    private ArrayList<Modelo> objEstados;
+    private ArrayList<ModeloSQL> listaClientes;
+    private ArrayList<ModeloSQL> objEstados;
 
     private String idCliente;
     private String idEstado;
@@ -116,7 +116,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private ImageButton btnVerNotas;
     public static String rutaPdf;
     private boolean enGarantia;
-    private Modelo cliente;
+    private ModeloSQL cliente;
 
     public FragmentCRUDProyecto() {
         // Required empty public constructor
@@ -134,7 +134,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
@@ -161,9 +161,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         if (lista.chechLista()) {
 
-            ArrayList<Modelo> listatemp = new ArrayList<>();
+            ArrayList<ModeloSQL> listatemp = new ArrayList<>();
 
-            for (Modelo item : lista.getLista()) {
+            for (ModeloSQL item : lista.getLista()) {
 
                 int estado = item.getInt(PROYECTO_TIPOESTADO);
 
@@ -252,7 +252,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
 
         if(bundle.containsKey(CLIENTE)){
-            cliente = (Modelo) bundle.getSerializable(CLIENTE);
+            cliente = (ModeloSQL) bundle.getSerializable(CLIENTE);
             idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
             if (actual.equals(PRESUPUESTO)) {
                 idEstado = getIdEstado(TNUEVOPRESUP);
@@ -264,8 +264,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         }
 
         if (id !=null) {
-                modelo = CRUDutil.updateModelo(campos,id);
-                idCliente = modelo.getString(PROYECTO_ID_CLIENTE);
+            modeloSQL = CRUDutil.updateModelo(campos, id);
+            idCliente = modeloSQL.getString(PROYECTO_ID_CLIENTE);
             new Interactor.Calculos.TareaActualizaProy().execute(id);
         }
 
@@ -410,11 +410,11 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     private void nuevoEvento() {
         update();
-        Modelo cliente = queryObject(CAMPOS_CLIENTE, idCliente);
+        ModeloSQL cliente = queryObject(CAMPOS_CLIENTE, idCliente);
 
         bundle = new Bundle();
         bundle.putSerializable(CLIENTE, cliente);
-        bundle.putSerializable(PROYECTO, modelo);
+        bundle.putSerializable(PROYECTO, modeloSQL);
         bundle.putString(SUBTITULO, actualtemp);
         bundle.putString(ORIGEN, actualtemp);
         bundle.putBoolean(NUEVOREGISTRO, true);
@@ -424,11 +424,11 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     private void verEventos() {
         update();
-        Modelo cliente = queryObject(CAMPOS_CLIENTE, idCliente);
+        ModeloSQL cliente = queryObject(CAMPOS_CLIENTE, idCliente);
 
         bundle = new Bundle();
         bundle.putSerializable(CLIENTE, cliente);
-        bundle.putSerializable(PROYECTO, modelo);
+        bundle.putSerializable(PROYECTO, modeloSQL);
         bundle.putString(SUBTITULO, actualtemp);
         bundle.putString(ORIGEN, actualtemp);
         bundle.putSerializable(LISTA, new ListaModelo(CAMPOS_EVENTO, EVENTO_PROYECTOREL, id, null, IGUAL, null));
@@ -438,8 +438,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     private void verNotas() {
         enviarBundle();
-        bundle.putString(IDREL, modelo.getString(PROYECTO_ID_PROYECTO));
-        bundle.putString(SUBTITULO, modelo.getString(PROYECTO_NOMBRE));
+        bundle.putString(IDREL, modeloSQL.getString(PROYECTO_ID_PROYECTO));
+        bundle.putString(SUBTITULO, modeloSQL.getString(PROYECTO_NOMBRE));
         bundle.putString(ORIGEN, PROYECTO);
         bundle.putString(ACTUAL, NOTA);
         bundle.putSerializable(LISTA, null);
@@ -450,15 +450,15 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     private void nuevaNota() {
         bundle = new Bundle();
-        bundle.putString(IDREL, modelo.getString(PROYECTO_ID_PROYECTO));
-        bundle.putString(SUBTITULO, modelo.getString(PROYECTO_NOMBRE));
+        bundle.putString(IDREL, modeloSQL.getString(PROYECTO_ID_PROYECTO));
+        bundle.putString(SUBTITULO, modeloSQL.getString(PROYECTO_NOMBRE));
         bundle.putString(ORIGEN, PROYECTO);
         icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevaNota());
     }
 
     private void verPartidas() {
         update();
-        bundle.putSerializable(PROYECTO, modelo);
+        bundle.putSerializable(PROYECTO, modeloSQL);
         bundle.putString(ORIGEN, actualtemp);
         bundle.putString(ACTUAL, PARTIDA);
         bundle.putString(SUBTITULO, actualtemp);
@@ -701,8 +701,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         btnVerPdf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (modelo.getString(PROYECTO_RUTAPDF) != null) {
-                    AppActivity.mostrarPDF(modelo.getString(PROYECTO_RUTAPDF));
+                if (modeloSQL.getString(PROYECTO_RUTAPDF) != null) {
+                    AppActivity.mostrarPDF(modeloSQL.getString(PROYECTO_RUTAPDF));
                 } else {
                     update();
                 }
@@ -714,15 +714,15 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         btnenviarPdf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (modelo.getString(PROYECTO_RUTAPDF) != null) {
+                if (modeloSQL.getString(PROYECTO_RUTAPDF) != null) {
 
-                    Modelo cliente = CRUDutil.updateModelo(CAMPOS_CLIENTE, idCliente);
+                    ModeloSQL cliente = CRUDutil.updateModelo(CAMPOS_CLIENTE, idCliente);
                     String email = cliente.getString(CLIENTE_EMAIL);
                     String asunto = "Presupuesto solicitado";
-                    String mensaje = "Envio presupuesto" + modelo.getString(PROYECTO_NOMBRE) + "solicitado por usted";
+                    String mensaje = "Envio presupuesto" + modeloSQL.getString(PROYECTO_NOMBRE) + "solicitado por usted";
                     PresupuestoPDF presupuestoPDF = new PresupuestoPDF();
-                    presupuestoPDF.buscarPDF(modelo.getString(PROYECTO_RUTAPDF));
-                    presupuestoPDF.enviarPDFEmail(contexto, modelo.getString(PROYECTO_RUTAPDF), email, asunto, mensaje);
+                    presupuestoPDF.buscarPDF(modeloSQL.getString(PROYECTO_RUTAPDF));
+                    presupuestoPDF.enviarPDFEmail(contexto, modeloSQL.getString(PROYECTO_RUTAPDF), email, asunto, mensaje);
                 } else {
                     update();
                 }
@@ -732,9 +732,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         btncompartirPdf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (modelo.getString(PROYECTO_RUTAPDF) != null) {
+                if (modeloSQL.getString(PROYECTO_RUTAPDF) != null) {
 
-                    AppActivity.compartirPdf(modelo.getString(PROYECTO_RUTAPDF));
+                    AppActivity.compartirPdf(modeloSQL.getString(PROYECTO_RUTAPDF));
 
                 } else {
                     update();
@@ -820,10 +820,10 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             btnVerNotas.setVisibility(View.GONE);
         }
 
-        nombrePry.setText(modelo.getString(PROYECTO_NOMBRE));
-        descripcionPry.setText(modelo.getString(PROYECTO_DESCRIPCION));
-        idCliente = modelo.getString(PROYECTO_ID_CLIENTE);
-        peso = modelo.getInt(PROYECTO_CLIENTE_PESOTIPOCLI);//cliente.getInt(CLIENTE_PESOTIPOCLI);
+        nombrePry.setText(modeloSQL.getString(PROYECTO_NOMBRE));
+        descripcionPry.setText(modeloSQL.getString(PROYECTO_DESCRIPCION));
+        idCliente = modeloSQL.getString(PROYECTO_ID_CLIENTE);
+        peso = modeloSQL.getInt(PROYECTO_CLIENTE_PESOTIPOCLI);//cliente.getInt(CLIENTE_PESOTIPOCLI);
         if (peso > 6) {
             spClienteProyecto.setImgBtnAccion2(R.drawable.clientev);
         } else if (peso > 3) {
@@ -834,14 +834,14 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             spClienteProyecto.setImgBtnAccion2(R.drawable.cliente);
         }
 
-        idEstado = modelo.getString(PROYECTO_ID_ESTADO);
-        id = modelo.getString(PROYECTO_ID_PROYECTO);
-        fechaEntradaPry.setText(JavaUtil.getDateTime(modelo.getLong(PROYECTO_FECHAENTRADA)));
-        if (modelo.getLong(PROYECTO_FECHAENTREGAPRESUP) == 0) {
+        idEstado = modeloSQL.getString(PROYECTO_ID_ESTADO);
+        id = modeloSQL.getString(PROYECTO_ID_PROYECTO);
+        fechaEntradaPry.setText(JavaUtil.getDateTime(modeloSQL.getLong(PROYECTO_FECHAENTRADA)));
+        if (modeloSQL.getLong(PROYECTO_FECHAENTREGAPRESUP) == 0) {
             fechaEntregaPresup.setText
                     (getResources().getString(R.string.establecer_fecha_entrega_presup));
-        } else if (modelo.getLong(PROYECTO_FECHAENTREGAPRESUP) > 0) {
-            fechaEntregaPresup.setText(JavaUtil.getDate(modelo.getLong(PROYECTO_FECHAENTREGAPRESUP)));
+        } else if (modeloSQL.getLong(PROYECTO_FECHAENTREGAPRESUP) > 0) {
+            fechaEntregaPresup.setText(JavaUtil.getDate(modeloSQL.getLong(PROYECTO_FECHAENTREGAPRESUP)));
         }
 
         calculoTotales();
@@ -870,16 +870,16 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             visible(pvpPartidas.getLinearLayout());
             gone(fechaEntregaPresup.getLinearLayout());
             visible(totalPartidasPry.getLinearLayout());
-            fechaCalculada = modelo.getLong(PROYECTO_FECHAENTREGACALCULADA);
-            fechaInicioCalculada = modelo.getLong(PROYECTO_FECHAINICIOCALCULADA);
-            horaInicioCalculada = modelo.getLong(PROYECTO_HORAINICIOCALCULADA);
+            fechaCalculada = modeloSQL.getLong(PROYECTO_FECHAENTREGACALCULADA);
+            fechaInicioCalculada = modeloSQL.getLong(PROYECTO_FECHAINICIOCALCULADA);
+            horaInicioCalculada = modeloSQL.getLong(PROYECTO_HORAINICIOCALCULADA);
 
-            if (modelo.getInt(PROYECTO_TIPOESTADO)==TNUEVOPRESUP){
+            if (modeloSQL.getInt(PROYECTO_TIPOESTADO) == TNUEVOPRESUP) {
                 valores = new ContentValues();
                 setDato(PROYECTO_PRECIOHORA, Interactor.hora);
                 setDato(PROYECTO_FECHAENTREGAACORDADA,fechaCalculada);
-                CRUDutil.actualizarRegistro(modelo,valores);
-                modelo = CRUDutil.updateModelo(modelo);
+                CRUDutil.actualizarRegistro(modeloSQL, valores);
+                modeloSQL = CRUDutil.updateModelo(modeloSQL);
             }
 
             if (horaInicioCalculada == 0) {
@@ -898,7 +898,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
                 fechaCalculadaPry.setText(JavaUtil.getDateTime(fechaCalculada));
                 fechaInicioCalculadaPry.setText(TimeDateUtil.getDateString(fechaInicioCalculada));
-                if (modelo.getInt(PROYECTO_TIPOESTADO) > 2) {
+                if (modeloSQL.getInt(PROYECTO_TIPOESTADO) > 2) {
 
                     visible(fechaEntregaPresup.getLinearLayout());
                 }
@@ -908,11 +908,11 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         }
 
 
-        if (modelo.getLong(PROYECTO_FECHAFINAL) == 0) {
+        if (modeloSQL.getLong(PROYECTO_FECHAFINAL) == 0) {
             gone(fechaFinalPry.getLinearLayout());
         } else {
             visible(fechaFinalPry.getLinearLayout());
-            fechaFinalPry.setText(JavaUtil.getDate(modelo.getLong(PROYECTO_FECHAFINAL)));
+            fechaFinalPry.setText(JavaUtil.getDate(modeloSQL.getLong(PROYECTO_FECHAFINAL)));
         }
 
 
@@ -924,17 +924,17 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                     (preciototal));
         }
 
-        if (modelo.getInt(PROYECTO_TIPOESTADO) < 4) {
+        if (modeloSQL.getInt(PROYECTO_TIPOESTADO) < 4) {
             gone(importeFinalPry.getLinearLayout());
         } else {
             visible(importeFinalPry.getLinearLayout());
-            importeFinalPry.setText(JavaUtil.formatoMonedaLocal(modelo.getDouble(PROYECTO_IMPORTEFINAL)));
+            importeFinalPry.setText(JavaUtil.formatoMonedaLocal(modeloSQL.getDouble(PROYECTO_IMPORTEFINAL)));
         }
 
 
-        estadoProyecto.setText(modelo.getString(PROYECTO_DESCRIPCION_ESTADO));
+        estadoProyecto.setText(modeloSQL.getString(PROYECTO_DESCRIPCION_ESTADO));
 
-            long retraso = modelo.getLong(PROYECTO_RETRASO);
+        long retraso = modeloSQL.getLong(PROYECTO_RETRASO);
         if (retraso > 3 * Interactor.DIASLONG) {
             estadoProyecto.setImgBtnAccion2(R.drawable.alert_box_r);
         } else if (retraso > Interactor.DIASLONG) {
@@ -943,7 +943,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             estadoProyecto.setImgBtnAccion2(R.drawable.alert_box_v);
             }
 
-        if (modelo.getInt(PROYECTO_TIPOESTADO)>=TPRESUPPENDENTREGA){
+        if (modeloSQL.getInt(PROYECTO_TIPOESTADO) >= TPRESUPPENDENTREGA) {
 
                 btnVerPdf.setVisibility(View.VISIBLE);
                 btnenviarPdf.setVisibility(View.VISIBLE);
@@ -959,7 +959,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
 
         if (idCliente!=null) {
-            Modelo cliente = queryObject(CAMPOS_CLIENTE, idCliente);
+            ModeloSQL cliente = queryObject(CAMPOS_CLIENTE, idCliente);
             nombreCliente = cliente.getString(CLIENTE_NOMBRE);
             spClienteProyecto.setText(nombreCliente);
         }
@@ -969,7 +969,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     private void calculoTotales() {
 
-        ArrayList<Modelo> listaPartidas = queryListDetalle(CAMPOS_PARTIDA, id,TABLA_PROYECTO);
+        ArrayList<ModeloSQL> listaPartidas = queryListDetalle(CAMPOS_PARTIDA, id, TABLA_PROYECTO);
         double precioHora;
 
         int x = 0;
@@ -983,9 +983,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         }
         totcompletada = (int) (Math.round(((double) totcompletada) / (double) x));
 
-        totPartidas = modelo.getDouble(PROYECTO_TIEMPO);
-        precioPartidas = totPartidas * modelo.getDouble(PROYECTO_PRECIOHORA);
-        preciototal = modelo.getDouble(PROYECTO_IMPORTEPRESUPUESTO);
+        totPartidas = modeloSQL.getDouble(PROYECTO_TIEMPO);
+        precioPartidas = totPartidas * modeloSQL.getDouble(PROYECTO_PRECIOHORA);
+        preciototal = modeloSQL.getDouble(PROYECTO_IMPORTEPRESUPUESTO);
 
         Log.d(TAG,"calculosTotales");
 
@@ -996,23 +996,23 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     protected boolean update() {
 
         new Tareafechas().execute(false);
-        if (modelo!=null) {
-            fechaCalculada = modelo.getLong(PROYECTO_FECHAENTREGACALCULADA);
-            fechaInicioCalculada = modelo.getLong(PROYECTO_FECHAINICIOCALCULADA);
-            horaInicioCalculada = modelo.getLong(PROYECTO_HORAINICIOCALCULADA);
-            if (modelo.getInt(PROYECTO_TIPOESTADO)==TNUEVOPRESUP){
+        if (modeloSQL != null) {
+            fechaCalculada = modeloSQL.getLong(PROYECTO_FECHAENTREGACALCULADA);
+            fechaInicioCalculada = modeloSQL.getLong(PROYECTO_FECHAINICIOCALCULADA);
+            horaInicioCalculada = modeloSQL.getLong(PROYECTO_HORAINICIOCALCULADA);
+            if (modeloSQL.getInt(PROYECTO_TIPOESTADO) == TNUEVOPRESUP) {
                 valores = new ContentValues();
                 setDato(PROYECTO_PRECIOHORA, Interactor.hora);
                 setDato(PROYECTO_FECHAENTREGACALCULADA,fechaCalculada);
-                CRUDutil.actualizarRegistro(modelo,valores);
-                modelo = CRUDutil.updateModelo(modelo);
-            }else if (modelo.getInt(PROYECTO_TIPOESTADO)>=TPRESUPACEPTADO){
+                CRUDutil.actualizarRegistro(modeloSQL, valores);
+                modeloSQL = CRUDutil.updateModelo(modeloSQL);
+            } else if (modeloSQL.getInt(PROYECTO_TIPOESTADO) >= TPRESUPACEPTADO) {
                 valores = new ContentValues();
                 setDato(PROYECTO_FECHAENTREGAACORDADA,fechaCalculada);
                 setDato(PROYECTO_FECHAINICIOACORDADA,fechaInicioCalculada);
                 setDato(PROYECTO_HORAINICIOACORDADA,horaInicioCalculada);
-                CRUDutil.actualizarRegistro(modelo,valores);
-                modelo = CRUDutil.updateModelo(modelo);
+                CRUDutil.actualizarRegistro(modeloSQL, valores);
+                modeloSQL = CRUDutil.updateModelo(modeloSQL);
             }
 
                 calculoTotales();
@@ -1043,7 +1043,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     private void comprobarEstado() {
 
-        Modelo proyecto = queryObject(CAMPOS_PROYECTO, id);
+        ModeloSQL proyecto = queryObject(CAMPOS_PROYECTO, id);
 
 
         if (proyecto!=null && proyecto.getInt(PROYECTO_TIPOESTADO) > 0) {
@@ -1093,9 +1093,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     private String getIdEstado(int tipoEstado){
 
-        ArrayList<Modelo> listaEstados = queryList(CAMPOS_ESTADO,null, null);
+        ArrayList<ModeloSQL> listaEstados = queryList(CAMPOS_ESTADO, null, null);
 
-        for (Modelo estado : listaEstados) {
+        for (ModeloSQL estado : listaEstados) {
 
             if (estado.getInt(ESTADO_TIPOESTADO)==tipoEstado){
 
@@ -1108,9 +1108,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     private String getIdEstado(String descTipoEstado){
 
-        ArrayList<Modelo> listaEstados = queryList(CAMPOS_ESTADO,null, null);
+        ArrayList<ModeloSQL> listaEstados = queryList(CAMPOS_ESTADO, null, null);
 
-        for (Modelo estado : listaEstados) {
+        for (ModeloSQL estado : listaEstados) {
 
             if (estado.getString(ESTADO_DESCRIPCION).equals(descTipoEstado)){
 
@@ -1191,7 +1191,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         valores = new ContentValues();
         putDato(valores,CAMPOS_PROYECTO,PROYECTO_ID_ESTADO,idEstado);
         updateRegistro(TABLA_PROYECTO, id,valores);
-        CRUDutil.actualizarRegistro(modelo,valores);
+        CRUDutil.actualizarRegistro(modeloSQL, valores);
 
         modificarEstadoPartidas(id,idEstado);
 
@@ -1208,7 +1208,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         ListaModelo listaPartidas = new ListaModelo(CAMPOS_PARTIDA,id,tabla,null,null);
         int res = 0;
 
-        for (Modelo partida : listaPartidas.getLista()) {
+        for (ModeloSQL partida : listaPartidas.getLista()) {
 
             String idpartidabase = partida.getString(PARTIDA_ID_PARTIDABASE);
             if (idpartidabase!=null){
@@ -1230,7 +1230,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             long horaini = JavaUtil.sumaHoraMin(JavaUtil.hoy());
             String asunto = "Presupuesto solicitado";
             String mensaje = "Envio presupuesto solicitado por usted";
-            Modelo cliente = queryObject(CAMPOS_CLIENTE, idCliente);
+        ModeloSQL cliente = queryObject(CAMPOS_CLIENTE, idCliente);
             valores = new ContentValues();
         putDato(valores, CAMPOS_EVENTO, EVENTO_TIPO, Interactor.TiposEvento.TIPOEVENTOEMAIL);
             putDato(valores, CAMPOS_EVENTO, EVENTO_DESCRIPCION, "Envío presupuesto a cliente");
@@ -1242,10 +1242,10 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             putDato(valores, CAMPOS_EVENTO, EVENTO_ASUNTO, asunto);
             putDato(valores, CAMPOS_EVENTO, EVENTO_MENSAJE, mensaje);
             putDato(valores, CAMPOS_EVENTO, EVENTO_RUTAADJUNTO,rutaPdf);
-            putDato(valores, CAMPOS_EVENTO, EVENTO_RUTAFOTO, modelo.getString(PROYECTO_RUTAFOTO));
+        putDato(valores, CAMPOS_EVENTO, EVENTO_RUTAFOTO, modeloSQL.getString(PROYECTO_RUTAFOTO));
             putDato(valores, CAMPOS_EVENTO, EVENTO_PROYECTOREL, id);
             putDato(valores, CAMPOS_EVENTO, EVENTO_CLIENTEREL, idCliente);
-            putDato(valores, CAMPOS_EVENTO, EVENTO_NOMPROYECTOREL, modelo.getString(PROYECTO_NOMBRE));
+        putDato(valores, CAMPOS_EVENTO, EVENTO_NOMPROYECTOREL, modeloSQL.getString(PROYECTO_NOMBRE));
             putDato(valores, CAMPOS_EVENTO, EVENTO_NOMCLIENTEREL, nombreCliente);
             putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, 50 * MINUTOSLONG);
 
@@ -1256,16 +1256,16 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         PresupuestoPDF presupuestoPDF = new PresupuestoPDF();
         presupuestoPDF.setNombreArchivo(id);
-        Modelo modelo = CRUDutil.updateModelo(CAMPOS_PROYECTO,id);
-        presupuestoPDF.crearPdf(id,modelo.getString(PROYECTO_RUTAFOTO));
+        ModeloSQL modeloSQL = CRUDutil.updateModelo(CAMPOS_PROYECTO, id);
+        presupuestoPDF.crearPdf(id, modeloSQL.getString(PROYECTO_RUTAFOTO));
         ContentValues valores = new ContentValues();
         putDato(valores,CAMPOS_PROYECTO,PROYECTO_RUTAPDF,presupuestoPDF.getRutaArchivo());
         System.out.println("presupuestoPDF ruta = " + presupuestoPDF.getRutaArchivo());
-        System.out.println("modelo = " + modelo);
+        System.out.println("modeloSQL = " + modeloSQL);
         System.out.println("valores = " + valores);
-        int res = ConsultaBD.updateRegistro(modelo.getNombreTabla(),id,valores);
+        int res = ConsultaBD.updateRegistro(modeloSQL.getNombreTabla(), id, valores);
         System.out.println("res = " + res);
-        System.out.println("modeloRutapdf = " + modelo.getString(PROYECTO_RUTAPDF));
+        System.out.println("modeloRutapdf = " + modeloSQL.getString(PROYECTO_RUTAPDF));
 
         return presupuestoPDF.getRutaArchivo();
     }
@@ -1296,9 +1296,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         String idPresupNoAceptado;
 
-        ArrayList<Modelo> listaEstados = queryList(CAMPOS_ESTADO,null, null);
+        ArrayList<ModeloSQL> listaEstados = queryList(CAMPOS_ESTADO, null, null);
 
-        for (Modelo estado : listaEstados) {
+        for (ModeloSQL estado : listaEstados) {
 
             if (estado.getInt(ESTADO_TIPOESTADO) == TPRESUPNOACEPTADO) {
 
@@ -1340,9 +1340,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         System.out.println("fechaAcordada = " + fechaAcordada);
         long retraso = 0;
 
-        if (modelo!=null) {
-            long fechafinal = modelo.getLong(PROYECTO_FECHAFINAL);
-            long fechaentrada = modelo.getLong(PROYECTO_FECHAENTRADA);
+        if (modeloSQL != null) {
+            long fechafinal = modeloSQL.getLong(PROYECTO_FECHAFINAL);
+            long fechaentrada = modeloSQL.getLong(PROYECTO_FECHAENTRADA);
             if (fechafinal>0){
                 retraso = (JavaUtil.hoy() - fechafinal);
             }else if (fechaCalculada <= fechaAcordada || fechaEntregaP == 0) {
@@ -1364,7 +1364,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             setDato(PROYECTO_FECHAENTRADAF, JavaUtil.getDateTime(JavaUtil.hoy()));
         }
 
-        if (modelo != null && id != null && Interactor.getTipoEstado(modelo.getString(PROYECTO_ID_ESTADO)) >= TPRESUPPENDENTREGA) {
+        if (modeloSQL != null && id != null && Interactor.getTipoEstado(modeloSQL.getString(PROYECTO_ID_ESTADO)) >= TPRESUPPENDENTREGA) {
             new TareaGenerarPdf().execute(id);
             System.out.println("Generar pdf");
         }
@@ -1429,8 +1429,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             setDato(PROYECTO_FECHAENTREGAACORDADA,fechaCalculada);
             setDato(PROYECTO_FECHAINICIOACORDADA,fechaInicioCalculada);
             setDato(PROYECTO_HORAINICIOACORDADA,horaInicioCalculada);
-            CRUDutil.actualizarRegistro(modelo,valores);
-            modelo = CRUDutil.updateModelo(modelo);
+            CRUDutil.actualizarRegistro(modeloSQL, valores);
+            modeloSQL = CRUDutil.updateModelo(modeloSQL);
 
             System.out.println("TAREA FECHAS GUARDAR EJECUTADO");
         }
@@ -1479,8 +1479,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private void actualizarFechas(){
 
         System.out.println("TAREA FECHAS DATOS EJECUTADO");
-        fechaInicioCalculadaPry.setText(modelo.getString(PROYECTO_FECHAINICIOCALCULADAF));
-        fechaCalculadaPry.setText(modelo.getString(PROYECTO_FECHAENTREGACALCULADAF));
+        fechaInicioCalculadaPry.setText(modeloSQL.getString(PROYECTO_FECHAINICIOCALCULADAF));
+        fechaCalculadaPry.setText(modeloSQL.getString(PROYECTO_FECHAENTREGACALCULADAF));
     }
 
     @Override
@@ -1606,19 +1606,19 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
-            nombreProyecto.setText(modelo.getString(PROYECTO_NOMBRE));
-            descripcionProyecto.setText(modelo.getString(PROYECTO_DESCRIPCION));
-            clienteProyecto.setText(modelo.getString(PROYECTO_CLIENTE_NOMBRE));
-            estadoProyecto.setText(modelo.getString(PROYECTO_DESCRIPCION_ESTADO));
-            importe.setText(JavaUtil.formatoMonedaLocal(modelo.getDouble(PROYECTO_IMPORTEPRESUPUESTO)));
+            nombreProyecto.setText(modeloSQL.getString(PROYECTO_NOMBRE));
+            descripcionProyecto.setText(modeloSQL.getString(PROYECTO_DESCRIPCION));
+            clienteProyecto.setText(modeloSQL.getString(PROYECTO_CLIENTE_NOMBRE));
+            estadoProyecto.setText(modeloSQL.getString(PROYECTO_DESCRIPCION_ESTADO));
+            importe.setText(JavaUtil.formatoMonedaLocal(modeloSQL.getDouble(PROYECTO_IMPORTEPRESUPUESTO)));
 
             if (actualtemp.equals(PROYECTO)){
 
-                progressBarProyecto.setProgress(modelo.getInt(PROYECTO_TOTCOMPLETADO));
+                progressBarProyecto.setProgress(modeloSQL.getInt(PROYECTO_TOTCOMPLETADO));
 
-                long retraso = modelo.getLong(PROYECTO_RETRASO);
+                long retraso = modeloSQL.getLong(PROYECTO_RETRASO);
                 if (retraso > 3 * DIASLONG){imagenEstado.setImageResource(R.drawable.alert_box_r);}
                 else if (retraso > DIASLONG){imagenEstado.setImageResource(R.drawable.alert_box_a);}
                 else {imagenEstado.setImageResource(R.drawable.alert_box_v);}
@@ -1626,23 +1626,23 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             }else{
 
                 progressBarProyecto.setVisibility(View.GONE);
-                long retraso = modelo.getLong(PROYECTO_RETRASO);
+                long retraso = modeloSQL.getLong(PROYECTO_RETRASO);
                 if (retraso > 3 * DIASLONG){imagenEstado.setImageResource(R.drawable.alert_box_r);}
                 else if (retraso > DIASLONG){imagenEstado.setImageResource(R.drawable.alert_box_a);}
                 else {imagenEstado.setImageResource(R.drawable.alert_box_v);}
 
             }
-            if (modelo.getString(PROYECTO_RUTAFOTO)!=null) {
-                imagenProyecto.setImageUriCard(activityBase,modelo.getString(PROYECTO_RUTAFOTO));
+            if (modeloSQL.getString(PROYECTO_RUTAFOTO) != null) {
+                imagenProyecto.setImageUriCard(activityBase, modeloSQL.getString(PROYECTO_RUTAFOTO));
             }
-            int peso = modelo.getInt(PROYECTO_CLIENTE_PESOTIPOCLI);
+            int peso = modeloSQL.getInt(PROYECTO_CLIENTE_PESOTIPOCLI);
 
             if (peso>6){imagenCliente.setImageResource(R.drawable.clientev);}
             else if (peso>3){imagenCliente.setImageResource(R.drawable.clientea);}
             else if (peso>0){imagenCliente.setImageResource(R.drawable.clienter);}
             else {imagenCliente.setImageResource(R.drawable.cliente);}
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override
@@ -1654,12 +1654,12 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View view, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View view, ArrayList<ModeloSQL> entrada) {
 
             ImagenLayout imagen = view.findViewById(R.id.imglistaproyectos);
             TextView nombre = view.findViewById(R.id.tvnombrelistaproyectos);

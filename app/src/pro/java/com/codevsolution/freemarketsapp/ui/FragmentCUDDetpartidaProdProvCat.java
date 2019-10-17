@@ -6,13 +6,13 @@ import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.codevsolution.base.android.controls.ImagenLayout;
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCUD;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
@@ -30,8 +30,8 @@ public class FragmentCUDDetpartidaProdProvCat extends FragmentCUD implements Int
     private EditMaterial refProv;
     private TextView tipoDetPartida;
     private String tipo;
-    private Modelo proyecto;
-    private Modelo partida;
+    private ModeloSQL proyecto;
+    private ModeloSQL partida;
     private String idDetPartida;
 
     private String idProyecto_Partida;
@@ -81,8 +81,8 @@ public class FragmentCUDDetpartidaProdProvCat extends FragmentCUD implements Int
     @Override
     protected void setBundle() {
 
-        proyecto = (Modelo) bundle.getSerializable(PROYECTO);
-        partida = (Modelo) bundle.getSerializable(PARTIDA);
+        proyecto = (ModeloSQL) bundle.getSerializable(PROYECTO);
+        partida = (ModeloSQL) bundle.getSerializable(PARTIDA);
         prodProv = (ProdProv) bundle.getSerializable(PRODPROVCAT);
 
         if (partida != null) {
@@ -113,16 +113,16 @@ public class FragmentCUDDetpartidaProdProvCat extends FragmentCUD implements Int
     @Override
     protected void setDatos() {
 
-        modelo = CRUDutil.updateModelo(campos, id, secuencia);
+        modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
 
-        tipo = modelo.getString(DETPARTIDA_TIPO);
+        tipo = modeloSQL.getString(DETPARTIDA_TIPO);
         btndelete.setVisibility(View.VISIBLE);
         tipoDetPartida.setText(tipo.toUpperCase());
-        cantidadTot.setText(JavaUtil.getDecimales(((partida.getDouble(PARTIDA_CANTIDAD)) * (modelo.getDouble(DETPARTIDA_CANTIDAD)))));
+        cantidadTot.setText(JavaUtil.getDecimales(((partida.getDouble(PARTIDA_CANTIDAD)) * (modeloSQL.getDouble(DETPARTIDA_CANTIDAD)))));
 
-        if (modelo.getString(DETPARTIDA_RUTAFOTO) != null) {
+        if (modeloSQL.getString(DETPARTIDA_RUTAFOTO) != null) {
             mediaUtil = new MediaUtil(contexto);
-            path = modelo.getString(DETPARTIDA_RUTAFOTO);
+            path = modeloSQL.getString(DETPARTIDA_RUTAFOTO);
             imagen.setImageFirestoreCircle(path);
         }
     }

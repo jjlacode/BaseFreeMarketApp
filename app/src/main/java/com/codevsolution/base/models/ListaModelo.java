@@ -11,24 +11,24 @@ import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryListCampo;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryListDetalle;
 
-public class ListaModelo extends ArrayList<ArrayList<Modelo>> implements Serializable {
+public class ListaModelo extends ArrayList<ArrayList<ModeloSQL>> implements Serializable {
 
 
     public ListaModelo(int initialCapacity) {
         super(initialCapacity);
     }
 
-    public ListaModelo(@NonNull Collection<? extends ArrayList<Modelo>> c) {
+    public ListaModelo(@NonNull Collection<? extends ArrayList<ModeloSQL>> c) {
         super(c);
     }
 
     public ListaModelo() {
 
         super();
-        add(new ArrayList<Modelo>());
+        add(new ArrayList<ModeloSQL>());
     }
 
-    public ListaModelo(ArrayList<Modelo> lista) {
+    public ListaModelo(ArrayList<ModeloSQL> lista) {
 
         super();
 
@@ -76,7 +76,7 @@ public class ListaModelo extends ArrayList<ArrayList<Modelo>> implements Seriali
         add(queryList(campos, campo, valor, valor2, flag, orden));
     }
 
-    public ArrayList<Modelo> getLista() {
+    public ArrayList<ModeloSQL> getLista() {
 
         if (size() > 0) {
 
@@ -85,7 +85,7 @@ public class ListaModelo extends ArrayList<ArrayList<Modelo>> implements Seriali
         return null;
     }
 
-    public ArrayList<Modelo> getLista(int indice) {
+    public ArrayList<ModeloSQL> getLista(int indice) {
 
         if (size() > indice) {
 
@@ -95,16 +95,16 @@ public class ListaModelo extends ArrayList<ArrayList<Modelo>> implements Seriali
         return null;
     }
 
-    public ArrayList<ArrayList<Modelo>> getListas() {
+    public ArrayList<ArrayList<ModeloSQL>> getListas() {
         return this;
     }
 
-    public void addLista(ArrayList<Modelo> lista) {
+    public void addLista(ArrayList<ModeloSQL> lista) {
 
         add(lista);
     }
 
-    public void addLista(int indice, ArrayList<Modelo> lista) {
+    public void addLista(int indice, ArrayList<ModeloSQL> lista) {
 
         add(indice, lista);
 
@@ -133,7 +133,7 @@ public class ListaModelo extends ArrayList<ArrayList<Modelo>> implements Seriali
 
     }
 
-    public void removeLista(ArrayList<Modelo> lista) {
+    public void removeLista(ArrayList<ModeloSQL> lista) {
 
         remove(lista);
 
@@ -151,67 +151,67 @@ public class ListaModelo extends ArrayList<ArrayList<Modelo>> implements Seriali
 
     }
 
-    public void addModelo(Modelo modelo) {
+    public void addModelo(ModeloSQL modeloSQL) {
 
-        get(0).add(modelo);
-        modelo.setPosicionLista(get(0).indexOf(modelo));
-        modelo.setIndiceLista(0);
-        modelo.setEnLista(true);
+        get(0).add(modeloSQL);
+        modeloSQL.setPosicionLista(get(0).indexOf(modeloSQL));
+        modeloSQL.setIndiceLista(0);
+        modeloSQL.setEnLista(true);
     }
 
-    public void addModelo(int indice, Modelo modelo) {
+    public void addModelo(int indice, ModeloSQL modeloSQL) {
 
-        get(indice).add(modelo);
-        modelo.setPosicionLista(get(indice).indexOf(modelo));
-        modelo.setIndiceLista(indice);
-        modelo.setEnLista(true);
+        get(indice).add(modeloSQL);
+        modeloSQL.setPosicionLista(get(indice).indexOf(modeloSQL));
+        modeloSQL.setIndiceLista(indice);
+        modeloSQL.setEnLista(true);
 
     }
 
     public void removeModelo(int posicionModelo) {
 
-        Modelo modelo = get(0).get(posicionModelo);
-        modelo.setEnLista(false);
-        modelo.setIndiceLista(0);
-        modelo.setPosicionLista(0);
+        ModeloSQL modeloSQL = get(0).get(posicionModelo);
+        modeloSQL.setEnLista(false);
+        modeloSQL.setIndiceLista(0);
+        modeloSQL.setPosicionLista(0);
         get(0).remove(posicionModelo);
     }
 
     public void removeModelo(int indice, int posicionModelo) {
 
-        Modelo modelo = get(indice).get(posicionModelo);
-        modelo.setEnLista(false);
-        modelo.setIndiceLista(0);
-        modelo.setPosicionLista(0);
+        ModeloSQL modeloSQL = get(indice).get(posicionModelo);
+        modeloSQL.setEnLista(false);
+        modeloSQL.setIndiceLista(0);
+        modeloSQL.setPosicionLista(0);
         get(indice).remove(posicionModelo);
     }
 
-    public void removeModelo(Modelo modelo) {
+    public void removeModelo(ModeloSQL modeloSQL) {
 
-        modelo.setEnLista(false);
-        modelo.setIndiceLista(0);
-        modelo.setPosicionLista(0);
-        get(0).remove(modelo);
+        modeloSQL.setEnLista(false);
+        modeloSQL.setIndiceLista(0);
+        modeloSQL.setPosicionLista(0);
+        get(0).remove(modeloSQL);
     }
 
-    public void removeModelo(int indice, Modelo modelo) {
+    public void removeModelo(int indice, ModeloSQL modeloSQL) {
 
-        modelo.setEnLista(false);
-        modelo.setIndiceLista(0);
-        modelo.setPosicionLista(0);
-        get(indice).remove(modelo);
+        modeloSQL.setEnLista(false);
+        modeloSQL.setIndiceLista(0);
+        modeloSQL.setPosicionLista(0);
+        get(indice).remove(modeloSQL);
     }
 
-    public void set(int posicion, Modelo modelo) {
+    public void set(int posicion, ModeloSQL modeloSQL) {
 
-        modelo.setPosicionLista(posicion);
-        get(0).set(posicion, modelo);
+        modeloSQL.setPosicionLista(posicion);
+        get(0).set(posicion, modeloSQL);
     }
 
-    public void set(int indice, int posicion, Modelo modelo) {
+    public void set(int indice, int posicion, ModeloSQL modeloSQL) {
 
-        modelo.setPosicionLista(posicion);
-        get(indice).set(posicion, modelo);
+        modeloSQL.setPosicionLista(posicion);
+        get(indice).set(posicion, modeloSQL);
     }
 
     public String tablaModelo(int posicion) {
@@ -224,12 +224,12 @@ public class ListaModelo extends ArrayList<ArrayList<Modelo>> implements Seriali
         return get(indice).get(posicion).getNombreTabla();
     }
 
-    public Modelo getItem(int posicion) {
+    public ModeloSQL getItem(int posicion) {
 
         return get(0).get(posicion);
     }
 
-    public Modelo getItem(int indice, int posicion) {
+    public ModeloSQL getItem(int indice, int posicion) {
 
         return get(indice).get(posicion);
     }
@@ -237,9 +237,9 @@ public class ListaModelo extends ArrayList<ArrayList<Modelo>> implements Seriali
 
     public boolean esDetalle(int posicion) {
 
-        Modelo modelo = get(0).get(posicion);
-        String[] campos = modelo.getCampos();
-        for (int i = 0; i < modelo.getNumcampos(); i++) {
+        ModeloSQL modeloSQL = get(0).get(posicion);
+        String[] campos = modeloSQL.getCampos();
+        for (int i = 0; i < modeloSQL.getNumcampos(); i++) {
             if (campos[i].equals(CAMPO_SECUENCIA)) {
                 return true;
             }
@@ -249,9 +249,9 @@ public class ListaModelo extends ArrayList<ArrayList<Modelo>> implements Seriali
 
     public boolean esDetalle(int indice, int posicion) {
 
-        Modelo modelo = get(indice).get(posicion);
-        String[] campos = modelo.getCampos();
-        for (int i = 0; i < modelo.getNumcampos(); i++) {
+        ModeloSQL modeloSQL = get(indice).get(posicion);
+        String[] campos = modeloSQL.getCampos();
+        for (int i = 0; i < modeloSQL.getNumcampos(); i++) {
             if (campos[i].equals(CAMPO_SECUENCIA)) {
                 return true;
             }
@@ -289,12 +289,12 @@ public class ListaModelo extends ArrayList<ArrayList<Modelo>> implements Seriali
         get(indice).clear();
     }
 
-    public void addAllLista(ArrayList<Modelo> listaClon) {
+    public void addAllLista(ArrayList<ModeloSQL> listaClon) {
 
         get(0).addAll(listaClon);
     }
 
-    public void addAllLista(int indice, ArrayList<Modelo> listaClon) {
+    public void addAllLista(int indice, ArrayList<ModeloSQL> listaClon) {
 
         get(indice).addAll(listaClon);
     }
@@ -342,7 +342,7 @@ public class ListaModelo extends ArrayList<ArrayList<Modelo>> implements Seriali
         return 0;
     }
 
-    public void clearAddAllLista(ArrayList<Modelo> listaClon) {
+    public void clearAddAllLista(ArrayList<ModeloSQL> listaClon) {
 
         if (size() > 0) {
 
@@ -363,7 +363,7 @@ public class ListaModelo extends ArrayList<ArrayList<Modelo>> implements Seriali
         addAll(listaModeloClon.getListas());
     }
 
-    public void setLista(ArrayList<Modelo> lista) {
+    public void setLista(ArrayList<ModeloSQL> lista) {
         set(0, lista);
     }
 
@@ -383,7 +383,7 @@ public class ListaModelo extends ArrayList<ArrayList<Modelo>> implements Seriali
         set(0, queryListDetalle(campos, id, tablaCab, seleccion, orden));
     }
 
-    public void setLista(int indice, ArrayList<Modelo> lista) {
+    public void setLista(int indice, ArrayList<ModeloSQL> lista) {
         set(indice, lista);
     }
 

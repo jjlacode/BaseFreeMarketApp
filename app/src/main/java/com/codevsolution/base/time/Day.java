@@ -3,7 +3,7 @@ package com.codevsolution.base.time;
 import android.graphics.Color;
 
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -22,7 +22,7 @@ public class Day {
     private int textColorNV = Color.parseColor("#d2d2d2");
     private int backgroundColor = Color.parseColor("#FFF5F5F5");
     private int backgroundColorNV = Color.parseColor("#FFF5F5F5");
-    private ArrayList<Modelo> lista;
+    private ArrayList<ModeloSQL> lista;
     private ListaModelo listaModelo;
     private int posicionListaSimple;
     private int posicionListaMulti;
@@ -121,7 +121,7 @@ public class Day {
 
     }
 
-    public Day(Calendar date, int textColor, int backgroundColor, ArrayList<Modelo> lista, int posicionCal) {
+    public Day(Calendar date, int textColor, int backgroundColor, ArrayList<ModeloSQL> lista, int posicionCal) {
         this.date = date;
         this.textColor = textColor;
         this.backgroundColor = backgroundColor;
@@ -274,11 +274,11 @@ public class Day {
         this.selected = selected;
     }
 
-    public void setLista(ArrayList<Modelo> lista) {
+    public void setLista(ArrayList<ModeloSQL> lista) {
         this.lista = lista;
     }
 
-    public ArrayList<Modelo> getLista() {
+    public ArrayList<ModeloSQL> getLista() {
         return lista;
     }
 

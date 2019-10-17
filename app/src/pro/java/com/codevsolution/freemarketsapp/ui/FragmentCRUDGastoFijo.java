@@ -5,12 +5,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.crud.FragmentCRUD;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.javautil.JavaUtil;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
@@ -39,7 +39,7 @@ public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.T
 
     @Override
     protected ListaAdaptadorFiltroModelo setAdaptadorAuto
-            (Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+            (Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
@@ -111,13 +111,13 @@ public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.T
     protected void setDatos() {
 
         btndelete.setVisibility(View.VISIBLE);
-        nombre.setText(modelo.getString(GASTOFIJO_NOMBRE));
-        descripcion.setText(modelo.getString(GASTOFIJO_DESCRIPCION));
-        cantidad.setText(modelo.getString(GASTOFIJO_CANTIDAD));
-        importe.setText(modelo.getString(GASTOFIJO_PRECIO));
-        anios.setText(modelo.getString(GASTOFIJO_ANYOS));
-        meses.setText(modelo.getString(GASTOFIJO_MESES));
-        dias.setText(modelo.getString(GASTOFIJO_DIAS));
+        nombre.setText(modeloSQL.getString(GASTOFIJO_NOMBRE));
+        descripcion.setText(modeloSQL.getString(GASTOFIJO_DESCRIPCION));
+        cantidad.setText(modeloSQL.getString(GASTOFIJO_CANTIDAD));
+        importe.setText(modeloSQL.getString(GASTOFIJO_PRECIO));
+        anios.setText(modeloSQL.getString(GASTOFIJO_ANYOS));
+        meses.setText(modeloSQL.getString(GASTOFIJO_MESES));
+        dias.setText(modeloSQL.getString(GASTOFIJO_DIAS));
 
     }
 
@@ -183,16 +183,16 @@ public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.T
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
-            nombre.setText(modelo.getString(GASTOFIJO_NOMBRE));
-            descripcion.setText(modelo.getString(GASTOFIJO_DESCRIPCION));
-            cantidad.setText(modelo.getString(GASTOFIJO_CANTIDAD));
-            importe.setText(JavaUtil.formatoMonedaLocal(modelo.getDouble(GASTOFIJO_PRECIO)));
-            anios.setText(modelo.getString(GASTOFIJO_ANYOS));
-            meses.setText(modelo.getString(GASTOFIJO_MESES));
-            dias.setText(modelo.getString(GASTOFIJO_DIAS));
-            super.bind(modelo);
+            nombre.setText(modeloSQL.getString(GASTOFIJO_NOMBRE));
+            descripcion.setText(modeloSQL.getString(GASTOFIJO_DESCRIPCION));
+            cantidad.setText(modeloSQL.getString(GASTOFIJO_CANTIDAD));
+            importe.setText(JavaUtil.formatoMonedaLocal(modeloSQL.getDouble(GASTOFIJO_PRECIO)));
+            anios.setText(modeloSQL.getString(GASTOFIJO_ANYOS));
+            meses.setText(modeloSQL.getString(GASTOFIJO_MESES));
+            dias.setText(modeloSQL.getString(GASTOFIJO_DIAS));
+            super.bind(modeloSQL);
         }
 
         @Override
@@ -204,12 +204,12 @@ public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.T
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View itemView, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View itemView, ArrayList<ModeloSQL> entrada) {
 
             TextView nombre, descripcion, cantidad, importe, anios, meses, dias;
 

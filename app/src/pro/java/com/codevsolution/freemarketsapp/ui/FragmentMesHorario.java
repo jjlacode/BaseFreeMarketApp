@@ -17,7 +17,7 @@ import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.Day;
 import com.codevsolution.base.time.TimeDateUtil;
@@ -87,7 +87,7 @@ public abstract class FragmentMesHorario extends FragmentMes implements
             mainLinear.setOrientation(ViewGroupLayout.ORI_LLC_HORIZONTAL);
             ViewGroupLayout vistaLinear = new ViewGroupLayout(contexto, mainLinear);
 
-            Modelo perfil = CRUDutil.updateModelo(CAMPOS_PERFIL, PERFIL_NOMBRE, Interactor.perfila, null, IGUAL, null);
+            ModeloSQL perfil = CRUDutil.updateModelo(CAMPOS_PERFIL, PERFIL_NOMBRE, Interactor.perfila, null, IGUAL, null);
             if ((nomDay == Calendar.SUNDAY && perfil.getDouble(PERFIL_HORASDOMINGO) == 0) ||
                     (nomDay == Calendar.MONDAY && perfil.getDouble(PERFIL_HORASLUNES) == 0) ||
                     (nomDay == Calendar.TUESDAY && perfil.getDouble(PERFIL_HORASMARTES) == 0) ||
@@ -211,7 +211,7 @@ public abstract class FragmentMesHorario extends FragmentMes implements
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
             ViewGroupLayout vistaCard = new ViewGroupLayout(contexto, relativeLayout, new CardView(contexto));
             card = (CardView) vistaCard.getViewGroup();
@@ -224,7 +224,7 @@ public abstract class FragmentMesHorario extends FragmentMes implements
             btnNombre.setLayoutParams(layoutParamsrv);
 
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override

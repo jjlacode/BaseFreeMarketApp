@@ -12,18 +12,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.codevsolution.base.android.controls.ImagenLayout;
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.AudioPlayRec;
 import com.codevsolution.base.media.MediaUtil;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
@@ -67,7 +67,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
@@ -168,7 +168,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
         super.setDefectoMaestroDetalleSeparados();
 
         /*
-        if (idrelacionado != null && id!=null && modelo == null) {
+        if (idrelacionado != null && id!=null && modeloSQL == null) {
             frPie.setVisibility(View.VISIBLE);
             btnsave.setVisibility(View.GONE);
             btndelete.setVisibility(View.GONE);
@@ -211,20 +211,20 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
     protected void setDatos() {
 
         if (id!=null) {
-            modelo = CRUDutil.updateModelo(campos, id);
+            modeloSQL = CRUDutil.updateModelo(campos, id);
             btnsave.setVisibility(View.VISIBLE);
             btndelete.setVisibility(View.VISIBLE);
         }
 
-        descripcion.setText(modelo.getString(NOTA_DESCRIPCION));
-        titulo.setText(modelo.getString(NOTA_TITULO));
-        fechaNota = modelo.getLong(NOTA_FECHA);
-        path = modelo.getString(NOTA_RUTAFOTO);
+        descripcion.setText(modeloSQL.getString(NOTA_DESCRIPCION));
+        titulo.setText(modeloSQL.getString(NOTA_TITULO));
+        fechaNota = modeloSQL.getLong(NOTA_FECHA);
+        path = modeloSQL.getString(NOTA_RUTAFOTO);
         fecha.setText(JavaUtil.getDateTime(fechaNota));
         playVideo.setVisibility(View.GONE);
         recVideo.setVisibility(View.GONE);
         imagen.setVisibility(View.GONE);
-        tipoNota = modelo.getString(NOTA_TIPO);
+        tipoNota = modeloSQL.getString(NOTA_TIPO);
         tvTipo.setVisibility(View.GONE);
         videoView.setVisibility(View.GONE);
         btncompartir.setVisibility(View.GONE);
@@ -297,8 +297,8 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
 
                     mediaUtil = new MediaUtil(contexto);
 
-                    if (modelo.getString(NOTA_RUTAFOTO) != null) {
-                        path = modelo.getString(NOTA_RUTAFOTO);
+                    if (modeloSQL.getString(NOTA_RUTAFOTO) != null) {
+                        path = modeloSQL.getString(NOTA_RUTAFOTO);
                         setImagenUri(mediaUtil, path);
                         if (!ampliado) {
                             imagenPantalla(4, 2);
@@ -452,7 +452,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
                     path=null;
                     if (delete()) {
                         id = null;
-                        modelo = null;
+                        modeloSQL = null;
                         selector();
                         return true;
                     }
@@ -465,7 +465,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
                 path=null;
                 if (delete()) {
                     id = null;
-                    modelo = null;
+                    modeloSQL = null;
                     selector();
                     return true;
                 }
@@ -514,14 +514,14 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
         if (id!=null){
 
             id=null;
-            modelo=null;
+            modeloSQL = null;
             selector();
 
         }else if (origen.equals(EVENTO)) {
 
             enviarBundle();
             bundle.putString(CAMPO_ID, idrelacionado);
-            Modelo evento = CRUDutil.updateModelo(CAMPOS_EVENTO,idrelacionado);
+            ModeloSQL evento = CRUDutil.updateModelo(CAMPOS_EVENTO, idrelacionado);
             bundle.putSerializable(MODELO, evento);
             bundle.putString(ACTUAL, origen);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
@@ -571,12 +571,12 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View view, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View view, ArrayList<ModeloSQL> entrada) {
 
             TextView descripcion, fecha, tipoNota;
             ImageView imagen;
@@ -610,11 +610,11 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
-            descripcion.setText(modelo.getString(NOTA_TITULO));
-            fecha.setText(JavaUtil.getDateTime(modelo.getLong(NOTA_FECHA)));
-            String tipo = modelo.getString(NOTA_TIPO);
+            descripcion.setText(modeloSQL.getString(NOTA_TITULO));
+            fecha.setText(JavaUtil.getDateTime(modeloSQL.getLong(NOTA_FECHA)));
+            String tipo = modeloSQL.getString(NOTA_TIPO);
             tipoNota.setText(tipo);
             tipoNota.setVisibility(View.GONE);
             //imagenTarea.setVisibility(View.GONE);
@@ -632,8 +632,8 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
                     case NOTAAUDIO:
 
                         imagen.setImageResource(R.drawable.ic_mic_black_24dp);
-                        if (modelo.getString(NOTA_RUTAFOTO) != null) {
-                            path = modelo.getString(NOTA_RUTAFOTO);
+                        if (modeloSQL.getString(NOTA_RUTAFOTO) != null) {
+                            path = modeloSQL.getString(NOTA_RUTAFOTO);
                         }
 
                         break;
@@ -641,17 +641,17 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
                     case NOTAVIDEO:
 
                         imagen.setImageResource(R.drawable.ic_videocam_black_24dp);
-                        if (modelo.getString(NOTA_RUTAFOTO) != null) {
-                            path = modelo.getString(NOTA_RUTAFOTO);
+                        if (modeloSQL.getString(NOTA_RUTAFOTO) != null) {
+                            path = modeloSQL.getString(NOTA_RUTAFOTO);
                         }
 
                         break;
 
                     case NOTAIMAGEN:
 
-                        if (modelo.getString(NOTA_RUTAFOTO) != null) {
+                        if (modeloSQL.getString(NOTA_RUTAFOTO) != null) {
                             imagen.setVisibility(View.VISIBLE);
-                            path = modelo.getString(NOTA_RUTAFOTO);
+                            path = modeloSQL.getString(NOTA_RUTAFOTO);
                             MediaUtil imagenUtil = new MediaUtil(AppActivity.getAppContext());
                             imagenUtil.setImageUriCircle(path, imagen);
                         } else {
@@ -661,7 +661,7 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
                 }
             }
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override

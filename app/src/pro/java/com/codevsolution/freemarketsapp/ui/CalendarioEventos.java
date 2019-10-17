@@ -10,13 +10,13 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.time.Day;
 import com.codevsolution.base.time.ListaDays;
 import com.codevsolution.base.time.TimeDateUtil;
@@ -47,18 +47,18 @@ public class CalendarioEventos extends FragmentMes {
         ListaModelo listatemp = new ListaModelo();
         ListaModelo listaCompleta = new ListaModelo(CAMPOS_EVENTO);
 
-        for (Modelo modelo : listaCompleta.getLista()) {
-            if (!modelo.getString(EVENTO_TIPO).equals(TIPOEVENTOTAREA)) {
-                listatemp.addModelo(modelo);
+        for (ModeloSQL modeloSQL : listaCompleta.getLista()) {
+            if (!modeloSQL.getString(EVENTO_TIPO).equals(TIPOEVENTOTAREA)) {
+                listatemp.addModelo(modeloSQL);
             }
         }
 
-        for (Modelo modelo : listatemp.getLista()) {
+        for (ModeloSQL modeloSQL : listatemp.getLista()) {
 
-            if (TimeDateUtil.getDateString(modelo.getLong(EVENTO_FECHAINIEVENTO))
+            if (TimeDateUtil.getDateString(modeloSQL.getLong(EVENTO_FECHAINIEVENTO))
                     .equals(TimeDateUtil.getDateString(fecha))) {
 
-                listaDia.addModelo(modelo);
+                listaDia.addModelo(modeloSQL);
             }
         }
 
@@ -72,10 +72,10 @@ public class CalendarioEventos extends FragmentMes {
         ListaModelo listaDia = new ListaModelo();
         ListaModelo listaCompleta = new ListaModelo(CAMPOS_EVENTO);
 
-        for (Modelo modelo : listaCompleta.getLista()) {
-            if (modelo.getString(EVENTO_TIPO).equals(TIPOEVENTOTAREA) &&
-                    modelo.getDouble(EVENTO_COMPLETADA) < 100) {
-                listaDia.addModelo(modelo);
+        for (ModeloSQL modeloSQL : listaCompleta.getLista()) {
+            if (modeloSQL.getString(EVENTO_TIPO).equals(TIPOEVENTOTAREA) &&
+                    modeloSQL.getDouble(EVENTO_COMPLETADA) < 100) {
+                listaDia.addModelo(modeloSQL);
             }
         }
 
@@ -181,18 +181,18 @@ public class CalendarioEventos extends FragmentMes {
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View itemView, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View itemView, ArrayList<ModeloSQL> entrada) {
 
             TextView descripcion,hora,telefono,email,lugar,horafin,fechafin,fechaini;
             ProgressBar pbar;
@@ -315,25 +315,25 @@ public class CalendarioEventos extends FragmentMes {
         }
 
         @Override
-        public void bind(final Modelo modelo) {
+        public void bind(final ModeloSQL modeloSQL) {
 
-            final String tipoevento = modelo.getString(EVENTO_TIPO);
+            final String tipoevento = modeloSQL.getString(EVENTO_TIPO);
             telefono.setVisibility(View.GONE);
             lugar.setVisibility(View.GONE);
             email.setVisibility(View.GONE);
             fechafin.setVisibility(View.GONE);
             horafin.setVisibility(View.GONE);
 
-            double completada = modelo.getDouble(EVENTO_COMPLETADA);
-            descripcion.setText(modelo.getString(EVENTO_DESCRIPCION));
-            hora.setText(modelo.getString(EVENTO_HORAINIEVENTOF));
-            telefono.setText(modelo.getString(EVENTO_TELEFONO));
-            lugar.setText(modelo.getString(EVENTO_DIRECCION));
-            email.setText(modelo.getString(EVENTO_EMAIL));
+            double completada = modeloSQL.getDouble(EVENTO_COMPLETADA);
+            descripcion.setText(modeloSQL.getString(EVENTO_DESCRIPCION));
+            hora.setText(modeloSQL.getString(EVENTO_HORAINIEVENTOF));
+            telefono.setText(modeloSQL.getString(EVENTO_TELEFONO));
+            lugar.setText(modeloSQL.getString(EVENTO_DIRECCION));
+            email.setText(modeloSQL.getString(EVENTO_EMAIL));
             pbar.setProgress((int) completada);
-            horafin.setText(modelo.getString(EVENTO_HORAFINEVENTOF));
-            fechafin.setText(modelo.getString(EVENTO_FECHAFINEVENTOF));
-            fechaini.setText(modelo.getString(EVENTO_FECHAINIEVENTOF));
+            horafin.setText(modeloSQL.getString(EVENTO_HORAFINEVENTOF));
+            fechafin.setText(modeloSQL.getString(EVENTO_FECHAFINEVENTOF));
+            fechaini.setText(modeloSQL.getString(EVENTO_FECHAINIEVENTOF));
 
             if (tipoevento.equals(TIPOEVENTOTAREA)) {
                 imagen.setImageResource(R.drawable.ic_tareas_indigo);
@@ -367,7 +367,7 @@ public class CalendarioEventos extends FragmentMes {
 
             if (completada < 100) {
 
-                long retraso = JavaUtil.hoy() - modelo.getLong(EVENTO_FECHAINIEVENTO);
+                long retraso = JavaUtil.hoy() - modeloSQL.getLong(EVENTO_FECHAINIEVENTO);
 
                 if (!tipoevento.equals(TIPOEVENTOTAREA)) {
                     if (retraso > 3 * Interactor.DIASLONG) {
@@ -378,7 +378,7 @@ public class CalendarioEventos extends FragmentMes {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
                     }//imgret.setImageResource(R.drawable.alert_box_v);}
                 }else {
-                    retraso = JavaUtil.hoy() - modelo.getLong(EVENTO_FECHAFINEVENTO);
+                    retraso = JavaUtil.hoy() - modeloSQL.getLong(EVENTO_FECHAFINEVENTO);
                     if (retraso > 3 * Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
                     } else if (retraso > Interactor.DIASLONG) {
@@ -398,26 +398,26 @@ public class CalendarioEventos extends FragmentMes {
 
                     if (tipoevento.equals(TIPOEVENTOCITA)){
 
-                        if (!modelo.getString(EVENTO_DIRECCION).equals("")){
+                        if (!modeloSQL.getString(EVENTO_DIRECCION).equals("")) {
 
-                            viewOnMapA(getContext(),modelo.getString(EVENTO_DIRECCION));
+                            viewOnMapA(getContext(), modeloSQL.getString(EVENTO_DIRECCION));
                         }
                     }else if (tipoevento.equals(TIPOEVENTOLLAMADA)){
 
                         AppActivity.hacerLlamada(AppActivity.getAppContext()
-                                ,modelo.getString(EVENTO_TELEFONO));
+                                , modeloSQL.getString(EVENTO_TELEFONO));
                     }else if (tipoevento.equals(TIPOEVENTOEMAIL)){
 
                         String path =null;
-                        if (modelo.getString(EVENTO_RUTAADJUNTO)!=null) {
-                            path = modelo.getString(EVENTO_RUTAADJUNTO);
+                        if (modeloSQL.getString(EVENTO_RUTAADJUNTO) != null) {
+                            path = modeloSQL.getString(EVENTO_RUTAADJUNTO);
                             AppActivity.enviarEmail(AppActivity.getAppContext(),
-                                    modelo.getString(EVENTO_EMAIL), modelo.getString(EVENTO_ASUNTO),
-                                    modelo.getString(EVENTO_MENSAJE), path);
+                                    modeloSQL.getString(EVENTO_EMAIL), modeloSQL.getString(EVENTO_ASUNTO),
+                                    modeloSQL.getString(EVENTO_MENSAJE), path);
                         }else{
                             AppActivity.enviarEmail(AppActivity.getAppContext(),
-                                    modelo.getString(EVENTO_EMAIL), modelo.getString(EVENTO_ASUNTO),
-                                    modelo.getString(EVENTO_MENSAJE));
+                                    modeloSQL.getString(EVENTO_EMAIL), modeloSQL.getString(EVENTO_ASUNTO),
+                                    modeloSQL.getString(EVENTO_MENSAJE));
                         }
                     }
                 }
@@ -428,8 +428,8 @@ public class CalendarioEventos extends FragmentMes {
                 public void onClick(View v) {
 
                     bundle = new Bundle();
-                    bundle.putSerializable(MODELO, modelo);
-                    bundle.putString(CAMPO_ID,modelo.getString(EVENTO_ID_EVENTO));
+                    bundle.putSerializable(MODELO, modeloSQL);
+                    bundle.putString(CAMPO_ID, modeloSQL.getString(EVENTO_ID_EVENTO));
                     bundle.putString(ORIGEN, CALENDARIO);
                     bundle.putString(SUBTITULO, JavaUtil.getDate(fecha));
                     bundle.putString(ACTUAL, TIPOEVENTOEVENTO);
@@ -438,7 +438,7 @@ public class CalendarioEventos extends FragmentMes {
                 }
             });
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override

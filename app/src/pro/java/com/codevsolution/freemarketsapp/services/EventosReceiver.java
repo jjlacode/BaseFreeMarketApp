@@ -5,10 +5,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.crud.CRUDutil;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.javautil.JavaUtil;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.services.ReceiverBase;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.freemarketsapp.MainActivity;
@@ -39,7 +39,7 @@ public class EventosReceiver extends ReceiverBase implements JavaUtil.Constantes
 
         if (intent.getAction() != null && intent.getExtras() != null && intent.getAction().equals(ACCION_AVISOEVENTO)) {
 
-            Modelo evento = (Modelo) intent.getExtras().get(EVENTO);
+            ModeloSQL evento = (ModeloSQL) intent.getExtras().get(EVENTO);
 
             String contenido = evento.getString(EVENTO_DESCRIPCION);
 
@@ -57,14 +57,14 @@ public class EventosReceiver extends ReceiverBase implements JavaUtil.Constantes
             System.out.println("Accion posponer");
             String idEvento = intent.getExtras().getString(EXTRA_IDEVENTO);
 
-            Modelo evento = CRUDutil.updateModelo(CAMPOS_EVENTO, idEvento);
+            ModeloSQL evento = CRUDutil.updateModelo(CAMPOS_EVENTO, idEvento);
             ConsultaBD consulta = new ConsultaBD();
             ContentValues valores = new ContentValues();
             long minhoy = JavaUtil.sumaHoraMin(JavaUtil.hoy());
             long minAviso = JavaUtil.sumaHoraMin(evento.getLong(EVENTO_HORAINIEVENTO));
-            consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_NOTIFICADO, 0);
-            consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, (minAviso - minhoy - HORASLONG) - (3 * MINUTOSLONG));
-            consulta.updateRegistro(TABLA_EVENTO, idEvento, valores);
+            ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_NOTIFICADO, 0);
+            ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, (minAviso - minhoy - HORASLONG) - (3 * MINUTOSLONG));
+            ConsultaBD.updateRegistro(TABLA_EVENTO, idEvento, valores);
             NotificationManager notifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
             notifyMgr.cancel(intent.getExtras().getInt(EXTRA_ID));
 
@@ -75,9 +75,9 @@ public class EventosReceiver extends ReceiverBase implements JavaUtil.Constantes
 
             ConsultaBD consulta = new ConsultaBD();
             ContentValues valores = new ContentValues();
-            consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_COMPLETADA, 100);
+            ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_COMPLETADA, 100);
             //consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_NOTIFICADO, 0);
-            consulta.updateRegistro(TABLA_EVENTO, idEvento, valores);
+            ConsultaBD.updateRegistro(TABLA_EVENTO, idEvento, valores);
             NotificationManager notifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
             notifyMgr.cancel(intent.getExtras().getInt(EXTRA_ID));
 

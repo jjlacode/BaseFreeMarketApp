@@ -17,7 +17,7 @@ import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.FragmentRV;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
 
@@ -73,18 +73,18 @@ public abstract class DiaCalBase extends FragmentRV {
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new ListaAdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View view, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View view, ArrayList<ModeloSQL> entrada) {
 
             super.setEntradas(posicion, view, entrada);
         }

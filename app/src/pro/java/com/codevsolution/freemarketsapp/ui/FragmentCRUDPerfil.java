@@ -14,16 +14,16 @@ import android.widget.Toast;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
 
-import com.codevsolution.base.android.controls.EditMaterialLayout;
-import com.codevsolution.base.android.controls.ViewGroupLayout;
-import com.codevsolution.base.crud.CRUDutil;
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
+import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.javautil.JavaUtil;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.TimeDateUtil;
@@ -70,7 +70,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
@@ -107,21 +107,21 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     protected void setDatos() {
 
         obtenerDatosBtns();
-        nombre.setText(modelo.getString(PERFIL_NOMBRE));
-        descripcion.setText(modelo.getString(PERFIL_DESCRIPCION));
-        lunes.setText(modelo.getString(PERFIL_HORASLUNES));
-        martes.setText(modelo.getString(PERFIL_HORASMARTES));
-        miercoles.setText(modelo.getString(PERFIL_HORASMIERCOLES));
-        jueves.setText(modelo.getString(PERFIL_HORASJUEVES));
-        viernes.setText(modelo.getString(PERFIL_HORASVIERNES));
-        sabado.setText(modelo.getString(PERFIL_HORASSABADO));
-        domingo.setText(modelo.getString(PERFIL_HORASDOMINGO));
-        vacaciones.setText(modelo.getString(PERFIL_VACACIONES));
-        sueldo.setText(JavaUtil.formatoMonedaLocal(modelo.getDouble(PERFIL_SUELDO)));
+        nombre.setText(modeloSQL.getString(PERFIL_NOMBRE));
+        descripcion.setText(modeloSQL.getString(PERFIL_DESCRIPCION));
+        lunes.setText(modeloSQL.getString(PERFIL_HORASLUNES));
+        martes.setText(modeloSQL.getString(PERFIL_HORASMARTES));
+        miercoles.setText(modeloSQL.getString(PERFIL_HORASMIERCOLES));
+        jueves.setText(modeloSQL.getString(PERFIL_HORASJUEVES));
+        viernes.setText(modeloSQL.getString(PERFIL_HORASVIERNES));
+        sabado.setText(modeloSQL.getString(PERFIL_HORASSABADO));
+        domingo.setText(modeloSQL.getString(PERFIL_HORASDOMINGO));
+        vacaciones.setText(modeloSQL.getString(PERFIL_VACACIONES));
+        sueldo.setText(JavaUtil.formatoMonedaLocal(modeloSQL.getDouble(PERFIL_SUELDO)));
         btndelete.setVisibility(View.VISIBLE);
         btnperfilact.setVisibility(View.VISIBLE);
 
-        if (modelo.getString(PERFIL_NOMBRE) != null && modelo.getString(PERFIL_NOMBRE).equals(Interactor.perfila)) {
+        if (modeloSQL.getString(PERFIL_NOMBRE) != null && modeloSQL.getString(PERFIL_NOMBRE).equals(Interactor.perfila)) {
 
             activo.setVisibility(View.VISIBLE);
             btnperfilact.setVisibility(View.GONE);
@@ -146,34 +146,34 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
         long domingoIM = 0, domingoFM = 0, domingoIT = 0, domingoFT = 0;
 
 
-        lunesIM = modelo.getLong(PERFIL_HORAIMLUNES);
-        lunesFM = modelo.getLong(PERFIL_HORAFMLUNES);
-        lunesIT = modelo.getLong(PERFIL_HORAITLUNES);
-        lunesFT = modelo.getLong(PERFIL_HORAFTLUNES);
-        martesIM = modelo.getLong(PERFIL_HORAIMMARTES);
-        martesFM = modelo.getLong(PERFIL_HORAFMMARTES);
-        martesIT = modelo.getLong(PERFIL_HORAITMARTES);
-        martesFT = modelo.getLong(PERFIL_HORAFTMARTES);
-        miercolesIM = modelo.getLong(PERFIL_HORAIMMIERCOLES);
-        miercolesFM = modelo.getLong(PERFIL_HORAFMMIERCOLES);
-        miercolesIT = modelo.getLong(PERFIL_HORAITMIERCOLES);
-        miercolesFT = modelo.getLong(PERFIL_HORAFTMIERCOLES);
-        juevesIM = modelo.getLong(PERFIL_HORAIMJUEVES);
-        juevesFM = modelo.getLong(PERFIL_HORAFMJUEVES);
-        juevesIT = modelo.getLong(PERFIL_HORAITJUEVES);
-        juevesFT = modelo.getLong(PERFIL_HORAFTJUEVES);
-        viernesIM = modelo.getLong(PERFIL_HORAIMVIERNES);
-        viernesFM = modelo.getLong(PERFIL_HORAFMVIERNES);
-        viernesIT = modelo.getLong(PERFIL_HORAITVIERNES);
-        viernesFT = modelo.getLong(PERFIL_HORAFTVIERNES);
-        sabadoIM = modelo.getLong(PERFIL_HORAIMSABADO);
-        sabadoFM = modelo.getLong(PERFIL_HORAFMSABADO);
-        sabadoIT = modelo.getLong(PERFIL_HORAITSABADO);
-        sabadoFT = modelo.getLong(PERFIL_HORAFTSABADO);
-        domingoIM = modelo.getLong(PERFIL_HORAIMDOMINGO);
-        domingoFM = modelo.getLong(PERFIL_HORAFMDOMINGO);
-        domingoIT = modelo.getLong(PERFIL_HORAITDOMINGO);
-        domingoFT = modelo.getLong(PERFIL_HORAFTDOMINGO);
+        lunesIM = modeloSQL.getLong(PERFIL_HORAIMLUNES);
+        lunesFM = modeloSQL.getLong(PERFIL_HORAFMLUNES);
+        lunesIT = modeloSQL.getLong(PERFIL_HORAITLUNES);
+        lunesFT = modeloSQL.getLong(PERFIL_HORAFTLUNES);
+        martesIM = modeloSQL.getLong(PERFIL_HORAIMMARTES);
+        martesFM = modeloSQL.getLong(PERFIL_HORAFMMARTES);
+        martesIT = modeloSQL.getLong(PERFIL_HORAITMARTES);
+        martesFT = modeloSQL.getLong(PERFIL_HORAFTMARTES);
+        miercolesIM = modeloSQL.getLong(PERFIL_HORAIMMIERCOLES);
+        miercolesFM = modeloSQL.getLong(PERFIL_HORAFMMIERCOLES);
+        miercolesIT = modeloSQL.getLong(PERFIL_HORAITMIERCOLES);
+        miercolesFT = modeloSQL.getLong(PERFIL_HORAFTMIERCOLES);
+        juevesIM = modeloSQL.getLong(PERFIL_HORAIMJUEVES);
+        juevesFM = modeloSQL.getLong(PERFIL_HORAFMJUEVES);
+        juevesIT = modeloSQL.getLong(PERFIL_HORAITJUEVES);
+        juevesFT = modeloSQL.getLong(PERFIL_HORAFTJUEVES);
+        viernesIM = modeloSQL.getLong(PERFIL_HORAIMVIERNES);
+        viernesFM = modeloSQL.getLong(PERFIL_HORAFMVIERNES);
+        viernesIT = modeloSQL.getLong(PERFIL_HORAITVIERNES);
+        viernesFT = modeloSQL.getLong(PERFIL_HORAFTVIERNES);
+        sabadoIM = modeloSQL.getLong(PERFIL_HORAIMSABADO);
+        sabadoFM = modeloSQL.getLong(PERFIL_HORAFMSABADO);
+        sabadoIT = modeloSQL.getLong(PERFIL_HORAITSABADO);
+        sabadoFT = modeloSQL.getLong(PERFIL_HORAFTSABADO);
+        domingoIM = modeloSQL.getLong(PERFIL_HORAIMDOMINGO);
+        domingoFM = modeloSQL.getLong(PERFIL_HORAFMDOMINGO);
+        domingoIT = modeloSQL.getLong(PERFIL_HORAITDOMINGO);
+        domingoFT = modeloSQL.getLong(PERFIL_HORAFTDOMINGO);
 
         llenarTextosBtns(listaBtn [0][1],(lunesIM));
         llenarTextosBtns(listaBtn [1][1],(lunesFM));
@@ -204,13 +204,13 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
         llenarTextosBtns(listaBtn [2][7],(domingoIT));
         llenarTextosBtns(listaBtn [3][7],(domingoFT));
 
-        lunes.setText(String.valueOf(modelo.getInt(PERFIL_HORASLUNES)));
-        martes.setText(String.valueOf(modelo.getInt(PERFIL_HORASMARTES)));
-        miercoles.setText(String.valueOf(modelo.getInt(PERFIL_HORASMIERCOLES)));
-        jueves.setText(String.valueOf(modelo.getInt(PERFIL_HORASJUEVES)));
-        viernes.setText(String.valueOf(modelo.getInt(PERFIL_HORASVIERNES)));
-        sabado.setText(String.valueOf(modelo.getInt(PERFIL_HORASSABADO)));
-        domingo.setText(String.valueOf(modelo.getInt(PERFIL_HORASDOMINGO)));
+        lunes.setText(String.valueOf(modeloSQL.getInt(PERFIL_HORASLUNES)));
+        martes.setText(String.valueOf(modeloSQL.getInt(PERFIL_HORASMARTES)));
+        miercoles.setText(String.valueOf(modeloSQL.getInt(PERFIL_HORASMIERCOLES)));
+        jueves.setText(String.valueOf(modeloSQL.getInt(PERFIL_HORASJUEVES)));
+        viernes.setText(String.valueOf(modeloSQL.getInt(PERFIL_HORASVIERNES)));
+        sabado.setText(String.valueOf(modeloSQL.getInt(PERFIL_HORASSABADO)));
+        domingo.setText(String.valueOf(modeloSQL.getInt(PERFIL_HORASDOMINGO)));
 
     }
 
@@ -578,8 +578,8 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
                             }
                         }
 
-                        CRUDutil.actualizarRegistro(modelo,valores);
-                        modelo = CRUDutil.updateModelo(modelo);
+                        CRUDutil.actualizarRegistro(modeloSQL, valores);
+                        modeloSQL = CRUDutil.updateModelo(modeloSQL);
                         calcularHorasTotales();
 
                     }
@@ -697,8 +697,8 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
             }
         }
 
-        CRUDutil.actualizarRegistro(modelo,valores);
-        modelo = CRUDutil.updateModelo(modelo);
+        CRUDutil.actualizarRegistro(modeloSQL, valores);
+        modeloSQL = CRUDutil.updateModelo(modeloSQL);
         calcularHorasTotales();
     }
 
@@ -707,59 +707,59 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
         long mlunes=0,mmartes=0,mmiercoles=0,mjueves=0,mviernes=0,msabado=0,mdomingo=0;
         long tlunes=0,tmartes=0,tmiercoles=0,tjueves=0,tviernes=0,tsabado=0,tdomingo=0;
 
-        if (modelo.getLong(PERFIL_HORAFMLUNES)>=0){
-            mlunes = Math.abs(modelo.getLong(PERFIL_HORAFMLUNES)-modelo.getLong(PERFIL_HORAIMLUNES));
+        if (modeloSQL.getLong(PERFIL_HORAFMLUNES) >= 0) {
+            mlunes = Math.abs(modeloSQL.getLong(PERFIL_HORAFMLUNES) - modeloSQL.getLong(PERFIL_HORAIMLUNES));
         }
-        if (modelo.getLong(PERFIL_HORAFTLUNES)>=0){
-            tlunes = Math.abs(modelo.getLong(PERFIL_HORAFTLUNES)-modelo.getLong(PERFIL_HORAITLUNES));
+        if (modeloSQL.getLong(PERFIL_HORAFTLUNES) >= 0) {
+            tlunes = Math.abs(modeloSQL.getLong(PERFIL_HORAFTLUNES) - modeloSQL.getLong(PERFIL_HORAITLUNES));
         }
         int horasLunes = Math.round((mlunes+tlunes)/HORASLONG);
 
-        if (modelo.getLong(PERFIL_HORAFMMARTES)>=0){
-            mmartes = Math.abs(modelo.getLong(PERFIL_HORAFMMARTES)-modelo.getLong(PERFIL_HORAIMMARTES));
+        if (modeloSQL.getLong(PERFIL_HORAFMMARTES) >= 0) {
+            mmartes = Math.abs(modeloSQL.getLong(PERFIL_HORAFMMARTES) - modeloSQL.getLong(PERFIL_HORAIMMARTES));
         }
-        if (modelo.getLong(PERFIL_HORAFTMARTES)>=0){
-            tmartes = Math.abs(modelo.getLong(PERFIL_HORAFTMARTES)-modelo.getLong(PERFIL_HORAITMARTES));
+        if (modeloSQL.getLong(PERFIL_HORAFTMARTES) >= 0) {
+            tmartes = Math.abs(modeloSQL.getLong(PERFIL_HORAFTMARTES) - modeloSQL.getLong(PERFIL_HORAITMARTES));
         }
         int horasMartes = Math.round((mmartes+tmartes)/HORASLONG);
 
-        if (modelo.getLong(PERFIL_HORAFMMIERCOLES)>=0){
-            mmiercoles = Math.abs(modelo.getLong(PERFIL_HORAFMMIERCOLES)-modelo.getLong(PERFIL_HORAIMMIERCOLES));
+        if (modeloSQL.getLong(PERFIL_HORAFMMIERCOLES) >= 0) {
+            mmiercoles = Math.abs(modeloSQL.getLong(PERFIL_HORAFMMIERCOLES) - modeloSQL.getLong(PERFIL_HORAIMMIERCOLES));
         }
-        if (modelo.getLong(PERFIL_HORAFTMIERCOLES)>=0){
-            tmiercoles = Math.abs(modelo.getLong(PERFIL_HORAFTMIERCOLES)-modelo.getLong(PERFIL_HORAITMIERCOLES));
+        if (modeloSQL.getLong(PERFIL_HORAFTMIERCOLES) >= 0) {
+            tmiercoles = Math.abs(modeloSQL.getLong(PERFIL_HORAFTMIERCOLES) - modeloSQL.getLong(PERFIL_HORAITMIERCOLES));
         }
         int horasMiercoles = Math.round((mmiercoles+tmiercoles)/HORASLONG);
 
-        if (modelo.getLong(PERFIL_HORAFMJUEVES)>=0){
-            mjueves = Math.abs(modelo.getLong(PERFIL_HORAFMJUEVES)-modelo.getLong(PERFIL_HORAIMJUEVES));
+        if (modeloSQL.getLong(PERFIL_HORAFMJUEVES) >= 0) {
+            mjueves = Math.abs(modeloSQL.getLong(PERFIL_HORAFMJUEVES) - modeloSQL.getLong(PERFIL_HORAIMJUEVES));
         }
-        if (modelo.getLong(PERFIL_HORAFTJUEVES)>=0){
-            tjueves = Math.abs(modelo.getLong(PERFIL_HORAFTJUEVES)-modelo.getLong(PERFIL_HORAITJUEVES));
+        if (modeloSQL.getLong(PERFIL_HORAFTJUEVES) >= 0) {
+            tjueves = Math.abs(modeloSQL.getLong(PERFIL_HORAFTJUEVES) - modeloSQL.getLong(PERFIL_HORAITJUEVES));
         }
         int horasJueves = Math.round((mjueves+tjueves)/HORASLONG);
 
-        if (modelo.getLong(PERFIL_HORAFMVIERNES)>=0){
-            mviernes = Math.abs(modelo.getLong(PERFIL_HORAFMVIERNES)-modelo.getLong(PERFIL_HORAIMVIERNES));
+        if (modeloSQL.getLong(PERFIL_HORAFMVIERNES) >= 0) {
+            mviernes = Math.abs(modeloSQL.getLong(PERFIL_HORAFMVIERNES) - modeloSQL.getLong(PERFIL_HORAIMVIERNES));
         }
-        if (modelo.getLong(PERFIL_HORAFTVIERNES)>=0){
-            tviernes = Math.abs(modelo.getLong(PERFIL_HORAFTVIERNES)-modelo.getLong(PERFIL_HORAITVIERNES));
+        if (modeloSQL.getLong(PERFIL_HORAFTVIERNES) >= 0) {
+            tviernes = Math.abs(modeloSQL.getLong(PERFIL_HORAFTVIERNES) - modeloSQL.getLong(PERFIL_HORAITVIERNES));
         }
         int horasViernes = Math.round((mviernes+tviernes)/HORASLONG);
 
-        if (modelo.getLong(PERFIL_HORAFMSABADO)>=0){
-            msabado = Math.abs(modelo.getLong(PERFIL_HORAFMSABADO)-modelo.getLong(PERFIL_HORAIMSABADO));
+        if (modeloSQL.getLong(PERFIL_HORAFMSABADO) >= 0) {
+            msabado = Math.abs(modeloSQL.getLong(PERFIL_HORAFMSABADO) - modeloSQL.getLong(PERFIL_HORAIMSABADO));
         }
-        if (modelo.getLong(PERFIL_HORAFTSABADO)>=0){
-            tsabado = Math.abs(modelo.getLong(PERFIL_HORAFTSABADO)-modelo.getLong(PERFIL_HORAITSABADO));
+        if (modeloSQL.getLong(PERFIL_HORAFTSABADO) >= 0) {
+            tsabado = Math.abs(modeloSQL.getLong(PERFIL_HORAFTSABADO) - modeloSQL.getLong(PERFIL_HORAITSABADO));
         }
         int horasSabado = Math.round((msabado+tsabado)/HORASLONG);
 
-        if (modelo.getLong(PERFIL_HORAFMDOMINGO)>=0){
-            mdomingo = Math.abs(modelo.getLong(PERFIL_HORAFMDOMINGO)-modelo.getLong(PERFIL_HORAIMDOMINGO));
+        if (modeloSQL.getLong(PERFIL_HORAFMDOMINGO) >= 0) {
+            mdomingo = Math.abs(modeloSQL.getLong(PERFIL_HORAFMDOMINGO) - modeloSQL.getLong(PERFIL_HORAIMDOMINGO));
         }
-        if (modelo.getLong(PERFIL_HORAFTDOMINGO)>=0){
-            tdomingo = Math.abs(modelo.getLong(PERFIL_HORAFTDOMINGO)-modelo.getLong(PERFIL_HORAITDOMINGO));
+        if (modeloSQL.getLong(PERFIL_HORAFTDOMINGO) >= 0) {
+            tdomingo = Math.abs(modeloSQL.getLong(PERFIL_HORAFTDOMINGO) - modeloSQL.getLong(PERFIL_HORAITDOMINGO));
         }
         int horasDomingo = Math.round((mdomingo+tdomingo)/HORASLONG);
 
@@ -782,8 +782,8 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
         domingo.setText(String.valueOf(horasDomingo));
 
 
-        CRUDutil.actualizarRegistro(modelo,valores);
-        modelo = CRUDutil.updateModelo(modelo);
+        CRUDutil.actualizarRegistro(modeloSQL, valores);
+        modeloSQL = CRUDutil.updateModelo(modeloSQL);
 
 
     }
@@ -814,11 +814,11 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     protected boolean delete() {
 
 
-        if (!modelo.getString(PERFIL_NOMBRE).equals(Interactor.perfila)) {
+        if (!modeloSQL.getString(PERFIL_NOMBRE).equals(Interactor.perfila)) {
             super.delete();
             ConsultaBD.deleteRegistro(tabla, id);
         }else{
-            Toast.makeText(getContext(),"No se puede borrar el modelo setActivo", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "No se puede borrar el modeloSQL setActivo", Toast.LENGTH_SHORT).show();
         }
 
         return true;
@@ -858,12 +858,12 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View itemView, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View itemView, ArrayList<ModeloSQL> entrada) {
 
             TextView nombre,descripcion;
             CardView card;
@@ -899,17 +899,17 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
-            nombre.setText(modelo.getString(PERFIL_NOMBRE));
-            descripcion.setText(modelo.getString(PERFIL_DESCRIPCION));
+            nombre.setText(modeloSQL.getString(PERFIL_NOMBRE));
+            descripcion.setText(modeloSQL.getString(PERFIL_DESCRIPCION));
 
-            if (modelo.getString(PERFIL_NOMBRE).equals(Interactor.perfila)) {
+            if (modeloSQL.getString(PERFIL_NOMBRE).equals(Interactor.perfila)) {
 
                 card.setCardBackgroundColor(
                         AppActivity.getAppContext().getResources().getColor(R.color.Color_card_ok));
             }
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override

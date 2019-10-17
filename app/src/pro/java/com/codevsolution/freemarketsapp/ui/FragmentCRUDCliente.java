@@ -17,20 +17,20 @@ import android.widget.TextView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
 
-import com.codevsolution.base.android.controls.EditMaterialLayout;
-import com.codevsolution.base.android.controls.ImagenLayout;
-import com.codevsolution.base.android.controls.ViewGroupLayout;
-import com.codevsolution.base.android.controls.ViewImagenLayout;
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
+import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
+import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import static android.app.Activity.RESULT_OK;
 import static com.codevsolution.base.sqlite.ConsultaBD.checkQueryList;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
-import static com.codevsolution.freemarketsapp.logica.Interactor.setNamefdef;
 
 public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.ConstantesPry,
         ContratoPry.Tablas {
@@ -61,11 +60,11 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     private Button crearPresup;
     private CheckBox activo;
     private String idTipoCliente = null;
-    private ArrayList<Modelo> objTiposCli;
+    private ArrayList<ModeloSQL> objTiposCli;
     private long fechaInactivo;
 
     int peso;
-    private Modelo proyecto;
+    private ModeloSQL proyecto;
     private ImageButton btnVerEventos;
     private ImageButton btnNota;
     private ImageButton btnVerNotas;
@@ -83,7 +82,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
@@ -220,7 +219,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     @Override
     protected void setBundle() {
 
-        proyecto = (Modelo) bundle.getSerializable(TABLA_PROYECTO);
+        proyecto = (ModeloSQL) bundle.getSerializable(TABLA_PROYECTO);
         if (actual == null){
             actual = PROSPECTO;
         }
@@ -234,18 +233,18 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     @Override
     protected void setDatos() {
 
-        activityBase.toolbar.setSubtitle(modelo.getString(CLIENTE_NOMBRE));
+        activityBase.toolbar.setSubtitle(modeloSQL.getString(CLIENTE_NOMBRE));
         visible(btnevento);
         visible(btnNota);
 
-        idTipoCliente = modelo.getString(CLIENTE_ID_TIPOCLIENTE);
+        idTipoCliente = modeloSQL.getString(CLIENTE_ID_TIPOCLIENTE);
         tipoCliente.getEditText().setTextSize(sizeText * 2);
         tipoCliente.setGravedad(Gravity.CENTER_HORIZONTAL);
-        tipoCliente.getEditText().setText(modelo.getString(CLIENTE_DESCRIPCIONTIPOCLI).toUpperCase());
+        tipoCliente.getEditText().setText(modeloSQL.getString(CLIENTE_DESCRIPCIONTIPOCLI).toUpperCase());
 
-        id = modelo.getString(CLIENTE_ID_CLIENTE);
-        peso = modelo.getInt(CLIENTE_PESOTIPOCLI);
-        fechaInactivo = modelo.getLong(CLIENTE_ACTIVO);
+        id = modeloSQL.getString(CLIENTE_ID_CLIENTE);
+        peso = modeloSQL.getInt(CLIENTE_PESOTIPOCLI);
+        fechaInactivo = modeloSQL.getLong(CLIENTE_ACTIVO);
         if (fechaInactivo > 0) {
             activo.setChecked(true);
         } else {
@@ -345,7 +344,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             @Override
             public void onClick(View view) {
                 bundle = new Bundle();
-                bundle.putSerializable(CLIENTE, modelo);
+                bundle.putSerializable(CLIENTE, modeloSQL);
                 bundle.putBoolean(NUEVOREGISTRO, true);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevoEvento());
             }
@@ -365,8 +364,8 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             @Override
             public void onClick(View view) {
                 bundle = new Bundle();
-                bundle.putString(IDREL,modelo.getString(CLIENTE_ID_CLIENTE));
-                bundle.putString(SUBTITULO, modelo.getString(CLIENTE_NOMBRE));
+                bundle.putString(IDREL, modeloSQL.getString(CLIENTE_ID_CLIENTE));
+                bundle.putString(SUBTITULO, modeloSQL.getString(CLIENTE_NOMBRE));
                 bundle.putString(ORIGEN, CLIENTE);
                 bundle.putSerializable(MODELO, null);
                 bundle.putSerializable(LISTA, null);
@@ -379,8 +378,8 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             @Override
             public void onClick(View view) {
                 enviarBundle();
-                bundle.putString(IDREL,modelo.getString(CLIENTE_ID_CLIENTE));
-                bundle.putString(SUBTITULO, modelo.getString(CLIENTE_NOMBRE));
+                bundle.putString(IDREL, modeloSQL.getString(CLIENTE_ID_CLIENTE));
+                bundle.putString(SUBTITULO, modeloSQL.getString(CLIENTE_NOMBRE));
                 bundle.putString(ORIGEN, CLIENTE);
                 bundle.putString(ACTUAL,NOTA);
                 bundle.putSerializable(LISTA,null);
@@ -399,7 +398,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
                 bundle = new Bundle();
                 putBundle(NUEVOREGISTRO, true);
                 putBundle(ACTUAL, PRESUPUESTO);
-                putBundle(CLIENTE, modelo);
+                putBundle(CLIENTE, modeloSQL);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
 
             }
@@ -411,7 +410,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
                 bundle = new Bundle();
                 putBundle(NUEVOREGISTRO, true);
                 putBundle(ACTUAL, PROYECTO);
-                putBundle(CLIENTE, modelo);
+                putBundle(CLIENTE, modeloSQL);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
 
             }
@@ -546,7 +545,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
@@ -566,7 +565,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
             ViewGroupLayout vistaCard = new ViewGroupLayout(contexto,relativeLayout,new CardView(contexto));
             card = (CardView) vistaCard.getViewGroup();
@@ -578,14 +577,14 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             imagenPeso = vistaImagen.addImagenLayout();
             ViewGroupLayout vistaForm = new ViewGroupLayout(contexto,mainLinear);
             vistaForm.setOrientacion(ViewGroupLayout.ORI_LL_VERTICAL,1);
-            nombre = vistaForm.addTextView(modelo.getString(CLIENTE_NOMBRE));
-            direccion = vistaForm.addTextView(modelo.getString(CLIENTE_DIRECCION));
-            telefono = vistaForm.addTextView(modelo.getString(CLIENTE_TELEFONO));
-            email = vistaForm.addTextView(modelo.getString(CLIENTE_EMAIL));
-            contacto = vistaForm.addTextView(modelo.getString(CLIENTE_CONTACTO));
+            nombre = vistaForm.addTextView(modeloSQL.getString(CLIENTE_NOMBRE));
+            direccion = vistaForm.addTextView(modeloSQL.getString(CLIENTE_DIRECCION));
+            telefono = vistaForm.addTextView(modeloSQL.getString(CLIENTE_TELEFONO));
+            email = vistaForm.addTextView(modeloSQL.getString(CLIENTE_EMAIL));
+            contacto = vistaForm.addTextView(modeloSQL.getString(CLIENTE_CONTACTO));
 
-            imagen.setImageUriCard(activityBase, modelo.getString(CLIENTE_RUTAFOTO),20);
-            int peso = modelo.getInt(CLIENTE_PESOTIPOCLI);
+            imagen.setImageUriCard(activityBase, modeloSQL.getString(CLIENTE_RUTAFOTO), 20);
+            int peso = modeloSQL.getInt(CLIENTE_PESOTIPOCLI);
             if (peso > 6) {
                 imagenPeso.setImageResourceCard(activityBase, R.drawable.clientev,10);
             } else if (peso > 3) {
@@ -596,13 +595,13 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
                 imagenPeso.setImageResourceCard(activityBase, R.drawable.cliente,10);
             }
 
-            if (modelo.getLong(CLIENTE_ACTIVO) > 0) {
+            if (modeloSQL.getLong(CLIENTE_ACTIVO) > 0) {
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
             } else {
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_defecto));
             }
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
 
         }
 

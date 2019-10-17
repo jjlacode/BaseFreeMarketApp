@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 
@@ -18,10 +18,10 @@ import java.util.ArrayList;
 public class AdaptadorTareas extends RecyclerView.Adapter<AdaptadorTareas.TareaViewHolder>
         implements View.OnClickListener, ContratoPry.Tablas {
 
-    ArrayList<Modelo> listaTareas;
+    ArrayList<ModeloSQL> listaTareas;
     private View.OnClickListener listener;
 
-    public AdaptadorTareas(ArrayList<Modelo> listaTareas) {
+    public AdaptadorTareas(ArrayList<ModeloSQL> listaTareas) {
         this.listaTareas = listaTareas;
     }
 

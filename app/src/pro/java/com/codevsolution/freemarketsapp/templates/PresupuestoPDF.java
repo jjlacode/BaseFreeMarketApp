@@ -3,7 +3,7 @@ package com.codevsolution.freemarketsapp.templates;
 
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.PdfUtils;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 
@@ -19,8 +19,8 @@ public class PresupuestoPDF extends PdfUtils implements ContratoPry.Tablas {
 
     public void crearPdf(String idProyecto, String rutalogo) {
 
-        Modelo presupuesto = ConsultaBD.queryObject(CAMPOS_PROYECTO, idProyecto);
-        ArrayList<Modelo> listaPartidas = ConsultaBD.queryListDetalle(CAMPOS_PARTIDA, idProyecto, TABLA_PROYECTO);
+        ModeloSQL presupuesto = ConsultaBD.queryObject(CAMPOS_PROYECTO, idProyecto);
+        ArrayList<ModeloSQL> listaPartidas = ConsultaBD.queryListDetalle(CAMPOS_PARTIDA, idProyecto, TABLA_PROYECTO);
         abrirPdf(idProyecto);
         if (rutalogo != null) {
             addImagen(rutalogo, ALINEACION_IZQUIERDA, 100, 100);
@@ -44,7 +44,7 @@ public class PresupuestoPDF extends PdfUtils implements ContratoPry.Tablas {
 
         ArrayList<String[]> lista = new ArrayList<>();
 
-        for (Modelo partida : listaPartidas) {
+        for (ModeloSQL partida : listaPartidas) {
 
             String[] partidatemp = {partida.getString(PARTIDA_NOMBRE),
                     partida.getString(PARTIDA_CANTIDAD),

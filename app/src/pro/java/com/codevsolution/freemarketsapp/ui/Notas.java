@@ -8,14 +8,14 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.time.Day;
 import com.codevsolution.base.time.ListaDays;
 import com.codevsolution.base.time.TimeDateUtil;
@@ -38,11 +38,11 @@ public class Notas extends FragmentMes {
         ListaModelo listaDia = new ListaModelo();
         ListaModelo listaCompleta = new ListaModelo(CAMPOS_NOTA);
 
-        for (Modelo modelo : listaCompleta.getLista()) {
+        for (ModeloSQL modeloSQL : listaCompleta.getLista()) {
 
-            if (TimeDateUtil.getDateString(modelo.getLong(NOTA_FECHA)).equals(TimeDateUtil.getDateString(fecha))){
+            if (TimeDateUtil.getDateString(modeloSQL.getLong(NOTA_FECHA)).equals(TimeDateUtil.getDateString(fecha))) {
 
-                listaDia.addModelo(modelo);
+                listaDia.addModelo(modeloSQL);
             }
         }
         return listaDia;
@@ -133,7 +133,7 @@ public class Notas extends FragmentMes {
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new ListaAdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
@@ -156,15 +156,15 @@ public class Notas extends FragmentMes {
         }
 
         @Override
-        public void bind(final Modelo modelo) {
+        public void bind(final ModeloSQL modeloSQL) {
 
-            descripcion.setText(modelo.getString(NOTA_TITULO));
-            fecha = modelo.getLong(NOTA_FECHA);
+            descripcion.setText(modeloSQL.getString(NOTA_TITULO));
+            fecha = modeloSQL.getLong(NOTA_FECHA);
             fechanota.setText(JavaUtil.getDateTime(fecha));
-            String tipo = modelo.getString(NOTA_TIPO);
-            rel.setText(modelo.getString(NOTA_NOMBREREL));
-            System.out.println("modelo = " + modelo.getString(NOTA_NOMBREREL));
-            if (modelo.getString(NOTA_NOMBREREL)!=null){
+            String tipo = modeloSQL.getString(NOTA_TIPO);
+            rel.setText(modeloSQL.getString(NOTA_NOMBREREL));
+            System.out.println("modeloSQL = " + modeloSQL.getString(NOTA_NOMBREREL));
+            if (modeloSQL.getString(NOTA_NOMBREREL) != null) {
                 visible(rel);
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
             }else{
@@ -186,8 +186,8 @@ public class Notas extends FragmentMes {
                     case NOTAAUDIO:
 
                         imagen.setImageResource(R.drawable.ic_nota_audio_indigo);
-                        if (modelo.getString(NOTA_RUTAFOTO) != null) {
-                            path = modelo.getString(NOTA_RUTAFOTO);
+                        if (modeloSQL.getString(NOTA_RUTAFOTO) != null) {
+                            path = modeloSQL.getString(NOTA_RUTAFOTO);
                         }
 
                         break;
@@ -195,17 +195,17 @@ public class Notas extends FragmentMes {
                     case NOTAVIDEO:
 
                         imagen.setImageResource(R.drawable.ic_nota_video_indigo);
-                        if (modelo.getString(NOTA_RUTAFOTO) != null) {
-                            path = modelo.getString(NOTA_RUTAFOTO);
+                        if (modeloSQL.getString(NOTA_RUTAFOTO) != null) {
+                            path = modeloSQL.getString(NOTA_RUTAFOTO);
                         }
 
                         break;
 
                     case NOTAIMAGEN:
 
-                        if (modelo.getString(NOTA_RUTAFOTO) != null) {
+                        if (modeloSQL.getString(NOTA_RUTAFOTO) != null) {
                             imagen.setVisibility(View.VISIBLE);
-                            path = modelo.getString(NOTA_RUTAFOTO);
+                            path = modeloSQL.getString(NOTA_RUTAFOTO);
                             MediaUtil imagenUtil = new MediaUtil(AppActivity.getAppContext());
                             imagenUtil.setImageUriCircle(path, imagen);
                         } else {
@@ -220,12 +220,12 @@ public class Notas extends FragmentMes {
                 public void onClick(View view) {
 
                     bundle = new Bundle();
-                    bundle.putSerializable(MODELO, modelo);
-                    bundle.putString(CAMPO_ID,modelo.getString(NOTA_ID_NOTA));
+                    bundle.putSerializable(MODELO, modeloSQL);
+                    bundle.putString(CAMPO_ID, modeloSQL.getString(NOTA_ID_NOTA));
                     bundle.putString(ORIGEN, NOTAS);
-                    if (modelo.getString(NOTA_ID_RELACIONADO)!=null){
-                        bundle.putString(IDREL, modelo.getString(NOTA_ID_RELACIONADO));
-                        bundle.putString(SUBTITULO,modelo.getString(NOTA_NOMBREREL));
+                    if (modeloSQL.getString(NOTA_ID_RELACIONADO) != null) {
+                        bundle.putString(IDREL, modeloSQL.getString(NOTA_ID_RELACIONADO));
+                        bundle.putString(SUBTITULO, modeloSQL.getString(NOTA_NOMBREREL));
                     }else{
                     bundle.putString(SUBTITULO, JavaUtil.getDate(fecha));
                     }
@@ -236,7 +236,7 @@ public class Notas extends FragmentMes {
             });
 
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override

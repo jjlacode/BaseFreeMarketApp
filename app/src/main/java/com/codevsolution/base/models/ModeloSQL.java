@@ -4,11 +4,14 @@ import android.content.ContentValues;
 import android.net.Uri;
 
 import com.codevsolution.base.javautil.JavaUtil;
+import com.codevsolution.base.sqlite.ConsultaBD;
+import com.codevsolution.base.sqlite.ContratoPry;
 
 import java.io.Serializable;
-import java.util.Map;
 
-public class Modelo implements Serializable {
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.CAMPO_SECUENCIA;
+
+public class ModeloSQL implements Serializable {
 
     private String[] campos;
 
@@ -16,9 +19,11 @@ public class Modelo implements Serializable {
 
     private String[] valores;
 
-    private String nombreModelo;
+    private String nombreTabla;
 
     private int numcampos;
+
+    private int campostabla;
 
     private int posicionLista;
 
@@ -26,36 +31,21 @@ public class Modelo implements Serializable {
 
     private boolean enLista;
 
-    public Modelo() {
+    public ModeloSQL() {
     }
 
-    public Modelo(String modelo) {
+    public ModeloSQL(String tabla) {
 
-        estructura = ContratoModels.obtenerCampos(modelo);
-        numcampos = (estructura.length - 1) / 2;
-        nombreModelo = estructura[0];
-        this.campos = new String[numcampos];
-        valores = new String[numcampos];
-        valores[0] = ContratoModels.generarIdModelo(nombreModelo);
-
-        for (int i = 0, x = 1; i < numcampos; i++, x += 2) {
-
-            if (estructura[x] != null) {
-                this.campos[i] = estructura[x];
-            }
-
-        }
-    }
-
-    public Modelo(String[] campos) {
+        campos = ContratoPry.obtenerCampos(tabla);
 
         estructura = campos;
-        numcampos = (campos.length - 1) / 2;
-        nombreModelo = campos[0];
+        numcampos = (campos.length / 3);
+        nombreTabla = campos[1];
+        campostabla = (Integer.parseInt(campos[0]) - 2) / 3;
         this.campos = new String[numcampos];
         valores = new String[numcampos];
 
-        for (int i = 0, x = 1; i < numcampos; i++, x += 2) {
+        for (int i = 0, x = 2; i < numcampos; i++, x += 3) {
 
             if (campos[x] != null) {
                 this.campos[i] = campos[x];
@@ -64,22 +54,73 @@ public class Modelo implements Serializable {
         }
     }
 
-    public Modelo(String[] campos, String[] valores) {
+    public ModeloSQL(String[] campos) {
 
         estructura = campos;
-        numcampos = (campos.length - 1) / 2;
-        nombreModelo = campos[0];
+        numcampos = (campos.length / 3);
+        nombreTabla = campos[1];
+        campostabla = (Integer.parseInt(campos[0]) - 2) / 3;
+        this.campos = new String[numcampos];
+        valores = new String[numcampos];
+
+        for (int i = 0, x = 2; i < numcampos; i++, x += 3) {
+
+            if (campos[x] != null) {
+                this.campos[i] = campos[x];
+            }
+
+        }
+    }
+
+    public ModeloSQL(String[] campos, String id) {
+
+        ModeloSQL modeloSQL = ConsultaBD.queryObject(campos, id);
+        this.campos = campos;
+        this.valores = modeloSQL.getValores();
+        estructura = campos;
+        numcampos = (campos.length / 3);
+        nombreTabla = campos[1];
+        campostabla = (Integer.parseInt(campos[0]) - 2) / 3;
+    }
+
+    public ModeloSQL(String[] campos, String id, int secuencia) {
+
+        ModeloSQL modeloSQL = ConsultaBD.queryObjectDetalle(campos, id, secuencia);
+        this.campos = campos;
+        this.valores = modeloSQL.getValores();
+        estructura = campos;
+        numcampos = (campos.length / 3);
+        nombreTabla = campos[1];
+        campostabla = (Integer.parseInt(campos[0]) - 2) / 3;
+    }
+
+    public ModeloSQL(String[] campos, String id, String secuencia) {
+
+        ModeloSQL modeloSQL = ConsultaBD.queryObjectDetalle(campos, id, secuencia);
+        this.campos = campos;
+        this.valores = modeloSQL.getValores();
+        estructura = campos;
+        numcampos = (campos.length / 3);
+        nombreTabla = campos[1];
+        campostabla = (Integer.parseInt(campos[0]) - 2) / 3;
+    }
+
+    public ModeloSQL(String[] campos, String[] valores) {
+
+        estructura = campos;
+        numcampos = (campos.length / 3);
+        nombreTabla = campos[1];
+        campostabla = (Integer.parseInt(campos[0]) - 2) / 3;
         this.campos = new String[numcampos];
         this.valores = new String[numcampos];
-        this.valores[0] = ContratoModels.generarIdModelo(nombreModelo);
 
-        for (int i = 1, x = 1; i < numcampos; i++, x += 2) {
+        for (int i = 0, x = 2; i < numcampos; i++, x += 3) {
 
             if (campos[x] != null) {
                 this.campos[i] = campos[x];
             }
             if (valores[i] != null) {
-                this.valores[i] = valores[i - 1];
+                this.valores[i] = valores[i];
             }
 
         }
@@ -87,6 +128,31 @@ public class Modelo implements Serializable {
 
     }
 
+    public ModeloSQL(String[] campos, String[] valores, boolean ref) {
+
+        estructura = campos;
+        numcampos = (campos.length / 3);
+        nombreTabla = campos[1];
+        campostabla = (Integer.parseInt(campos[0]) - 2) / 3;
+        if (ref) {
+            numcampos = campostabla;
+        }
+        this.campos = new String[numcampos];
+        this.valores = new String[numcampos];
+
+        for (int i = 0, x = 2; i < numcampos; i++, x += 3) {
+
+            if (campos[x] != null) {
+                this.campos[i] = campos[x];
+            }
+            if (valores[i] != null) {
+                this.valores[i] = valores[i];
+            }
+
+        }
+
+
+    }
 
     public void setCampos(String[] campos) {
         this.campos = campos;
@@ -104,25 +170,36 @@ public class Modelo implements Serializable {
         this.valores = valores;
     }
 
-    public void setNombreModelo(String nombreModelo) {
-        this.nombreModelo = nombreModelo;
+    public void setNombreTabla(String nombreTabla) {
+        this.nombreTabla = nombreTabla;
     }
 
     public void setNumcampos(int numcampos) {
         this.numcampos = numcampos;
     }
 
-    public Modelo clonar() {
+    public ModeloSQL clonar(boolean ref) {
 
-        return new Modelo(estructura, valores);
+        return new ModeloSQL(estructura, valores, ref);
 
+    }
+
+    public boolean esDetalle() {
+
+        for (int i = 0; i < numcampos; i++) {
+            if (campos[i].equals(CAMPO_SECUENCIA)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public ContentValues contenido() {
 
         ContentValues values = new ContentValues();
 
-        int size = numcampos;
+        int size = campostabla;
 
         for (int i = 0; i < size; i++) {
 
@@ -345,22 +422,19 @@ public class Modelo implements Serializable {
         return valores;
     }
 
-    public String getNombreModelo() {
-        return nombreModelo;
+    public String getNombreTabla() {
+        return nombreTabla;
     }
 
     public int getNumcampos() {
         return numcampos;
     }
 
-    public Map toJason() {
-
-        Map jason = null;
-
-        for (int i = 0; i < numcampos; i++) {
-            jason.put(campos[i], valores[i]);
-        }
-        return jason;
+    public int getCampostabla() {
+        return campostabla;
     }
 
+    public void setCampostabla(int campostabla) {
+        this.campostabla = campostabla;
+    }
 }

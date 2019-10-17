@@ -22,7 +22,7 @@ import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
@@ -40,10 +40,10 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
     private ImageButton btnNota;
     private ImageButton btnevento;
     private ImageButton btnVerEventos;
-    private Modelo producto;
+    private ModeloSQL producto;
     private Button addProducto;
-    private Modelo partida;
-    private Modelo proyecto;
+    private ModeloSQL partida;
+    private ModeloSQL proyecto;
     private EditMaterialLayout nombre;
 
 
@@ -53,7 +53,7 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
@@ -61,9 +61,9 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
     protected void setBundle() {
         super.setBundle();
 
-        producto = (Modelo) getBundleSerial(PRODUCTO);
-        partida = (Modelo) getBundleSerial(PARTIDA);
-        proyecto = (Modelo) getBundleSerial(PROYECTO);
+        producto = (ModeloSQL) getBundleSerial(PRODUCTO);
+        partida = (ModeloSQL) getBundleSerial(PARTIDA);
+        proyecto = (ModeloSQL) getBundleSerial(PROYECTO);
 
     }
 
@@ -116,10 +116,10 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
         addProducto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                modelo = CRUDutil.updateModelo(campos, id);
+                modeloSQL = CRUDutil.updateModelo(campos, id);
                 bundle = new Bundle();
                 putBundle(MODELO, producto);
-                putBundle(PROVEEDOR, modelo);
+                putBundle(PROVEEDOR, modeloSQL);
                 putBundle(PARTIDA, partida);
                 putBundle(PROYECTO, proyecto);
                 putBundle(ORIGEN, origen);
@@ -157,7 +157,7 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
             public void onClick(View v) {
 
                 bundle = new Bundle();
-                bundle.putSerializable(CLIENTE, modelo);
+                bundle.putSerializable(CLIENTE, modeloSQL);
                 bundle.putBoolean(NUEVOREGISTRO, true);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevoEvento());
             }
@@ -179,8 +179,8 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
             public void onClick(View v) {
 
                 bundle = new Bundle();
-                bundle.putString(IDREL, modelo.getString(PROVEEDOR_ID_PROVEEDOR));
-                bundle.putString(SUBTITULO, modelo.getString(PROVEEDOR_NOMBRE));
+                bundle.putString(IDREL, modeloSQL.getString(PROVEEDOR_ID_PROVEEDOR));
+                bundle.putString(SUBTITULO, modeloSQL.getString(PROVEEDOR_NOMBRE));
                 bundle.putString(ORIGEN, PROVEEDOR);
                 bundle.putSerializable(MODELO, null);
                 bundle.putSerializable(LISTA, null);
@@ -195,8 +195,8 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
             public void onClick(View v) {
 
                 enviarBundle();
-                bundle.putString(IDREL, modelo.getString(PROVEEDOR_ID_PROVEEDOR));
-                bundle.putString(SUBTITULO, modelo.getString(PROVEEDOR_NOMBRE));
+                bundle.putString(IDREL, modeloSQL.getString(PROVEEDOR_ID_PROVEEDOR));
+                bundle.putString(SUBTITULO, modeloSQL.getString(PROVEEDOR_NOMBRE));
                 bundle.putString(ORIGEN, PROVEEDOR);
                 bundle.putString(ACTUAL, NOTA);
                 bundle.putSerializable(LISTA, null);
@@ -237,7 +237,7 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
         visible(btnevento);
         visible(btnNota);
 
-        fechaInactivo = modelo.getLong(PROVEEDOR_ACTIVO);
+        fechaInactivo = modeloSQL.getLong(PROVEEDOR_ACTIVO);
         if (fechaInactivo > 0) {
             activo.setChecked(false);
         } else {
@@ -280,25 +280,25 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
-            nombre.setText(modelo.getCampos(PROVEEDOR_NOMBRE));
-            direccion.setText(modelo.getCampos(PROVEEDOR_DIRECCION));
-            telefono.setText(modelo.getCampos(PROVEEDOR_TELEFONO));
-            email.setText(modelo.getCampos(PROVEEDOR_EMAIL));
-            contacto.setText(modelo.getCampos(PROVEEDOR_CONTACTO));
+            nombre.setText(modeloSQL.getCampos(PROVEEDOR_NOMBRE));
+            direccion.setText(modeloSQL.getCampos(PROVEEDOR_DIRECCION));
+            telefono.setText(modeloSQL.getCampos(PROVEEDOR_TELEFONO));
+            email.setText(modeloSQL.getCampos(PROVEEDOR_EMAIL));
+            contacto.setText(modeloSQL.getCampos(PROVEEDOR_CONTACTO));
 
-            String path = modelo.getString(PROVEEDOR_RUTAFOTO);
+            String path = modeloSQL.getString(PROVEEDOR_RUTAFOTO);
             if (path != null) {
                 new MediaUtil(contexto).setImageUriCircle(path, imagenProveedor);
             }
-            if (modelo.getLong(PROVEEDOR_ACTIVO) > 0) {
+            if (modeloSQL.getLong(PROVEEDOR_ACTIVO) > 0) {
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
             } else {
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_defecto));
             }
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
 
         }
 
@@ -310,12 +310,12 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View view, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View view, ArrayList<ModeloSQL> entrada) {
 
             ImageView imagenProveedor = view.findViewById(R.id.imglproveedor);
             TextView nombre = view.findViewById(R.id.tvnomlproveedor);

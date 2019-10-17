@@ -18,8 +18,7 @@ import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
-import com.codevsolution.base.media.MediaUtil;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
@@ -31,7 +30,7 @@ import static com.codevsolution.freemarketsapp.logica.Interactor.TiposDetPartida
 
 public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.ConstantesPry, ContratoPry.Tablas {
 
-    private Modelo proveedor;
+    private ModeloSQL proveedor;
     private EditMaterialLayout nombreProv;
     private Button addPartida;
 
@@ -45,7 +44,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
@@ -93,12 +92,12 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
         }
 
-        imagen.setTextTitulo(modelo.getString(PRODUCTO_CATEGORIA).toUpperCase());
+        imagen.setTextTitulo(modeloSQL.getString(PRODUCTO_CATEGORIA).toUpperCase());
 
-        if (!modelo.getString(PRODUCTO_CATEGORIA).equals(PRODUCTOLOCAL)){
+        if (!modeloSQL.getString(PRODUCTO_CATEGORIA).equals(PRODUCTOLOCAL)) {
 
             imagen.getImagen().setClickable(false);
-            imagen.setImageFirestore(modelo.getString(PRODUCTO_ID_PRODFIRE));
+            imagen.setImageFirestore(modeloSQL.getString(PRODUCTO_ID_PRODFIRE));
         }
 
     }
@@ -123,7 +122,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     @Override
     protected void setBundle() {
         super.setBundle();
-        proveedor = (Modelo) getBundleSerial(PROVEEDOR);
+        proveedor = (ModeloSQL) getBundleSerial(PROVEEDOR);
         if (origen == null) {
             origen = PRODUCTO;
         }
@@ -157,7 +156,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             public void onClickAccion(View view) {
                 bundle = new Bundle();
 
-                putBundle(PRODUCTO, modelo);
+                putBundle(PRODUCTO, modeloSQL);
                 putBundle(ORIGEN, PRODUCTO);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProveedor());
             }
@@ -188,9 +187,9 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
                 update();
                 valores = new ContentValues();
                 valores.put(PRODUCTO_CATEGORIA, PRODUCTOCLI);
-                CRUDutil.actualizarRegistro(modelo, valores);
+                CRUDutil.actualizarRegistro(modeloSQL, valores);
                 bundle = new Bundle();
-                putBundle(CRUD, modelo);
+                putBundle(CRUD, modeloSQL);
                 icFragmentos.enviarBundleAFragment(bundle, new AltaProductosCli());
             }
         });
@@ -201,9 +200,9 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             public void onClick(View view) {
                 update();
                 valores.put(PRODUCTO_CATEGORIA, PRODUCTOPRO);
-                CRUDutil.actualizarRegistro(modelo, valores);
+                CRUDutil.actualizarRegistro(modeloSQL, valores);
                 bundle = new Bundle();
-                putBundle(CRUD, modelo);
+                putBundle(CRUD, modeloSQL);
                 icFragmentos.enviarBundleAFragment(bundle, new AltaProductosPro());
             }
         });
@@ -214,7 +213,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
     private int crearProductoBase(String idPartidabase) {
         ContentValues valores = new ContentValues();
-        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_DETPARTIDABASE, modelo.getString(PRODUCTO_ID_PRODUCTO));
+        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_DETPARTIDABASE, modeloSQL.getString(PRODUCTO_ID_PRODUCTO));
         putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_TIPO, TIPOPRODUCTO);
         putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_PARTIDABASE, idPartidabase);
         return CRUDutil.crearRegistroSec(CAMPOS_DETPARTIDABASE, idPartidabase, TABLA_PARTIDABASE, valores);
@@ -240,12 +239,12 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View itemView, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View itemView, ArrayList<ModeloSQL> entrada) {
 
             TextView nombreProd = itemView.findViewById(R.id.tvnombrelproductos);
             TextView descripcionProd = itemView.findViewById(R.id.tvdescripcionlproductos);
@@ -280,22 +279,22 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
-            nombreProd.setText(modelo.getString(PRODUCTO_NOMBRE));
-            descripcionProd.setText(modelo.getString(PRODUCTO_DESCRIPCION));
-            importeProd.setText(modelo.getString(PRODUCTO_PRECIO));
-            String path = modelo.getString(PRODUCTO_RUTAFOTO);
+            nombreProd.setText(modeloSQL.getString(PRODUCTO_NOMBRE));
+            descripcionProd.setText(modeloSQL.getString(PRODUCTO_DESCRIPCION));
+            importeProd.setText(modeloSQL.getString(PRODUCTO_PRECIO));
+            String path = modeloSQL.getString(PRODUCTO_RUTAFOTO);
             System.out.println("path = " + path);
-            if (nnn(path) && modelo.getString(PRODUCTO_CATEGORIA).equals(PRODUCTOLOCAL)) {
+            if (nnn(path) && modeloSQL.getString(PRODUCTO_CATEGORIA).equals(PRODUCTOLOCAL)) {
                 imagenProd.setImageUriCard(activityBase,path);
-            }else if (nnn(modelo.getString(PRODUCTO_ID_PRODFIRE))){
-                imagenProd.setImageFirestoreCircle(modelo.getString(PRODUCTO_ID_PRODFIRE));
+            } else if (nnn(modeloSQL.getString(PRODUCTO_ID_PRODFIRE))) {
+                imagenProd.setImageFirestoreCircle(modeloSQL.getString(PRODUCTO_ID_PRODFIRE));
             }else {
                 gone(imagenProd);
             }
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override

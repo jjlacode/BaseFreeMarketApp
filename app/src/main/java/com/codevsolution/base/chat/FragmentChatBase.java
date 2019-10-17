@@ -25,13 +25,6 @@ import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.codevsolution.base.javautil.JavaUtil;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.RVAdapter;
@@ -39,13 +32,20 @@ import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.FirebaseFormBase;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.MsgChat;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -72,7 +72,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new ListaAdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
@@ -125,16 +125,16 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
         if (nn(id) && !id.equals(NULL)) {
 
-            modelo = CRUDutil.updateModelo(campos, id);
-            idchat = modelo.getString(CHAT_USUARIO);
-            AndroidUtil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, modelo.getString(CHAT_USUARIO));
+            modeloSQL = CRUDutil.updateModelo(campos, id);
+            idchat = modeloSQL.getString(CHAT_USUARIO);
+            AndroidUtil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, modeloSQL.getString(CHAT_USUARIO));
 
             System.out.println("idchat = " + idchat);
 
         } else if (nn(idchat) && !idchat.equals(NULL)) {
 
             ListaModelo listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
-            for (Modelo chat : listaChats.getLista()) {
+            for (ModeloSQL chat : listaChats.getLista()) {
                 if (chat.getString(CHAT_TIPO).equals(tipo) && chat.getString(CHAT_USUARIO).equals(idchat)) {
                     id = chat.getString(CHAT_ID_CHAT);
                     break;
@@ -149,7 +149,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
                 valores.put(CHAT_TIMESTAMP, TimeDateUtil.ahora());
                 valores.put(CHAT_TIPO, tipo);
                 id = CRUDutil.crearRegistroId(TABLA_CHAT, valores);
-                modelo = CRUDutil.updateModelo(campos, id);
+                modeloSQL = CRUDutil.updateModelo(campos, id);
             }
         }
 
@@ -169,7 +169,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
         activityBase.toolbar.setSubtitle(subTitulo);
         ListaModelo listaTemp = new ListaModelo();
 
-        for (Modelo chat : lista.getLista()) {
+        for (ModeloSQL chat : lista.getLista()) {
             if (chat.getString(CHAT_TIPO).equals(CHAT)) {
                 listaTemp.addModelo(chat);
             }
@@ -247,7 +247,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
     @Override
     protected void setDatos() {
 
-        AndroidUtil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, modelo.getString(CHAT_USUARIO));
+        AndroidUtil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, modeloSQL.getString(CHAT_USUARIO));
 
         if (nombreChat == null || nombreChat.equals(NULL) || nombreChat.equals("")) {
             getNombreChat();
@@ -260,15 +260,15 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
         rvMsgChat.setAdapter(adaptadorDetChat);
         gone(activityBase.fabNuevo);
 
-        modelo = CRUDutil.updateModelo(campos, id);
+        modeloSQL = CRUDutil.updateModelo(campos, id);
         activityBase.fabVoz.setSize(FloatingActionButton.SIZE_NORMAL);
         activityBase.fabInicio.setSize(FloatingActionButton.SIZE_NORMAL);
-        tipo = modelo.getString(CHAT_TIPO);
+        tipo = modeloSQL.getString(CHAT_TIPO);
 
-        System.out.println("chat nombre " + modelo.getString(CHAT_NOMBRE));
-        subTitulo = modelo.getString(CHAT_NOMBRE);
+        System.out.println("chat nombre " + modeloSQL.getString(CHAT_NOMBRE));
+        subTitulo = modeloSQL.getString(CHAT_NOMBRE);
         activityBase.toolbar.setSubtitle(subTitulo);
-        idchat = modelo.getString(CHAT_USUARIO);
+        idchat = modeloSQL.getString(CHAT_USUARIO);
 
         visible(lyEnvMsg);
         visible(actuar);
@@ -316,7 +316,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
             RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
             rvMsgChat.setAdapter(adaptadorDetChat);
 
-            Modelo chat = CRUDutil.updateModelo(campos, id);
+            ModeloSQL chat = CRUDutil.updateModelo(campos, id);
 
             MsgChat msgChat = new MsgChat();
             msgChat.setMensaje(msgEnv.getText().toString());
@@ -396,12 +396,12 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View view, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View view, ArrayList<ModeloSQL> entrada) {
 
             TextView nombreCli = view.findViewById(R.id.tvnombrechat_base);
 
@@ -425,20 +425,20 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
-            nombre.setText(modelo.getCampos(CHAT_NOMBRE));
+            nombre.setText(modeloSQL.getCampos(CHAT_NOMBRE));
 
 
             card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_defecto));
             try {
-                setImagenFireStoreCircle(contexto, modelo.getString(CHAT_USUARIO), imgchat);
+                setImagenFireStoreCircle(contexto, modeloSQL.getString(CHAT_USUARIO), imgchat);
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
 
         }
 
@@ -468,16 +468,16 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
-            int tipo = modelo.getInt(DETCHAT_TIPO);
-            String idChat = modelo.getString(DETCHAT_ID_CHAT);
-            Modelo chat = CRUDutil.updateModelo(CAMPOS_CHAT, idChat);
+            int tipo = modeloSQL.getInt(DETCHAT_TIPO);
+            String idChat = modeloSQL.getString(DETCHAT_ID_CHAT);
+            ModeloSQL chat = CRUDutil.updateModelo(CAMPOS_CHAT, idChat);
             String tipoChat = chat.getString(CHAT_TIPO);
 
             if (tipoChat.equals(CHAT)) {
-                mensaje.setText(modelo.getString(DETCHAT_MENSAJE));
-                fecha.setText(TimeDateUtil.getDateTimeString(modelo.getLong(DETCHAT_FECHA)));
+                mensaje.setText(modeloSQL.getString(DETCHAT_MENSAJE));
+                fecha.setText(TimeDateUtil.getDateTimeString(modeloSQL.getLong(DETCHAT_FECHA)));
 
                 if (tipo == ENVIADO) {
 
@@ -509,7 +509,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
                 }
 
-                String webprod = modelo.getString(DETCHAT_URL);
+                String webprod = modeloSQL.getString(DETCHAT_URL);
 
 
                 if (webprod != null && JavaUtil.isValidURL(webprod)) {
@@ -552,7 +552,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
                 }
             }
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
 
         }
 

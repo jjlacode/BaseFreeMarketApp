@@ -10,16 +10,15 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.base.time.calendar.clases.DiaCalBase;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
@@ -86,18 +85,18 @@ public class DiaCalCalendario extends HorarioPerfil implements ContratoPry.Tabla
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new ListaAdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View view, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View view, ArrayList<ModeloSQL> entrada) {
 
             super.setEntradas(posicion, view, entrada);
         }
@@ -129,24 +128,24 @@ public class DiaCalCalendario extends HorarioPerfil implements ContratoPry.Tabla
         }
 
         @Override
-        public void bind(final Modelo modelo) {
+        public void bind(final ModeloSQL modeloSQL) {
 
             gone(card);
             //Si la fecha coincide con la fecha del dia
-            if (modelo.getString(EVENTO_FECHAINIEVENTOF).equals(TimeDateUtil.getDateString(fecha)) ||
-                    (modelo.getString(EVENTO_TIPO).equals(TIPOEVENTOTAREA) &&
-                            modelo.getString(EVENTO_FECHAFINEVENTOF).equals(TimeDateUtil.getDateString(fecha)))) {
+            if (modeloSQL.getString(EVENTO_FECHAINIEVENTOF).equals(TimeDateUtil.getDateString(fecha)) ||
+                    (modeloSQL.getString(EVENTO_TIPO).equals(TIPOEVENTOTAREA) &&
+                            modeloSQL.getString(EVENTO_FECHAFINEVENTOF).equals(TimeDateUtil.getDateString(fecha)))) {
                 //Si la hora coincide con el intervalo de la celda
-                if ((modelo.getLong(EVENTO_HORAFINEVENTO) > 0 && modelo.getLong(EVENTO_HORAFINEVENTO) >= horaCal
-                        && modelo.getLong(EVENTO_HORAFINEVENTO) < horaCal + (30 * MINUTOSLONG)) ||
-                        (modelo.getLong(EVENTO_HORAINIEVENTO) > 0 && modelo.getLong(EVENTO_HORAINIEVENTO) >= horaCal
-                                && modelo.getLong(EVENTO_HORAINIEVENTO) < horaCal + (30 * MINUTOSLONG)) ||
-                        (modelo.getLong(EVENTO_HORAINIEVENTO) > 0 && modelo.getLong(EVENTO_HORAFINEVENTO) >= horaCal
-                                && modelo.getLong(EVENTO_HORAINIEVENTO) < horaCal + (30 * MINUTOSLONG) &&
-                                modelo.getLong(EVENTO_HORAFINEVENTO) > 0)) {
+                if ((modeloSQL.getLong(EVENTO_HORAFINEVENTO) > 0 && modeloSQL.getLong(EVENTO_HORAFINEVENTO) >= horaCal
+                        && modeloSQL.getLong(EVENTO_HORAFINEVENTO) < horaCal + (30 * MINUTOSLONG)) ||
+                        (modeloSQL.getLong(EVENTO_HORAINIEVENTO) > 0 && modeloSQL.getLong(EVENTO_HORAINIEVENTO) >= horaCal
+                                && modeloSQL.getLong(EVENTO_HORAINIEVENTO) < horaCal + (30 * MINUTOSLONG)) ||
+                        (modeloSQL.getLong(EVENTO_HORAINIEVENTO) > 0 && modeloSQL.getLong(EVENTO_HORAFINEVENTO) >= horaCal
+                                && modeloSQL.getLong(EVENTO_HORAINIEVENTO) < horaCal + (30 * MINUTOSLONG) &&
+                                modeloSQL.getLong(EVENTO_HORAFINEVENTO) > 0)) {
 
                     visible(card);
-                    final String tipoevento = modelo.getString(EVENTO_TIPO);
+                    final String tipoevento = modeloSQL.getString(EVENTO_TIPO);
                     telefono.setVisibility(View.GONE);
                     lugar.setVisibility(View.GONE);
                     email.setVisibility(View.GONE);
@@ -154,7 +153,7 @@ public class DiaCalCalendario extends HorarioPerfil implements ContratoPry.Tabla
                     fechaini.setVisibility(View.GONE);
                     horafin.setVisibility(View.GONE);
 
-                    System.out.println("hora = " + JavaUtil.getTime(modelo.getLong(EVENTO_HORAFINEVENTO)));
+                    System.out.println("hora = " + JavaUtil.getTime(modeloSQL.getLong(EVENTO_HORAFINEVENTO)));
 
                     if (tipoevento.equals(TIPOEVENTOCITA)) {
                         imagen.setImageResource(R.drawable.ic_place_black_24dp);
@@ -171,16 +170,16 @@ public class DiaCalCalendario extends HorarioPerfil implements ContratoPry.Tabla
                         horafin.setVisibility(View.VISIBLE);
                         fechaini.setVisibility(View.VISIBLE);
                     }
-                    double completada = modelo.getDouble(EVENTO_COMPLETADA);
-                    descripcion.setText(modelo.getString(EVENTO_DESCRIPCION));
-                    hora.setText(modelo.getString(EVENTO_HORAINIEVENTOF));
-                    telefono.setText(modelo.getString(EVENTO_TELEFONO));
-                    lugar.setText(modelo.getString(EVENTO_DIRECCION));
-                    email.setText(modelo.getString(EVENTO_EMAIL));
+                    double completada = modeloSQL.getDouble(EVENTO_COMPLETADA);
+                    descripcion.setText(modeloSQL.getString(EVENTO_DESCRIPCION));
+                    hora.setText(modeloSQL.getString(EVENTO_HORAINIEVENTOF));
+                    telefono.setText(modeloSQL.getString(EVENTO_TELEFONO));
+                    lugar.setText(modeloSQL.getString(EVENTO_DIRECCION));
+                    email.setText(modeloSQL.getString(EVENTO_EMAIL));
                     pbar.setProgress((int) completada);
-                    horafin.setText(modelo.getString(EVENTO_HORAFINEVENTOF));
-                    fechafin.setText(modelo.getString(EVENTO_FECHAFINEVENTOF));
-                    fechaini.setText(modelo.getString(EVENTO_FECHAINIEVENTOF));
+                    horafin.setText(modeloSQL.getString(EVENTO_HORAFINEVENTOF));
+                    fechafin.setText(modeloSQL.getString(EVENTO_FECHAFINEVENTOF));
+                    fechaini.setText(modeloSQL.getString(EVENTO_FECHAINIEVENTOF));
 
                     if (completada > 0) {
                         visible(pbar);
@@ -190,7 +189,7 @@ public class DiaCalCalendario extends HorarioPerfil implements ContratoPry.Tabla
 
                     if (completada < 100) {
 
-                        long retraso = JavaUtil.hoy() - modelo.getLong(EVENTO_FECHAINIEVENTO);
+                        long retraso = JavaUtil.hoy() - modeloSQL.getLong(EVENTO_FECHAINIEVENTO);
 
                         if (!tipoevento.equals(TIPOEVENTOTAREA)) {
                             if (retraso > 3 * Interactor.DIASLONG) {
@@ -201,7 +200,7 @@ public class DiaCalCalendario extends HorarioPerfil implements ContratoPry.Tabla
                                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
                             }//imgret.setImageResource(R.drawable.alert_box_v);}
                         } else {
-                            retraso = JavaUtil.hoy() - modelo.getLong(EVENTO_FECHAFINEVENTO);
+                            retraso = JavaUtil.hoy() - modeloSQL.getLong(EVENTO_FECHAFINEVENTO);
                             if (retraso > 3 * Interactor.DIASLONG) {
                                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
                             } else if (retraso > Interactor.DIASLONG) {
@@ -221,26 +220,26 @@ public class DiaCalCalendario extends HorarioPerfil implements ContratoPry.Tabla
 
                             if (tipoevento.equals(TIPOEVENTOCITA)) {
 
-                                if (!modelo.getString(EVENTO_DIRECCION).equals("")) {
+                                if (!modeloSQL.getString(EVENTO_DIRECCION).equals("")) {
 
-                                    viewOnMapA(getContext(), modelo.getString(EVENTO_DIRECCION));
+                                    viewOnMapA(getContext(), modeloSQL.getString(EVENTO_DIRECCION));
                                 }
                             } else if (tipoevento.equals(TIPOEVENTOLLAMADA)) {
 
                                 AppActivity.hacerLlamada(AppActivity.getAppContext()
-                                        , modelo.getString(EVENTO_TELEFONO));
+                                        , modeloSQL.getString(EVENTO_TELEFONO));
                             } else if (tipoevento.equals(TIPOEVENTOEMAIL)) {
 
                                 String path = null;
-                                if (modelo.getString(EVENTO_RUTAADJUNTO) != null) {
-                                    path = modelo.getString(EVENTO_RUTAADJUNTO);
+                                if (modeloSQL.getString(EVENTO_RUTAADJUNTO) != null) {
+                                    path = modeloSQL.getString(EVENTO_RUTAADJUNTO);
                                     AppActivity.enviarEmail(AppActivity.getAppContext(),
-                                            modelo.getString(EVENTO_EMAIL), modelo.getString(EVENTO_ASUNTO),
-                                            modelo.getString(EVENTO_MENSAJE), path);
+                                            modeloSQL.getString(EVENTO_EMAIL), modeloSQL.getString(EVENTO_ASUNTO),
+                                            modeloSQL.getString(EVENTO_MENSAJE), path);
                                 } else {
                                     AppActivity.enviarEmail(AppActivity.getAppContext(),
-                                            modelo.getString(EVENTO_EMAIL), modelo.getString(EVENTO_ASUNTO),
-                                            modelo.getString(EVENTO_MENSAJE));
+                                            modeloSQL.getString(EVENTO_EMAIL), modeloSQL.getString(EVENTO_ASUNTO),
+                                            modeloSQL.getString(EVENTO_MENSAJE));
                                 }
                             }
                         }
@@ -251,8 +250,8 @@ public class DiaCalCalendario extends HorarioPerfil implements ContratoPry.Tabla
                         public void onClick(View v) {
 
                             bundle = new Bundle();
-                            bundle.putSerializable(MODELO, modelo);
-                            bundle.putString(CAMPO_ID, modelo.getString(EVENTO_ID_EVENTO));
+                            bundle.putSerializable(MODELO, modeloSQL);
+                            bundle.putString(CAMPO_ID, modeloSQL.getString(EVENTO_ID_EVENTO));
                             bundle.putString(ORIGEN, CALENDARIO);
                             bundle.putString(SUBTITULO, JavaUtil.getDate(fecha));
                             bundle.putString(ACTUAL, TIPOEVENTOEVENTO);
@@ -262,7 +261,7 @@ public class DiaCalCalendario extends HorarioPerfil implements ContratoPry.Tabla
                     });
                 }
             }
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override

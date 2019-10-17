@@ -8,16 +8,15 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.base.time.calendar.clases.DiaCalBase;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
@@ -62,18 +61,18 @@ public class DiaCalDiario extends HorarioPerfil implements ContratoPry.Tablas,
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new ListaAdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View view, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View view, ArrayList<ModeloSQL> entrada) {
 
             super.setEntradas(posicion, view, entrada);
         }
@@ -97,17 +96,17 @@ public class DiaCalDiario extends HorarioPerfil implements ContratoPry.Tablas,
         }
 
         @Override
-        public void bind(final Modelo modelo) {
+        public void bind(final ModeloSQL modeloSQL) {
 
-            descripcion.setText(modelo.getString(DIARIO_DESCRIPCION));
-            fecha = modelo.getLong(DIARIO_CREATE);
+            descripcion.setText(modeloSQL.getString(DIARIO_DESCRIPCION));
+            fecha = modeloSQL.getLong(DIARIO_CREATE);
             fechaDiario.setText(TimeDateUtil.getDateString(fecha));
-            rel.setText(modelo.getString(DIARIO_NOMBREREL));
+            rel.setText(modeloSQL.getString(DIARIO_NOMBREREL));
 
             String path;
-            if (modelo.getString(DIARIO_RUTAFOTO) != null) {
+            if (modeloSQL.getString(DIARIO_RUTAFOTO) != null) {
                 imagen.setVisibility(View.VISIBLE);
-                path = modelo.getString(DIARIO_RUTAFOTO);
+                path = modeloSQL.getString(DIARIO_RUTAFOTO);
                 MediaUtil imagenUtil = new MediaUtil(AppActivity.getAppContext());
                 imagenUtil.setImageUriCircle(path, imagen);
             } else {
@@ -120,10 +119,10 @@ public class DiaCalDiario extends HorarioPerfil implements ContratoPry.Tablas,
                 public void onClick(View view) {
 
                     bundle = new Bundle();
-                    bundle.putSerializable(MODELO, modelo);
-                    bundle.putString(CAMPO_ID,modelo.getString(DIARIO_ID_RELACIONADO));
+                    bundle.putSerializable(MODELO, modeloSQL);
+                    bundle.putString(CAMPO_ID, modeloSQL.getString(DIARIO_ID_RELACIONADO));
                     bundle.putString(ORIGEN, DIARIO);
-                    String destinoRel = modelo.getString(DIARIO_REL);
+                    String destinoRel = modeloSQL.getString(DIARIO_REL);
                     bundle.putString(ACTUAL, destinoRel);
 
                     switch (destinoRel){
@@ -145,7 +144,7 @@ public class DiaCalDiario extends HorarioPerfil implements ContratoPry.Tablas,
             });
 
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override

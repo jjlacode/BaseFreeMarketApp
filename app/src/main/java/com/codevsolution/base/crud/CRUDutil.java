@@ -4,12 +4,11 @@ import android.content.ContentValues;
 import android.net.Uri;
 
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.CAMPO_SECUENCIA;
 
@@ -26,7 +25,7 @@ public class CRUDutil {
         return lista;
     }
 
-    public static ListaModelo clonaListaModelo(String[] campos, ArrayList<Modelo> list) {
+    public static ListaModelo clonaListaModelo(String[] campos, ArrayList<ModeloSQL> list) {
         ListaModelo lista = new ListaModelo(campos);
         lista.clearAddAllLista(list);
         return lista;
@@ -71,55 +70,55 @@ public class CRUDutil {
         return new ListaModelo(campos, campo, valor, valor2, flag, orden);
     }
 
-    public static Modelo updateModelo(Modelo modelo) {
+    public static ModeloSQL updateModelo(ModeloSQL modeloSQL) {
 
-        if (modelo.getInt(CAMPO_SECUENCIA)>0){
-            return ConsultaBD.queryObjectDetalle(modelo.getEstructura(), modelo.getString(modelo.getCampoID()), modelo.getInt(CAMPO_SECUENCIA));
+        if (modeloSQL.getInt(CAMPO_SECUENCIA) > 0) {
+            return ConsultaBD.queryObjectDetalle(modeloSQL.getEstructura(), modeloSQL.getString(modeloSQL.getCampoID()), modeloSQL.getInt(CAMPO_SECUENCIA));
         }
-        return ConsultaBD.queryObject(modelo.getEstructura(), modelo.getString(modelo.getCampoID()));
+        return ConsultaBD.queryObject(modeloSQL.getEstructura(), modeloSQL.getString(modeloSQL.getCampoID()));
     }
 
-    public static Modelo updateModelo(String[] campos, String id) {
+    public static ModeloSQL updateModelo(String[] campos, String id) {
 
         return ConsultaBD.queryObject(campos, id);
     }
 
-    public static Modelo updateModelo(String[] campos, String campo, String valor, String valor2, int flag, String orden) {
+    public static ModeloSQL updateModelo(String[] campos, String campo, String valor, String valor2, int flag, String orden) {
 
         return ConsultaBD.queryObject(campos, campo,valor,valor2,flag,orden);
     }
 
-    public static Modelo updateModelo(String[] campos, String campo, int valor, int valor2, int flag, String orden) {
+    public static ModeloSQL updateModelo(String[] campos, String campo, int valor, int valor2, int flag, String orden) {
 
         return ConsultaBD.queryObject(campos, campo,valor,valor2,flag,orden);
     }
 
-    public static Modelo updateModelo(String[] campos, String campo, long valor, long valor2, int flag, String orden) {
+    public static ModeloSQL updateModelo(String[] campos, String campo, long valor, long valor2, int flag, String orden) {
 
         return ConsultaBD.queryObject(campos, campo,valor,valor2,flag,orden);
     }
 
-    public static Modelo updateModelo(String[] campos, String campo, double valor, double valor2, int flag, String orden) {
+    public static ModeloSQL updateModelo(String[] campos, String campo, double valor, double valor2, int flag, String orden) {
 
         return ConsultaBD.queryObject(campos, campo,valor,valor2,flag,orden);
     }
 
-    public static Modelo updateModelo(String[] campos, String campo, float valor, float valor2, int flag, String orden) {
+    public static ModeloSQL updateModelo(String[] campos, String campo, float valor, float valor2, int flag, String orden) {
 
         return ConsultaBD.queryObject(campos, campo,valor,valor2,flag,orden);
     }
 
-    public static Modelo updateModelo(String[] campos, String campo, short valor, short valor2, int flag, String orden) {
+    public static ModeloSQL updateModelo(String[] campos, String campo, short valor, short valor2, int flag, String orden) {
 
         return ConsultaBD.queryObject(campos, campo,valor,valor2,flag,orden);
     }
 
-    public static Modelo updateModelo(String[] campos, String id, int secuencia) {
+    public static ModeloSQL updateModelo(String[] campos, String id, int secuencia) {
 
         return ConsultaBD.queryObjectDetalle(campos, id, secuencia);
     }
 
-    public static Modelo updateModelo(String[] campos, String id, String secuencia) {
+    public static ModeloSQL updateModelo(String[] campos, String id, String secuencia) {
         return ConsultaBD.queryObjectDetalle(campos, id, secuencia);
     }
 
@@ -133,16 +132,16 @@ public class CRUDutil {
         return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
     }
 
-    public static int actualizarRegistro(Modelo modelo, ContentValues valores) {
+    public static int actualizarRegistro(ModeloSQL modeloSQL, ContentValues valores) {
 
-        String tabla = modelo.getNombreTabla();
+        String tabla = modeloSQL.getNombreTabla();
         System.out.println("tabla = " + tabla);
-        String id = modelo.getString(modelo.getCampoID());
+        String id = modeloSQL.getString(modeloSQL.getCampoID());
 
         if (ContratoPry.getTabCab(tabla) != null) {
 
             System.out.println("id = " + id);
-            int secuencia = modelo.getInt(CAMPO_SECUENCIA);
+            int secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
             System.out.println("secuencia = " + secuencia);
             return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
 
@@ -188,13 +187,13 @@ public class CRUDutil {
         return ConsultaBD.deleteRegistroDetalle(tabla, id, secuencia);
     }
 
-    public static String getID(Modelo modelo, String campoID) {
+    public static String getID(ModeloSQL modeloSQL, String campoID) {
 
-        return modelo.getString(campoID);
+        return modeloSQL.getString(campoID);
     }
 
-    public static int getSecuencia(Modelo modelo) {
-        return modelo.getInt("secuencia");
+    public static int getSecuencia(ModeloSQL modeloSQL) {
+        return modeloSQL.getInt("secuencia");
     }
 
 

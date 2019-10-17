@@ -15,20 +15,17 @@ import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.CheckPermisos;
 import com.codevsolution.base.android.MainActivityBase;
-import com.codevsolution.base.chat.FragmentChatBase;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.login.LoginActivity;
 import com.codevsolution.base.media.VisorPDFEmail;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.SQLiteUtil;
 import com.codevsolution.base.web.FragmentWebView;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.codevsolution.freemarketsapp.services.AutoArranquePro;
 import com.codevsolution.freemarketsapp.settings.SettingsActivityPro;
-import com.codevsolution.freemarketsapp.ui.AltaPerfilesFirebaseCli;
 import com.codevsolution.freemarketsapp.ui.AltaPerfilesFirebasePro;
 import com.codevsolution.freemarketsapp.ui.AltaSorteosCli;
 import com.codevsolution.freemarketsapp.ui.AltaSorteosPro;
@@ -45,14 +42,14 @@ import com.codevsolution.freemarketsapp.ui.FragmentCRUDTrabajo;
 import com.codevsolution.freemarketsapp.ui.ListadoProductosCli;
 import com.codevsolution.freemarketsapp.ui.ListadoProductosPro;
 import com.codevsolution.freemarketsapp.ui.ListadoSorteosCli;
+import com.codevsolution.freemarketsapp.ui.ListadoSorteosPro;
 import com.codevsolution.freemarketsapp.ui.ListadosPerfilesFirebasePro;
+import com.codevsolution.freemarketsapp.ui.MenuInicio;
 import com.codevsolution.freemarketsapp.ui.MisSorteosCli;
+import com.codevsolution.freemarketsapp.ui.MisSorteosPro;
 import com.codevsolution.freemarketsapp.ui.MisSuscripcionesPro;
 import com.codevsolution.freemarketsapp.ui.MisSuscripcionesProductosCli;
 import com.codevsolution.freemarketsapp.ui.MisSuscripcionesProductosPro;
-import com.codevsolution.freemarketsapp.ui.ListadoSorteosPro;
-import com.codevsolution.freemarketsapp.ui.MenuInicio;
-import com.codevsolution.freemarketsapp.ui.MisSorteosPro;
 import com.google.firebase.auth.FirebaseAuth;
 
 import static android.Manifest.permission.INTERNET;
@@ -145,9 +142,7 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
                 db.close();
                 ListaModelo listaModelo = CRUDutil.setListaModelo(CAMPOS_PERFIL);
-                if (listaModelo.getLista().size() > 0 && listaModelo.getLista().get(0).getString(PERFIL_NOMBRE).equals("Defecto")) {
-                    return true;
-                }
+                return listaModelo.getLista().size() > 0 && listaModelo.getLista().get(0).getString(PERFIL_NOMBRE).equals("Defecto");
             }
         }
 

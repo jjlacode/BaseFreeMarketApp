@@ -6,7 +6,7 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 
 import java.util.ArrayList;
 
@@ -18,7 +18,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
     }
 
-    public void bind(Modelo modelo) {
+    public void bind(ModeloSQL modeloSQL) {
 
     }
 

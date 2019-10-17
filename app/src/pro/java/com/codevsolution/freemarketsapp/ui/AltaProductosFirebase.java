@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.media.ImagenUtil;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.Productos;
 import com.codevsolution.base.nosql.FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb;
 import com.codevsolution.base.sqlite.ContratoPry;
@@ -27,7 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         implements Interactor.ConstantesPry, ContratoPry.Tablas {
 
-    private Modelo prodCrud;
+    private ModeloSQL prodCrud;
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
@@ -179,7 +179,7 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
 
         if (nn(bundle)) {
 
-            prodCrud = (Modelo) getBundleSerial(CRUD);
+            prodCrud = (ModeloSQL) getBundleSerial(CRUD);
             if (prodCrud != null) {
                 prodProv = convertirProdCrud(prodCrud);
                 if (prodProv != null) {
@@ -193,7 +193,7 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
         }
     }
 
-    private Productos convertirProdCrud(Modelo prodCrud) {
+    private Productos convertirProdCrud(ModeloSQL prodCrud) {
 
         boolean activo = false;
         boolean sincro = false;

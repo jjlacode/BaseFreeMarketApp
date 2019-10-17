@@ -8,22 +8,22 @@ import android.os.Handler;
 
 import androidx.annotation.NonNull;
 
+import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.crud.CRUDutil;
+import com.codevsolution.base.javautil.JavaUtil;
+import com.codevsolution.base.logica.InteractorBase;
+import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.models.MsgChat;
+import com.codevsolution.base.sqlite.ConsultaBD;
+import com.codevsolution.base.sqlite.ContratoSystem;
+import com.codevsolution.base.time.TimeDateUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.android.AndroidUtil;
-import com.codevsolution.base.crud.CRUDutil;
-import com.codevsolution.base.logica.InteractorBase;
-import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
-import com.codevsolution.base.models.MsgChat;
-import com.codevsolution.base.sqlite.ConsultaBD;
-import com.codevsolution.base.sqlite.ContratoSystem;
-import com.codevsolution.base.time.TimeDateUtil;
 
 public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
         JavaUtil.Constantes, InteractorBase.Constantes {
@@ -66,10 +66,10 @@ public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
                                     ListaModelo listaChats = new ListaModelo(CAMPOS_CHAT);
                                     int cChat = 0;
                                     boolean primerReg = false;
-                                    for (Modelo chat : listaChats.getLista()) {
+                                    for (ModeloSQL chat : listaChats.getLista()) {
                                         String seleccion = DETCHAT_TIPO + " = '" + RECIBIDO + "'";
                                         ListaModelo listaDetChat = new ListaModelo(CAMPOS_DETCHAT, chat.getString(CHAT_ID_CHAT), TABLA_CHAT, seleccion, DETCHAT_FECHA + " DESC");
-                                        Modelo detChat = null;
+                                        ModeloSQL detChat = null;
                                         if (listaDetChat.getLista().size() > 0) {
                                             detChat = listaDetChat.getLista().get(0);
                                         } else {
@@ -126,7 +126,7 @@ public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
                                         values.put(DETCHAT_TIPO, RECIBIDO);
                                         int sec = ConsultaBD.secInsertRegistroDetalle(CAMPOS_DETCHAT, idChat, TABLA_CHAT, values);
                                         if (sec > 0) {
-                                            Modelo detChat = ConsultaBD.queryObjectDetalle(CAMPOS_DETCHAT, idChat, sec);
+                                            ModeloSQL detChat = ConsultaBD.queryObjectDetalle(CAMPOS_DETCHAT, idChat, sec);
                                             FirebaseDatabase.getInstance().getReference().child(CHAT).child(idUser).child(idChild).removeValue();
                                             Intent intent = new Intent(ACCION_AVISOMSGCHAT).putExtra(CHAT, detChat);
                                             sendBroadcast(intent);

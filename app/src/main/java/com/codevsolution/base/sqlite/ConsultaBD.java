@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.time.TimeDateUtil;
 
 import java.util.ArrayList;
@@ -120,10 +120,10 @@ public class ConsultaBD implements JavaUtil.Constantes {
     }
 
 
-    public static ArrayList<Modelo> queryList(String[] campos, String seleccion, String orden) {
+    public static ArrayList<ModeloSQL> queryList(String[] campos, String seleccion, String orden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         Cursor reg = resolver.query(obtenerUriContenido(
                 campos[1]), null, seleccion, null, orden);
@@ -166,8 +166,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.add(modeloSQL);
                 }
             }
         }
@@ -179,7 +179,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
     public static boolean checkQueryList(String[] campos, String seleccion, String orden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         Cursor reg = resolver.query(obtenerUriContenido(
                 campos[1]), null, seleccion, null, orden);
@@ -222,8 +222,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.add(modeloSQL);
                 }
             }
         }
@@ -236,7 +236,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
             (String[] campos, String campo, String valor, String valor2, int flag, String orden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         String seleccion = null;
 
@@ -305,8 +305,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.add(modeloSQL);
                 }
             }
         }
@@ -315,10 +315,10 @@ public class ConsultaBD implements JavaUtil.Constantes {
         return list.size() > 0;
     }
 
-    public static ArrayList<Modelo> queryList(String[] campos) {
+    public static ArrayList<ModeloSQL> queryList(String[] campos) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         Cursor reg = resolver.query(obtenerUriContenido(
                 campos[1]), null, null, null, null);
@@ -361,8 +361,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.add(modeloSQL);
                 }
             }
         }
@@ -371,10 +371,10 @@ public class ConsultaBD implements JavaUtil.Constantes {
         return list;
     }
 
-    public static ArrayList<Modelo> queryList(String[] campos, boolean ref) {
+    public static ArrayList<ModeloSQL> queryList(String[] campos, boolean ref) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         Cursor reg = resolver.query(obtenerUriContenido(
                 campos[1]), null, null, null, null);
@@ -416,8 +416,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    Modelo modelo = new Modelo(campos, insert, ref);
-                    list.add(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert, ref);
+                    list.add(modeloSQL);
                 }
             }
         }
@@ -427,10 +427,10 @@ public class ConsultaBD implements JavaUtil.Constantes {
     }
 
 
-    public static Modelo queryObject(String[] campos, String id) {
+    public static ModeloSQL queryObject(String[] campos, String id) {
 
 
-        Modelo modelo = null;
+        ModeloSQL modeloSQL = null;
 
         Cursor reg = resolver.query(crearUriTabla(id,
                 campos[1]), null, null, null, null);
@@ -471,17 +471,17 @@ public class ConsultaBD implements JavaUtil.Constantes {
             }
 
             if (insert[0] != null) {
-                modelo = new Modelo(campos, insert);
+                modeloSQL = new ModeloSQL(campos, insert);
             }
         }
         reg.close();
 
-        return modelo;
+        return modeloSQL;
     }
 
-    public static Modelo queryObject(String[] campos, Uri uri) {
+    public static ModeloSQL queryObject(String[] campos, Uri uri) {
 
-        Modelo modelo = null;
+        ModeloSQL modeloSQL = null;
 
         String id = obtenerIdTabla(uri);
 
@@ -524,19 +524,19 @@ public class ConsultaBD implements JavaUtil.Constantes {
             }
 
             if (insert[0] != null) {
-                modelo = new Modelo(campos, insert);
+                modeloSQL = new ModeloSQL(campos, insert);
             }
         }
         reg.close();
 
-        return modelo;
+        return modeloSQL;
     }
 
-    public static ArrayList<Modelo> queryListCampo(String[] campos, String campo, String valor, String orden) {
+    public static ArrayList<ModeloSQL> queryListCampo(String[] campos, String campo, String valor, String orden) {
 
         String seleccion = campo + " = '" + valor + "'";
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         Cursor reg = resolver.query(obtenerUriContenido(
                 campos[1]), null, seleccion, null, orden);
@@ -576,8 +576,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
             }
 
             if (insert[0] != null) {
-                Modelo modelo = new Modelo(campos, insert);
-                list.add(modelo);
+                ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                list.add(modeloSQL);
             }
         }
         reg.close();
@@ -585,9 +585,9 @@ public class ConsultaBD implements JavaUtil.Constantes {
         return list;
     }
 
-    public static ArrayList<Modelo> queryListDetalle(String[] campos, String id, String tablaCab, String seleccion, String orden) {
+    public static ArrayList<ModeloSQL> queryListDetalle(String[] campos, String id, String tablaCab, String seleccion, String orden) {
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         Cursor reg = resolver.query(crearUriTablaDetalleId(id,
                 campos[1], tablaCab), null, seleccion, null, orden);
@@ -628,8 +628,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
             }
 
             if (insert[0] != null) {
-                Modelo modelo = new Modelo(campos, insert);
-                list.add(modelo);
+                ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                list.add(modeloSQL);
             }
         }
         reg.close();
@@ -637,9 +637,9 @@ public class ConsultaBD implements JavaUtil.Constantes {
         return list;
     }
 
-    public static ArrayList<Modelo> queryListDetalle(String[] campos, String id, String tablaCab) {
+    public static ArrayList<ModeloSQL> queryListDetalle(String[] campos, String id, String tablaCab) {
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         Cursor reg = resolver.query(crearUriTablaDetalleId(id,
                 campos[1], tablaCab), null, null, null, null);
@@ -680,8 +680,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
             }
 
             if (insert[0] != null) {
-                Modelo modelo = new Modelo(campos, insert);
-                list.add(modelo);
+                ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                list.add(modeloSQL);
             }
         }
         reg.close();
@@ -689,62 +689,10 @@ public class ConsultaBD implements JavaUtil.Constantes {
         return list;
     }
 
-    public static Modelo queryObjectDetalle(String[] campos, String id, String secuencia) {
+    public static ModeloSQL queryObjectDetalle(String[] campos, String id, String secuencia) {
 
 
-        Modelo modelo = null;
-
-        Cursor reg = resolver.query(crearUriTablaDetalle(id, secuencia,
-                campos[1]), null, null, null, null);
-
-
-        while (reg.moveToNext()) {
-
-            String[] insert = new String[reg.getColumnCount() - 1];
-
-            for (int i = 0, x = 2, y = 4; i < reg.getColumnCount() - 1; i++, x += 3, y += 3) {
-
-                switch (campos[y]) {
-
-                    case STRING:
-                        insert[i] = reg.getString(reg.getColumnIndex(campos[x]));
-                        break;
-                    case INT:
-                        insert[i] = String.valueOf(reg.getInt(reg.getColumnIndex(campos[x])));
-                        break;
-                    case LONG:
-                        insert[i] = String.valueOf(reg.getLong(reg.getColumnIndex(campos[x])));
-                        break;
-                    case DOUBLE:
-                        insert[i] = String.valueOf(reg.getDouble(reg.getColumnIndex(campos[x])));
-                        break;
-                    case FLOAT:
-                        insert[i] = String.valueOf(reg.getFloat(reg.getColumnIndex(campos[x])));
-                        break;
-                    case SHORT:
-                        insert[i] = String.valueOf(reg.getShort(reg.getColumnIndex(campos[x])));
-                        break;
-                    default:
-
-                        insert[i] = reg.getString(reg.getColumnIndex(campos[x]));
-
-                }
-
-            }
-
-            if (insert[0] != null) {
-                modelo = new Modelo(campos, insert);
-            }
-        }
-        reg.close();
-
-        return modelo;
-    }
-
-    public static Modelo queryObjectDetalle(String[] campos, String id, int secuencia) {
-
-
-        Modelo modelo = null;
+        ModeloSQL modeloSQL = null;
 
         Cursor reg = resolver.query(crearUriTablaDetalle(id, secuencia,
                 campos[1]), null, null, null, null);
@@ -785,17 +733,69 @@ public class ConsultaBD implements JavaUtil.Constantes {
             }
 
             if (insert[0] != null) {
-                modelo = new Modelo(campos, insert);
+                modeloSQL = new ModeloSQL(campos, insert);
             }
         }
         reg.close();
 
-        return modelo;
+        return modeloSQL;
     }
 
-    public static Modelo queryObjectDetalle(String[] campos, Uri uri) {
+    public static ModeloSQL queryObjectDetalle(String[] campos, String id, int secuencia) {
 
-        Modelo modelo = null;
+
+        ModeloSQL modeloSQL = null;
+
+        Cursor reg = resolver.query(crearUriTablaDetalle(id, secuencia,
+                campos[1]), null, null, null, null);
+
+
+        while (reg.moveToNext()) {
+
+            String[] insert = new String[reg.getColumnCount() - 1];
+
+            for (int i = 0, x = 2, y = 4; i < reg.getColumnCount() - 1; i++, x += 3, y += 3) {
+
+                switch (campos[y]) {
+
+                    case STRING:
+                        insert[i] = reg.getString(reg.getColumnIndex(campos[x]));
+                        break;
+                    case INT:
+                        insert[i] = String.valueOf(reg.getInt(reg.getColumnIndex(campos[x])));
+                        break;
+                    case LONG:
+                        insert[i] = String.valueOf(reg.getLong(reg.getColumnIndex(campos[x])));
+                        break;
+                    case DOUBLE:
+                        insert[i] = String.valueOf(reg.getDouble(reg.getColumnIndex(campos[x])));
+                        break;
+                    case FLOAT:
+                        insert[i] = String.valueOf(reg.getFloat(reg.getColumnIndex(campos[x])));
+                        break;
+                    case SHORT:
+                        insert[i] = String.valueOf(reg.getShort(reg.getColumnIndex(campos[x])));
+                        break;
+                    default:
+
+                        insert[i] = reg.getString(reg.getColumnIndex(campos[x]));
+
+                }
+
+            }
+
+            if (insert[0] != null) {
+                modeloSQL = new ModeloSQL(campos, insert);
+            }
+        }
+        reg.close();
+
+        return modeloSQL;
+    }
+
+    public static ModeloSQL queryObjectDetalle(String[] campos, Uri uri) {
+
+        ModeloSQL modeloSQL = null;
 
         Cursor reg = resolver.query(uri, null, null, null, null);
 
@@ -834,15 +834,15 @@ public class ConsultaBD implements JavaUtil.Constantes {
             }
 
             if (insert[0] != null) {
-                modelo = new Modelo(campos, insert);
+                modeloSQL = new ModeloSQL(campos, insert);
             }
         }
         reg.close();
 
-        return modelo;
+        return modeloSQL;
     }
 
-    public static Modelo queryObject
+    public static ModeloSQL queryObject
             (String[] campos, String campo, String valor, String valor2, int flag, String orden) {
 
         String seleccion = null;
@@ -875,7 +875,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
         Cursor reg = resolver.query(obtenerUriContenido(
                 campos[1]), null, seleccion, null, orden);
 
-        Modelo modelo = null;
+        ModeloSQL modeloSQL = null;
 
         if (reg != null) {
 
@@ -914,16 +914,16 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    modelo = new Modelo(campos, insert);
+                    modeloSQL = new ModeloSQL(campos, insert);
                 }
             }
         }
         reg.close();
 
-        return modelo;
+        return modeloSQL;
     }
 
-    public static Modelo queryObject
+    public static ModeloSQL queryObject
             (String[] campos, String campo, int valor, int valor2, int flag, String orden) {
 
         String seleccion = null;
@@ -956,7 +956,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
         Cursor reg = resolver.query(obtenerUriContenido(
                 campos[1]), null, seleccion, null, orden);
 
-        Modelo modelo = null;
+        ModeloSQL modeloSQL = null;
 
         if (reg != null) {
 
@@ -995,16 +995,16 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    modelo = new Modelo(campos, insert);
+                    modeloSQL = new ModeloSQL(campos, insert);
                 }
             }
         }
         reg.close();
 
-        return modelo;
+        return modeloSQL;
     }
 
-    public static Modelo queryObject
+    public static ModeloSQL queryObject
             (String[] campos, String campo, double valor, double valor2, int flag, String orden) {
 
         String seleccion = null;
@@ -1037,7 +1037,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
         Cursor reg = resolver.query(obtenerUriContenido(
                 campos[1]), null, seleccion, null, orden);
 
-        Modelo modelo = null;
+        ModeloSQL modeloSQL = null;
 
         if (reg != null) {
 
@@ -1076,16 +1076,16 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    modelo = new Modelo(campos, insert);
+                    modeloSQL = new ModeloSQL(campos, insert);
                 }
             }
         }
         reg.close();
 
-        return modelo;
+        return modeloSQL;
     }
 
-    public static Modelo queryObject
+    public static ModeloSQL queryObject
             (String[] campos, String campo, long valor, long valor2, int flag, String orden) {
 
         String seleccion = null;
@@ -1118,7 +1118,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
         Cursor reg = resolver.query(obtenerUriContenido(
                 campos[1]), null, seleccion, null, orden);
 
-        Modelo modelo = null;
+        ModeloSQL modeloSQL = null;
 
         if (reg != null) {
 
@@ -1157,16 +1157,16 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    modelo = new Modelo(campos, insert);
+                    modeloSQL = new ModeloSQL(campos, insert);
                 }
             }
         }
         reg.close();
 
-        return modelo;
+        return modeloSQL;
     }
 
-    public static Modelo queryObject
+    public static ModeloSQL queryObject
             (String[] campos, String campo, float valor, float valor2, int flag, String orden) {
 
         String seleccion = null;
@@ -1199,7 +1199,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
         Cursor reg = resolver.query(obtenerUriContenido(
                 campos[1]), null, seleccion, null, orden);
 
-        Modelo modelo = null;
+        ModeloSQL modeloSQL = null;
 
         if (reg != null) {
 
@@ -1238,16 +1238,16 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    modelo = new Modelo(campos, insert);
+                    modeloSQL = new ModeloSQL(campos, insert);
                 }
             }
         }
         reg.close();
 
-        return modelo;
+        return modeloSQL;
     }
 
-    public static Modelo queryObject
+    public static ModeloSQL queryObject
             (String[] campos, String campo, short valor, short valor2, int flag, String orden) {
 
         String seleccion = null;
@@ -1280,7 +1280,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
         Cursor reg = resolver.query(obtenerUriContenido(
                 campos[1]), null, seleccion, null, orden);
 
-        Modelo modelo = null;
+        ModeloSQL modeloSQL = null;
 
         if (reg != null) {
 
@@ -1319,20 +1319,20 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    modelo = new Modelo(campos, insert);
+                    modeloSQL = new ModeloSQL(campos, insert);
                 }
             }
         }
         reg.close();
 
-        return modelo;
+        return modeloSQL;
     }
 
-    public static ArrayList<Modelo> queryList
+    public static ArrayList<ModeloSQL> queryList
             (String[] campos, String campo, String valor, String valor2, int flag, String orden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         String seleccion = null;
 
@@ -1402,8 +1402,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.add(modeloSQL);
                 }
             }
         }
@@ -1412,11 +1412,11 @@ public class ConsultaBD implements JavaUtil.Constantes {
         return list;
     }
 
-    public static ArrayList<Modelo> queryList
+    public static ArrayList<ModeloSQL> queryList
             (String[] campos, String campo, int valor, int valor2, int flag, String orden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         String seleccion = null;
 
@@ -1486,8 +1486,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.add(modeloSQL);
                 }
             }
         }
@@ -1496,11 +1496,11 @@ public class ConsultaBD implements JavaUtil.Constantes {
         return list;
     }
 
-    public static ArrayList<Modelo> queryList
+    public static ArrayList<ModeloSQL> queryList
             (String[] campos, String campo, double valor, double valor2, int flag, String orden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         String seleccion = null;
 
@@ -1570,8 +1570,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.add(modeloSQL);
                 }
             }
         }
@@ -1581,11 +1581,11 @@ public class ConsultaBD implements JavaUtil.Constantes {
     }
 
 
-    public static ArrayList<Modelo> queryList
+    public static ArrayList<ModeloSQL> queryList
             (String[] campos, String campo, long valor, long valor2, int flag, String orden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         String seleccion = null;
 
@@ -1655,8 +1655,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.add(modeloSQL);
                 }
             }
         }
@@ -1665,11 +1665,11 @@ public class ConsultaBD implements JavaUtil.Constantes {
         return list;
     }
 
-    public static ArrayList<Modelo> queryList
+    public static ArrayList<ModeloSQL> queryList
             (String[] campos, String campo, float valor, float valor2, int flag, String orden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         String seleccion = null;
 
@@ -1739,8 +1739,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.add(modeloSQL);
                 }
             }
         }
@@ -1749,11 +1749,11 @@ public class ConsultaBD implements JavaUtil.Constantes {
         return list;
     }
 
-    public static ArrayList<Modelo> queryList
+    public static ArrayList<ModeloSQL> queryList
             (String[] campos, String campo, short valor, short valor2, int flag, String orden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         String seleccion = null;
 
@@ -1823,8 +1823,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.add(modeloSQL);
                 }
             }
         }
@@ -1833,11 +1833,11 @@ public class ConsultaBD implements JavaUtil.Constantes {
         return list;
     }
 
-    public static ArrayList<Modelo> queryList
+    public static ArrayList<ModeloSQL> queryList
             (String[] campos, String seleccion, String campoOrden, int flagOrden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         String orden = null;
 
@@ -1892,8 +1892,8 @@ public class ConsultaBD implements JavaUtil.Constantes {
                 }
 
                 if (insert[0] != null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.add(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.add(modeloSQL);
                 }
             }
         }
@@ -2479,7 +2479,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
         valores.put(CAMPO_TIMESTAMP, JavaUtil.hoy());
         valores.put(CAMPO_CREATEREG, JavaUtil.hoy());
 
-        ArrayList<Modelo> lista = queryListDetalle(campos, id, tablaCab, null, null);
+        ArrayList<ModeloSQL> lista = queryListDetalle(campos, id, tablaCab, null, null);
 
         int secuencia = 0;
 
@@ -2500,7 +2500,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
         valores.put(CAMPO_TIMESTAMP, TimeDateUtil.ahora());
         valores.put(CAMPO_CREATEREG, TimeDateUtil.ahora());
 
-        ArrayList<Modelo> lista = queryListDetalle(campos, id, tablaCab, null, null);
+        ArrayList<ModeloSQL> lista = queryListDetalle(campos, id, tablaCab, null, null);
 
         int secuencia = 0;
 

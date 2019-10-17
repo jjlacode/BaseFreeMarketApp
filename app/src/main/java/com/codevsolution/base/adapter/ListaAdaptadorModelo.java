@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 
 import java.util.ArrayList;
 
@@ -15,13 +15,13 @@ import java.util.ArrayList;
  *
  * @author Ramon Invarato Menéndez
  */
-public abstract class ListaAdaptadorModelo extends ArrayAdapter<Modelo> {
+public abstract class ListaAdaptadorModelo extends ArrayAdapter<ModeloSQL> {
 
-    private ArrayList<Modelo> entradas;
+    private ArrayList<ModeloSQL> entradas;
     private int R_layout_IdView;
     private Context contexto;
 
-    public ListaAdaptadorModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas) {
+    public ListaAdaptadorModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas) {
         super(contexto, R_layout_IdView, entradas);
         this.contexto = contexto;
         this.entradas = entradas;
@@ -44,7 +44,7 @@ public abstract class ListaAdaptadorModelo extends ArrayAdapter<Modelo> {
     }
 
     @Override
-    public Modelo getItem(int posicion) {
+    public ModeloSQL getItem(int posicion) {
         return entradas.get(posicion);
     }
 
@@ -59,6 +59,6 @@ public abstract class ListaAdaptadorModelo extends ArrayAdapter<Modelo> {
      * @param entrada La entrada que será la asociada a la view. La entrada es del tipo del paquete/handler
      * @param view    View particular que contendrá los datos del paquete/handler
      */
-    public abstract void onEntrada(Modelo entrada, View view);
+    public abstract void onEntrada(ModeloSQL entrada, View view);
 
 }

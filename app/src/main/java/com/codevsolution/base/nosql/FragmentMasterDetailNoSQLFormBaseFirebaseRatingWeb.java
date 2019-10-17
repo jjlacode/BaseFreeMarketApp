@@ -21,32 +21,32 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 
-import com.codevsolution.base.android.controls.ImagenLayout;
-import com.codevsolution.base.chat.FragmentChatBase;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltro;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.chat.FragmentChatBase;
 import com.codevsolution.base.crud.CRUDutil;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.models.FirebaseFormBase;
 import com.codevsolution.base.models.ListaModelo;
 import com.codevsolution.base.models.Marcador;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.Productos;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -142,19 +142,19 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
                 switch (i) {
 
                     case 5:
-                        lugar = (String) paisUser.get(4);
+                        lugar = paisUser.get(4);
                         break;
                     case 4:
-                        lugar = (String) paisUser.get(3);
+                        lugar = paisUser.get(3);
                         break;
                     case 3:
-                        lugar = (String) paisUser.get(2);
+                        lugar = paisUser.get(2);
                         break;
                     case 2:
-                        lugar = (String) paisUser.get(1);
+                        lugar = paisUser.get(1);
                         break;
                     case 1:
-                        lugar = (String) paisUser.get(0);
+                        lugar = paisUser.get(0);
                         break;
                     case 0:
                         lugar = MUNDIAL;
@@ -294,7 +294,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
             if (idChat == null) {
                 ListaModelo listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
-                for (Modelo chat : listaChats.getLista()) {
+                for (ModeloSQL chat : listaChats.getLista()) {
                     if (chat.getString(CHAT_USUARIO).equals(id) && chat.getString(CHAT_TIPO).equals(tipo)) {
                         idChat = chat.getString(CHAT_ID_CHAT);
                     }
@@ -581,7 +581,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
                     perfilUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
                     ListaModelo listaChats = new ListaModelo(CAMPOS_CHAT);
                     String idChat = null;
-                    for (Modelo chat : listaChats.getLista()) {
+                    for (ModeloSQL chat : listaChats.getLista()) {
                         if (chat.getString(CHAT_USUARIO).equals(firebaseFormBase.getIdchatBase())) {
                             idChat = chat.getString(CHAT_ID_CHAT);
                         }
@@ -641,12 +641,12 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
-            int tipo = modelo.getInt(DETCHAT_TIPO);
+            int tipo = modeloSQL.getInt(DETCHAT_TIPO);
 
-            mensaje.setText(modelo.getString(DETCHAT_MENSAJE));
-            fecha.setText(TimeDateUtil.getDateTimeString(modelo.getLong(DETCHAT_FECHA)));
+            mensaje.setText(modeloSQL.getString(DETCHAT_MENSAJE));
+            fecha.setText(TimeDateUtil.getDateTimeString(modeloSQL.getLong(DETCHAT_FECHA)));
 
             if (tipo == RECIBIDO) {
 
@@ -665,7 +665,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
             }
 
-            String webprod = modelo.getString(DETCHAT_URL);
+            String webprod = modeloSQL.getString(DETCHAT_URL);
 
 
             if (webprod != null && JavaUtil.isValidURL(webprod)) {
@@ -707,7 +707,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
                 lylweb.setVisibility(View.GONE);
             }
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
 
         }
 

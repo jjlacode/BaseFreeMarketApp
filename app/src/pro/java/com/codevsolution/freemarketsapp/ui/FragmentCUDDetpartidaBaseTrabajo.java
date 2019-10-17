@@ -8,16 +8,10 @@ import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCUD;
 import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
-
-import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
-import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
-import static com.codevsolution.base.sqlite.ConsultaBD.queryObject;
-import static com.codevsolution.base.sqlite.ConsultaBD.queryObjectDetalle;
-import static com.codevsolution.base.sqlite.ConsultaBD.updateRegistroDetalle;
 
 public class FragmentCUDDetpartidaBaseTrabajo extends FragmentCUD implements Interactor.ConstantesPry,
         ContratoPry.Tablas, Interactor.TiposDetPartida, Interactor.TiposEstados {
@@ -28,7 +22,7 @@ public class FragmentCUDDetpartidaBaseTrabajo extends FragmentCUD implements Int
     private TextView tipoDetPartida;
     private EditMaterial tiempoDet;
     private String tipo;
-    private Modelo trabajo;
+    private ModeloSQL trabajo;
 
     private EditMaterial nombre;
 
@@ -75,12 +69,12 @@ public class FragmentCUDDetpartidaBaseTrabajo extends FragmentCUD implements Int
         visible(cantidad);
         gone(btnsave);
 
-        modelo = CRUDutil.updateModelo(campos, id, secuencia);
-        trabajo = CRUDutil.updateModelo(CAMPOS_TRABAJO, modelo.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
+        modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
+        trabajo = CRUDutil.updateModelo(CAMPOS_TRABAJO, modeloSQL.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
 
         tipo = TRABAJO;
         tipoDetPartida.setText(tipo.toUpperCase());
-        //cantidad.setText(JavaUtil.getDecimales(modelo.getDouble(DETPARTIDABASE_CANTIDAD)));
+        //cantidad.setText(JavaUtil.getDecimales(modeloSQL.getDouble(DETPARTIDABASE_CANTIDAD)));
         nombre.setText(trabajo.getString(TRABAJO_NOMBRE));
         descripcion.setText(trabajo.getString(TRABAJO_DESCRIPCION));
         precio.setText(JavaUtil.formatoMonedaLocal(trabajo.getDouble(TRABAJO_TIEMPO) * Interactor.hora));

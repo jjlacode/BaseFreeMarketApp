@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -20,12 +19,11 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.animation.OneFrameLayout;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public abstract class FragmentRV extends FragmentBase {
 
@@ -48,7 +46,7 @@ public abstract class FragmentRV extends FragmentBase {
     protected ArrayList lista;
     protected int tituloPlural;
     protected String[] campos;
-    protected Modelo modelo;
+    protected ModeloSQL modeloSQL;
     protected OneFrameLayout fragment_container;
     protected RecyclerView.LayoutManager layoutManager;
 
@@ -287,7 +285,7 @@ public abstract class FragmentRV extends FragmentBase {
     }
 
     protected abstract ListaAdaptadorFiltroModelo setAdaptadorAuto
-            (Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos);
+            (Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos);
 
     protected void setLista() {
     }
@@ -318,7 +316,7 @@ public abstract class FragmentRV extends FragmentBase {
             public void onItemClick(AdapterView<?> parent, View view, int position, long ids) {
 
                 auto.setText("");
-                modelo = adaptadorFiltroRV.getItem(position);
+                modeloSQL = adaptadorFiltroRV.getItem(position);
 
                 selector();
 

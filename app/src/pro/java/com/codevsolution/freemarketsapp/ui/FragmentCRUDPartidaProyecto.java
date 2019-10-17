@@ -21,21 +21,19 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.codevsolution.base.android.AndroidUtil;
-import com.codevsolution.base.android.controls.EditMaterialLayout;
-import com.codevsolution.base.android.controls.ImagenLayout;
-import com.codevsolution.base.android.controls.ViewGroupLayout;
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
+import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
-import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
+import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
-import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
@@ -48,8 +46,6 @@ import java.util.TimerTask;
 import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryListDetalle;
-import static com.codevsolution.base.sqlite.ConsultaBD.queryObjectDetalle;
-import static com.codevsolution.base.sqlite.ConsultaBD.updateRegistroDetalle;
 
 public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interactor.ConstantesPry,
         ContratoPry.Tablas, Interactor.TiposDetPartida, Interactor.TiposEstados {
@@ -71,12 +67,12 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     private ImageView imagenret;
     private RecyclerView rvdetalles;
     private ProgressBar progressBarPartida;
-    private ArrayList<Modelo> listaDetpartidas;
+    private ArrayList<ModeloSQL> listaDetpartidas;
 
-    private Modelo proyecto;
+    private ModeloSQL proyecto;
     private String idDetPartida;
     private String idPartida;
-    private Modelo partida;
+    private ModeloSQL partida;
     private Uri uri;
     private Button btnVolverProy;
     private double completada;
@@ -100,7 +96,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
@@ -139,8 +135,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
                 AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDA_ID_PARTIDA, id);
                 AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDA_SECUENCIA, secuencia);
 
-                System.out.println("modelo.getString(PARTIDA_ID_PARTIDABASE) = " + modelo.getString(PARTIDA_ID_PARTIDABASE));
-                putBundle(CAMPO_ID, modelo.getString(PARTIDA_ID_PARTIDABASE));
+                System.out.println("modeloSQL.getString(PARTIDA_ID_PARTIDABASE) = " + modeloSQL.getString(PARTIDA_ID_PARTIDABASE));
+                putBundle(CAMPO_ID, modeloSQL.getString(PARTIDA_ID_PARTIDABASE));
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDPartidaBase());
             }
         });
@@ -307,7 +303,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDA_SECUENCIA, 0);
 
         idpartidabase = getStringBundle(IDREL,null);
-        proyecto = (Modelo) bundle.getSerializable(PROYECTO);
+        proyecto = (ModeloSQL) bundle.getSerializable(PROYECTO);
         System.out.println("proyecto = " + proyecto);
         if (proyecto == null && nn(id)) {
             proyecto = CRUDutil.updateModelo(CAMPOS_PROYECTO, id);
@@ -331,14 +327,14 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         progressBarPartida.setVisibility(View.VISIBLE);
 
         gone(buscar);
-        tiempo = (modelo.getDouble(PARTIDA_TIEMPO)*HORASLONG)/1000;
-        completada = modelo.getDouble(PARTIDA_COMPLETADA);
+        tiempo = (modeloSQL.getDouble(PARTIDA_TIEMPO) * HORASLONG) / 1000;
+        completada = modeloSQL.getDouble(PARTIDA_COMPLETADA);
         completadaPartida.setText(JavaUtil.getDecimales(completada));
-        tiemporeal = (modelo.getDouble(PARTIDA_TIEMPOREAL)*HORASLONG)/1000;
+        tiemporeal = (modeloSQL.getDouble(PARTIDA_TIEMPOREAL) * HORASLONG) / 1000;
         secuenciatemp = secuencia;
-        horaInicioCalculada = modelo.getLong(PARTIDA_HORAINICIOCALCULADA);
-        fechaInicioCalculada = modelo.getLong(PARTIDA_HORAINICIOCALCULADA);
-        fechaCalculada = modelo.getLong(PARTIDA_FECHAENTREGACALCULADA);
+        horaInicioCalculada = modeloSQL.getLong(PARTIDA_HORAINICIOCALCULADA);
+        fechaInicioCalculada = modeloSQL.getLong(PARTIDA_HORAINICIOCALCULADA);
+        fechaCalculada = modeloSQL.getLong(PARTIDA_FECHAENTREGACALCULADA);
 
         if (horaInicioCalculada == 0) {
             etHoraInicioCalculada.setText(getString(R.string.sin_asignar));
@@ -359,16 +355,16 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
         }
 
-        etOrden.setText(String.valueOf(modelo.getInt(DETPARTIDA_ORDEN)));
+        etOrden.setText(String.valueOf(modeloSQL.getInt(DETPARTIDA_ORDEN)));
         int orden = 0;
-        if (modelo.getInt(PARTIDA_ORDEN)==0){
+        if (modeloSQL.getInt(PARTIDA_ORDEN) == 0) {
 
             if (lista == null) {
                 lista = CRUDutil.setListaModelo(campos);
             }
 
             if (lista.sizeLista() > 0) {
-                for (Modelo partida : lista.getLista()) {
+                for (ModeloSQL partida : lista.getLista()) {
                     if (partida.getInt(PARTIDA_ORDEN) > orden) {
                         orden = partida.getInt(PARTIDA_ORDEN);
                     }
@@ -376,13 +372,13 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
             }
             valores = new ContentValues();
             putDato(valores,campos,PARTIDA_ORDEN,orden+1);
-            CRUDutil.actualizarRegistro(modelo,valores);
-            modelo = CRUDutil.updateModelo(modelo);
-            etOrden.setText(String.valueOf(modelo.getInt(DETPARTIDA_ORDEN)));
+            CRUDutil.actualizarRegistro(modeloSQL, valores);
+            modeloSQL = CRUDutil.updateModelo(modeloSQL);
+            etOrden.setText(String.valueOf(modeloSQL.getInt(DETPARTIDA_ORDEN)));
 
         }
 
-        if (getTipoEstado(modelo.getString(PARTIDA_ID_ESTADO))<=TPRESUPACEPTADO) {
+        if (getTipoEstado(modeloSQL.getString(PARTIDA_ID_ESTADO)) <= TPRESUPACEPTADO) {
 
             progressBarPartida.setVisibility(View.GONE);
             completadaPartida.getLinearLayout().setVisibility(View.GONE);
@@ -391,23 +387,23 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
             progressBarPartida.setVisibility(View.VISIBLE);
             completadaPartida.getLinearLayout().setVisibility(View.VISIBLE);
 
-            if (modelo.getInt(PARTIDA_COMPLETA) == 1) {
-                tiempoPartida.setText(JavaUtil.getDecimales(modelo.getDouble(PARTIDA_TIEMPOREAL)));
+            if (modeloSQL.getInt(PARTIDA_COMPLETA) == 1) {
+                tiempoPartida.setText(JavaUtil.getDecimales(modeloSQL.getDouble(PARTIDA_TIEMPOREAL)));
             }
 
         }
 
 
-        nombrePartida.setText(modelo.getString(PARTIDA_NOMBRE));
-        descripcionPartida.setText(modelo.getString(PARTIDA_DESCRIPCION));
-        tiempoPartida.setText(JavaUtil.getDecimales((modelo.getDouble(PARTIDA_TIEMPO) *
-                modelo.getDouble(PARTIDA_CANTIDAD))));
-        importePartida.setText(JavaUtil.formatoMonedaLocal((modelo.getDouble(PARTIDA_PRECIO) *
-                modelo.getDouble(PARTIDA_CANTIDAD))));
-        cantidadPartida.setText(modelo.getString(PARTIDA_CANTIDAD));
-        idDetPartida = modelo.getString(PARTIDA_ID_PARTIDA);
+        nombrePartida.setText(modeloSQL.getString(PARTIDA_NOMBRE));
+        descripcionPartida.setText(modeloSQL.getString(PARTIDA_DESCRIPCION));
+        tiempoPartida.setText(JavaUtil.getDecimales((modeloSQL.getDouble(PARTIDA_TIEMPO) *
+                modeloSQL.getDouble(PARTIDA_CANTIDAD))));
+        importePartida.setText(JavaUtil.formatoMonedaLocal((modeloSQL.getDouble(PARTIDA_PRECIO) *
+                modeloSQL.getDouble(PARTIDA_CANTIDAD))));
+        cantidadPartida.setText(modeloSQL.getString(PARTIDA_CANTIDAD));
+        idDetPartida = modeloSQL.getString(PARTIDA_ID_PARTIDA);
 
-        retraso = modelo.getLong(PARTIDA_PROYECTO_RETRASO);
+        retraso = modeloSQL.getLong(PARTIDA_PROYECTO_RETRASO);
         if (retraso < 1) {
             imagenret.setImageResource(R.drawable.alert_box_r);
         } else if (retraso < 3) {
@@ -442,11 +438,11 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
                             getInt(DETPARTIDA_SECUENCIA));
                     String tipo = (listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v)).
                             getString(DETPARTIDA_TIPO));
-                    Modelo detpartida = listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v));
+                    ModeloSQL detpartida = listaDetpartidas.get(rvdetalles.getChildAdapterPosition(v));
 
                     bundle = new Bundle();
                     bundle.putSerializable(TABLA_PROYECTO, proyecto);
-                    bundle.putSerializable(TABLA_PARTIDA, modelo);
+                    bundle.putSerializable(TABLA_PARTIDA, modeloSQL);
                     bundle.putSerializable(MODELO, detpartida);
                     bundle.putString(CAMPO_ID, idDetPartida);
                     bundle.putInt(CAMPO_SECUENCIA, secuenciadetpartida);
@@ -477,8 +473,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     }
 
     @Override
-    protected void setOnClickRV(Modelo modelo) {
-        super.setOnClickRV(modelo);
+    protected void setOnClickRV(ModeloSQL modeloSQL) {
+        super.setOnClickRV(modeloSQL);
 
         if (nn(id) && secuencia > 0) {
             new TareaSincroPartidaProy().execute(id, String.valueOf(secuencia));
@@ -486,38 +482,38 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     }
 
     @SuppressLint("StaticFieldLeak")
-    public class TareaSincroPartidaProy extends AsyncTask<String, Float, Modelo> {
+    public class TareaSincroPartidaProy extends AsyncTask<String, Float, ModeloSQL> {
 
         @Override
-        protected Modelo doInBackground(String... strings) {
+        protected ModeloSQL doInBackground(String... strings) {
 
             Interactor.Calculos.sincroPartidaBaseToPartidaProy(strings[0], strings[1]);
             return CRUDutil.updateModelo(CAMPOS_PARTIDA, strings[0], strings[1]);
         }
 
         @Override
-        protected void onPostExecute(Modelo modelo) {
-            super.onPostExecute(modelo);
-            new TareaActualizaProdProvPartidaProy().execute(modelo);
+        protected void onPostExecute(ModeloSQL modeloSQL) {
+            super.onPostExecute(modeloSQL);
+            new TareaActualizaProdProvPartidaProy().execute(modeloSQL);
 
         }
 
     }
 
     @SuppressLint("StaticFieldLeak")
-    public class TareaActualizaProdProvPartidaProy extends AsyncTask<Modelo, Float, Modelo> {
+    public class TareaActualizaProdProvPartidaProy extends AsyncTask<ModeloSQL, Float, ModeloSQL> {
 
         @Override
-        protected Modelo doInBackground(Modelo... modelos) {
+        protected ModeloSQL doInBackground(ModeloSQL... modeloSQLS) {
 
-            Interactor.Calculos.actualizarProdProvPartidaProy(modelos[0].getString(PARTIDA_ID_PARTIDA));
-            return modelos[0];
+            Interactor.Calculos.actualizarProdProvPartidaProy(modeloSQLS[0].getString(PARTIDA_ID_PARTIDA));
+            return modeloSQLS[0];
         }
 
         @Override
-        protected void onPostExecute(Modelo modelo) {
-            super.onPostExecute(modelo);
-            new TareaActualizaPartidaProy().execute(modelo.getString(PARTIDA_ID_PARTIDA));
+        protected void onPostExecute(ModeloSQL modeloSQL) {
+            super.onPostExecute(modeloSQL);
+            new TareaActualizaPartidaProy().execute(modeloSQL.getString(PARTIDA_ID_PARTIDA));
 
         }
     }
@@ -584,9 +580,9 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
         if (idEstado!=null) {
 
-            ArrayList<Modelo> listaEstados = queryList(CAMPOS_ESTADO, null, null);
+            ArrayList<ModeloSQL> listaEstados = queryList(CAMPOS_ESTADO, null, null);
 
-            for (Modelo estado : listaEstados) {
+            for (ModeloSQL estado : listaEstados) {
 
                 if (estado.getString(ESTADO_ID_ESTADO).equals(idEstado)) {
 
@@ -607,8 +603,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         if (Double.parseDouble(cantidadPartida.getTexto())==0){
             valores = new ContentValues();
             setDato(PARTIDA_CANTIDAD,1);
-            CRUDutil.actualizarRegistro(modelo,valores);
-            modelo = CRUDutil.updateModelo(modelo);
+            CRUDutil.actualizarRegistro(modeloSQL, valores);
+            modeloSQL = CRUDutil.updateModelo(modeloSQL);
         }
         super.update();
 
@@ -625,12 +621,12 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     public class AdaptadorDetpartida extends RecyclerView.Adapter<AdaptadorDetpartida.DetpartidaViewHolder>
             implements View.OnClickListener, ContratoPry.Tablas, Interactor.TiposDetPartida {
 
-        private ArrayList<Modelo> listDetpartida;
+        private ArrayList<ModeloSQL> listDetpartida;
         private View.OnClickListener listener;
         private String namef;
         private Context context = AppActivity.getAppContext();
 
-        public AdaptadorDetpartida(ArrayList<Modelo> listDetpartida, String namef) {
+        public AdaptadorDetpartida(ArrayList<ModeloSQL> listDetpartida, String namef) {
 
             this.listDetpartida = listDetpartida;
             this.namef = namef;
@@ -740,12 +736,12 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View itemView, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View itemView, ArrayList<ModeloSQL> entrada) {
 
             ImageView imagenPartida, imagenret;
             TextView descripcionPartida, tiempoPartida, cantidadPartida, completadaPartida, importePartida;
@@ -818,22 +814,22 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
-            descripcionPartida.setText(modelo.getString(PARTIDA_DESCRIPCION));
-            tiempoPartida.setText(JavaUtil.getDecimales(modelo.getDouble(PARTIDA_TIEMPO)));
-            cantidadPartida.setText(JavaUtil.getDecimales(modelo.getDouble(PARTIDA_CANTIDAD)));
-            importePartida.setText(JavaUtil.formatoMonedaLocal(modelo.getDouble(PARTIDA_PRECIO)));
-            completadaPartida.setText(JavaUtil.getDecimales(modelo.getDouble(PARTIDA_COMPLETADA)));
-            progressBarPartida.setProgress(modelo.getInt(PARTIDA_COMPLETADA));
+            descripcionPartida.setText(modeloSQL.getString(PARTIDA_DESCRIPCION));
+            tiempoPartida.setText(JavaUtil.getDecimales(modeloSQL.getDouble(PARTIDA_TIEMPO)));
+            cantidadPartida.setText(JavaUtil.getDecimales(modeloSQL.getDouble(PARTIDA_CANTIDAD)));
+            importePartida.setText(JavaUtil.formatoMonedaLocal(modeloSQL.getDouble(PARTIDA_PRECIO)));
+            completadaPartida.setText(JavaUtil.getDecimales(modeloSQL.getDouble(PARTIDA_COMPLETADA)));
+            progressBarPartida.setProgress(modeloSQL.getInt(PARTIDA_COMPLETADA));
 
-            if (modelo.getString(PARTIDA_RUTAFOTO) != null) {
+            if (modeloSQL.getString(PARTIDA_RUTAFOTO) != null) {
 
                 mediaUtil = new MediaUtil(contexto);
-                mediaUtil.setImageUriCircle(modelo.getString(PARTIDA_RUTAFOTO),imagenPartida);
+                mediaUtil.setImageUriCircle(modeloSQL.getString(PARTIDA_RUTAFOTO), imagenPartida);
             }
 
-            long retraso = modelo.getLong(PARTIDA_PROYECTO_RETRASO);
+            long retraso = modeloSQL.getLong(PARTIDA_PROYECTO_RETRASO);
             if (retraso > 3 * DIASLONG) {
                 imagenret.setImageResource(R.drawable.alert_box_r);
             } else if (retraso > DIASLONG) {
@@ -854,7 +850,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_defecto));
             }
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override

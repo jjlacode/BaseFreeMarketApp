@@ -10,16 +10,16 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 
-import com.codevsolution.base.android.controls.ImagenLayout;
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.FragmentCRUD;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.javautil.JavaUtil;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.DatePickerFragment;
 import com.codevsolution.freemarketsapp.R;
@@ -56,7 +56,7 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
@@ -83,20 +83,20 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
     @Override
     protected void setDatos() {
 
-        nombre.setText(modelo.getString(AMORTIZACION_NOMBRE));
-        descripcion.setText(modelo.getString(AMORTIZACION_DESCRIPCION));
-        cantidad.setText(modelo.getString(AMORTIZACION_CANTIDAD));
-        importe.setText(modelo.getString(AMORTIZACION_PRECIO));
-        fecha.setText(JavaUtil.getDate(modelo.getLong(AMORTIZACION_FECHACOMPRA)));
-        fechaCompra = modelo.getLong(AMORTIZACION_FECHACOMPRA);
-        anios.setText(modelo.getString(AMORTIZACION_ANYOS));
-        meses.setText(modelo.getString(AMORTIZACION_MESES));
-        dias.setText(modelo.getString(AMORTIZACION_DIAS));
+        nombre.setText(modeloSQL.getString(AMORTIZACION_NOMBRE));
+        descripcion.setText(modeloSQL.getString(AMORTIZACION_DESCRIPCION));
+        cantidad.setText(modeloSQL.getString(AMORTIZACION_CANTIDAD));
+        importe.setText(modeloSQL.getString(AMORTIZACION_PRECIO));
+        fecha.setText(JavaUtil.getDate(modeloSQL.getLong(AMORTIZACION_FECHACOMPRA)));
+        fechaCompra = modeloSQL.getLong(AMORTIZACION_FECHACOMPRA);
+        anios.setText(modeloSQL.getString(AMORTIZACION_ANYOS));
+        meses.setText(modeloSQL.getString(AMORTIZACION_MESES));
+        dias.setText(modeloSQL.getString(AMORTIZACION_DIAS));
 
-        long compra = modelo.getLong(AMORTIZACION_FECHACOMPRA);
-        long amort = (modelo.getLong(AMORTIZACION_DIAS)*DIASLONG)+
-                (modelo.getLong(AMORTIZACION_MESES)*MESESLONG)+
-                (modelo.getLong(AMORTIZACION_ANYOS)*ANIOSLONG);
+        long compra = modeloSQL.getLong(AMORTIZACION_FECHACOMPRA);
+        long amort = (modeloSQL.getLong(AMORTIZACION_DIAS) * DIASLONG) +
+                (modeloSQL.getLong(AMORTIZACION_MESES) * MESESLONG) +
+                (modeloSQL.getLong(AMORTIZACION_ANYOS) * ANIOSLONG);
         long fechafin = compra + amort;
         long amortizado = JavaUtil.hoy()-compra;
         int res = (int) ((100/(double)(fechafin-compra))*amortizado);
@@ -242,12 +242,12 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View itemView, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View itemView, ArrayList<ModeloSQL> entrada) {
 
             TextView nombre, descripcion, cantidad, importe, fecha, anios, meses, dias;
             ImageView imagen;
@@ -334,29 +334,29 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
-            nombre.setText(modelo.getString(AMORTIZACION_NOMBRE));
-            descripcion.setText(modelo.getString(AMORTIZACION_DESCRIPCION));
-            cantidad.setText(modelo.getString(AMORTIZACION_CANTIDAD));
-            importe.setText(modelo.getString(AMORTIZACION_PRECIO));
-            fecha.setText(JavaUtil.getDate(modelo.getLong(AMORTIZACION_FECHACOMPRA)));
-            anios.setText(modelo.getString(AMORTIZACION_ANYOS));
-            meses.setText(modelo.getString(AMORTIZACION_MESES));
-            dias.setText(modelo.getString(AMORTIZACION_DIAS));
-            if (modelo.getString(AMORTIZACION_RUTAFOTO)!=null){
+            nombre.setText(modeloSQL.getString(AMORTIZACION_NOMBRE));
+            descripcion.setText(modeloSQL.getString(AMORTIZACION_DESCRIPCION));
+            cantidad.setText(modeloSQL.getString(AMORTIZACION_CANTIDAD));
+            importe.setText(modeloSQL.getString(AMORTIZACION_PRECIO));
+            fecha.setText(JavaUtil.getDate(modeloSQL.getLong(AMORTIZACION_FECHACOMPRA)));
+            anios.setText(modeloSQL.getString(AMORTIZACION_ANYOS));
+            meses.setText(modeloSQL.getString(AMORTIZACION_MESES));
+            dias.setText(modeloSQL.getString(AMORTIZACION_DIAS));
+            if (modeloSQL.getString(AMORTIZACION_RUTAFOTO) != null) {
 
-                setImagenUriCircle(contexto,modelo.getString(AMORTIZACION_RUTAFOTO),imagen);
+                setImagenUriCircle(contexto, modeloSQL.getString(AMORTIZACION_RUTAFOTO), imagen);
             }
-            if (modelo.getLong(AMORTIZACION_FECHACOMPRA)>= JavaUtil.hoy()){
+            if (modeloSQL.getLong(AMORTIZACION_FECHACOMPRA) >= JavaUtil.hoy()) {
 
                 card.setCardBackgroundColor(
                         AppActivity.getAppContext().getResources().getColor(R.color.Color_card_notok));
             }
-            long compra = modelo.getLong(AMORTIZACION_FECHACOMPRA);
-            long amort = (modelo.getLong(AMORTIZACION_DIAS)*DIASLONG)+
-                    (modelo.getLong(AMORTIZACION_MESES)*MESESLONG)+
-                    (modelo.getLong(AMORTIZACION_ANYOS)*ANIOSLONG);
+            long compra = modeloSQL.getLong(AMORTIZACION_FECHACOMPRA);
+            long amort = (modeloSQL.getLong(AMORTIZACION_DIAS) * DIASLONG) +
+                    (modeloSQL.getLong(AMORTIZACION_MESES) * MESESLONG) +
+                    (modeloSQL.getLong(AMORTIZACION_ANYOS) * ANIOSLONG);
             long fechafin = compra + amort;
             long amortizado = JavaUtil.hoy()-compra;
             int res = (int) ((100/(double)(fechafin-compra))*amortizado);
@@ -365,7 +365,7 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
                     res,null,null,0,0,0,
                     card,R.color.Color_card_notok,R.color.Color_card_acept,R.color.Color_card_ok);
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override

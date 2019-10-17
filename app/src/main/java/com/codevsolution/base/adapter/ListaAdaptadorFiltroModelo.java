@@ -9,20 +9,20 @@ import android.widget.Filter;
 
 import androidx.annotation.NonNull;
 
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListaAdaptadorFiltroModelo extends ArrayAdapter<Modelo> {
+public class ListaAdaptadorFiltroModelo extends ArrayAdapter<ModeloSQL> {
 
-    protected ArrayList<Modelo> entradas;
-    protected ArrayList<Modelo> entradasfiltro;
+    protected ArrayList<ModeloSQL> entradas;
+    protected ArrayList<ModeloSQL> entradasfiltro;
     private int R_layout_IdView;
     private Context contexto;
     private String[] campos;
 
-    public ListaAdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas,
+    public ListaAdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas,
                                       String[] campos) {
         super(contexto, R_layout_IdView, entradas);
         this.contexto = contexto;
@@ -42,7 +42,7 @@ public class ListaAdaptadorFiltroModelo extends ArrayAdapter<Modelo> {
         return view;
     }
 
-    protected void setEntradas(int posicion, View view, ArrayList<Modelo> entrada) {
+    protected void setEntradas(int posicion, View view, ArrayList<ModeloSQL> entrada) {
 
     }
 
@@ -51,17 +51,17 @@ public class ListaAdaptadorFiltroModelo extends ArrayAdapter<Modelo> {
         return entradasfiltro.size();
     }
 
-    public ArrayList<Modelo> getLista() {
+    public ArrayList<ModeloSQL> getLista() {
 
         return entradasfiltro;
     }
 
-    public void addAll(ArrayList<Modelo> lista) {
+    public void addAll(ArrayList<ModeloSQL> lista) {
         entradas.addAll(lista);
         notifyDataSetChanged();
     }
 
-    public void clearAddAll(ArrayList<Modelo> lista) {
+    public void clearAddAll(ArrayList<ModeloSQL> lista) {
         entradas.clear();
         entradas.addAll(lista);
         notifyDataSetChanged();
@@ -75,10 +75,10 @@ public class ListaAdaptadorFiltroModelo extends ArrayAdapter<Modelo> {
             protected FilterResults performFiltering(CharSequence constraint) {
 
                 FilterResults results = new FilterResults();
-                List<Modelo> suggestion = new ArrayList<>();
+                List<ModeloSQL> suggestion = new ArrayList<>();
                 if (constraint != null) {
 
-                    for (Modelo item : entradas) {
+                    for (ModeloSQL item : entradas) {
 
                         for (int i = 2; i < campos.length; i += 3) {
 
@@ -108,7 +108,7 @@ public class ListaAdaptadorFiltroModelo extends ArrayAdapter<Modelo> {
                 entradasfiltro.clear();
 
                 if (results != null && results.count > 0) {
-                    for (Modelo item : (List<Modelo>) results.values) {
+                    for (ModeloSQL item : (List<ModeloSQL>) results.values) {
                         entradasfiltro.add(item);
                     }
                     notifyDataSetChanged();
@@ -126,7 +126,7 @@ public class ListaAdaptadorFiltroModelo extends ArrayAdapter<Modelo> {
 
 
     @Override
-    public Modelo getItem(int posicion) {
+    public ModeloSQL getItem(int posicion) {
         return entradasfiltro.get(posicion);
     }
 

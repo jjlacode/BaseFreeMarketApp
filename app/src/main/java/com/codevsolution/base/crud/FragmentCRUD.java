@@ -19,15 +19,15 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -41,7 +41,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
     protected AutoCompleteTextView auto;
     protected ListaModelo lista;
     protected boolean maestroDetalleSeparados;
-    protected ArrayList<Modelo> listafiltrada;
+    protected ArrayList<ModeloSQL> listafiltrada;
     protected ImageView buscar;
     protected ImageView renovar;
     protected ImageView inicio;
@@ -116,7 +116,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
             if (tablaCab == null) {
                 id = null;
             }
-            modelo = null;
+            modeloSQL = null;
             secuencia = 0;
             if (tituloNuevo > 0) {
                 subTitulo = getString(tituloNuevo);
@@ -129,20 +129,20 @@ public abstract class FragmentCRUD extends FragmentCUD {
             if (bundle != null) {
                 bundle.putBoolean(NUEVOREGISTRO, false);
             }
-        } else if (modelo != null) {
+        } else if (modeloSQL != null) {
 
-            id = modelo.getString(campoID);
+            id = modeloSQL.getString(campoID);
             if (tablaCab != null) {
-                secuencia = modelo.getInt(CAMPO_SECUENCIA);
+                secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
             }
             datos();
 
         } else if (id != null && (secuencia > 0 || tablaCab == null)) {
 
             if (tablaCab != null) {
-                modelo = CRUDutil.updateModelo(campos, id, secuencia);
+                modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
             } else {
-                modelo = CRUDutil.updateModelo(campos, id);
+                modeloSQL = CRUDutil.updateModelo(campos, id);
             }
 
             datos();
@@ -401,7 +401,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
     }
 
     protected abstract ListaAdaptadorFiltroModelo setAdaptadorAuto
-            (Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos);
+            (Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos);
 
     protected void setLista() {
         Log.d(TAG, getMetodo());
@@ -502,7 +502,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
             visible(frPie);
             activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_MINI);
             activityBase.fabVoz.setSize(FloatingActionButton.SIZE_MINI);
-        } else if ((id != null && secuencia > 0) || (id != null && tablaCab == null) || (modelo != null)) {
+        } else if ((id != null && secuencia > 0) || (id != null && tablaCab == null) || (modeloSQL != null)) {
             if (layoutCabecera > 0 || cabecera) {
                 gone(frCabecera);
             }
@@ -598,11 +598,11 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
         if (listab == null) {
             if (tablaCab != null) {
-                modelo = null;
+                modeloSQL = null;
                 secuencia = 0;
                 lista = CRUDutil.setListaModeloDetalle(campos, id, tablaCab);
             } else {
-                modelo = null;
+                modeloSQL = null;
                 id = null;
                 lista = CRUDutil.setListaModelo(campos);
             }
@@ -617,20 +617,20 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
         Log.d(TAG, getMetodo());
 
-        modelo = lista.getItem(rv.getChildAdapterPosition(v));
+        modeloSQL = lista.getItem(rv.getChildAdapterPosition(v));
 
         posicion = rv.getChildAdapterPosition(v);
-        setOnClickRV(modelo);
+        setOnClickRV(modeloSQL);
 
 
     }
 
-    protected void setOnClickRV(Modelo modelo) {
+    protected void setOnClickRV(ModeloSQL modeloSQL) {
 
-        id = modelo.getString(campoID);
+        id = modeloSQL.getString(campoID);
 
         if (tablaCab != null) {
-            secuencia = modelo.getInt(CAMPO_SECUENCIA);
+            secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
         }
 
         if (id != null) {
@@ -661,13 +661,13 @@ public abstract class FragmentCRUD extends FragmentCUD {
         }
     }
 
-    protected void onSetAdapter(ArrayList<Modelo> lista) {
+    protected void onSetAdapter(ArrayList<ModeloSQL> lista) {
 
         Log.d(TAG, getMetodo());
 
         if (!maestroDetalleSeparados && lista != null && lista.size() > 0 && id == null && !nuevo) {
 
-            modelo = lista.get(0);
+            modeloSQL = lista.get(0);
 
             if (tablaCab != null) {
                 secuencia = lista.get(0).getInt(CAMPO_SECUENCIA);
@@ -688,11 +688,11 @@ public abstract class FragmentCRUD extends FragmentCUD {
             public void onItemClick(AdapterView<?> parent, View view, int position, long ids) {
 
                 auto.setText("");
-                modelo = adaptadorFiltroRV.getItem(position);
-                if (modelo != null) {
-                    id = modelo.getString(campoID);
+                modeloSQL = adaptadorFiltroRV.getItem(position);
+                if (modeloSQL != null) {
+                    id = modeloSQL.getString(campoID);
                     if (tablaCab != null) {
-                        secuencia = modelo.getInt(CAMPO_SECUENCIA);
+                        secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
                     }
                 }
 
@@ -711,7 +711,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
         } else {
             if (delete()) {
 
-                modelo = null;
+                modeloSQL = null;
                 if (tablaCab == null) {
                     id = null;
                 }
@@ -732,9 +732,9 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
         back = true;
 
-        System.out.println("modelo.getLong(campoTimeStamp) = " + modelo.getLong(CAMPO_TIMESTAMP));
-        System.out.println("modelo.getLong(campoCreate) = " + modelo.getLong(CAMPO_CREATEREG));
-        if (modelo.getLong(CAMPO_CREATEREG)==modelo.getLong(CAMPO_TIMESTAMP)){
+        System.out.println("modeloSQL.getLong(campoTimeStamp) = " + modeloSQL.getLong(CAMPO_TIMESTAMP));
+        System.out.println("modeloSQL.getLong(campoCreate) = " + modeloSQL.getLong(CAMPO_CREATEREG));
+        if (modeloSQL.getLong(CAMPO_CREATEREG) == modeloSQL.getLong(CAMPO_TIMESTAMP)) {
             delete();
         }
         cambiarFragment();
@@ -754,7 +754,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
         Log.d(TAG, getMetodo());
 
-        modelo = null;
+        modeloSQL = null;
         if (tablaCab == null) {
             id = null;
         }
@@ -811,7 +811,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
                     ListaModelo suggestion = new ListaModelo();
                     if (grabarVoz != null) {
 
-                        for (Modelo item : lista.getLista()) {
+                        for (ModeloSQL item : lista.getLista()) {
 
                             for (int i = 2; i < campos.length; i += 3) {
 

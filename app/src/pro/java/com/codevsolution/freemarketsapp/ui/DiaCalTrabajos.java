@@ -10,14 +10,13 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
-import com.codevsolution.base.time.calendar.clases.DiaCalBase;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
@@ -53,7 +52,7 @@ public class DiaCalTrabajos extends HorarioPerfil implements ContratoPry.Tablas,
     @Override
     protected void onClickHora(DiaCal diaCal) {
 
-        horaCal = modelo.getLong(HORACAL);
+        horaCal = modeloSQL.getLong(HORACAL);
 
         bundle = new Bundle();
         bundle.putBoolean(NUEVOREGISTRO,true);
@@ -73,18 +72,18 @@ public class DiaCalTrabajos extends HorarioPerfil implements ContratoPry.Tablas,
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new ListaAdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View view, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View view, ArrayList<ModeloSQL> entrada) {
 
             super.setEntradas(posicion, view, entrada);
         }
@@ -111,16 +110,16 @@ public class DiaCalTrabajos extends HorarioPerfil implements ContratoPry.Tablas,
         }
 
         @Override
-        public void bind(final Modelo modelo) {
+        public void bind(final ModeloSQL modeloSQL) {
 
 
-            double completada = modelo.getDouble(PROYECTO_TOTCOMPLETADO);
-            descripcion.setText(modelo.getString(PROYECTO_DESCRIPCION));
+            double completada = modeloSQL.getDouble(PROYECTO_TOTCOMPLETADO);
+            descripcion.setText(modeloSQL.getString(PROYECTO_DESCRIPCION));
             pbar.setProgress((int)completada);
-            cliente.setText(modelo.getString(PROYECTO_CLIENTE_NOMBRE));
+            cliente.setText(modeloSQL.getString(PROYECTO_CLIENTE_NOMBRE));
             MediaUtil imagenUtil = new MediaUtil(getContext());
             try{
-                imagenUtil.setImageUri(modelo.getString(PROYECTO_RUTAFOTO),imagen);
+                imagenUtil.setImageUri(modeloSQL.getString(PROYECTO_RUTAFOTO), imagen);
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -131,7 +130,7 @@ public class DiaCalTrabajos extends HorarioPerfil implements ContratoPry.Tablas,
             }
 
 
-            long retraso = modelo.getLong(PROYECTO_RETRASO);
+            long retraso = modeloSQL.getLong(PROYECTO_RETRASO);
 
             if (retraso > 3 * Interactor.DIASLONG) {
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
@@ -147,16 +146,16 @@ public class DiaCalTrabajos extends HorarioPerfil implements ContratoPry.Tablas,
                 public void onClick(View v) {
 
                     bundle = new Bundle();
-                    bundle.putSerializable(MODELO, modelo);
-                    bundle.putString(CAMPO_ID,modelo.getString(PROYECTO_ID_PROYECTO));
+                    bundle.putSerializable(MODELO, modeloSQL);
+                    bundle.putString(CAMPO_ID, modeloSQL.getString(PROYECTO_ID_PROYECTO));
                     bundle.putString(ORIGEN, TRABAJOS);
-                    bundle.putString(SUBTITULO, modelo.getString(PROYECTO_NOMBRE));
+                    bundle.putString(SUBTITULO, modeloSQL.getString(PROYECTO_NOMBRE));
                     bundle.putString(ACTUAL, PROYECTO);
                     icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
 
                 }
             });
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override

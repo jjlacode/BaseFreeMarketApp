@@ -18,7 +18,7 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
@@ -32,7 +32,7 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
     protected RecyclerView rv;
     protected ListaModelo lista;
     protected AutoCompleteTextView auto;
-    protected ArrayList<Modelo> listafiltrada;
+    protected ArrayList<ModeloSQL> listafiltrada;
     protected ImageView buscar;
     protected ImageView renovar;
     protected ImageView inicio;
@@ -113,7 +113,7 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
             public void onClick(View v) {
 
 
-                modelo = null;
+                modeloSQL = null;
                 if (tablaCab == null) {
                     id = null;
                 }
@@ -278,7 +278,7 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
     }
 
     protected abstract ListaAdaptadorFiltroModelo setAdaptadorAuto
-            (Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos);
+            (Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos);
 
     protected void setLista() {
 
@@ -304,17 +304,17 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
 
     protected void onClickRV(View v) {
 
-        modelo = lista.getItem(rv.getChildAdapterPosition(v));
-        id = modelo.getString(campoID);
+        modeloSQL = lista.getItem(rv.getChildAdapterPosition(v));
+        id = modeloSQL.getString(campoID);
 
         if (tablaCab != null) {
-            secuencia = modelo.getInt(CAMPO_SECUENCIA);
+            secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
         }
 
-        setOnClickRV(id, secuencia, modelo);
+        setOnClickRV(id, secuencia, modeloSQL);
     }
 
-    public abstract void setOnClickRV(String id, int secuencia, Modelo modelo);
+    public abstract void setOnClickRV(String id, int secuencia, ModeloSQL modeloSQL);
 
 
     protected void setOnItemClickAuto() {
@@ -324,11 +324,11 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
             public void onItemClick(AdapterView<?> parent, View view, int position, long ids) {
 
                 auto.setText("");
-                modelo = adaptadorFiltroRV.getItem(position);
-                if (modelo != null) {
-                    id = modelo.getString(campoID);
+                modeloSQL = adaptadorFiltroRV.getItem(position);
+                if (modeloSQL != null) {
+                    id = modeloSQL.getString(campoID);
                     if (tablaCab != null) {
-                        secuencia = modelo.getInt(CAMPO_SECUENCIA);
+                        secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
                     }
                 }
 

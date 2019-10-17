@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 
@@ -18,10 +18,10 @@ import java.util.ArrayList;
 public class AdaptadorProducto extends RecyclerView.Adapter<AdaptadorProducto.ProductoViewHolder>
         implements View.OnClickListener, ContratoPry.Tablas {
 
-    ArrayList<Modelo> listaProductos;
+    ArrayList<ModeloSQL> listaProductos;
     View.OnClickListener listener;
 
-    public AdaptadorProducto(ArrayList<Modelo> listaProductos) {
+    public AdaptadorProducto(ArrayList<ModeloSQL> listaProductos) {
         this.listaProductos = listaProductos;
     }
 

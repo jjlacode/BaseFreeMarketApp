@@ -27,14 +27,30 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.codevsolution.base.adapter.BaseViewHolder;
+import com.codevsolution.base.adapter.RVAdapter;
+import com.codevsolution.base.adapter.TipoViewHolder;
+import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.controls.LockableScrollView;
+import com.codevsolution.base.chat.EnviarNoticias;
 import com.codevsolution.base.crud.CRUDutil;
+import com.codevsolution.base.javautil.JavaUtil;
+import com.codevsolution.base.localizacion.LocalizacionUtils;
+import com.codevsolution.base.localizacion.MapUtil;
 import com.codevsolution.base.media.ImagenUtil;
+import com.codevsolution.base.models.FirebaseFormBase;
+import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.Marcador;
+import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.models.Rating;
+import com.codevsolution.base.time.TimeDateUtil;
+import com.codevsolution.freemarketsapp.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -46,23 +62,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.adapter.BaseViewHolder;
-import com.codevsolution.base.adapter.RVAdapter;
-import com.codevsolution.base.adapter.TipoViewHolder;
-import com.codevsolution.base.android.AndroidUtil;
-import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.LockableScrollView;
-import com.codevsolution.base.chat.EnviarNoticias;
-import com.codevsolution.base.localizacion.LocalizacionUtils;
-import com.codevsolution.base.localizacion.MapUtil;
-import com.codevsolution.base.models.FirebaseFormBase;
-import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Marcador;
-import com.codevsolution.base.models.Modelo;
-import com.codevsolution.base.models.Rating;
-import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.freemarketsapp.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,9 +69,6 @@ import java.util.List;
 import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.CAMPOS_CHAT;
 import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.CHAT_ID_CHAT;
 import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.CHAT_TIPO;
-import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.DETCHAT_FECHA;
-import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.DETCHAT_MENSAJE;
-import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.DETCHAT_TIPO;
 
 public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends FragmentMasterDetailNoSQL {
 
@@ -250,7 +246,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         }
         frWeb.addView(viewWeb);
 
-        browser = (WebView) view.findViewById(R.id.webBrowser);
+        browser = view.findViewById(R.id.webBrowser);
         progressBarWeb = view.findViewById(R.id.progressBarWeb);
         lyweb = view.findViewById(R.id.lywebBrowser);
         tipoForm = setTipoForm();
@@ -1370,7 +1366,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
                     bundle = new Bundle();
 
                     ListaModelo listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
-                    for (Modelo chat : listaChats.getLista()) {
+                    for (ModeloSQL chat : listaChats.getLista()) {
                         if (chat.getString(CHAT_TIPO).equals(tipo)) {
                             putBundle(CAMPO_ID, chat.getString(CHAT_ID_CHAT));
 

@@ -11,25 +11,25 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.codevsolution.base.adapter.BaseViewHolder;
+import com.codevsolution.base.adapter.ListaAdaptadorFiltro;
+import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
+import com.codevsolution.base.javautil.JavaUtil;
+import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.nosql.FragmentMasterDetailNoSQL;
+import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.freemarketsapp.model.ProdProv;
+import com.codevsolution.freemarketsapp.model.Proveedores;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.adapter.BaseViewHolder;
-import com.codevsolution.base.adapter.ListaAdaptadorFiltro;
-import com.codevsolution.base.adapter.TipoViewHolder;
-import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.models.Modelo;
-import com.codevsolution.base.nosql.FragmentMasterDetailNoSQL;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.model.ProdProv;
-import com.codevsolution.freemarketsapp.model.Proveedores;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,8 +60,8 @@ public class CatalogoProdProvWeb extends FragmentMasterDetailNoSQL {
     private String idDetPartida;
     private DatabaseReference dbProductos;
     private Query query;
-    private Modelo partida;
-    private Modelo proyecto;
+    private ModeloSQL partida;
+    private ModeloSQL proyecto;
     private ProdProv prodProv;
     private Proveedores proveedor;
     private DatabaseReference dbProveedores;
@@ -198,8 +198,8 @@ public class CatalogoProdProvWeb extends FragmentMasterDetailNoSQL {
 
         if (bundle != null) {
 
-            partida = (Modelo) getBundleSerial(PARTIDA);
-            proyecto = (Modelo) getBundleSerial(PROYECTO);
+            partida = (ModeloSQL) getBundleSerial(PARTIDA);
+            proyecto = (ModeloSQL) getBundleSerial(PROYECTO);
             origen = getStringBundle(ORIGEN, "");
 
         }
@@ -244,7 +244,7 @@ public class CatalogoProdProvWeb extends FragmentMasterDetailNoSQL {
         email = (EditMaterial) ctrl(R.id.etemailprovcatalogo);
         telefono = (EditMaterial) ctrl(R.id.ettelefonoprovcatalogo);
         imgProv = (ImagenLayout) ctrl(R.id.imgprovcatalogo);
-        browser = (WebView) view.findViewById(R.id.etwebcatalogo);
+        browser = view.findViewById(R.id.etwebcatalogo);
 
 
     }

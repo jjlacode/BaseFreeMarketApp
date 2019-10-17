@@ -45,9 +45,15 @@ public class JavaUtil {
         String APICB = "api_cb";
         String TITULO = "titulo";
         String CAMPO_ID = "id_";
+        String MOD_ID = "id";
+        String MOD_NOMBRE = "nombre";
+        String MOD_APELLIDOS = "apellidos";
+        String MOD_DIRECCION = "direccion";
+        String MOD_TELEFONO = "telefono";
+        String MOD_EMAIL = "email";
         String IDREL = "idrel";
         String CAMPO_SECUENCIA = "secuencia";
-        String MODELO = "modelo";
+        String MODELO = "modeloSQL";
         String NOSQL = "nosql";
         String ERROR = "error";
         String CAMPO_TIMESTAMP = "timestamp";

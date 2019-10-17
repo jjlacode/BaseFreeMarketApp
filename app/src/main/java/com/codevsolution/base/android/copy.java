@@ -118,12 +118,12 @@ public class copy {
         implements View.OnClickListener, Contract.Tablas {
 
 
-    private ArrayList<Modelo> listaProyecto;
+    private ArrayList<ModeloSQL> listaProyecto;
     private String actual;
 
     private View.OnClickListener listener;
 
-    public Adaptador(ArrayList<Modelo> listaProyecto, String actual) {
+    public Adaptador(ArrayList<ModeloSQL> listaProyecto, String actual) {
         this.listaProyecto = listaProyecto;
         this.actual = actual;
     }
@@ -369,10 +369,10 @@ public class QueryDB implements Utilidades.ConstantesPry {
     private static ContentResolver resolver = getAppContext().getContentResolver();
 
 
-    public static ArrayList<Modelo> queryList(String[] campos, String seleccion, String orden) {
+    public static ArrayList<ModeloSQL> queryList(String[] campos, String seleccion, String orden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         Cursor reg = resolver.query(obtenerUriContenido(
                 campos[1]), null, seleccion, null, orden);
@@ -417,8 +417,8 @@ public class QueryDB implements Utilidades.ConstantesPry {
 
 
                 if (insert[0]!=null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.addModelo(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.addModelo(modeloSQL);
                 }
             }
         }
@@ -427,10 +427,10 @@ public class QueryDB implements Utilidades.ConstantesPry {
         return list;
     }
 
-    public static ArrayList<Modelo> queryList(String[] campos) {
+    public static ArrayList<ModeloSQL> queryList(String[] campos) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         Cursor reg = resolver.query(obtenerUriContenido(
                 campos[1]), null, null, null, null);
@@ -476,8 +476,8 @@ public class QueryDB implements Utilidades.ConstantesPry {
 
 
                 if (insert[0]!=null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.addModelo(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.addModelo(modeloSQL);
                 }
             }
         }
@@ -486,10 +486,10 @@ public class QueryDB implements Utilidades.ConstantesPry {
         return list;
     }
 
-    public static Modelo queryObject(String[] campos, String id) {
+    public static ModeloSQL queryObject(String[] campos, String id) {
 
 
-        Modelo modelo = null;
+        ModeloSQL modeloSQL = null;
 
         Cursor reg = resolver.query(crearUriTabla(id,
                 campos[1]), null, null, null, null);
@@ -530,17 +530,17 @@ public class QueryDB implements Utilidades.ConstantesPry {
             }
 
             if (insert[0]!=null) {
-                modelo = new Modelo(campos, insert);
+                modeloSQL = new ModeloSQL(campos, insert);
             }
         }
         reg.close();
 
-        return modelo;
+        return modeloSQL;
     }
 
-    public static Modelo queryObject(String[] campos, Uri uri) {
+    public static ModeloSQL queryObject(String[] campos, Uri uri) {
 
-        Modelo modelo = null;
+        ModeloSQL modeloSQL = null;
 
         String id = obtenerIdTabla(uri);
 
@@ -583,19 +583,19 @@ public class QueryDB implements Utilidades.ConstantesPry {
             }
 
             if (insert[0]!=null) {
-                modelo = new Modelo(campos, insert);
+                modeloSQL = new ModeloSQL(campos, insert);
             }
         }
         reg.close();
 
-        return modelo;
+        return modeloSQL;
     }
 
-    public static ArrayList<Modelo> queryListCampo(String[] campos, String campo, String valor, String orden) {
+    public static ArrayList<ModeloSQL> queryListCampo(String[] campos, String campo, String valor, String orden) {
 
         String seleccion = campo+" = '"+valor+"'";
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         Cursor reg = resolver.query(obtenerUriContenido(
                 campos[1]), null, seleccion, null, orden);
@@ -635,8 +635,8 @@ public class QueryDB implements Utilidades.ConstantesPry {
             }
 
             if (insert[0]!=null) {
-                Modelo modelo = new Modelo(campos, insert);
-                list.addModelo(modelo);
+                ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                list.addModelo(modeloSQL);
             }
         }
         reg.close();
@@ -644,9 +644,9 @@ public class QueryDB implements Utilidades.ConstantesPry {
         return list;
     }
 
-    public static ArrayList<Modelo> queryListDetalle(String[] campos, String id, String tablaCab, String seleccion, String orden) {
+    public static ArrayList<ModeloSQL> queryListDetalle(String[] campos, String id, String tablaCab, String seleccion, String orden) {
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         Cursor reg = resolver.query(crearUriTablaDetalleId(id,
                 campos[1], tablaCab),null, seleccion, null, orden);
@@ -689,8 +689,8 @@ public class QueryDB implements Utilidades.ConstantesPry {
             System.out.println("regcolumn = " + reg.getColumnCount());
 
             if (insert[0]!=null) {
-                Modelo modelo = new Modelo(campos, insert);
-                list.addModelo(modelo);
+                ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                list.addModelo(modeloSQL);
             }
         }
         reg.close();
@@ -698,9 +698,9 @@ public class QueryDB implements Utilidades.ConstantesPry {
         return list;
     }
 
-    public static ArrayList<Modelo> queryListDetalle(String[] campos, String id, String tablaCab) {
+    public static ArrayList<ModeloSQL> queryListDetalle(String[] campos, String id, String tablaCab) {
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         Cursor reg = resolver.query(crearUriTablaDetalleId(id,
                 campos[1], tablaCab),null, null, null, null);
@@ -741,8 +741,8 @@ public class QueryDB implements Utilidades.ConstantesPry {
             }
 
             if (insert[0]!=null) {
-                Modelo modelo = new Modelo(campos, insert);
-                list.addModelo(modelo);
+                ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                list.addModelo(modeloSQL);
             }
         }
         reg.close();
@@ -750,10 +750,10 @@ public class QueryDB implements Utilidades.ConstantesPry {
         return list;
     }
 
-    public static Modelo queryObjectDetalle(String[] campos, String id, String secuencia) {
+    public static ModeloSQL queryObjectDetalle(String[] campos, String id, String secuencia) {
 
 
-        Modelo modelo = null;
+        ModeloSQL modeloSQL = null;
 
         Cursor reg = resolver.query(crearUriTablaDetalle(id,secuencia,
                 campos[1]), null, null, null, null);
@@ -796,20 +796,20 @@ public class QueryDB implements Utilidades.ConstantesPry {
             System.out.println("regcolumn = " + reg.getColumnCount());
 
             if (insert[0]!=null) {
-                modelo = new Modelo(campos, insert);
+                modeloSQL = new ModeloSQL(campos, insert);
             }
         }
         reg.close();
 
-        return modelo;
+        return modeloSQL;
     }
 
-    public static Modelo queryObjectDetalle(String[] campos, Uri uri) {
+    public static ModeloSQL queryObjectDetalle(String[] campos, Uri uri) {
 
 
         String[] ids = Contract.obtenerIdTablaDetalle(uri);
 
-        Modelo modelo = null;
+        ModeloSQL modeloSQL = null;
 
         Cursor reg = resolver.query(crearUriTablaDetalle(ids[0],ids[1],
                 campos[1]), null, null, null, null);
@@ -852,19 +852,19 @@ public class QueryDB implements Utilidades.ConstantesPry {
             System.out.println("regcolumn = " + reg.getColumnCount());
 
             if (insert[0]!=null) {
-                modelo = new Modelo(campos, insert);
+                modeloSQL = new ModeloSQL(campos, insert);
             }
         }
         reg.close();
 
-        return modelo;
+        return modeloSQL;
     }
 
-    public static ArrayList<Modelo> queryList
+    public static ArrayList<ModeloSQL> queryList
             (String[] campos, String campo, String valor, String valor2, int flag, String orden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         String seleccion = null;
 
@@ -936,8 +936,8 @@ public class QueryDB implements Utilidades.ConstantesPry {
                 System.out.println("regcolumn = " + reg.getColumnCount());
 
                 if (insert[0]!=null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.addModelo(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.addModelo(modeloSQL);
                 }
             }
         }
@@ -946,11 +946,11 @@ public class QueryDB implements Utilidades.ConstantesPry {
         return list;
     }
 
-    public static ArrayList<Modelo> queryList
+    public static ArrayList<ModeloSQL> queryList
             (String[] campos, String campo, int valor, int valor2, int flag, String orden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         String seleccion = null;
 
@@ -1022,8 +1022,8 @@ public class QueryDB implements Utilidades.ConstantesPry {
                 System.out.println("regcolumn = " + reg.getColumnCount());
 
                 if (insert[0]!=null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.addModelo(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.addModelo(modeloSQL);
                 }
             }
         }
@@ -1032,11 +1032,11 @@ public class QueryDB implements Utilidades.ConstantesPry {
         return list;
     }
 
-    public static ArrayList<Modelo> queryList
+    public static ArrayList<ModeloSQL> queryList
             (String[] campos, String campo, double valor, double valor2, int flag, String orden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         String seleccion = null;
 
@@ -1108,8 +1108,8 @@ public class QueryDB implements Utilidades.ConstantesPry {
                 System.out.println("regcolumn = " + reg.getColumnCount());
 
                 if (insert[0]!=null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.addModelo(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.addModelo(modeloSQL);
                 }
             }
         }
@@ -1151,11 +1151,11 @@ public class QueryDB implements Utilidades.ConstantesPry {
         }
     }
 
-    public static ArrayList<Modelo> queryList
+    public static ArrayList<ModeloSQL> queryList
             (String[] campos, String campo, long valor, long valor2, int flag, String orden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         String seleccion = null;
 
@@ -1227,8 +1227,8 @@ public class QueryDB implements Utilidades.ConstantesPry {
                 System.out.println("regcolumn = " + reg.getColumnCount());
 
                 if (insert[0]!=null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.addModelo(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.addModelo(modeloSQL);
                 }
             }
         }
@@ -1237,11 +1237,11 @@ public class QueryDB implements Utilidades.ConstantesPry {
         return list;
     }
 
-    public static ArrayList<Modelo> queryList
+    public static ArrayList<ModeloSQL> queryList
             (String[] campos, String campo, float valor, float valor2, int flag, String orden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         String seleccion = null;
 
@@ -1313,8 +1313,8 @@ public class QueryDB implements Utilidades.ConstantesPry {
                 System.out.println("regcolumn = " + reg.getColumnCount());
 
                 if (insert[0]!=null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.addModelo(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.addModelo(modeloSQL);
                 }
             }
         }
@@ -1323,11 +1323,11 @@ public class QueryDB implements Utilidades.ConstantesPry {
         return list;
     }
 
-    public static ArrayList<Modelo> queryList
+    public static ArrayList<ModeloSQL> queryList
             (String[] campos, String campo, short valor, short valor2, int flag, String orden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         String seleccion = null;
 
@@ -1399,8 +1399,8 @@ public class QueryDB implements Utilidades.ConstantesPry {
                 System.out.println("regcolumn = " + reg.getColumnCount());
 
                 if (insert[0]!=null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.addModelo(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.addModelo(modeloSQL);
                 }
             }
         }
@@ -1409,11 +1409,11 @@ public class QueryDB implements Utilidades.ConstantesPry {
         return list;
     }
 
-    public static ArrayList<Modelo> queryList
+    public static ArrayList<ModeloSQL> queryList
             (String[] campos, String seleccion, String campoOrden, int flagOrden) {
 
 
-        ArrayList<Modelo> list = new ArrayList<>();
+        ArrayList<ModeloSQL> list = new ArrayList<>();
 
         String orden = null;
 
@@ -1470,8 +1470,8 @@ public class QueryDB implements Utilidades.ConstantesPry {
                 System.out.println("regcolumn = " + reg.getColumnCount());
 
                 if (insert[0]!=null) {
-                    Modelo modelo = new Modelo(campos, insert);
-                    list.addModelo(modelo);
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.addModelo(modeloSQL);
                 }
             }
         }
@@ -1981,7 +1981,7 @@ public class QueryDB implements Utilidades.ConstantesPry {
 
     public static Uri insertRegistroDetalle(String[] campos, String id, String tablaCab, ContentValues valores){
 
-        ArrayList<Modelo> lista = QueryDB.queryListDetalle(campos,id,tablaCab,null,null);
+        ArrayList<ModeloSQL> lista = QueryDB.queryListDetalle(campos,id,tablaCab,null,null);
 
         int secuencia = 0;
 

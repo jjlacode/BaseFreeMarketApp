@@ -6,12 +6,12 @@ import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.codevsolution.base.android.controls.ImagenLayout;
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCUD;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.javautil.JavaUtil;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
@@ -29,8 +29,8 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
     private EditMaterial refProv;
     private TextView tipoDetPartida;
     private String tipo;
-    private Modelo proyecto;
-    private Modelo partida;
+    private ModeloSQL proyecto;
+    private ModeloSQL partida;
     private String idDetPartida;
 
     private String idProyecto_Partida;
@@ -39,7 +39,7 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
     private EditMaterial completadaPartida;
 
     private CheckBox partida_completada;
-    private Modelo producto;
+    private ModeloSQL producto;
     private double completada;
     private EditMaterial cantidadPartida;
     private String idProv;
@@ -81,10 +81,10 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
     @Override
     protected void setBundle() {
 
-        proyecto = (Modelo) bundle.getSerializable(PROYECTO);
-        partida = (Modelo) bundle.getSerializable(TABLA_PARTIDA);
+        proyecto = (ModeloSQL) bundle.getSerializable(PROYECTO);
+        partida = (ModeloSQL) bundle.getSerializable(TABLA_PARTIDA);
         if (nn(partida) && partida.getInt(PARTIDA_TIPO_ESTADO)==TNUEVOPRESUP) {
-            producto = CRUDutil.updateModelo(CAMPOS_PRODUCTO, modelo.getString(DETPARTIDA_ID_DETPARTIDA));
+            producto = CRUDutil.updateModelo(CAMPOS_PRODUCTO, modeloSQL.getString(DETPARTIDA_ID_DETPARTIDA));
         }
 
         if (nn(partida)) {
@@ -101,14 +101,14 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
     @Override
     protected void setDatos() {
 
-        modelo = CRUDutil.updateModelo(campos, id, secuencia);
+        modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
 
         tipoDetPartida.setText(tipo.toUpperCase());
 
         completadaPartida.setVisibility(View.VISIBLE);
         progressBarPartida.setVisibility(View.VISIBLE);
-        completada = modelo.getDouble(DETPARTIDA_COMPLETADA);
-        cantidad.setText(modelo.getString(DETPARTIDA_CANTIDAD));
+        completada = modeloSQL.getDouble(DETPARTIDA_COMPLETADA);
+        cantidad.setText(modeloSQL.getString(DETPARTIDA_CANTIDAD));
         if (nn(producto)) {
             nombre.setText(producto.getString(PRODUCTO_NOMBRE));
             descripcion.setText(producto.getString(PRODUCTO_DESCRIPCION));
@@ -122,26 +122,26 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
 
         } else{
 
-            nombre.setText(modelo.getString(DETPARTIDA_NOMBRE));
-            descripcion.setText(modelo.getString(DETPARTIDA_DESCRIPCION));
-            precio.setText(JavaUtil.formatoMonedaLocal(modelo.getDouble(DETPARTIDA_PRECIO)));
-            refProv.setText(modelo.getString(DETPARTIDA_REFPROVEEDOR));
-            nomProv.setText(modelo.getString(DETPARTIDA_PROVEEDOR));
-            descProv.setText(modelo.getString(DETPARTIDA_DESCUENTOPROVEEDOR));
-            idDetPartida = modelo.getString(DETPARTIDA_ID_DETPARTIDA);
-            idProv = modelo.getString(DETPARTIDA_ID_PROVEEDOR);
-            path = modelo.getString(DETPARTIDA_RUTAFOTO);
+            nombre.setText(modeloSQL.getString(DETPARTIDA_NOMBRE));
+            descripcion.setText(modeloSQL.getString(DETPARTIDA_DESCRIPCION));
+            precio.setText(JavaUtil.formatoMonedaLocal(modeloSQL.getDouble(DETPARTIDA_PRECIO)));
+            refProv.setText(modeloSQL.getString(DETPARTIDA_REFPROVEEDOR));
+            nomProv.setText(modeloSQL.getString(DETPARTIDA_PROVEEDOR));
+            descProv.setText(modeloSQL.getString(DETPARTIDA_DESCUENTOPROVEEDOR));
+            idDetPartida = modeloSQL.getString(DETPARTIDA_ID_DETPARTIDA);
+            idProv = modeloSQL.getString(DETPARTIDA_ID_PROVEEDOR);
+            path = modeloSQL.getString(DETPARTIDA_RUTAFOTO);
 
         }
 
-        if (modelo.getString(DETPARTIDA_RUTAFOTO) != null) {
-            path = modelo.getString(DETPARTIDA_RUTAFOTO);
-            imagen.setImageUri(modelo.getString(DETPARTIDA_RUTAFOTO));
+        if (modeloSQL.getString(DETPARTIDA_RUTAFOTO) != null) {
+            path = modeloSQL.getString(DETPARTIDA_RUTAFOTO);
+            imagen.setImageUri(modeloSQL.getString(DETPARTIDA_RUTAFOTO));
         }
         if (nn(partida) && nn(producto)) {
             preciotot.setText(JavaUtil.formatoMonedaLocal
                     ((partida.getDouble(PARTIDA_CANTIDAD) * producto.getDouble(PRODUCTO_PRECIO)
-                            *modelo.getDouble(DETPARTIDA_CANTIDAD))));
+                            * modeloSQL.getDouble(DETPARTIDA_CANTIDAD))));
         }
 
     }
@@ -218,10 +218,7 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
 
     @Override
     protected boolean update() {
-        if (super.update()) {
-            return true;
-        }
-        return false;
+        return super.update();
     }
 
     @Override

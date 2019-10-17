@@ -14,22 +14,22 @@ import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 
 import com.codevsolution.base.adapter.BaseViewHolder;
+import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
+import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
+import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.models.MsgChat;
+import com.codevsolution.base.sqlite.ContratoSystem;
+import com.codevsolution.base.time.TimeDateUtil;
+import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.codevsolution.base.adapter.RVAdapter;
-import com.codevsolution.base.crud.CRUDutil;
-import com.codevsolution.base.models.Modelo;
-import com.codevsolution.base.models.MsgChat;
-import com.codevsolution.base.sqlite.ContratoSystem;
-import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
 
@@ -79,7 +79,7 @@ public class EnviarNoticias extends FragmentChatBase implements
     protected void setDatos() {
         super.setDatos();
 
-        activityBase.toolbar.setSubtitle(modelo.getString(CHAT_NOMBRE) + " - " + getString(R.string.envio_noticias));
+        activityBase.toolbar.setSubtitle(modeloSQL.getString(CHAT_NOMBRE) + " - " + getString(R.string.envio_noticias));
         gone(btnback);
         listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, id, TABLA_CHAT, null, DETCHAT_FECHA + " DESC");
         RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
@@ -131,7 +131,7 @@ public class EnviarNoticias extends FragmentChatBase implements
             valores.put(DETCHAT_ID_CHAT, id);
             secuencia = CRUDutil.crearRegistroSec(CAMPOS_DETCHAT, id, TABLA_CHAT, valores);
 
-            Modelo chat = CRUDutil.updateModelo(campos, id);
+            ModeloSQL chat = CRUDutil.updateModelo(campos, id);
 
             MsgChat msgChat = new MsgChat();
             msgChat.setMensaje(msgEnv.getText().toString());
@@ -184,12 +184,12 @@ public class EnviarNoticias extends FragmentChatBase implements
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
-            int tipo = modelo.getInt(DETCHAT_TIPO);
+            int tipo = modeloSQL.getInt(DETCHAT_TIPO);
 
-            mensaje.setText(modelo.getString(DETCHAT_MENSAJE));
-            fecha.setText(TimeDateUtil.getDateTimeString(modelo.getLong(DETCHAT_FECHA)));
+            mensaje.setText(modeloSQL.getString(DETCHAT_MENSAJE));
+            fecha.setText(TimeDateUtil.getDateTimeString(modeloSQL.getLong(DETCHAT_FECHA)));
 
             if (tipo == ENVIADO) {
 
@@ -209,7 +209,7 @@ public class EnviarNoticias extends FragmentChatBase implements
 
             }
 
-            String webprod = modelo.getString(DETCHAT_URL);
+            String webprod = modeloSQL.getString(DETCHAT_URL);
 
 
             if (webprod != null && JavaUtil.isValidURL(webprod)) {
@@ -251,7 +251,7 @@ public class EnviarNoticias extends FragmentChatBase implements
                 lylweb.setVisibility(View.GONE);
             }
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
 
         }
 

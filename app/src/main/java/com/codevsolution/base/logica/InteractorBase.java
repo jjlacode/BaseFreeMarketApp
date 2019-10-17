@@ -8,15 +8,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.widget.RemoteViews;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.SplashActivity;
 import com.codevsolution.base.crud.CRUDutil;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ModeloFire;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.freemarketsapp.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -108,13 +108,13 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
         return AndroidUtil.getSharePreference(getAppContext(), PREFERENCIAS, PERFILUSER, NULL);
     }
 
-    public static void notificationChat(Context contexto, Class<?> clase, Modelo detchat, String actual,
+    public static void notificationChat(Context contexto, Class<?> clase, ModeloSQL detchat, String actual,
                                         int id, int iconId, String titulo, String contenido) {
 
         RemoteViews remoteView = new RemoteViews(contexto.getPackageName(), R.layout.notificacion_chat);
         remoteView.setTextViewText(R.id.tvdescnotchat, contenido);
 
-        Modelo chat = CRUDutil.updateModelo(CAMPOS_CHAT, detchat.getString(DETCHAT_ID_CHAT));
+        ModeloSQL chat = CRUDutil.updateModelo(CAMPOS_CHAT, detchat.getString(DETCHAT_ID_CHAT));
         Intent intentVerChat = new Intent(contexto, clase);
         intentVerChat.setAction(ACCION_VERCHAT);
         intentVerChat.putExtra(EXTRA_IDSPCHAT, chat.getString(CHAT_USUARIO));
@@ -157,11 +157,11 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
 
     }
 
-    public static ModeloFire convertirModelo(Modelo modelo) {
+    public static ModeloFire convertirModelo(ModeloSQL modeloSQL) {
 
         ModeloFire fire = new ModeloFire();
 
-        ArrayList<String> valores = new ArrayList<>(Arrays.asList(modelo.getValores()));
+        ArrayList<String> valores = new ArrayList<>(Arrays.asList(modeloSQL.getValores()));
         fire.setValores(valores);
 
         return fire;

@@ -22,7 +22,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
-import static com.codevsolution.base.sqlite.ConsultaBD.queryObjectDetalle;
 
 public class FragmentCUDDetpartidaBaseProdProvCat extends FragmentCUD implements Interactor.ConstantesPry,
         ContratoPry.Tablas, Interactor.TiposDetPartida, Interactor.TiposEstados {
@@ -95,7 +94,7 @@ public class FragmentCUDDetpartidaBaseProdProvCat extends FragmentCUD implements
                     precio.setText(JavaUtil.formatoMonedaLocal(prodProv.getPrecio()));
                     descProv.setText(JavaUtil.getDecimales(prodProv.getDescProv()));
                     nomProv.setText(prodProv.getProveedor());
-                    cantidad.setText(JavaUtil.getDecimales(modelo.getDouble(DETPARTIDABASE_CANTIDAD)));
+                    cantidad.setText(JavaUtil.getDecimales(modeloSQL.getDouble(DETPARTIDABASE_CANTIDAD)));
 
                     path = prodProv.getId();
 
@@ -126,9 +125,9 @@ public class FragmentCUDDetpartidaBaseProdProvCat extends FragmentCUD implements
 
         System.out.println("id = " + id);
         System.out.println("secuencia = " + secuencia);
-        modelo = CRUDutil.updateModelo(campos, id, secuencia);
+        modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
 
-        obtenerProdProv(modelo.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
+        obtenerProdProv(modeloSQL.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
 
         tipo = TIPOPRODUCTOPROV;
 

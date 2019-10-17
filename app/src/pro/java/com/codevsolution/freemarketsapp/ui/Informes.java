@@ -5,13 +5,13 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.time.Day;
 import com.codevsolution.base.time.ListaDays;
 import com.codevsolution.base.time.TimeDateUtil;
@@ -33,16 +33,16 @@ public class Informes extends FragmentMes implements Interactor.TiposEstados {
         ListaModelo listaDia = new ListaModelo();
         ListaModelo listaClientes = new ListaModelo(CAMPOS_CLIENTE);
         listabase = new ListaModelo(CAMPOS_PROYECTO);
-        for (Modelo cliente : listaClientes.getLista()) {
+        for (ModeloSQL cliente : listaClientes.getLista()) {
             listabase.addModelo(cliente);
         }
-        for (Modelo modelo : listabase.getLista()) {
+        for (ModeloSQL modeloSQL : listabase.getLista()) {
 
 
-            if (TimeDateUtil.getDateString(modelo.getLong(CAMPO_CREATEREG)).
+            if (TimeDateUtil.getDateString(modeloSQL.getLong(CAMPO_CREATEREG)).
                     equals(TimeDateUtil.getDateString(fecha))){
 
-                listaDia.addModelo(modelo);
+                listaDia.addModelo(modeloSQL);
             }
         }
         tipoRV = LISTA;
@@ -157,7 +157,7 @@ public class Informes extends FragmentMes implements Interactor.TiposEstados {
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new ListaAdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
@@ -183,18 +183,18 @@ public class Informes extends FragmentMes implements Interactor.TiposEstados {
 
         @Override
         public void bind(ArrayList<?> lista, int position) {
-            System.out.println("lista modelo = " + lista.size());
+            System.out.println("lista modeloSQL = " + lista.size());
 
 
             super.bind(lista, position);
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
-            System.out.println("modelo = " + modelo.getString(campo));
+            System.out.println("modeloSQL = " + modeloSQL.getString(campo));
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override
@@ -211,17 +211,17 @@ public class Informes extends FragmentMes implements Interactor.TiposEstados {
             System.out.println("listaModelo = " + lista.getLista().size());
 
 
-                for (Modelo modelo : lista.getLista()) {
+            for (ModeloSQL modeloSQL : lista.getLista()) {
 
-                    switch (modelo.getNombreTabla()) {
+                switch (modeloSQL.getNombreTabla()) {
 
                         case PROYECTO:
                             if (chProyectos.isChecked() || chTodos.isChecked()) {
                                 hayProyectos = true;
                                 visible(impTot);
                                 visible(tiempoTot);
-                                importeTotal += modelo.getDouble(PROYECTO_IMPORTEFINAL);
-                                tiempoProy += modelo.getDouble(PROYECTO_TIEMPO);
+                                importeTotal += modeloSQL.getDouble(PROYECTO_IMPORTEFINAL);
+                                tiempoProy += modeloSQL.getDouble(PROYECTO_TIEMPO);
                             }
                             break;
                         case CLIENTE:
@@ -231,10 +231,10 @@ public class Informes extends FragmentMes implements Interactor.TiposEstados {
                                 visible(totCli);
                                 visible(totCliIn);
                                 prospectos++;
-                                if (modelo.getInt(CLIENTE_PESOTIPOCLI) > 0) {
+                                if (modeloSQL.getInt(CLIENTE_PESOTIPOCLI) > 0) {
                                     clientes++;
                                 }
-                                if (modelo.getLong(CLIENTE_ACTIVO) > 0) {
+                                if (modeloSQL.getLong(CLIENTE_ACTIVO) > 0) {
                                     clientesInactivos++;
                                 }
                             }

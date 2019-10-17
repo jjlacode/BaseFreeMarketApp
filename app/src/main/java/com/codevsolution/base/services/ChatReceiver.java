@@ -4,10 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.freemarketsapp.MainActivity;
@@ -25,8 +25,8 @@ public class ChatReceiver extends ReceiverBase implements InteractorBase.Constan
 
         if (intent.getAction() != null && intent.getExtras() != null && intent.getAction().equals(ACCION_AVISOMSGCHAT)) {
 
-            Modelo detChat = (Modelo) intent.getExtras().get(CHAT);
-            Modelo chat = ConsultaBD.queryObject(CAMPOS_CHAT, detChat.getString(DETCHAT_ID_CHAT));
+            ModeloSQL detChat = (ModeloSQL) intent.getExtras().get(CHAT);
+            ModeloSQL chat = ConsultaBD.queryObject(CAMPOS_CHAT, detChat.getString(DETCHAT_ID_CHAT));
 
             String contenido = chat.getString(CHAT_NOMBRE) + " : \n" + detChat.getString(DETCHAT_MENSAJE);
 

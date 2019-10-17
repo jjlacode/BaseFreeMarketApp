@@ -2,13 +2,12 @@ package com.codevsolution.freemarketsapp.ui;
 
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.calendar.clases.DiaCalBase;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -17,9 +16,9 @@ public abstract class HorarioPerfil extends DiaCalBase implements ContratoPry.Ta
     @Override
     protected int setColorCard(long fecha, long horaCal){
 
-        Modelo perfilActivo = null;
+        ModeloSQL perfilActivo = null;
         ListaModelo listaModelo = CRUDutil.setListaModelo(CAMPOS_PERFIL);
-        for (Modelo perfil : listaModelo.getLista()) {
+        for (ModeloSQL perfil : listaModelo.getLista()) {
             if (perfil.getString(PERFIL_NOMBRE).equals(Interactor.perfila)) {
                 perfilActivo = CRUDutil.updateModelo(perfil);
             }

@@ -11,13 +11,12 @@ import android.widget.Toast;
 
 import com.codevsolution.base.android.CheckPermisos;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static com.codevsolution.freemarketsapp.logica.Interactor.setNamefdef;
 
 public abstract class FragmentCUD extends FragmentBaseCRUD {
 
@@ -43,7 +42,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
             if (tablaCab == null) {
                 id = null;
             }
-            modelo = null;
+            modeloSQL = null;
             secuencia = 0;
             icFragmentos.showSubTitle(tituloNuevo);
             vaciarControles();
@@ -83,20 +82,20 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
 
         ListaModelo lista = CRUDutil.setListaModelo(campos);
         boolean valido = false;
-        for (Modelo modeloSW : lista.getLista()) {
-            if (modeloSW != null && valido) {
-                id = modeloSW.getString(campoID);
+        for (ModeloSQL modeloSQLSW : lista.getLista()) {
+            if (modeloSQLSW != null && valido) {
+                id = modeloSQLSW.getString(campoID);
                 if (tablaCab != null) {
-                    secuencia = modeloSW.getInt(CAMPO_SECUENCIA);
-                    modelo = CRUDutil.updateModelo(campos, id, secuencia);
+                    secuencia = modeloSQLSW.getInt(CAMPO_SECUENCIA);
+                    modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
                 } else {
-                    modelo = CRUDutil.updateModelo(campos, id);
+                    modeloSQL = CRUDutil.updateModelo(campos, id);
                 }
                 System.out.println("swipe derecha");
                 selector();
                 break;
             }
-            if (modeloSW.getString(campoID).equals(id)) {
+            if (modeloSQLSW.getString(campoID).equals(id)) {
                 valido = true;
             }
         }
@@ -108,25 +107,25 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
         Log.d(TAG, getMetodo());
 
         ListaModelo lista = CRUDutil.setListaModelo(campos);
-        Modelo modeloAnt = null;
-        for (Modelo modeloSW : lista.getLista()) {
-            if (modeloSW.getString(campoID).equals(id)) {
-                if (modeloAnt != null) {
-                    id = modeloAnt.getString(campoID);
+        ModeloSQL modeloSQLAnt = null;
+        for (ModeloSQL modeloSQLSW : lista.getLista()) {
+            if (modeloSQLSW.getString(campoID).equals(id)) {
+                if (modeloSQLAnt != null) {
+                    id = modeloSQLAnt.getString(campoID);
                     if (tablaCab != null) {
-                        secuencia = modeloAnt.getInt(CAMPO_SECUENCIA);
-                        modelo = CRUDutil.updateModelo(campos, id, secuencia);
+                        secuencia = modeloSQLAnt.getInt(CAMPO_SECUENCIA);
+                        modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
 
                     } else {
-                        modelo = CRUDutil.updateModelo(campos, id);
+                        modeloSQL = CRUDutil.updateModelo(campos, id);
                     }
                 }
                 selector();
                 System.out.println("swipe izquierda");
                 break;
             }
-            if (modeloSW != null) {
-                modeloAnt = modeloSW.clonar(false);
+            if (modeloSQLSW != null) {
+                modeloSQLAnt = modeloSQLSW.clonar(false);
             }
         }
 
@@ -276,7 +275,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
 
                 secuencia = ConsultaBD.secInsertRegistroDetalle(campos, id, tablaCab, valores);
 
-                modelo = ConsultaBD.queryObjectDetalle(campos, id, secuencia);
+                modeloSQL = ConsultaBD.queryObjectDetalle(campos, id, secuencia);
 
                 Toast.makeText(getContext(), "Registro detalle creado", Toast.LENGTH_SHORT).show();
                 nuevo = false;
@@ -285,9 +284,9 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
             } else {
 
                 id = ConsultaBD.idInsertRegistro(tabla, valores);
-                modelo = ConsultaBD.queryObject(campos, id);
+                modeloSQL = ConsultaBD.queryObject(campos, id);
                 //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                //db.child(idUser).child(tabla).child(id).setValue(convertirModelo(modelo));
+                //db.child(idUser).child(tabla).child(id).setValue(convertirModelo(modeloSQL));
 
                 Toast.makeText(getContext(), "Registro creado", Toast.LENGTH_SHORT).show();
                 nuevo = false;
@@ -319,7 +318,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
         Log.d(TAG, getMetodo());
 
         id = null;
-        modelo = null;
+        modeloSQL = null;
         secuencia = 0;
         bundle = new Bundle();
 
@@ -333,21 +332,21 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
         comprobarRutaFoto();
         setContenedor();
 
-        if (tablaCab != null && modelo != null) {
-            secuencia = modelo.getInt(campoSecuencia);
+        if (tablaCab != null && modeloSQL != null) {
+            secuencia = modeloSQL.getInt(campoSecuencia);
         }
 
-        if ((id != null || modelo != null) && (tablaCab == null || secuencia > 0)) {
+        if ((id != null || modeloSQL != null) && (tablaCab == null || secuencia > 0)) {
 
             if (id == null) {
-                id = modelo.getString(campoID);
+                id = modeloSQL.getString(campoID);
             }
             try {
                 if (tablaCab != null) {
 
                     if (ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores) > 0) {
 
-                        modelo = ConsultaBD.queryObjectDetalle(campos, id, secuencia);
+                        modeloSQL = ConsultaBD.queryObjectDetalle(campos, id, secuencia);
                         Toast.makeText(getContext(), "Registro detalle guardado", Toast.LENGTH_SHORT).show();
                         nuevo = false;
                         return true;
@@ -355,11 +354,11 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
 
                 } else if (ConsultaBD.updateRegistro(tabla, id, valores) > 0) {
 
-                    modelo = ConsultaBD.queryObject(campos, id);
+                    modeloSQL = ConsultaBD.queryObject(campos, id);
                     //idUser = AndroidUtil.getSharePreference(contexto,USERID,USERID,NULL);
                     //System.out.println("idUser = " + idUser);
                     //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                    //db.child(idUser).child(tabla).child(id).setValue(convertirModelo(modelo));
+                    //db.child(idUser).child(tabla).child(id).setValue(convertirModelo(modeloSQL));
 
                     Toast.makeText(getContext(), "Registro guardado", Toast.LENGTH_SHORT).show();
                     nuevo = false;
@@ -375,7 +374,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
                 e.printStackTrace();
             }
 
-        } else if (modelo == null) {
+        } else if (modeloSQL == null) {
             return registrar();
         }
 

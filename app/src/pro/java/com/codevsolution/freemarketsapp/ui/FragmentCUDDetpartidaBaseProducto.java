@@ -8,13 +8,10 @@ import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCUD;
 import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
-
-import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
-import static com.codevsolution.base.sqlite.ConsultaBD.queryObjectDetalle;
 
 public class FragmentCUDDetpartidaBaseProducto extends FragmentCUD implements Interactor.ConstantesPry,
         ContratoPry.Tablas, Interactor.TiposDetPartida, Interactor.TiposEstados {
@@ -28,7 +25,7 @@ public class FragmentCUDDetpartidaBaseProducto extends FragmentCUD implements In
     private TextView tipoDetPartida;
     private String tipo;
 
-    private Modelo producto;
+    private ModeloSQL producto;
     private EditMaterial nomProv;
 
 
@@ -78,9 +75,9 @@ public class FragmentCUDDetpartidaBaseProducto extends FragmentCUD implements In
         visible(cantidad);
         gone(btnsave);
 
-        modelo = CRUDutil.updateModelo(campos, id, secuencia);
+        modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
 
-        producto = CRUDutil.updateModelo(CAMPOS_PRODUCTO, modelo.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
+        producto = CRUDutil.updateModelo(CAMPOS_PRODUCTO, modeloSQL.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
 
         tipo = TIPOPRODUCTO;
 
@@ -91,7 +88,7 @@ public class FragmentCUDDetpartidaBaseProducto extends FragmentCUD implements In
             refProv.setText(producto.getString(PRODUCTO_REFERENCIA));
             nomProv.setText(producto.getString(PRODUCTO_NOMBREPROV));
             descProv.setText(JavaUtil.formatoMonedaLocal(producto.getDouble(PRODUCTO_DESCPROV)));
-            cantidad.setText(JavaUtil.getDecimales(modelo.getDouble(DETPARTIDABASE_CANTIDAD)));
+            cantidad.setText(JavaUtil.getDecimales(modeloSQL.getDouble(DETPARTIDABASE_CANTIDAD)));
             path = producto.getString(PRODUCTO_RUTAFOTO);
         }
 

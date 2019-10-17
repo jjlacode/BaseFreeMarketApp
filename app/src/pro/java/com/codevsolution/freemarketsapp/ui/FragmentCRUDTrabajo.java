@@ -10,18 +10,18 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.codevsolution.base.adapter.BaseViewHolder;
+import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
+import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
-import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.adapter.BaseViewHolder;
-import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
-import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.crud.FragmentCRUD;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
@@ -48,7 +48,7 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
@@ -124,7 +124,7 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
     private int crearTrabajoBase(String idPartidabase) {
 
         ContentValues valores = new ContentValues();
-        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_DETPARTIDABASE, modelo.getString(TRABAJO_ID_TRABAJO));
+        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_DETPARTIDABASE, modeloSQL.getString(TRABAJO_ID_TRABAJO));
         putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_TIPO, TIPOTRABAJO);
         putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_PARTIDABASE, idPartidabase);
         return CRUDutil.crearRegistroSec(CAMPOS_DETPARTIDABASE, idPartidabase, TABLA_PARTIDABASE, valores);
@@ -161,8 +161,8 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
             public void onClick(View v) {
 
                 enviarBundle();
-                bundle.putString(IDREL,modelo.getString(campoID));
-                bundle.putString(SUBTITULO, modelo.getString(TRABAJO_DESCRIPCION));
+                bundle.putString(IDREL, modeloSQL.getString(campoID));
+                bundle.putString(SUBTITULO, modeloSQL.getString(TRABAJO_DESCRIPCION));
                 bundle.putString(ORIGEN, TRABAJO);
                 bundle.putSerializable(MODELO,null);
                 bundle.putString(CAMPO_ID,null);
@@ -176,8 +176,8 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
             public void onClick(View v) {
 
                 enviarBundle();
-                bundle.putString(IDREL,modelo.getString(campoID));
-                bundle.putString(SUBTITULO, modelo.getString(TRABAJO_DESCRIPCION));
+                bundle.putString(IDREL, modeloSQL.getString(campoID));
+                bundle.putString(SUBTITULO, modeloSQL.getString(TRABAJO_DESCRIPCION));
                 bundle.putString(ORIGEN, TAREA);
                 bundle.putSerializable(MODELO,null);
                 bundle.putString(CAMPO_ID,null);
@@ -198,10 +198,7 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
 
     @Override
     protected boolean update() {
-        if (super.update()){
-            return true;
-        }
-        return false;
+        return super.update();
     }
 
     @Override
@@ -219,12 +216,12 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View itemView, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View itemView, ArrayList<ModeloSQL> entrada) {
 
             TextView tiempo, nombre, descripcion;
             ImageView imagenTarea;
@@ -262,16 +259,16 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
-            tiempo.setText(JavaUtil.getDecimales(modelo.getDouble(TRABAJO_TIEMPO)));
-            nombre.setText(modelo.getString(TRABAJO_NOMBRE));
-            descripcion.setText(modelo.getString(TRABAJO_DESCRIPCION));
-            if (modelo.getString(TRABAJO_RUTAFOTO)!=null){
-                new MediaUtil(contexto).setImageUriCircle(modelo.getString(TRABAJO_RUTAFOTO), imagenTarea);
+            tiempo.setText(JavaUtil.getDecimales(modeloSQL.getDouble(TRABAJO_TIEMPO)));
+            nombre.setText(modeloSQL.getString(TRABAJO_NOMBRE));
+            descripcion.setText(modeloSQL.getString(TRABAJO_DESCRIPCION));
+            if (modeloSQL.getString(TRABAJO_RUTAFOTO) != null) {
+                new MediaUtil(contexto).setImageUriCircle(modeloSQL.getString(TRABAJO_RUTAFOTO), imagenTarea);
             }
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override

@@ -24,19 +24,19 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 
-import com.codevsolution.base.android.controls.ImagenLayout;
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltro;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.DatePickerFragment;
@@ -47,10 +47,10 @@ import com.codevsolution.freemarketsapp.logica.Interactor;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.codevsolution.base.android.AppActivity.viewOnMapA;
 import static com.codevsolution.base.javautil.JavaUtil.getDate;
 import static com.codevsolution.base.javautil.JavaUtil.getTime;
 import static com.codevsolution.base.javautil.JavaUtil.hoy;
-import static com.codevsolution.base.android.AppActivity.viewOnMapA;
 import static com.codevsolution.base.time.calendar.clases.DiaCalBase.HORACAL;
 import static com.codevsolution.freemarketsapp.logica.Interactor.setNamefdef;
 
@@ -91,8 +91,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
     private ImageButton btnVerNotas;
     private Button btnVerRepeticiones;
 
-    private ArrayList<Modelo> listaClientes;
-    private ArrayList<Modelo> listaProyectos;
+    private ArrayList<ModeloSQL> listaClientes;
+    private ArrayList<ModeloSQL> listaProyectos;
     private String idCliente;
     private String idProyecto;
     private String nombreProyecto;
@@ -117,8 +117,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
     private CheckBox relCli;
     private CheckBox relProy;
     private CheckBox completada;
-    private Modelo proyecto;
-    private Modelo cliente;
+    private ModeloSQL proyecto;
+    private ModeloSQL cliente;
     private int notificado;
 
 
@@ -132,7 +132,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
@@ -267,7 +267,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
     protected boolean update() {
 
         if (id==null){
-            if(registrar()){return true;}
+            return registrar();
         }else {
 
             valores = new ContentValues();
@@ -360,8 +360,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
             } else {
 
-                if (modelo != null) {
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, modelo.getLong(EVENTO_AVISO));
+                if (modeloSQL != null) {
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, modeloSQL.getLong(EVENTO_AVISO));
                 }
             }
 
@@ -370,11 +370,11 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
             }
 
             ConsultaBD.updateRegistro(TABLA_EVENTO, id, valores);
-            modelo = CRUDutil.updateModelo(campos,id);
+            modeloSQL = CRUDutil.updateModelo(campos, id);
 
             if (repeticiones.isChecked()) {
 
-                idMulti = modelo.getString(EVENTO_IDMULTI);
+                idMulti = modeloSQL.getString(EVENTO_IDMULTI);
 
                 String seleccion = ContratoPry.Tablas.EVENTO_IDMULTI + " = '" + idMulti +
                         "' AND " + ContratoPry.Tablas.EVENTO_ID_EVENTO +
@@ -452,12 +452,11 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
             Toast.makeText(contexto, "Registro actualizado", Toast.LENGTH_SHORT).show();
 
-            modelo = CRUDutil.updateModelo(campos,id);
+            modeloSQL = CRUDutil.updateModelo(campos, id);
             setDatos();
             return true;
         }
 
-        return false;
     }
 
 
@@ -484,11 +483,11 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
     @Override
     protected void setBundle() {
 
-        proyecto = (Modelo) bundle.getSerializable(TABLA_PROYECTO);
-        cliente = (Modelo) bundle.getSerializable(TABLA_CLIENTE);
+        proyecto = (ModeloSQL) bundle.getSerializable(TABLA_PROYECTO);
+        cliente = (ModeloSQL) bundle.getSerializable(TABLA_CLIENTE);
         tevento = bundle.getString(TIPO);
-        if (modelo!=null) {
-            idMulti = modelo.getString(EVENTO_IDMULTI);
+        if (modeloSQL != null) {
+            idMulti = modeloSQL.getString(EVENTO_IDMULTI);
         }
 
     }
@@ -511,7 +510,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
         visible(relProy);
         visiblePie();
 
-        completa.setText(modelo.getString(EVENTO_COMPLETADA));
+        completa.setText(modeloSQL.getString(EVENTO_COMPLETADA));
 
         if (ConsultaBD.checkQueryList(CAMPOS_NOTA,NOTA_ID_RELACIONADO,id,null,IGUAL,null)){
             btnVerNotas.setVisibility(View.VISIBLE);
@@ -520,16 +519,16 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
         }
 
 
-        notificado = modelo.getInt(EVENTO_NOTIFICADO);
+        notificado = modeloSQL.getInt(EVENTO_NOTIFICADO);
 
-        if (modelo.getString(EVENTO_PROYECTOREL)!=null){
+        if (modeloSQL.getString(EVENTO_PROYECTOREL) != null) {
 
-            idProyecto = modelo.getString(EVENTO_PROYECTOREL);
-            nombreProyecto = modelo.getString(EVENTO_NOMPROYECTOREL);
+            idProyecto = modeloSQL.getString(EVENTO_PROYECTOREL);
+            nombreProyecto = modeloSQL.getString(EVENTO_NOMPROYECTOREL);
             proyRel.setText(nombreProyecto);
             relProy.setChecked(true);
-            idCliente = modelo.getString(EVENTO_CLIENTEREL);
-            nombreCliente = modelo.getString(EVENTO_NOMCLIENTEREL);
+            idCliente = modeloSQL.getString(EVENTO_CLIENTEREL);
+            nombreCliente = modeloSQL.getString(EVENTO_NOMCLIENTEREL);
             cliRel.setText(nombreCliente);
             relCli.setChecked(true);
             proyRel.setVisibility(View.VISIBLE);
@@ -539,10 +538,10 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
             activityBase.toolbar.setSubtitle(nombreProyecto);
 
 
-        }else if (modelo.getString(EVENTO_CLIENTEREL)!=null){
+        } else if (modeloSQL.getString(EVENTO_CLIENTEREL) != null) {
 
-            idCliente = modelo.getString(EVENTO_CLIENTEREL);
-            nombreCliente = modelo.getString(EVENTO_NOMCLIENTEREL);
+            idCliente = modeloSQL.getString(EVENTO_CLIENTEREL);
+            nombreCliente = modeloSQL.getString(EVENTO_NOMCLIENTEREL);
             if (nombreProyecto==null) {
                 activityBase.toolbar.setSubtitle(nombreCliente);
             }
@@ -556,7 +555,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
         repeticiones.setChecked(false);
         completa.setVisibility(View.VISIBLE);
 
-        idMulti =  modelo.getString(EVENTO_IDMULTI);
+        idMulti = modeloSQL.getString(EVENTO_IDMULTI);
 
         if (idMulti==null){
             repeticiones.setText(getString(R.string.crear_repeticiones));
@@ -568,17 +567,17 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
         }
 
-        if (modelo!=null) {
-            tevento = modelo.getString(EVENTO_TIPO);
+        if (modeloSQL != null) {
+            tevento = modeloSQL.getString(EVENTO_TIPO);
             tipoEvento.setVisibility(View.VISIBLE);
-            descipcion.setText(modelo.getString(EVENTO_DESCRIPCION));
-            asunto.setText(modelo.getString(EVENTO_ASUNTO));
-            mensaje.setText(modelo.getString(EVENTO_MENSAJE));
+            descipcion.setText(modeloSQL.getString(EVENTO_DESCRIPCION));
+            asunto.setText(modeloSQL.getString(EVENTO_ASUNTO));
+            mensaje.setText(modeloSQL.getString(EVENTO_MENSAJE));
 
 
-            if (modelo.getLong(EVENTO_AVISO) > 0) {
+            if (modeloSQL.getLong(EVENTO_AVISO) > 0) {
 
-                long[] res = JavaUtil.longA_ddhhmm(modelo.getLong(EVENTO_AVISO));
+                long[] res = JavaUtil.longA_ddhhmm(modeloSQL.getLong(EVENTO_AVISO));
 
                 avisoDias.setText(String.valueOf(res[0]));
                 avisoHoras.setText(String.valueOf(res[1]));
@@ -617,9 +616,9 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                     horaFin.setVisibility(View.VISIBLE);
                     btnffin.setVisibility(View.VISIBLE);
                     btnhfin.setVisibility(View.VISIBLE);
-                    ffinEvento = modelo.getLong(EVENTO_FECHAFINEVENTO);
+                    ffinEvento = modeloSQL.getLong(EVENTO_FECHAFINEVENTO);
                     fechaFin.setText(getDate(ffinEvento));
-                    hfinEvento = modelo.getLong(EVENTO_HORAFINEVENTO);
+                    hfinEvento = modeloSQL.getLong(EVENTO_HORAFINEVENTO);
                     horaFin.setText(getTime(hfinEvento));
 
                     break;
@@ -634,10 +633,10 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                     btnhini.setVisibility(View.VISIBLE);
                     repeticiones.setVisibility(View.VISIBLE);
                     aviso.setVisibility(View.VISIBLE);
-                    lugar.setText(modelo.getString(EVENTO_DIRECCION));
-                    finiEvento = modelo.getLong(EVENTO_FECHAINIEVENTO);
+                    lugar.setText(modeloSQL.getString(EVENTO_DIRECCION));
+                    finiEvento = modeloSQL.getLong(EVENTO_FECHAINIEVENTO);
                     fechaIni.setText(getDate(finiEvento));
-                    hiniEvento = modelo.getLong(EVENTO_HORAINIEVENTO);
+                    hiniEvento = modeloSQL.getLong(EVENTO_HORAINIEVENTO);
                     horaIni.setText(getTime(hiniEvento));
                     break;
 
@@ -652,10 +651,10 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                     btnhini.setVisibility(View.VISIBLE);
                     repeticiones.setVisibility(View.VISIBLE);
                     aviso.setVisibility(View.VISIBLE);
-                    email.setText(modelo.getString(EVENTO_EMAIL));
-                    finiEvento = modelo.getLong(EVENTO_FECHAINIEVENTO);
+                    email.setText(modeloSQL.getString(EVENTO_EMAIL));
+                    finiEvento = modeloSQL.getLong(EVENTO_FECHAINIEVENTO);
                     fechaIni.setText(getDate(finiEvento));
-                    hiniEvento = modelo.getLong(EVENTO_HORAINIEVENTO);
+                    hiniEvento = modeloSQL.getLong(EVENTO_HORAINIEVENTO);
                     horaIni.setText(getTime(hiniEvento));
                     break;
 
@@ -670,10 +669,10 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                     btnhini.setVisibility(View.VISIBLE);
                     repeticiones.setVisibility(View.VISIBLE);
                     aviso.setVisibility(View.VISIBLE);
-                    telefono.setText(modelo.getString(EVENTO_TELEFONO));
-                    finiEvento = modelo.getLong(EVENTO_FECHAINIEVENTO);
+                    telefono.setText(modeloSQL.getString(EVENTO_TELEFONO));
+                    finiEvento = modeloSQL.getLong(EVENTO_FECHAINIEVENTO);
                     fechaIni.setText(getDate(finiEvento));
-                    hiniEvento = modelo.getLong(EVENTO_HORAINIEVENTO);
+                    hiniEvento = modeloSQL.getLong(EVENTO_HORAINIEVENTO);
                     horaIni.setText(getTime(hiniEvento));
                     break;
 
@@ -688,13 +687,13 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                     btnhfin.setVisibility(View.VISIBLE);
                     repeticiones.setVisibility(View.VISIBLE);
                     aviso.setVisibility(View.VISIBLE);
-                    finiEvento = modelo.getLong(EVENTO_FECHAINIEVENTO);
+                    finiEvento = modeloSQL.getLong(EVENTO_FECHAINIEVENTO);
                     fechaIni.setText(getDate(finiEvento));
-                    hiniEvento = modelo.getLong(EVENTO_HORAINIEVENTO);
+                    hiniEvento = modeloSQL.getLong(EVENTO_HORAINIEVENTO);
                     horaIni.setText(getTime(hiniEvento));
-                    ffinEvento = modelo.getLong(EVENTO_FECHAFINEVENTO);
+                    ffinEvento = modeloSQL.getLong(EVENTO_FECHAFINEVENTO);
                     fechaFin.setText(getDate(ffinEvento));
-                    hfinEvento = modelo.getLong(EVENTO_HORAFINEVENTO);
+                    hfinEvento = modeloSQL.getLong(EVENTO_HORAFINEVENTO);
                     horaFin.setText(getTime(hfinEvento));
                     break;
 
@@ -838,7 +837,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
             public void onClick(View v) {
 
                 AppActivity.hacerLlamada(AppActivity.getAppContext()
-                        ,modelo.getString(EVENTO_TELEFONO));
+                        , modeloSQL.getString(EVENTO_TELEFONO));
             }
         });
 
@@ -846,9 +845,9 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
             @Override
             public void onClick(View v) {
 
-                AppActivity.enviarEmail(contexto, modelo.getString(EVENTO_EMAIL),
-                        modelo.getString(EVENTO_ASUNTO),modelo.getString(EVENTO_MENSAJE),
-                        modelo.getString(EVENTO_RUTAADJUNTO));
+                AppActivity.enviarEmail(contexto, modeloSQL.getString(EVENTO_EMAIL),
+                        modeloSQL.getString(EVENTO_ASUNTO), modeloSQL.getString(EVENTO_MENSAJE),
+                        modeloSQL.getString(EVENTO_RUTAADJUNTO));
 
             }
         });
@@ -859,7 +858,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
                 if (!lugar.getText().toString().equals("")){
 
-                    viewOnMapA(contexto,modelo.getString(EVENTO_DIRECCION));
+                    viewOnMapA(contexto, modeloSQL.getString(EVENTO_DIRECCION));
                 }
 
             }
@@ -1046,7 +1045,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Modelo proyecto = (Modelo) proyRel.getAdapter().getItem(position);
+                ModeloSQL proyecto = (ModeloSQL) proyRel.getAdapter().getItem(position);
                 idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
                 nombreProyecto = proyecto.getString(PROYECTO_NOMBRE);
                 proyRel.setText(nombreProyecto);
@@ -1060,7 +1059,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Modelo cliente = (Modelo) cliRel.getAdapter().getItem(position);
+                ModeloSQL cliente = (ModeloSQL) cliRel.getAdapter().getItem(position);
                 idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
                 nombreCliente = cliente.getString(CLIENTE_NOMBRE);
                 cliRel.setText(nombreCliente);
@@ -1077,8 +1076,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
             public void onClick(View v) {
 
                 enviarBundle();
-                bundle.putString(IDREL,modelo.getString(EVENTO_ID_EVENTO));
-                bundle.putString(SUBTITULO, modelo.getString(EVENTO_DESCRIPCION));
+                bundle.putString(IDREL, modeloSQL.getString(EVENTO_ID_EVENTO));
+                bundle.putString(SUBTITULO, modeloSQL.getString(EVENTO_DESCRIPCION));
                 bundle.putString(ORIGEN, EVENTO);
                 bundle.putString(ACTUAL,NOTA);
                 bundle.putSerializable(MODELO,null);
@@ -1094,8 +1093,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
             public void onClick(View v) {
 
                 enviarBundle();
-                bundle.putString(IDREL,modelo.getString(EVENTO_ID_EVENTO));
-                bundle.putString(SUBTITULO, modelo.getString(EVENTO_DESCRIPCION));
+                bundle.putString(IDREL, modeloSQL.getString(EVENTO_ID_EVENTO));
+                bundle.putString(SUBTITULO, modeloSQL.getString(EVENTO_DESCRIPCION));
                 bundle.putString(ORIGEN, EVENTO);
                 bundle.putString(ACTUAL,NOTA);
                 bundle.putSerializable(LISTA,null);
@@ -1129,10 +1128,10 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
     private void verRepeticiones(){
 
-        idMulti = modelo.getString(EVENTO_IDMULTI);
+        idMulti = modeloSQL.getString(EVENTO_IDMULTI);
         listab = new ListaModelo(campos,EVENTO_IDMULTI,idMulti,null,IGUAL,null);
         id = null;
-        modelo = null;
+        modeloSQL = null;
         selector();
     }
 
@@ -1328,7 +1327,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
             id = ConsultaBD.idInsertRegistro(tabla, valores);
 
-            modelo = new Modelo(campos,id);//consulta.queryObject(campos,id);
+        modeloSQL = new ModeloSQL(campos, id);//consulta.queryObject(campos,id);
 
             if (repeticiones.isChecked() && !tevento.equals(TIPOEVENTOTAREA)) {
 
@@ -1403,10 +1402,10 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
             }
 
 
-            if (modelo!=null) {
+        if (modeloSQL != null) {
                 Toast.makeText(getContext(), "Registro creado",
                         Toast.LENGTH_SHORT).show();
-                modelo = CRUDutil.updateModelo(campos,id);
+            modeloSQL = CRUDutil.updateModelo(campos, id);
                 nuevo = false;
                 return true;
             }
@@ -1467,15 +1466,15 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
     private boolean mostrarDialogoBorrarRep(final String idEvento) {
 
-        modelo = ConsultaBD.queryObject(campos,idEvento);
-        final CharSequence[] opciones = {"Borrar sólo este modelo", "Borrar este y repeticiones", "Borrar sólo repeticiones", "Cancelar"};
+        modeloSQL = ConsultaBD.queryObject(campos, idEvento);
+        final CharSequence[] opciones = {"Borrar sólo este modeloSQL", "Borrar este y repeticiones", "Borrar sólo repeticiones", "Cancelar"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Elige una opción");
         builder.setItems(opciones, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                if (opciones[which].equals("Borrar sólo este modelo")) {
+                if (opciones[which].equals("Borrar sólo este modeloSQL")) {
 
                     if (ConsultaBD.deleteRegistro(TABLA_EVENTO, idEvento)>0) {
 
@@ -1484,7 +1483,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                             listab = new ListaModelo(campos,EVENTO_IDMULTI,idMulti,null,IGUAL,null);
                         }
                         id = null;
-                        modelo = null;
+                        modeloSQL = null;
                         selector();
 
                     }else{
@@ -1494,12 +1493,12 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
                 } else if (opciones[which].equals("Borrar este y repeticiones")) {
 
-                    idMulti = modelo.getString(EVENTO_IDMULTI);
+                    idMulti = modeloSQL.getString(EVENTO_IDMULTI);
                     String seleccion = EVENTO_IDMULTI + " = '" + idMulti + "'";
                     if (ConsultaBD.deleteRegistros(TABLA_EVENTO,EVENTO_IDMULTI,idMulti,null,IGUAL)>0) {
 
                         id = null;
-                        modelo = null;
+                        modeloSQL = null;
                         listab = null;
                         Toast.makeText(contexto, "Regitros borrados", Toast.LENGTH_SHORT).show();
                         selector();
@@ -1511,7 +1510,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
                 } else if (opciones[which].equals("Borrar sólo repeticiones")) {
 
-                    idMulti = modelo.getString(EVENTO_IDMULTI);
+                    idMulti = modeloSQL.getString(EVENTO_IDMULTI);
                     String seleccion = EVENTO_IDMULTI + " = '" + idMulti +
                             "' AND " + EVENTO_ID_EVENTO + " <> '" + idEvento + "'";
                     if (ConsultaBD.deleteRegistros(TABLA_EVENTO,seleccion)>0) {
@@ -1519,7 +1518,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                         valores = new ContentValues();
                         valores.putNull(EVENTO_IDMULTI);
                         ConsultaBD.updateRegistro(tabla,idEvento,valores);
-                        modelo = CRUDutil.updateModelo(campos,idEvento);
+                        modeloSQL = CRUDutil.updateModelo(campos, idEvento);
                         idMulti = null;
                         Toast.makeText(contexto, "Regitros borrados", Toast.LENGTH_SHORT).show();
                         listab = null;
@@ -1578,20 +1577,20 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
         }
 
         @Override
-        public void bind(final Modelo modelo) {
+        public void bind(final ModeloSQL modeloSQL) {
 
-            tipo.setText(modelo.getString(EVENTO_TIPO).toUpperCase());
-            descripcion.setText(modelo.getString(EVENTO_DESCRIPCION));
-            telefono.setText(modelo.getString(EVENTO_TELEFONO));
-            lugar.setText(modelo.getString(EVENTO_DIRECCION));
-            email.setText(modelo.getString(EVENTO_EMAIL));
-            nomPryRel.setText(modelo.getString(EVENTO_NOMPROYECTOREL));
-            nomCliRel.setText(modelo.getString(EVENTO_NOMCLIENTEREL));
-            fechaini.setText(getDate(modelo.getLong(EVENTO_FECHAINIEVENTO)));
-            fechafin.setText(getDate(modelo.getLong(EVENTO_FECHAFINEVENTO)));
-            horaini.setText(getTime(modelo.getLong(EVENTO_HORAINIEVENTO)));
-            horafin.setText(getTime(modelo.getLong(EVENTO_HORAFINEVENTO)));
-            double completada = modelo.getDouble(EVENTO_COMPLETADA);
+            tipo.setText(modeloSQL.getString(EVENTO_TIPO).toUpperCase());
+            descripcion.setText(modeloSQL.getString(EVENTO_DESCRIPCION));
+            telefono.setText(modeloSQL.getString(EVENTO_TELEFONO));
+            lugar.setText(modeloSQL.getString(EVENTO_DIRECCION));
+            email.setText(modeloSQL.getString(EVENTO_EMAIL));
+            nomPryRel.setText(modeloSQL.getString(EVENTO_NOMPROYECTOREL));
+            nomCliRel.setText(modeloSQL.getString(EVENTO_NOMCLIENTEREL));
+            fechaini.setText(getDate(modeloSQL.getLong(EVENTO_FECHAINIEVENTO)));
+            fechafin.setText(getDate(modeloSQL.getLong(EVENTO_FECHAFINEVENTO)));
+            horaini.setText(getTime(modeloSQL.getLong(EVENTO_HORAINIEVENTO)));
+            horafin.setText(getTime(modeloSQL.getLong(EVENTO_HORAFINEVENTO)));
+            double completada = modeloSQL.getDouble(EVENTO_COMPLETADA);
             System.out.println("completada = " + completada);
             if (completada==0){
                 pbar.setVisibility(View.GONE);
@@ -1607,10 +1606,10 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                 porccompleta.setVisibility(View.VISIBLE);
                 completa.setChecked(false);
                 pbar.setProgress((int)completada);
-                porccompleta.setText(String.format("%s %s",modelo.getDouble(EVENTO_COMPLETADA),"%"));
+                porccompleta.setText(String.format("%s %s", modeloSQL.getDouble(EVENTO_COMPLETADA), "%"));
             }
 
-            String tipoEvento = modelo.getString(EVENTO_TIPO);
+            String tipoEvento = modeloSQL.getString(EVENTO_TIPO);
 
             fechaini.setVisibility(View.GONE);
             fechafin.setVisibility(View.GONE);
@@ -1660,13 +1659,13 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
             }
             mediaUtil = new MediaUtil(contexto);
-            if (modelo.getString(EVENTO_RUTAFOTO)!=null) {
-                mediaUtil.setImageUriCircle(modelo.getString(EVENTO_RUTAFOTO),foto);
+            if (modeloSQL.getString(EVENTO_RUTAFOTO) != null) {
+                mediaUtil.setImageUriCircle(modeloSQL.getString(EVENTO_RUTAFOTO), foto);
             }
 
             if (completada < 100) {
 
-                long retraso = hoy() - modelo.getLong(EVENTO_FECHAINIEVENTO);
+                long retraso = hoy() - modeloSQL.getLong(EVENTO_FECHAINIEVENTO);
 
                 if (!tipoEvento.equals(TIPOEVENTOTAREA)) {
                     if (retraso > 3 * Interactor.DIASLONG) {
@@ -1677,7 +1676,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
                     }//imgret.setImageResource(R.drawable.alert_box_v);}
                 }else {
-                    retraso = hoy() - modelo.getLong(EVENTO_FECHAFINEVENTO);
+                    retraso = hoy() - modeloSQL.getLong(EVENTO_FECHAFINEVENTO);
                     if (retraso > 3 * Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
                     } else if (retraso > Interactor.DIASLONG) {
@@ -1699,7 +1698,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                 public void onClick(View v) {
 
                     AppActivity.hacerLlamada(AppActivity.getAppContext()
-                            ,modelo.getString(EVENTO_TELEFONO));
+                            , modeloSQL.getString(EVENTO_TELEFONO));
                 }
             });
 
@@ -1707,9 +1706,9 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                 @Override
                 public void onClick(View v) {
 
-                    AppActivity.enviarEmail(contexto,modelo.getString(EVENTO_EMAIL),
-                            modelo.getString(EVENTO_ASUNTO), modelo.getString(EVENTO_MENSAJE),
-                            modelo.getString(EVENTO_RUTAADJUNTO));
+                    AppActivity.enviarEmail(contexto, modeloSQL.getString(EVENTO_EMAIL),
+                            modeloSQL.getString(EVENTO_ASUNTO), modeloSQL.getString(EVENTO_MENSAJE),
+                            modeloSQL.getString(EVENTO_RUTAADJUNTO));
 
                 }
             });
@@ -1718,9 +1717,9 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                 @Override
                 public void onClick(View v) {
 
-                    if (!modelo.getString(EVENTO_DIRECCION).equals("")){
+                    if (!modeloSQL.getString(EVENTO_DIRECCION).equals("")) {
 
-                        viewOnMapA(contexto,modelo.getString(EVENTO_DIRECCION));
+                        viewOnMapA(contexto, modeloSQL.getString(EVENTO_DIRECCION));
                     }
 
                 }
@@ -1737,7 +1736,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                         ContentValues valores = new ContentValues();
 
                         ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_COMPLETADA, "100");
-                        ConsultaBD.updateRegistro(TABLA_EVENTO, modelo.getString
+                        ConsultaBD.updateRegistro(TABLA_EVENTO, modeloSQL.getString
                                 (EVENTO_ID_EVENTO), valores);
                         porccompleta.setVisibility(View.GONE);
                         pbar.setVisibility(View.GONE);
@@ -1751,14 +1750,14 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                 @Override
                 public void onClick(View v) {
 
-                    id = modelo.getString(EVENTO_ID_EVENTO);
+                    id = modeloSQL.getString(EVENTO_ID_EVENTO);
                     maestroDetalle();
                     setDatos();
 
 
                 }
             });
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override
@@ -1771,12 +1770,12 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View itemView, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View itemView, ArrayList<ModeloSQL> entrada) {
 
             TextView descripcion,fechaini,telefono,lugar,nomPryRel,nomCliRel,
                     fechafin, horaini,horafin,porccompleta,email,tipo;
@@ -1949,7 +1948,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                 R.layout.item_list_proyecto,listaProyectos,CAMPOS_PROYECTO) {
 
             @Override
-            protected void setEntradas(int posicion, View view, ArrayList<Modelo> entrada) {
+            protected void setEntradas(int posicion, View view, ArrayList<ModeloSQL> entrada) {
 
                 ImageView imagen = view.findViewById(R.id.imglistaproyectos);
                 TextView nombre = view.findViewById(R.id.tvnombrelistaproyectos);
@@ -2024,9 +2023,9 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                 TextView emailCli = view.findViewById(R.id.tvemailclilcliente);
                 TextView dirCli = view.findViewById(R.id.tvdirclilcliente);
 
-                dirCli.setText(((Modelo) entrada).getString(CLIENTE_DIRECCION));
+                dirCli.setText(((ModeloSQL) entrada).getString(CLIENTE_DIRECCION));
 
-                int peso = ((Modelo) entrada).getInt
+                int peso = ((ModeloSQL) entrada).getInt
                         (CLIENTE_PESOTIPOCLI);
 
                 /*
@@ -2042,11 +2041,11 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
                  */
 
-                nombreCli.setText(((Modelo) entrada).getString(CLIENTE_NOMBRE));
-                contactoCli.setText(((Modelo) entrada).getString(CLIENTE_CONTACTO));
-                telefonoCli.setText(((Modelo) entrada).getString(CLIENTE_TELEFONO));
-                emailCli.setText(((Modelo) entrada).getString(CLIENTE_EMAIL));
-                //imgcli.setImageUriPerfil(activityBase, ((Modelo) entrada).getString(CLIENTE_RUTAFOTO));
+                nombreCli.setText(((ModeloSQL) entrada).getString(CLIENTE_NOMBRE));
+                contactoCli.setText(((ModeloSQL) entrada).getString(CLIENTE_CONTACTO));
+                telefonoCli.setText(((ModeloSQL) entrada).getString(CLIENTE_TELEFONO));
+                emailCli.setText(((ModeloSQL) entrada).getString(CLIENTE_EMAIL));
+                //imgcli.setImageUriPerfil(activityBase, ((ModeloSQL) entrada).getString(CLIENTE_RUTAFOTO));
 
 
             }
@@ -2061,8 +2060,8 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                     for (int i = 2; i < CAMPOS_CLIENTE.length; i += 3) {
 
 
-                        if (((Modelo) item).getString(CAMPOS_CLIENTE[i]) != null && !((Modelo) item).getString(CAMPOS_CLIENTE[i]).equals("")) {
-                            if (((Modelo) item).getString(CAMPOS_CLIENTE[i]).toLowerCase().contains(constraint.toString().toLowerCase())) {
+                        if (((ModeloSQL) item).getString(CAMPOS_CLIENTE[i]) != null && !((ModeloSQL) item).getString(CAMPOS_CLIENTE[i]).equals("")) {
+                            if (((ModeloSQL) item).getString(CAMPOS_CLIENTE[i]).toLowerCase().contains(constraint.toString().toLowerCase())) {
 
                                 suggestion.add(item);
                                 break;

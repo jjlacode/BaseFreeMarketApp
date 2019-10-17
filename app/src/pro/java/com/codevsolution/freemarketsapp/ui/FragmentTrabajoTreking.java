@@ -10,14 +10,14 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.crud.FragmentRVR;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
@@ -44,16 +44,16 @@ public class FragmentTrabajoTreking extends FragmentRVR implements Interactor.Co
     }
 
     @Override
-    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<Modelo> lista, String[] campos) {
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
     }
 
     @Override
-    public void setOnClickRV(String id, int secuencia, Modelo modelo) {
+    public void setOnClickRV(String id, int secuencia, ModeloSQL modeloSQL) {
 
         bundle = new Bundle();
         putBundle(CAMPO_ID, id);
-        putBundle(MODELO, modelo);
+        putBundle(MODELO, modeloSQL);
         putBundle(CAMPO_SECUENCIA, secuencia);
         icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
     }
@@ -123,12 +123,12 @@ public class FragmentTrabajoTreking extends FragmentRVR implements Interactor.Co
 
     public class AdaptadorFiltroModelo extends ListaAdaptadorFiltroModelo {
 
-        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<Modelo> entradas, String[] campos) {
+        public AdaptadorFiltroModelo(Context contexto, int R_layout_IdView, ArrayList<ModeloSQL> entradas, String[] campos) {
             super(contexto, R_layout_IdView, entradas, campos);
         }
 
         @Override
-        protected void setEntradas(int posicion, View itemView, ArrayList<Modelo> entrada) {
+        protected void setEntradas(int posicion, View itemView, ArrayList<ModeloSQL> entrada) {
 
             TextView tipo, nombre, ltiempo, lcantidad, limporte, tiempo, cantidad, importe;
             ImageView imagen;
@@ -197,33 +197,33 @@ public class FragmentTrabajoTreking extends FragmentRVR implements Interactor.Co
         }
 
         @Override
-        public void bind(Modelo modelo) {
+        public void bind(ModeloSQL modeloSQL) {
 
-            String id = modelo.getString(DETPARTIDA_ID_PARTIDA);
-            int secuencia = modelo.getInt(DETPARTIDA_SECUENCIA);
-            modelo = queryObjectDetalle(CAMPOS_DETPARTIDA, id, secuencia);
+            String id = modeloSQL.getString(DETPARTIDA_ID_PARTIDA);
+            int secuencia = modeloSQL.getInt(DETPARTIDA_SECUENCIA);
+            modeloSQL = queryObjectDetalle(CAMPOS_DETPARTIDA, id, secuencia);
 
-            nombre.setText(modelo.getString(DETPARTIDA_NOMBRE));
+            nombre.setText(modeloSQL.getString(DETPARTIDA_NOMBRE));
 
             try {
                 MediaUtil mediaUtil = new MediaUtil(contexto);
-                mediaUtil.setImageUriCircle(modelo.getString(DETPARTIDA_RUTAFOTO), imagen);
+                mediaUtil.setImageUriCircle(modeloSQL.getString(DETPARTIDA_RUTAFOTO), imagen);
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             long ahora = hoy();
-            Modelo partida = queryObject(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, id, null, IGUAL, null);
+            ModeloSQL partida = queryObject(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, id, null, IGUAL, null);
             nomPartida.setText(partida.getString(PARTIDA_NOMBRE));
             double cantidadTotal = partida.getDouble(PARTIDA_CANTIDAD);
-            double tiempodet = (modelo.getDouble(DETPARTIDA_TIEMPO) * cantidadTotal * HORASLONG) / 1000;
-            double tiemporeal = (modelo.getDouble(DETPARTIDA_TIEMPOREAL) * HORASLONG) / 1000;
+            double tiempodet = (modeloSQL.getDouble(DETPARTIDA_TIEMPO) * cantidadTotal * HORASLONG) / 1000;
+            double tiemporeal = (modeloSQL.getDouble(DETPARTIDA_TIEMPOREAL) * HORASLONG) / 1000;
             String idProyecto = partida.getString(PARTIDA_ID_PROYECTO);
-            Modelo proyecto = queryObject(CAMPOS_PROYECTO, idProyecto);
+            ModeloSQL proyecto = queryObject(CAMPOS_PROYECTO, idProyecto);
             proy.setText(proyecto.getString(PROYECTO_NOMBRE));
-            long contador = modelo.getLong(DETPARTIDA_CONTADOR);
-            long pausa = modelo.getLong(DETPARTIDA_PAUSA);
+            long contador = modeloSQL.getLong(DETPARTIDA_CONTADOR);
+            long pausa = modeloSQL.getLong(DETPARTIDA_PAUSA);
             if (pausa > 0) {
                 ahora = pausa;
                 imgEstado.setImageResource(R.drawable.ic_pausa_indigo);
@@ -255,7 +255,7 @@ public class FragmentTrabajoTreking extends FragmentRVR implements Interactor.Co
                     R.color.Color_contador_notok, card, R.color.Color_card_ok, R.color.Color_card_acept,
                     R.color.Color_card_notok);
 
-            super.bind(modelo);
+            super.bind(modeloSQL);
         }
 
         @Override

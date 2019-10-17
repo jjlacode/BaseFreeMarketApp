@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codevsolution.base.models.ListaModelo;
-import com.codevsolution.base.models.Modelo;
+import com.codevsolution.base.models.ModeloSQL;
 
 import java.util.ArrayList;
 
@@ -31,7 +31,7 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
         this.list = list;
         this.tipoVH = LISTA;
-        if (list != null && list.size() > 0 && list.get(0) instanceof Modelo) {
+        if (list != null && list.size() > 0 && list.get(0) instanceof ModeloSQL) {
             tipoVH = MODELO;
         }
         this.layout = layout;
@@ -43,8 +43,8 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
         this.listaModelo = list;
         this.list = new ArrayList();
-        for (ArrayList<Modelo> modeloArrayList : listaModelo) {
-            this.list.add(modeloArrayList.size());
+        for (ArrayList<ModeloSQL> modeloSQLArrayList : listaModelo) {
+            this.list.add(modeloSQLArrayList.size());
         }
         this.tipoVH = LISTAMODELO;
         this.layout = layout;
@@ -77,7 +77,7 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
         } else if (tipoVH != null && tipoVH.equals(MODELO)) {
 
-            holder.bind((Modelo) list.get(position));
+            holder.bind((ModeloSQL) list.get(position));
         } else {
 
             holder.bind(list, position);
@@ -97,8 +97,8 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
     public void addAll(ListaModelo lista) {
         listaModelo.addAll(lista);
         this.list = new ArrayList();
-        for (ArrayList<Modelo> modeloArrayList : listaModelo) {
-            this.list.add(modeloArrayList.size());
+        for (ArrayList<ModeloSQL> modeloSQLArrayList : listaModelo) {
+            this.list.add(modeloSQLArrayList.size());
         }
         notifyDataSetChanged();
     }
@@ -113,8 +113,8 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
         listaModelo.clear();
         listaModelo.addAll(lista);
         this.list = new ArrayList();
-        for (ArrayList<Modelo> modeloArrayList : listaModelo) {
-            this.list.add(modeloArrayList.size());
+        for (ArrayList<ModeloSQL> modeloSQLArrayList : listaModelo) {
+            this.list.add(modeloSQLArrayList.size());
         }
         notifyDataSetChanged();
     }
