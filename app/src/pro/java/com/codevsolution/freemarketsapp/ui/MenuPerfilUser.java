@@ -3,16 +3,16 @@ package com.codevsolution.freemarketsapp.ui;
 import android.os.Bundle;
 import android.view.View;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.codevsolution.base.android.FragmentGrid;
+import com.codevsolution.base.android.FragmentGridImagen;
 import com.codevsolution.base.web.FragmentWebView;
 import com.codevsolution.freemarketsapp.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.HTTPAYUDA;
 
-public class MenuPerfilUser extends FragmentGrid {
+public class MenuPerfilUser extends FragmentGridImagen {
 
     private String clienteWeb;
     private String freelance;

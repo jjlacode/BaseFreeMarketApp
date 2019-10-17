@@ -3,11 +3,11 @@ package com.codevsolution.freemarketsapp.ui;
 import android.os.Bundle;
 import android.view.View;
 
+import com.codevsolution.base.android.FragmentGridImagen;
 import com.codevsolution.base.chat.FragmentChatBase;
-import com.google.firebase.auth.FirebaseAuth;
-import com.codevsolution.base.android.FragmentGrid;
 import com.codevsolution.base.web.FragmentWebView;
 import com.codevsolution.freemarketsapp.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
@@ -16,7 +16,7 @@ import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.H
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODFREELANCE;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODPROVCAT;
 
-public class MenuPublicidad extends FragmentGrid {
+public class MenuPublicidad extends FragmentGridImagen {
 
     private String altaProdProvWeb;
     private String clientes;

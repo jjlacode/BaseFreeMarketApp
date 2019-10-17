@@ -1,16 +1,14 @@
 package com.codevsolution.freemarketsapp.ui;
 
-import android.os.Bundle;
 import android.view.View;
 
-import com.codevsolution.base.android.FragmentGrid;
+import com.codevsolution.base.android.FragmentGridImagen;
 import com.codevsolution.base.pay.chargebee.SuscripcionesChargebee;
 import com.codevsolution.freemarketsapp.R;
+
 import java.util.ArrayList;
 
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODUCTOPRO;
-
-public class MenuInicio extends FragmentGrid {
+public class MenuInicio extends FragmentGridImagen {
 
     private String um;
     private String crm;

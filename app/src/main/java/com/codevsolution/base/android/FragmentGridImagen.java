@@ -1,4 +1,4 @@
-package com.codevsolution.base.android.controls;
+package com.codevsolution.base.android;
 
 import android.content.Context;
 import android.view.View;
@@ -6,114 +6,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
-import com.codevsolution.base.android.FragmentRV;
 import com.codevsolution.freemarketsapp.R;
 
 import java.util.ArrayList;
 
-public class FragmentGridImagen extends FragmentRV {
+public class FragmentGridImagen extends FragmentGrid {
 
-    protected int columnas = 3;
-    protected int filas = 4;
-    protected int altoimg = 100;
-    protected int anchoimg = 100;
-    protected int padtxt = 20;
-    protected int padalto = 10;
-    protected int padancho = 10;
-    private float sizeT;
-    private float relScreen;
-
-    public FragmentGridImagen() {
-        // Required empty public constructor
-    }
-
-    @Override
-    protected void setLayout() {
-
-        layoutItem = R.layout.item_grid;
-    }
-
-    @Override
-    protected void setInicio() {
-
-
-        bundle = getArguments();
-        if (bundle != null) {
-
-            origen = bundle.getString(ORIGEN);
-            bundle = null;
-        }
-
-        //frCuerpo.setOrientation(LinearLayout.VERTICAL);
-        gone(frameAnimationCuerpo);
-        gone(frPie);
-        frCuerpo.setPadding(0, 0, 0, 0);
-
-        relScreen = (float) alto / (float) ancho;
-
-        setLista();
-
-        if (land) {
-
-            for (int i = lista.size(); i > 0; i--) {
-                filas = i;
-                columnas = (int) ((double) lista.size() / i) + (lista.size() % i);
-                if (filas >= columnas - 1) {
-                    continue;
-                }
-                break;
-            }
-
-        } else {
-            for (int i = 1; i < lista.size(); i++) {
-                columnas = i;
-                filas = (int) ((double) lista.size() / i);
-                if (lista.size() % i > 0) {
-                    filas++;
-                }
-                if (filas > columnas + 1) {
-                    continue;
-                }
-                break;
-            }
-        }
-
-        anchoimg = ancho / columnas;
-        altoimg = alto / filas;
-        padancho = (int) ((double) (anchoimg) / (4));
-        padalto = (int) ((double) (altoimg) / (4));
-        padtxt = (int) ((double) padancho / 2);
-
-        sizeT = (sizeText * 4) / 5;
-        contexto = getContext();
-
-    }
-
-    @Override
-    protected void onSetRV() {
-        super.onSetRV();
-        gone(lupa);
-        gone(auto);
-        gone(renovar);
-        gone(voz);
-        gone(inicio);
-        gone(activityBase.fabNuevo);
-        visible(activityBase.fabVoz);
-
-    }
-
-    @Override
-    protected void setManagerRV() {
-        super.setManagerRV();
-
-        layoutManager = new GridLayoutManager(contexto, columnas);
-
-    }
 
     @Override
     protected TipoViewHolder setViewHolder(View view) {

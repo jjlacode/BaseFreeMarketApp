@@ -1,7 +1,6 @@
 package com.codevsolution.freemarketsapp.ui;
 
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -17,28 +16,26 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.LinearLayoutCompat;
 
-import com.codevsolution.base.android.controls.EditMaterialLayout;
-import com.codevsolution.base.android.controls.ImagenLayout;
-import com.codevsolution.base.android.controls.ViewGroupLayout;
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
+import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModelo;
 import com.codevsolution.base.models.Modelo;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.DatePickerFragment;
 import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.base.time.TimePickerFragment;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.codevsolution.freemarketsapp.templates.PresupuestoPDF;
@@ -46,7 +43,6 @@ import com.codevsolution.freemarketsapp.templates.PresupuestoPDF;
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
-import static com.codevsolution.base.javautil.JavaUtil.getTime;
 import static com.codevsolution.base.sqlite.ConsultaBD.checkQueryList;
 import static com.codevsolution.base.sqlite.ConsultaBD.insertRegistro;
 import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
@@ -909,13 +905,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
             }
 
-            if (modelo.getLong(PROYECTO_FECHAINICIOACORDADA) > 0 &&
-                    modelo.getLong(PROYECTO_HORAINICIOACORDADA) > 0) {
-                btnActualizar.setVisibility(View.VISIBLE);
-            }else{
-                btnActualizar.setVisibility(View.GONE);
-            }
-
         }
 
 
@@ -1571,61 +1560,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         }
         super.onActivityResult(requestCode, resultCode, data);
 
-    }
-
-    public void showTimePickerDialogAcordada(){
-
-        TimePickerFragment newFragment = TimePickerFragment.newInstance
-                (horaInicioCalculada, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-
-                        System.out.println("hourOfDay = " + hourOfDay);
-                        System.out.println("minute = " + minute);
-                        horaInicioCalculada = JavaUtil.horaALong(hourOfDay, minute);
-                        System.out.println("hora a long " + JavaUtil.horaALong(hourOfDay, minute));
-                        String selectedHour = TimeDateUtil.getTimeString(horaInicioCalculada);
-                        horaInicioCalculadaPry.setText(selectedHour);
-                        valores = new ContentValues();
-                        setDato(PROYECTO_HORAINICIOCALCULADA,horaInicioCalculada);
-                        setDato(PROYECTO_HORAINICIOCALCULADAF,selectedHour);
-                        updateRegistro(tabla,id,valores);
-                        Interactor.Calculos.recalcularFechas(false);
-                        System.out.println("modelo.getString(PROYECTO_FECHAENTREGACALCULADAF) = " + modelo.getString(PROYECTO_FECHAENTREGACALCULADAF));
-                        fechaCalculadaPry.setText(modelo.getString(PROYECTO_FECHAENTREGACALCULADAF));
-                        setDatos();
-
-                    }
-                });
-        newFragment.show(getActivity().getSupportFragmentManager(),"timePicker");
-
-    }
-
-
-    private void showDatePickerDialogAcordada() {
-        DatePickerFragment newFragment = DatePickerFragment.newInstance
-                (TimeDateUtil.ahora(), new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                        fechaInicioCalculada = JavaUtil.fechaALong(year, month, day);
-                        if (fechaInicioCalculada>0){
-                            visible(fechaEntregaPresup.getLinearLayout());
-                        }
-                        String selectedDate = TimeDateUtil.getDateString(fechaInicioCalculada);
-                        fechaInicioCalculadaPry.setText(selectedDate);
-                        btnActualizar.setVisibility(View.VISIBLE);
-                        valores = new ContentValues();
-                        setDato(PROYECTO_FECHAINICIOCALCULADA,fechaInicioCalculada);
-                        setDato(PROYECTO_FECHAINICIOCALCULADAF,selectedDate);
-                        updateRegistro(tabla,id,valores);
-                        Interactor.Calculos.recalcularFechas(false);
-                        System.out.println("modelo.getString(PROYECTO_FECHAENTREGACALCULADAF) = " + modelo.getString(PROYECTO_FECHAENTREGACALCULADAF));
-                        fechaCalculadaPry.setText(modelo.getString(PROYECTO_FECHAENTREGACALCULADAF));
-                        setDatos();
-
-                    }
-                });
-        newFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
     }
 
     private void showDatePickerDialogEntrega() {

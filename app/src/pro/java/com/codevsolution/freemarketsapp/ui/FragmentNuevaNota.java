@@ -3,7 +3,7 @@ package com.codevsolution.freemarketsapp.ui;
 import android.os.Bundle;
 import android.view.View;
 
-import com.codevsolution.base.android.FragmentGrid;
+import com.codevsolution.base.android.FragmentGridImagen;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import static com.codevsolution.base.time.calendar.clases.DiaCalBase.HORACAL;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.NOTA;
 
-public class FragmentNuevaNota extends FragmentGrid implements Interactor.TiposNota {
+public class FragmentNuevaNota extends FragmentGridImagen implements Interactor.TiposNota {
 
     private String notaTexto;
     private String notaAudio;

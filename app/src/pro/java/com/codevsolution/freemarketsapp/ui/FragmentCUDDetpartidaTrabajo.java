@@ -19,14 +19,13 @@ import android.widget.TimePicker;
 
 import androidx.appcompat.widget.LinearLayoutCompat;
 
+import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
-import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.android.AndroidUtil;
-import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCUD;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModelo;
 import com.codevsolution.base.models.Modelo;
@@ -47,7 +46,6 @@ import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryObject;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryObjectDetalle;
-import static com.codevsolution.base.sqlite.ConsultaBD.updateRegistro;
 import static com.codevsolution.base.sqlite.ConsultaBD.updateRegistroDetalle;
 
 public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interactor.ConstantesPry,
@@ -328,7 +326,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
                 completadaPartida.getEditText(), trek, R.color.Color_contador_ok, R.color.Color_contador_acept,
                 R.color.Color_contador_notok);
 
-        if (getTipoEstado(partida.getString(PARTIDA_ID_ESTADO)) <= -1) {//TPRESUPACEPTADO) {
+        if (getTipoEstado(partida.getString(PARTIDA_ID_ESTADO)) <= TPRESUPACEPTADO) {//TPRESUPACEPTADO) {
 
             progressBarPartida.setVisibility(View.GONE);
             completadaPartida.getLinearLayout().setVisibility(View.GONE);

@@ -2,15 +2,13 @@ package com.codevsolution.freemarketsapp.ui;
 
 import android.view.View;
 
-import com.codevsolution.base.android.FragmentGrid;
+import com.codevsolution.base.android.FragmentGridImagen;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
 
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.EVENTO;
-
-public class FragmentTablas extends FragmentGrid implements Interactor.ConstantesPry {
+public class FragmentTablas extends FragmentGridImagen implements Interactor.ConstantesPry {
 
     private String eventos;
     private String proyectos;

@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import com.codevsolution.base.android.FragmentGrid;
+import com.codevsolution.base.android.FragmentGridImagen;
 import com.codevsolution.base.models.ListaModelo;
 import com.codevsolution.base.models.Modelo;
 import com.codevsolution.base.sqlite.ConsultaBD;
@@ -17,7 +17,7 @@ import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.C
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PARTIDA;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRESUPUESTO;
 
-public class MenuGestionProyectos extends FragmentGrid implements ContratoPry.Tablas {
+public class MenuGestionProyectos extends FragmentGridImagen implements ContratoPry.Tablas {
 
     private String productos;
     private String proyectosCurso;

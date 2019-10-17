@@ -1,20 +1,16 @@
 package com.codevsolution.freemarketsapp.ui;
 
-import android.os.Bundle;
 import android.view.View;
 
+import com.codevsolution.base.android.FragmentGridImagen;
 import com.codevsolution.base.chat.FragmentChatBase;
-import com.google.firebase.auth.FirebaseAuth;
-import com.codevsolution.base.android.FragmentGrid;
-import com.codevsolution.base.web.FragmentWebView;
 import com.codevsolution.freemarketsapp.R;
 
 import java.util.ArrayList;
 
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.HTTPAYUDA;
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.SORTEOS;
 
-public class MenuMarketing extends FragmentGrid {
+public class MenuMarketing extends FragmentGridImagen {
 
     private String campanias;
     private String clientes;

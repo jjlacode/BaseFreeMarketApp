@@ -3,7 +3,7 @@ package com.codevsolution.freemarketsapp.ui;
 import android.os.Bundle;
 import android.view.View;
 
-import com.codevsolution.base.android.FragmentGrid;
+import com.codevsolution.base.android.FragmentGridImagen;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import static com.codevsolution.base.time.calendar.clases.DiaCalBase.HORACAL;
 
-public class FragmentNuevoEvento extends FragmentGrid implements Interactor.ConstantesPry, Interactor.TiposEvento {
+public class FragmentNuevoEvento extends FragmentGridImagen implements Interactor.ConstantesPry, Interactor.TiposEvento {
 
     private String nuevaTarea;
     private String nuevaCita;

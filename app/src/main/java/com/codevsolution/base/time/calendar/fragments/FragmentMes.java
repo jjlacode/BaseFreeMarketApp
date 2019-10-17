@@ -10,21 +10,25 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.FragmentBase;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.animation.OneFrameLayout;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModelo;
 import com.codevsolution.base.models.Modelo;
 import com.codevsolution.base.sqlite.ContratoPry;
@@ -83,6 +87,8 @@ public abstract class FragmentMes extends FragmentBase implements
     protected long fecha;
     protected String[] campos;
     protected String campo;
+    protected String campoCard;
+    protected String campoId;
     protected int layoutItem;
     protected ListaModelo listabase;
     private RVAdapter adaptadorRV;
@@ -118,7 +124,6 @@ public abstract class FragmentMes extends FragmentBase implements
     private GregorianCalendar cbusca;
     protected String tipoRV;
 
-    private Context context;
     private OneFrameLayout fragment_container;
     private LinearLayoutCompat main;
     private RecyclerView recyclerViewDays;
@@ -138,7 +143,7 @@ public abstract class FragmentMes extends FragmentBase implements
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = getActivity();
+        contexto = getActivity();
 
         month = getCurrentMonth();
         year = getCurrentYear();
@@ -179,8 +184,8 @@ public abstract class FragmentMes extends FragmentBase implements
 
         fragment_container = view.findViewById(R.id.fragment_animation);
         main = view.findViewById(R.id.main);
-        recyclerViewDays = (RecyclerView) view.findViewById(R.id.recyclerView);
-        recyclerViewDays.setLayoutManager(new GridLayoutManager(context, 7));
+        recyclerViewDays = view.findViewById(R.id.recyclerView);
+        recyclerViewDays.setLayoutManager(new GridLayoutManager(contexto, 7));
         rv = (RecyclerView) ctrl(R.id.rvcalendario);
         nuevo = (ImageButton) ctrl(R.id.btn_nuevo_item_calendario);
         verLista = (ImageButton) ctrl(R.id.btn_ver_lista_calendario);
@@ -356,7 +361,21 @@ public abstract class FragmentMes extends FragmentBase implements
 
                             if (dia.getLista() != null) {
                                 for (Modelo modelo : dia.getLista()) {
-                                    listaModeloSimple.addModelo(modelo);
+                                    boolean nuevo = true;
+                                    System.out.println("campoId = " + campoId);
+                                    if (campoId != null) {
+                                        for (Modelo modeloTmp : listaModeloSimple.getLista()) {
+                                            System.out.println("modelo.getString(campoId) = " + modelo.getString(campoId));
+                                            System.out.println("modeloTmp.getString(campoId) = " + modeloTmp.getString(campoId));
+                                            if (modelo.getString(campoId).equals(modeloTmp.getString(campoId))) {
+                                                nuevo = false;
+                                            }
+                                        }
+                                    }
+                                    System.out.println("nuevo = " + nuevo);
+                                    if (nuevo) {
+                                        listaModeloSimple.addModelo(modelo);
+                                    }
                                 }
                             }
                         }
@@ -416,7 +435,21 @@ public abstract class FragmentMes extends FragmentBase implements
 
                 ListaModelo listaFija = setListaFija();
                 for (Modelo modelo : listaFija.getLista()) {
-                    listaModeloFinal.addModelo(modelo);
+                    boolean nuevo = true;
+                    System.out.println("campoId = " + campoId);
+                    if (campoId != null) {
+                        for (Modelo modeloTmp : listaModeloFinal.getLista()) {
+                            System.out.println("modelo.getString(campoId) = " + modelo.getString(campoId));
+                            System.out.println("modeloTmp.getString(campoId) = " + modeloTmp.getString(campoId));
+                            if (modelo.getString(campoId).equals(modeloTmp.getString(campoId))) {
+                                nuevo = false;
+                            }
+                        }
+                    }
+                    System.out.println("nuevo = " + nuevo);
+                    if (nuevo) {
+                        listaModeloFinal.addModelo(modelo);
+                    }
                 }
 
                 listaSeleccionadosFinal = new ListaDays();
@@ -534,7 +567,17 @@ public abstract class FragmentMes extends FragmentBase implements
                             ListaModelo lista = setListaDia(dia.getFechaLong());
                             if (lista.getLista() != null) {
                                 for (Modelo modelo : lista.getLista()) {
-                                    listaModeloMulti.addModelo(modelo);
+                                    boolean nuevo = true;
+                                    if (campoId != null) {
+                                        for (Modelo modeloTmp : listaModeloMulti.getLista()) {
+                                            if (modelo.getString(campoId) == (modeloTmp.getString(campoId))) {
+                                                nuevo = false;
+                                            }
+                                        }
+                                    }
+                                    if (nuevo) {
+                                        listaModeloMulti.addModelo(modelo);
+                                    }
                                 }
                             }
                         }
@@ -878,7 +921,17 @@ public abstract class FragmentMes extends FragmentBase implements
                     ListaModelo lista = setListaDia(dia.getFechaLong());
                     if (lista.getLista() != null) {
                         for (Modelo modelo : lista.getLista()) {
-                            listaModeloMulti.addModelo(modelo);
+                            boolean nuevo = true;
+                            if (campoId != null) {
+                                for (Modelo modeloTmp : listaModeloMulti.getLista()) {
+                                    if (modelo.getString(campoId).equals(modeloTmp.getString(campoId))) {
+                                        nuevo = false;
+                                    }
+                                }
+                            }
+                            if (nuevo) {
+                                listaModeloMulti.addModelo(modelo);
+                            }
                         }
                     }
                 }
@@ -929,7 +982,17 @@ public abstract class FragmentMes extends FragmentBase implements
 
         ListaModelo listaFija = setListaFija();
         for (Modelo modelo : listaFija.getLista()) {
-            listaModeloFinal.addModelo(modelo);
+            boolean nuevo = true;
+            if (campoId != null) {
+                for (Modelo modeloTmp : listaModeloFinal.getLista()) {
+                    if (modelo.getString(campoId).equals(modeloTmp.getString(campoId))) {
+                        nuevo = false;
+                    }
+                }
+                if (nuevo) {
+                    listaModeloFinal.addModelo(modelo);
+                }
+            }
         }
 
 
@@ -1201,7 +1264,7 @@ public abstract class FragmentMes extends FragmentBase implements
 
 
             if (lista.sizeLista() > 0) {
-                days.add(new Day(calendar, context.getResources().getColor(R.color.Color_card_notok), context.getResources().getColor(R.color.Color_card_notok), lista.getLista(), squares));
+                days.add(new Day(calendar, contexto.getResources().getColor(R.color.Color_card_notok), contexto.getResources().getColor(R.color.Color_card_notok), lista.getLista(), squares));
             } else if (hoy.get(Calendar.YEAR) == year && hoy.get(Calendar.MONTH) == month && this.currentDay == i) {
                 days.add(new Day(calendar, textColorCurrentDayDay, currentDayBackgroundColor, squares));
             } else {
@@ -1244,7 +1307,17 @@ public abstract class FragmentMes extends FragmentBase implements
 
                 for (Modelo modelo : listaBusca.getLista()) {
 
-                    listaModeloSimple.addModelo(modelo);
+                    boolean nuevo = true;
+                    if (campoId != null) {
+                        for (Modelo modeloTmp : listaModeloSimple.getLista()) {
+                            if (modelo.getString(campoId).equals(modeloTmp.getString(campoId))) {
+                                nuevo = false;
+                            }
+                        }
+                    }
+                    if (nuevo) {
+                        listaModeloSimple.addModelo(modelo);
+                    }
                 }
             }
 
@@ -1297,9 +1370,13 @@ public abstract class FragmentMes extends FragmentBase implements
 
         setLanguage(lenguaje);
 
-        rvAdapter = new RVAdapter(new ViewHolderRV(view), days, R.layout.item_calendar);
+        rvAdapter = new RVAdapter(setViewHolderCal(view), days, R.layout.item_list_layout);
         recyclerViewDays.setAdapter(rvAdapter);
         onDayClickListener.onAdapterAttach();
+    }
+
+    protected TipoViewHolder setViewHolderCal(View view) {
+        return new ViewHolderRV(view);
     }
 
     protected ListaDays getlistaTotal() {
@@ -1563,7 +1640,7 @@ public abstract class FragmentMes extends FragmentBase implements
     }
 
 
-    private OnDayClickListener onDayClickListener;
+    protected OnDayClickListener onDayClickListener;
 
     public void setOnDayClickListener(OnDayClickListener onDayClickListener) {
         this.onDayClickListener = onDayClickListener;
@@ -1799,21 +1876,26 @@ public abstract class FragmentMes extends FragmentBase implements
         private int textColorFinDay, backgroundColorFinDay;
         private int textColorMultiDay, backgroundColorMultiDay;
         private int textColorBuscaDay, backgroundColorBuscaDay;
+        RelativeLayout relativeLayout;
+        RecyclerView recyclerView;
+        CardView card;
+
 
         public ViewHolderRV(View itemView) {
             super(itemView);
 
-            btnDia = (Button) itemView.findViewById(R.id.textViewDay);
-            this.textColorSelectedDay = context.getResources().getColor(R.color.Color_contador_notok);
-            this.backgroundColorSelectedDay = context.getResources().getColor(R.color.Color_contador_notok);
-            this.textColorInicioDay = context.getResources().getColor(R.color.Color_contador_acept);
-            this.backgroundColorInicioDay = context.getResources().getColor(R.color.Color_contador_acept);
-            this.textColorFinDay = context.getResources().getColor(R.color.Color_contador_ok);
-            this.backgroundColorFinDay = context.getResources().getColor(R.color.Color_contador_ok);
-            this.textColorMultiDay = context.getResources().getColor(R.color.colorSecondaryDark);
-            this.backgroundColorMultiDay = context.getResources().getColor(R.color.colorSecondaryDark);
-            this.textColorBuscaDay = context.getResources().getColor(R.color.Color_busqueda);
-            this.backgroundColorBuscaDay = context.getResources().getColor(R.color.Color_busqueda);
+            relativeLayout = itemView.findViewById(R.id.ry_item_list);
+            btnDia = itemView.findViewById(R.id.textViewDay);
+            this.textColorSelectedDay = contexto.getResources().getColor(R.color.Color_contador_notok);
+            this.backgroundColorSelectedDay = contexto.getResources().getColor(R.color.Color_contador_notok);
+            this.textColorInicioDay = contexto.getResources().getColor(R.color.Color_contador_acept);
+            this.backgroundColorInicioDay = contexto.getResources().getColor(R.color.Color_contador_acept);
+            this.textColorFinDay = contexto.getResources().getColor(R.color.Color_contador_ok);
+            this.backgroundColorFinDay = contexto.getResources().getColor(R.color.Color_contador_ok);
+            this.textColorMultiDay = contexto.getResources().getColor(R.color.colorSecondaryDark);
+            this.backgroundColorMultiDay = contexto.getResources().getColor(R.color.colorSecondaryDark);
+            this.textColorBuscaDay = contexto.getResources().getColor(R.color.Color_busqueda);
+            this.backgroundColorBuscaDay = contexto.getResources().getColor(R.color.Color_busqueda);
         }
 
         @Override
@@ -1823,6 +1905,29 @@ public abstract class FragmentMes extends FragmentBase implements
             Calendar cal = dia.getDate();//Calendar.getInstance();
             //cal.setTime(dia.getDate());
             int nday = cal.get(Calendar.DAY_OF_MONTH);
+            int pad = (int) sizeText / 2;
+
+            ViewGroupLayout vistaCard = new ViewGroupLayout(contexto, relativeLayout, new CardView(contexto));
+            card = (CardView) vistaCard.getViewGroup();
+            LinearLayoutCompat mainLinear = (LinearLayoutCompat) vistaCard.addVista(new LinearLayoutCompat(contexto));
+            mainLinear.setOrientation(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+            ViewGroupLayout vistaLinear = new ViewGroupLayout(contexto, mainLinear);
+
+            btnDia = vistaLinear.addButtonTrans(null);
+            btnDia.setPadding(pad, pad, pad, pad);
+
+            if (campoCard != null) {
+                recyclerView = (RecyclerView) vistaLinear.addVista(new RecyclerView(contexto));
+                recyclerView.setLayoutManager(new LinearLayoutManager(contexto));
+                ListaModelo listaEvento = setListaDia(cal.getTimeInMillis());
+                RVAdapter adaptadorRV = new RVAdapter(setViewHolderCard(itemView),
+                        listaEvento.getLista(), R.layout.item_list_layout);
+                recyclerView.setAdapter(adaptadorRV);
+                LinearLayoutCompat.LayoutParams layoutParamsrv = new LinearLayoutCompat.LayoutParams
+                        (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                recyclerView.setLayoutParams(layoutParamsrv);
+            }
+
             btnDia.setText(nday + "");
             btnDia.setTextSize(sizeText);
 
@@ -1850,8 +1955,8 @@ public abstract class FragmentMes extends FragmentBase implements
             }
 
             if (dia.getFechaLong() == TimeDateUtil.soloFecha(JavaUtil.hoy())) {
-                btnDia.setBackgroundColor(context.getResources().getColor(R.color.colorSecondaryDark));
-                btnDia.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+                btnDia.setBackgroundColor(contexto.getResources().getColor(R.color.colorSecondaryDark));
+                btnDia.setTextColor(contexto.getResources().getColor(R.color.colorPrimary));
             }
 
             btnDia.setOnClickListener(new View.OnClickListener() {
@@ -1881,6 +1986,47 @@ public abstract class FragmentMes extends FragmentBase implements
             return new ViewHolderRV(view);
         }
     }
+
+    protected TipoViewHolder setViewHolderCard(View view) {
+        return new ViewHolderRVCard(view);
+    }
+
+    public class ViewHolderRVCard extends BaseViewHolder implements TipoViewHolder {
+
+        RelativeLayout relativeLayout;
+        CardView card;
+        private Button btnNombre;
+
+        public ViewHolderRVCard(View itemView) {
+            super(itemView);
+
+            relativeLayout = itemView.findViewById(R.id.ry_item_list);
+
+        }
+
+        @Override
+        public void bind(Modelo modelo) {
+
+            ViewGroupLayout vistaCard = new ViewGroupLayout(contexto, relativeLayout, new CardView(contexto));
+            card = (CardView) vistaCard.getViewGroup();
+            LinearLayoutCompat mainLinear = (LinearLayoutCompat) vistaCard.addVista(new LinearLayoutCompat(contexto));
+            ViewGroupLayout vistaLinear = new ViewGroupLayout(contexto, vistaCard.getViewGroup());
+            btnNombre = vistaLinear.addButtonSecondary(campoCard);
+            btnNombre.setTextSize(sizeText / 2);
+            LinearLayoutCompat.LayoutParams layoutParamsrv = new LinearLayoutCompat.LayoutParams
+                    (ViewGroup.LayoutParams.MATCH_PARENT, (int) getResources().getDimension(R.dimen.altobtn) / 2);
+            btnNombre.setLayoutParams(layoutParamsrv);
+
+
+            super.bind(modelo);
+        }
+
+        @Override
+        public BaseViewHolder holder(View view) {
+            return new ViewHolderRVCard(view);
+        }
+    }
+
 
     public interface DayOnClickListener {
         /**

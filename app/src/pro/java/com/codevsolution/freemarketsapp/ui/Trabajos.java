@@ -3,23 +3,27 @@ package com.codevsolution.freemarketsapp.ui;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
 
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModelo;
 import com.codevsolution.base.models.Modelo;
 import com.codevsolution.base.time.Day;
 import com.codevsolution.base.time.ListaDays;
 import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.base.time.calendar.fragments.FragmentMes;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
@@ -28,7 +32,7 @@ import java.util.ArrayList;
 import static com.codevsolution.freemarketsapp.logica.Interactor.TiposEstados.TPRESUPACEPTADO;
 import static com.codevsolution.freemarketsapp.logica.Interactor.TiposEstados.TPROYECTPENDCOBRO;
 
-public class Trabajos extends FragmentMes {
+public class Trabajos extends FragmentMesHorario {
 
     @Override
     protected ListaModelo setListaDia(long fecha) {
@@ -45,11 +49,10 @@ public class Trabajos extends FragmentMes {
         }
 
         for (Modelo modelo : listabase.getLista()) {
-
-            if (TimeDateUtil.soloFecha(modelo.getLong(PROYECTO_FECHAENTRADA))
-                    >= TimeDateUtil.soloFecha(fecha) &&
-                    TimeDateUtil.soloFecha(modelo.getLong(PROYECTO_FECHAENTREGAACORDADA))
-                            <= TimeDateUtil.soloFecha(fecha)) {
+            if (TimeDateUtil.soloFecha(modelo.getLong(PROYECTO_FECHAINICIOCALCULADA))
+                    <= TimeDateUtil.soloFecha(fecha) &&
+                    TimeDateUtil.soloFecha(modelo.getLong(PROYECTO_FECHAENTREGACALCULADA))
+                            >= TimeDateUtil.soloFecha(fecha)) {
 
                 listaDia.addModelo(modelo);
             }
@@ -81,7 +84,10 @@ public class Trabajos extends FragmentMes {
     protected void setCampos() {
 
         campos = CAMPOS_PROYECTO;
-        campo = PROYECTO_FECHAENTREGAACORDADA;
+        campo = PROYECTO_FECHAENTREGACALCULADA;
+        campoCard = PROYECTO_NOMBRE;
+        campoId = PROYECTO_ID_PROYECTO;
+
 
     }
 
@@ -101,10 +107,12 @@ public class Trabajos extends FragmentMes {
     @Override
     protected void setOnDayClick(Day day, int position) {
 
+
     }
 
     @Override
     protected void setOnDayLongClick(Day day, int position) {
+
 
     }
 
@@ -233,6 +241,47 @@ public class Trabajos extends FragmentMes {
         @Override
         public BaseViewHolder holder(View view) {
             return new ViewHolderRV(view);
+        }
+    }
+
+    @Override
+    protected TipoViewHolder setViewHolderCard(View view) {
+        return new ViewHolderRVCard(view);
+    }
+
+    public class ViewHolderRVCard extends BaseViewHolder implements TipoViewHolder {
+
+        RelativeLayout relativeLayout;
+        CardView card;
+        private Button btnNombre;
+
+        public ViewHolderRVCard(View itemView) {
+            super(itemView);
+
+            relativeLayout = itemView.findViewById(R.id.ry_item_list);
+
+        }
+
+        @Override
+        public void bind(Modelo modelo) {
+
+            ViewGroupLayout vistaCard = new ViewGroupLayout(contexto, relativeLayout, new CardView(contexto));
+            card = (CardView) vistaCard.getViewGroup();
+            LinearLayoutCompat mainLinear = (LinearLayoutCompat) vistaCard.addVista(new LinearLayoutCompat(contexto));
+            ViewGroupLayout vistaLinear = new ViewGroupLayout(contexto, vistaCard.getViewGroup());
+            btnNombre = vistaLinear.addButtonSecondary(modelo.getString(PROYECTO_NOMBRE));
+            btnNombre.setTextSize(sizeText / 2);
+            LinearLayoutCompat.LayoutParams layoutParamsrv = new LinearLayoutCompat.LayoutParams
+                    (ViewGroup.LayoutParams.MATCH_PARENT, (int) getResources().getDimension(R.dimen.altobtn) / 2);
+            btnNombre.setLayoutParams(layoutParamsrv);
+
+
+            super.bind(modelo);
+        }
+
+        @Override
+        public BaseViewHolder holder(View view) {
+            return new ViewHolderRVCard(view);
         }
     }
 

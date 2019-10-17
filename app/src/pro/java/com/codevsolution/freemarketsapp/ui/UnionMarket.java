@@ -1,14 +1,13 @@
 package com.codevsolution.freemarketsapp.ui;
 
-import android.os.Bundle;
 import android.view.View;
 
-import com.codevsolution.base.android.FragmentGrid;
+import com.codevsolution.base.android.FragmentGridImagen;
 import com.codevsolution.freemarketsapp.R;
 
 import java.util.ArrayList;
 
-public class UnionMarket extends FragmentGrid {
+public class UnionMarket extends FragmentGridImagen {
 
     private String productos;
     private String productosPro;
