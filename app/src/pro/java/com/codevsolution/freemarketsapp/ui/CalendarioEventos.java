@@ -15,7 +15,7 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.time.Day;
 import com.codevsolution.base.time.ListaDays;
@@ -37,15 +37,15 @@ public class CalendarioEventos extends FragmentMes {
 
 
     @Override
-    protected ListaModelo setListaDia(long fecha) {
+    protected ListaModeloSQL setListaDia(long fecha) {
         return listaEventosFecha(fecha);
     }
 
-    public static ListaModelo listaEventosFecha(long fecha){
+    public static ListaModeloSQL listaEventosFecha(long fecha) {
 
-        ListaModelo listaDia = new ListaModelo();
-        ListaModelo listatemp = new ListaModelo();
-        ListaModelo listaCompleta = new ListaModelo(CAMPOS_EVENTO);
+        ListaModeloSQL listaDia = new ListaModeloSQL();
+        ListaModeloSQL listatemp = new ListaModeloSQL();
+        ListaModeloSQL listaCompleta = new ListaModeloSQL(CAMPOS_EVENTO);
 
         for (ModeloSQL modeloSQL : listaCompleta.getLista()) {
             if (!modeloSQL.getString(EVENTO_TIPO).equals(TIPOEVENTOTAREA)) {
@@ -67,10 +67,10 @@ public class CalendarioEventos extends FragmentMes {
     }
 
     @Override
-    protected ListaModelo setListaFija() {
+    protected ListaModeloSQL setListaFija() {
 
-        ListaModelo listaDia = new ListaModelo();
-        ListaModelo listaCompleta = new ListaModelo(CAMPOS_EVENTO);
+        ListaModeloSQL listaDia = new ListaModeloSQL();
+        ListaModeloSQL listaCompleta = new ListaModeloSQL(CAMPOS_EVENTO);
 
         for (ModeloSQL modeloSQL : listaCompleta.getLista()) {
             if (modeloSQL.getString(EVENTO_TIPO).equals(TIPOEVENTOTAREA) &&
@@ -84,7 +84,7 @@ public class CalendarioEventos extends FragmentMes {
     }
 
     @Override
-    protected void setVerDia(long fecha, ListaModelo listaModelo) {
+    protected void setVerDia(long fecha, ListaModeloSQL listaModeloSQL) {
 
         bundle = new Bundle();
         bundle.putString(ORIGEN,CALENDARIO);
@@ -148,12 +148,12 @@ public class CalendarioEventos extends FragmentMes {
     }
 
     @Override
-    protected void setVerLista(ListaModelo listaModelo, ListaDays listaDays) {
+    protected void setVerLista(ListaModeloSQL listaModeloSQL, ListaDays listaDays) {
 
         bundle = new Bundle();
         bundle.putString(ORIGEN,CALENDARIO);
         bundle.putString(ACTUAL, EVENTO);
-        bundle.putSerializable(LISTA,listaModelo);
+        bundle.putSerializable(LISTA, listaModeloSQL);
         bundle.putString(CAMPO_ID,null);
         bundle.putSerializable(MODELO, null);
         icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());

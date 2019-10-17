@@ -12,7 +12,7 @@ import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.MsgChat;
 import com.codevsolution.base.sqlite.ConsultaBD;
@@ -63,12 +63,12 @@ public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
 
                                 if (!ultimoIdChild.equals(idChild)) {
                                     ContentValues values;
-                                    ListaModelo listaChats = new ListaModelo(CAMPOS_CHAT);
+                                    ListaModeloSQL listaChats = new ListaModeloSQL(CAMPOS_CHAT);
                                     int cChat = 0;
                                     boolean primerReg = false;
                                     for (ModeloSQL chat : listaChats.getLista()) {
                                         String seleccion = DETCHAT_TIPO + " = '" + RECIBIDO + "'";
-                                        ListaModelo listaDetChat = new ListaModelo(CAMPOS_DETCHAT, chat.getString(CHAT_ID_CHAT), TABLA_CHAT, seleccion, DETCHAT_FECHA + " DESC");
+                                        ListaModeloSQL listaDetChat = new ListaModeloSQL(CAMPOS_DETCHAT, chat.getString(CHAT_ID_CHAT), TABLA_CHAT, seleccion, DETCHAT_FECHA + " DESC");
                                         ModeloSQL detChat = null;
                                         if (listaDetChat.getLista().size() > 0) {
                                             detChat = listaDetChat.getLista().get(0);

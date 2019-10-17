@@ -19,7 +19,7 @@ import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.login.LoginActivity;
 import com.codevsolution.base.media.VisorPDFEmail;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.SQLiteUtil;
 import com.codevsolution.base.web.FragmentWebView;
@@ -141,8 +141,8 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
             if (SQLiteUtil.isTableExists(TABLA_PERFIL, db)) {
 
                 db.close();
-                ListaModelo listaModelo = CRUDutil.setListaModelo(CAMPOS_PERFIL);
-                return listaModelo.getLista().size() > 0 && listaModelo.getLista().get(0).getString(PERFIL_NOMBRE).equals("Defecto");
+                ListaModeloSQL listaModeloSQL = CRUDutil.setListaModelo(CAMPOS_PERFIL);
+                return listaModeloSQL.getLista().size() > 0 && listaModeloSQL.getLista().get(0).getString(PERFIL_NOMBRE).equals("Defecto");
             }
         }
 

@@ -14,7 +14,7 @@ import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.media.MediaUtil;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.time.Day;
 import com.codevsolution.base.time.ListaDays;
@@ -32,11 +32,11 @@ import static com.codevsolution.freemarketsapp.logica.Interactor.TiposEstados.TP
 public class Presupuestos extends FragmentMes {
 
     @Override
-    protected ListaModelo setListaDia(long fecha) {
+    protected ListaModeloSQL setListaDia(long fecha) {
 
-        ListaModelo listaDia = new ListaModelo();
-        ListaModelo listatemp = new ListaModelo(CAMPOS_PROYECTO);
-        listabase = new ListaModelo();
+        ListaModeloSQL listaDia = new ListaModeloSQL();
+        ListaModeloSQL listatemp = new ListaModeloSQL(CAMPOS_PROYECTO);
+        listabase = new ListaModeloSQL();
 
         for (ModeloSQL modeloSQL : listatemp.getLista()) {
             if ((modeloSQL.getInt(PROYECTO_TIPOESTADO) >= TNUEVOPRESUP) &&
@@ -58,12 +58,12 @@ public class Presupuestos extends FragmentMes {
     }
 
     @Override
-    protected void setVerDia(long fecha, ListaModelo listaModelo) {
+    protected void setVerDia(long fecha, ListaModeloSQL listaModeloSQL) {
 
         bundle = new Bundle();
         bundle.putString(ORIGEN, TRABAJOS);
         bundle.putString(ACTUAL, PROYECTO);
-        bundle.putSerializable(LISTA, listaModelo);
+        bundle.putSerializable(LISTA, listaModeloSQL);
         bundle.putLong(FECHA, fecha);
 
         icFragmentos.enviarBundleAFragment(bundle, new DiaCalTrabajos());
@@ -122,12 +122,12 @@ public class Presupuestos extends FragmentMes {
     }
 
     @Override
-    protected void setVerLista(ListaModelo listaModelo, ListaDays listaDays) {
+    protected void setVerLista(ListaModeloSQL listaModeloSQL, ListaDays listaDays) {
 
         bundle = new Bundle();
         bundle.putString(ORIGEN, PRESUPUESTOS);
         bundle.putString(ACTUAL, PRESUPUESTO);
-        bundle.putSerializable(LISTA, listaModelo);
+        bundle.putSerializable(LISTA, listaModeloSQL);
         bundle.putString(CAMPO_ID, null);
         bundle.putSerializable(MODELO, null);
         icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());

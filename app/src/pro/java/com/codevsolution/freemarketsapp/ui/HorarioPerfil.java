@@ -1,7 +1,7 @@
 package com.codevsolution.freemarketsapp.ui;
 
 import com.codevsolution.base.crud.CRUDutil;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.calendar.clases.DiaCalBase;
@@ -17,8 +17,8 @@ public abstract class HorarioPerfil extends DiaCalBase implements ContratoPry.Ta
     protected int setColorCard(long fecha, long horaCal){
 
         ModeloSQL perfilActivo = null;
-        ListaModelo listaModelo = CRUDutil.setListaModelo(CAMPOS_PERFIL);
-        for (ModeloSQL perfil : listaModelo.getLista()) {
+        ListaModeloSQL listaModeloSQL = CRUDutil.setListaModelo(CAMPOS_PERFIL);
+        for (ModeloSQL perfil : listaModeloSQL.getLista()) {
             if (perfil.getString(PERFIL_NOMBRE).equals(Interactor.perfila)) {
                 perfilActivo = CRUDutil.updateModelo(perfil);
             }

@@ -1,116 +1,71 @@
 package com.codevsolution.base.android;
 
-import androidx.recyclerview.widget.GridLayoutManager;
+import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.appcompat.widget.LinearLayoutCompat;
+
+import com.codevsolution.base.adapter.BaseViewHolder;
+import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
+import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
+import com.codevsolution.base.models.Modelo;
 import com.codevsolution.freemarketsapp.R;
 
-public abstract class FragmentGrid extends FragmentRV {
+import java.util.ArrayList;
 
-    protected int columnas = 3;
-    protected int filas = 4;
-    protected int altoimg = 100;
-    protected int anchoimg = 100;
-    protected int padtxt = 20;
-    protected int padalto = 10;
-    protected int padancho = 10;
-    protected float sizeT;
-    private float relScreen;
-    protected ViewGroupLayout vistaMain;
+public class FragmentGrid extends FragmentGridBase {
 
-    public FragmentGrid() {
-        // Required empty public constructor
-    }
 
     @Override
     protected void setLayout() {
 
-        layoutItem = R.layout.item_grid;
+        layoutItem = R.layout.item_grid_list;
     }
 
     @Override
-    protected void setInicio() {
+    protected TipoViewHolder setViewHolder(View view) {
+        return new ViewHolderRV(view);
+    }
 
+    @Override
+    protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList lista, String[] campos) {
+        return null;
+    }
 
-        bundle = getArguments();
-        if (bundle != null) {
+    @Override
+    public void setOnClickRV(Object object) {
 
-            origen = bundle.getString(ORIGEN);
-            bundle = null;
+    }
+
+    protected ViewGroupLayout setVistaMain(Context contexto, ViewGroup viewGroup, Modelo modelo) {
+        return null;
+    }
+
+    private class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
+
+        LinearLayoutCompat main;
+
+        public ViewHolderRV(View view) {
+            super(view);
+
+            main = view.findViewById(R.id.main_item_grid);
         }
 
-        //frCuerpo.setOrientation(LinearLayout.VERTICAL);
-        gone(frameAnimationCuerpo);
-        gone(frPie);
-        frCuerpo.setPadding(0, 0, 0, 0);
+        @Override
+        public void bind(ArrayList<?> lista, int position) {
+            super.bind(lista, position);
 
-        relScreen = (float) alto / (float) ancho;
+            Modelo modelo = (Modelo) lista.get(position);
+            vistaMain = setVistaMain(contexto, main, modelo);
 
-        setLista();
-
-        if (land) {
-
-            for (int i = lista.size(); i > 0; i--) {
-                filas = i;
-                columnas = (int) ((double) lista.size() / i) + (lista.size() % i);
-                if (filas >= columnas - 1) {
-                    continue;
-                }
-                break;
-            }
-
-        } else {
-            for (int i = 1; i < lista.size(); i++) {
-                columnas = i;
-                filas = (int) ((double) lista.size() / i);
-                if (lista.size() % i > 0) {
-                    filas++;
-                }
-                if (filas > columnas + 1) {
-                    continue;
-                }
-                break;
-            }
         }
 
-        setColumnasFilas();
-
-        anchoimg = ancho / columnas;
-        altoimg = alto / filas;
-        padancho = (int) ((double) (anchoimg) / (4));
-        padalto = (int) ((double) (altoimg) / (4));
-        padtxt = (int) ((double) padancho / 2);
-
-        sizeT = (sizeText * 4) / 5;
-        contexto = getContext();
-
+        @Override
+        public BaseViewHolder holder(View view) {
+            return new ViewHolderRV(view);
+        }
     }
-
-    protected void setColumnasFilas() {
-
-    }
-
-    @Override
-    protected void onSetRV() {
-        super.onSetRV();
-        gone(lupa);
-        gone(auto);
-        gone(renovar);
-        gone(voz);
-        gone(inicio);
-        gone(activityBase.fabNuevo);
-        visible(activityBase.fabVoz);
-
-    }
-
-    @Override
-    protected void setManagerRV() {
-        super.setManagerRV();
-
-        layoutManager = new GridLayoutManager(contexto, columnas);
-
-    }
-
-
 
 }

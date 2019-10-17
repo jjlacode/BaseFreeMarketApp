@@ -45,7 +45,7 @@ import com.codevsolution.base.localizacion.LocalizacionUtils;
 import com.codevsolution.base.localizacion.MapUtil;
 import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.models.FirebaseFormBase;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.Marcador;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.Rating;
@@ -146,7 +146,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
     protected Switch miUbicacionDef;
     protected Switch suscripcion;
     private LocalizacionUtils localizacionUtils;
-    protected ListaModelo listaMsgChat;
+    protected ListaModeloSQL listaMsgChat;
     protected String idChat;
     protected EditMaterial zona;
     protected EditMaterial suscritos;
@@ -1365,7 +1365,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
                     bundle = new Bundle();
 
-                    ListaModelo listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
+                    ListaModeloSQL listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
                     for (ModeloSQL chat : listaChats.getLista()) {
                         if (chat.getString(CHAT_TIPO).equals(tipo)) {
                             putBundle(CAMPO_ID, chat.getString(CHAT_ID_CHAT));

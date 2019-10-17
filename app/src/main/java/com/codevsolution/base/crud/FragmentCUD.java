@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.codevsolution.base.android.CheckPermisos;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 
@@ -80,7 +80,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
         super.setOnLeftSwipeCuerpo();
         Log.d(TAG, getMetodo());
 
-        ListaModelo lista = CRUDutil.setListaModelo(campos);
+        ListaModeloSQL lista = CRUDutil.setListaModelo(campos);
         boolean valido = false;
         for (ModeloSQL modeloSQLSW : lista.getLista()) {
             if (modeloSQLSW != null && valido) {
@@ -106,7 +106,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
         super.setOnRigthSwipeCuerpo();
         Log.d(TAG, getMetodo());
 
-        ListaModelo lista = CRUDutil.setListaModelo(campos);
+        ListaModeloSQL lista = CRUDutil.setListaModelo(campos);
         ModeloSQL modeloSQLAnt = null;
         for (ModeloSQL modeloSQLSW : lista.getLista()) {
             if (modeloSQLSW.getString(campoID).equals(id)) {

@@ -3,6 +3,8 @@ package com.codevsolution.base.json;
 import android.util.JsonReader;
 
 import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
+import com.codevsolution.base.models.Modelo;
 import com.codevsolution.base.models.ModeloSQL;
 import com.google.gson.Gson;
 
@@ -14,7 +16,7 @@ import java.util.ArrayList;
 
 public class JsonParser {
 
-    public ListaModelo leerFlujoJsonSQL(InputStream in) throws IOException {
+    public ListaModeloSQL leerFlujoJsonSQL(InputStream in) throws IOException {
         Gson gson = new Gson();
         JsonReader reader = new JsonReader(new InputStreamReader(in, StandardCharsets.UTF_8));
         ArrayList<ModeloJson> modelosJson = new ArrayList();
@@ -30,12 +32,12 @@ public class JsonParser {
 
         reader.endArray();
         reader.close();
-        ListaModelo listaModelos = new ListaModelo();
+        ListaModeloSQL listaModelosSQL = new ListaModeloSQL();
         for (ModeloJson modeloJson : modelosJson) {
             ModeloSQL modeloSQL = new ModeloSQL(modeloJson.getEstructura(), modeloJson.getValores());
-            listaModelos.addModelo(modeloSQL);
+            listaModelosSQL.addModelo(modeloSQL);
         }
-        return listaModelos;
+        return listaModelosSQL;
     }
 
     public ListaModelo leerFlujoJson(InputStream in) throws IOException {
@@ -56,8 +58,8 @@ public class JsonParser {
         reader.close();
         ListaModelo listaModelos = new ListaModelo();
         for (ModeloJson modeloJson : modelosJson) {
-            ModeloSQL modeloSQL = new ModeloSQL(modeloJson.getEstructura(), modeloJson.getValores());
-            listaModelos.addModelo(modeloSQL);
+            Modelo modelo = new Modelo(modeloJson.getEstructura(), modeloJson.getValores());
+            listaModelos.addModelo(modelo);
         }
         return listaModelos;
     }

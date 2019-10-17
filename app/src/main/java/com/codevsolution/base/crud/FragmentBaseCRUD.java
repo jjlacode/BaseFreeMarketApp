@@ -23,7 +23,7 @@ import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
@@ -58,7 +58,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     protected String campoCreate;
 
     protected ContentValues valores;
-    protected ListaModelo listab;
+    protected ListaModeloSQL listab;
     protected boolean nuevo;
 
     protected ImagenLayout imagen;
@@ -144,7 +144,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
             if (subTitulo == null) {
                 subTitulo = Interactor.setNamefdef();
             }
-            listab = (ListaModelo) bundle.getSerializable(LISTA);
+            listab = (ListaModeloSQL) bundle.getSerializable(LISTA);
 
             modeloSQL = (ModeloSQL) bundle.getSerializable(MODELO);
             if (id == null) {

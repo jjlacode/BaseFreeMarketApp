@@ -3,7 +3,7 @@
     android:id="@+id/main_item_grid"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:backgroundTint="@color/cardview_light_background"
+    android:backgroundTint="@color/Color_card_defecto"
     android:orientation="vertical">
 
 

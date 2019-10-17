@@ -16,7 +16,7 @@ import com.codevsolution.freemarketsapp.R;
 
 import java.util.ArrayList;
 
-public class FragmentGridImageButton extends FragmentGrid {
+public class FragmentGridImageButton extends FragmentGridBase {
 
 
     @Override
@@ -39,6 +39,7 @@ public class FragmentGridImageButton extends FragmentGrid {
     public void setOnClickRV(Object object) {
 
     }
+
 
     protected ViewGroupLayout setVistaMain(Context contexto, ViewGroup viewGroup, GridModel gridModel) {
         return null;

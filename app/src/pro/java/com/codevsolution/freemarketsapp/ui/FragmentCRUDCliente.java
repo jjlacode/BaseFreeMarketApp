@@ -29,7 +29,7 @@ import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
@@ -355,7 +355,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             @Override
             public void onClick(View view) {
                 bundle = new Bundle();
-                bundle.putSerializable(LISTA, new ListaModelo(CAMPOS_EVENTO, EVENTO_CLIENTEREL, id, null, IGUAL, null));
+                bundle.putSerializable(LISTA, new ListaModeloSQL(CAMPOS_EVENTO, EVENTO_CLIENTEREL, id, null, IGUAL, null));
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
             }
         });

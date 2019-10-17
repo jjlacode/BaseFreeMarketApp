@@ -43,7 +43,7 @@ import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.media.ImagenUtil;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.Marcador;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.Productos;
@@ -490,7 +490,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             visible(lyChat);
 
             if (idChat == null) {
-                ListaModelo listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
+                ListaModeloSQL listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
                 for (ModeloSQL chat : listaChats.getLista()) {
                     if (chat.getString(CHAT_USUARIO).equals(id) && chat.getString(CHAT_TIPO).equals(tipo)) {
                         idChat = chat.getString(CHAT_ID_CHAT);
@@ -1166,7 +1166,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                     public void onClick(View view) {
 
                         perfilUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
-                        ListaModelo listaChats = new ListaModelo(CAMPOS_CHAT);
+                        ListaModeloSQL listaChats = new ListaModeloSQL(CAMPOS_CHAT);
                         String idChat = null;
                         for (ModeloSQL chat : listaChats.getLista()) {
                             if (chat.getString(CHAT_USUARIO).equals(prodProv.getIdprov())) {

@@ -6,29 +6,24 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static com.codevsolution.base.javautil.JavaUtil.Constantes.CAMPO_SECUENCIA;
-import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
-import static com.codevsolution.base.sqlite.ConsultaBD.queryListCampo;
-import static com.codevsolution.base.sqlite.ConsultaBD.queryListDetalle;
-
-public class ListaModelo extends ArrayList<ArrayList<ModeloSQL>> implements Serializable {
+public class ListaModelo extends ArrayList<ArrayList<Modelo>> implements Serializable {
 
 
     public ListaModelo(int initialCapacity) {
         super(initialCapacity);
     }
 
-    public ListaModelo(@NonNull Collection<? extends ArrayList<ModeloSQL>> c) {
+    public ListaModelo(@NonNull Collection<? extends ArrayList<Modelo>> c) {
         super(c);
     }
 
     public ListaModelo() {
 
         super();
-        add(new ArrayList<ModeloSQL>());
+        add(new ArrayList<Modelo>());
     }
 
-    public ListaModelo(ArrayList<ModeloSQL> lista) {
+    public ListaModelo(ArrayList<Modelo> lista) {
 
         super();
 
@@ -42,41 +37,7 @@ public class ListaModelo extends ArrayList<ArrayList<ModeloSQL>> implements Seri
 
     }
 
-    public ListaModelo(String[] campos) {
-
-        super();
-
-        add(queryList(campos));
-    }
-
-    public ListaModelo(String[] campos, String id, String tablaCab, String seleccion, String orden) {
-
-        super();
-
-        add(queryListDetalle(campos, id, tablaCab, seleccion, orden));
-    }
-
-    public ListaModelo(String[] campos, String seleccion, String orden) {
-
-        super();
-
-        add(queryList(campos, seleccion, orden));
-    }
-
-    public ListaModelo(String[] campos, String campo, String valor, String orden) {
-
-        super();
-        add(queryListCampo(campos, campo, valor, orden));
-
-    }
-
-    public ListaModelo(String[] campos, String campo, String valor, String valor2, int flag, String orden) {
-
-        super();
-        add(queryList(campos, campo, valor, valor2, flag, orden));
-    }
-
-    public ArrayList<ModeloSQL> getLista() {
+    public ArrayList<Modelo> getLista() {
 
         if (size() > 0) {
 
@@ -85,7 +46,7 @@ public class ListaModelo extends ArrayList<ArrayList<ModeloSQL>> implements Seri
         return null;
     }
 
-    public ArrayList<ModeloSQL> getLista(int indice) {
+    public ArrayList<Modelo> getLista(int indice) {
 
         if (size() > indice) {
 
@@ -95,16 +56,16 @@ public class ListaModelo extends ArrayList<ArrayList<ModeloSQL>> implements Seri
         return null;
     }
 
-    public ArrayList<ArrayList<ModeloSQL>> getListas() {
+    public ArrayList<ArrayList<Modelo>> getListas() {
         return this;
     }
 
-    public void addLista(ArrayList<ModeloSQL> lista) {
+    public void addLista(ArrayList<Modelo> lista) {
 
         add(lista);
     }
 
-    public void addLista(int indice, ArrayList<ModeloSQL> lista) {
+    public void addLista(int indice, ArrayList<Modelo> lista) {
 
         add(indice, lista);
 
@@ -133,7 +94,7 @@ public class ListaModelo extends ArrayList<ArrayList<ModeloSQL>> implements Seri
 
     }
 
-    public void removeLista(ArrayList<ModeloSQL> lista) {
+    public void removeLista(ArrayList<Modelo> lista) {
 
         remove(lista);
 
@@ -151,112 +112,87 @@ public class ListaModelo extends ArrayList<ArrayList<ModeloSQL>> implements Seri
 
     }
 
-    public void addModelo(ModeloSQL modeloSQL) {
+    public void addModelo(Modelo modelo) {
 
-        get(0).add(modeloSQL);
-        modeloSQL.setPosicionLista(get(0).indexOf(modeloSQL));
-        modeloSQL.setIndiceLista(0);
-        modeloSQL.setEnLista(true);
+        get(0).add(modelo);
+        modelo.setPosicionLista(get(0).indexOf(modelo));
+        modelo.setIndiceLista(0);
+        modelo.setEnLista(true);
     }
 
-    public void addModelo(int indice, ModeloSQL modeloSQL) {
+    public void addModelo(int indice, Modelo modelo) {
 
-        get(indice).add(modeloSQL);
-        modeloSQL.setPosicionLista(get(indice).indexOf(modeloSQL));
-        modeloSQL.setIndiceLista(indice);
-        modeloSQL.setEnLista(true);
+        get(indice).add(modelo);
+        modelo.setPosicionLista(get(indice).indexOf(modelo));
+        modelo.setIndiceLista(indice);
+        modelo.setEnLista(true);
 
     }
 
     public void removeModelo(int posicionModelo) {
 
-        ModeloSQL modeloSQL = get(0).get(posicionModelo);
-        modeloSQL.setEnLista(false);
-        modeloSQL.setIndiceLista(0);
-        modeloSQL.setPosicionLista(0);
+        Modelo modelo = get(0).get(posicionModelo);
+        modelo.setEnLista(false);
+        modelo.setIndiceLista(0);
+        modelo.setPosicionLista(0);
         get(0).remove(posicionModelo);
     }
 
     public void removeModelo(int indice, int posicionModelo) {
 
-        ModeloSQL modeloSQL = get(indice).get(posicionModelo);
-        modeloSQL.setEnLista(false);
-        modeloSQL.setIndiceLista(0);
-        modeloSQL.setPosicionLista(0);
+        Modelo modelo = get(indice).get(posicionModelo);
+        modelo.setEnLista(false);
+        modelo.setIndiceLista(0);
+        modelo.setPosicionLista(0);
         get(indice).remove(posicionModelo);
     }
 
-    public void removeModelo(ModeloSQL modeloSQL) {
+    public void removeModelo(Modelo modelo) {
 
-        modeloSQL.setEnLista(false);
-        modeloSQL.setIndiceLista(0);
-        modeloSQL.setPosicionLista(0);
-        get(0).remove(modeloSQL);
+        modelo.setEnLista(false);
+        modelo.setIndiceLista(0);
+        modelo.setPosicionLista(0);
+        get(0).remove(modelo);
     }
 
-    public void removeModelo(int indice, ModeloSQL modeloSQL) {
+    public void removeModelo(int indice, Modelo modelo) {
 
-        modeloSQL.setEnLista(false);
-        modeloSQL.setIndiceLista(0);
-        modeloSQL.setPosicionLista(0);
-        get(indice).remove(modeloSQL);
+        modelo.setEnLista(false);
+        modelo.setIndiceLista(0);
+        modelo.setPosicionLista(0);
+        get(indice).remove(modelo);
     }
 
-    public void set(int posicion, ModeloSQL modeloSQL) {
+    public void set(int posicion, Modelo modelo) {
 
-        modeloSQL.setPosicionLista(posicion);
-        get(0).set(posicion, modeloSQL);
+        modelo.setPosicionLista(posicion);
+        get(0).set(posicion, modelo);
     }
 
-    public void set(int indice, int posicion, ModeloSQL modeloSQL) {
+    public void set(int indice, int posicion, Modelo modelo) {
 
-        modeloSQL.setPosicionLista(posicion);
-        get(indice).set(posicion, modeloSQL);
+        modelo.setPosicionLista(posicion);
+        get(indice).set(posicion, modelo);
     }
 
-    public String tablaModelo(int posicion) {
+    public String nombreModelo(int posicion) {
 
-        return get(0).get(posicion).getNombreTabla();
+        return get(0).get(posicion).getNombreModelo();
     }
 
-    public String tablaModelo(int indice, int posicion) {
+    public String nombreModelo(int indice, int posicion) {
 
-        return get(indice).get(posicion).getNombreTabla();
+        return get(indice).get(posicion).getNombreModelo();
     }
 
-    public ModeloSQL getItem(int posicion) {
+    public Modelo getItem(int posicion) {
 
         return get(0).get(posicion);
     }
 
-    public ModeloSQL getItem(int indice, int posicion) {
+    public Modelo getItem(int indice, int posicion) {
 
         return get(indice).get(posicion);
-    }
-
-
-    public boolean esDetalle(int posicion) {
-
-        ModeloSQL modeloSQL = get(0).get(posicion);
-        String[] campos = modeloSQL.getCampos();
-        for (int i = 0; i < modeloSQL.getNumcampos(); i++) {
-            if (campos[i].equals(CAMPO_SECUENCIA)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean esDetalle(int indice, int posicion) {
-
-        ModeloSQL modeloSQL = get(indice).get(posicion);
-        String[] campos = modeloSQL.getCampos();
-        for (int i = 0; i < modeloSQL.getNumcampos(); i++) {
-            if (campos[i].equals(CAMPO_SECUENCIA)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public String[] getCampos(int posicion) {
@@ -289,12 +225,12 @@ public class ListaModelo extends ArrayList<ArrayList<ModeloSQL>> implements Seri
         get(indice).clear();
     }
 
-    public void addAllLista(ArrayList<ModeloSQL> listaClon) {
+    public void addAllLista(ArrayList<Modelo> listaClon) {
 
         get(0).addAll(listaClon);
     }
 
-    public void addAllLista(int indice, ArrayList<ModeloSQL> listaClon) {
+    public void addAllLista(int indice, ArrayList<Modelo> listaClon) {
 
         get(indice).addAll(listaClon);
     }
@@ -324,7 +260,7 @@ public class ListaModelo extends ArrayList<ArrayList<ModeloSQL>> implements Seri
 
     public int sizeLista() {
 
-        if (this != null && size() > 0 && get(0) != null) {
+        if (size() > 0 && get(0) != null) {
             return get(0).size();
         }
         return 0;
@@ -342,7 +278,7 @@ public class ListaModelo extends ArrayList<ArrayList<ModeloSQL>> implements Seri
         return 0;
     }
 
-    public void clearAddAllLista(ArrayList<ModeloSQL> listaClon) {
+    public void clearAddAllLista(ArrayList<Modelo> listaClon) {
 
         if (size() > 0) {
 
@@ -363,7 +299,7 @@ public class ListaModelo extends ArrayList<ArrayList<ModeloSQL>> implements Seri
         addAll(listaModeloClon.getListas());
     }
 
-    public void setLista(ArrayList<ModeloSQL> lista) {
+    public void setLista(ArrayList<Modelo> lista) {
         set(0, lista);
     }
 
@@ -371,36 +307,12 @@ public class ListaModelo extends ArrayList<ArrayList<ModeloSQL>> implements Seri
         set(0, lista.getLista());
     }
 
-    public void setLista(String[] campos) {
-        set(0, queryList(campos));
-    }
-
-    public void setLista(String[] campos, String seleccion, String orden) {
-        set(0, queryList(campos, seleccion, orden));
-    }
-
-    public void setLista(String[] campos, String id, String tablaCab, String seleccion, String orden) {
-        set(0, queryListDetalle(campos, id, tablaCab, seleccion, orden));
-    }
-
-    public void setLista(int indice, ArrayList<ModeloSQL> lista) {
+    public void setLista(int indice, ArrayList<Modelo> lista) {
         set(indice, lista);
     }
 
     public void setLista(int indice, ListaModelo lista) {
         set(indice, lista.getLista());
-    }
-
-    public void setLista(int indice, String[] campos) {
-        set(indice, queryList(campos));
-    }
-
-    public void setLista(int indice, String[] campos, String seleccion, String orden) {
-        set(indice, queryList(campos, seleccion, orden));
-    }
-
-    public void setLista(int indice, String[] campos, String id, String tablaCab, String seleccion, String orden) {
-        set(indice, queryListDetalle(campos, id, tablaCab, seleccion, orden));
     }
 
     public boolean chech() {

@@ -14,7 +14,7 @@ import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.time.Day;
 import com.codevsolution.base.time.ListaDays;
@@ -28,15 +28,15 @@ import java.util.ArrayList;
 public class Notas extends FragmentMes {
 
     @Override
-    protected ListaModelo setListaDia(long fecha) {
+    protected ListaModeloSQL setListaDia(long fecha) {
 
         return getListaNotas(fecha);
     }
 
-    public static ListaModelo getListaNotas(long fecha){
+    public static ListaModeloSQL getListaNotas(long fecha) {
 
-        ListaModelo listaDia = new ListaModelo();
-        ListaModelo listaCompleta = new ListaModelo(CAMPOS_NOTA);
+        ListaModeloSQL listaDia = new ListaModeloSQL();
+        ListaModeloSQL listaCompleta = new ListaModeloSQL(CAMPOS_NOTA);
 
         for (ModeloSQL modeloSQL : listaCompleta.getLista()) {
 
@@ -49,12 +49,12 @@ public class Notas extends FragmentMes {
     }
 
     @Override
-    protected void setVerDia(long fecha, ListaModelo listaModelo) {
+    protected void setVerDia(long fecha, ListaModeloSQL listaModeloSQL) {
 
         bundle = new Bundle();
         bundle.putString(ORIGEN,NOTAS);
         bundle.putString(ACTUAL, NOTAS);
-        bundle.putSerializable(LISTA,listaModelo);
+        bundle.putSerializable(LISTA, listaModeloSQL);
         bundle.putLong(FECHA,fecha);
 
         icFragmentos.enviarBundleAFragment(bundle, new DiaCalNotas());
@@ -103,11 +103,11 @@ public class Notas extends FragmentMes {
     }
 
     @Override
-    protected void setVerLista(ListaModelo listaModelo, ListaDays listaDays) {
+    protected void setVerLista(ListaModeloSQL listaModeloSQL, ListaDays listaDays) {
 
         bundle = new Bundle();
         bundle.putString(ORIGEN,NOTAS);
-        bundle.putSerializable(LISTA,listaModelo);
+        bundle.putSerializable(LISTA, listaModeloSQL);
         bundle.putString(ACTUAL, NOTA);
         icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
     }

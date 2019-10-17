@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
         implements View.OnClickListener, View.OnLongClickListener {
 
     protected ArrayList list;
-    protected ListaModelo listaModelo;
+    protected ListaModeloSQL listaModeloSQL;
     private View.OnClickListener listener;
     private View.OnLongClickListener longClickListener;
     private String tipoVH;
@@ -39,11 +39,11 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
     }
 
-    public RVAdapter(TipoViewHolder tipoViewHolder, ListaModelo list, int layout) {
+    public RVAdapter(TipoViewHolder tipoViewHolder, ListaModeloSQL list, int layout) {
 
-        this.listaModelo = list;
+        this.listaModeloSQL = list;
         this.list = new ArrayList();
-        for (ArrayList<ModeloSQL> modeloSQLArrayList : listaModelo) {
+        for (ArrayList<ModeloSQL> modeloSQLArrayList : listaModeloSQL) {
             this.list.add(modeloSQLArrayList.size());
         }
         this.tipoVH = LISTAMODELO;
@@ -70,7 +70,7 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
         if (tipoVH != null && tipoVH.equals(LISTAMODELO)) {
 
-            holder.bind(listaModelo, position);
+            holder.bind(listaModeloSQL, position);
         } else if (tipoVH != null && tipoVH.equals(LISTA)) {
 
             holder.bind(list, position);
@@ -94,10 +94,10 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
         notifyDataSetChanged();
     }
 
-    public void addAll(ListaModelo lista) {
-        listaModelo.addAll(lista);
+    public void addAll(ListaModeloSQL lista) {
+        listaModeloSQL.addAll(lista);
         this.list = new ArrayList();
-        for (ArrayList<ModeloSQL> modeloSQLArrayList : listaModelo) {
+        for (ArrayList<ModeloSQL> modeloSQLArrayList : listaModeloSQL) {
             this.list.add(modeloSQLArrayList.size());
         }
         notifyDataSetChanged();
@@ -109,11 +109,11 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
         notifyDataSetChanged();
     }
 
-    public void clearAddAll(ListaModelo lista) {
-        listaModelo.clear();
-        listaModelo.addAll(lista);
+    public void clearAddAll(ListaModeloSQL lista) {
+        listaModeloSQL.clear();
+        listaModeloSQL.addAll(lista);
         this.list = new ArrayList();
-        for (ArrayList<ModeloSQL> modeloSQLArrayList : listaModelo) {
+        for (ArrayList<ModeloSQL> modeloSQLArrayList : listaModeloSQL) {
             this.list.add(modeloSQLArrayList.size());
         }
         notifyDataSetChanged();
@@ -126,7 +126,7 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
         if (tipoVH != null && tipoVH.equals(LISTAMODELO)) {
 
-            listaModelo.clear();
+            listaModeloSQL.clear();
             list.clear();
 
         } else {
@@ -150,8 +150,8 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
 
         if (tipoVH != null && tipoVH.equals(LISTAMODELO)) {
 
-            if (listaModelo != null) {
-                return listaModelo.size();
+            if (listaModeloSQL != null) {
+                return listaModeloSQL.size();
             }
 
         } else if (list != null) {

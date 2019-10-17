@@ -21,7 +21,7 @@ import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.models.DestinosVoz;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.Productos;
 import com.codevsolution.base.sqlite.ConsultaBD;
@@ -1220,7 +1220,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             long hoy = JavaUtil.hoy();
             ArrayList<ModeloSQL> lista = new ArrayList<>();
 
-            ListaModelo listaEventos = new ListaModelo(CAMPOS_EVENTO);
+            ListaModeloSQL listaEventos = new ListaModeloSQL(CAMPOS_EVENTO);
 
             for (ModeloSQL evento : listaEventos.getLista()) {
 
@@ -1327,7 +1327,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
                 fin = (TimeDateUtil.ahora()+(ANIOSLONG * anios));
             }
-            ListaModelo listaMinutos = CRUDutil.setListaModelo(CAMPOS_AGENDA, AGENDA_VALORENTRADA,
+            ListaModeloSQL listaMinutos = CRUDutil.setListaModelo(CAMPOS_AGENDA, AGENDA_VALORENTRADA,
                     String.valueOf(inicio),String.valueOf(fin),ENTRE,ordenAgenda);
 
             for (int i = 0; i < listaMinutos.getLista().size(); i++) {
@@ -1389,14 +1389,14 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             long fechaFin = 0;
             String ordenProyectosNuevos = PROYECTO_FECHAENTRADA + Constantes.ORDENASCENDENTE;
 
-            ListaModelo listaProyectosnuevos = CRUDutil.setListaModelo(CAMPOS_PROYECTO, PROYECTO_FECHAINICIOACORDADA, "0", IGUAL,ordenProyectosNuevos);
+            ListaModeloSQL listaProyectosnuevos = CRUDutil.setListaModelo(CAMPOS_PROYECTO, PROYECTO_FECHAINICIOACORDADA, "0", IGUAL, ordenProyectosNuevos);
 
 
             for (int i = 0; i < listaProyectosnuevos.getLista().size(); i++) {
 
                 ModeloSQL proyectoNuevo = listaProyectosnuevos.getLista().get(i);
                 String ordenPartidas = PARTIDA_ORDEN + Constantes.ORDENASCENDENTE;
-                ListaModelo listaPartidas = CRUDutil.setListaModelo(CAMPOS_PARTIDA,PARTIDA_ID_PROYECTO,proyectoNuevo.getString(PROYECTO_ID_PROYECTO),IGUAL,ordenPartidas);
+                ListaModeloSQL listaPartidas = CRUDutil.setListaModelo(CAMPOS_PARTIDA, PARTIDA_ID_PROYECTO, proyectoNuevo.getString(PROYECTO_ID_PROYECTO), IGUAL, ordenPartidas);
 
                 int ultimaPartida = 0;
                 for (ModeloSQL partida : listaPartidas.getLista()) {
@@ -1407,7 +1407,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                 for (int x = 0; x < listaPartidas.sizeLista(); x++) {
                     ModeloSQL partida = listaPartidas.getLista().get(x);
                     String ordenDetPartidas = DETPARTIDA_ORDEN + Constantes.ORDENASCENDENTE;
-                    ListaModelo listaDetPartidas = CRUDutil.setListaModelo(CAMPOS_DETPARTIDA, DETPARTIDA_ID_PARTIDA, partida.getString(PARTIDA_ID_PARTIDA), IGUAL, ordenDetPartidas);
+                    ListaModeloSQL listaDetPartidas = CRUDutil.setListaModelo(CAMPOS_DETPARTIDA, DETPARTIDA_ID_PARTIDA, partida.getString(PARTIDA_ID_PARTIDA), IGUAL, ordenDetPartidas);
                     int ultimaDetPartida = 0;
                     for (ModeloSQL detPartida : listaDetPartidas.getLista()) {
                         if (detPartida.getInt(DETPARTIDA_ORDEN) > ultimaDetPartida) {
@@ -1526,7 +1526,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             }
 
             String ordenAgenda = AGENDA_VALORENTRADA + Constantes.ORDENASCENDENTE;
-            ListaModelo listaMinutos = CRUDutil.setListaModelo(CAMPOS_AGENDA, AGENDA_VALORENTRADA,
+            ListaModeloSQL listaMinutos = CRUDutil.setListaModelo(CAMPOS_AGENDA, AGENDA_VALORENTRADA,
                     String.valueOf(inicio), String.valueOf(fin), ENTRE, ordenAgenda);
 
             System.out.println("listaMinutos = " + listaMinutos.sizeLista());
@@ -2707,7 +2707,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
         public static double actualizarTarea(String idtarea, boolean automatico) {
 
-            ListaModelo listaDetPartidas = new ListaModelo(CAMPOS_DETPARTIDA, DETPARTIDA_ID_DETPARTIDA, idtarea, null);
+            ListaModeloSQL listaDetPartidas = new ListaModeloSQL(CAMPOS_DETPARTIDA, DETPARTIDA_ID_DETPARTIDA, idtarea, null);
 
             double tiempo = 0;
             double tiemporeal = 0;
@@ -2757,7 +2757,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
                 String iddetpartida = modeloSQL.getString(PARTIDA_ID_PARTIDA);
                 String iddetpartidabase = partidaBase.getString(PARTIDABASE_ID_PARTIDABASE);
-                ListaModelo listaDetPartidabase = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, iddetpartidabase, TABLA_PARTIDABASE);
+                ListaModeloSQL listaDetPartidabase = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, iddetpartidabase, TABLA_PARTIDABASE);
                 for (ModeloSQL detPartidaBase : listaDetPartidabase.getLista()) {
 
                     valores = new ContentValues();
@@ -2767,7 +2767,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                     putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_TIPO, detPartidaBase.getString(DETPARTIDABASE_TIPO));
                     putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_CANTIDAD, detPartidaBase.getString(DETPARTIDABASE_CANTIDAD));
                     boolean detnuevo = true;
-                    ListaModelo listaDetPartida = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida, TABLA_PARTIDA);
+                    ListaModeloSQL listaDetPartida = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida, TABLA_PARTIDA);
                     for (ModeloSQL detPartida : listaDetPartida.getLista()) {
 
                         if (detPartida.getString(DETPARTIDA_ID_DETPARTIDA).equals(detPartidaBase.getString(DETPARTIDABASE_ID_DETPARTIDABASE))) {
@@ -2781,7 +2781,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                     }
                 }
 
-                ListaModelo listaDetPartida = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida, TABLA_PARTIDA);
+                ListaModeloSQL listaDetPartida = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida, TABLA_PARTIDA);
                 for (ModeloSQL detPartida : listaDetPartida.getLista()) {
                     boolean cambio = true;
                     for (ModeloSQL detPartidaBase : listaDetPartidabase.getLista()) {

@@ -30,7 +30,7 @@ import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
@@ -431,7 +431,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         bundle.putSerializable(PROYECTO, modeloSQL);
         bundle.putString(SUBTITULO, actualtemp);
         bundle.putString(ORIGEN, actualtemp);
-        bundle.putSerializable(LISTA, new ListaModelo(CAMPOS_EVENTO, EVENTO_PROYECTOREL, id, null, IGUAL, null));
+        bundle.putSerializable(LISTA, new ListaModeloSQL(CAMPOS_EVENTO, EVENTO_PROYECTOREL, id, null, IGUAL, null));
         icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
         bundle = null;
     }
@@ -1205,7 +1205,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private void actualizarVinculoPartidaBase() {
 
 
-        ListaModelo listaPartidas = new ListaModelo(CAMPOS_PARTIDA,id,tabla,null,null);
+        ListaModeloSQL listaPartidas = new ListaModeloSQL(CAMPOS_PARTIDA, id, tabla, null, null);
         int res = 0;
 
         for (ModeloSQL partida : listaPartidas.getLista()) {

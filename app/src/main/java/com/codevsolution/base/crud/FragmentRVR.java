@@ -17,7 +17,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
@@ -30,7 +30,7 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
     protected View viewRV;
     protected int layoutItem;
     protected RecyclerView rv;
-    protected ListaModelo lista;
+    protected ListaModeloSQL lista;
     protected AutoCompleteTextView auto;
     protected ArrayList<ModeloSQL> listafiltrada;
     protected ImageView buscar;
@@ -225,7 +225,7 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
 
     protected void listaRV() {
 
-        lista = new ListaModelo();
+        lista = new ListaModeloSQL();
         if (listab == null) {
             if (tablaCab == null) {
                 lista = CRUDutil.setListaModelo(campos);
@@ -286,7 +286,7 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
 
     protected void actualizarConsultasRV() {
 
-        lista = new ListaModelo();
+        lista = new ListaModeloSQL();
 
         if (listab == null) {
             if (tablaCab != null) {

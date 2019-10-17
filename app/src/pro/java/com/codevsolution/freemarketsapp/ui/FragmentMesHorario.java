@@ -16,7 +16,7 @@ import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.Day;
@@ -102,7 +102,7 @@ public abstract class FragmentMesHorario extends FragmentMes implements
                 if (campoCard != null) {
                     recyclerView = (RecyclerView) vistaLinear.addVista(new RecyclerView(contexto));
                     recyclerView.setLayoutManager(new LinearLayoutManager(contexto));
-                    ListaModelo listaEvento = setListaDia(cal.getTimeInMillis());
+                    ListaModeloSQL listaEvento = setListaDia(cal.getTimeInMillis());
                     RVAdapter adaptadorRV = new RVAdapter(setViewHolderCard(itemView),
                             listaEvento.getLista(), R.layout.item_list_layout);
                     recyclerView.setAdapter(adaptadorRV);

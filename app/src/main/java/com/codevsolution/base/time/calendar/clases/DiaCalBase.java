@@ -16,7 +16,7 @@ import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.FragmentRV;
 import com.codevsolution.base.animation.OneFrameLayout;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
@@ -29,7 +29,7 @@ public abstract class DiaCalBase extends FragmentRV {
 
     protected static final String THORACAL = "texto_hora_calendario";
     public static final String HORACAL = "hora_calendario";
-    protected ListaModelo listaCont;
+    protected ListaModeloSQL listaCont;
     protected long fecha;
     protected long horaCal;
     protected String campo;
@@ -45,7 +45,7 @@ public abstract class DiaCalBase extends FragmentRV {
         listaCont = setListaDia(fecha);
     }
 
-    protected ListaModelo setListaDia(long fecha) {
+    protected ListaModeloSQL setListaDia(long fecha) {
 
         return null;
     }

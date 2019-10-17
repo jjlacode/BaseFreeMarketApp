@@ -3,7 +3,7 @@ package com.codevsolution.base.crud;
 import android.content.ContentValues;
 import android.net.Uri;
 
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
@@ -14,60 +14,60 @@ import static com.codevsolution.base.javautil.JavaUtil.Constantes.CAMPO_SECUENCI
 
 public class CRUDutil {
 
-    public static ListaModelo setListaModelo(String[] campos) {
-        return new ListaModelo(campos);
+    public static ListaModeloSQL setListaModelo(String[] campos) {
+        return new ListaModeloSQL(campos);
     }
 
 
-    public static ListaModelo clonaListaModelo(String[] campos, ListaModelo list) {
-        ListaModelo lista = new ListaModelo(campos);
+    public static ListaModeloSQL clonaListaModelo(String[] campos, ListaModeloSQL list) {
+        ListaModeloSQL lista = new ListaModeloSQL(campos);
         lista.clearAddAllLista(list.getLista());
         return lista;
     }
 
-    public static ListaModelo clonaListaModelo(String[] campos, ArrayList<ModeloSQL> list) {
-        ListaModelo lista = new ListaModelo(campos);
+    public static ListaModeloSQL clonaListaModelo(String[] campos, ArrayList<ModeloSQL> list) {
+        ListaModeloSQL lista = new ListaModeloSQL(campos);
         lista.clearAddAllLista(list);
         return lista;
     }
 
-    public static ListaModelo setListaModeloDetalle(String[] campos, String id, String tablaCab) {
-        return new ListaModelo(campos, id, tablaCab, null, null);
+    public static ListaModeloSQL setListaModeloDetalle(String[] campos, String id, String tablaCab) {
+        return new ListaModeloSQL(campos, id, tablaCab, null, null);
     }
 
 
-    public static ListaModelo setListaModelo(String[] campos, String seleccion) {
-        return new ListaModelo(campos, seleccion, null);
+    public static ListaModeloSQL setListaModelo(String[] campos, String seleccion) {
+        return new ListaModeloSQL(campos, seleccion, null);
     }
 
-    public static ListaModelo setListaModeloDetalle(String[] campos, String id, String tablaCab, String seleccion) {
-        return new ListaModelo(campos, id, tablaCab, seleccion, null);
+    public static ListaModeloSQL setListaModeloDetalle(String[] campos, String id, String tablaCab, String seleccion) {
+        return new ListaModeloSQL(campos, id, tablaCab, seleccion, null);
     }
 
-    public static ListaModelo setListaModelo(String[] campos, String seleccion, String orden) {
-        return new ListaModelo(campos, seleccion, orden);
+    public static ListaModeloSQL setListaModelo(String[] campos, String seleccion, String orden) {
+        return new ListaModeloSQL(campos, seleccion, orden);
     }
 
-    public static ListaModelo setListaModeloDetalle(String[] campos, String id, String tablaCab,
-                                                    String seleccion, String orden) {
-        return new ListaModelo(campos, id, tablaCab, seleccion, orden);
+    public static ListaModeloSQL setListaModeloDetalle(String[] campos, String id, String tablaCab,
+                                                       String seleccion, String orden) {
+        return new ListaModeloSQL(campos, id, tablaCab, seleccion, orden);
     }
 
 
-    public static ListaModelo setListaModelo(String[] campos, String campo, String valor, int flag) {
-        return new ListaModelo(campos, campo, valor, null, flag, null);
+    public static ListaModeloSQL setListaModelo(String[] campos, String campo, String valor, int flag) {
+        return new ListaModeloSQL(campos, campo, valor, null, flag, null);
     }
 
-    public static ListaModelo setListaModelo(String[] campos, String campo, String valor, int flag, String orden) {
-        return new ListaModelo(campos, campo, valor, null, flag, orden);
+    public static ListaModeloSQL setListaModelo(String[] campos, String campo, String valor, int flag, String orden) {
+        return new ListaModeloSQL(campos, campo, valor, null, flag, orden);
     }
 
-    public static ListaModelo setListaModelo(String[] campos, String campo, String valor, String valor2, int flag) {
-        return new ListaModelo(campos, campo, valor, valor2, flag, null);
+    public static ListaModeloSQL setListaModelo(String[] campos, String campo, String valor, String valor2, int flag) {
+        return new ListaModeloSQL(campos, campo, valor, valor2, flag, null);
     }
 
-    public static ListaModelo setListaModelo(String[] campos, String campo, String valor, String valor2, int flag, String orden) {
-        return new ListaModelo(campos, campo, valor, valor2, flag, orden);
+    public static ListaModeloSQL setListaModelo(String[] campos, String campo, String valor, String valor2, int flag, String orden) {
+        return new ListaModeloSQL(campos, campo, valor, valor2, flag, orden);
     }
 
     public static ModeloSQL updateModelo(ModeloSQL modeloSQL) {

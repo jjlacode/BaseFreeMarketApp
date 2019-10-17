@@ -23,7 +23,7 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.animation.OneFrameLayout;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
@@ -39,7 +39,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
     protected int layoutItem;
     protected RecyclerView rv;
     protected AutoCompleteTextView auto;
-    protected ListaModelo lista;
+    protected ListaModeloSQL lista;
     protected boolean maestroDetalleSeparados;
     protected ArrayList<ModeloSQL> listafiltrada;
     protected ImageView buscar;
@@ -808,7 +808,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
                 } else if (buscar != null && buscar.equals("buscar ")) {
                     grabarVoz = grabarVoz.substring(7);
                     System.out.println("grabarVoz sub= " + grabarVoz);
-                    ListaModelo suggestion = new ListaModelo();
+                    ListaModeloSQL suggestion = new ListaModeloSQL();
                     if (grabarVoz != null) {
 
                         for (ModeloSQL item : lista.getLista()) {
@@ -826,7 +826,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
                         }
 
                         System.out.println("suggestion = " + suggestion.sizeLista());
-                        listab = new ListaModelo(suggestion);
+                        listab = new ListaModeloSQL(suggestion);
                         System.out.println("listab = " + listab.sizeLista());
                         actualizarConsultasRV();
                         System.out.println("lista = " + lista.sizeLista());

@@ -34,7 +34,7 @@ import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.FirebaseFormBase;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.MsgChat;
 import com.codevsolution.base.sqlite.ContratoSystem;
@@ -58,7 +58,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
     protected EditText msgEnv;
     protected EditText url;
     protected ImageButton btnEnviar;
-    protected ListaModelo listaMsgChat;
+    protected ListaModeloSQL listaMsgChat;
     protected LinearLayout lyEnvMsg;
     protected TextView actuar;
     protected FirebaseFormBase firebaseFormBase;
@@ -133,7 +133,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
         } else if (nn(idchat) && !idchat.equals(NULL)) {
 
-            ListaModelo listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
+            ListaModeloSQL listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
             for (ModeloSQL chat : listaChats.getLista()) {
                 if (chat.getString(CHAT_TIPO).equals(tipo) && chat.getString(CHAT_USUARIO).equals(idchat)) {
                     id = chat.getString(CHAT_ID_CHAT);
@@ -167,7 +167,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
         subTitulo = CHAT;
         activityBase.toolbar.setSubtitle(subTitulo);
-        ListaModelo listaTemp = new ListaModelo();
+        ListaModeloSQL listaTemp = new ListaModeloSQL();
 
         for (ModeloSQL chat : lista.getLista()) {
             if (chat.getString(CHAT_TIPO).equals(CHAT)) {

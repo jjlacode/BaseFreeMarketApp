@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.codevsolution.base.android.FragmentGridImagen;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
@@ -139,7 +139,7 @@ public class MenuGestionProyectos extends FragmentGridImagen implements Contrato
     private void obtenerTareas() {
 
         ArrayList<ModeloSQL> lista;
-        ListaModelo listaPartidasSinCompletar = new ListaModelo(CAMPOS_PARTIDA);
+        ListaModeloSQL listaPartidasSinCompletar = new ListaModeloSQL(CAMPOS_PARTIDA);
         listaPartidasSinCompletar.clearLista();
 
         lista = ConsultaBD.queryList(CAMPOS_PARTIDA);
@@ -172,7 +172,7 @@ public class MenuGestionProyectos extends FragmentGridImagen implements Contrato
     private void obtenerDeptpartidasTreking() {
 
         ArrayList<ModeloSQL> lista;
-        ListaModelo listaPartidasSinCompletar = new ListaModelo(CAMPOS_DETPARTIDA);
+        ListaModeloSQL listaPartidasSinCompletar = new ListaModeloSQL(CAMPOS_DETPARTIDA);
         listaPartidasSinCompletar.clearLista();
 
         lista = ConsultaBD.queryList(CAMPOS_DETPARTIDA);
@@ -207,7 +207,7 @@ public class MenuGestionProyectos extends FragmentGridImagen implements Contrato
                 ESTADO_TIPOESTADO + " = 2";
         String orden = "'" + PROYECTO_FECHAENTRADA + "' ASC";
 
-        ListaModelo lista = new ListaModelo(CAMPOS_PROYECTO, seleccion, orden);
+        ListaModeloSQL lista = new ListaModeloSQL(CAMPOS_PROYECTO, seleccion, orden);
 
         if (lista.chechLista()) {
 
@@ -228,7 +228,7 @@ public class MenuGestionProyectos extends FragmentGridImagen implements Contrato
         String seleccion = ESTADO_TIPOESTADO + " = 7";
         String orden = "'" + PROYECTO_FECHAENTREGAPRESUP + "' ASC";
 
-        ListaModelo lista = new ListaModelo(CAMPOS_PROYECTO, seleccion, orden);
+        ListaModeloSQL lista = new ListaModeloSQL(CAMPOS_PROYECTO, seleccion, orden);
 
         if (lista.chechLista()) {
 
@@ -249,7 +249,7 @@ public class MenuGestionProyectos extends FragmentGridImagen implements Contrato
         String seleccion = ESTADO_TIPOESTADO + " = 3";
         String orden = "'" + PROYECTO_FECHAENTREGAPRESUP + "' ASC";
 
-        ListaModelo lista = new ListaModelo(CAMPOS_PROYECTO, seleccion, orden);
+        ListaModeloSQL lista = new ListaModeloSQL(CAMPOS_PROYECTO, seleccion, orden);
 
         if (lista.chechLista()) {
 

@@ -15,7 +15,7 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.TimeDateUtil;
@@ -73,7 +73,7 @@ public class DiaCalCalendario extends HorarioPerfil implements ContratoPry.Tabla
     }
 
     @Override
-    protected ListaModelo setListaDia(long fecha) {
+    protected ListaModeloSQL setListaDia(long fecha) {
         super.setListaDia(fecha);
 
         return CalendarioEventos.listaEventosFecha(fecha);

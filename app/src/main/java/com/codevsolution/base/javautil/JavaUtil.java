@@ -30,7 +30,7 @@ public class JavaUtil {
         String ORIGENTEMP = "origenTemp";
         String NAMESUBTEMP = "namesubtemp";
         String LISTA = "lista";
-        String LISTAMODELO = "listaModelo";
+        String LISTAMODELO = "listaModeloSQL";
         String CALENDARIO = "calendario";
         String WEB = "web";
         String FECHA = "fecha";

@@ -35,7 +35,7 @@ import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
@@ -1129,7 +1129,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
     private void verRepeticiones(){
 
         idMulti = modeloSQL.getString(EVENTO_IDMULTI);
-        listab = new ListaModelo(campos,EVENTO_IDMULTI,idMulti,null,IGUAL,null);
+        listab = new ListaModeloSQL(campos, EVENTO_IDMULTI, idMulti, null, IGUAL, null);
         id = null;
         modeloSQL = null;
         selector();
@@ -1480,7 +1480,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
                         Toast.makeText(contexto, "Registro borrado ", Toast.LENGTH_SHORT).show();
                         if (listab!=null){
-                            listab = new ListaModelo(campos,EVENTO_IDMULTI,idMulti,null,IGUAL,null);
+                            listab = new ListaModeloSQL(campos, EVENTO_IDMULTI, idMulti, null, IGUAL, null);
                         }
                         id = null;
                         modeloSQL = null;

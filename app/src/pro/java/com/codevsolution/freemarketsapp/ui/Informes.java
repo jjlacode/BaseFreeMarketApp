@@ -10,7 +10,7 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.time.Day;
 import com.codevsolution.base.time.ListaDays;
@@ -28,11 +28,11 @@ public class Informes extends FragmentMes implements Interactor.TiposEstados {
     private CheckBox chProyectos;
 
     @Override
-    protected ListaModelo setListaDia(long fecha) {
+    protected ListaModeloSQL setListaDia(long fecha) {
 
-        ListaModelo listaDia = new ListaModelo();
-        ListaModelo listaClientes = new ListaModelo(CAMPOS_CLIENTE);
-        listabase = new ListaModelo(CAMPOS_PROYECTO);
+        ListaModeloSQL listaDia = new ListaModeloSQL();
+        ListaModeloSQL listaClientes = new ListaModeloSQL(CAMPOS_CLIENTE);
+        listabase = new ListaModeloSQL(CAMPOS_PROYECTO);
         for (ModeloSQL cliente : listaClientes.getLista()) {
             listabase.addModelo(cliente);
         }
@@ -50,7 +50,7 @@ public class Informes extends FragmentMes implements Interactor.TiposEstados {
     }
 
     @Override
-    protected void setVerDia(long fecha, ListaModelo listaModelo) {
+    protected void setVerDia(long fecha, ListaModeloSQL listaModeloSQL) {
 
 
     }
@@ -95,7 +95,7 @@ public class Informes extends FragmentMes implements Interactor.TiposEstados {
     }
 
     @Override
-    protected void setVerLista(ListaModelo listaModelo, ListaDays listaDays) {
+    protected void setVerLista(ListaModeloSQL listaModeloSQL, ListaDays listaDays) {
 
 
     }
@@ -198,7 +198,7 @@ public class Informes extends FragmentMes implements Interactor.TiposEstados {
         }
 
         @Override
-        public void bind(ListaModelo lista, int position) {
+        public void bind(ListaModeloSQL lista, int position) {
 
             double importeTotal = 0;
             double tiempoProy = 0;
@@ -208,7 +208,7 @@ public class Informes extends FragmentMes implements Interactor.TiposEstados {
             boolean hayClientes = false;
             boolean hayProyectos = false;
 
-            System.out.println("listaModelo = " + lista.getLista().size());
+            System.out.println("listaModeloSQL = " + lista.getLista().size());
 
 
             for (ModeloSQL modeloSQL : lista.getLista()) {

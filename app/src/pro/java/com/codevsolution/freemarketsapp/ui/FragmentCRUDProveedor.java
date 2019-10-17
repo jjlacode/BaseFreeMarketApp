@@ -21,7 +21,7 @@ import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.media.MediaUtil;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.TimeDateUtil;
@@ -169,7 +169,7 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
             public void onClick(View v) {
 
                 bundle = new Bundle();
-                bundle.putSerializable(LISTA, new ListaModelo(CAMPOS_EVENTO, EVENTO_CLIENTEREL, id, null, IGUAL, null));
+                bundle.putSerializable(LISTA, new ListaModeloSQL(CAMPOS_EVENTO, EVENTO_CLIENTEREL, id, null, IGUAL, null));
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
             }
         });

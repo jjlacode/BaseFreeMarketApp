@@ -13,7 +13,7 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.media.MediaUtil;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.time.Day;
 import com.codevsolution.base.time.ListaDays;
@@ -27,10 +27,10 @@ import java.util.ArrayList;
 public class Diario extends FragmentMes {
 
     @Override
-    protected ListaModelo setListaDia(long fecha) {
+    protected ListaModeloSQL setListaDia(long fecha) {
 
-        ListaModelo listaDia = new ListaModelo();
-        listabase = new ListaModelo(CAMPOS_DIARIO);
+        ListaModeloSQL listaDia = new ListaModeloSQL();
+        listabase = new ListaModeloSQL(CAMPOS_DIARIO);
 
         for (ModeloSQL modeloSQL : listabase.getLista()) {
 
@@ -44,12 +44,12 @@ public class Diario extends FragmentMes {
     }
 
     @Override
-    protected void setVerDia(long fecha, ListaModelo listaModelo) {
+    protected void setVerDia(long fecha, ListaModeloSQL listaModeloSQL) {
 
         bundle = new Bundle();
         bundle.putString(ORIGEN,DIARIO);
         bundle.putString(ACTUAL, DIARIO);
-        bundle.putSerializable(LISTA,listaModelo);
+        bundle.putSerializable(LISTA, listaModeloSQL);
         bundle.putLong(FECHA,fecha);
 
         icFragmentos.enviarBundleAFragment(bundle, new DiaCalDiario());
@@ -93,7 +93,7 @@ public class Diario extends FragmentMes {
     }
 
     @Override
-    protected void setVerLista(ListaModelo listaModelo, ListaDays listaDays) {
+    protected void setVerLista(ListaModeloSQL listaModeloSQL, ListaDays listaDays) {
 
     }
 

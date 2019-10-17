@@ -27,7 +27,7 @@ import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCUD;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.DatePickerFragment;
@@ -297,7 +297,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
         etOrden.setText(String.valueOf(modeloSQL.getInt(DETPARTIDA_ORDEN)));
         int orden = 0;
         if (modeloSQL.getInt(DETPARTIDA_ORDEN) == 0) {
-            ListaModelo lista = CRUDutil.setListaModelo(CAMPOS_DETPARTIDA,DETPARTIDA_ID_PARTIDA,id,IGUAL);
+            ListaModeloSQL lista = CRUDutil.setListaModelo(CAMPOS_DETPARTIDA, DETPARTIDA_ID_PARTIDA, id, IGUAL);
             for (ModeloSQL detPartida : lista.getLista()) {
                 if (detPartida.getInt(DETPARTIDA_ORDEN)>orden){
                     orden = detPartida.getInt(DETPARTIDA_ORDEN);

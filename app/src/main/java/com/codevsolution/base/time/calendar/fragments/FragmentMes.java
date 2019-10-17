@@ -29,7 +29,7 @@ import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.models.ListaModelo;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.Day;
@@ -83,21 +83,21 @@ public abstract class FragmentMes extends FragmentBase implements
     int textColorCurrentDayDay = Color.parseColor("#000000");
     int backgroundColorSelectedDay = Color.parseColor("#D81B60");
 
-    private ListaModelo lista;
+    private ListaModeloSQL lista;
     protected long fecha;
     protected String[] campos;
     protected String campo;
     protected String campoCard;
     protected String campoId;
     protected int layoutItem;
-    protected ListaModelo listabase;
+    protected ListaModeloSQL listabase;
     private RVAdapter adaptadorRV;
     private RVAdapter rvAdapter;
     private long fechaHoy;
     protected int titulo;
-    private ListaModelo listaModeloMulti;
-    private ListaModelo listaModeloSimple;
-    private ListaModelo listaModeloFinal;
+    private ListaModeloSQL listaModeloSQLMulti;
+    private ListaModeloSQL listaModeloSQLSimple;
+    private ListaModeloSQL listaModeloSQLFinal;
     private ArrayList<Long> seleccionInicial = new ArrayList<>();
     private ArrayList<Long> seleccionFinal = new ArrayList<>();
     private int seleccion = 0;
@@ -284,7 +284,7 @@ public abstract class FragmentMes extends FragmentBase implements
         if (campos == null) {
             campos = new String[]{"", "", CAMPO_CREATEREG};
         } else {
-            listabase = new ListaModelo(campos);
+            listabase = new ListaModeloSQL(campos);
         }
         adaptadorFiltroRV = setAdaptadorAuto(getContext(), layoutItem, listabase.getLista(), campos);
 
@@ -325,9 +325,9 @@ public abstract class FragmentMes extends FragmentBase implements
 
         rv.setAdapter(adaptadorRV);
         setCampo(campo);
-        listaModeloSimple = new ListaModelo();
+        listaModeloSQLSimple = new ListaModeloSQL();
         listaSeleccionadosSimple = new ListaDays();
-        listaModeloFinal = new ListaModelo();
+        listaModeloSQLFinal = new ListaModeloSQL();
         listaSeleccionadosFinal = new ListaDays();
         seleccionInicial.add(seleccion, 0L);
         seleccionFinal.add(seleccion, 0L);
@@ -364,7 +364,7 @@ public abstract class FragmentMes extends FragmentBase implements
                                     boolean nuevo = true;
                                     System.out.println("campoId = " + campoId);
                                     if (campoId != null) {
-                                        for (ModeloSQL modeloSQLTmp : listaModeloSimple.getLista()) {
+                                        for (ModeloSQL modeloSQLTmp : listaModeloSQLSimple.getLista()) {
                                             System.out.println("modeloSQL.getString(campoId) = " + modeloSQL.getString(campoId));
                                             System.out.println("modeloSQLTmp.getString(campoId) = " + modeloSQLTmp.getString(campoId));
                                             if (modeloSQL.getString(campoId).equals(modeloSQLTmp.getString(campoId))) {
@@ -374,7 +374,7 @@ public abstract class FragmentMes extends FragmentBase implements
                                     }
                                     System.out.println("nuevo = " + nuevo);
                                     if (nuevo) {
-                                        listaModeloSimple.addModelo(modeloSQL);
+                                        listaModeloSQLSimple.addModelo(modeloSQL);
                                     }
                                 }
                             }
@@ -389,7 +389,7 @@ public abstract class FragmentMes extends FragmentBase implements
 
                                 if (dia.getLista() != null) {
                                     for (ModeloSQL modeloSQL : dia.getLista()) {
-                                        listaModeloSimple.removeModelo(modeloSQL);
+                                        listaModeloSQLSimple.removeModelo(modeloSQL);
                                     }
                                 }
 
@@ -412,7 +412,7 @@ public abstract class FragmentMes extends FragmentBase implements
                     if (dia.isSelected() && dia.isMulti()) {
                         if (dia.getLista() != null && dia.getLista().size() > 0) {
                             for (ModeloSQL modeloSQL : dia.getLista()) {
-                                listaModeloSimple.removeModelo(modeloSQL);
+                                listaModeloSQLSimple.removeModelo(modeloSQL);
                             }
                         }
                         if (listaSeleccionadosSimple.size() > dia.getPosicionListaSimple() &&
@@ -426,19 +426,19 @@ public abstract class FragmentMes extends FragmentBase implements
 
                 }
 
-                listaModeloFinal = new ListaModelo();
-                listaModeloFinal.addAllLista(listaModeloSimple.getLista());
+                listaModeloSQLFinal = new ListaModeloSQL();
+                listaModeloSQLFinal.addAllLista(listaModeloSQLSimple.getLista());
 
-                if (listaModeloMulti != null) {
-                    listaModeloFinal.addAllLista(listaModeloMulti.getLista());
+                if (listaModeloSQLMulti != null) {
+                    listaModeloSQLFinal.addAllLista(listaModeloSQLMulti.getLista());
                 }
 
-                ListaModelo listaFija = setListaFija();
+                ListaModeloSQL listaFija = setListaFija();
                 for (ModeloSQL modeloSQL : listaFija.getLista()) {
                     boolean nuevo = true;
                     System.out.println("campoId = " + campoId);
                     if (campoId != null) {
-                        for (ModeloSQL modeloSQLTmp : listaModeloFinal.getLista()) {
+                        for (ModeloSQL modeloSQLTmp : listaModeloSQLFinal.getLista()) {
                             System.out.println("modeloSQL.getString(campoId) = " + modeloSQL.getString(campoId));
                             System.out.println("modeloSQLTmp.getString(campoId) = " + modeloSQLTmp.getString(campoId));
                             if (modeloSQL.getString(campoId).equals(modeloSQLTmp.getString(campoId))) {
@@ -448,7 +448,7 @@ public abstract class FragmentMes extends FragmentBase implements
                     }
                     System.out.println("nuevo = " + nuevo);
                     if (nuevo) {
-                        listaModeloFinal.addModelo(modeloSQL);
+                        listaModeloSQLFinal.addModelo(modeloSQL);
                     }
                 }
 
@@ -499,12 +499,12 @@ public abstract class FragmentMes extends FragmentBase implements
                 if (tipoRV != null && tipoRV.equals(LISTA)) {
 
                     adaptadorRV = new RVAdapter(setViewHolder(view),
-                            listaModeloFinal, layoutItem);
+                            listaModeloSQLFinal, layoutItem);
 
                 } else {
 
                     adaptadorRV = new RVAdapter(setViewHolder(view),
-                            listaModeloFinal.getLista(), layoutItem);
+                            listaModeloSQLFinal.getLista(), layoutItem);
                 }
                 rv.setAdapter(adaptadorRV);
 
@@ -549,7 +549,7 @@ public abstract class FragmentMes extends FragmentBase implements
                     }
                 }
 
-                listaModeloMulti = new ListaModelo();
+                listaModeloSQLMulti = new ListaModeloSQL();
                 listaSeleccionadosMulti = new ListaDays();
 
                 for (int sel = seleccion; sel >= 0; sel--) {
@@ -564,19 +564,19 @@ public abstract class FragmentMes extends FragmentBase implements
                         ListaDays listadias = TimeDateUtil.listaDias(cini, cfin);
 
                         for (Day dia : listadias) {
-                            ListaModelo lista = setListaDia(dia.getFechaLong());
+                            ListaModeloSQL lista = setListaDia(dia.getFechaLong());
                             if (lista.getLista() != null) {
                                 for (ModeloSQL modeloSQL : lista.getLista()) {
                                     boolean nuevo = true;
                                     if (campoId != null) {
-                                        for (ModeloSQL modeloSQLTmp : listaModeloMulti.getLista()) {
+                                        for (ModeloSQL modeloSQLTmp : listaModeloSQLMulti.getLista()) {
                                             if (modeloSQL.getString(campoId) == (modeloSQLTmp.getString(campoId))) {
                                                 nuevo = false;
                                             }
                                         }
                                     }
                                     if (nuevo) {
-                                        listaModeloMulti.addModelo(modeloSQL);
+                                        listaModeloSQLMulti.addModelo(modeloSQL);
                                     }
                                 }
                             }
@@ -646,11 +646,11 @@ public abstract class FragmentMes extends FragmentBase implements
                         }
                     }
 
-                    listaModeloFinal = new ListaModelo();
-                    listaModeloFinal.addAllLista(listaModeloSimple.getLista());
+                    listaModeloSQLFinal = new ListaModeloSQL();
+                    listaModeloSQLFinal.addAllLista(listaModeloSQLSimple.getLista());
 
-                    if (listaModeloMulti != null) {
-                        listaModeloFinal.addAllLista(listaModeloMulti.getLista());
+                    if (listaModeloSQLMulti != null) {
+                        listaModeloSQLFinal.addAllLista(listaModeloSQLMulti.getLista());
                     }
 
                     listaSeleccionadosFinal = new ListaDays();
@@ -701,12 +701,12 @@ public abstract class FragmentMes extends FragmentBase implements
                 if (tipoRV != null && tipoRV.equals(LISTA)) {
 
                     adaptadorRV = new RVAdapter(setViewHolder(view),
-                            listaModeloFinal, layoutItem);
+                            listaModeloSQLFinal, layoutItem);
 
                 } else {
 
                     adaptadorRV = new RVAdapter(setViewHolder(view),
-                            listaModeloFinal.getLista(), layoutItem);
+                            listaModeloSQLFinal.getLista(), layoutItem);
                 }
                 rv.setAdapter(adaptadorRV);
 
@@ -781,14 +781,14 @@ public abstract class FragmentMes extends FragmentBase implements
             @Override
             public void onClick(View view) {
 
-                setVerLista(listaModeloFinal, listaSeleccionadosFinal);
+                setVerLista(listaModeloSQLFinal, listaSeleccionadosFinal);
             }
         });
 
         verDia.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setVerDia(fecha, listaModeloFinal);
+                setVerDia(fecha, listaModeloSQLFinal);
             }
         });
 
@@ -821,12 +821,12 @@ public abstract class FragmentMes extends FragmentBase implements
         if (tipoRV != null && tipoRV.equals(LISTA)) {
 
             adaptadorRV = new RVAdapter(setViewHolder(view),
-                    listaModeloFinal, layoutItem);
+                    listaModeloSQLFinal, layoutItem);
 
         } else {
 
             adaptadorRV = new RVAdapter(setViewHolder(view),
-                    listaModeloFinal.getLista(), layoutItem);
+                    listaModeloSQLFinal.getLista(), layoutItem);
         }
         rv.setAdapter(adaptadorRV);
     }
@@ -841,17 +841,17 @@ public abstract class FragmentMes extends FragmentBase implements
             }
             listaSeleccionadosMulti.clear();
         }
-        if (nn(listaModeloFinal)) {
-            listaModeloFinal.clearLista();
+        if (nn(listaModeloSQLFinal)) {
+            listaModeloSQLFinal.clearLista();
         }
         if (nn(listaSeleccionadosFinal)) {
             listaSeleccionadosFinal.clear();
         }
-        if (nn(listaModeloSimple)) {
-            listaModeloSimple.clearLista();
+        if (nn(listaModeloSQLSimple)) {
+            listaModeloSQLSimple.clearLista();
         }
-        if (nn(listaModeloMulti)) {
-            listaModeloMulti.clearLista();
+        if (nn(listaModeloSQLMulti)) {
+            listaModeloSQLMulti.clearLista();
         }
         if (nn(listaSeleccionadosSimple)) {
             listaSeleccionadosSimple.clear();
@@ -903,7 +903,7 @@ public abstract class FragmentMes extends FragmentBase implements
     private void alCambiarMes() {
 
         seleccionados = 0;
-        listaModeloMulti = new ListaModelo();
+        listaModeloSQLMulti = new ListaModeloSQL();
         listaSeleccionadosMulti = new ListaDays();
 
         for (int sel = seleccion; sel >= 0; sel--) {
@@ -918,19 +918,19 @@ public abstract class FragmentMes extends FragmentBase implements
                 ListaDays listadias = TimeDateUtil.listaDias(cini, cfin);
 
                 for (Day dia : listadias) {
-                    ListaModelo lista = setListaDia(dia.getFechaLong());
+                    ListaModeloSQL lista = setListaDia(dia.getFechaLong());
                     if (lista.getLista() != null) {
                         for (ModeloSQL modeloSQL : lista.getLista()) {
                             boolean nuevo = true;
                             if (campoId != null) {
-                                for (ModeloSQL modeloSQLTmp : listaModeloMulti.getLista()) {
+                                for (ModeloSQL modeloSQLTmp : listaModeloSQLMulti.getLista()) {
                                     if (modeloSQL.getString(campoId).equals(modeloSQLTmp.getString(campoId))) {
                                         nuevo = false;
                                     }
                                 }
                             }
                             if (nuevo) {
-                                listaModeloMulti.addModelo(modeloSQL);
+                                listaModeloSQLMulti.addModelo(modeloSQL);
                             }
                         }
                     }
@@ -974,23 +974,23 @@ public abstract class FragmentMes extends FragmentBase implements
 
         }
 
-        listaModeloFinal = new ListaModelo();
-        listaModeloFinal.addAllLista(listaModeloSimple.getLista());
-        if (listaModeloMulti != null) {
-            listaModeloFinal.addAllLista(listaModeloMulti.getLista());
+        listaModeloSQLFinal = new ListaModeloSQL();
+        listaModeloSQLFinal.addAllLista(listaModeloSQLSimple.getLista());
+        if (listaModeloSQLMulti != null) {
+            listaModeloSQLFinal.addAllLista(listaModeloSQLMulti.getLista());
         }
 
-        ListaModelo listaFija = setListaFija();
+        ListaModeloSQL listaFija = setListaFija();
         for (ModeloSQL modeloSQL : listaFija.getLista()) {
             boolean nuevo = true;
             if (campoId != null) {
-                for (ModeloSQL modeloSQLTmp : listaModeloFinal.getLista()) {
+                for (ModeloSQL modeloSQLTmp : listaModeloSQLFinal.getLista()) {
                     if (modeloSQL.getString(campoId).equals(modeloSQLTmp.getString(campoId))) {
                         nuevo = false;
                     }
                 }
                 if (nuevo) {
-                    listaModeloFinal.addModelo(modeloSQL);
+                    listaModeloSQLFinal.addModelo(modeloSQL);
                 }
             }
         }
@@ -1029,11 +1029,11 @@ public abstract class FragmentMes extends FragmentBase implements
         if (tipoRV != null && tipoRV.equals(LISTA)) {
 
             adaptadorRV = new RVAdapter(setViewHolder(view),
-                    listaModeloFinal, layoutItem);
+                    listaModeloSQLFinal, layoutItem);
 
         } else {
             adaptadorRV = new RVAdapter(setViewHolder(view),
-                    listaModeloFinal.getLista(), layoutItem);
+                    listaModeloSQLFinal.getLista(), layoutItem);
         }
         rv.setAdapter(adaptadorRV);
     }
@@ -1122,13 +1122,13 @@ public abstract class FragmentMes extends FragmentBase implements
         this.sinDia = sinDia;
     }
 
-    protected ListaModelo setListaFija() {
-        return new ListaModelo();
+    protected ListaModeloSQL setListaFija() {
+        return new ListaModeloSQL();
     }
 
-    protected abstract ListaModelo setListaDia(long fecha);
+    protected abstract ListaModeloSQL setListaDia(long fecha);
 
-    protected abstract void setVerDia(long fecha, ListaModelo listaModelo);
+    protected abstract void setVerDia(long fecha, ListaModeloSQL listaModeloSQL);
 
     protected abstract void setLayoutItem();
 
@@ -1142,7 +1142,7 @@ public abstract class FragmentMes extends FragmentBase implements
 
     protected abstract void setNuevo(long fecha);
 
-    protected abstract void setVerLista(ListaModelo listaModelo, ListaDays listaDays);
+    protected abstract void setVerLista(ListaModeloSQL listaModeloSQL, ListaDays listaDays);
 
     protected abstract void setOnPrevMonth();
 
@@ -1254,7 +1254,7 @@ public abstract class FragmentMes extends FragmentBase implements
 
             //Date date = new Date(year,month,i);
             long fecha = c.getTimeInMillis();
-            lista = new ListaModelo();
+            lista = new ListaModeloSQL();
 
             lista = setListaDia(fecha);
 
@@ -1301,7 +1301,7 @@ public abstract class FragmentMes extends FragmentBase implements
         if (buscando) {
 
             Day day = new Day(cbusca);
-            ListaModelo listaBusca = setListaDia(day.getFechaLong());
+            ListaModeloSQL listaBusca = setListaDia(day.getFechaLong());
 
             if (listaBusca != null) {
 
@@ -1309,14 +1309,14 @@ public abstract class FragmentMes extends FragmentBase implements
 
                     boolean nuevo = true;
                     if (campoId != null) {
-                        for (ModeloSQL modeloSQLTmp : listaModeloSimple.getLista()) {
+                        for (ModeloSQL modeloSQLTmp : listaModeloSQLSimple.getLista()) {
                             if (modeloSQL.getString(campoId).equals(modeloSQLTmp.getString(campoId))) {
                                 nuevo = false;
                             }
                         }
                     }
                     if (nuevo) {
-                        listaModeloSimple.addModelo(modeloSQL);
+                        listaModeloSQLSimple.addModelo(modeloSQL);
                     }
                 }
             }
@@ -1335,11 +1335,11 @@ public abstract class FragmentMes extends FragmentBase implements
             if (tipoRV != null && tipoRV.equals(LISTA)) {
 
                 adaptadorRV = new RVAdapter(setViewHolder(view),
-                        listaModeloSimple, layoutItem);
+                        listaModeloSQLSimple, layoutItem);
 
             } else {
                 adaptadorRV = new RVAdapter(setViewHolder(view),
-                        listaModeloSimple.getLista(), layoutItem);
+                        listaModeloSQLSimple.getLista(), layoutItem);
             }
             rv.setAdapter(adaptadorRV);
 
@@ -1860,8 +1860,8 @@ public abstract class FragmentMes extends FragmentBase implements
         this.onCalendarChangeListener = onCalendarChangeListener;
     }
 
-    public ListaModelo getListaModeloFinal() {
-        return listaModeloFinal;
+    public ListaModeloSQL getListaModeloSQLFinal() {
+        return listaModeloSQLFinal;
     }
 
     public ListaDays getListaSeleccionadosFinal() {
@@ -1919,7 +1919,7 @@ public abstract class FragmentMes extends FragmentBase implements
             if (campoCard != null) {
                 recyclerView = (RecyclerView) vistaLinear.addVista(new RecyclerView(contexto));
                 recyclerView.setLayoutManager(new LinearLayoutManager(contexto));
-                ListaModelo listaEvento = setListaDia(cal.getTimeInMillis());
+                ListaModeloSQL listaEvento = setListaDia(cal.getTimeInMillis());
                 RVAdapter adaptadorRV = new RVAdapter(setViewHolderCard(itemView),
                         listaEvento.getLista(), R.layout.item_list_layout);
                 recyclerView.setAdapter(adaptadorRV);
