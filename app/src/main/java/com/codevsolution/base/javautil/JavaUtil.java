@@ -131,6 +131,14 @@ public class JavaUtil {
         int AUDIORECORD = 1;
         int VIDEORECORD = 2;
 
+        String LUNES = "lunes";
+        String MARTES = "martes";
+        String MIERCOLES = "miercoles";
+        String JUEVES = "jueves";
+        String VIERNES = "viernes";
+        String SABADO = "sabado";
+        String DOMINGO = "domingo";
+
 
     }
 

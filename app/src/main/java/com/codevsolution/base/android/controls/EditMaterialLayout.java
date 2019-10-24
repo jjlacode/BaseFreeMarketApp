@@ -19,20 +19,11 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.style.Estilos;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-import static com.codevsolution.base.logica.InteractorBase.Constantes.BTNSECONDARY;
-import static com.codevsolution.base.logica.InteractorBase.Constantes.BTNTRANSPARENTE;
-import static com.codevsolution.base.logica.InteractorBase.Constantes.COLOR;
-import static com.codevsolution.base.logica.InteractorBase.Constantes.COLOREDITVACIO;
-import static com.codevsolution.base.logica.InteractorBase.Constantes.COLORPRIMARY;
-import static com.codevsolution.base.logica.InteractorBase.Constantes.COLORSECONDARY;
-import static com.codevsolution.base.logica.InteractorBase.Constantes.COLORSECONDARYDARK;
-import static com.codevsolution.base.logica.InteractorBase.Constantes.COLORTEXTO;
-import static com.codevsolution.base.logica.InteractorBase.Constantes.DRAWABLE;
-
-public class EditMaterialLayout {
+public class EditMaterialLayout implements Estilos.Constantes {
 
     private LinearLayoutCompat linearLayout;
     private ViewGroup viewGroup;
@@ -144,8 +135,7 @@ public class EditMaterialLayout {
         btnInicio.setImageResource(context.getResources().
                 getIdentifier("ic_rec_indigo", DRAWABLE, context.getPackageName()));
         btnInicio.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        btnInicio.setBackground(context.getResources().getDrawable(context.getResources().
-                getIdentifier(BTNSECONDARY, DRAWABLE, context.getPackageName())));
+        btnInicio.setBackground(Estilos.getBotonSecondary());
         linearLayout.addView(btnInicio);
         textInputLayout = new TextInputLayout(context, null, context.getResources().
                 getIdentifier("TextInputLayout", "style", context.getPackageName()));
@@ -154,20 +144,17 @@ public class EditMaterialLayout {
         textInputLayout.addView(editText);
         btnAccion = new ImageButton(context);
         btnAccion.setVisibility(View.GONE);
-        btnAccion.setBackground(context.getResources().getDrawable(context.getResources().
-                getIdentifier(BTNSECONDARY, DRAWABLE, context.getPackageName())));
+        btnAccion.setBackground(Estilos.getBotonSecondary());
         btnAccion.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         linearLayout.addView(btnAccion);
         btnAccion2 = new ImageButton(context);
         btnAccion2.setVisibility(View.GONE);
-        btnAccion2.setBackground(context.getResources().getDrawable(context.getResources().
-                getIdentifier(BTNTRANSPARENTE, DRAWABLE, context.getPackageName())));
+        btnAccion2.setBackground(Estilos.getBotonPrimary());
         btnAccion2.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         linearLayout.addView(btnAccion2);
         btnText = new Button(context);
         btnText.setVisibility(View.GONE);
-        btnText.setBackground(context.getResources().getDrawable(context.getResources().
-                getIdentifier(BTNSECONDARY, DRAWABLE, context.getPackageName())));
+        btnText.setBackground(Estilos.getBotonSecondary());
         linearLayout.addView(btnText);
     }
 
@@ -311,20 +298,12 @@ public class EditMaterialLayout {
                 if (b) {
                     if (listenerFoco != null) {
                         listenerFoco.alRecibirFoco(view);
-                        editText.setBackgroundColor(context.getResources().getColor(context.getResources().
-                                getIdentifier(COLORSECONDARY, COLOR,
-                                        context.getPackageName())));
-                        editText.setTextColor(context.getResources().getColor(context.getResources().
-                                getIdentifier(COLORSECONDARYDARK, COLOR,
-                                        context.getPackageName())));
+                        editText.setBackgroundColor(Estilos.colorSecondary);
+                        editText.setTextColor(Estilos.colorSecondaryDark);
                     }
                 } else {
-                    editText.setBackgroundColor(context.getResources().getColor(context.getResources().
-                            getIdentifier(COLORPRIMARY, COLOR,
-                                    context.getPackageName())));
-                    editText.setTextColor(context.getResources().getColor(context.getResources().
-                            getIdentifier(COLORSECONDARYDARK, COLOR,
-                                    context.getPackageName())));
+                    editText.setBackgroundColor(Estilos.colorPrymary);
+                    editText.setTextColor(Estilos.colorSecondaryDark);
                     comprobarEdit();
                 }
             }
@@ -600,7 +579,7 @@ public class EditMaterialLayout {
         float alto = metrics.heightPixels;
 
 
-        float size = ((float) (alto * ancho) / (metrics.densityDpi * 300));
+        float size = ((alto * ancho) / (metrics.densityDpi * 300));
         editText.setTextSize(size);
     }
 

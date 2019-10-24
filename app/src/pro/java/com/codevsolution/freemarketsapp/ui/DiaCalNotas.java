@@ -20,7 +20,7 @@ import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
-public class DiaCalNotas extends HorarioPerfil implements ContratoPry.Tablas,
+public class DiaCalNotas extends DiaCalHorario implements ContratoPry.Tablas,
         JavaUtil.Constantes, Interactor.TiposEvento, Interactor.ConstantesPry {
 
 

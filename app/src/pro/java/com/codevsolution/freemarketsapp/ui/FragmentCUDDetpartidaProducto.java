@@ -1,32 +1,41 @@
 package com.codevsolution.freemarketsapp.ui;
 
+import android.content.ContentValues;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCUD;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.style.Estilos;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.codevsolution.base.sqlite.ConsultaBD.queryObjectDetalle;
 
 public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Interactor.ConstantesPry,
         ContratoPry.Tablas, Interactor.TiposDetPartida, Interactor.TiposEstados {
 
-    private EditMaterial nombre;
-    private EditMaterial descripcion;
-    private EditMaterial precio;
-    private EditMaterial cantidad;
-    private EditMaterial descProv;
-    private EditMaterial refProv;
+    private EditMaterialLayout nombre;
+    private EditMaterialLayout descripcion;
+    private EditMaterialLayout precio;
+    private EditMaterialLayout cantidad;
+    private EditMaterialLayout descProv;
+    private EditMaterialLayout refProv;
     private TextView tipoDetPartida;
     private String tipo;
     private ModeloSQL proyecto;
@@ -36,15 +45,18 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
     private String idProyecto_Partida;
     private int secuenciaPartida;
     private ProgressBar progressBarPartida;
-    private EditMaterial completadaPartida;
+    private EditMaterialLayout completadaPartida;
 
     private CheckBox partida_completada;
     private ModeloSQL producto;
     private double completada;
-    private EditMaterial cantidadPartida;
+    private EditMaterialLayout cantidadPartida;
     private String idProv;
-    private EditMaterial nomProv;
-    private EditMaterial preciotot;
+    private EditMaterialLayout nomProv;
+    private EditMaterialLayout preciotot;
+    private EditMaterialLayout etBeneficio;
+    private double cantPart;
+    private double cant;
 
 
     public FragmentCUDDetpartidaProducto() {
@@ -90,7 +102,8 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
         if (nn(partida)) {
             secuenciaPartida = partida.getInt(PARTIDA_SECUENCIA);
             idProyecto_Partida = partida.getString(PARTIDA_ID_PROYECTO);
-            cantidadPartida.setText(JavaUtil.getDecimales(partida.getDouble(PARTIDA_CANTIDAD)));
+            cantPart = partida.getDouble(PARTIDA_CANTIDAD);
+            cantidadPartida.setText(JavaUtil.getDecimales(cantPart));
 
         }
         tipo = TIPOPRODUCTO;
@@ -105,10 +118,14 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
 
         tipoDetPartida.setText(tipo.toUpperCase());
 
-        completadaPartida.setVisibility(View.VISIBLE);
-        progressBarPartida.setVisibility(View.VISIBLE);
+        completadaPartida.getLinearLayout().setVisibility(View.VISIBLE);
         completada = modeloSQL.getDouble(DETPARTIDA_COMPLETADA);
-        cantidad.setText(modeloSQL.getString(DETPARTIDA_CANTIDAD));
+        AndroidUtil.bars(contexto, progressBarPartida, null, false, 100, 90, 120, completada,
+                completadaPartida.getEditText(), null, R.color.Color_contador_ok, R.color.Color_contador_acept,
+                R.color.Color_contador_notok);
+        progressBarPartida.setProgress((int) completada);
+        cant = modeloSQL.getDouble(DETPARTIDA_CANTIDAD);
+        cantidad.setText(JavaUtil.getDecimales(cant));
         if (nn(producto)) {
             nombre.setText(producto.getString(PRODUCTO_NOMBRE));
             descripcion.setText(producto.getString(PRODUCTO_DESCRIPCION));
@@ -140,15 +157,90 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
         }
         if (nn(partida) && nn(producto)) {
             preciotot.setText(JavaUtil.formatoMonedaLocal
-                    ((partida.getDouble(PARTIDA_CANTIDAD) * producto.getDouble(PRODUCTO_PRECIO)
-                            * modeloSQL.getDouble(DETPARTIDA_CANTIDAD))));
+                    ((cantPart * producto.getDouble(PRODUCTO_PRECIO)
+                            * cant)));
         }
+
+        valores = new ContentValues();
+        if (partida_completada.isChecked()) {
+            CRUDutil.actualizarCampo(modeloSQL, DETPARTIDA_COMPLETA, 1);
+        } else {
+            CRUDutil.actualizarCampo(modeloSQL, DETPARTIDA_COMPLETA, 0);
+        }
+
 
     }
 
     @Override
     protected void setAcciones() {
 
+        if (partida.getInt(PARTIDA_TIPO_ESTADO) == TNUEVOPRESUP) {
+
+            etBeneficio.setAlCambiarListener(new EditMaterialLayout.AlCambiarListener() {
+                @Override
+                public void antesCambio(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void cambiando(CharSequence s, int start, int before, int count) {
+
+                    if (timer != null) {
+                        timer.cancel();
+                    }
+                }
+
+                @Override
+                public void despuesCambio(Editable s) {
+
+                    preciotot.setText(JavaUtil.formatoMonedaLocal(modeloSQL.getDouble(DETPARTIDA_PRECIO) *
+                            cantPart * cant * (1 + ((JavaUtil.comprobarDouble(s.toString())) / 100))));
+
+                    final Editable temp = s;
+                    timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+
+                            activityBase.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    if (temp.toString().equals("")) {
+                                        etBeneficio.setText("0 %");
+                                    }
+
+                                    valores = new ContentValues();
+                                    setDato(DETPARTIDA_BENEFICIO, JavaUtil.comprobarDouble(etBeneficio.getTexto()));
+                                    CRUDutil.actualizarRegistro(modeloSQL, valores);
+                                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                                    Interactor.Calculos.actualizarPartidaProyecto(id);
+
+                                }
+                            });
+
+
+                        }
+                    }, 2000);
+
+                }
+            });
+        } else {
+            etBeneficio.setActivo(false);
+        }
+
+        partida_completada.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                valores = new ContentValues();
+                if (b) {
+                    CRUDutil.actualizarCampo(modeloSQL, DETPARTIDA_COMPLETA, 1);
+                } else {
+                    CRUDutil.actualizarCampo(modeloSQL, DETPARTIDA_COMPLETA, 0);
+                }
+            }
+        });
 
     }
 
@@ -162,63 +254,66 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
     @Override
     protected void setLayout() {
 
-        layoutCuerpo = R.layout.fragment_cud_detpartida_producto;
-
     }
 
     @Override
     protected void setInicio() {
 
-        descripcion = (EditMaterial) ctrl(R.id.etdesccdetpartida_prod);
-        precio = (EditMaterial) ctrl(R.id.etpreciocdetpartida_prod);
-        preciotot = (EditMaterial) ctrl(R.id.etpreciototcdetpartida_prod);
-        cantidad = (EditMaterial) ctrl(R.id.etcantcdetpartida_prod);
-        cantidadPartida = (EditMaterial) ctrl(R.id.etcanttotpartida_prod);
-        nombre = (EditMaterial) ctrl(R.id.etnombredetpartida_prod);
-        imagen = (ImagenLayout) ctrl(R.id.imgcdetpartida_prod);
-        refProv = (EditMaterial) ctrl(R.id.tvrefprovcdetpartida_prod);
-        nomProv = (EditMaterial) ctrl(R.id.tvnomprovcdetpartida_prod);
-        descProv = (EditMaterial) ctrl(R.id.etporcdesprovcdetpartida_prod);
-        tipoDetPartida = (TextView) ctrl(R.id.tvtipocdetpartida_prod);
-        partida_completada = (CheckBox) ctrl(R.id.cbox_hacer_detpartida_completa_prod);
-        progressBarPartida = (ProgressBar) ctrl(R.id.progressBardetpartida_prod);
-        completadaPartida = (EditMaterial) ctrl(R.id.etcompletadadetpartida_prod);
+        visible(frdetalle);
+        ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
+
+        tipoDetPartida = vistaForm.addTextView(null);
+        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
+        imagen.setFocusable(false);
+        imagen.getImagen().setClickable(false);
+        imagen.setTextTitulo(tituloSingular);
+        nombre = vistaForm.addEditMaterialLayout(getString(R.string.nombre));
+        nombre.setActivo(false);
+        refProv = vistaForm.addEditMaterialLayout(getString(R.string.referencia_proveedor));
+        refProv.setActivo(false);
+        nomProv = vistaForm.addEditMaterialLayout(getString(R.string.nombre_producto_proveedor));
+        nomProv.setActivo(false);
+        descripcion = vistaForm.addEditMaterialLayout(getString(R.string.descripcion));
+        descripcion.setActivo(false);
+
+        ViewGroupLayout vistaCant = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaCant.setOrientacion(Estilos.Constantes.ORI_LLC_HORIZONTAL);
+        cantidad = vistaCant.addEditMaterialLayout(R.string.cantidad, DETPARTIDA_CANTIDAD, 1);
+        cantidadPartida = vistaCant.addEditMaterialLayout(R.string.cantidad_partida, 1);
+        cantidadPartida.setActivo(false);
+        descProv = vistaCant.addEditMaterialLayout(R.string.descuento_proveedor, DETPARTIDA_DESCUENTOPROVEEDOR, 1);
+        actualizarArrays(vistaCant);
+
+        ViewGroupLayout vistaPrecio = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaPrecio.setOrientacion(Estilos.Constantes.ORI_LLC_HORIZONTAL);
+        precio = vistaPrecio.addEditMaterialLayout(R.string.importe, 1);
+        precio.setActivo(false);
+        etBeneficio = vistaPrecio.addEditMaterialLayout(R.string.beneficio, 1);
+        preciotot = vistaPrecio.addEditMaterialLayout(R.string.importe_total, 1);
+        preciotot.setActivo(false);
+        actualizarArrays(vistaPrecio);
+
+        completadaPartida = vistaForm.addEditMaterialLayout(R.string.completada, DETPARTIDA_COMPLETADA);
+        progressBarPartida = (ProgressBar) vistaForm.addVista(new ProgressBar(contexto, null, Estilos.pBarStyleAcept(contexto)));
+
+        partida_completada = (CheckBox) vistaForm.addVista(new CheckBox(contexto));
+        partida_completada.setText(R.string.completa);
+
+        actualizarArrays(vistaForm);
 
     }
-
-
-
 
     @Override
     protected void setContenedor() {
 
-        setDato(DETPARTIDA_ID_DETPARTIDA, idDetPartida);
-        setDato(DETPARTIDA_ID_PARTIDA, id);
-        setDato(DETPARTIDA_TIPO, tipo);
-        setDato(DETPARTIDA_NOMBRE,nombre.getTexto());
-        setDato(DETPARTIDA_DESCRIPCION,descripcion.getTexto());
-        setDato(DETPARTIDA_PRECIO,JavaUtil.comprobarDouble(precio.getTexto()));
-        setDato(DETPARTIDA_REFPROVEEDOR,refProv.getTexto());
-        setDato(DETPARTIDA_PROVEEDOR,nomProv.getTexto());
-        setDato(DETPARTIDA_DESCUENTOPROVEEDOR,descProv.getTexto());
-        setDato(DETPARTIDA_ID_PROVEEDOR,idProv);
-        setDato(DETPARTIDA_RUTAFOTO,path);
+    }
 
-        if (partida_completada.isChecked()) {
-            setDato(DETPARTIDA_COMPLETA, 1);
-        } else {
-            setDato(DETPARTIDA_COMPLETA, 0);
-
-        }
+    @Override
+    protected boolean onUpdate() {
 
         Interactor.Calculos.actualizarPartidaProyecto(id);
 
-    }
-
-
-    @Override
-    protected boolean update() {
-        return super.update();
+        return super.onUpdate();
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.codevsolution.base.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -56,7 +57,12 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
     @Override
     public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
 
-        final View view = LayoutInflater.from(parent.getContext()).inflate(layout, null, false);
+        View view = null;
+        if (layout > 0) {
+            view = LayoutInflater.from(parent.getContext()).inflate(layout, null, false);
+        } else {
+            view = new RelativeLayout(parent.getContext());
+        }
 
         view.setOnClickListener(this);
         view.setOnLongClickListener(this);

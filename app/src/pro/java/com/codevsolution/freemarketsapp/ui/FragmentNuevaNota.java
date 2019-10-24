@@ -9,7 +9,7 @@ import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
 
-import static com.codevsolution.base.time.calendar.clases.DiaCalBase.HORACAL;
+import static com.codevsolution.base.time.calendar.DiaCalBase.HORACAL;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.NOTA;
 
 public class FragmentNuevaNota extends FragmentGridImagen implements Interactor.TiposNota {

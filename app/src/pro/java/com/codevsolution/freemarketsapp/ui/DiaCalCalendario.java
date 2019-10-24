@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import static com.codevsolution.base.android.AppActivity.viewOnMapA;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.EVENTO;
 
-public class DiaCalCalendario extends HorarioPerfil implements ContratoPry.Tablas,
+public class DiaCalCalendario extends DiaCalHorario implements ContratoPry.Tablas,
         JavaUtil.Constantes, Interactor.TiposEvento {
 
 

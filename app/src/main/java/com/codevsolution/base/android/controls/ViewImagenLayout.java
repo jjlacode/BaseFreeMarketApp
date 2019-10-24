@@ -21,6 +21,7 @@ import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.interfaces.ICFragmentos;
 import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.media.VisorImagen;
+import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.TimeDateUtil;
 
 import java.io.ByteArrayInputStream;
@@ -30,13 +31,8 @@ import static com.codevsolution.base.javautil.JavaUtil.Constantes.PATH;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.PERSISTENCIA;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TIPO;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TSIMG;
-import static com.codevsolution.base.logica.InteractorBase.Constantes.BTNSECONDARY;
-import static com.codevsolution.base.logica.InteractorBase.Constantes.COLOR;
-import static com.codevsolution.base.logica.InteractorBase.Constantes.COLORPRIMARY;
-import static com.codevsolution.base.logica.InteractorBase.Constantes.COLORSECONDARY;
-import static com.codevsolution.base.logica.InteractorBase.Constantes.DRAWABLE;
 
-public class ViewImagenLayout {
+public class ViewImagenLayout implements Estilos.Constantes {
 
     ViewGroupLayout linearLayoutCompat;
     TextView titulo;
@@ -268,7 +264,7 @@ public class ViewImagenLayout {
         float ancho = metrics.widthPixels;
         float alto = metrics.heightPixels;
 
-        float size = ((float) (alto * ancho) / (metrics.densityDpi * 300));
+        float size = ((alto * ancho) / (metrics.densityDpi * 300));
         titulo.setTextSize(size);
 
     }
@@ -291,7 +287,7 @@ public class ViewImagenLayout {
         float ancho = metrics.widthPixels;
         float alto = metrics.heightPixels;
 
-        float size = ((float) (alto * ancho) / (metrics.densityDpi * 300));
+        float size = ((alto * ancho) / (metrics.densityDpi * 300));
         pie.setTextSize(size);
 
     }
@@ -315,7 +311,7 @@ public class ViewImagenLayout {
         float ancho = metrics.widthPixels;
         float alto = metrics.heightPixels;
 
-        float size = ((float) (alto * ancho) / (metrics.densityDpi * 300));
+        float size = ((alto * ancho) / (metrics.densityDpi * 300));
         titulo.setTextSize(size);
 
     }
@@ -338,7 +334,7 @@ public class ViewImagenLayout {
         float ancho = metrics.widthPixels;
         float alto = metrics.heightPixels;
 
-        float size = ((float) (alto * ancho) / (metrics.densityDpi * 300));
+        float size = ((alto * ancho) / (metrics.densityDpi * 300));
         pie.setTextSize(size);
 
     }

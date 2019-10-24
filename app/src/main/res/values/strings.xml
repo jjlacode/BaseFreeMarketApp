@@ -489,6 +489,16 @@
     <string name="hora_acordada">Hora entrega acordada</string>
     <string name="orden_ejecucion">Orden de ejecución</string>
     <string name="offset">Tiempo de preparación (horas)</string>
+    <string name="color_trabajo">Color Trabajo</string>
+    <string name="cerrar">Cerrar</string>
+    <string name="recalcular_fechas">Recalcular fecha entrega trabajos</string>
+    <string name="mantener_entera">Mantener entera</string>
+    <string name="no_mover">No mover</string>
+    <string name="presup">presup</string>
+    <string name="precio_hora">Precio hora</string>
+    <string name="coste">Coste total</string>
+    <string name="porcbenef">% beneficio</string>
+    <string name="asignar_cantidad">Debe asignar las unidades de la partida para poder acceder a los detalles de partida</string>
 
 
 </resources>

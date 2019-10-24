@@ -51,7 +51,7 @@ import static com.codevsolution.base.android.AppActivity.viewOnMapA;
 import static com.codevsolution.base.javautil.JavaUtil.getDate;
 import static com.codevsolution.base.javautil.JavaUtil.getTime;
 import static com.codevsolution.base.javautil.JavaUtil.hoy;
-import static com.codevsolution.base.time.calendar.clases.DiaCalBase.HORACAL;
+import static com.codevsolution.base.time.calendar.DiaCalBase.HORACAL;
 import static com.codevsolution.freemarketsapp.logica.Interactor.setNamefdef;
 
 public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.ConstantesPry,
@@ -139,7 +139,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
     @Override
     protected void setLista() {
 
-        if (origen.equals(CALENDARIO)) {
+        if (origen != null && origen.equals(CALENDARIO)) {
             visibleSoloBtnBack();
         }
 

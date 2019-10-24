@@ -2,8 +2,8 @@ package com.codevsolution.base.sqlite;
 
 import android.net.Uri;
 
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.javautil.JavaUtil;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -104,6 +104,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         String PROYECTO_FECHAENTREGACALCULADAF = "fechaentregacalculadaf_" + TABLA_PROYECTO;
         String PROYECTO_FECHAFINALF = "fechafinalf_" + TABLA_PROYECTO;
         String PROYECTO_SPLIT = "split_" + TABLA_PROYECTO;
+        String PROYECTO_FIJA = "fija_" + TABLA_PROYECTO;
         String PROYECTO_RETRASO = "retraso_proyecto_" + TABLA_PROYECTO;
         String PROYECTO_IMPORTEPRESUPUESTO = "importepresupuesto_" + TABLA_PROYECTO;
         String PROYECTO_IMPORTEFINAL = "importefinal_" + TABLA_PROYECTO;
@@ -163,6 +164,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         String PARTIDA_FECHAENTREGACALCULADAF = "fechaentregacalculadaf_" + TABLA_PARTIDA;
         String PARTIDA_ORDEN = "orden_" + TABLA_PARTIDA;
         String PARTIDA_SPLIT = "split_" + TABLA_PARTIDA;
+        String PARTIDA_FIJA = "fija_" + TABLA_PARTIDA;
         String PARTIDA_ID_ESTADO = CAMPO_ID + TABLA_PARTIDA + TABLA_ESTADO;
         String PARTIDA_DESCRIPCION = CAMPO_DESCRIPCION + TABLA_PARTIDA;
         String PARTIDA_NOMBRE = CAMPO_NOMBRE + TABLA_PARTIDA;
@@ -199,6 +201,8 @@ public class ContratoPry implements JavaUtil.Constantes {
         String DETPARTIDA_OFFSET = "offset_" + TABLA_DETPARTIDA;
         String DETPARTIDA_ORDEN = "orden_" + TABLA_DETPARTIDA;
         String DETPARTIDA_SPLIT = "split_" + TABLA_DETPARTIDA;
+        String DETPARTIDA_FIJA = "fija_" + TABLA_DETPARTIDA;
+        String DETPARTIDA_COLOR = "color_" + TABLA_DETPARTIDA;
         String DETPARTIDA_ID_DETPARTIDA = CAMPO_ID + TABLA_DETPARTIDA;
         String DETPARTIDA_ID_PROVEEDOR = CAMPO_ID+ "proveedor_" + TABLA_DETPARTIDA;
         String DETPARTIDA_ID_PROVEEDORWEB = CAMPO_ID+ "proveedorweb_" + TABLA_DETPARTIDA;
@@ -467,6 +471,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         String AGENDA_VALORSALIDA = CAMPO_VALOR + "salida_" + TABLA_AGENDA;
         String AGENDA_VALORANT = CAMPO_VALOR + "ant_" + TABLA_AGENDA;
         String AGENDA_VALORSIG = CAMPO_VALOR + "sig_" + TABLA_AGENDA;
+        String AGENDA_COLOR = "color_" + TABLA_AGENDA;
         String AGENDA_ACTIVO = CAMPO_ACTIVO + TABLA_AGENDA;
         String AGENDA_MULTI = CAMPO_MULTI + TABLA_AGENDA;
         String AGENDA_INICIO = "inicio_" + TABLA_AGENDA;
@@ -517,7 +522,7 @@ public class ContratoPry implements JavaUtil.Constantes {
 
         //CAMPOS----------------------------------------------------------------
 
-        String[] CAMPOS_PROYECTO = {"107", TABLA_PROYECTO,
+        String[] CAMPOS_PROYECTO = {"110", TABLA_PROYECTO,
                 PROYECTO_ID_PROYECTO, "TEXT NON NULL UNIQUE", STRING,
                 PROYECTO_ID_CLIENTE, String.format("TEXT NON NULL %s", ID_CLIENTE), STRING,
                 PROYECTO_ID_ESTADO, String.format("TEXT NON NULL %s", ID_ESTADO), STRING,
@@ -543,6 +548,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PROYECTO_FECHAFINALF, "TEXT", STRING,
                 PROYECTO_RETRASO, "INTEGER NON NULL DEFAULT 0", LONG,
                 PROYECTO_SPLIT, "INTEGER NON NULL DEFAULT 0", INT,
+                PROYECTO_FIJA, "INTEGER NON NULL DEFAULT 0", INT,
                 PROYECTO_IMPORTEPRESUPUESTO, "REAL NON NULL DEFAULT 0", DOUBLE,
                 PROYECTO_IMPORTEFINAL, "REAL NON NULL DEFAULT 0", DOUBLE,
                 PROYECTO_PRECIOHORA, "REAL NON NULL DEFAULT 0", DOUBLE,
@@ -590,7 +596,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 ESTADO_TIPOESTADO, "INTEGER NON NULL", INT
         };
 
-        String[] CAMPOS_PARTIDA = {"95", TABLA_PARTIDA,
+        String[] CAMPOS_PARTIDA = {"98", TABLA_PARTIDA,
                 PARTIDA_ID_PROYECTO, String.format("TEXT NON NULL %s", ID_PROYECTO), STRING,
                 PARTIDA_ID_PARTIDA, "TEXT NON NULL UNIQUE", STRING,
                 PARTIDA_ID_PARTIDABASE, "TEXT", STRING,
@@ -609,6 +615,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PARTIDA_HORAINICIOACORDADAF, "TEXT", STRING,
                 PARTIDA_ORDEN, "INTEGER NON NULL DEFAULT 0", INT,
                 PARTIDA_SPLIT, "INTEGER NON NULL DEFAULT 0", INT,
+                PARTIDA_FIJA, "INTEGER NON NULL DEFAULT 0", INT,
                 PARTIDA_ID_ESTADO, String.format("TEXT NON NULL %s", ID_ESTADO), STRING,
                 PARTIDA_DESCRIPCION, "TEXT NON NULL", STRING,
                 PARTIDA_NOMBRE, "TEXT NON NULL", STRING,
@@ -627,7 +634,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PARTIDA_TIPO_ESTADO, NULL, INT
         };
 
-        String[] CAMPOS_DETPARTIDA = {"128", TABLA_DETPARTIDA,
+        String[] CAMPOS_DETPARTIDA = {"134", TABLA_DETPARTIDA,
                 DETPARTIDA_ID_PARTIDA, String.format("TEXT NON NULL %s", ID_PARTIDA), STRING,
                 DETPARTIDA_SECUENCIA, "INTEGER NON NULL", INT,
                 DETPARTIDA_FECHAENTREGAACORDADA, "INTEGER NON NULL DEFAULT 0", LONG,
@@ -645,6 +652,8 @@ public class ContratoPry implements JavaUtil.Constantes {
                 DETPARTIDA_OFFSET, "INTEGER NON NULL DEFAULT 0", LONG,
                 DETPARTIDA_ORDEN, "INTEGER NON NULL DEFAULT 0", INT,
                 DETPARTIDA_SPLIT, "INTEGER NON NULL DEFAULT 0", INT,
+                DETPARTIDA_FIJA, "INTEGER NON NULL DEFAULT 0", INT,
+                DETPARTIDA_COLOR, "TEXT", STRING,
                 DETPARTIDA_ID_DETPARTIDA, "TEXT", STRING,
                 DETPARTIDA_NOMBRE, "TEXT NON NULL", STRING,
                 DETPARTIDA_DESCRIPCION, "TEXT NON NULL", STRING,
@@ -941,12 +950,13 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PEDIDOCLIENTE_TIMESTAMP, "INTEGER NON NULL DEFAULT 0", LONG
         };
 
-        String[] CAMPOS_AGENDA = {"62", TABLA_AGENDA,
+        String[] CAMPOS_AGENDA = {"65", TABLA_AGENDA,
                 AGENDA_ID_AGENDA, "TEXT NON NULL UNIQUE", STRING,
                 AGENDA_ID_PARTIDA, "TEXT NON NULL", STRING,
                 AGENDA_ID_DETPARTIDA, "TEXT NON NULL", STRING,
                 AGENDA_ID_MINANT, "TEXT", STRING,
                 AGENDA_ID_MINSIG, "TEXT", STRING,
+                AGENDA_COLOR, "TEXT", STRING,
                 AGENDA_SECUENCIA_PARTIDA, "INTEGER NON NULL DEFAULT 0", INT,
                 AGENDA_SECUENCIA_DETPARTIDA, "INTEGER NON NULL DEFAULT 0", INT,
                 AGENDA_VALORENTRADA, "INTEGER NON NULL DEFAULT 0", LONG,

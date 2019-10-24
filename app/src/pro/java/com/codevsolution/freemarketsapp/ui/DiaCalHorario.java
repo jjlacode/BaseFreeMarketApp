@@ -4,14 +4,15 @@ import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
-import com.codevsolution.base.time.calendar.clases.DiaCalBase;
+import com.codevsolution.base.style.Estilos;
+import com.codevsolution.base.time.calendar.DiaCalBase;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public abstract class HorarioPerfil extends DiaCalBase implements ContratoPry.Tablas {
+public abstract class DiaCalHorario extends DiaCalBase implements ContratoPry.Tablas {
 
     @Override
     protected int setColorCard(long fecha, long horaCal){
@@ -34,7 +35,7 @@ public abstract class HorarioPerfil extends DiaCalBase implements ContratoPry.Ta
                         (horaCal >= perfilActivo.getLong(PERFIL_HORAITLUNES) && horaCal <
                                 perfilActivo.getLong(PERFIL_HORAFTLUNES))) {
 
-                    return R.color.colorPrimary;
+                    return Estilos.colorPrimary(contexto);
                 }
             } else if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY) {
                 if ((horaCal >= perfilActivo.getLong(PERFIL_HORAIMMARTES) && horaCal <
@@ -42,7 +43,7 @@ public abstract class HorarioPerfil extends DiaCalBase implements ContratoPry.Ta
                         (horaCal >= perfilActivo.getLong(PERFIL_HORAITMARTES) && horaCal <
                                 perfilActivo.getLong(PERFIL_HORAFTMARTES))) {
 
-                    return R.color.colorPrimary;
+                    return Estilos.colorPrimary(contexto);
                 }
             } else if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY) {
                 if ((horaCal >= perfilActivo.getLong(PERFIL_HORAIMMIERCOLES) && horaCal <
@@ -50,7 +51,7 @@ public abstract class HorarioPerfil extends DiaCalBase implements ContratoPry.Ta
                         (horaCal >= perfilActivo.getLong(PERFIL_HORAITMIERCOLES) && horaCal <
                                 perfilActivo.getLong(PERFIL_HORAFTMIERCOLES))) {
 
-                    return R.color.colorPrimary;
+                    return Estilos.colorPrimary(contexto);
                 }
             } else if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY) {
                 if ((horaCal >= perfilActivo.getLong(PERFIL_HORAIMJUEVES) && horaCal <
@@ -58,7 +59,7 @@ public abstract class HorarioPerfil extends DiaCalBase implements ContratoPry.Ta
                         (horaCal >= perfilActivo.getLong(PERFIL_HORAITJUEVES) && horaCal <
                                 perfilActivo.getLong(PERFIL_HORAFTJUEVES))) {
 
-                    return R.color.colorPrimary;
+                    return Estilos.colorPrimary(contexto);
                 }
             } else if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
                 if ((horaCal >= perfilActivo.getLong(PERFIL_HORAIMVIERNES) && horaCal <
@@ -66,7 +67,7 @@ public abstract class HorarioPerfil extends DiaCalBase implements ContratoPry.Ta
                         (horaCal >= perfilActivo.getLong(PERFIL_HORAITVIERNES) && horaCal <
                                 perfilActivo.getLong(PERFIL_HORAFTVIERNES))) {
 
-                    return R.color.colorPrimary;
+                    return Estilos.colorPrimary(contexto);
                 }
             } else if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
                 if ((horaCal >= perfilActivo.getLong(PERFIL_HORAIMSABADO) && horaCal <
@@ -74,7 +75,7 @@ public abstract class HorarioPerfil extends DiaCalBase implements ContratoPry.Ta
                         (horaCal >= perfilActivo.getLong(PERFIL_HORAITSABADO) && horaCal <
                                 perfilActivo.getLong(PERFIL_HORAFTSABADO))) {
 
-                    return R.color.colorPrimary;
+                    return Estilos.colorPrimary(contexto);
                 }
             } else if (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
                 if ((horaCal >= perfilActivo.getLong(PERFIL_HORAIMDOMINGO) && horaCal <
@@ -82,7 +83,7 @@ public abstract class HorarioPerfil extends DiaCalBase implements ContratoPry.Ta
                         (horaCal >= perfilActivo.getLong(PERFIL_HORAITDOMINGO) && horaCal <
                                 perfilActivo.getLong(PERFIL_HORAFTDOMINGO))) {
 
-                    return R.color.colorPrimary;
+                    return Estilos.colorPrimary(contexto);
                 }
             }
         }

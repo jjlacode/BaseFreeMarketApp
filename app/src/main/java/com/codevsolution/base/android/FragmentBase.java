@@ -34,13 +34,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.codevsolution.base.android.controls.EditMaterialLayout;
-import com.codevsolution.base.android.controls.ViewGroupLayout;
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.LockableScrollView;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.interfaces.ICFragmentos;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.models.Contactos;
 import com.codevsolution.base.models.DestinosVoz;
@@ -139,6 +139,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected String idUser;
     protected boolean autoGuardado = true;
     protected int tiempoGuardado = 1;
+    protected int sizeTextD;
 
 
     @Override
@@ -161,11 +162,11 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         altoReal = metrics.heightPixels;
         ancho = (int) (metrics.widthPixels / densidad);
         alto = (int) (metrics.heightPixels / densidad);
-        densidadDpi = (int) (metrics.densityDpi);
+        densidadDpi = metrics.densityDpi;
 
         sizeText = ((float) (ancho + alto + densidadDpi) / (100));
         System.out.println("sizeText = " + sizeText);
-
+        sizeTextD = (int) (sizeText * densidad);
         materialEdits = new ArrayList<>();
         materialEditLayouts = new ArrayList<>();
         vistas = new ArrayList<>();
@@ -266,7 +267,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         gone(frLista);
 
-        timerg = (Chronometer) view.findViewById(R.id.chronocrud);
+        timerg = view.findViewById(R.id.chronocrud);
 
         setOnCreateView(view, inflaterMain, containerMain);
 

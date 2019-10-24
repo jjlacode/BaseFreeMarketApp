@@ -13,18 +13,27 @@ import androidx.cardview.widget.CardView;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
+import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.style.Estilos;
+import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
 
-public class DiaCalTrabajos extends HorarioPerfil implements ContratoPry.Tablas,
+public class DiaCalTrabajos extends DiaCalHorario implements ContratoPry.Tablas,
         JavaUtil.Constantes, Interactor.TiposEvento, Interactor.ConstantesPry {
 
+    @Override
+    protected ListaModeloSQL setListaDia(long fecha) {
+
+        return Trabajos.getListaDia(fecha);
+    }
 
     @Override
     protected void setOnBack() {
@@ -110,13 +119,25 @@ public class DiaCalTrabajos extends HorarioPerfil implements ContratoPry.Tablas,
         }
 
         @Override
-        public void bind(final ModeloSQL modeloSQL) {
+        public void bind(final ModeloSQL segmento) {
 
+            if (setColorCard(fecha, horaCal) == Estilos.getIdColor(contexto, Estilos.Constantes.COLORPRIMARY) &&
+                    segmento.getLong(AGENDA_VALORENTRADA) <= horaCal + TimeDateUtil.soloFecha(fecha)
+                    && segmento.getLong(AGENDA_VALORSALIDA) > horaCal + TimeDateUtil.soloFecha(fecha)) {
+                visible(card);
 
-            double completada = modeloSQL.getDouble(PROYECTO_TOTCOMPLETADO);
-            descripcion.setText(modeloSQL.getString(PROYECTO_DESCRIPCION));
+            } else {
+                gone(card);
+            }
+
+            final ModeloSQL modeloSQL = CRUDutil.updateModelo(CAMPOS_DETPARTIDA, segmento.
+                    getString(AGENDA_ID_DETPARTIDA), segmento.getInt(AGENDA_SECUENCIA_DETPARTIDA));
+
+            double completada = modeloSQL.getDouble(DETPARTIDA_COMPLETADA);
+            descripcion.setText(modeloSQL.getString(DETPARTIDA_DESCRIPCION));
             pbar.setProgress((int)completada);
-            cliente.setText(modeloSQL.getString(PROYECTO_CLIENTE_NOMBRE));
+            final ModeloSQL proyecto = CRUDutil.updateModelo(CAMPOS_PROYECTO, segmento.getString(AGENDA_ID_PARTIDA));
+            cliente.setText(proyecto.getString(PROYECTO_CLIENTE_NOMBRE));
             MediaUtil imagenUtil = new MediaUtil(getContext());
             try{
                 imagenUtil.setImageUri(modeloSQL.getString(PROYECTO_RUTAFOTO), imagen);
@@ -130,7 +151,7 @@ public class DiaCalTrabajos extends HorarioPerfil implements ContratoPry.Tablas,
             }
 
 
-            long retraso = modeloSQL.getLong(PROYECTO_RETRASO);
+            long retraso = proyecto.getLong(PROYECTO_RETRASO);
 
             if (retraso > 3 * Interactor.DIASLONG) {
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
@@ -147,11 +168,12 @@ public class DiaCalTrabajos extends HorarioPerfil implements ContratoPry.Tablas,
 
                     bundle = new Bundle();
                     bundle.putSerializable(MODELO, modeloSQL);
-                    bundle.putString(CAMPO_ID, modeloSQL.getString(PROYECTO_ID_PROYECTO));
+                    bundle.putString(CAMPO_ID, modeloSQL.getString(DETPARTIDA_ID_PARTIDA));
+                    bundle.putInt(CAMPO_SECUENCIA, modeloSQL.getInt(DETPARTIDA_SECUENCIA));
                     bundle.putString(ORIGEN, TRABAJOS);
-                    bundle.putString(SUBTITULO, modeloSQL.getString(PROYECTO_NOMBRE));
-                    bundle.putString(ACTUAL, PROYECTO);
-                    icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
+                    bundle.putString(SUBTITULO, modeloSQL.getString(DETPARTIDA_NOMBRE));
+                    bundle.putString(ACTUAL, DETPARTIDA);
+                    icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
 
                 }
             });

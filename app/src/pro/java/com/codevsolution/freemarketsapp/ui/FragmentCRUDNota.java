@@ -32,7 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.codevsolution.base.time.calendar.clases.DiaCalBase.HORACAL;
+import static com.codevsolution.base.time.calendar.DiaCalBase.HORACAL;
 
 public class FragmentCRUDNota extends FragmentCRUD implements Interactor.ConstantesPry,
         ContratoPry.Tablas, Interactor.TiposNota {

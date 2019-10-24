@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/dialog_main">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/container_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/btn_cerrar_dialogo_paleta"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="4"
+        android:background="@drawable/boton_redondo_secondary"
+        android:textColor="@color/colorSecondaryDark"
+        android:text="@string/cerrar" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>

@@ -3,6 +3,7 @@ package com.codevsolution.freemarketsapp.ui;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -19,9 +20,10 @@ import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.Day;
 import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.base.time.calendar.fragments.FragmentMes;
+import com.codevsolution.base.time.calendar.FragmentMes;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
@@ -33,7 +35,7 @@ import java.util.Calendar;
  */
 
 public abstract class FragmentMesHorario extends FragmentMes implements
-        JavaUtil.Constantes, ContratoPry.Tablas, Interactor.ConstantesPry {//}, CalendarAdapter.DayOnClickListener {
+        JavaUtil.Constantes, ContratoPry.Tablas, Interactor.ConstantesPry {
 
 
     @Override
@@ -72,10 +74,10 @@ public abstract class FragmentMesHorario extends FragmentMes implements
         }
 
         @Override
-        public void bind(ArrayList<?> lista, final int position) {
+        public void bind(final ArrayList<?> lista, final int position) {
 
             final Day dia = (Day) lista.get(position);
-            Calendar cal = dia.getDate();//Calendar.getInstance();
+            final Calendar cal = dia.getDate();//Calendar.getInstance();
             //cal.setTime(dia.getDate());
             int nday = cal.get(Calendar.DAY_OF_MONTH);
             int nomDay = cal.get(Calendar.DAY_OF_WEEK);
@@ -87,6 +89,17 @@ public abstract class FragmentMesHorario extends FragmentMes implements
             mainLinear.setOrientation(ViewGroupLayout.ORI_LLC_HORIZONTAL);
             ViewGroupLayout vistaLinear = new ViewGroupLayout(contexto, mainLinear);
 
+            verDia = vistaLinear.addImageButtonSecundary(Estilos.getIdDrawable(contexto, "ic_ver_indigo"));
+            Estilos.setLayoutParams(vistaLinear.getViewGroup(), verDia, Estilos.Constantes.MATCH_PARENT,
+                    (int) (Estilos.getAltoBoton(activityBase, 0.3f)));
+            verDia.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            verDia.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    setVerDia(cal.getTimeInMillis(), setListaDia(cal.getTimeInMillis()));
+                }
+            });
+
             ModeloSQL perfil = CRUDutil.updateModelo(CAMPOS_PERFIL, PERFIL_NOMBRE, Interactor.perfila, null, IGUAL, null);
             if ((nomDay == Calendar.SUNDAY && perfil.getDouble(PERFIL_HORASDOMINGO) == 0) ||
                     (nomDay == Calendar.MONDAY && perfil.getDouble(PERFIL_HORASLUNES) == 0) ||
@@ -96,9 +109,14 @@ public abstract class FragmentMesHorario extends FragmentMes implements
                     (nomDay == Calendar.FRIDAY && perfil.getDouble(PERFIL_HORASVIERNES) == 0) ||
                     (nomDay == Calendar.SATURDAY && perfil.getDouble(PERFIL_HORASSABADO) == 0)) {
                 btnDia = vistaLinear.addButtonPrimary(null);
+                Estilos.setLayoutParams(vistaLinear.getViewGroup(), btnDia, Estilos.Constantes.MATCH_PARENT,
+                        (int) (Estilos.getAltoBoton(activityBase, 1)));
                 descanso = true;
             } else {
                 btnDia = vistaLinear.addButtonTrans(null);
+                Estilos.setLayoutParams(vistaLinear.getViewGroup(), btnDia, Estilos.Constantes.MATCH_PARENT,
+                        (int) (Estilos.getAltoBoton(activityBase, 1)));
+
                 if (campoCard != null) {
                     recyclerView = (RecyclerView) vistaLinear.addVista(new RecyclerView(contexto));
                     recyclerView.setLayoutManager(new LinearLayoutManager(contexto));
@@ -154,6 +172,12 @@ public abstract class FragmentMesHorario extends FragmentMes implements
                 }
             } else {
                 btnDia.setTextColor(dia.getTextColorNV());
+                btnDia.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        abrirSemana(cal.getTimeInMillis());
+                    }
+                });
                 card.setBackgroundColor(dia.getBackgroundColorNV());
                 if (recyclerView != null)
                     recyclerView.setBackgroundColor(dia.getBackgroundColorNV());

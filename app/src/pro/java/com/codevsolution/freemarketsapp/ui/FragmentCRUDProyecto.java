@@ -10,6 +10,8 @@ import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -82,7 +84,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
 
     private ArrayList<String> listaEstados;
-    private ArrayList<ModeloSQL> listaClientes;
     private ArrayList<ModeloSQL> objEstados;
 
     private String idCliente;
@@ -90,14 +91,11 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private String nombreCliente;
 
     private int peso = 0;
-    private int posCliente = 0;
     private int totcompletada = 0;
 
     private long fechaCalculada = 0;
     private long fechaInicioCalculada = 0;
     private long horaInicioCalculada = 0;
-    private long horaInicioAcordada = 0;
-    private long fechaInicioAcordada = 0;
     private long fechaAcordada = 0;
     private long fechaEntregaP = 0;
 
@@ -117,6 +115,12 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     public static String rutaPdf;
     private boolean enGarantia;
     private ModeloSQL cliente;
+    private CheckBox chSplit;
+    private CheckBox chFija;
+    private EditMaterialLayout precioHora;
+    private EditMaterialLayout costeProy;
+    private EditMaterialLayout beneficio;
+    private EditMaterialLayout porcBenef;
 
     public FragmentCRUDProyecto() {
         // Required empty public constructor
@@ -148,7 +152,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     }
 
-    protected void actualizarConsultas() {
+    private void actualizarConsultas() {
 
         new Interactor.Calculos.TareaActualizarProys().execute();
 
@@ -166,6 +170,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             for (ModeloSQL item : lista.getLista()) {
 
                 int estado = item.getInt(PROYECTO_TIPOESTADO);
+                System.out.println("actual = " + actual);
 
                 switch (actual) {
 
@@ -208,9 +213,13 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                             }
 
                         break;
+
+                    default:
+                        listatemp.add(item);
                 }
             }
             lista = CRUDutil.clonaListaModelo(campos,listatemp);
+            System.out.println("lista = " + lista.sizeLista());
 
             enviarAct();
             setSubtitulo(actual);
@@ -221,8 +230,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setLayout() {
 
-        //layoutCuerpo = R.layout.fragment_crud_proyecto;
-        //layoutCabecera = R.layout.cabecera_crud_proyecto;
         layoutItem = R.layout.item_list_proyecto;
         cabecera = true;
 
@@ -273,31 +280,23 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             actual=PROYECTO;
         }
 
-        if (actual.equals(PRESUPUESTO)) {
-            if (actualtemp==null) {
-                actualtemp = actual;
-            }
-        }else if (actual.equals(PROYECTO)){
-            if (actualtemp==null) {
-                actualtemp = actual;
-            }
-        }else if (actual.equals(COBROS)){
-            if (actualtemp==null) {
-                actualtemp = PROYECTO;
-            }
-        }else if (actual.equals(HISTORICO)){
-            if (actualtemp==null) {
-                actualtemp = PROYECTO;
-            }
-        } else if (actual.equals(GARANTIA)) {
-            if (actualtemp == null) {
-                actualtemp = PROYECTO;
-            }
-        }else{
-            if (actualtemp==null) {
-                actualtemp = actual;
-            }
+        switch (actual) {
 
+            case COBROS:
+
+            case HISTORICO:
+
+            case GARANTIA:
+                if (actualtemp == null) {
+                    actualtemp = PROYECTO;
+                }
+                break;
+            default:
+                if (actualtemp == null) {
+                    actualtemp = actual;
+                }
+
+                break;
         }
         setSubtitulo(actual);
 
@@ -402,6 +401,34 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 setSubtitulo(actual);
 
                 selector();
+            }
+        });
+
+        chSplit.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                if (b) {
+                    CRUDutil.actualizarCampo(modeloSQL, PROYECTO_SPLIT, 1);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                } else {
+                    CRUDutil.actualizarCampo(modeloSQL, PROYECTO_SPLIT, 0);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                }
+            }
+        });
+
+        chFija.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                if (b) {
+                    CRUDutil.actualizarCampo(modeloSQL, PROYECTO_FIJA, 1);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                } else {
+                    CRUDutil.actualizarCampo(modeloSQL, PROYECTO_FIJA, 0);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                }
             }
         });
 
@@ -596,71 +623,98 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 showDatePickerDialogEntrega();
             }
         });
+
+        ViewGroupLayout vistaSplit = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaSplit.setOrientacion(LinearLayoutCompat.HORIZONTAL);
+        chSplit = (CheckBox) vistaSplit.addVista(new CheckBox(contexto), 1);
+        chSplit.setText(R.string.mantener_entera);
+        chFija = (CheckBox) vistaSplit.addVista(new CheckBox(contexto), 1);
+        chFija.setText(R.string.no_mover);
+        actualizarArrays(vistaSplit);
+
         ViewGroupLayout vistaAcordada = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
         vistaAcordada.setOrientacion(LinearLayoutCompat.HORIZONTAL);
-        fechaInicioCalculadaPry = vistaAcordada.addEditMaterialLayout(R.string.fecha_acordada);
+        fechaInicioCalculadaPry = vistaAcordada.addEditMaterialLayout(R.string.fecha_acordada, 1);
         fechaInicioCalculadaPry.setActivo(false);
         fechaInicioCalculadaPry.btnInicioVisible(false);
-
-        horaInicioCalculadaPry = vistaAcordada.addEditMaterialLayout(R.string.hora_acordada);
+        horaInicioCalculadaPry = vistaAcordada.addEditMaterialLayout(R.string.hora_acordada, 1);
         horaInicioCalculadaPry.setActivo(false);
         horaInicioCalculadaPry.btnInicioVisible(false);
-
         actualizarArrays(vistaAcordada);
+
         fechaCalculadaPry = vistaForm.addEditMaterialLayout(R.string.fecha_calculada);
         fechaCalculadaPry.setActivo(false);
         fechaCalculadaPry.btnInicioVisible(false);
         fechaFinalPry = vistaForm.addEditMaterialLayout(R.string.fecha_final);
         fechaFinalPry.setActivo(false);
         fechaFinalPry.btnInicioVisible(false);
+
         ViewGroupLayout vistaImportepartidas = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
         vistaImportepartidas.setOrientacion(LinearLayoutCompat.HORIZONTAL);
-        totalPartidasPry = vistaImportepartidas.addEditMaterialLayout(R.string.tiempo_partidas);
+        precioHora = vistaImportepartidas.addEditMaterialLayout(R.string.precio_hora, 1);
+        precioHora.setActivo(false);
+        precioHora.btnInicioVisible(false);
+        totalPartidasPry = vistaImportepartidas.addEditMaterialLayout(R.string.tiempo_partidas, 1);
         totalPartidasPry.setActivo(false);
         totalPartidasPry.btnInicioVisible(false);
-        pvpPartidas = vistaImportepartidas.addEditMaterialLayout(R.string.total_partidas);
+        pvpPartidas = vistaImportepartidas.addEditMaterialLayout(R.string.total_partidas, 1);
         pvpPartidas.setActivo(false);
         pvpPartidas.btnInicioVisible(false);
         actualizarArrays(vistaImportepartidas);
+
         ViewGroupLayout vistaImporte = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
         vistaImporte.setOrientacion(LinearLayoutCompat.HORIZONTAL);
-        importeCalculadoPry = vistaImporte.addEditMaterialLayout(R.string.importe_calculado);
+        importeCalculadoPry = vistaImporte.addEditMaterialLayout(R.string.importe_calculado, 1);
         importeCalculadoPry.setActivo(false);
         importeCalculadoPry.btnInicioVisible(false);
-        importeFinalPry = vistaImporte.addEditMaterialLayout(R.string.importe_final);
+        importeFinalPry = vistaImporte.addEditMaterialLayout(R.string.importe_final, 1);
         actualizarArrays(vistaImporte);
-        btnPartidasPry = vistaForm.addButtonPrimary(R.string.partidas_proyecto);
+
+        ViewGroupLayout vistaCoste = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaCoste.setOrientacion(LinearLayoutCompat.HORIZONTAL);
+
+        costeProy = vistaCoste.addEditMaterialLayout(R.string.coste, 1);
+        costeProy.setActivo(false);
+        costeProy.btnInicioVisible(false);
+        beneficio = vistaCoste.addEditMaterialLayout(R.string.beneficio, 1);
+        beneficio.setActivo(false);
+        beneficio.btnInicioVisible(false);
+        porcBenef = vistaCoste.addEditMaterialLayout(R.string.porcbenef, 1);
+        porcBenef.setActivo(false);
+        porcBenef.btnInicioVisible(false);
+
+        btnPartidasPry = vistaForm.addButtonPrimary(activityBase, R.string.partidas_proyecto);
         btnPartidasPry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 verPartidas();
             }
         });
+
         ViewGroupLayout vistabtn = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
         vistabtn.setOrientacion(LinearLayoutCompat.HORIZONTAL);
-
-        btnEvento = vistabtn.addImageButtonSecundary(R.drawable.ic_evento_indigo);
+        btnEvento = vistabtn.addImageButtonSecundary(activityBase, R.drawable.ic_evento_indigo, 1);
         btnEvento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 nuevoEvento();
             }
         });
-        btnVerEventos = vistabtn.addImageButtonSecundary(R.drawable.ic_lista_eventos_indigo);
+        btnVerEventos = vistabtn.addImageButtonSecundary(activityBase, R.drawable.ic_lista_eventos_indigo, 1);
         btnVerEventos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 verEventos();
             }
         });
-        btnNota = vistabtn.addImageButtonSecundary(R.drawable.ic_nueva_nota_indigo);
+        btnNota = vistabtn.addImageButtonSecundary(activityBase, R.drawable.ic_nueva_nota_indigo, 1);
         btnNota.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 nuevaNota();
             }
         });
-        btnVerNotas = vistabtn.addImageButtonSecundary(R.drawable.ic_lista_notas_indigo);
+        btnVerNotas = vistabtn.addImageButtonSecundary(activityBase, R.drawable.ic_lista_notas_indigo, 1);
         btnVerNotas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -668,7 +722,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             }
         });
         actualizarArrays(vistabtn);
-        btnActualizar = vistaForm.addButtonPrimary(R.string.estado);
+
+        btnActualizar = vistaForm.addButtonPrimary(activityBase, R.string.estado);
         btnActualizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -688,7 +743,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 setDatos();
             }
         });
-        btnActualizar2 = vistaForm.addButtonPrimary(R.string.estado);
+        btnActualizar2 = vistaForm.addButtonPrimary(activityBase, R.string.estado);
         btnActualizar2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -697,7 +752,10 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 setDatos();
             }
         });
-        btnVerPdf = vistaForm.addImageButtonSecundary(R.drawable.ic_pdf_indigo);
+        ViewGroupLayout vistaPdf = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaPdf.setOrientacion(LinearLayoutCompat.HORIZONTAL);
+
+        btnVerPdf = vistaPdf.addImageButtonSecundary(activityBase, R.drawable.ic_pdf_indigo, 1);
         btnVerPdf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -710,7 +768,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             }
         });
 
-        btnenviarPdf = vistaForm.addImageButtonSecundary(R.drawable.ic_txt_pdf_indigo);
+        btnenviarPdf = vistaPdf.addImageButtonSecundary(activityBase, R.drawable.ic_txt_pdf_indigo, 1);
         btnenviarPdf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -728,7 +786,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 }
             }
         });
-        btncompartirPdf = vistaForm.addImageButtonSecundary(R.drawable.ic_compartir_indigo);
+        btncompartirPdf = vistaPdf.addImageButtonSecundary(activityBase, R.drawable.ic_compartir_indigo, 1);
         btncompartirPdf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -742,16 +800,22 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             }
         });
 
+        actualizarArrays(vistaPdf);
         actualizarArrays(vistaForm);
 
         ViewGroupLayout vistaCab = new ViewGroupLayout(contexto, frCabecera);
         vistaCab.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
 
-        btnpresupuestos = vistaCab.addButtonSecondary("Presup");
-        btnproyectos = vistaCab.addButtonSecondary(R.string.proyecto);
-        btncobros = vistaCab.addButtonSecondary(R.string.cobros);
-        btnhistorico = vistaCab.addButtonSecondary(R.string.historico);
-        btngarantias = vistaCab.addButtonSecondary(R.string.garantia);
+        btnpresupuestos = vistaCab.addButtonSecondary(activityBase, R.string.presup, 1);
+        btnpresupuestos.setSingleLine(true);
+        btnproyectos = vistaCab.addButtonSecondary(activityBase, R.string.proyecto, 1);
+        btnproyectos.setSingleLine(true);
+        btncobros = vistaCab.addButtonSecondary(activityBase, R.string.cobros, 1);
+        btncobros.setSingleLine(true);
+        btnhistorico = vistaCab.addButtonSecondary(activityBase, R.string.historico, 1);
+        btnhistorico.setSingleLine(true);
+        btngarantias = vistaCab.addButtonSecondary(activityBase, R.string.garantia, 1);
+        btngarantias.setSingleLine(true);
 
         actualizarArrays(vistaCab);
 
@@ -805,6 +869,37 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         fechaEntradaPry.getLinearLayout().setVisibility(View.VISIBLE);
         visible(btnNota);
         visible(imagen);
+        visible(chSplit);
+        visible(chFija);
+        visible(precioHora.getLinearLayout());
+        visible(costeProy.getLinearLayout());
+        visible(beneficio.getLinearLayout());
+        visible(porcBenef.getLinearLayout());
+
+        precioHora.setText(JavaUtil.formatoMonedaLocal(modeloSQL.getDouble(PROYECTO_PRECIOHORA)));
+        double coste = modeloSQL.getDouble(PROYECTO_COSTE);
+        costeProy.setText(JavaUtil.formatoMonedaLocal(coste));
+        double importe = modeloSQL.getDouble(PROYECTO_IMPORTEPRESUPUESTO);
+        if (modeloSQL.getDouble(PROYECTO_IMPORTEFINAL) > 0) {
+            importe = modeloSQL.getDouble(PROYECTO_IMPORTEFINAL);
+        }
+        double bnf = importe - coste;
+        beneficio.setText(JavaUtil.formatoMonedaLocal(bnf));
+        double pbenef = (double) (100) / (importe / bnf);
+        porcBenef.setText(JavaUtil.getDecimales(pbenef));
+
+        if (modeloSQL.getInt(PROYECTO_SPLIT) == 1) {
+            chSplit.setChecked(true);
+        } else {
+            chSplit.setChecked(false);
+        }
+
+        if (modeloSQL.getInt(PROYECTO_FIJA) == 1) {
+            chFija.setChecked(true);
+        } else {
+            chFija.setChecked(false);
+        }
+
 
         String seleccion = EVENTO_PROYECTOREL+" = '"+id+"'";
         if (checkQueryList(CAMPOS_EVENTO,seleccion,null)){
@@ -856,6 +951,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
             gone(fechaCalculadaPry.getLinearLayout());
             gone(fechaInicioCalculadaPry.getLinearLayout());
+            gone(horaInicioCalculadaPry.getLinearLayout());
             btnActualizar.setVisibility(View.GONE);
             btnActualizar2.setVisibility(View.GONE);
             gone(pvpPartidas.getLinearLayout());
@@ -866,6 +962,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
             visible(fechaCalculadaPry.getLinearLayout());
             visible(fechaInicioCalculadaPry.getLinearLayout());
+            visible(horaInicioCalculadaPry.getLinearLayout());
             visible(btnActualizar);
             visible(pvpPartidas.getLinearLayout());
             gone(fechaEntregaPresup.getLinearLayout());
@@ -970,7 +1067,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private void calculoTotales() {
 
         ArrayList<ModeloSQL> listaPartidas = queryListDetalle(CAMPOS_PARTIDA, id, TABLA_PROYECTO);
-        double precioHora;
 
         int x = 0;
         for (int i = 0; i < listaPartidas.size(); i++) {
@@ -1202,25 +1298,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         Log.d(TAG,"modificarEstado");
     }
 
-    private void actualizarVinculoPartidaBase() {
-
-
-        ListaModeloSQL listaPartidas = new ListaModeloSQL(CAMPOS_PARTIDA, id, tabla, null, null);
-        int res = 0;
-
-        for (ModeloSQL partida : listaPartidas.getLista()) {
-
-            String idpartidabase = partida.getString(PARTIDA_ID_PARTIDABASE);
-            if (idpartidabase!=null){
-
-                ContentValues values = new ContentValues();
-                values.putNull(PARTIDA_ID_PARTIDABASE);
-                res += CRUDutil.actualizarRegistro(partida,values);
-            }
-
-        }
-        Log.d(TAG,"Partidas base desvinculadas = " + res);
-    }
 
     private void crearEventoPresupuesto() {
 
@@ -1378,38 +1455,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         id = null;
     }
 
-    private void listaObjetosEstados() {
-
-        objEstados = new ArrayList<>();
-        String seleccion = null;
-        /*
-        if (actual.equals(PROYECTO)){
-            seleccion = ESTADO_TIPOESTADO + " >3";
-        }else if (actual.equals(PRESUPUESTO)){
-            seleccion = ESTADO_TIPOESTADO + " <4";
-        }else if (actual.equals(COBROS)){
-            seleccion = ESTADO_TIPOESTADO + " >6";
-        }else if (actual.equals(HISTORICO)){
-            seleccion = ESTADO_TIPOESTADO + " == 8";
-        }
-
-         */
-
-        objEstados = queryList(CAMPOS_ESTADO,seleccion,null);
-
-        obtenerListaEstados();
-    }
-
-    private void obtenerListaEstados() {
-
-        listaEstados = new ArrayList<String>();
-        listaEstados.add(getString(R.string.seleccion_estado));
-
-        for (int i=0;i<objEstados.size();i++){
-
-            listaEstados.add(objEstados.get(i).getString(ESTADO_DESCRIPCION));
-        }
-    }
 
     public class TareaFechasGuardar extends AsyncTask<Boolean, Float, Integer> {
 
@@ -1455,32 +1500,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             System.out.println("TAREA FECHAS EJECUTADO");
         }
 
-    }
-
-    public class TareaFechasDatos extends AsyncTask<Boolean, Float, Integer> {
-
-        @Override
-        protected Integer doInBackground(Boolean... booleans) {
-
-            System.out.println("TAREA FECHAS DATOS EJECUTANDO");
-            Interactor.Calculos.recalcularFechas(booleans[0]);
-            return 0;
-        }
-
-        @Override
-        protected void onPostExecute(Integer integer) {
-            super.onPostExecute(integer);
-
-            actualizarFechas();
-            System.out.println("TAREA FECHAS DATOS EJECUTADO");
-        }
-    }
-
-    private void actualizarFechas(){
-
-        System.out.println("TAREA FECHAS DATOS EJECUTADO");
-        fechaInicioCalculadaPry.setText(modeloSQL.getString(PROYECTO_FECHAINICIOCALCULADAF));
-        fechaCalculadaPry.setText(modeloSQL.getString(PROYECTO_FECHAENTREGACALCULADAF));
     }
 
     @Override

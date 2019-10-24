@@ -150,6 +150,126 @@ public class CRUDutil {
         return ConsultaBD.updateRegistro(tabla, id, valores);
     }
 
+    public static int actualizarCampo(ModeloSQL modeloSQL, String campo, String valor) {
+
+        ContentValues valores = new ContentValues();
+        String tabla = modeloSQL.getNombreTabla();
+        System.out.println("tabla = " + tabla);
+        String id = modeloSQL.getString(modeloSQL.getCampoID());
+        valores.put(campo, valor);
+
+        if (ContratoPry.getTabCab(tabla) != null) {
+
+            System.out.println("id = " + id);
+            int secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
+            System.out.println("secuencia = " + secuencia);
+            return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+
+        }
+        System.out.println("id = " + id);
+        return ConsultaBD.updateRegistro(tabla, id, valores);
+    }
+
+    public static int actualizarCampo(ModeloSQL modeloSQL, String campo, int valor) {
+
+        ContentValues valores = new ContentValues();
+        String tabla = modeloSQL.getNombreTabla();
+        System.out.println("tabla = " + tabla);
+        String id = modeloSQL.getString(modeloSQL.getCampoID());
+        valores.put(campo, valor);
+
+        if (ContratoPry.getTabCab(tabla) != null) {
+
+            System.out.println("id = " + id);
+            int secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
+            System.out.println("secuencia = " + secuencia);
+            return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+
+        }
+        System.out.println("id = " + id);
+        return ConsultaBD.updateRegistro(tabla, id, valores);
+    }
+
+    public static int actualizarCampo(ModeloSQL modeloSQL, String campo, long valor) {
+
+        ContentValues valores = new ContentValues();
+        String tabla = modeloSQL.getNombreTabla();
+        System.out.println("tabla = " + tabla);
+        String id = modeloSQL.getString(modeloSQL.getCampoID());
+        valores.put(campo, valor);
+
+        if (ContratoPry.getTabCab(tabla) != null) {
+
+            System.out.println("id = " + id);
+            int secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
+            System.out.println("secuencia = " + secuencia);
+            return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+
+        }
+        System.out.println("id = " + id);
+        return ConsultaBD.updateRegistro(tabla, id, valores);
+    }
+
+    public static int actualizarCampo(ModeloSQL modeloSQL, String campo, float valor) {
+
+        ContentValues valores = new ContentValues();
+        String tabla = modeloSQL.getNombreTabla();
+        System.out.println("tabla = " + tabla);
+        String id = modeloSQL.getString(modeloSQL.getCampoID());
+        valores.put(campo, valor);
+
+        if (ContratoPry.getTabCab(tabla) != null) {
+
+            System.out.println("id = " + id);
+            int secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
+            System.out.println("secuencia = " + secuencia);
+            return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+
+        }
+        System.out.println("id = " + id);
+        return ConsultaBD.updateRegistro(tabla, id, valores);
+    }
+
+    public static int actualizarCampo(ModeloSQL modeloSQL, String campo, double valor) {
+
+        ContentValues valores = new ContentValues();
+        String tabla = modeloSQL.getNombreTabla();
+        System.out.println("tabla = " + tabla);
+        String id = modeloSQL.getString(modeloSQL.getCampoID());
+        valores.put(campo, valor);
+
+        if (ContratoPry.getTabCab(tabla) != null) {
+
+            System.out.println("id = " + id);
+            int secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
+            System.out.println("secuencia = " + secuencia);
+            return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+
+        }
+        System.out.println("id = " + id);
+        return ConsultaBD.updateRegistro(tabla, id, valores);
+    }
+
+    public static int actualizarCampo(ModeloSQL modeloSQL, String campo, short valor) {
+
+        ContentValues valores = new ContentValues();
+        String tabla = modeloSQL.getNombreTabla();
+        System.out.println("tabla = " + tabla);
+        String id = modeloSQL.getString(modeloSQL.getCampoID());
+        valores.put(campo, valor);
+
+        if (ContratoPry.getTabCab(tabla) != null) {
+
+            System.out.println("id = " + id);
+            int secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
+            System.out.println("secuencia = " + secuencia);
+            return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+
+        }
+        System.out.println("id = " + id);
+        return ConsultaBD.updateRegistro(tabla, id, valores);
+    }
+
     public static int actualizarRegistro(String tabla, String id, String secuencia, ContentValues valores) {
 
         return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);

@@ -73,13 +73,13 @@ public class Modelo implements Serializable {
         this.valores = new String[numcampos];
         this.valores[0] = ContratoModels.generarIdModelo(nombreModelo);
 
-        for (int i = 1, x = 1; i < numcampos; i++, x += 2) {
+        for (int i = 0, x = 1; i < numcampos; i++, x += 2) {
 
             if (campos[x] != null) {
                 this.campos[i] = campos[x];
             }
             if (valores[i] != null) {
-                this.valores[i] = valores[i - 1];
+                this.valores[i] = valores[i];
             }
 
         }

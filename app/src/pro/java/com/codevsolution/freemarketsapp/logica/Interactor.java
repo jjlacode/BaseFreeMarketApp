@@ -1315,6 +1315,53 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
         }
 
+        public static void borrarSegmentosFuturos(long fecha) {
+
+            String ordenAgenda = AGENDA_VALORENTRADA + Constantes.ORDENASCENDENTE;
+            ListaModeloSQL listaSegmentos = CRUDutil.setListaModelo(CAMPOS_AGENDA, AGENDA_VALORENTRADA, String.valueOf(TimeDateUtil.ahora()), MAYOR, ordenAgenda);
+
+            for (ModeloSQL segmento : listaSegmentos.getLista()) {
+
+                ModeloSQL detpartida = CRUDutil.updateModelo(CAMPOS_DETPARTIDA, segmento.getString(AGENDA_ID_DETPARTIDA), segmento.getInt(AGENDA_SECUENCIA_DETPARTIDA));
+
+                if (detpartida.getInt(DETPARTIDA_FIJA) == 0) {
+                    CRUDutil.borrarRegistro(TABLA_AGENDA, segmento.getString(AGENDA_ID_AGENDA));
+                }
+            }
+
+        }
+
+        public static boolean comprobarSegmentoIdDetpartida(String idDetpartida, int secDetpartida) {
+
+            ListaModeloSQL listaSegmentos = CRUDutil.setListaModelo(CAMPOS_AGENDA);
+
+            for (ModeloSQL segmento : listaSegmentos.getLista()) {
+                if (segmento.getString(AGENDA_ID_DETPARTIDA).equals(idDetpartida) && segmento.getInt(AGENDA_SECUENCIA_DETPARTIDA) == secDetpartida) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static void moverSegmento(String idDetpartida, int secDetpartida) {
+
+            long fecha = TimeDateUtil.ahora();
+            ListaModeloSQL listaSegmentos = CRUDutil.setListaModelo(CAMPOS_AGENDA, AGENDA_ID_DETPARTIDA, idDetpartida, IGUAL, null);
+            for (ModeloSQL segmento : listaSegmentos.getLista()) {
+
+                if (segmento.getInt(AGENDA_SECUENCIA_DETPARTIDA) == secDetpartida) {
+                    fecha = segmento.getInt(AGENDA_VALORENTRADA);
+                }
+
+            }
+
+            borrarSegmentosFuturos(fecha);
+
+            recalcularFechas(true);
+
+        }
+
         public static void recalcularAgenda(long inicio, long fin, int anios){
 
             String ordenAgenda = AGENDA_VALORENTRADA + Constantes.ORDENASCENDENTE;
@@ -1389,14 +1436,21 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             long fechaFin = 0;
             String ordenProyectosNuevos = PROYECTO_FECHAENTRADA + Constantes.ORDENASCENDENTE;
 
-            ListaModeloSQL listaProyectosnuevos = CRUDutil.setListaModelo(CAMPOS_PROYECTO, PROYECTO_FECHAINICIOACORDADA, "0", IGUAL, ordenProyectosNuevos);
+            ListaModeloSQL listaProyectosnuevos = new ListaModeloSQL();
+            ListaModeloSQL listatmp = CRUDutil.setListaModelo(CAMPOS_PROYECTO, null, ordenProyectosNuevos);
 
+            for (ModeloSQL proyectotmp : listatmp.getLista()) {
+                if (proyectotmp.getInt(PROYECTO_TIPOESTADO) > 0 && proyectotmp.getInt(PROYECTO_TIPOESTADO) < TiposEstados.TPROYECPENDENTREGA) {
+                    listaProyectosnuevos.addModelo(proyectotmp);
+                }
+            }
 
             for (int i = 0; i < listaProyectosnuevos.getLista().size(); i++) {
 
                 ModeloSQL proyectoNuevo = listaProyectosnuevos.getLista().get(i);
                 String ordenPartidas = PARTIDA_ORDEN + Constantes.ORDENASCENDENTE;
-                ListaModeloSQL listaPartidas = CRUDutil.setListaModelo(CAMPOS_PARTIDA, PARTIDA_ID_PROYECTO, proyectoNuevo.getString(PROYECTO_ID_PROYECTO), IGUAL, ordenPartidas);
+                ListaModeloSQL listaPartidas = CRUDutil.setListaModelo(CAMPOS_PARTIDA, PARTIDA_ID_PROYECTO,
+                        proyectoNuevo.getString(PROYECTO_ID_PROYECTO), IGUAL, ordenPartidas);
 
                 int ultimaPartida = 0;
                 for (ModeloSQL partida : listaPartidas.getLista()) {
@@ -1418,87 +1472,90 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
                         ModeloSQL detPartida = listaDetPartidas.getLista().get(y);
 
-                        if (detPartida.getInt(DETPARTIDA_ORDEN)>0){
+                        if (!guardar || !comprobarSegmentoIdDetpartida(detPartida.getString(DETPARTIDA_ID_PARTIDA), detPartida.getInt(DETPARTIDA_SECUENCIA))) {
 
-                            if (partida.getInt(PARTIDA_ORDEN) == 1) {
-                                if (detPartida.getInt(DETPARTIDA_ORDEN) == 1) {
-                                    inicio = TimeDateUtil.soloFecha(detPartida.getLong(DETPARTIDA_FECHAINICIOCALCULADA)) +
-                                            TimeDateUtil.soloHora(detPartida.getLong(DETPARTIDA_HORAINICIOCALCULADA));
-                                }
+                            if (detPartida.getInt(DETPARTIDA_ORDEN) > 0) {
 
-                            } else if (partida.getInt(PARTIDA_ORDEN) > 1) {
+                                if (partida.getInt(PARTIDA_ORDEN) == 1) {
+                                    if (detPartida.getInt(DETPARTIDA_ORDEN) == 1) {
+                                        inicio = TimeDateUtil.soloFecha(detPartida.getLong(DETPARTIDA_FECHAINICIOCALCULADA)) +
+                                                TimeDateUtil.soloHora(detPartida.getLong(DETPARTIDA_HORAINICIOCALCULADA));
+                                    }
 
-                                if (detPartida.getInt(DETPARTIDA_ORDEN) == 1) {
-                                    ModeloSQL partidaAnt = null;
-                                    for (ModeloSQL partidatemp : listaPartidas.getLista()) {
-                                        if (partidatemp.getInt(PARTIDA_ORDEN) == partida.getInt(PARTIDA_ORDEN) - 1) {
-                                            partidaAnt = partidatemp.clonar(false);
-                                            break;
+                                } else if (partida.getInt(PARTIDA_ORDEN) > 1) {
+
+                                    if (detPartida.getInt(DETPARTIDA_ORDEN) == 1) {
+                                        ModeloSQL partidaAnt = null;
+                                        for (ModeloSQL partidatemp : listaPartidas.getLista()) {
+                                            if (partidatemp.getInt(PARTIDA_ORDEN) == partida.getInt(PARTIDA_ORDEN) - 1) {
+                                                partidaAnt = partidatemp.clonar(false);
+                                                break;
+                                            }
+                                        }
+                                        if (partidaAnt != null) {
+                                            inicio = partidaAnt.getLong(PARTIDA_FECHAENTREGACALCULADA);
                                         }
                                     }
-                                    if (partidaAnt != null) {
-                                        inicio = partidaAnt.getLong(PARTIDA_FECHAENTREGACALCULADA);
+                                }
+
+                                if (inicio == 0 && detPartida.getInt(DETPARTIDA_ORDEN) > 1) {
+
+                                    ModeloSQL detPartidaAnt = null;
+                                    for (ModeloSQL detPartidatemp : listaDetPartidas.getLista()) {
+                                        if (detPartidatemp.getInt(DETPARTIDA_ORDEN) == detPartida.getInt(DETPARTIDA_ORDEN) - 1) {
+                                            detPartidaAnt = detPartidatemp.clonar(false);
+                                        }
+                                    }
+                                    if (detPartidaAnt != null) {
+                                        inicio = detPartidaAnt.getLong(DETPARTIDA_FECHAENTREGACALCULADA);
                                     }
                                 }
-                            }
 
-                            if (inicio == 0 && detPartida.getInt(DETPARTIDA_ORDEN) > 1) {
+                                fechaFin = calculoMinutoFinDetPartida(inicio, detPartida, guardar);
 
-                                ModeloSQL detPartidaAnt = null;
-                                for (ModeloSQL detPartidatemp : listaDetPartidas.getLista()) {
-                                    if (detPartidatemp.getInt(DETPARTIDA_ORDEN) == detPartida.getInt(DETPARTIDA_ORDEN) - 1) {
-                                        detPartidaAnt = detPartidatemp.clonar(false);
+                                ContentValues valores = new ContentValues();
+                                ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAINICIOCALCULADA, inicio);
+                                ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(inicio));
+                                ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_HORAINICIOCALCULADA, inicio);
+                                ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(inicio));
+                                ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAENTREGACALCULADA, fechaFin);
+                                ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
+                                ConsultaBD.updateRegistroDetalle(TABLA_DETPARTIDA, detPartida.getString(DETPARTIDA_ID_PARTIDA), detPartida.getInt(DETPARTIDA_SECUENCIA), valores);
+                                System.out.println("valores detpartida= " + valores);
+                                if (partida.getInt(PARTIDA_ORDEN) == 1) {
+                                    valores = new ContentValues();
+                                    ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAINICIOCALCULADA, inicio);
+                                    ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(inicio));
+                                    ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_HORAINICIOCALCULADA, inicio);
+                                    ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(inicio));
+                                    ConsultaBD.updateRegistroDetalle(TABLA_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO), partida.getInt(PARTIDA_SECUENCIA), valores);
+                                    System.out.println("valores inicio partida= " + valores);
+
+                                    if (detPartida.getInt(DETPARTIDA_ORDEN) == 1) {
+                                        valores = new ContentValues();
+                                        ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAINICIOCALCULADA, inicio);
+                                        ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(inicio));
+                                        ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_HORAINICIOCALCULADA, inicio);
+                                        ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(inicio));
+                                        ConsultaBD.updateRegistro(TABLA_PROYECTO, proyectoNuevo.getString(PROYECTO_ID_PROYECTO), valores);
+                                        System.out.println("valores inicio proyecto= " + valores);
+
                                     }
                                 }
-                                if (detPartidaAnt != null) {
-                                    inicio = detPartidaAnt.getLong(DETPARTIDA_FECHAENTREGACALCULADA);
-                                }
-                            }
-
-                            fechaFin = calculoMinutoFinDetPartida(inicio, detPartida, guardar);
-
-                            ContentValues valores = new ContentValues();
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAINICIOCALCULADA, inicio);
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(inicio));
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_HORAINICIOCALCULADA, inicio);
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(inicio));
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAENTREGACALCULADA, fechaFin);
-                            ConsultaBD.putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
-                            ConsultaBD.updateRegistroDetalle(TABLA_DETPARTIDA, detPartida.getString(DETPARTIDA_ID_PARTIDA), detPartida.getInt(DETPARTIDA_SECUENCIA), valores);
-                            System.out.println("valores detpartida= " + valores);
-                            if (partida.getInt(PARTIDA_ORDEN) == 1) {
-                                valores = new ContentValues();
-                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAINICIOCALCULADA, inicio);
-                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(inicio));
-                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_HORAINICIOCALCULADA, inicio);
-                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(inicio));
-                                ConsultaBD.updateRegistroDetalle(TABLA_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO), partida.getInt(PARTIDA_SECUENCIA), valores);
-                                System.out.println("valores inicio partida= " + valores);
-
-                                if (detPartida.getInt(DETPARTIDA_ORDEN) == 1) {
+                                if (partida.getInt(PARTIDA_ORDEN) == ultimaPartida) {
                                     valores = new ContentValues();
-                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAINICIOCALCULADA, inicio);
-                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(inicio));
-                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_HORAINICIOCALCULADA, inicio);
-                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(inicio));
-                                    ConsultaBD.updateRegistro(TABLA_PROYECTO, proyectoNuevo.getString(PROYECTO_ID_PROYECTO), valores);
-                                    System.out.println("valores inicio proyecto= " + valores);
+                                    ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAENTREGACALCULADA, fechaFin);
+                                    ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
+                                    ConsultaBD.updateRegistroDetalle(TABLA_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO), partida.getInt(PARTIDA_SECUENCIA), valores);
+                                    System.out.println("valores fin partida= " + valores);
+                                    if (detPartida.getInt(DETPARTIDA_ORDEN) == ultimaDetPartida) {
+                                        valores = new ContentValues();
+                                        ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAENTREGACALCULADA, fechaFin);
+                                        ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
+                                        ConsultaBD.updateRegistro(TABLA_PROYECTO, proyectoNuevo.getString(PROYECTO_ID_PROYECTO), valores);
+                                        System.out.println("valores fin proyecto= " + valores);
 
-                                }
-                            }
-                            if (partida.getInt(PARTIDA_ORDEN) == ultimaPartida) {
-                                valores = new ContentValues();
-                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAENTREGACALCULADA, fechaFin);
-                                ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
-                                ConsultaBD.updateRegistroDetalle(TABLA_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO), partida.getInt(PARTIDA_SECUENCIA), valores);
-                                System.out.println("valores fin partida= " + valores);
-                                if (detPartida.getInt(DETPARTIDA_ORDEN) == ultimaDetPartida) {
-                                    valores = new ContentValues();
-                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAENTREGACALCULADA, fechaFin);
-                                    ConsultaBD.putDato(valores, CAMPOS_PROYECTO, PROYECTO_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
-                                    ConsultaBD.updateRegistro(TABLA_PROYECTO, proyectoNuevo.getString(PROYECTO_ID_PROYECTO), valores);
-                                    System.out.println("valores fin proyecto= " + valores);
-
+                                    }
                                 }
                             }
 
@@ -1610,6 +1667,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                     values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
                     values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
                     values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                values.put(AGENDA_COLOR, detPartida.getString(DETPARTIDA_COLOR));
 
             }
             double cantPartida = partida.getDouble(PARTIDA_CANTIDAD);
@@ -1798,6 +1856,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                                 values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
                                 values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
                                 values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
+                                values.put(AGENDA_COLOR, detPartida.getString(DETPARTIDA_COLOR));
                                 putDato(values, CAMPOS_AGENDA, AGENDA_ID_MINANT, segmentoAnt.getString(AGENDA_ID_AGENDA));
 
 
@@ -1849,81 +1908,6 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             return fechahoy + (totaldias * DIASLONG) + TimeDateUtil.soloHora(horaHoy);//((horaHoy-TimeDateUtil.soloHora(TimeDateUtil.ahora()))/MINUTOSLONG);
 
         }
-
-        private static long calculoFinDetPartida(ModeloSQL minutoini, ModeloSQL detPartida, boolean guardar) {
-
-            double horastrabajos = detPartida.getDouble(DETPARTIDA_TIEMPO);
-            long min = 0;
-            double horasAnt = 0;
-            ModeloSQL partida = null;
-            long bloqueMin = 1;
-
-            System.out.println("minutoini = " + minutoini);
-            if (minutoini == null) {
-                guardar = false;
-                ContentValues values = new ContentValues();
-                values.put(AGENDA_VALORENTRADA, TimeDateUtil.ahora());
-                values.put(AGENDA_ESPACIOSIG, horastrabajos);
-                Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                System.out.println("Uri 1er registro tabla AGENDA = " + uri);
-                minutoini = ConsultaBD.queryObject(CAMPOS_AGENDA, uri);
-            }
-
-            if (guardar) {
-                partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA,
-                        detPartida.getString(DETPARTIDA_ID_PARTIDA), null, IGUAL, null);
-                if (minutoini.getLong(AGENDA_VALORSIG) > minutoini.getLong(AGENDA_VALORENTRADA) + bloqueMin) {
-                    ContentValues values = new ContentValues();
-                    values.put(AGENDA_VALORENTRADA, minutoini.getLong(AGENDA_VALORENTRADA) + bloqueMin);
-                    values.put(AGENDA_ID_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO));
-                    values.put(AGENDA_ID_DETPARTIDA, partida.getString(PARTIDA_ID_PARTIDA));
-                    values.put(AGENDA_SECUENCIA_PARTIDA, partida.getInt(PARTIDA_SECUENCIA));
-                    values.put(AGENDA_SECUENCIA_DETPARTIDA, detPartida.getInt(DETPARTIDA_SECUENCIA));
-
-                    CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                }
-            }
-
-            ModeloSQL minutoSig = minutoini.clonar(false);
-
-            while (horastrabajos > 0) {
-
-                horasAnt = horastrabajos;
-                horastrabajos -= minutoSig.getDouble(AGENDA_ESPACIOSIG);
-                System.out.println("horastrabajos = " + horastrabajos);
-
-                if (horastrabajos > 0) {
-                    min += Math.round((minutoSig.getDouble(AGENDA_ESPACIOSIG) * 1000) * ((double) (HORASLONG) / 1000));
-                    while (minutoSig.getInt(AGENDA_FIN) == 0 && minutoSig.getString(AGENDA_ID_MINSIG) != null &&
-                            minutoSig.getLong(AGENDA_VALORSIG) <= minutoSig.getLong(AGENDA_VALORENTRADA) + bloqueMin) {
-                        minutoSig = CRUDutil.updateModelo(CAMPOS_AGENDA, minutoSig.getString(AGENDA_ID_MINSIG));
-                        if (guardar && minutoSig.getInt(AGENDA_FIN) == 1 &&
-                                minutoSig.getLong(AGENDA_VALORANT) < minutoSig.getLong(AGENDA_VALORENTRADA) - bloqueMin) {
-                            partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA,
-                                    detPartida.getString(DETPARTIDA_ID_PARTIDA), null, IGUAL, null);
-                            if (minutoSig.getLong(AGENDA_VALORSIG) > minutoSig.getLong(AGENDA_VALORENTRADA) + bloqueMin) {
-                                ContentValues values = new ContentValues();
-                                values.put(AGENDA_VALORENTRADA, minutoSig.getLong(AGENDA_VALORENTRADA) + bloqueMin);
-                                values.put(AGENDA_ID_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO));
-                                values.put(AGENDA_ID_DETPARTIDA, partida.getString(PARTIDA_ID_PARTIDA));
-                                values.put(AGENDA_SECUENCIA_PARTIDA, partida.getInt(PARTIDA_SECUENCIA));
-                                values.put(AGENDA_SECUENCIA_DETPARTIDA, detPartida.getInt(DETPARTIDA_SECUENCIA));
-                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                            }
-                        }
-                    }
-                } else {
-                    min += Math.round((horasAnt * 1000) * ((double) (HORASLONG) / 1000)) + Math.round((horastrabajos * 1000) * ((double) (HORASLONG) / 1000));
-                }
-
-            }
-
-            System.out.println("min = " + min);
-            System.out.println("return fechafin " + TimeDateUtil.getDateTimeString(minutoini.getLong(AGENDA_VALORENTRADA) + min));
-            return minutoini.getLong(AGENDA_VALORENTRADA) + min;
-
-        }
-
 
         private static double calculoEspacioEntreMinutos(long fechaIni, long fechaFin) {
 
@@ -2573,15 +2557,13 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                 } else {
                     double importedet = detPartida.getDouble(DETPARTIDA_PRECIO) * detPartida.getDouble(DETPARTIDA_CANTIDAD);
                     if (detPartida.getString(DETPARTIDA_TIPO).equals(TIPOPRODUCTO)) {
-                        importeProductosPartida += importedet + ((importedet / 100) * detPartida.getDouble(DETPARTIDA_BENEFICIO));
-                    } else {
-                        importeProductosPartida += importedet;
-                    }
-                    if (detPartida.getString(DETPARTIDA_TIPO).equals(TIPOPRODUCTOPROV)) {
+                        coste += importedet - ((importedet / 100) * detPartida.getDouble(DETPARTIDA_DESCUENTOPROVEEDOR));
+                    } else if (detPartida.getString(DETPARTIDA_TIPO).equals(TIPOPRODUCTOPROV)) {
                         coste += importedet - ((importedet / 100) * detPartida.getDouble(DETPARTIDA_DESCUENTOPROVCAT));
                     } else {
                         coste += importedet;
                     }
+                    importeProductosPartida += importedet + ((importedet / 100) * detPartida.getDouble(DETPARTIDA_BENEFICIO));
                 }
             }
             coste += (tiempoPartida * calculoCosteHora());
@@ -2590,6 +2572,9 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
 
             double cantidadPartida = partida.getDouble(PARTIDA_CANTIDAD);
+            System.out.println("coste m.o. = " + (tiempoPartida * calculoCosteHora() * cantidadPartida));
+            System.out.println("coste = " + (coste * cantidadPartida));
+            System.out.println("importeTiempoPartida = " + importeTiempoPartida);
 
             ContentValues valores = new ContentValues();
             ConsultaBD.putDato(valores, CAMPOS_PARTIDA, PARTIDA_TIEMPO, tiempoPartida * cantidadPartida);
@@ -2616,11 +2601,10 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
             for (ModeloSQL itemPartida : listaPartidas) {
                 actualizarPartidaProyecto(itemPartida.getString(PARTIDA_ID_PARTIDA));
-                double cantidad = itemPartida.getDouble(PARTIDA_CANTIDAD);
                 totalTiempo += itemPartida.getDouble(PARTIDA_TIEMPO) ;
-                totalPrecio += itemPartida.getDouble(PARTIDA_PRECIO) * cantidad;
+                totalPrecio += itemPartida.getDouble(PARTIDA_PRECIO);
                 totcompletada += itemPartida.getInt(PARTIDA_COMPLETADA);
-                totalcoste += itemPartida.getDouble(PARTIDA_COSTE) * cantidad;
+                totalcoste += itemPartida.getDouble(PARTIDA_COSTE);
             }
 
             totcompletada = (int) (Math.round(((double) totcompletada) / listaPartidas.size()));
@@ -2645,11 +2629,10 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
             for (ModeloSQL itemPartida : listaPartidas) {
                 actualizarPartidaProyecto(itemPartida.getString(PARTIDA_ID_PARTIDA));
-                double cantidad = itemPartida.getDouble(PARTIDA_CANTIDAD);
                 totalTiempo += itemPartida.getDouble(PARTIDA_TIEMPO) ;
-                totalPrecio += itemPartida.getDouble(PARTIDA_PRECIO) * cantidad;
+                totalPrecio += itemPartida.getDouble(PARTIDA_PRECIO);
                 totcompletada += itemPartida.getInt(PARTIDA_COMPLETADA);
-                totalcoste += itemPartida.getDouble(PARTIDA_COSTE) * cantidad;
+                totalcoste += itemPartida.getDouble(PARTIDA_COSTE);
             }
 
             totcompletada = (int) (Math.round(((double) totcompletada) / listaPartidas.size()));
@@ -2685,11 +2668,10 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
                 for (ModeloSQL itemPartida : listaPartidas) {
                     actualizarPartidaProyecto(itemPartida.getString(PARTIDA_ID_PARTIDA));
-                    double cantidad = itemPartida.getDouble(PARTIDA_CANTIDAD);
                     totalTiempo += itemPartida.getDouble(PARTIDA_TIEMPO) ;
-                    totalPrecio += itemPartida.getDouble(PARTIDA_PRECIO) * cantidad;
+                    totalPrecio += itemPartida.getDouble(PARTIDA_PRECIO);
                     totcompletada += itemPartida.getInt(PARTIDA_COMPLETADA);
-                    totalcoste += itemPartida.getDouble(PARTIDA_COSTE) * cantidad;
+                    totalcoste += itemPartida.getDouble(PARTIDA_COSTE);
                 }
 
                 totcompletada = (int) (Math.round(((double) totcompletada) / listaPartidas.size()));

@@ -1,6 +1,7 @@
 package com.codevsolution.freemarketsapp.ui;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
+import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
@@ -29,35 +31,34 @@ import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
 
-import static com.codevsolution.freemarketsapp.logica.Interactor.TiposEstados.TPRESUPACEPTADO;
-import static com.codevsolution.freemarketsapp.logica.Interactor.TiposEstados.TPROYECTPENDCOBRO;
-
 public class Trabajos extends FragmentMesHorario {
+
 
     @Override
     protected ListaModeloSQL setListaDia(long fecha) {
+        return getListaDia(fecha);
+    }
+
+    public static ListaModeloSQL getListaDia(long fecha) {
 
         ListaModeloSQL listaDia = new ListaModeloSQL();
-        ListaModeloSQL listatemp = new ListaModeloSQL(CAMPOS_PROYECTO);
-        listabase = new ListaModeloSQL();
+        ListaModeloSQL listatemp = new ListaModeloSQL(CAMPOS_AGENDA);
 
         for (ModeloSQL modeloSQL : listatemp.getLista()) {
-            if ((modeloSQL.getInt(PROYECTO_TIPOESTADO) >= TPRESUPACEPTADO) &&
-                    (modeloSQL.getInt(PROYECTO_TIPOESTADO) < TPROYECTPENDCOBRO)) {
-                listabase.addModelo(modeloSQL);
-            }
-        }
+            System.out.println("fecha entrada = " + TimeDateUtil.getDateString(TimeDateUtil.soloFecha(modeloSQL.getLong(AGENDA_VALORENTRADA))));
+            System.out.println("fecha = " + TimeDateUtil.getDateString(TimeDateUtil.soloFecha(fecha)));
+            System.out.println("fecha salida = " + TimeDateUtil.getDateString(TimeDateUtil.soloFecha(modeloSQL.getLong(AGENDA_VALORSALIDA))));
 
-        for (ModeloSQL modeloSQL : listabase.getLista()) {
-            if (TimeDateUtil.soloFecha(modeloSQL.getLong(PROYECTO_FECHAINICIOCALCULADA))
+            if (TimeDateUtil.soloFecha(modeloSQL.getLong(AGENDA_VALORENTRADA))
                     <= TimeDateUtil.soloFecha(fecha) &&
-                    TimeDateUtil.soloFecha(modeloSQL.getLong(PROYECTO_FECHAENTREGACALCULADA))
+                    TimeDateUtil.soloFecha(modeloSQL.getLong(AGENDA_VALORSALIDA))
                             >= TimeDateUtil.soloFecha(fecha)) {
 
                 listaDia.addModelo(modeloSQL);
+                System.out.println("listaDia = " + listaDia.sizeLista());
+
             }
         }
-
         return listaDia;
     }
 
@@ -65,9 +66,6 @@ public class Trabajos extends FragmentMesHorario {
     protected void setVerDia(long fecha, ListaModeloSQL listaModeloSQL) {
 
         bundle = new Bundle();
-        bundle.putString(ORIGEN,TRABAJOS);
-        bundle.putString(ACTUAL, PROYECTO);
-        bundle.putSerializable(LISTA, listaModeloSQL);
         bundle.putLong(FECHA,fecha);
 
         icFragmentos.enviarBundleAFragment(bundle, new DiaCalTrabajos());
@@ -83,10 +81,11 @@ public class Trabajos extends FragmentMesHorario {
     @Override
     protected void setCampos() {
 
-        campos = CAMPOS_PROYECTO;
-        campo = PROYECTO_FECHAENTREGACALCULADA;
-        campoCard = PROYECTO_NOMBRE;
-        campoId = PROYECTO_ID_PROYECTO;
+        campos = CAMPOS_AGENDA;
+        campo = AGENDA_VALORENTRADA;
+        campoCard = AGENDA_ID_PARTIDA;
+        campoId = AGENDA_ID_AGENDA;
+        campoColor = AGENDA_COLOR;
 
 
     }
@@ -94,7 +93,7 @@ public class Trabajos extends FragmentMesHorario {
     @Override
     protected void setOnCreate() {
         super.setOnCreate();
-        setSinDia(true);
+        //setSinDia(true);
     }
 
     @Override
@@ -158,6 +157,15 @@ public class Trabajos extends FragmentMesHorario {
     }
 
     @Override
+    protected void abrirSemana(long fecha) {
+        super.abrirSemana(fecha);
+
+        bundle = new Bundle();
+        bundle.putLong(FECHA, fecha);
+        icFragmentos.enviarBundleAFragment(bundle, new TrabajosSem());
+    }
+
+    @Override
     protected TipoViewHolder setViewHolder(View view) {
         return new ViewHolderRV(view);
     }
@@ -189,16 +197,19 @@ public class Trabajos extends FragmentMesHorario {
         }
 
         @Override
-        public void bind(final ModeloSQL modeloSQL) {
+        public void bind(final ModeloSQL segmento) {
 
+            final ModeloSQL modeloSQL = CRUDutil.updateModelo(CAMPOS_DETPARTIDA,
+                    segmento.getString(AGENDA_ID_DETPARTIDA), segmento.getInt(AGENDA_SECUENCIA_DETPARTIDA));
 
-            double completada = modeloSQL.getDouble(PROYECTO_TOTCOMPLETADO);
-            descripcion.setText(modeloSQL.getString(PROYECTO_DESCRIPCION));
+            double completada = modeloSQL.getDouble(DETPARTIDA_COMPLETADA);
+            descripcion.setText(modeloSQL.getString(DETPARTIDA_DESCRIPCION));
             pbar.setProgress((int)completada);
-            cliente.setText(modeloSQL.getString(PROYECTO_CLIENTE_NOMBRE));
+            ModeloSQL proyecto = CRUDutil.updateModelo(CAMPOS_PROYECTO, segmento.getString(AGENDA_ID_PARTIDA));
+            cliente.setText(proyecto.getString(PROYECTO_CLIENTE_NOMBRE));
             MediaUtil imagenUtil = new MediaUtil(getContext());
             try{
-                imagenUtil.setImageUri(modeloSQL.getString(PROYECTO_RUTAFOTO), imagen);
+                imagenUtil.setImageUri(modeloSQL.getString(DETPARTIDA_RUTAFOTO), imagen);
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -209,7 +220,7 @@ public class Trabajos extends FragmentMesHorario {
             }
 
 
-            long retraso = modeloSQL.getLong(PROYECTO_RETRASO);
+            long retraso = proyecto.getLong(PROYECTO_RETRASO);
 
             if (retraso > 3 * Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
@@ -219,6 +230,7 @@ public class Trabajos extends FragmentMesHorario {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
                     }//imgret.setImageResource(R.drawable.alert_box_v);}
 
+            ver.setBackgroundColor(Color.parseColor(segmento.getString(AGENDA_COLOR)));
 
             ver.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -226,11 +238,12 @@ public class Trabajos extends FragmentMesHorario {
 
                     bundle = new Bundle();
                     bundle.putSerializable(MODELO, modeloSQL);
-                    bundle.putString(CAMPO_ID, modeloSQL.getString(PROYECTO_ID_PROYECTO));
+                    bundle.putString(CAMPO_ID, modeloSQL.getString(DETPARTIDA_ID_PARTIDA));
+                    bundle.putInt(CAMPO_SECUENCIA, modeloSQL.getInt(DETPARTIDA_SECUENCIA));
                     bundle.putString(ORIGEN, TRABAJOS);
-                    bundle.putString(SUBTITULO, modeloSQL.getString(PROYECTO_NOMBRE));
+                    bundle.putString(SUBTITULO, modeloSQL.getString(DETPARTIDA_NOMBRE));
                     bundle.putString(ACTUAL, PROYECTO);
-                    icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
+                    icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
 
                 }
             });
@@ -265,16 +278,17 @@ public class Trabajos extends FragmentMesHorario {
         @Override
         public void bind(ModeloSQL modeloSQL) {
 
+            ModeloSQL detPartida = CRUDutil.updateModelo(CAMPOS_DETPARTIDA,
+                    modeloSQL.getString(AGENDA_ID_DETPARTIDA), modeloSQL.getInt(AGENDA_SECUENCIA_DETPARTIDA));
             ViewGroupLayout vistaCard = new ViewGroupLayout(contexto, relativeLayout, new CardView(contexto));
             card = (CardView) vistaCard.getViewGroup();
-            LinearLayoutCompat mainLinear = (LinearLayoutCompat) vistaCard.addVista(new LinearLayoutCompat(contexto));
             ViewGroupLayout vistaLinear = new ViewGroupLayout(contexto, vistaCard.getViewGroup());
-            btnNombre = vistaLinear.addButtonSecondary(modeloSQL.getString(PROYECTO_NOMBRE));
+            btnNombre = vistaLinear.addButtonSecondary(detPartida.getString(DETPARTIDA_NOMBRE));
             btnNombre.setTextSize(sizeText / 2);
+            btnNombre.setBackgroundColor(Color.parseColor(detPartida.getString(DETPARTIDA_COLOR)));
             LinearLayoutCompat.LayoutParams layoutParamsrv = new LinearLayoutCompat.LayoutParams
-                    (ViewGroup.LayoutParams.MATCH_PARENT, (int) getResources().getDimension(R.dimen.altobtn) / 2);
+                    (ViewGroup.LayoutParams.MATCH_PARENT, (int) ((double) getResources().getDimension(R.dimen.altobtn)) / 3);
             btnNombre.setLayoutParams(layoutParamsrv);
-
 
             super.bind(modeloSQL);
         }

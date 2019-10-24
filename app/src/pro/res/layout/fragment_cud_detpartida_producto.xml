@@ -117,6 +117,14 @@
 
     </LinearLayout>
 
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etbenefcdetpartida_prod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hint_text="@string/beneficio"
+            app:tipo_dato="NUMERO|DECIMAL" />
+
         <com.codevsolution.base.android.controls.EditMaterial
                 android:id="@+id/etcompletadadetpartida_prod"
                 android:layout_width="match_parent"

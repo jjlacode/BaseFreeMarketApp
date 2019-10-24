@@ -129,7 +129,10 @@ public class MenuGestionProyectos extends FragmentGridImagen implements Contrato
 
         } else if (nombre.equals(salir)) {
 
-            activityBase.finish();
+            activityBase.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_main, new TrabajosSem()).addToBackStack(null).commit();
+
+            //activityBase.finish();
 
         }
 

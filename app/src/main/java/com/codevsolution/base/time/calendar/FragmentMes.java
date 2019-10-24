@@ -1,4 +1,4 @@
-package com.codevsolution.base.time.calendar.fragments;
+package com.codevsolution.base.time.calendar;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -32,10 +32,10 @@ import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.Day;
 import com.codevsolution.base.time.ListaDays;
 import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.base.time.calendar.clases.CalendarAdapter;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
@@ -51,7 +51,7 @@ import java.util.Locale;
  */
 
 public abstract class FragmentMes extends FragmentBase implements
-        JavaUtil.Constantes, ContratoPry.Tablas, Interactor.ConstantesPry {//}, CalendarAdapter.DayOnClickListener {
+        JavaUtil.Constantes, ContratoPry.Tablas, Interactor.ConstantesPry {
 
 
     private int month, year;
@@ -88,6 +88,7 @@ public abstract class FragmentMes extends FragmentBase implements
     protected String[] campos;
     protected String campo;
     protected String campoCard;
+    protected String campoColor;
     protected String campoId;
     protected int layoutItem;
     protected ListaModeloSQL listabase;
@@ -127,7 +128,6 @@ public abstract class FragmentMes extends FragmentBase implements
     private OneFrameLayout fragment_container;
     private LinearLayoutCompat main;
     private RecyclerView recyclerViewDays;
-    private CalendarAdapter calendarAdapter;
     protected RecyclerView rv;
     private ListaDays days = new ListaDays();
     private ImageButton buttonUp, buttonDown;
@@ -1239,8 +1239,22 @@ public abstract class FragmentMes extends FragmentBase implements
             int numdays = getNumberOfDaysMonthYear(tyear, tmonth);
 
             for (int i = numdays - blankSpaces + 1; i <= numdays; i++) {
+
                 Calendar date = new GregorianCalendar(tyear, tmonth, i);
-                days.add(new Day(date, false, textColorDaysOfAnotherMonth, backgroundColorDaysOfAnotherMonth, squares));
+
+                long fecha = date.getTimeInMillis();
+                lista = new ListaModeloSQL();
+
+                lista = setListaDia(fecha);
+
+                if (lista.sizeLista() > 0) {
+
+                    days.add(new Day(date, false,
+                            textColorDaysOfAnotherMonth, contexto.getResources().getColor(R.color.Color_card_notok), squares));
+                } else {
+                    days.add(new Day(date, false,
+                            textColorDaysOfAnotherMonth, backgroundColorDaysOfAnotherMonth, squares));
+                }
                 squares++;
             }
         }
@@ -1289,8 +1303,23 @@ public abstract class FragmentMes extends FragmentBase implements
 
             for (int i = 1; i < 20; i++) {
 
-                days.add(new Day(new GregorianCalendar(tyear, tmonth, i), false,
-                        textColorDaysOfAnotherMonth, backgroundColorDaysOfAnotherMonth, squares));
+                Calendar c = new GregorianCalendar(tyear, tmonth, i);
+
+                //Date date = new Date(year,month,i);
+                long fecha = c.getTimeInMillis();
+                lista = new ListaModeloSQL();
+
+                lista = setListaDia(fecha);
+
+                if (lista.sizeLista() > 0) {
+
+                    days.add(new Day(new GregorianCalendar(tyear, tmonth, i), false,
+                            textColorDaysOfAnotherMonth, contexto.getResources().getColor(R.color.Color_card_notok), squares));
+                } else {
+
+                    days.add(new Day(new GregorianCalendar(tyear, tmonth, i), false,
+                            textColorDaysOfAnotherMonth, backgroundColorDaysOfAnotherMonth, squares));
+                }
                 squares++;
                 if (squares == 42) {
                     break;
@@ -1653,8 +1682,8 @@ public abstract class FragmentMes extends FragmentBase implements
             if (i != position)
                 days.get(i).setSelected(false);
         }
-        calendarAdapter.notifyItemChanged(0, 41);
-        calendarAdapter.notifyDataSetChanged();
+        rvAdapter.notifyItemChanged(0, 41);
+        rvAdapter.notifyDataSetChanged();
 
     }
 
@@ -1868,9 +1897,14 @@ public abstract class FragmentMes extends FragmentBase implements
         return listaSeleccionadosFinal;
     }
 
+    protected void abrirSemana(long fecha) {
+
+    }
+
     public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
 
         private Button btnDia;
+        private ImageButton verDia;
         private int textColorSelectedDay, backgroundColorSelectedDay;
         private int textColorInicioDay, backgroundColorInicioDay;
         private int textColorFinDay, backgroundColorFinDay;
@@ -1885,7 +1919,7 @@ public abstract class FragmentMes extends FragmentBase implements
             super(itemView);
 
             relativeLayout = itemView.findViewById(R.id.ry_item_list);
-            btnDia = itemView.findViewById(R.id.textViewDay);
+            //btnDia = itemView.findViewById(R.id.textViewDay);
             this.textColorSelectedDay = contexto.getResources().getColor(R.color.Color_contador_notok);
             this.backgroundColorSelectedDay = contexto.getResources().getColor(R.color.Color_contador_notok);
             this.textColorInicioDay = contexto.getResources().getColor(R.color.Color_contador_acept);
@@ -1902,7 +1936,7 @@ public abstract class FragmentMes extends FragmentBase implements
         public void bind(ArrayList<?> lista, final int position) {
 
             final Day dia = (Day) lista.get(position);
-            Calendar cal = dia.getDate();//Calendar.getInstance();
+            final Calendar cal = dia.getDate();//Calendar.getInstance();
             //cal.setTime(dia.getDate());
             int nday = cal.get(Calendar.DAY_OF_MONTH);
             int pad = (int) sizeText / 2;
@@ -1912,21 +1946,22 @@ public abstract class FragmentMes extends FragmentBase implements
             LinearLayoutCompat mainLinear = (LinearLayoutCompat) vistaCard.addVista(new LinearLayoutCompat(contexto));
             mainLinear.setOrientation(ViewGroupLayout.ORI_LLC_HORIZONTAL);
             ViewGroupLayout vistaLinear = new ViewGroupLayout(contexto, mainLinear);
-
+            verDia = vistaLinear.addImageButtonSecundary(Estilos.getIdDrawable(contexto, "ic_ver_indigo"));
+            Estilos.setLayoutParams(vistaLinear.getViewGroup(), verDia, Estilos.Constantes.MATCH_PARENT,
+                    (int) ((double) getResources().getDimension(Estilos.getIdDimens(contexto, "altobtn")) / 3));
             btnDia = vistaLinear.addButtonTrans(null);
-            btnDia.setPadding(pad, pad, pad, pad);
+            Estilos.setLayoutParams(vistaLinear.getViewGroup(), btnDia, Estilos.Constantes.MATCH_PARENT,
+                    (int) ((double) getResources().getDimension(Estilos.getIdDimens(contexto, "altobtn")) / 3));
 
-            if (campoCard != null) {
-                recyclerView = (RecyclerView) vistaLinear.addVista(new RecyclerView(contexto));
-                recyclerView.setLayoutManager(new LinearLayoutManager(contexto));
-                ListaModeloSQL listaEvento = setListaDia(cal.getTimeInMillis());
-                RVAdapter adaptadorRV = new RVAdapter(setViewHolderCard(itemView),
-                        listaEvento.getLista(), R.layout.item_list_layout);
-                recyclerView.setAdapter(adaptadorRV);
-                LinearLayoutCompat.LayoutParams layoutParamsrv = new LinearLayoutCompat.LayoutParams
-                        (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                recyclerView.setLayoutParams(layoutParamsrv);
-            }
+            recyclerView = (RecyclerView) vistaLinear.addVista(new RecyclerView(contexto));
+            recyclerView.setLayoutManager(new LinearLayoutManager(contexto));
+            ListaModeloSQL listaEvento = setListaDia(cal.getTimeInMillis());
+            RVAdapter adaptadorRV = new RVAdapter(setViewHolderCard(itemView),
+                    listaEvento.getLista(), R.layout.item_list_layout);
+            recyclerView.setAdapter(adaptadorRV);
+            LinearLayoutCompat.LayoutParams layoutParamsrv = new LinearLayoutCompat.LayoutParams
+                    (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            recyclerView.setLayoutParams(layoutParamsrv);
 
             btnDia.setText(nday + "");
             btnDia.setTextSize(sizeText);
@@ -1952,6 +1987,12 @@ public abstract class FragmentMes extends FragmentBase implements
             } else {
                 btnDia.setTextColor(dia.getTextColorNV());
                 itemView.setBackgroundColor(dia.getBackgroundColorNV());
+                btnDia.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        abrirSemana(cal.getTimeInMillis());
+                    }
+                });
             }
 
             if (dia.getFechaLong() == TimeDateUtil.soloFecha(JavaUtil.hoy())) {
@@ -2009,12 +2050,18 @@ public abstract class FragmentMes extends FragmentBase implements
 
             ViewGroupLayout vistaCard = new ViewGroupLayout(contexto, relativeLayout, new CardView(contexto));
             card = (CardView) vistaCard.getViewGroup();
-            LinearLayoutCompat mainLinear = (LinearLayoutCompat) vistaCard.addVista(new LinearLayoutCompat(contexto));
             ViewGroupLayout vistaLinear = new ViewGroupLayout(contexto, vistaCard.getViewGroup());
-            btnNombre = vistaLinear.addButtonSecondary(campoCard);
+            btnNombre = vistaLinear.addButtonSecondary(null);
+            if (campoCard != null) {
+                btnNombre.setText(modeloSQL.getString(campoCard));
+            }
+            if (campoColor != null) {
+                btnNombre.setBackgroundColor(Color.parseColor(modeloSQL.getString(campoColor)));
+            }
             btnNombre.setTextSize(sizeText / 2);
             LinearLayoutCompat.LayoutParams layoutParamsrv = new LinearLayoutCompat.LayoutParams
-                    (ViewGroup.LayoutParams.MATCH_PARENT, (int) getResources().getDimension(R.dimen.altobtn) / 2);
+                    (ViewGroup.LayoutParams.MATCH_PARENT,
+                            (int) ((double) getResources().getDimension(Estilos.getIdDimens(contexto, "altobtn")) / 3));
             btnNombre.setLayoutParams(layoutParamsrv);
 
 

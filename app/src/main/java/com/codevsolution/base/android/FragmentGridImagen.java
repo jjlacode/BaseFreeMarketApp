@@ -54,7 +54,6 @@ public class FragmentGridImagen extends FragmentGridBase {
             LinearLayoutCompat.LayoutParams param = new LinearLayoutCompat.LayoutParams(
                     LinearLayoutCompat.LayoutParams.MATCH_PARENT, (int) (((rv.getHeight()) - (padalto * densidad)) / filas));
             main.setLayoutParams(param);
-
             imagen.setImageResource(gridModel.getDrawable());
             imagen.setPadding(padancho, padalto, padancho, 0);
 

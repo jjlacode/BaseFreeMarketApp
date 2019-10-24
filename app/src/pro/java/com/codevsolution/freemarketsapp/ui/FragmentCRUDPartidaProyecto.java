@@ -11,9 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.LinearLayoutCompat;
@@ -32,7 +35,9 @@ import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.javautil.JavaUtil;
+import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.media.MediaUtil;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.TimeDateUtil;
@@ -43,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryListDetalle;
 
@@ -84,6 +88,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     private long horaInicioCalculada;
     private long fechaInicioCalculada;
     private long fechaCalculada;
+    private CheckBox chSplit;
+    private CheckBox chFija;
 
     public FragmentCRUDPartidaProyecto() {
         // Required empty public constructor
@@ -184,6 +190,34 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
             }
         });
 
+        chSplit.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                if (b) {
+                    CRUDutil.actualizarCampo(modeloSQL, PARTIDA_SPLIT, 1);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                } else {
+                    CRUDutil.actualizarCampo(modeloSQL, PARTIDA_SPLIT, 0);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                }
+            }
+        });
+
+        chFija.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                if (b) {
+                    CRUDutil.actualizarCampo(modeloSQL, PARTIDA_FIJA, 1);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                } else {
+                    CRUDutil.actualizarCampo(modeloSQL, PARTIDA_FIJA, 0);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                }
+            }
+        });
+
     }
 
     @Override
@@ -233,26 +267,35 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
         ViewGroupLayout vistaCant = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
         vistaCant.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
-        imagenret = (ImageView) vistaCant.addVista(new ImageView(contexto));
+        imagenret = (ImageView) vistaCant.addVista(new ImageView(contexto), 1);
         imagenret.setFocusable(false);
-        cantidadPartida = vistaCant.addEditMaterialLayout(getString(R.string.cantidad), PARTIDA_CANTIDAD);
-        tiempoPartida = vistaCant.addEditMaterialLayout(R.string.tiempo);
+        cantidadPartida = vistaCant.addEditMaterialLayout(getString(R.string.cantidad), PARTIDA_CANTIDAD, 1);
+        tiempoPartida = vistaCant.addEditMaterialLayout(R.string.tiempo, 1);
         tiempoPartida.setActivo(false);
         tiempoPartida.btnInicioVisible(false);
-        importePartida = vistaCant.addEditMaterialLayout(R.string.importe);
+        importePartida = vistaCant.addEditMaterialLayout(R.string.importe, 1);
         importePartida.setActivo(false);
         importePartida.btnInicioVisible(false);
 
         actualizarArrays(vistaCant);
 
-        etOrden = vistaForm.addEditMaterialLayout(R.string.orden_ejecucion);
+        etOrden = vistaForm.addEditMaterialLayout(R.string.orden_ejecucion, PARTIDA_ORDEN);
+
+        ViewGroupLayout vistaSplit = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaSplit.setOrientacion(LinearLayoutCompat.HORIZONTAL);
+        chSplit = (CheckBox) vistaSplit.addVista(new CheckBox(contexto), 1);
+        chSplit.setText(R.string.mantener_entera);
+        chFija = (CheckBox) vistaSplit.addVista(new CheckBox(contexto), 1);
+        chFija.setText(R.string.no_mover);
+        actualizarArrays(vistaSplit);
+
         ViewGroupLayout vistaAcordada = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
         vistaAcordada.setOrientacion(LinearLayoutCompat.HORIZONTAL);
-        etFechaInicioCalculada = vistaAcordada.addEditMaterialLayout(R.string.fecha_acordada);
+        etFechaInicioCalculada = vistaAcordada.addEditMaterialLayout(R.string.fecha_acordada, 1);
         etFechaInicioCalculada.setActivo(false);
         etFechaInicioCalculada.btnInicioVisible(false);
 
-        etHoraInicioCalculada = vistaAcordada.addEditMaterialLayout(R.string.hora_acordada);
+        etHoraInicioCalculada = vistaAcordada.addEditMaterialLayout(R.string.hora_acordada, 1);
         etHoraInicioCalculada.setActivo(false);
         etHoraInicioCalculada.btnInicioVisible(false);
 
@@ -261,6 +304,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         etFechaCalculada = vistaForm.addEditMaterialLayout(R.string.fecha_calculada);
         etFechaCalculada.setActivo(false);
         etFechaCalculada.btnInicioVisible(false);
+
         progressBarPartida = (ProgressBar) vistaForm.addVista(new ProgressBar(contexto, null, R.style.ProgressBarStyleAcept));
         completadaPartida = vistaForm.addEditMaterialLayout(R.string.completada);
 
@@ -320,6 +364,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         if (nn(proyecto)) {
             activityBase.toolbar.setSubtitle(proyecto.getString(PROYECTO_NOMBRE));
         }
+        boolean manoObra = modeloSQL.getDouble(PARTIDA_TIEMPO) > 0;
         imagen.setTextTitulo(getString(R.string.partida)+" "+secuencia);
         completadaPartida.getLinearLayout().setVisibility(View.VISIBLE);
         nombrePartida.getLinearLayout().setVisibility(View.VISIBLE);
@@ -336,16 +381,16 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         fechaInicioCalculada = modeloSQL.getLong(PARTIDA_HORAINICIOCALCULADA);
         fechaCalculada = modeloSQL.getLong(PARTIDA_FECHAENTREGACALCULADA);
 
-        if (horaInicioCalculada == 0) {
+        if (horaInicioCalculada == 0 && manoObra) {
             etHoraInicioCalculada.setText(getString(R.string.sin_asignar));
         } else {
             etHoraInicioCalculada.setText(TimeDateUtil.getTimeString(horaInicioCalculada));
         }
 
-        if (fechaInicioCalculada == 0) {
+        if (fechaInicioCalculada == 0 && manoObra) {
 
             etFechaInicioCalculada.setText(getString(R.string.sin_asignar));
-            etFechaCalculada.setText(JavaUtil.getDateTime(fechaCalculada));
+            gone(etFechaCalculada.getLinearLayout());
 
 
         } else {
@@ -355,28 +400,38 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
         }
 
-        etOrden.setText(String.valueOf(modeloSQL.getInt(DETPARTIDA_ORDEN)));
-        int orden = 0;
-        if (modeloSQL.getInt(PARTIDA_ORDEN) == 0) {
-
-            if (lista == null) {
-                lista = CRUDutil.setListaModelo(campos);
-            }
-
-            if (lista.sizeLista() > 0) {
-                for (ModeloSQL partida : lista.getLista()) {
-                    if (partida.getInt(PARTIDA_ORDEN) > orden) {
-                        orden = partida.getInt(PARTIDA_ORDEN);
-                    }
-                }
-            }
-            valores = new ContentValues();
-            putDato(valores,campos,PARTIDA_ORDEN,orden+1);
-            CRUDutil.actualizarRegistro(modeloSQL, valores);
-            modeloSQL = CRUDutil.updateModelo(modeloSQL);
-            etOrden.setText(String.valueOf(modeloSQL.getInt(DETPARTIDA_ORDEN)));
-
+        if (proyecto.getInt(PROYECTO_SPLIT) == 0) {
+            CRUDutil.actualizarCampo(modeloSQL, PARTIDA_SPLIT, 0);
+            chSplit.setEnabled(false);
+        } else {
+            chSplit.setEnabled(true);
         }
+
+        if (proyecto.getInt(PROYECTO_FIJA) == 1) {
+            CRUDutil.actualizarCampo(modeloSQL, PARTIDA_FIJA, 1);
+            chFija.setEnabled(false);
+        } else {
+            chFija.setEnabled(true);
+        }
+
+        if (modeloSQL.getInt(PARTIDA_SPLIT) == 1) {
+            chSplit.setChecked(true);
+        } else {
+            chSplit.setChecked(false);
+        }
+
+        if (modeloSQL.getInt(PARTIDA_FIJA) == 1) {
+            chFija.setChecked(true);
+        } else {
+            chFija.setChecked(false);
+        }
+
+        int orden = modeloSQL.getInt(PARTIDA_ORDEN);
+        if (orden == 0 && manoObra) {
+            orden = calcularOrdenPartida();
+            CRUDutil.actualizarCampo(modeloSQL, PARTIDA_ORDEN, orden);
+        }
+        etOrden.setText(String.valueOf(orden));
 
         if (getTipoEstado(modeloSQL.getString(PARTIDA_ID_ESTADO)) <= TPRESUPACEPTADO) {
 
@@ -396,10 +451,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
         nombrePartida.setText(modeloSQL.getString(PARTIDA_NOMBRE));
         descripcionPartida.setText(modeloSQL.getString(PARTIDA_DESCRIPCION));
-        tiempoPartida.setText(JavaUtil.getDecimales((modeloSQL.getDouble(PARTIDA_TIEMPO) *
-                modeloSQL.getDouble(PARTIDA_CANTIDAD))));
-        importePartida.setText(JavaUtil.formatoMonedaLocal((modeloSQL.getDouble(PARTIDA_PRECIO) *
-                modeloSQL.getDouble(PARTIDA_CANTIDAD))));
+        tiempoPartida.setText(JavaUtil.getDecimales(modeloSQL.getDouble(PARTIDA_TIEMPO)));
+        importePartida.setText(JavaUtil.formatoMonedaLocal(modeloSQL.getDouble(PARTIDA_PRECIO)));
         cantidadPartida.setText(modeloSQL.getString(PARTIDA_CANTIDAD));
         idDetPartida = modeloSQL.getString(PARTIDA_ID_PARTIDA);
 
@@ -410,6 +463,12 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
             imagenret.setImageResource(R.drawable.alert_box_a);
         } else {
             imagenret.setImageResource(R.drawable.alert_box_v);
+        }
+
+        if (manoObra) {
+            visible(tiempoPartida.getLinearLayout());
+        } else {
+            gone(tiempoPartida.getLinearLayout());
         }
 
         setRvDetallePartida();
@@ -449,19 +508,24 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
                     bundle.putString(ORIGEN, PARTIDA);
                     bundle.putString(SUBTITULO, subTitulo);
                     bundle.putString(TIPO, tipo);
-                    switch (tipo) {
 
-                        case TIPOTRABAJO:
-                            icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
-                            break;
-                        case TIPOPRODUCTO:
-                            icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaProducto());
-                            break;
-                        case TIPOPRODUCTOPROV:
-                            icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaProdProvCat());
-                            break;
+                    if (modeloSQL.getDouble(PARTIDA_CANTIDAD) > 0) {
 
+                        switch (tipo) {
 
+                            case TIPOTRABAJO:
+                                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaTrabajo());
+                                break;
+                            case TIPOPRODUCTO:
+                                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaProducto());
+                                break;
+                            case TIPOPRODUCTOPROV:
+                                icFragmentos.enviarBundleAFragment(bundle, new FragmentCUDDetpartidaProdProvCat());
+                                break;
+
+                        }
+                    } else {
+                        Toast.makeText(contexto, R.string.asignar_cantidad, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -479,6 +543,20 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         if (nn(id) && secuencia > 0) {
             new TareaSincroPartidaProy().execute(id, String.valueOf(secuencia));
         }
+    }
+
+    private int calcularOrdenPartida() {
+
+        int ultimaPartida = 0;
+        String ordenPartidas = PARTIDA_ORDEN + InteractorBase.Constantes.ORDENASCENDENTE;
+        ListaModeloSQL listaPartidas = CRUDutil.setListaModelo(CAMPOS_PARTIDA, PARTIDA_ID_PROYECTO, proyecto.getString(PROYECTO_ID_PROYECTO), IGUAL, ordenPartidas);
+
+        for (ModeloSQL partida : listaPartidas.getLista()) {
+            if (partida.getInt(PARTIDA_ORDEN) > ultimaPartida) {
+                ultimaPartida = partida.getInt(PARTIDA_ORDEN);
+            }
+        }
+        return ultimaPartida + 1;
     }
 
     @SuppressLint("StaticFieldLeak")

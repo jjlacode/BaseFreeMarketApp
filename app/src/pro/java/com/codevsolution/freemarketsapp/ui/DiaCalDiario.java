@@ -22,7 +22,7 @@ import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
 
-public class DiaCalDiario extends HorarioPerfil implements ContratoPry.Tablas,
+public class DiaCalDiario extends DiaCalHorario implements ContratoPry.Tablas,
         JavaUtil.Constantes, Interactor.TiposEvento, Interactor.ConstantesPry {
 
 

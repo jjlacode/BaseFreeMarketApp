@@ -320,9 +320,9 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
 
         vistaForm.addEditMaterialLayout(getString(R.string.nombre), CLIENTE_NOMBRE, null, null);
         vistaForm.addEditMaterialLayout(getString(R.string.direccion), CLIENTE_DIRECCION, ViewGroupLayout.MAPA, activityBase);
-        vistaForm.addEditMaterialLayout(getString(R.string.direccion), CLIENTE_TELEFONO, ViewGroupLayout.LLAMADA, activityBase);
-        vistaForm.addEditMaterialLayout(getString(R.string.direccion), CLIENTE_EMAIL, ViewGroupLayout.MAIL, activityBase);
-        vistaForm.addEditMaterialLayout(getString(R.string.nombre), CLIENTE_CONTACTO, null, null);
+        vistaForm.addEditMaterialLayout(getString(R.string.telefono), CLIENTE_TELEFONO, ViewGroupLayout.LLAMADA, activityBase);
+        vistaForm.addEditMaterialLayout(getString(R.string.email), CLIENTE_EMAIL, ViewGroupLayout.MAIL, activityBase);
+        vistaForm.addEditMaterialLayout(getString(R.string.contacto), CLIENTE_CONTACTO, null, null);
         activo = (CheckBox) vistaForm.addVista(new CheckBox(contexto));
         activo.setText(R.string.inactivo);
         activo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -399,6 +399,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
                 putBundle(NUEVOREGISTRO, true);
                 putBundle(ACTUAL, PRESUPUESTO);
                 putBundle(CLIENTE, modeloSQL);
+                putBundle(CAMPO_ID, null);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
 
             }
@@ -411,6 +412,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
                 putBundle(NUEVOREGISTRO, true);
                 putBundle(ACTUAL, PROYECTO);
                 putBundle(CLIENTE, modeloSQL);
+                putBundle(CAMPO_ID, null);
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
 
             }
@@ -421,7 +423,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
         ViewGroupLayout vistaCab = new ViewGroupLayout(contexto, frCabecera);
         vistaCab.setOrientacion(LinearLayoutCompat.HORIZONTAL);
 
-        btnclientes = vistaCab.addButtonSecondary(R.string.clientes);
+        btnclientes = vistaCab.addButtonSecondary(R.string.clientes, 1);
         btnclientes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -433,7 +435,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             }
         });
 
-        btnprospectos = vistaCab.addButtonSecondary(R.string.prospectos);
+        btnprospectos = vistaCab.addButtonSecondary(R.string.prospectos, 1);
         btnprospectos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

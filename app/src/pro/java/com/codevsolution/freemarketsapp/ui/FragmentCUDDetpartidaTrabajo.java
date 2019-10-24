@@ -3,6 +3,7 @@ package com.codevsolution.freemarketsapp.ui;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -30,6 +31,7 @@ import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.DatePickerFragment;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.base.time.TimePickerFragment;
@@ -99,6 +101,10 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
     private long horaInicioCalculada;
     private long fechaInicioCalculada;
     private long fechaCalculada;
+    private Button colorTrabajo;
+    private Button btnRecalcularFechas;
+    private CheckBox chSplit;
+    private CheckBox chFija;
 
 
     public FragmentCUDDetpartidaTrabajo() {
@@ -164,9 +170,10 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
         modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
         contador = modeloSQL.getLong(DETPARTIDA_CONTADOR);
         completada = modeloSQL.getDouble(DETPARTIDA_COMPLETADA);
-        cantidadPartida = partida.getDouble(PARTIDA_CANTIDAD) + modeloSQL.getDouble(DETPARTIDA_CANTIDAD);
+        cantidad = modeloSQL.getDouble(DETPARTIDA_CANTIDAD);
+        cantidadPartida = partida.getDouble(PARTIDA_CANTIDAD);
         tiemporeal = (modeloSQL.getDouble(DETPARTIDA_TIEMPOREAL) * HORASLONG) / 1000;
-        tiempo = (modeloSQL.getDouble(DETPARTIDA_TIEMPO) * cantidadPartida * HORASLONG) / 1000;
+        tiempo = (modeloSQL.getDouble(DETPARTIDA_TIEMPO) * cantidadPartida * cantidad * HORASLONG) / 1000;
 
         System.out.println("contador = " + contador);
 
@@ -212,16 +219,22 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
 
         modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
 
-        tipo = modeloSQL.getString(DETPARTIDA_TIPO);
-
-
-        allGone();
-
-        if (partida == null) {
-            partida = queryObject(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, id, null, IGUAL, null);
+        if (modeloSQL.getString(DETPARTIDA_COLOR) != null) {
+            colorTrabajo.setBackgroundColor(Color.parseColor(modeloSQL.getString(DETPARTIDA_COLOR)));
         }
 
-        tipoDetPartida.setText(partida.getString(PARTIDA_NOMBRE)+" "+tipo.toUpperCase());
+        tipo = modeloSQL.getString(DETPARTIDA_TIPO);
+
+        if (partida == null) {
+            partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, id, null, IGUAL, null);
+        }
+        if (proyecto == null) {
+            proyecto = CRUDutil.updateModelo(CAMPOS_PROYECTO, partida.getString(PARTIDA_ID_PROYECTO));
+        }
+
+        if (nn(partida)) {
+            tipoDetPartida.setText(partida.getString(PARTIDA_NOMBRE) + " " + tipo.toUpperCase());
+        }
 
         if (trabajo != null && nn(partida) && partida.getInt(PARTIDA_TIPO_ESTADO)==TNUEVOPRESUP) {
             nombre.setText(trabajo.getString(TRABAJO_NOMBRE));
@@ -236,20 +249,6 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
             tiempoDet.setText(modeloSQL.getString(DETPARTIDA_TIEMPO));
             precioHora = proyecto.getDouble(PROYECTO_PRECIOHORA);
         }
-
-        //Visualizamos campos comunes
-        visible(nombre.getLinearLayout());
-        visible(descripcion.getLinearLayout());
-        visible(imagen);
-        visible(tipoDetPartida);
-        visible(etPrecio.getLinearLayout());
-        visible(etCantidadPartida.getLinearLayout());
-        visible(tiempoDet.getLinearLayout());
-        visible(etTiempoTotalDetPartida);
-        visible(etBeneficio.getLinearLayout());
-        visible(etCantidad.getLinearLayout());
-        visible(etPrecioFinal.getLinearLayout());
-        visible(etOrden.getLinearLayout());
 
         fechaCalculada = modeloSQL.getLong(DETPARTIDA_FECHAENTREGACALCULADA);
         fechaInicioCalculada = modeloSQL.getLong(DETPARTIDA_FECHAINICIOCALCULADA);
@@ -272,6 +271,32 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
             etFechaCalculada.setText(JavaUtil.getDateTime(fechaCalculada));
             etFechaInicioCalculada.setText(TimeDateUtil.getDateString(fechaInicioCalculada));
 
+        }
+
+        if (partida.getInt(PARTIDA_SPLIT) == 0) {
+            CRUDutil.actualizarCampo(modeloSQL, DETPARTIDA_SPLIT, 0);
+            chSplit.setEnabled(false);
+        } else {
+            chSplit.setEnabled(true);
+        }
+
+        if (partida.getInt(PARTIDA_FIJA) == 1) {
+            CRUDutil.actualizarCampo(modeloSQL, DETPARTIDA_FIJA, 1);
+            chFija.setEnabled(false);
+        } else {
+            chFija.setEnabled(true);
+        }
+
+        if (modeloSQL.getInt(DETPARTIDA_SPLIT) == 1) {
+            chSplit.setChecked(true);
+        } else {
+            chSplit.setChecked(false);
+        }
+
+        if (modeloSQL.getInt(DETPARTIDA_FIJA) == 1) {
+            chFija.setChecked(true);
+        } else {
+            chFija.setChecked(false);
         }
 
         offset.setText(String.valueOf(modeloSQL.getDouble(DETPARTIDA_OFFSET)));
@@ -326,17 +351,20 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
                 completadaPartida.getEditText(), trek, R.color.Color_contador_ok, R.color.Color_contador_acept,
                 R.color.Color_contador_notok);
 
-        if (getTipoEstado(partida.getString(PARTIDA_ID_ESTADO)) <= TPRESUPACEPTADO) {//TPRESUPACEPTADO) {
+        if (getTipoEstado(partida.getString(PARTIDA_ID_ESTADO)) <= TPRESUPACEPTADO) {
 
-            progressBarPartida.setVisibility(View.GONE);
-            completadaPartida.getLinearLayout().setVisibility(View.GONE);
-            partida_completada.setVisibility(View.GONE);
-            btntrek.setVisibility(View.GONE);
+            gone(progressBarPartida);
+            gone(progressBarPartida2);
+            gone(completadaPartida.getLinearLayout());
+            gone(partida_completada);
+            gone(btntrekPausa);
+            gone(btntrek);
+            gone(btntrekReset);
+            gone(trek);
         } else {
 
             progressBarPartida.setVisibility(View.VISIBLE);
             completadaPartida.getLinearLayout().setVisibility(View.VISIBLE);
-            //labelCompletada.setVisibility(View.VISIBLE);
             partida_completada.setVisibility(View.VISIBLE);
 
             if (modeloSQL.getInt(DETPARTIDA_COMPLETA) == 1) {
@@ -466,165 +494,192 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
             etBeneficio.setActivo(false);
         }
 
-            btntrek.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        btntrek.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-                    if (trekOn) {
-                        btntrek.setText(getString(R.string.inicio_trek));
-                        btntrekPausa.setVisibility(View.GONE);
-
-                        valores = new ContentValues();
-                        putDato(valores, campos, DETPARTIDA_COMPLETADA, completada);
-                        putDato(valores, campos, DETPARTIDA_TIEMPOREAL, (((tiemporeal + countUp) / 3600)));
-                        trek.setText(String.format(Locale.getDefault(), "%s %s",
-                                JavaUtil.getDecimales(((tiemporeal + countUp) / 3600)), getString(R.string.horas)));
-                        trekOn = false;
-                        chronometer.stop();
-                        putDato(valores, campos, DETPARTIDA_CONTADOR, 0);
-                        long pausa = modeloSQL.getLong(DETPARTIDA_PAUSA);
-
-                        if (pausa>0) {
-                            contador = modeloSQL.getLong(DETPARTIDA_CONTADOR);
-                            pausa = modeloSQL.getLong(DETPARTIDA_PAUSA);
-                            long contadortemp = contador +(hoy() - (pausa));
-                            putDato(valores, campos, DETPARTIDA_PAUSA, 0);
-                            putDato(valores, campos, DETPARTIDA_CONTADOR, contadortemp);
-                            trekOnpausa = false;
-                        }
-
-                        int i = updateRegistroDetalle(tabla, id, secuencia, valores);
-                        modeloSQL = queryObjectDetalle(campos, id, secuencia);
-
-                    } else {
-                        btntrek.setText(getString(R.string.stop_trek));
-                        btntrekPausa.setVisibility(View.VISIBLE);
-                        btntrekReset.setVisibility(View.VISIBLE);
-                        cronometro();
-                        chronometer.start();
-                        trekOn = true;
-                    }
-
-                }
-            });
-
-            btntrekPausa.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    if (trekOn && !trekOnpausa) {
-                        btntrekPausa.setText(getString(R.string.reanudar_trek));
-
-                        valores = new ContentValues();
-                        putDato(valores, campos, DETPARTIDA_PAUSA, hoy());
-                        putDato(valores, campos, DETPARTIDA_COMPLETADA, completada);
-                        trekOnpausa = true;
-                        chronometer.stop();
-
-                        int i = updateRegistroDetalle(tabla, id, secuencia, valores);
-                        modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
-                        System.out.println("registros actualizados on pausa = " + i);
-                        System.out.println("pausa on = " + modeloSQL.getLong(DETPARTIDA_PAUSA));
-
-                    } else if (trekOn) {
-                        btntrekPausa.setText(getString(R.string.pausa_trek));
-                        modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
-                        contador = modeloSQL.getLong(DETPARTIDA_CONTADOR);
-                        long pausa = modeloSQL.getLong(DETPARTIDA_PAUSA);
-                        long contadortemp = contador +(hoy() - (pausa));
-                        valores = new ContentValues();
-                        putDato(valores, campos, DETPARTIDA_PAUSA, 0);
-                        putDato(valores, campos, DETPARTIDA_CONTADOR, contadortemp);
-                        int i = updateRegistroDetalle(tabla, id, secuencia, valores);
-                        modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
-                        System.out.println("registros actualizados on pausa = " + i);
-                        System.out.println("pausa off = " + modeloSQL.getLong(DETPARTIDA_PAUSA));
-
-                        cronometro();
-                        chronometer.start();
-                        trekOnpausa = false;
-                    }
-
-                }
-            });
-
-            btntrekReset.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
+                if (trekOn) {
                     btntrek.setText(getString(R.string.inicio_trek));
                     btntrekPausa.setVisibility(View.GONE);
 
                     valores = new ContentValues();
-                    countUp = 0;
-                    putDato(valores, campos, DETPARTIDA_COMPLETADA, 0);
-                    putDato(valores, campos, DETPARTIDA_TIEMPOREAL, 0);
+                    putDato(valores, campos, DETPARTIDA_COMPLETADA, completada);
+                    putDato(valores, campos, DETPARTIDA_TIEMPOREAL, (((tiemporeal + countUp) / 3600)));
                     trek.setText(String.format(Locale.getDefault(), "%s %s",
-                            JavaUtil.getDecimales(0), getString(R.string.horas)));
+                            JavaUtil.getDecimales(((tiemporeal + countUp) / 3600)), getString(R.string.horas)));
                     trekOn = false;
-
+                    chronometer.stop();
                     putDato(valores, campos, DETPARTIDA_CONTADOR, 0);
-                    putDato(valores, campos, DETPARTIDA_PAUSA, 0);
+                    long pausa = modeloSQL.getLong(DETPARTIDA_PAUSA);
+
+                    if (pausa > 0) {
+                        contador = modeloSQL.getLong(DETPARTIDA_CONTADOR);
+                        pausa = modeloSQL.getLong(DETPARTIDA_PAUSA);
+                        long contadortemp = contador + (hoy() - (pausa));
+                        putDato(valores, campos, DETPARTIDA_PAUSA, 0);
+                        putDato(valores, campos, DETPARTIDA_CONTADOR, contadortemp);
+                        trekOnpausa = false;
+                    }
+
                     int i = updateRegistroDetalle(tabla, id, secuencia, valores);
                     modeloSQL = queryObjectDetalle(campos, id, secuencia);
-                    contador = modeloSQL.getLong(DETPARTIDA_CONTADOR);
-                    completada = modeloSQL.getDouble(DETPARTIDA_COMPLETADA);
-                    cantidadPartida = partida.getDouble(PARTIDA_CANTIDAD);
-                    tiemporeal = (modeloSQL.getDouble(DETPARTIDA_TIEMPOREAL) * HORASLONG) / 1000;
-                    tiempo = (modeloSQL.getDouble(DETPARTIDA_TIEMPO) * cantidadPartida * HORASLONG) / 1000;
-                    String asText = JavaUtil.relojContador(countUp);
-                    trek.setText(String.format(Locale.getDefault(), "%s", asText));
-                    completada = (((tiemporeal * 100) / tiempo) + ((countUp * 100) / tiempo));
-                    AndroidUtil.bars(contexto, progressBarPartida, progressBarPartida2, false,100,90, 120, completada,
-                            completadaPartida.getEditText(), trek, R.color.Color_contador_ok, R.color.Color_contador_acept,
-                            R.color.Color_contador_notok);
 
-                    etTiempoTotalDetPartida.setText(String.format(Locale.getDefault(),
-                            "%s %s %s %s %s", JavaUtil.getDecimales(((tiemporeal + countUp) / 3600)),
-                            getString(R.string.horas), getString(R.string.de),
-                            JavaUtil.getDecimales(tiempo / 3600), getString(R.string.horas)));
+                } else {
+                    btntrek.setText(getString(R.string.stop_trek));
+                    btntrekPausa.setVisibility(View.VISIBLE);
+                    btntrekReset.setVisibility(View.VISIBLE);
+                    cronometro();
+                    chronometer.start();
+                    trekOn = true;
+                }
+
+            }
+        });
+
+        btntrekPausa.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (trekOn && !trekOnpausa) {
+                    btntrekPausa.setText(getString(R.string.reanudar_trek));
+
+                    valores = new ContentValues();
+                    putDato(valores, campos, DETPARTIDA_PAUSA, hoy());
+                    putDato(valores, campos, DETPARTIDA_COMPLETADA, completada);
+                    trekOnpausa = true;
                     chronometer.stop();
 
-                }
-            });
+                    int i = updateRegistroDetalle(tabla, id, secuencia, valores);
+                    modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
+                    System.out.println("registros actualizados on pausa = " + i);
+                    System.out.println("pausa on = " + modeloSQL.getLong(DETPARTIDA_PAUSA));
 
-            partida_completada.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                } else if (trekOn) {
+                    btntrekPausa.setText(getString(R.string.pausa_trek));
+                    modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
+                    contador = modeloSQL.getLong(DETPARTIDA_CONTADOR);
+                    long pausa = modeloSQL.getLong(DETPARTIDA_PAUSA);
+                    long contadortemp = contador + (hoy() - (pausa));
+                    valores = new ContentValues();
+                    putDato(valores, campos, DETPARTIDA_PAUSA, 0);
+                    putDato(valores, campos, DETPARTIDA_CONTADOR, contadortemp);
+                    int i = updateRegistroDetalle(tabla, id, secuencia, valores);
+                    modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
+                    System.out.println("registros actualizados on pausa = " + i);
+                    System.out.println("pausa off = " + modeloSQL.getLong(DETPARTIDA_PAUSA));
 
-                    if (contador > 0 && isChecked) {
-
-                        valores = new ContentValues();
-                        putDato(valores, campos, DETPARTIDA_COMPLETA, 1);
-                        putDato(valores, campos, DETPARTIDA_COMPLETADA, completada);
-                        putDato(valores, campos, DETPARTIDA_TIEMPOREAL, (((tiemporeal + countUp) / 3600)));
-                        putDato(valores, campos, DETPARTIDA_CONTADOR, 0);
-                        putDato(valores, campos, DETPARTIDA_PAUSA, 0);
-                        updateRegistroDetalle(tabla, id, secuencia, valores);
-                        modeloSQL = queryObjectDetalle(campos, id, secuencia);
-
-                        new Interactor.Calculos.TareaActualizarTareaAuto().execute(idDetPartida);
-
-                        chronometer.stop();
-                        trek.setVisibility(View.GONE);
-                        btntrek.setVisibility(View.GONE);
-                    } else {
-
-                        valores = new ContentValues();
-                        putDato(valores, campos, DETPARTIDA_COMPLETA, 0);
-                        putDato(valores, campos, DETPARTIDA_COMPLETADA, completada);
-                        updateRegistroDetalle(tabla, id, secuencia, valores);
-                        modeloSQL = queryObjectDetalle(campos, id, secuencia);
-
-                        new Interactor.Calculos.TareaActualizarTareaAuto().execute(idDetPartida);
-
-                        trek.setVisibility(View.VISIBLE);
-                        btntrek.setVisibility(View.VISIBLE);
-                    }
+                    cronometro();
+                    chronometer.start();
+                    trekOnpausa = false;
                 }
 
-            });
+            }
+        });
 
+        btntrekReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                btntrek.setText(getString(R.string.inicio_trek));
+                btntrekPausa.setVisibility(View.GONE);
+
+                valores = new ContentValues();
+                countUp = 0;
+                putDato(valores, campos, DETPARTIDA_COMPLETADA, 0);
+                putDato(valores, campos, DETPARTIDA_TIEMPOREAL, 0);
+                trek.setText(String.format(Locale.getDefault(), "%s %s",
+                        JavaUtil.getDecimales(0), getString(R.string.horas)));
+                trekOn = false;
+
+                putDato(valores, campos, DETPARTIDA_CONTADOR, 0);
+                putDato(valores, campos, DETPARTIDA_PAUSA, 0);
+                int i = updateRegistroDetalle(tabla, id, secuencia, valores);
+                modeloSQL = queryObjectDetalle(campos, id, secuencia);
+                contador = modeloSQL.getLong(DETPARTIDA_CONTADOR);
+                completada = modeloSQL.getDouble(DETPARTIDA_COMPLETADA);
+                cantidadPartida = partida.getDouble(PARTIDA_CANTIDAD);
+                tiemporeal = (modeloSQL.getDouble(DETPARTIDA_TIEMPOREAL) * HORASLONG) / 1000;
+                tiempo = (modeloSQL.getDouble(DETPARTIDA_TIEMPO) * cantidadPartida * HORASLONG) / 1000;
+                String asText = JavaUtil.relojContador(countUp);
+                trek.setText(String.format(Locale.getDefault(), "%s", asText));
+                completada = (((tiemporeal * 100) / tiempo) + ((countUp * 100) / tiempo));
+                AndroidUtil.bars(contexto, progressBarPartida, progressBarPartida2, false, 100, 90, 120, completada,
+                        completadaPartida.getEditText(), trek, R.color.Color_contador_ok, R.color.Color_contador_acept,
+                        R.color.Color_contador_notok);
+
+                etTiempoTotalDetPartida.setText(String.format(Locale.getDefault(),
+                        "%s %s %s %s %s", JavaUtil.getDecimales(((tiemporeal + countUp) / 3600)),
+                        getString(R.string.horas), getString(R.string.de),
+                        JavaUtil.getDecimales(tiempo / 3600), getString(R.string.horas)));
+                chronometer.stop();
+
+            }
+        });
+
+        partida_completada.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (contador > 0 && isChecked) {
+
+                    valores = new ContentValues();
+                    putDato(valores, campos, DETPARTIDA_COMPLETA, 1);
+                    putDato(valores, campos, DETPARTIDA_COMPLETADA, completada);
+                    putDato(valores, campos, DETPARTIDA_TIEMPOREAL, (((tiemporeal + countUp) / 3600)));
+                    putDato(valores, campos, DETPARTIDA_CONTADOR, 0);
+                    putDato(valores, campos, DETPARTIDA_PAUSA, 0);
+                    updateRegistroDetalle(tabla, id, secuencia, valores);
+                    modeloSQL = queryObjectDetalle(campos, id, secuencia);
+
+                    new Interactor.Calculos.TareaActualizarTareaAuto().execute(idDetPartida);
+
+                    chronometer.stop();
+                    trek.setVisibility(View.GONE);
+                    btntrek.setVisibility(View.GONE);
+                } else {
+
+                    valores = new ContentValues();
+                    putDato(valores, campos, DETPARTIDA_COMPLETA, 0);
+                    putDato(valores, campos, DETPARTIDA_COMPLETADA, completada);
+                    updateRegistroDetalle(tabla, id, secuencia, valores);
+                    modeloSQL = queryObjectDetalle(campos, id, secuencia);
+
+                    new Interactor.Calculos.TareaActualizarTareaAuto().execute(idDetPartida);
+
+                    trek.setVisibility(View.VISIBLE);
+                    btntrek.setVisibility(View.VISIBLE);
+                }
+            }
+
+        });
+
+        chSplit.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                if (b) {
+                    CRUDutil.actualizarCampo(modeloSQL, DETPARTIDA_SPLIT, 1);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                } else {
+                    CRUDutil.actualizarCampo(modeloSQL, DETPARTIDA_SPLIT, 0);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                }
+            }
+        });
+
+        chFija.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                if (b) {
+                    CRUDutil.actualizarCampo(modeloSQL, DETPARTIDA_FIJA, 1);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                } else {
+                    CRUDutil.actualizarCampo(modeloSQL, DETPARTIDA_FIJA, 0);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                }
+            }
+        });
     }
 
     @Override
@@ -640,6 +695,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
         //layoutCuerpo = R.layout.fragment_cud_detpartida_trabajo;
 
     }
+
 
     @Override
     protected void setInicio() {
@@ -664,15 +720,23 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
 
         ViewGroupLayout vistaOrden = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
         vistaOrden.setOrientacion(LinearLayoutCompat.HORIZONTAL);
-        etOrden = vistaOrden.addEditMaterialLayout(getString(R.string.orden_ejecucion), DETPARTIDA_ORDEN, null, null);
+        etOrden = vistaOrden.addEditMaterialLayout(getString(R.string.orden_ejecucion), DETPARTIDA_ORDEN, 1);
         etOrden.setTipo(EditMaterialLayout.NUMERO);
-        offset = vistaOrden.addEditMaterialLayout(getString(R.string.offset), DETPARTIDA_OFFSET, null, null);
+        offset = vistaOrden.addEditMaterialLayout(getString(R.string.offset), DETPARTIDA_OFFSET, 1);
         offset.setTipo(EditMaterialLayout.NUMERO | EditMaterialLayout.DECIMAL);
         actualizarArrays(vistaOrden);
 
+        ViewGroupLayout vistaSplit = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaSplit.setOrientacion(LinearLayoutCompat.HORIZONTAL);
+        chSplit = (CheckBox) vistaSplit.addVista(new CheckBox(contexto), 1);
+        chSplit.setText(R.string.mantener_entera);
+        chFija = (CheckBox) vistaSplit.addVista(new CheckBox(contexto), 1);
+        chFija.setText(R.string.no_mover);
+        actualizarArrays(vistaSplit);
+
         ViewGroupLayout vistaAcordada = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
         vistaAcordada.setOrientacion(LinearLayoutCompat.HORIZONTAL);
-        etFechaInicioCalculada = vistaAcordada.addEditMaterialLayout(R.string.fecha_acordada);
+        etFechaInicioCalculada = vistaAcordada.addEditMaterialLayout(R.string.fecha_acordada, 1);
         etFechaInicioCalculada.setActivo(false);
         etFechaInicioCalculada.btnInicioVisible(false);
         etFechaInicioCalculada.btnAccionEnable(true);
@@ -699,7 +763,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
                 new TareaFechasDatos().execute(false);
             }
         });
-        etHoraInicioCalculada = vistaAcordada.addEditMaterialLayout(R.string.hora_acordada);
+        etHoraInicioCalculada = vistaAcordada.addEditMaterialLayout(R.string.hora_acordada, 1);
         etHoraInicioCalculada.setActivo(false);
         etHoraInicioCalculada.btnInicioVisible(false);
         etHoraInicioCalculada.btnAccionEnable(true);
@@ -728,41 +792,73 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
             }
         });
         actualizarArrays(vistaAcordada);
+        btnRecalcularFechas = vistaForm.addButtonSecondary(R.string.recalcular_fechas);
+        btnRecalcularFechas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (partida.getInt(PARTIDA_TIPO_ESTADO) == 1) {
+                    Interactor.Calculos.recalcularFechas(false);
+                } else {
+                    Interactor.Calculos.moverSegmento(id, secuencia);
+                }
+                actualizarFechas();
+                gone(btnRecalcularFechas);
+                setDatos();
+
+            }
+        });
         etFechaCalculada = vistaForm.addEditMaterialLayout(R.string.fecha_calculada);
         etFechaCalculada.setActivo(false);
         etFechaCalculada.btnInicioVisible(false);
 
         ViewGroupLayout vistaTiempo = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
         vistaTiempo.setOrientacion(LinearLayoutCompat.HORIZONTAL);
-        tiempoDet = vistaTiempo.addEditMaterialLayout(getString(R.string.tiempo_detpartida));
+        tiempoDet = vistaTiempo.addEditMaterialLayout(getString(R.string.tiempo_detpartida), 1);
         tiempoDet.setActivo(false);
         tiempoDet.btnInicioVisible(false);
-        etCantidad = vistaTiempo.addEditMaterialLayout(getString(R.string.cantidad));
+        etCantidad = vistaTiempo.addEditMaterialLayout(getString(R.string.cantidad), 1);
         etCantidad.setActivo(false);
         etCantidad.btnInicioVisible(false);
-        etCantidadPartida = vistaTiempo.addEditMaterialLayout(getString(R.string.cantidad_partida));
+        etCantidadPartida = vistaTiempo.addEditMaterialLayout(getString(R.string.cantidad_partida), 1);
         etCantidadPartida.setActivo(false);
         etCantidadPartida.btnInicioVisible(false);
         actualizarArrays(vistaTiempo);
 
         ViewGroupLayout vistaPrecio = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
         vistaPrecio.setOrientacion(LinearLayoutCompat.HORIZONTAL);
-        etPrecio = vistaPrecio.addEditMaterialLayout(getString(R.string.importe));
+        etPrecio = vistaPrecio.addEditMaterialLayout(getString(R.string.importe), 1);
         etPrecio.setActivo(false);
         etPrecio.btnInicioVisible(false);
-        etBeneficio = vistaPrecio.addEditMaterialLayout(getString(R.string.beneficio));
+        etBeneficio = vistaPrecio.addEditMaterialLayout(getString(R.string.beneficio), 1);
         etBeneficio.setTipo(EditMaterialLayout.NUMERO | EditMaterialLayout.DECIMAL);
-        etPrecioFinal = vistaPrecio.addEditMaterialLayout(getString(R.string.importe_final));
+        etPrecioFinal = vistaPrecio.addEditMaterialLayout(getString(R.string.importe_final), 1);
         etPrecioFinal.setActivo(false);
         etPrecioFinal.btnInicioVisible(false);
         actualizarArrays(vistaPrecio);
+
+        colorTrabajo = vistaForm.addButtonSecondary(R.string.color_trabajo);
+        colorTrabajo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new Estilos.PaletaColoresDialog(new Estilos.PaletaColoresDialog.OnClick() {
+                    @Override
+                    public void onClick(String color) {
+                        colorTrabajo.setBackgroundColor(Color.parseColor(color));
+                        valores = new ContentValues();
+                        putDato(valores, campos, DETPARTIDA_COLOR, color);
+                        CRUDutil.actualizarRegistro(modeloSQL, valores);
+                    }
+                }, contexto).show(getFragmentManager(), "paletacolores");
+            }
+        });
 
         etTiempoTotalDetPartida = vistaForm.addTextView(null);
         etTiempoTotalDetPartida.setGravity(Gravity.CENTER);
         completadaPartida = vistaForm.addEditMaterialLayout(R.string.completada);
 
-        progressBarPartida = (ProgressBar) vistaForm.addVista(new ProgressBar(contexto, null, R.style.ProgressBarStyleAcept));
-        progressBarPartida2 = (ProgressBar) vistaForm.addVista(new ProgressBar(contexto, null, R.style.ProgressBarStyleAcept));
+        progressBarPartida = (ProgressBar) vistaForm.addVista(new ProgressBar(contexto, null, Estilos.pBarStyleAcept(contexto)));
+        progressBarPartida2 = (ProgressBar) vistaForm.addVista(new ProgressBar(contexto, null, Estilos.pBarStyleAcept(contexto)));
         trek = vistaForm.addTextView(null);
         trek.setGravity(Gravity.CENTER);
         btntrek = vistaForm.addButtonPrimary(null);
@@ -883,6 +979,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
+                        long fechatmp = horaInicioCalculada;
                         System.out.println("hourOfDay = " + hourOfDay);
                         System.out.println("minute = " + minute);
                         horaInicioCalculada = JavaUtil.horaALong(hourOfDay, minute);
@@ -894,9 +991,10 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
                         setDato(DETPARTIDA_HORAINICIOCALCULADAF, selectedHour);
                         updateRegistroDetalle(tabla, id, secuencia, valores);
                         modeloSQL = CRUDutil.updateModelo(modeloSQL);
-                        Interactor.Calculos.recalcularFechas(false);
-                        actualizarFechas();
-                        setDatos();
+                        if (fechatmp != horaInicioCalculada) {
+                            visible(btnRecalcularFechas);
+                        }
+
 
                     }
                 });
@@ -907,9 +1005,10 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
 
     private void showDatePickerDialogAcordada() {
         DatePickerFragment newFragment = DatePickerFragment.newInstance
-                (TimeDateUtil.ahora(), new DatePickerDialog.OnDateSetListener() {
+                (fechaInicioCalculada, new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                        long fechatmp = fechaInicioCalculada;
                         fechaInicioCalculada = JavaUtil.fechaALong(year, month, day);
                         String selectedDate = TimeDateUtil.getDateString(fechaInicioCalculada);
                         etFechaInicioCalculada.setText(selectedDate);
@@ -918,9 +1017,10 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
                         setDato(DETPARTIDA_FECHAINICIOCALCULADAF, selectedDate);
                         updateRegistroDetalle(tabla, id, secuencia, valores);
                         modeloSQL = CRUDutil.updateModelo(modeloSQL);
-                        Interactor.Calculos.recalcularFechas(false);
-                        actualizarFechas();
-                        setDatos();
+                        if (fechatmp != fechaInicioCalculada) {
+                            visible(btnRecalcularFechas);
+                        }
+
 
                     }
                 });

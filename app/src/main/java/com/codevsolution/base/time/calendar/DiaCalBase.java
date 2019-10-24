@@ -1,4 +1,4 @@
-package com.codevsolution.base.time.calendar.clases;
+package com.codevsolution.base.time.calendar;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

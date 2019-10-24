@@ -26,9 +26,8 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
 
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.logica.InteractorBase;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.freemarketsapp.R;
 
 import java.io.File;
@@ -81,25 +80,6 @@ public class AndroidUtil extends AppCompatActivity {
                 .getIdentifier(nombre, tipo, context.getPackageName());
     }
 
-    public static int getIdDrawable(Context context, String nombre) {
-        return context.getResources()
-                .getIdentifier(nombre, InteractorBase.Constantes.DRAWABLE, context.getPackageName());
-    }
-
-    public static int getIdStrig(Context context, String nombre) {
-        return context.getResources()
-                .getIdentifier(nombre, InteractorBase.Constantes.STRING, context.getPackageName());
-    }
-
-    public static int getIdColor(Context context, String nombre) {
-        return context.getResources()
-                .getIdentifier(nombre, InteractorBase.Constantes.COLOR, context.getPackageName());
-    }
-
-    public static int getIdLayout(Context context, String nombre) {
-        return context.getResources()
-                .getIdentifier(nombre, InteractorBase.Constantes.LAYOUT, context.getPackageName());
-    }
     public static void sinFoco(EditText editText) {
 
         editText.setFocusable(false);
@@ -617,10 +597,7 @@ public class AndroidUtil extends AppCompatActivity {
                         .get(Calendar.MONTH)) {
                     return true;
                 }
-                if (checkDate.get(Calendar.YEAR) > now.get(Calendar.YEAR)) {
-                    return true;
-                }
-                return false;
+                return checkDate.get(Calendar.YEAR) > now.get(Calendar.YEAR);
             } catch (ParseException e) {
 
             }
@@ -640,7 +617,7 @@ public class AndroidUtil extends AppCompatActivity {
         float densidad = metrics.density;
         int ancho = (int) (metrics.widthPixels / densidad);
         int alto = (int) (metrics.heightPixels / densidad);
-        int densidadDpi = (int) (metrics.densityDpi);
+        int densidadDpi = metrics.densityDpi;
 
         return ((float) (ancho + alto + densidadDpi) / (100));
     }

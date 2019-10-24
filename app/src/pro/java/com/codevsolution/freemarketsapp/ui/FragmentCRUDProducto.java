@@ -144,11 +144,11 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
         imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
         imagen.setFocusable(false);
-        vistaForm.addEditMaterialLayout(getString(R.string.nombre), PRODUCTO_NOMBRE, null, null);
-        vistaForm.addEditMaterialLayout(getString(R.string.descripcion), PRODUCTO_DESCRIPCION, null, null);
-        EditMaterialLayout precio = vistaForm.addEditMaterialLayout(getString(R.string.importe), PRODUCTO_PRECIO, null, null);
+        vistaForm.addEditMaterialLayout(getString(R.string.nombre), PRODUCTO_NOMBRE);
+        vistaForm.addEditMaterialLayout(getString(R.string.descripcion), PRODUCTO_DESCRIPCION);
+        EditMaterialLayout precio = vistaForm.addEditMaterialLayout(getString(R.string.importe), PRODUCTO_PRECIO);
         precio.setTipo(EditMaterialLayout.NUMERO | EditMaterialLayout.DECIMAL);
-        nombreProv = vistaForm.addEditMaterialLayout(getString(R.string.nombre_producto_proveedor), PRODUCTO_NOMBREPROV, null, null);
+        nombreProv = vistaForm.addEditMaterialLayout(getString(R.string.nombre_producto_proveedor), PRODUCTO_NOMBREPROV);
         nombreProv.setImgBtnAccion(R.drawable.ic_clientes_indigo);
         nombreProv.setActivo(false);
         nombreProv.setClickAccion(new EditMaterialLayout.ClickAccion() {
@@ -161,8 +161,8 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProveedor());
             }
         });
-        vistaForm.addEditMaterialLayout(getString(R.string.referencia_proveedor), PRODUCTO_REFERENCIA, null, null);
-        vistaForm.addEditMaterialLayout(getString(R.string.referencia_proveedor), PRODUCTO_DESCPROV, null, null);
+        vistaForm.addEditMaterialLayout(getString(R.string.referencia_proveedor), PRODUCTO_REFERENCIA);
+        vistaForm.addEditMaterialLayout(getString(R.string.descuento_proveedor), PRODUCTO_DESCPROV);
 
         addPartida = vistaForm.addButtonPrimary(R.string.add_detpartida);
         addPartida.setOnClickListener(new View.OnClickListener() {
