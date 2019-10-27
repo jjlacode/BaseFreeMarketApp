@@ -1,16 +1,17 @@
 package com.codevsolution.freemarketsapp.ui;
 
-import android.os.Bundle;
 import android.view.View;
 
+import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.FragmentGridImagen;
-import com.codevsolution.base.web.FragmentWebView;
 import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.freemarketsapp.templates.CatalogoPDF;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.HTTPAYUDA;
+import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODUCTO;
 
 public class MenuCRM extends FragmentGridImagen {
 
@@ -104,10 +105,13 @@ public class MenuCRM extends FragmentGridImagen {
 
         } else if (nombre.equals(ayuda)) {
 
-            bundle = new Bundle();
-            putBundle(WEB, ayudaWeb);
-            icFragmentos.enviarBundleAFragment(bundle, new FragmentWebView());
+            //bundle = new Bundle();
+            //putBundle(WEB, ayudaWeb);
+            //icFragmentos.enviarBundleAFragment(bundle, new FragmentWebView());
 
+            CatalogoPDF catalogoPDF = new CatalogoPDF();
+            catalogoPDF.crearPdf(PRODUCTO);
+            AppActivity.mostrarPDF(catalogoPDF.getRutaArchivo());
         }
 
 

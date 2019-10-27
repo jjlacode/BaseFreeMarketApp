@@ -137,7 +137,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
             }
             datos();
 
-        } else if (id != null && (secuencia > 0 || tablaCab == null)) {
+        } else if (nnn(id) && (secuencia > 0 || tablaCab == null)) {
 
             if (tablaCab != null) {
                 modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);

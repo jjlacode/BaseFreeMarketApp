@@ -69,8 +69,8 @@ public class OneFrameLayout extends FrameLayout {
 
                         mTracking = true;
 
-                        if (getTranslationX() <= mWidth / 2
-                                && getTranslationX() >= -(mWidth / 2)) {
+                        if (getTranslationX() <= (double) mWidth / 2
+                                && getTranslationX() >= -((double) mWidth / 2)) {
 
                             setTranslationX(mInitialTx + deltaX);
                             break;
@@ -85,9 +85,9 @@ public class OneFrameLayout extends FrameLayout {
                         mTracking = false;
                         float currentTranslateX = getTranslationX();
 
-                        if (currentTranslateX > mWidth / 8) {
+                        if (currentTranslateX > (double) mWidth / 4) {
                             onSwipeListener.rightSwipe();
-                        } else if (currentTranslateX < -(mWidth / 8)) {
+                        } else if (currentTranslateX < -((double) mWidth / 4)) {
                             onSwipeListener.leftSwipe();
                         }
 

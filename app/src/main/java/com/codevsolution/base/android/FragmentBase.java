@@ -140,6 +140,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected boolean autoGuardado = true;
     protected int tiempoGuardado = 1;
     protected int sizeTextD;
+    protected boolean swipeOn;
 
 
     @Override
@@ -277,15 +278,17 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         AndroidUtil.ocultarTeclado(activityBase, view);
 
+        swipeOn = true;
+
         frameAnimationCuerpo.setOnSwipeListener(new OneFrameLayout.OnSwipeListener() {
             @Override
             public void rightSwipe() {
-                setOnRigthSwipeCuerpo();
+                if (swipeOn) setOnRigthSwipeCuerpo();
             }
 
             @Override
             public void leftSwipe() {
-                setOnLeftSwipeCuerpo();
+                if (swipeOn) setOnLeftSwipeCuerpo();
             }
         });
 
@@ -505,6 +508,9 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         }
     }
 
+    protected void setSwipeOn(boolean enable) {
+        swipeOn = enable;
+    }
     protected String setAyudaWeb() {
         return null;
     }

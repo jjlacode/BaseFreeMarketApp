@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -16,11 +17,13 @@ import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.cardview.widget.CardView;
 
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
@@ -29,6 +32,7 @@ import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
+import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.javautil.JavaUtil;
@@ -36,12 +40,18 @@ import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.DatePickerFragment;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.codevsolution.freemarketsapp.templates.PresupuestoPDF;
+import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
+import com.github.barteksc.pdfviewer.listener.OnTapListener;
+import com.github.barteksc.pdfviewer.util.FitPolicy;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
@@ -77,7 +87,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private Button btnActualizar;
     private Button btnActualizar2;
     private ImageButton btncompartirPdf;
-    private ImageButton btnVerPdf;
     private ImageButton btnenviarPdf;
     private ImageButton btnVerEventos;
     private Spinner spEstadoProyecto;
@@ -121,6 +130,12 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private EditMaterialLayout costeProy;
     private EditMaterialLayout beneficio;
     private EditMaterialLayout porcBenef;
+    private PDFView viewerPdf;
+    private Button btnAntPage;
+    private Button btnNextPage;
+    private int pageNumber;
+    private EditMaterialLayout etNumeroPag;
+    private long timeStamp;
 
     public FragmentCRUDProyecto() {
         // Required empty public constructor
@@ -230,7 +245,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setLayout() {
 
-        layoutItem = R.layout.item_list_proyecto;
+        layoutItem = R.layout.item_list_layout;
         cabecera = true;
 
     }
@@ -752,51 +767,93 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 setDatos();
             }
         });
-        ViewGroupLayout vistaPdf = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
-        vistaPdf.setOrientacion(LinearLayoutCompat.HORIZONTAL);
-
-        btnVerPdf = vistaPdf.addImageButtonSecundary(activityBase, R.drawable.ic_pdf_indigo, 1);
-        btnVerPdf.setOnClickListener(new View.OnClickListener() {
+        viewerPdf = (PDFView) vistaForm.addVista(new PDFView(contexto, null));
+        Estilos.setLayoutParams(vistaForm.getViewGroup(), viewerPdf, ViewGroupLayout.MATCH_PARENT, (int) (altoReal * 0.65));
+        viewerPdf.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                if (modeloSQL.getString(PROYECTO_RUTAPDF) != null) {
-                    AppActivity.mostrarPDF(modeloSQL.getString(PROYECTO_RUTAPDF));
+            public void onClick(View v) {
+
+                if (viewerPdf.getZoom() > 1) {
+                    frameAnimationCuerpo.setActivo(false);
+                    scrollDetalle.setScrollingEnabled(false);
                 } else {
-                    update();
+                    frameAnimationCuerpo.setActivo(true);
+                    scrollDetalle.setScrollingEnabled(true);
                 }
 
             }
         });
 
+        ViewGroupLayout vistaPdf = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaPdf.setOrientacion(LinearLayoutCompat.HORIZONTAL);
+        btnAntPage = vistaPdf.addButtonSecondary(activityBase, R.string.ant_page, 1);
+        btnAntPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int currentPage = viewerPdf.getCurrentPage();
+                if (currentPage > 0) {
+                    viewerPdf.jumpTo(currentPage - 1);
+                    if (viewerPdf.getCurrentPage() == 0) {
+                        gone(btnAntPage);
+                    } else {
+                        visible(btnAntPage);
+                    }
+                    if (viewerPdf.getCurrentPage() == viewerPdf.getPageCount() - 1) {
+                        gone(btnNextPage);
+                    } else {
+                        visible(btnNextPage);
+                    }
+                }
+                timeStamp = TimeDateUtil.ahora();
+            }
+        });
         btnenviarPdf = vistaPdf.addImageButtonSecundary(activityBase, R.drawable.ic_txt_pdf_indigo, 1);
         btnenviarPdf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (modeloSQL.getString(PROYECTO_RUTAPDF) != null) {
 
-                    ModeloSQL cliente = CRUDutil.updateModelo(CAMPOS_CLIENTE, idCliente);
-                    String email = cliente.getString(CLIENTE_EMAIL);
-                    String asunto = "Presupuesto solicitado";
-                    String mensaje = "Envio presupuesto" + modeloSQL.getString(PROYECTO_NOMBRE) + "solicitado por usted";
-                    PresupuestoPDF presupuestoPDF = new PresupuestoPDF();
-                    presupuestoPDF.buscarPDF(modeloSQL.getString(PROYECTO_RUTAPDF));
-                    presupuestoPDF.enviarPDFEmail(contexto, modeloSQL.getString(PROYECTO_RUTAPDF), email, asunto, mensaje);
-                } else {
-                    update();
-                }
+
+                ModeloSQL cliente = CRUDutil.updateModelo(CAMPOS_CLIENTE, idCliente);
+                String email = cliente.getString(CLIENTE_EMAIL);
+                String asunto = "Presupuesto solicitado";
+                String mensaje = "Envio presupuesto " + modeloSQL.getString(PROYECTO_NOMBRE) + " solicitado por usted";
+                PresupuestoPDF presupuestoPDF = new PresupuestoPDF();
+                presupuestoPDF.buscarPDF(rutaPdf);
+                presupuestoPDF.enviarPDFEmail(contexto, rutaPdf, email, asunto, mensaje);
             }
         });
+        etNumeroPag = vistaPdf.addEditMaterialLayout(R.string.pagina, 1);
+        etNumeroPag.setActivo(false);
         btncompartirPdf = vistaPdf.addImageButtonSecundary(activityBase, R.drawable.ic_compartir_indigo, 1);
         btncompartirPdf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (modeloSQL.getString(PROYECTO_RUTAPDF) != null) {
 
-                    AppActivity.compartirPdf(modeloSQL.getString(PROYECTO_RUTAPDF));
+                AppActivity.compartirPdf(generarPDF(id));
 
-                } else {
-                    update();
+            }
+        });
+        btnNextPage = vistaPdf.addButtonSecondary(activityBase, R.string.next_page, 1);
+        btnNextPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int totPages = viewerPdf.getPageCount();
+                int currentPage = viewerPdf.getCurrentPage();
+
+                if (currentPage < totPages) {
+                    viewerPdf.jumpTo(currentPage + 1);
+                    if (viewerPdf.getCurrentPage() == 0) {
+                        gone(btnAntPage);
+                    } else {
+                        visible(btnAntPage);
+                    }
+                    if (viewerPdf.getCurrentPage() == viewerPdf.getPageCount() - 1) {
+                        gone(btnNextPage);
+                    } else {
+                        visible(btnNextPage);
+                    }
                 }
+                timeStamp = TimeDateUtil.ahora();
             }
         });
 
@@ -835,17 +892,86 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         }
 
+    }
 
+    protected void cargarPresupuesto() {
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Interactor.Calculos.actualizarPresupuesto(id);
+                rutaPdf = generarPDF(id);
+                activityBase.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        viewerPdf.fromFile(new File(rutaPdf)).enableSwipe(true)
+                                .swipeHorizontal(false)
+                                .enableDoubletap(true)
+                                .onTap(new OnTapListener() {
+                                    @Override
+                                    public boolean onTap(MotionEvent e) {
+                                        if (viewerPdf.getZoom() > 1) {
+                                            frameAnimationCuerpo.setActivo(false);
+                                            scrollDetalle.setScrollingEnabled(false);
+                                        } else {
+                                            frameAnimationCuerpo.setActivo(true);
+                                            scrollDetalle.setScrollingEnabled(true);
+                                        }
+                                        return false;
+                                    }
+                                })
+
+                                .onPageChange(new OnPageChangeListener() {
+                                    @Override
+                                    public void onPageChanged(int page, int pageCount) {
+                                        pageNumber = page;
+                                        etNumeroPag.setText((String.format("%s / %s", page + 1, pageCount)));
+                                        frameAnimationCuerpo.setActivo(true);
+                                        if (viewerPdf.getCurrentPage() == 0) {
+                                            gone(btnAntPage);
+                                        } else {
+                                            visible(btnAntPage);
+                                        }
+                                        if (viewerPdf.getCurrentPage() == viewerPdf.getPageCount() - 1) {
+                                            gone(btnNextPage);
+                                        } else {
+                                            visible(btnNextPage);
+                                        }
+                                    }
+                                })
+
+                                .defaultPage(pageNumber)
+                                .password(null)
+                                .enableAntialiasing(true) // improve rendering a little bit on low-res screens
+                                .pageFitPolicy(FitPolicy.BOTH)
+                                .load();
+
+                        timeStamp = TimeDateUtil.ahora();
+
+                    }
+                });
+            }
+        }).start();
+    }
+
+    @Override
+    protected void alGuardarCampos() {
+        super.alGuardarCampos();
+
+        System.out.println("Al guardar campos");
+        if (nnn(id) && nn(modeloSQL) && timeStamp < TimeDateUtil.ahora() - (10 * SEGUNDOSLONG)) {
+
+            cargarPresupuesto();
         }
 
-
+    }
 
     @Override
     protected void setDatos() {
 
         Interactor.Calculos.actualizarPresupuesto(id);
-        //new TareaFechasDatos().execute(false);
+
+        cargarPresupuesto();
 
         activityBase.fabNuevo.hide();
 
@@ -1042,12 +1168,10 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         if (modeloSQL.getInt(PROYECTO_TIPOESTADO) >= TPRESUPPENDENTREGA) {
 
-                btnVerPdf.setVisibility(View.VISIBLE);
                 btnenviarPdf.setVisibility(View.VISIBLE);
                 btncompartirPdf.setVisibility(View.VISIBLE);
         }else{
 
-            btnVerPdf.setVisibility(View.GONE);
             btnenviarPdf.setVisibility(View.GONE);
             btncompartirPdf.setVisibility(View.GONE);
         }
@@ -1061,6 +1185,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             spClienteProyecto.setText(nombreCliente);
         }
 
+        timeStamp = TimeDateUtil.ahora();
     }
 
 
@@ -1240,7 +1365,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
             estadoProyecto.setText(PRESUPESPERA);
             idEstado = idPresupEnEspera;
-            //showDatePickerDialogEntrega();
             visible(fechaEntregaPresup.getLinearLayout());
 
         } else if (idEstado.equals(idPresupEnEspera) && fechaEntregaP >0) {
@@ -1301,8 +1425,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     private void crearEventoPresupuesto() {
 
-       new TareaGenerarPdf().execute(id);
-
             long fechaini = JavaUtil.sumaDiaMesAnio(JavaUtil.hoy());
             long horaini = JavaUtil.sumaHoraMin(JavaUtil.hoy());
             String asunto = "Presupuesto solicitado";
@@ -1329,7 +1451,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             insertRegistro(TABLA_EVENTO, valores);
     }
 
-    private static String generarPDF(String id) {
+    private String generarPDF(String id) {
 
         PresupuestoPDF presupuestoPDF = new PresupuestoPDF();
         presupuestoPDF.setNombreArchivo(id);
@@ -1346,28 +1468,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         return presupuestoPDF.getRutaArchivo();
     }
-    public static class TareaGenerarPdf extends AsyncTask<String, Float, Boolean> {
-
-        private String rutaPdftmp;
-
-        @Override
-        protected Boolean doInBackground(String... strings) {
-
-            rutaPdftmp = generarPDF(strings[0]);
-
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
-
-            rutaPdf = rutaPdftmp;
-            System.out.println("rutaPdf = " + rutaPdf);
-
-        }
-    }
-
 
     private void modificarEstadoNoAceptado() {
 
@@ -1441,11 +1541,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             setDato(PROYECTO_FECHAENTRADAF, JavaUtil.getDateTime(JavaUtil.hoy()));
         }
 
-        if (modeloSQL != null && id != null && Interactor.getTipoEstado(modeloSQL.getString(PROYECTO_ID_ESTADO)) >= TPRESUPPENDENTREGA) {
-            new TareaGenerarPdf().execute(id);
-            System.out.println("Generar pdf");
-        }
-
     }
 
 
@@ -1454,6 +1549,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         id = null;
     }
+
 
 
     public class TareaFechasGuardar extends AsyncTask<Boolean, Float, Integer> {
@@ -1605,27 +1701,45 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
 
-        ImagenLayout imagenProyecto;
-        ImageView imagenEstado, imagenCliente;
+        ViewImagenLayout imagenProyecto, imagenEstado, imagenCliente;
         TextView nombreProyecto,descripcionProyecto,clienteProyecto, estadoProyecto,
                 importe;
         ProgressBar progressBarProyecto;
+        CardView card;
+        RelativeLayout relativeLayout;
 
         public ViewHolderRV(View itemView) {
             super(itemView);
-            imagenProyecto = itemView.findViewById(R.id.imglistaproyectos);
-            imagenCliente = itemView.findViewById(R.id.imgclientelistaproyectos);
-            imagenEstado = itemView.findViewById(R.id.imgestadolistaproyectos);
-            nombreProyecto = itemView.findViewById(R.id.tvnombrelistaproyectos);
-            descripcionProyecto = itemView.findViewById(R.id.tvdesclistaproyectos);
-            clienteProyecto = itemView.findViewById(R.id.tvnombreclientelistaproyectos);
-            estadoProyecto = itemView.findViewById(R.id.tvestadolistaproyectos);
-            progressBarProyecto = itemView.findViewById(R.id.progressBarlistaproyectos);
-            importe = itemView.findViewById(R.id.tvimptotlistaproyectos);
+            relativeLayout = itemView.findViewById(R.id.ry_item_list);
+
         }
 
         @Override
         public void bind(ModeloSQL modeloSQL) {
+
+            ViewGroupLayout vistaCard = new ViewGroupLayout(contexto, relativeLayout, new CardView(contexto));
+            card = (CardView) vistaCard.getViewGroup();
+            LinearLayoutCompat mainLinear = (LinearLayoutCompat) vistaCard.addVista(new LinearLayoutCompat(contexto));
+            mainLinear.setOrientation(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+            ViewGroupLayout vistaImagen = new ViewGroupLayout(contexto, mainLinear);
+            vistaImagen.setOrientacion(ViewGroupLayout.ORI_LLC_VERTICAL, 2.5f);
+            imagenProyecto = vistaImagen.addImagenLayout(1);
+            Estilos.setLayoutParams(mainLinear, imagenProyecto.getLinearLayoutCompat(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT, 1, 5);
+            ViewGroupLayout vistaImagen2 = new ViewGroupLayout(contexto, vistaImagen.getViewGroup());
+            vistaImagen2.setOrientacion(Estilos.Constantes.ORI_LLC_HORIZONTAL, 3f);
+            imagenCliente = vistaImagen2.addImagenLayout(1);
+            Estilos.setLayoutParams(vistaImagen2.getViewGroup(), imagenCliente.getLinearLayoutCompat(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT, 1, 5);
+            imagenEstado = vistaImagen2.addImagenLayout(1);
+            Estilos.setLayoutParams(vistaImagen2.getViewGroup(), imagenEstado.getLinearLayoutCompat(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.MATCH_PARENT, 1, 5);
+            ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, mainLinear);
+            vistaForm.setOrientacion(ViewGroupLayout.ORI_LL_VERTICAL, 1);
+            nombreProyecto = vistaForm.addTextView(modeloSQL.getString(PROYECTO_NOMBRE));
+            descripcionProyecto = vistaForm.addTextView(modeloSQL.getString(PROYECTO_DESCRIPCION));
+            clienteProyecto = vistaForm.addTextView(modeloSQL.getString(PROYECTO_CLIENTE_NOMBRE));
+            estadoProyecto = vistaForm.addTextView(modeloSQL.getString(PROYECTO_DESCRIPCION_ESTADO));
+            importe = vistaForm.addTextView(JavaUtil.formatoMonedaLocal(modeloSQL.getDouble(PROYECTO_IMPORTEPRESUPUESTO)));
+            progressBarProyecto = (ProgressBar) vistaForm.addVista(new ProgressBar(contexto, null, Estilos.pBarStyleAcept(contexto)));
+
 
             nombreProyecto.setText(modeloSQL.getString(PROYECTO_NOMBRE));
             descripcionProyecto.setText(modeloSQL.getString(PROYECTO_DESCRIPCION));
@@ -1638,16 +1752,18 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 progressBarProyecto.setProgress(modeloSQL.getInt(PROYECTO_TOTCOMPLETADO));
 
                 long retraso = modeloSQL.getLong(PROYECTO_RETRASO);
-                if (retraso > 3 * DIASLONG){imagenEstado.setImageResource(R.drawable.alert_box_r);}
-                else if (retraso > DIASLONG){imagenEstado.setImageResource(R.drawable.alert_box_a);}
+                if (retraso > 3 * DIASLONG){imagenEstado.setImageResource(R.drawable.alert_box_r);} else if (retraso > DIASLONG) {
+                    imagenEstado.setImageResource(contexto, R.drawable.alert_box_a);
+                }
                 else {imagenEstado.setImageResource(R.drawable.alert_box_v);}
 
             }else{
 
                 progressBarProyecto.setVisibility(View.GONE);
                 long retraso = modeloSQL.getLong(PROYECTO_RETRASO);
-                if (retraso > 3 * DIASLONG){imagenEstado.setImageResource(R.drawable.alert_box_r);}
-                else if (retraso > DIASLONG){imagenEstado.setImageResource(R.drawable.alert_box_a);}
+                if (retraso > 3 * DIASLONG){imagenEstado.setImageResource(R.drawable.alert_box_r);} else if (retraso > DIASLONG) {
+                    imagenEstado.setImageResource(contexto, R.drawable.alert_box_a);
+                }
                 else {imagenEstado.setImageResource(R.drawable.alert_box_v);}
 
             }

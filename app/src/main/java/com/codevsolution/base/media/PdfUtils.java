@@ -11,6 +11,9 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.interfaces.ICFragmentos;
+import com.codevsolution.freemarketsapp.R;
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -22,22 +25,24 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.codevsolution.base.android.AppActivity;
-import com.codevsolution.base.android.FragmentBase;
-import com.codevsolution.base.interfaces.ICFragmentos;
-import com.codevsolution.freemarketsapp.R;
+import com.shockwave.pdfium.PdfDocument;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
-public class PdfUtils extends FragmentBase {
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.ACTUAL;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.VISORPDFMAIL;
+
+public class PdfUtils {
 
     private final static String NOMBRE_DIRECTORIO = AppActivity.getAppContext().getString(R.string.app_name) + "/Pdf";
     private final static String ETIQUETA_ERROR = "ERROR PDF";
@@ -47,12 +52,19 @@ public class PdfUtils extends FragmentBase {
     private String nombrePdf;
     private Document documento;
     private PdfWriter writer;
-    private Paragraph paragraph;
-    private PdfPTable tabla;
-    private PdfPCell pdfCell;
+    //private Paragraph paragraph;
+    //protected PdfPTable tabla;
+    //private PdfPCell pdfCell;
     protected int ALINEACION_IZQUIERDA = Element.ALIGN_LEFT;
     protected int ALINEACION_CENTRO = Element.ALIGN_CENTER;
     protected int ALINEACION_DERECHA = Element.ALIGN_RIGHT;
+    protected int ALINEACION_ABAJO = Element.ALIGN_BOTTOM;
+    protected int ALINEACION_ARRIBA = Element.ALIGN_TOP;
+    protected int ALINEACION_MEDIO = Element.ALIGN_MIDDLE;
+    protected int ALINEACION_JUSTIFICADA = Element.ALIGN_JUSTIFIED;
+    protected int ALINEACION_JUSTIFICADA_TODO = Element.ALIGN_JUSTIFIED_ALL;
+    protected int ALINEACION_BASELINE = Element.ALIGN_BASELINE;
+    protected int ALINEACION_INDEFINIDA = Element.ALIGN_UNDEFINED;
     protected String HELVETICA = FontFactory.HELVETICA;
     protected String HELVETICA_BOLD = FontFactory.HELVETICA_BOLD;
     protected String HELVETICA_BOLD_OBLIQUE = FontFactory.HELVETICA_BOLDOBLIQUE;
@@ -78,8 +90,17 @@ public class PdfUtils extends FragmentBase {
     protected final int GRIS = 4;
     protected final int VERDE = 5;
     protected final int MAGENTA = 6;
+    protected final int BLANCO = 7;
+    protected final int SIN_BORDES = Rectangle.NO_BORDER;
+    protected final int BORDE_DERECHO = Rectangle.RIGHT;
+    protected final int BORDE_IZQUIERDO = Rectangle.LEFT;
+    protected final int BORDE_ARRIBA = Rectangle.TOP;
+    protected final int BORDE_ABAJO = Rectangle.BOTTOM;
+    protected final int BORDE_TODOS = Rectangle.BOX;
+
     protected Uri fileUri;
     protected String path;
+    protected Context context = AppActivity.getAppContext();
 
 
     protected PdfUtils() {
@@ -154,9 +175,9 @@ public class PdfUtils extends FragmentBase {
             intent.setDataAndType(uri, "applicacion/PDF");
             //Try catch ´por si no existe una APP en el dispositivo
             try {
-                startActivity(intent);
+                context.startActivity(intent);
             } catch (ActivityNotFoundException e) {
-                startActivity(new Intent(Intent.ACTION_VIEW,
+                context.startActivity(new Intent(Intent.ACTION_VIEW,
                         Uri.parse("market://details?id=cn.wps.moffice_eng&hl=es")));
                 //Mensaje en un Toast para que se visualize el posible error
                 Toast.makeText(AppActivity.getAppContext(),
@@ -165,7 +186,7 @@ public class PdfUtils extends FragmentBase {
             }
 
         } else if (fPDF == 0) {
-            Toast.makeText(getContext(), "No existe archivo PDF para LEER", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "No existe archivo PDF para LEER", Toast.LENGTH_LONG).show();
         }
 
 
@@ -199,7 +220,8 @@ public class PdfUtils extends FragmentBase {
 
         buscarPDF();
         if (fPDF == 1) {
-            bundle = new Bundle();
+
+            Bundle bundle = new Bundle();
             bundle.putString("email", email);
             bundle.putString("asunto", asunto);
             bundle.putString("texto", texto);
@@ -218,7 +240,8 @@ public class PdfUtils extends FragmentBase {
 
         buscarPDF(path);
         if (fPDF == 1) {
-            bundle = new Bundle();
+
+            Bundle bundle = new Bundle();
             bundle.putString("email", email);
             bundle.putString("asunto", asunto);
             bundle.putString("texto", texto);
@@ -299,7 +322,7 @@ public class PdfUtils extends FragmentBase {
 
     public void addParrafo(int alineacion, String... args) {
 
-        paragraph = new Paragraph();
+        Paragraph paragraph = new Paragraph();
         for (String arg : args) {
 
             if (null != arg) {
@@ -322,7 +345,7 @@ public class PdfUtils extends FragmentBase {
 
     public void addParrafo(String... args) {
 
-        paragraph = new Paragraph();
+        Paragraph paragraph = new Paragraph();
         for (String arg : args) {
 
             if (null != arg) {
@@ -353,7 +376,7 @@ public class PdfUtils extends FragmentBase {
     }
 
 
-    public void addResource(int resource, Context context) {
+    public void addResource(int resource, Context context, int alineacion, int ancho, int alto) {
 
         Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),
                 resource);
@@ -362,6 +385,9 @@ public class PdfUtils extends FragmentBase {
         Image imagen = null;
         try {
             imagen = Image.getInstance(stream.toByteArray());
+            imagen.scaleToFit(ancho, alto);
+            imagen.setAlignment(alineacion);
+
         } catch (BadElementException | IOException e) {
             e.printStackTrace();
         }
@@ -392,7 +418,7 @@ public class PdfUtils extends FragmentBase {
             documento.add(imagen);
         } catch (DocumentException e) {
             e.printStackTrace();
-            Log.e("Añadir recurso", e.toString());
+            Log.e("Añadir imagen", e.toString());
         }
     }
 
@@ -400,7 +426,7 @@ public class PdfUtils extends FragmentBase {
                          int[] colspan, int altoceldas, int porcentaje, Font fuentecab, Font fuentefilas, int colorcab) {
 
         try {
-            paragraph = new Paragraph();
+            Paragraph paragraph = new Paragraph();
             paragraph.setFont(fuentecab);
             PdfPTable tabla = new PdfPTable(columnas);
             tabla.setWidthPercentage(porcentaje);
@@ -439,40 +465,43 @@ public class PdfUtils extends FragmentBase {
         }
     }
 
-    protected void abrirTabla(int columnas, int porcentaje, int espacioantes) {
+    protected PdfPTable crearTabla(int columnas) {
 
-        paragraph = new Paragraph();
-        tabla = new PdfPTable(columnas);
-        tabla.setWidthPercentage(porcentaje);
-        tabla.setSpacingBefore(espacioantes);
-
-    }
-
-    protected void abrirTabla(int columnas, int espacioantes) {
-
-        paragraph = new Paragraph();
-        tabla = new PdfPTable(columnas);
-        tabla.setWidthPercentage(100);
-        tabla.setSpacingBefore(espacioantes);
-
-    }
-
-    protected void abrirTabla(int columnas) {
-
-        paragraph = new Paragraph();
-        tabla = new PdfPTable(columnas);
+        PdfPTable tabla = new PdfPTable(columnas);
         tabla.setWidthPercentage(100);
         tabla.setSpacingBefore(20);
 
+        return tabla;
+
     }
 
-    protected void addTablaCab(String[] cabeceras, int[] colspan, int[] rowspan, int[] alinh,
-                               int[] alinv, int altoceldas, Font fuentecab, int colorcab) {
+    protected PdfPTable crearTabla(int columnas, int espacioAntes) {
+
+        PdfPTable tabla = new PdfPTable(columnas);
+        tabla.setWidthPercentage(100);
+        tabla.setSpacingBefore(espacioAntes);
+
+        return tabla;
+
+    }
+
+    protected PdfPTable crearTabla(int columnas, int espacioAntes, int porcentaje) {
+
+        PdfPTable tabla = new PdfPTable(columnas);
+        tabla.setWidthPercentage(porcentaje);
+        tabla.setSpacingBefore(espacioAntes);
+
+        return tabla;
+
+    }
+
+    protected void addTablaCab(PdfPTable tabla, String[] cabeceras, int[] colspan, int[] rowspan, int[] alinh,
+                               int[] alinv, int altoceldas, Font fuentecab, int colorcab, int borde) {
 
         int indexC = 0;
         while (indexC < cabeceras.length) {
 
-            pdfCell = new PdfPCell(new Phrase(cabeceras[indexC], fuentecab));
+            PdfPCell pdfCell = new PdfPCell(new Phrase(cabeceras[indexC], fuentecab));
             pdfCell.setColspan(colspan[indexC]);
             pdfCell.setRowspan(rowspan[indexC]);
             pdfCell.setHorizontalAlignment(alinh[indexC]);
@@ -480,26 +509,42 @@ public class PdfUtils extends FragmentBase {
             pdfCell.setFixedHeight(altoceldas);
             pdfCell.setVerticalAlignment(alinv[indexC]);
             pdfCell.setHorizontalAlignment(alinh[indexC]);
+            pdfCell.setBorder(borde);
             tabla.addCell(pdfCell);
             indexC++;
         }
     }
 
-    protected void addCellTabla(String dato, int colspan, int rowspan, int altocell,
-                                int alinv, int alinh, int colorcell) {
+    protected void addCellDato(PdfPTable tabla, String dato, int colspan, int rowspan, int altocell,
+                               int alinv, int alinh, int colorcell, int borde) {
 
-        pdfCell = new PdfPCell(new Phrase(dato));
+        PdfPCell pdfCell = new PdfPCell(new Phrase(dato));
         pdfCell.setColspan(colspan);
         pdfCell.setRowspan(rowspan);
         pdfCell.setBackgroundColor(getColor(colorcell));
         pdfCell.setHorizontalAlignment(alinh);
         pdfCell.setVerticalAlignment(alinv);
         pdfCell.setFixedHeight(altocell);
+        pdfCell.setBorder(borde);
         tabla.addCell(pdfCell);
     }
 
-    protected void addCellImage(String rutafoto, float ancho, float alto, int colspan, int rowspan, int altocell,
-                                int alinv, int alinh, int colorcell) {
+    protected void addCellTabla(PdfPTable tabla, PdfPTable tablaCell, int colspan, int rowspan, int altocell,
+                                int alinv, int alinh, int colorcell, int borde) {
+
+        PdfPCell pdfCell = new PdfPCell(tablaCell);
+        pdfCell.setColspan(colspan);
+        pdfCell.setRowspan(rowspan);
+        pdfCell.setBackgroundColor(getColor(colorcell));
+        pdfCell.setHorizontalAlignment(alinh);
+        pdfCell.setVerticalAlignment(alinv);
+        pdfCell.setFixedHeight(altocell);
+        pdfCell.setBorder(borde);
+        tabla.addCell(pdfCell);
+    }
+
+    protected void addCellImage(PdfPTable tabla, String rutafoto, float ancho, float alto, int colspan, int rowspan, int altocell,
+                                int alinv, int alinh, int colorcell, int borde) {
 
         Bitmap bitmap = BitmapFactory.decodeFile(rutafoto);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -512,37 +557,89 @@ public class PdfUtils extends FragmentBase {
             e.printStackTrace();
         }
 
-        pdfCell = new PdfPCell(Image.getInstance(imagen));
+        PdfPCell pdfCell = new PdfPCell(Image.getInstance(imagen));
         pdfCell.setColspan(colspan);
         pdfCell.setRowspan(rowspan);
         pdfCell.setBackgroundColor(getColor(colorcell));
         pdfCell.setHorizontalAlignment(alinh);
         pdfCell.setVerticalAlignment(alinv);
         pdfCell.setFixedHeight(altocell);
+        pdfCell.setBorder(borde);
         tabla.addCell(pdfCell);
     }
 
-    protected void addListaTabla(int col, ArrayList<String[]> datos,
-                                 int[] colspan, int[] rowspan, int[] alinh, int[] alinv, int altoceldas, Font fuentefilas) {
+    protected void addListaTabla(PdfPTable tabla, int col, ArrayList<String[]> datos,
+                                 int[] colspan, int[] alinh, int[] alinv, Font fuentefilas, int borde) {
 
         int indexC = 0;
 
         for (int i = 0; i < datos.size(); i++) {
             String[] row = datos.get(i);
+            int maxRow = 1;
+            int alto = 0;
             for (indexC = 0; indexC < col; indexC++) {
 
-                pdfCell = new PdfPCell(new Phrase(row[indexC], fuentefilas));
+                if ((int) Math.round(((double) row[indexC].length()) / (colspan[indexC] * 3)) > maxRow) {
+                    maxRow = (int) Math.round(((double) row[indexC].length()) / (colspan[indexC] * 3));
+                }
+            }
+            alto = maxRow * 20;
+            if (alto < 40) {
+                alto = 40;
+            }
+
+            for (indexC = 0; indexC < col; indexC++) {
+
+                PdfPCell pdfCell = new PdfPCell(new Phrase(row[indexC], fuentefilas));
                 pdfCell.setColspan(colspan[indexC]);
-                pdfCell.setRowspan(rowspan[indexC]);
+                pdfCell.setRowspan(1);
                 pdfCell.setHorizontalAlignment(alinh[indexC]);
                 pdfCell.setVerticalAlignment(alinv[indexC]);
-                pdfCell.setFixedHeight(altoceldas);
+                pdfCell.setFixedHeight(alto);
+                pdfCell.setBorder(borde);
+
                 tabla.addCell(pdfCell);
             }
         }
     }
 
-    protected void cerrarTabla() {
+    protected void addListaImagenTabla(PdfPTable tabla, int col, ArrayList<String[]> datos, int colorCellImagen,
+                                       int[] colspan, int[] alinh, int[] alinv, Font fuentefilas, int borde) {
+
+        int indexC = 0;
+
+        for (int i = 0; i < datos.size(); i++) {
+            String[] row = datos.get(i);
+
+            int maxRow = 1;
+            int alto = 0;
+            for (indexC = 1; indexC < col; indexC++) {
+
+                if ((int) Math.round(((double) row[indexC].length()) / (colspan[indexC] * 3)) > maxRow) {
+                    maxRow = (int) Math.round(((double) row[indexC].length()) / (colspan[indexC] * 3));
+                }
+            }
+            alto = maxRow * 20;
+            if (alto < 40) {
+                alto = 40;
+            }
+            addCellImage(tabla, row[0], 40, 40, colspan[0], 1,
+                    alto, alinv[0], alinh[0], colorCellImagen, borde);
+
+            for (indexC = 1; indexC < col; indexC++) {
+
+                PdfPCell pdfCell = new PdfPCell(new Phrase(row[indexC], fuentefilas));
+                pdfCell.setColspan(colspan[indexC]);
+                pdfCell.setRowspan(1);
+                pdfCell.setHorizontalAlignment(alinh[indexC]);
+                pdfCell.setVerticalAlignment(alinv[indexC]);
+                pdfCell.setFixedHeight(alto);
+                tabla.addCell(pdfCell);
+            }
+        }
+    }
+
+    protected void dibujarTabla(Paragraph paragraph, PdfPTable tabla) {
 
         try {
             paragraph.add(tabla);
@@ -557,13 +654,13 @@ public class PdfUtils extends FragmentBase {
 
         buscarPDF();
         if (fPDF == 1) {
-            Intent intent = new Intent(getContext(), clase);
+            Intent intent = new Intent(context, clase);
             intent.putExtra("path", archivoPDF.getAbsolutePath());
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
-            Toast.makeText(getContext(), "Si existe archivo PDF para LEER", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Si existe archivo PDF para LEER", Toast.LENGTH_LONG).show();
         } else if (fPDF == 0) {
-            Toast.makeText(getContext(), "No existe archivo PDF para LEER", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "No existe archivo PDF para LEER", Toast.LENGTH_LONG).show();
         }
 
     }
@@ -576,7 +673,7 @@ public class PdfUtils extends FragmentBase {
                 writer.getPageNumber() % 2 == 1 ? 45 : -45);
     }
 
-    private void addChildP(Paragraph childParagraph, int alineacion) {
+    private void addChildP(Paragraph paragraph, Paragraph childParagraph, int alineacion) {
 
         childParagraph.setAlignment(alineacion);
         paragraph.add(childParagraph);
@@ -655,13 +752,13 @@ public class PdfUtils extends FragmentBase {
         return ruta;
     }
 
-    @Override
-    protected void setLayout() {
+    public static void printBookmarksTree(List<PdfDocument.Bookmark> tree, String sep) {
+        for (PdfDocument.Bookmark b : tree) {
 
+            if (b.hasChildren()) {
+                printBookmarksTree(b.getChildren(), sep + "-");
+            }
+        }
     }
 
-    @Override
-    protected void setInicio() {
-
-    }
 }

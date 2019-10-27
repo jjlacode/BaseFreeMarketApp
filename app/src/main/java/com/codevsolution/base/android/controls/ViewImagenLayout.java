@@ -71,6 +71,7 @@ public class ViewImagenLayout implements Estilos.Constantes {
         titulo.setVisibility(View.GONE);
 
         imagen = new ImageView(context);
+        imagen.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         linearLayoutCompat.addVista(imagen);
 
         pie = linearLayoutCompat.addTextView(null);
@@ -602,6 +603,11 @@ public class ViewImagenLayout implements Estilos.Constantes {
         ImagenUtil.setImageUri(recurso, imagen, 1f);
     }
 
+    public void setImageResource(Context context, int recurso) {
+
+        ImagenUtil.setImageUri(context, recurso, imagen, 1f);
+    }
+
     public void setImageResource(int recurso, int ancho, int alto) {
 
         ImagenUtil.setImageUri(recurso, imagen, ancho, alto);
@@ -610,6 +616,11 @@ public class ViewImagenLayout implements Estilos.Constantes {
     public void setImageResource(int recurso, float multiplicador) {
 
         ImagenUtil.setImageUri(recurso, imagen, multiplicador);
+    }
+
+    public void setImageResource(Context context, int recurso, float multiplicador) {
+
+        ImagenUtil.setImageUri(context, recurso, imagen, multiplicador);
     }
 
     public void setImageFirestore(String uri) {

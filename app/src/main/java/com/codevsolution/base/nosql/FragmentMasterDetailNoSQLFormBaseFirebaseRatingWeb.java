@@ -321,6 +321,12 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             web = firebaseFormBase.getWebBase();
             etWeb.setText(web);
 
+            AndroidUtil.setSharePreference(contexto, PREFERENCIAS, CAMPO_NOMBRE, firebaseFormBase.getNombreBase());
+            AndroidUtil.setSharePreference(contexto, PREFERENCIAS, CAMPO_DIRECCION, firebaseFormBase.getDireccionBase());
+            AndroidUtil.setSharePreference(contexto, PREFERENCIAS, CAMPO_TELEFONO, firebaseFormBase.getTelefonoBase());
+            AndroidUtil.setSharePreference(contexto, PREFERENCIAS, CAMPO_EMAIL, firebaseFormBase.getEmailBase());
+            AndroidUtil.setSharePreference(contexto, PREFERENCIAS, CAMPO_WEB, firebaseFormBase.getWebBase());
+
             chActivo.setChecked(firebaseFormBase.isActivo());
 
             accionesImagen();

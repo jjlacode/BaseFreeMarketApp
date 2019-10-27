@@ -169,6 +169,14 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         return imagenLayout;
     }
 
+    public ViewImagenLayout addImagenLayout(int peso) {
+
+        ViewImagenLayout imagenLayout = new ViewImagenLayout(viewGroup, context);
+        Estilos.setLayoutParams(viewGroup, imagenLayout.getLinearLayoutCompat(), peso);
+
+        return imagenLayout;
+    }
+
     public TextView addTextView(String text) {
 
         TextView textView = new TextView(context);

@@ -22,8 +22,9 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
-import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.javautil.JavaUtil;
@@ -51,10 +52,10 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
         ContratoPry.Tablas, Interactor.TiposDetPartida {
 
     private AutoCompleteTextView autoNombrePartida;
-    private EditMaterial nombrePartida;
-    private EditMaterial descripcionPartida;
-    private EditMaterial tiempoPartida;
-    private EditMaterial importePartida;
+    private EditMaterialLayout nombrePartida;
+    private EditMaterialLayout descripcionPartida;
+    private EditMaterialLayout tiempoPartida;
+    private EditMaterialLayout importePartida;
     private ImageButton btnNuevaTarea;
     private ImageButton btnNuevoProd;
     private ImageButton btnNuevoProdProv;
@@ -99,25 +100,87 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
     @Override
     protected void setLayout() {
 
-        layoutCuerpo = R.layout.fragment_crud_partidabase;
+        //layoutCuerpo = R.layout.fragment_crud_partidabase;
         layoutItem = R.layout.item_list_partidabase;
     }
 
     @Override
     protected void setInicio() {
 
-        nombrePartida = (EditMaterial) ctrl(R.id.etnomudpartidabase, PARTIDABASE_NOMBRE);
-        descripcionPartida = (EditMaterial) ctrl(R.id.etdescripcionUDpartidabase, PARTIDABASE_DESCRIPCION);
-        tiempoPartida = (EditMaterial) ctrl(R.id.ettiempoUDpartidabase);
-        importePartida = (EditMaterial) ctrl(R.id.etprecioUDpartidabase);
-        btnNuevaTarea = (ImageButton) ctrl(R.id.btntareaudpartidabase);
-        btnNuevoProd = (ImageButton) ctrl(R.id.btnprodudpartidabase);
-        btnNuevoProdProv = (ImageButton) ctrl(R.id.btnprovudpartidabase);
-        btnpart = (Button) ctrl(R.id.btn_asignar_a_partidaproy_partidabase);
-        imagen = (ImagenLayout) ctrl(R.id.imgudpartidabase);
-        rvdetalles = (RecyclerView) ctrl(R.id.rvdetalleUDpartidabase);
-        autoNombrePartida = view.findViewById(R.id.autonompartidabase);
+        ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
 
+        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
+        imagen.setFocusable(false);
+        imagen.setTextTitulo(tituloSingular);
+        btnpart = vistaForm.addButtonPrimary(R.string.add_detpartida);
+        btnpart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                update();
+                asignarAPartidaProy();
+
+            }
+
+        });
+        autoNombrePartida = (AutoCompleteTextView) vistaForm.addVista(new AutoCompleteTextView(contexto));
+        autoNombrePartida.setText(R.string.partida_clon);
+        nombrePartida = vistaForm.addEditMaterialLayout(getString(R.string.nombre), PARTIDABASE_NOMBRE, null, null);
+        descripcionPartida = vistaForm.addEditMaterialLayout(getString(R.string.descripcion), PARTIDABASE_DESCRIPCION, null, null);
+        descripcionPartida.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.MULTI);
+
+        ViewGroupLayout vistaDatos = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaDatos.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+
+        tiempoPartida = vistaDatos.addEditMaterialLayout(getString(R.string.tiempo));
+        tiempoPartida.setActivo(false);
+        importePartida = vistaDatos.addEditMaterialLayout(R.string.importe);
+        importePartida.setActivo(false);
+
+        ViewGroupLayout vistaBtn = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaBtn.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+        btnNuevaTarea = vistaBtn.addImageButtonSecundary(R.drawable.ic_tareas_indigo, 1);
+        btnNuevaTarea.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                update();
+                AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDABASE_ID_PARTIDABASE, id);
+                bundle = new Bundle();
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDTrabajo());
+
+
+            }
+
+        });
+        btnNuevoProd = vistaBtn.addImageButtonSecundary(R.drawable.ic_producto_indigo, 1);
+        btnNuevoProd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                update();
+                AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDABASE_ID_PARTIDABASE, id);
+                bundle = new Bundle();
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProducto());
+
+            }
+
+        });
+        btnNuevoProdProv = vistaBtn.addImageButtonSecundary(R.drawable.ic_catalogo_indigo, 1);
+        btnNuevoProdProv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                update();
+                AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDABASE_ID_PARTIDABASE, id);
+                bundle = new Bundle();
+                putBundle(ORIGEN, PARTIDABASE);
+                icFragmentos.enviarBundleAFragment(bundle, new ListadoProductosPro());
+
+            }
+
+        });
+        rvdetalles = (RecyclerView) vistaForm.addVista(new RecyclerView(contexto));
 
     }
 
@@ -163,7 +226,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
         visible(btnNuevaTarea);
         visible(btnNuevoProd);
         visible(btnNuevoProdProv);
-        visible(nombrePartida);
+        visible(nombrePartida.getLinearLayout());
         visible(btndelete);
 
         idPartida = AndroidUtil.getSharePreference(contexto, PERSISTENCIA, PARTIDA_ID_PARTIDA, NULL);
@@ -173,6 +236,8 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
             if (secPartida > 0) {
                 btnpart.setText(getString(R.string.sincronizar_clon_partida));
             }
+        } else {
+            gone(btnpart);
         }
         descripcionPartida.setText(modeloSQL.getString(PARTIDABASE_DESCRIPCION));
         nombrePartida.setText(modeloSQL.getString(PARTIDABASE_NOMBRE));
@@ -314,59 +379,6 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                 mostrarDialogoClonarPartidabase(partidaclon);
             }
         });
-
-        btnNuevaTarea.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                update();
-                AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDABASE_ID_PARTIDABASE, id);
-                bundle = new Bundle();
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDTrabajo());
-
-
-            }
-
-        });
-
-        btnNuevoProd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                update();
-                AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDABASE_ID_PARTIDABASE, id);
-                bundle = new Bundle();
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProducto());
-
-            }
-
-        });
-
-        btnpart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                update();
-                asignarAPartidaProy();
-
-            }
-
-        });
-
-        btnNuevoProdProv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                update();
-                AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDABASE_ID_PARTIDABASE, id);
-                bundle = new Bundle();
-                putBundle(ORIGEN, PARTIDABASE);
-                icFragmentos.enviarBundleAFragment(bundle, new ListadoProductosPro());
-
-            }
-
-        });
-
 
     }
 

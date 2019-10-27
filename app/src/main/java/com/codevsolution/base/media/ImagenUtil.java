@@ -14,8 +14,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.time.TimeDateUtil;
+import com.codevsolution.freemarketsapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -23,8 +25,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.codevsolution.base.android.AppActivity;
-import com.codevsolution.freemarketsapp.R;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayInputStream;
@@ -424,12 +424,32 @@ public class ImagenUtil {
 
     public static void setImageUri(int recurso, ImageView imagen, float multiplicador) {
 
-        RequestOptions options = new RequestOptions()
-                .placeholder(logo)
-                .sizeMultiplier(multiplicador)
-                .error(error);
+        try {
+            RequestOptions options = new RequestOptions()
+                    .placeholder(logo)
+                    .sizeMultiplier(multiplicador)
+                    .error(error);
 
-        Glide.with(context).load(recurso).apply(options).into(imagen);
+            Glide.with(context).load(recurso).apply(options).into(imagen);
+        } catch (Exception e) {
+            imagen.setImageResource(recurso);
+            imagen.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        }
+    }
+
+    public static void setImageUri(Context context, int recurso, ImageView imagen, float multiplicador) {
+
+        try {
+            RequestOptions options = new RequestOptions()
+                    .placeholder(logo)
+                    .sizeMultiplier(multiplicador)
+                    .error(error);
+
+            Glide.with(context).load(recurso).apply(options).into(imagen);
+        } catch (Exception e) {
+            imagen.setImageResource(recurso);
+            imagen.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        }
     }
 
     public static void setImageUri(int recurso, ImageView imagen) {

@@ -90,6 +90,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     private long fechaCalculada;
     private CheckBox chSplit;
     private CheckBox chFija;
+    private boolean manoObra;
 
     public FragmentCRUDPartidaProyecto() {
         // Required empty public constructor
@@ -119,34 +120,63 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     }
 
     @Override
-    protected void setAcciones() {
+    protected void setTitulo() {
+        tituloSingular = R.string.partida;
+        tituloPlural = R.string.partidas;
+        tituloNuevo = R.string.nueva_partida;
+    }
 
-        btnVolverProy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new Interactor.Calculos.TareaActualizaProy().execute(id);
-                bundle.putSerializable(MODELO, proyecto);
-                bundle.putString(ACTUAL,origen);
-                bundle.putString(ACTUALTEMP,origen);
-                bundle.putString(ORIGEN,PARTIDA);
-                bundle.putString(CAMPO_ID,id);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
-            }
-        });
 
+    @Override
+    protected void setNuevo() {
+
+
+        bundle = new Bundle();
+        AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDA_ID_PARTIDA, id);
+        AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDA_SECUENCIA, 0);
+        icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDPartidaBase());
+
+    }
+
+    @Override
+    protected void setLayout() {
+
+        layoutItem = R.layout.item_list_partida;
+        cabecera = true;
+    }
+
+    @Override
+    protected void setInicio() {
+
+        ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
+
+        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
+        imagen.setFocusable(false);
+        imagen.getImagen().setClickable(false);
+        imagen.setTextTitulo(tituloSingular);
+        btnPartidaBase = vistaForm.addButtonPrimary(R.string.modificar_partidabase);
         btnPartidaBase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDA_ID_PARTIDA, id);
                 AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDA_SECUENCIA, secuencia);
-
-                System.out.println("modeloSQL.getString(PARTIDA_ID_PARTIDABASE) = " + modeloSQL.getString(PARTIDA_ID_PARTIDABASE));
                 putBundle(CAMPO_ID, modeloSQL.getString(PARTIDA_ID_PARTIDABASE));
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDPartidaBase());
             }
         });
+        nombrePartida = vistaForm.addEditMaterialLayout(getString(R.string.nombre));
+        nombrePartida.setActivo(false);
+        nombrePartida.btnInicioVisible(false);
+        descripcionPartida = vistaForm.addEditMaterialLayout(getString(R.string.descripcion));
+        descripcionPartida.setActivo(false);
+        descripcionPartida.btnInicioVisible(false);
 
+        ViewGroupLayout vistaCant = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaCant.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+        imagenret = (ImageView) vistaCant.addVista(new ImageView(contexto), 1);
+        imagenret.setFocusable(false);
+        cantidadPartida = vistaCant.addEditMaterialLayout(getString(R.string.cantidad), PARTIDA_CANTIDAD, 1);
         cantidadPartida.setAlCambiarListener(new EditMaterialLayout.AlCambiarListener() {
             @Override
             public void antesCambio(CharSequence s, int start, int count, int after) {
@@ -156,7 +186,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
             @Override
             public void cambiando(CharSequence s, int start, int before, int count) {
 
-                if (nn(timer)){
+                if (nn(timer)) {
                     timer.cancel();
                 }
             }
@@ -189,87 +219,6 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
             }
         });
-
-        chSplit.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
-                if (b) {
-                    CRUDutil.actualizarCampo(modeloSQL, PARTIDA_SPLIT, 1);
-                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
-                } else {
-                    CRUDutil.actualizarCampo(modeloSQL, PARTIDA_SPLIT, 0);
-                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
-                }
-            }
-        });
-
-        chFija.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
-                if (b) {
-                    CRUDutil.actualizarCampo(modeloSQL, PARTIDA_FIJA, 1);
-                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
-                } else {
-                    CRUDutil.actualizarCampo(modeloSQL, PARTIDA_FIJA, 0);
-                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
-                }
-            }
-        });
-
-    }
-
-    @Override
-    protected void setTitulo() {
-        tituloSingular = R.string.partida;
-        tituloPlural = R.string.partidas;
-        tituloNuevo = R.string.nueva_partida;
-    }
-
-
-    @Override
-    protected void setNuevo() {
-
-
-        bundle = new Bundle();
-        AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDA_ID_PARTIDA, id);
-        AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDA_SECUENCIA, 0);
-        icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDPartidaBase());
-
-    }
-
-    @Override
-    protected void setLayout() {
-
-        //layoutCuerpo = R.layout.fragment_crud_partida_proyecto;
-        //layoutCabecera = R.layout.cabecera_crud_partida;
-        layoutItem = R.layout.item_list_partida;
-        cabecera = true;
-    }
-
-    @Override
-    protected void setInicio() {
-
-        ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
-
-        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
-        imagen.setFocusable(false);
-        imagen.getImagen().setClickable(false);
-        imagen.setTextTitulo(tituloSingular);
-        btnPartidaBase = vistaForm.addButtonPrimary(R.string.modificar_partidabase);
-        nombrePartida = vistaForm.addEditMaterialLayout(getString(R.string.nombre));
-        nombrePartida.setActivo(false);
-        nombrePartida.btnInicioVisible(false);
-        descripcionPartida = vistaForm.addEditMaterialLayout(getString(R.string.descripcion));
-        descripcionPartida.setActivo(false);
-        descripcionPartida.btnInicioVisible(false);
-
-        ViewGroupLayout vistaCant = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
-        vistaCant.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
-        imagenret = (ImageView) vistaCant.addVista(new ImageView(contexto), 1);
-        imagenret.setFocusable(false);
-        cantidadPartida = vistaCant.addEditMaterialLayout(getString(R.string.cantidad), PARTIDA_CANTIDAD, 1);
         tiempoPartida = vistaCant.addEditMaterialLayout(R.string.tiempo, 1);
         tiempoPartida.setActivo(false);
         tiempoPartida.btnInicioVisible(false);
@@ -285,8 +234,34 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         vistaSplit.setOrientacion(LinearLayoutCompat.HORIZONTAL);
         chSplit = (CheckBox) vistaSplit.addVista(new CheckBox(contexto), 1);
         chSplit.setText(R.string.mantener_entera);
+        chSplit.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                if (b) {
+                    CRUDutil.actualizarCampo(modeloSQL, PARTIDA_SPLIT, 1);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                } else {
+                    CRUDutil.actualizarCampo(modeloSQL, PARTIDA_SPLIT, 0);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                }
+            }
+        });
         chFija = (CheckBox) vistaSplit.addVista(new CheckBox(contexto), 1);
         chFija.setText(R.string.no_mover);
+        chFija.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                if (b) {
+                    CRUDutil.actualizarCampo(modeloSQL, PARTIDA_FIJA, 1);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                } else {
+                    CRUDutil.actualizarCampo(modeloSQL, PARTIDA_FIJA, 0);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                }
+            }
+        });
         actualizarArrays(vistaSplit);
 
         ViewGroupLayout vistaAcordada = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
@@ -313,11 +288,21 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
         ViewGroupLayout vistaCab = new ViewGroupLayout(contexto, frCabecera);
         btnVolverProy = vistaCab.addButtonPrimary(R.string.volver_a_proyecto);
+        btnVolverProy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Interactor.Calculos.TareaActualizaProy().execute(id);
+                bundle.putSerializable(MODELO, proyecto);
+                bundle.putString(ACTUAL, origen);
+                bundle.putString(ACTUALTEMP, origen);
+                bundle.putString(ORIGEN, PARTIDA);
+                bundle.putString(CAMPO_ID, id);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
+            }
+        });
         actualizarArrays(vistaCab);
 
     }
-
-
 
     @Override
     protected void setTabla() {
@@ -364,7 +349,9 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         if (nn(proyecto)) {
             activityBase.toolbar.setSubtitle(proyecto.getString(PROYECTO_NOMBRE));
         }
-        boolean manoObra = modeloSQL.getDouble(PARTIDA_TIEMPO) > 0;
+        Interactor.Calculos.actualizarPartidaProyecto(modeloSQL.getString(PARTIDA_ID_PARTIDA));
+        modeloSQL = CRUDutil.updateModelo(modeloSQL);
+        manoObra = modeloSQL.getDouble(PARTIDA_TIEMPO) > 0;
         imagen.setTextTitulo(getString(R.string.partida)+" "+secuencia);
         completadaPartida.getLinearLayout().setVisibility(View.VISIBLE);
         nombrePartida.getLinearLayout().setVisibility(View.VISIBLE);
@@ -425,11 +412,16 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         } else {
             chFija.setChecked(false);
         }
-
         int orden = modeloSQL.getInt(PARTIDA_ORDEN);
-        if (orden == 0 && manoObra) {
-            orden = calcularOrdenPartida();
-            CRUDutil.actualizarCampo(modeloSQL, PARTIDA_ORDEN, orden);
+        if (!manoObra) {
+            gone(etOrden.getLinearLayout());
+        } else {
+            visible(etOrden.getLinearLayout());
+            if (orden == 0) {
+                orden = calcularOrdenPartida();
+                CRUDutil.actualizarCampo(modeloSQL, PARTIDA_ORDEN, orden);
+            }
+
         }
         etOrden.setText(String.valueOf(orden));
 
@@ -473,6 +465,17 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
         setRvDetallePartida();
 
+    }
+
+    @Override
+    protected void alGuardarCampo(EditMaterialLayout editMaterialLayout) {
+        super.alGuardarCampo(editMaterialLayout);
+
+        if (editMaterialLayout == cantidadPartida && nnn(id) && nn(modeloSQL)) {
+            setDatos();
+        } else if (editMaterialLayout == etOrden && nnn(id) && nn(modeloSQL)) {
+            setDatos();
+        }
     }
 
     private void setRvDetallePartida() {
@@ -688,9 +691,6 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
         if (proyecto==null && id!=null){
             proyecto = CRUDutil.updateModelo(CAMPOS_PROYECTO,id);
-        }
-        if (proyecto != null && id != null && Interactor.getTipoEstado(proyecto.getString(PROYECTO_ID_ESTADO)) >= TPRESUPPENDENTREGA) {
-            new FragmentCRUDProyecto.TareaGenerarPdf().execute(id);
         }
         return true;
     }

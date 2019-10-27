@@ -64,6 +64,7 @@ public class JavaUtil {
         String CAMPO_DIRECCION = "direccion_";
         String CAMPO_TELEFONO = "telefono_";
         String CAMPO_EMAIL = "email_";
+        String CAMPO_WEB = "web_";
         String CAMPO_CONTACTO = "contacto_";
         String CAMPO_ACTIVO = "activo_";
         String CAMPO_MULTI = "multi";

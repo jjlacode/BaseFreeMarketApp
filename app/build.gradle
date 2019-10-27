@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId 'com.codevsolution.freemarketsapp'
         minSdkVersion 22
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -22,6 +22,7 @@ android {
     sourceSets {
         main {
             res.srcDirs = ['src/main/res', 'src/main/res/base', 'src/main/res/res']
+
         }
     }
     flavorDimensions 'default'
@@ -31,7 +32,7 @@ android {
             applicationId = 'com.codevsolution.freemarketsapp.cli'
             versionCode = 1
             versionName = '1.0'
-            targetSdkVersion 28
+            targetSdkVersion 29
             minSdkVersion 22
         }
         pro {
@@ -39,7 +40,7 @@ android {
             applicationId = 'com.codevsolution.freemarketsapp.pro'
             versionCode = 1
             versionName = '1.0'
-            targetSdkVersion 28
+            targetSdkVersion 29
             minSdkVersion 22
         }
     }
@@ -69,12 +70,12 @@ dependencies {
     implementation 'com.braintreepayments.api:drop-in:4.2.0'
     implementation 'com.android.volley:volley:1.1.1'
     implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
-    implementation 'com.itextpdf:itextg:5.5.10'
+    implementation 'com.github.barteksc:android-pdf-viewer:3.0.0-beta.5'
     implementation 'com.github.bumptech.glide:glide:4.0.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0'
     implementation files('lib/javax.mail-api-1.6.2.jar')
     implementation files('lib/chargebee-java-2.7.4.jar')
+    implementation files('lib/itextpdf-5.5.13.1.jar')
 
 
 }

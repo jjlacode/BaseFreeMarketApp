@@ -474,6 +474,9 @@
     <string name="coste">Coste total</string>
     <string name="porcbenef">% beneficio</string>
     <string name="asignar_cantidad">Debe asignar las unidades de la partida para poder acceder a los detalles de partida</string>
+    <string name="ant_page">Pagina Anterior</string>
+    <string name="next_page">Siguiente pagina</string>
+    <string name="pagina">Pagina</string>
 
 
 </resources>

@@ -423,6 +423,9 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                 }
             }
         }
+        alGuardarCampos();
+        alGuardarCampo(editMaterial);
+
     }
 
     @Override
@@ -440,6 +443,21 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                 }
             }
         }
+        alGuardarCampos();
+        alGuardarCampo(editMaterial);
+
+    }
+
+    protected void alGuardarCampos() {
+
+    }
+
+    protected void alGuardarCampo(EditMaterialLayout editMaterialLayout) {
+
+    }
+
+    protected void alGuardarCampo(EditMaterial editMaterialLayout) {
+
     }
 
     protected void guardarEdit(EditMaterial editMaterial) {
