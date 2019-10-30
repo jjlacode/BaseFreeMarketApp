@@ -55,7 +55,6 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
         prodUsados = (EditMaterial) ctrl(R.id.etprod);
 
 
-        comprobarSuscripciones();
         DatabaseReference db = FirebaseDatabase.getInstance().getReference();
         db.child(INDICE + PRODUCTOPRO).child(idUser).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -222,7 +221,11 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
         String idCrud = null;
 
         ContentValues values = new ContentValues();
-        values.put(PRODUCTO_ID_PRODFIRE, prodprov.getId());
+        if (tipo.equals(PRODUCTOCLI)) {
+            values.put(PRODUCTO_ID_PRODFIRE, prodprov.getId());
+        } else if (tipo.equals(PRODUCTOPRO)) {
+            values.put(PRODUCTO_ID_PRODFIREPRO, prodprov.getId());
+        }
         values.put(PRODUCTO_ID_PRODUCTO, prodprov.getIdCrud());
         values.put(PRODUCTO_REFERENCIA, prodprov.getRefprov());
         values.put(PRODUCTO_NOMBRE, prodprov.getNombre());
@@ -232,7 +235,7 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
         values.put(PRODUCTO_PRECIO, prodprov.getPrecio());
         values.put(PRODUCTO_ID_PROVFIRE, prodprov.getIdprov());
         values.put(PRODUCTO_CATEGORIA, prodprov.getCategoria());
-        values.put(PRODUCTO_ID_PROVFIRE, prodprov.getProveedor());
+        values.put(PRODUCTO_NOMBREPROV, prodprov.getProveedor());
         values.put(PRODUCTO_ALCANCE, prodprov.getAlcance());
         values.put(PRODUCTO_TIPO, prodprov.getTipo());
         values.put(PRODUCTO_ID_CLON, prodprov.getIdClon());
@@ -253,10 +256,9 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
         if (nn(prodprov.getIdCrud())) {
             CRUDutil.actualizarRegistro(TABLA_PRODUCTO, prodprov.getIdCrud(), values);
         } else {
-            idCrud = CRUDutil.crearRegistroId(TABLA_PRODUCTO, values);
-            prodprov.setIdCrud(idCrud);
+
             DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-            db.child(prodprov.getCategoria()).child(prodprov.getId()).setValue(prodprov);
+            db.child(tipo).child(prodprov.getId()).setValue(prodprov);
         }
 
     }

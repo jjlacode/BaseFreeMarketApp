@@ -475,8 +475,8 @@
     <string name="limitactusados">Prod act. usados</string>
     <string name="limitprod">Prod tot disponibles</string>
     <string name="limitprodusados">Prod tot usados</string>
-    <string name="add_prodwebcli">Export. prod. web CLI</string>
-    <string name="add_prodwebpro">Export. prod web PRO</string>
+    <string name="add_prodwebcli">Config. prod. web CLI</string>
+    <string name="add_prodwebpro">Config. prod. web PRO</string>
     <string name="proyectos_y_presupuestos">Proyectos y presupuestos</string>
     <string name="crear_presup">Nuevo presupuesto</string>
     <string name="crear_proyecto">Nuevo proyecto</string>
@@ -502,6 +502,8 @@
     <string name="ant_page">Pagina Anterior</string>
     <string name="next_page">Siguiente pagina</string>
     <string name="pagina">Pagina</string>
+    <string name="producto_web">Producto web cliente</string>
+    <string name="producto_web_pro">Producto web Pro</string>
 
 
 </resources>

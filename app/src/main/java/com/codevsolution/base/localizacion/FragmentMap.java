@@ -23,4 +23,5 @@ public class FragmentMap extends SupportMapFragment {
 
         return root;
     }
+
 }

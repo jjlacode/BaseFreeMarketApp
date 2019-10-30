@@ -9,6 +9,8 @@
         <item name="colorControlActivated">@color/colorSecondary</item>
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="editTextStyle">@style/EditTextDefault</item>
+        <item name="android:alertDialogTheme">@style/Theme_Dialog_Alert_Codev</item>
+        <item name="android:alertDialogStyle">@style/AlertDialogCodev</item>
     </style>
 
 
@@ -32,6 +34,86 @@
         <item name="colorControlActivated">@color/colorSecondary</item>
         <item name="android:editTextColor">@color/colorSecondaryDark</item>
 
+    </style>
+
+    <style name="AlertDialogCustom" parent="@style/Theme_Holo_Dialog_Alert">
+        <item name="android:windowTitleStyle">@style/DialogWindowTitle.Codev</item>
+    </style>
+
+    <style name="Theme_Holo_Dialog_Alert" parent="@android:style/Theme.Holo.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTitleStyle">@style/DialogWindowTitle_Holo</item>
+        <item name="android:windowMinWidthMajor">@android:dimen/dialog_min_width_major</item>
+        <item name="android:windowMinWidthMinor">@android:dimen/dialog_min_width_minor</item>
+    </style>
+
+    <style name="DialogWindowTitle_Holo">
+        <item name="android:maxLines">1</item>
+        <item name="android:scrollHorizontally">true</item>
+        <item name="android:textAppearance">@android:style/TextAppearance.Holo.DialogWindowTitle
+        </item>
+    </style>
+
+    <style name="Theme_Dialog_Alert_Codev" parent="@style/Theme.MaterialComponents.Dialog.Alert">
+        <item name="android:windowBackground">@color/colorPrimary</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowMinWidthMajor">@android:dimen/dialog_min_width_major</item>
+        <item name="android:windowMinWidthMinor">@android:dimen/dialog_min_width_minor</item>
+        <item name="android:windowTitleStyle">@style/DialogWindowTitle.Codev</item>
+        <item name="android:textColorPrimary">@color/colorSecondaryDark</item>
+        <item name="android:textColorAlertDialogListItem">@color/colorSecondaryDark</item>
+        <item name="android:textAppearanceMedium">@style/TextAppearance.Codev.Medium</item>
+        <item name="android:textAppearanceLarge">@style/TextAppearance.Codev.DialogWindowTitle
+        </item>
+        <item name="android:borderlessButtonStyle">@style/Widget.Codev.Button.Borderless.Small
+        </item>
+        <item name="android:buttonBarStyle">@style/Codev.ButtonBar.AlertDialog</item>
+    </style>
+
+    <style name="DialogWindowTitle.Codev" parent="@style/DialogWindowTitle_Holo">
+        <item name="android:textAppearance">@style/TextAppearance.Codev.DialogWindowTitle</item>
+    </style>
+
+    <style name="TextAppearance.Codev.DialogWindowTitle" parent="@android:style/TextAppearance.Holo.DialogWindowTitle">
+        <item name="android:textColor">@color/colorSecondaryDark</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.Codev.Medium" parent="@android:style/TextAppearance.Holo.Medium">
+        <item name="android:textStyle">italic</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Widget.Codev.Button.Borderless.Small" parent="@android:style/Widget.Holo.Button.Borderless.Small">
+        <item name="android:textColor">@color/colorSecondaryDark</item>
+        <item name="android:textAppearance">@style/TextAppearance.Codev.DialogButton</item>
+    </style>
+
+    <style name="TextAppearance.Codev.DialogButton" parent="@android:style/TextAppearance.Holo.Medium">
+        <item name="android:textStyle">italic</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/colorSecondaryDark</item>
+    </style>
+
+    <style name="Codev.ButtonBar.AlertDialog" parent="@android:style/Holo.ButtonBar.AlertDialog">
+        <item name="android:background">@color/colorSecondary</item>
+    </style>
+
+    <style name="AlertDialogCodev">
+        <item name="android:fullDark">@color/colorPrimary</item>
+        <item name="android:topDark">@color/colorPrimary</item>
+        <item name="android:centerDark">@color/colorPrimary</item>
+        <item name="android:bottomDark">@color/colorSecondaryDark</item>
+        <item name="android:fullBright">@color/colorPrimary</item>
+        <item name="android:topBright">@color/colorPrimary</item>
+        <item name="android:centerBright">@color/colorPrimary</item>
+        <item name="android:bottomBright">@color/colorSecondaryDark</item>
+        <item name="android:bottomMedium">@color/colorSecondaryDark</item>
+        <item name="android:centerMedium">@color/colorSecondaryDark</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

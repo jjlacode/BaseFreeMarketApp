@@ -31,6 +31,7 @@ import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.style.Dialogos;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.DatePickerFragment;
 import com.codevsolution.base.time.TimeDateUtil;
@@ -841,7 +842,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
         colorTrabajo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new Estilos.PaletaColoresDialog(new Estilos.PaletaColoresDialog.OnClick() {
+                new Dialogos.PaletaColoresDialog(new Dialogos.PaletaColoresDialog.OnClick() {
                     @Override
                     public void onClick(String color) {
                         colorTrabajo.setBackgroundColor(Color.parseColor(color));

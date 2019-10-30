@@ -11,13 +11,4 @@
         android:layout_height="match_parent"
         android:layout_weight="1" />
 
-    <Button
-        android:id="@+id/btn_cerrar_dialogo_paleta"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="4"
-        android:background="@drawable/boton_redondo_secondary"
-        android:textColor="@color/colorSecondaryDark"
-        android:text="@string/cerrar" />
-
 </androidx.appcompat.widget.LinearLayoutCompat>

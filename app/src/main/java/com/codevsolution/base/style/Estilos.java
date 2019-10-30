@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -402,6 +403,14 @@ public class Estilos {
         return getIdStyle(context, PBARSTYLEACEPT);
     }
 
+    public static ContextThemeWrapper dialogStyle(Context context) {
+        return new ContextThemeWrapper(context, getIdStyle(context, "AlertDialogCustom"));
+    }
+
+    public static ContextThemeWrapper dialogStyle(Context context, String style) {
+        return new ContextThemeWrapper(context, getIdStyle(context, style));
+    }
+
     public static class PaletaColoresDialog extends DialogFragment {
 
         private Context context;
@@ -551,13 +560,15 @@ public class Estilos {
             RVAdapter adaptadorRV = new RVAdapter(new ViewHolderRV(v), lista, layoutItem);
             rv.setAdapter(adaptadorRV);
 
-            Button btnCerrar = v.findViewById(R.id.btn_cerrar_dialogo_paleta);
+            Button btnCerrar = new Button(context);
+            btnCerrar.setBackground(getBotonPrimary());
             btnCerrar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     dismiss();
                 }
             });
+            main.addView(btnCerrar);
             builder.setView(v);
 
             builder.setTitle("Paleta de Colores")

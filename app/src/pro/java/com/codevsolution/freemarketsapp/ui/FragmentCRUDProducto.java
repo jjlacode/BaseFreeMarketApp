@@ -6,9 +6,13 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.chargebee.models.Subscription;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
@@ -18,10 +22,15 @@ import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
+import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.style.Dialogos;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
+import com.codevsolution.freemarketsapp.logica.InteractorSuscriptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -33,6 +42,11 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     private ModeloSQL proveedor;
     private EditMaterialLayout nombreProv;
     private Button addPartida;
+    private CheckBox fire;
+    private CheckBox firePro;
+    private Button opcionesCLI;
+    private Button opcionesPRO;
+    private ViewGroupLayout vistaForm;
 
     public FragmentCRUDProducto() {
         // Required empty public constructor
@@ -92,13 +106,16 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
         }
 
-        imagen.setTextTitulo(modeloSQL.getString(PRODUCTO_CATEGORIA).toUpperCase());
+        //imagen.setTextTitulo(modeloSQL.getString(PRODUCTO_CATEGORIA).toUpperCase());
 
+        /*
         if (!modeloSQL.getString(PRODUCTO_CATEGORIA).equals(PRODUCTOLOCAL)) {
 
             imagen.getImagen().setClickable(false);
             imagen.setImageFirestore(modeloSQL.getString(PRODUCTO_ID_PRODFIRE));
         }
+
+         */
 
     }
 
@@ -140,15 +157,57 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     @Override
     protected void setInicio() {
 
-        ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalleExtrasante);
+        vistaForm = new ViewGroupLayout(contexto, frdetalleExtrasante);
 
         imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
         imagen.setFocusable(false);
+        /* Comprobar que el cliente está suscrito y tiene disponibles productos web para configurar*/
+        comprobarSuscripciones();
+        /* Checkbox de productos web a clientes finales, si esta chekeado muestra el
+           boton de opciones de configuracion de productos web CLI */
+        fire = (CheckBox) vistaForm.addVista(new CheckBox(contexto));
+        fire.setText(R.string.producto_web);
+        fire.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+                    visible(opcionesCLI);
+                    // Guarda el valor de producto cli a true y actualiza el modelo
+                    CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIRE, 1);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                } else {
+
+                    abriDialogoBorrarProdCli();
+                }
+            }
+        });
+        gone(fire);
+        /* Checkbox de productos web a clientes profesionales, si esta chekeado muestra el
+           boton de opciones de configuracion de productos web PRO */
+        firePro = (CheckBox) vistaForm.addVista(new CheckBox(contexto));
+        firePro.setText(R.string.producto_web_pro);
+        firePro.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+                    visible(opcionesPRO);
+                    // Guarda el valor de producto pro a true y actualiza el modelo
+                    CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIREPRO, 1);
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                } else {
+
+                    abriDialogoBorrarProdPro();
+                }
+            }
+        });
+        gone(firePro);
         vistaForm.addEditMaterialLayout(getString(R.string.nombre), PRODUCTO_NOMBRE);
         vistaForm.addEditMaterialLayout(getString(R.string.descripcion), PRODUCTO_DESCRIPCION);
         EditMaterialLayout precio = vistaForm.addEditMaterialLayout(getString(R.string.importe), PRODUCTO_PRECIO);
         precio.setTipo(EditMaterialLayout.NUMERO | EditMaterialLayout.DECIMAL);
-        nombreProv = vistaForm.addEditMaterialLayout(getString(R.string.nombre_producto_proveedor), PRODUCTO_NOMBREPROV);
+        nombreProv = vistaForm.addEditMaterialLayout(getString(R.string.proveedor), PRODUCTO_NOMBREPROV);
         nombreProv.setImgBtnAccion(R.drawable.ic_clientes_indigo);
         nombreProv.setActivo(false);
         nombreProv.setClickAccion(new EditMaterialLayout.ClickAccion() {
@@ -180,35 +239,137 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             }
         });
 
-        Button exportCLI = vistaForm.addButtonSecondary(R.string.add_prodwebcli);
-        exportCLI.setOnClickListener(new View.OnClickListener() {
+        /* Botón de opciones para configurar los productos web a clientes finales, es visible si el
+           si el checkbox de productos cli esta chekeado */
+        opcionesCLI = vistaForm.addButtonSecondary(R.string.add_prodwebcli);
+        opcionesCLI.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                update();
-                valores = new ContentValues();
-                valores.put(PRODUCTO_CATEGORIA, PRODUCTOCLI);
-                CRUDutil.actualizarRegistro(modeloSQL, valores);
+
                 bundle = new Bundle();
                 putBundle(CRUD, modeloSQL);
                 icFragmentos.enviarBundleAFragment(bundle, new AltaProductosCli());
             }
         });
+        gone(opcionesCLI);
 
-        Button exportPRO = vistaForm.addButtonSecondary(R.string.add_prodwebpro);
-        exportPRO.setOnClickListener(new View.OnClickListener() {
+        /* Botón de opciones para configurar los productos web a profesionales, es visible si el
+           si el checkbox de productos pro esta chekeado */
+        opcionesPRO = vistaForm.addButtonSecondary(R.string.add_prodwebpro);
+        opcionesPRO.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 update();
-                valores.put(PRODUCTO_CATEGORIA, PRODUCTOPRO);
-                CRUDutil.actualizarRegistro(modeloSQL, valores);
+
                 bundle = new Bundle();
                 putBundle(CRUD, modeloSQL);
                 icFragmentos.enviarBundleAFragment(bundle, new AltaProductosPro());
             }
         });
+        gone(opcionesPRO);
         actualizarArrays(vistaForm);
 
 
+    }
+
+    private void comprobarSuscripciones() {
+        InteractorSuscriptions interactorSuscriptions = new InteractorSuscriptions(contexto);
+        interactorSuscriptions.comprobarSuscripciones(new InteractorSuscriptions.CheckSubscriptions() {
+
+            @Override
+            public void onNotSubscriptions() {
+
+                Toast.makeText(contexto, "Necesita una suscripcion para poder usar los productos en web", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onProductLimit() {
+                Toast.makeText(contexto, "Ha llegado al limite de productos suscritos", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(String msgError) {
+                Toast.makeText(contexto, msgError, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCheckSuscriptionsOk(ArrayList<Subscription> listaSuscripciones) {
+
+                visible(fire);
+                visible(firePro);
+
+            }
+
+        });
+
+    }
+
+    private void abriDialogoBorrarProdCli() {
+
+        String titulo = "Confirmar borrado";
+        String mensaje = "Esta seguro de querer borrar la configuracion del producto CLI, " +
+                "se perderan el rating y las suscripciones de clientes y tendrá que volver a configurarlo si quiere habilitarlo más tarde";
+        new Dialogos.DialogoTexto(titulo, mensaje, contexto, new Dialogos.DialogoTexto.OnClick() {
+            @Override
+            public void onConfirm() {
+                gone(opcionesCLI);
+                CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIRE, 0);
+                modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                borrarProdFire(modeloSQL, PRODUCTOCLI);
+            }
+
+            @Override
+            public void onCancel() {
+                fire.setChecked(true);
+            }
+        }).show(getFragmentManager(), "productcli");
+    }
+
+    private void borrarProdFire(ModeloSQL modeloSQL, String tipo) {
+
+        String id = null;
+        if (tipo.equals(PRODUCTOCLI)) {
+
+            id = modeloSQL.getString(PRODUCTO_ID_PRODFIRE);
+
+        } else if (tipo.equals(PRODUCTOPRO)) {
+
+            id = modeloSQL.getString(PRODUCTO_ID_PRODFIREPRO);
+
+        }
+        if (id != null) {
+
+            String idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
+            if (nnn(idUser)) {
+                DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                db.child(tipo).child(id).removeValue();
+                db.child(INDICE + tipo).child(idUser).child(id).removeValue();
+                db.child(RATING).child(tipo).child(id).removeValue();
+                ImagenUtil.deleteImagefirestore(id);
+                db.child(MARC).child(id).removeValue();
+            }
+        }
+    }
+
+    private void abriDialogoBorrarProdPro() {
+
+        String titulo = "Confirmar borrado";
+        String mensaje = "Esta seguro de querer borrar la configuracion del producto PRO, " +
+                "se perderan el rating y las suscripciones de clientes y tendrá que volver a configurarlo si quiere habilitarlo más tarde";
+        new Dialogos.DialogoTexto(titulo, mensaje, contexto, new Dialogos.DialogoTexto.OnClick() {
+            @Override
+            public void onConfirm() {
+                gone(opcionesPRO);
+                CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIREPRO, 0);
+                modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                borrarProdFire(modeloSQL, PRODUCTOPRO);
+            }
+
+            @Override
+            public void onCancel() {
+                firePro.setChecked(true);
+            }
+        }).show(getFragmentManager(), "productpro");
     }
 
     private int crearProductoBase(String idPartidabase) {

@@ -112,6 +112,8 @@ public class MenuCRM extends FragmentGridImagen {
             CatalogoPDF catalogoPDF = new CatalogoPDF();
             catalogoPDF.crearPdf(PRODUCTO);
             AppActivity.mostrarPDF(catalogoPDF.getRutaArchivo());
+
+
         }
 
 

@@ -35,7 +35,7 @@ import static com.codevsolution.base.sqlite.ContratoPry.Tablas.PRODUCTO_TIPO;
 import static com.codevsolution.base.sqlite.ContratoPry.Tablas.PRODUCTO_WEB;
 import static com.codevsolution.base.sqlite.ContratoPry.Tablas.TABLA_PARTIDABASE;
 import static com.codevsolution.base.sqlite.ContratoPry.Tablas.TABLA_PRODUCTO;
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODUCTOCLI;
+import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODUCTOLOCAL;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODUCTOPRO;
 import static com.codevsolution.freemarketsapp.logica.Interactor.TiposDetPartida.TIPOPRODUCTOPROV;
 
@@ -104,7 +104,7 @@ public class ListadoProductosPro extends FragmentMasterDetailNoSQLFormProductosF
         visible(descuento);
         gone(sincronizaClon);
         visible(btnClonar);
-        visible(btnClonarPro);
+        gone(btnClonarPro);
 
         super.setDatos();
     }
@@ -127,7 +127,7 @@ public class ListadoProductosPro extends FragmentMasterDetailNoSQLFormProductosF
                 @Override
                 public void onClick(View view) {
 
-                    clonarProd(PRODUCTOCLI);
+                    clonarProd(PRODUCTOLOCAL);
 
                 }
             });

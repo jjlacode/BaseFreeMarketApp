@@ -27,15 +27,12 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 
-import com.chargebee.Environment;
-import com.chargebee.ListResult;
 import com.chargebee.models.Subscription;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltro;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
-import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.chat.FragmentChatBase;
@@ -51,6 +48,7 @@ import com.codevsolution.base.models.Rating;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.freemarketsapp.logica.InteractorSuscriptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -93,6 +91,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
     protected Button btnClonarPro;
     protected Switch sincronizaClon;
     protected String idClon;
+    protected String idProv;
     private ArrayList<Subscription> listaSus;
 
     @Override
@@ -126,14 +125,40 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
         if (tipoForm.equals(NUEVO)) {
             visible(frCabecera);
-            nombre.setActivo(true);
-            descripcion.setActivo(true);
-            referencia.setActivo(true);
-            proveedor.setActivo(true);
-            precio.setActivo(true);
-            etWeb.setActivo(true);
+            nombre.setActivo(false);
+            descripcion.setActivo(false);
+            referencia.setActivo(false);
+            proveedor.setActivo(false);
+            precio.setActivo(false);
+            etWeb.setActivo(false);
             zona.setActivo(true);
-            comprobarSuscripciones();
+            InteractorSuscriptions interactorSuscriptions = new InteractorSuscriptions(contexto);
+            interactorSuscriptions.comprobarSuscripciones(new InteractorSuscriptions.CheckSubscriptions() {
+                @Override
+                public void onNotSubscriptions() {
+
+                }
+
+                @Override
+                public void onProductLimit() {
+
+                }
+
+                @Override
+                public void onError(String msgError) {
+
+                }
+
+                @Override
+                public void onCheckSuscriptionsOk(ArrayList<Subscription> listaSuscripciones) {
+
+                    for (Subscription subscription : listaSuscripciones) {
+                        limiteProdActivos += subscription.planQuantity();
+                        limiteProdTotal = Math.round(limiteProdActivos * 1.5);
+                    }
+                    alComprobarSuscripciones();
+                }
+            });
 
         } else {
             gone(frCabecera);
@@ -143,6 +168,9 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             btnClonarPro.setEnabled(false);
 
         }
+
+        activityBase.fabNuevo.hide();
+        activityBase.fabInicio.show();
 
     }
 
@@ -316,86 +344,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
             });
 
-            if (lista.size() == 0) {
-                activityBase.fabNuevo.show();
-                activityBase.fabInicio.hide();
-            }
-
         }
-    }
-
-    public void comprobarSuscripciones() {
-
-        final DatabaseReference db = FirebaseDatabase.getInstance().getReference().child(CONFIG);
-        db.child(SITENAME).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                final String siteName = dataSnapshot.getValue(String.class);
-                db.child(APICB).addListenerForSingleValueEvent(new ValueEventListener() {
-                    private ListResult result;
-
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String apiCB = dataSnapshot.getValue(String.class);
-                        Environment.configure(siteName, apiCB);
-
-                        final String idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
-                        listaSus = new ArrayList<>();
-
-                        //Environment.configure("codevsolution-test","test_RqYREPeEdnp7KP16xeQTDRfzAg7cdB7xt");
-                        Thread th = new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    result = Subscription.list()
-                                            .customerId().is(idUser)
-                                            .request();
-                                    System.out.println("result = " + result);
-                                    for (ListResult.Entry entry : result) {
-
-                                        Subscription subscription = entry.subscription();
-                                        System.out.println("subscription = " + subscription.planQuantity());
-                                        limiteProdActivos = subscription.planQuantity();
-                                        limiteProdTotal = Math.round(limiteProdActivos * 1.5);
-
-                                        if (!subscription.status().equals(Subscription.Status.CANCELLED)) {
-                                            listaSus.add(subscription);
-                                        }
-                                        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child(idUser);
-                                        db.child(SUSESTADO).setValue(subscription.status());
-                                        activityBase.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                alComprobarSuscripciones();
-                                            }
-                                        });
-
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                        th.start();
-
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
     }
 
     protected void alComprobarSuscripciones() {
@@ -407,15 +356,9 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         super.cargarBundle();
 
 
-        if (tipoForm.equals(NUEVO)) {
-            getFirebaseFormBase();
-            activityBase.fabInicio.hide();
-            activityBase.fabNuevo.show();
-
-        } else {
             activityBase.fabNuevo.hide();
             activityBase.fabInicio.show();
-        }
+
         if (nn(bundle) && bundle.getBoolean(AVISO)) {
 
             if (nn(id) && prodProv == null) {
@@ -459,7 +402,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             visible(etWeb);
             gone(proveedor);
             gone(lystars);
-            descuento.setActivo(true);
+            descuento.setActivo(false);
             visible(radioGroupProd);
             gone(verVoto);
             zona.setActivo(false);
@@ -536,6 +479,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             web = prodProv.getWeb();
             etWeb.setText(prodProv.getWeb());
             idClon = prodProv.getIdClon();
+            idProv = prodProv.getIdprov();
 
             id = prodProv.getId();
 
@@ -848,7 +792,6 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
     protected void clonarProd(final String tipoClon) {
 
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
 
         prodProv = new Productos();
 
@@ -861,23 +804,28 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
         prodProv.setCategoria(tipoClon);
         prodProv.setNombre(nombre.getTexto());
-        prodProv.setIdprov(idUser);
+        prodProv.setIdprov(idProv);
         prodProv.setIdClon(id);
         prodProv.setActivo(false);
         prodProv.setDescripcion(descripcion.getTexto());
         prodProv.setPrecio(JavaUtil.comprobarDouble(precio.getTexto()));
         prodProv.setRefprov(referencia.getTexto());
-        prodProv.setProveedor(firebaseFormBase.getNombreBase());
+        prodProv.setProveedor(proveedor.getTexto());
         prodProv.setAlcance(claves.getTexto());
         prodProv.setWeb(etWeb.getTexto());
         prodProv.setTimeStamp(TimeDateUtil.ahora());
 
+        prodProv.setIdCrud(crearProdCrud(prodProv));
 
+
+    }
+
+    protected void crearProdFire(final String tipoClon) {
+
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
 
         final String idnew = db.child(tipoClon).push().getKey();
         prodProv.setId(idnew);
-
-        prodProv.setIdCrud(crearProdCrud(prodProv));
 
         if (nn(id) && nn(idnew)) {
 

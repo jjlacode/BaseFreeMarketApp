@@ -378,47 +378,51 @@ public class PdfUtils {
 
     public void addResource(int resource, Context context, int alineacion, int ancho, int alto) {
 
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),
-                resource);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        Image imagen = null;
-        try {
-            imagen = Image.getInstance(stream.toByteArray());
-            imagen.scaleToFit(ancho, alto);
-            imagen.setAlignment(alineacion);
+        if (resource > 0) {
+            Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),
+                    resource);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            Image imagen = null;
+            try {
+                imagen = Image.getInstance(stream.toByteArray());
+                imagen.scaleToFit(ancho, alto);
+                imagen.setAlignment(alineacion);
 
-        } catch (BadElementException | IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            documento.add(imagen);
-        } catch (DocumentException e) {
-            e.printStackTrace();
-            Log.e("Añadir recurso", e.toString());
+            } catch (BadElementException | IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                documento.add(imagen);
+            } catch (DocumentException e) {
+                e.printStackTrace();
+                Log.e("Añadir recurso", e.toString());
+            }
         }
     }
 
     public void addImagen(String rutafoto, int alineacion, int ancho, int alto) {
 
-        Bitmap bitmap = BitmapFactory.decodeFile(rutafoto);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        if (bitmap != null) {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        }
-        Image imagen = null;
-        try {
-            imagen = Image.getInstance(stream.toByteArray());
-            imagen.scaleToFit(ancho, alto);
-            imagen.setAlignment(alineacion);
-        } catch (BadElementException | IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            documento.add(imagen);
-        } catch (DocumentException e) {
-            e.printStackTrace();
-            Log.e("Añadir imagen", e.toString());
+        if (rutafoto != null) {
+            Bitmap bitmap = BitmapFactory.decodeFile(rutafoto);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            if (bitmap != null) {
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            }
+            Image imagen = null;
+            try {
+                imagen = Image.getInstance(stream.toByteArray());
+                imagen.scaleToFit(ancho, alto);
+                imagen.setAlignment(alineacion);
+            } catch (BadElementException | IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                documento.add(imagen);
+            } catch (DocumentException e) {
+                e.printStackTrace();
+                Log.e("Añadir imagen", e.toString());
+            }
         }
     }
 
@@ -546,26 +550,28 @@ public class PdfUtils {
     protected void addCellImage(PdfPTable tabla, String rutafoto, float ancho, float alto, int colspan, int rowspan, int altocell,
                                 int alinv, int alinh, int colorcell, int borde) {
 
-        Bitmap bitmap = BitmapFactory.decodeFile(rutafoto);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        Image imagen = null;
-        try {
-            imagen = Image.getInstance(stream.toByteArray());
-            imagen.scaleToFit(ancho, alto);
-        } catch (BadElementException | IOException e) {
-            e.printStackTrace();
-        }
+        if (rutafoto != null) {
+            Bitmap bitmap = BitmapFactory.decodeFile(rutafoto);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            Image imagen = null;
+            try {
+                imagen = Image.getInstance(stream.toByteArray());
+                imagen.scaleToFit(ancho, alto);
+            } catch (BadElementException | IOException e) {
+                e.printStackTrace();
+            }
 
-        PdfPCell pdfCell = new PdfPCell(Image.getInstance(imagen));
-        pdfCell.setColspan(colspan);
-        pdfCell.setRowspan(rowspan);
-        pdfCell.setBackgroundColor(getColor(colorcell));
-        pdfCell.setHorizontalAlignment(alinh);
-        pdfCell.setVerticalAlignment(alinv);
-        pdfCell.setFixedHeight(altocell);
-        pdfCell.setBorder(borde);
-        tabla.addCell(pdfCell);
+            PdfPCell pdfCell = new PdfPCell(Image.getInstance(imagen));
+            pdfCell.setColspan(colspan);
+            pdfCell.setRowspan(rowspan);
+            pdfCell.setBackgroundColor(getColor(colorcell));
+            pdfCell.setHorizontalAlignment(alinh);
+            pdfCell.setVerticalAlignment(alinv);
+            pdfCell.setFixedHeight(altocell);
+            pdfCell.setBorder(borde);
+            tabla.addCell(pdfCell);
+        }
     }
 
     protected void addListaTabla(PdfPTable tabla, int col, ArrayList<String[]> datos,

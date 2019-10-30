@@ -515,7 +515,11 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         return null;
     }
 
+    /**
+     *
+     */
     protected void setOnRigthSwipeCuerpo() {
+
         Log.d(TAG, getMetodo());
     }
 
