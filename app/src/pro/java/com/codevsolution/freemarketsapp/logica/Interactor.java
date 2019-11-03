@@ -1213,6 +1213,51 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
         return -1;
     }
 
+    public static String getIdTipoCliente(String tipoCliente) {
+
+        ArrayList<ModeloSQL> listaTiposCliente = queryList(CAMPOS_TIPOCLIENTE, null, null);
+
+        for (ModeloSQL tipoCli : listaTiposCliente) {
+
+            if (tipoCli.getString(TIPOCLIENTE_DESCRIPCION).equals(tipoCliente)) {
+
+                return tipoCli.getString(TIPOCLIENTE_ID_TIPOCLIENTE);
+            }
+
+        }
+        return null;
+    }
+
+    public static int getPesoTipoCliente(String tipoCliente) {
+
+        ArrayList<ModeloSQL> listaTiposCliente = queryList(CAMPOS_TIPOCLIENTE, null, null);
+
+        for (ModeloSQL tipoCli : listaTiposCliente) {
+
+            if (tipoCli.getString(TIPOCLIENTE_DESCRIPCION).equals(tipoCliente)) {
+
+                return tipoCli.getInt(TIPOCLIENTE_PESO);
+            }
+
+        }
+        return 0;
+    }
+
+    public static int getPesoTipoClienteId(String idTipoCliente) {
+
+        ArrayList<ModeloSQL> listaTiposCliente = queryList(CAMPOS_TIPOCLIENTE, null, null);
+
+        for (ModeloSQL tipoCli : listaTiposCliente) {
+
+            if (tipoCli.getString(TIPOCLIENTE_ID_TIPOCLIENTE).equals(idTipoCliente)) {
+
+                return tipoCli.getInt(TIPOCLIENTE_PESO);
+            }
+
+        }
+        return 0;
+    }
+
     public static class Calculos implements ConstantesPry, TiposDetPartida {
 
         public static ArrayList<ModeloSQL> comprobarEventos() {

@@ -39,12 +39,18 @@ public class ProviderSystem extends ContentProvider
 
     // Casos
 
-    public static final int CHAT = 155;
-    public static final int CHAT_ID = 156;
-    public static final int CHAT_ID_DETCHAT = 157;
+    public static final int CHAT = 201;
+    public static final int CHAT_ID = 202;
+    public static final int CHAT_ID_DETCHAT = 203;
 
-    public static final int DETCHAT = 158;
-    public static final int DETCHAT_ID = 159;
+    public static final int DETCHAT = 204;
+    public static final int DETCHAT_ID = 205;
+
+    public static final int MARCADOR = 206;
+    public static final int MARCADOR_ID = 207;
+
+    public static final int ZONA = 208;
+    public static final int ZONA_ID = 209;
 
     public static final String AUTORIDAD = AUTORIDAD_CONTENIDO;//"jjlacode.com.freelanceproject2";
 
@@ -59,6 +65,12 @@ public class ProviderSystem extends ContentProvider
 
         uriMatcher.addURI(AUTORIDAD, TABLA_DETCHAT, DETCHAT);
         uriMatcher.addURI(AUTORIDAD, TABLA_DETCHAT + "/*", DETCHAT_ID);
+
+        uriMatcher.addURI(AUTORIDAD, TABLA_MARCADOR, MARCADOR);
+        uriMatcher.addURI(AUTORIDAD, TABLA_MARCADOR + "/*", MARCADOR_ID);
+
+        uriMatcher.addURI(AUTORIDAD, TABLA_ZONA, ZONA);
+        uriMatcher.addURI(AUTORIDAD, TABLA_ZONA + "/*", ZONA_ID);
 
 
     }
@@ -90,6 +102,15 @@ public class ProviderSystem extends ContentProvider
                 return generarMime(TABLA_DETCHAT);
             case DETCHAT_ID:
                 return generarMimeItem(TABLA_DETCHAT);
+            case MARCADOR:
+                return generarMime(TABLA_MARCADOR);
+            case MARCADOR_ID:
+                return generarMimeItem(TABLA_MARCADOR);
+            case ZONA:
+                return generarMime(TABLA_ZONA);
+            case ZONA_ID:
+                return generarMimeItem(TABLA_ZONA);
+
             default:
                 throw new UnsupportedOperationException("Uri desconocida =>" + uri);
         }
@@ -156,6 +177,44 @@ public class ProviderSystem extends ContentProvider
                 esDetalle = true;
                 esId = true;
                 break;
+            case MARCADOR:
+                tabla = TABLA_MARCADOR;
+                setTablas = tabla;
+                proyeccion = tabla + ".*";
+                idTabla = MARCADOR_ID_MARCADOR;
+                esDetalle = false;
+                esId = false;
+                break;
+
+            case MARCADOR_ID:
+
+                tabla = TABLA_MARCADOR;
+                setTablas = tabla;
+                proyeccion = tabla + ".*";
+                idTabla = MARCADOR_ID_MARCADOR;
+                esDetalle = false;
+                esId = true;
+                break;
+            case ZONA:
+                tabla = TABLA_ZONA;
+                setTablas = tabla;
+                proyeccion = tabla + ".*";
+                idTabla = ZONA_ID_ZONA;
+                esDetalle = false;
+                esId = false;
+                break;
+
+            case ZONA_ID:
+
+                tabla = TABLA_ZONA;
+                setTablas = tabla;
+                proyeccion = tabla + ".*";
+                idTabla = ZONA_ID_ZONA;
+                esDetalle = false;
+                esId = true;
+                break;
+
+
         }
 
         values.put("tablaModelo", tabla);

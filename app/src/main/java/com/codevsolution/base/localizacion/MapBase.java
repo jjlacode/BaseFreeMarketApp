@@ -1,12 +1,19 @@
 package com.codevsolution.base.localizacion;
 
 import android.graphics.Color;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.codevsolution.base.android.CheckPermisos;
+import com.codevsolution.base.interfaces.ICFragmentos;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
@@ -16,8 +23,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
-import com.codevsolution.base.android.CheckPermisos;
-import com.codevsolution.base.interfaces.ICFragmentos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +30,7 @@ import java.util.List;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
-public class MapUtil {
+public class MapBase {
 
     public final int LOCATION_REQUEST_CODE = 333;
     public final static double KMTGR = (2 * Math.PI * 6366) / 360;
@@ -35,7 +40,7 @@ public class MapUtil {
     private ArrayList<Marker> listaMarkers;
     private ArrayList<Polygon> listaPoligonos;
 
-    public MapUtil(int layoutMap, ICFragmentos icFragmentos, AppCompatActivity activityBase) {
+    public MapBase(int layoutMap, ICFragmentos icFragmentos, AppCompatActivity activityBase) {
 
         boolean permiso = CheckPermisos.validarPermisos(activityBase, ACCESS_FINE_LOCATION, LOCATION_REQUEST_CODE) ||
                 CheckPermisos.validarPermisos(activityBase, ACCESS_COARSE_LOCATION, LOCATION_REQUEST_CODE);
@@ -67,6 +72,34 @@ public class MapUtil {
             listaMarkers = new ArrayList<>();
             listaPoligonos = new ArrayList<>();
         }
+    }
+
+    public MapBase(FragmentMap map) {
+
+
+        mMap = map;
+
+        mMap.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+
+                if (mMap != null) {
+
+                    gMap = googleMap;
+
+
+                    if (onReadyMap != null) {
+
+                        onReadyMap.onReady(googleMap);
+                    }
+
+
+                }
+            }
+        });
+        listaCirculos = new ArrayList<>();
+        listaMarkers = new ArrayList<>();
+        listaPoligonos = new ArrayList<>();
     }
 
     public ArrayList<Circle> getListaCirculos() {
@@ -107,7 +140,10 @@ public class MapUtil {
         System.out.println("Creando marcador");
         if (gMap != null) {
             System.out.println("Gmap no null");
+            System.out.println("longitud = " + longitud);
+            System.out.println("latitud = " + latitud);
             LatLng latLng = new LatLng(latitud, longitud);
+            System.out.println("latLng = " + latLng);
             MarkerOptions markerOptions =
                     new MarkerOptions()
                             .position(latLng)
@@ -360,10 +396,56 @@ public class MapUtil {
         this.onReadyMap = onReadyMap;
     }
 
+    public void borrarObjetos() {
+
+        try {
+            for (Marker marker : listaMarkers) {
+                marker.remove();
+            }
+            listaMarkers = new ArrayList<>();
+        } catch (Exception e) {
+
+        }
+        try {
+            for (Circle circulo : listaCirculos) {
+                circulo.remove();
+            }
+            listaCirculos = new ArrayList<>();
+        } catch (Exception e) {
+
+        }
+        try {
+            for (Polygon poligono : listaPoligonos) {
+                poligono.remove();
+            }
+            listaPoligonos = new ArrayList<>();
+        } catch (Exception e) {
+
+        }
+    }
+
     public interface OnReadyMap {
 
         void onReady(GoogleMap googleMap);
 
     }
 
+    public static class FragmentMap extends SupportMapFragment {
+
+        public FragmentMap() {
+        }
+
+        public static FragmentMap newInstance() {
+            return new FragmentMap();
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View root = super.onCreateView(inflater, container, savedInstanceState);
+
+            return root;
+        }
+
+    }
 }

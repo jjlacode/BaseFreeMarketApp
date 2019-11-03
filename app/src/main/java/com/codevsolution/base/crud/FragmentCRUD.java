@@ -500,6 +500,8 @@ public abstract class FragmentCRUD extends FragmentCUD {
             visible(frameAnimationCuerpo);
             visible(frdetalle);
             visible(frPie);
+            activityBase.fabVoz.show();
+            activityBase.fabNuevo.show();
             activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_MINI);
             activityBase.fabVoz.setSize(FloatingActionButton.SIZE_MINI);
         } else if ((id != null && secuencia > 0) || (id != null && tablaCab == null) || (modeloSQL != null)) {
@@ -512,6 +514,8 @@ public abstract class FragmentCRUD extends FragmentCUD {
             visible(frameAnimationCuerpo);
             visible(frdetalle);
             visible(frPie);
+            activityBase.fabVoz.show();
+            activityBase.fabNuevo.show();
             activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_MINI);
             activityBase.fabVoz.setSize(FloatingActionButton.SIZE_MINI);
 

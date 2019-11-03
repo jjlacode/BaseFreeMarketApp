@@ -525,6 +525,16 @@ public class EditMaterialLayout implements Estilos.Constantes {
         this.listenerAccion = listenerAccion;
     }
 
+    public void setAccionVerWeb(ClickAccion listenerAccion) {
+
+        btnAccionEnable(true);
+        setImgBtnAccion(context.getResources().
+                getIdentifier("ic_web_indigo", DRAWABLE,
+                        context.getPackageName()));
+
+        this.listenerAccion = listenerAccion;
+    }
+
     public void enviarEmail() {
 
         if (valido) {
@@ -546,6 +556,14 @@ public class EditMaterialLayout implements Estilos.Constantes {
 
         if (valido) {
             AppActivity.hacerLlamada(context, getTexto(), activity);
+        }
+
+    }
+
+    public void verWeb() {
+
+        if (valido) {
+            AppActivity.verWeb(context, getTexto(), activity);
         }
 
     }
@@ -646,6 +664,18 @@ public class EditMaterialLayout implements Estilos.Constantes {
             if (!Patterns.PHONE.matcher(getTexto()).matches()) {
                 textInputLayout.setErrorEnabled(true);
                 textInputLayout.setError("telefono invalido");
+                if (obligatorio) {
+                    valido = false;
+                }
+            } else {
+                if (textInputLayout.isErrorEnabled()) {
+                    textInputLayout.setError(null);
+                }
+            }
+        } else if (tipoDato == URI) {
+            if (!Patterns.WEB_URL.matcher(getTexto()).matches()) {
+                textInputLayout.setErrorEnabled(true);
+                textInputLayout.setError("web invalida");
                 if (obligatorio) {
                     valido = false;
                 }

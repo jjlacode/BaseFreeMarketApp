@@ -45,6 +45,7 @@ public class JavaUtil {
         String APICB = "api_cb";
         String TITULO = "titulo";
         String CAMPO_ID = "id_";
+        String CAMPO_IDREL = "idrel_";
         String MOD_ID = "id";
         String MOD_NOMBRE = "nombre";
         String MOD_APELLIDOS = "apellidos";
@@ -561,14 +562,14 @@ public class JavaUtil {
             u = new URL(url);
         } catch (MalformedURLException e) {
             System.out.println("url = " + url + " no es url valida");
-            e.printStackTrace();
+            //e.printStackTrace();
             return false;
         }
         try {
             u.toURI();
         } catch (URISyntaxException e) {
             System.out.println("url = " + url + " no es url valida");
-            e.printStackTrace();
+            //e.printStackTrace();
             return false;
         }
 

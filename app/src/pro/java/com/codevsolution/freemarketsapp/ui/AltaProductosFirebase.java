@@ -1,6 +1,7 @@
 package com.codevsolution.freemarketsapp.ui;
 
 import android.content.ContentValues;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 
+import com.codevsolution.base.android.MainActivityBase;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.media.ImagenUtil;
@@ -27,7 +29,6 @@ import com.google.firebase.database.ValueEventListener;
 public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         implements Interactor.ConstantesPry, ContratoPry.Tablas {
 
-    private ModeloSQL prodCrud;
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
@@ -115,14 +116,47 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
 
             }
         });
+
+        activityBase.setAlRecibirDatosListener(new MainActivityBase.AlRecibirDatos() {
+            @Override
+            public void alRecibirDatos(Bundle bundle) {
+
+                System.out.println("Al recibir datos de activity");
+                if (nn(bundle)) {
+
+                    System.out.println("bundle = " + bundle);
+                    prodCrud = (ModeloSQL) getBundleSerial(CRUD);
+                    if (prodCrud != null) {
+                        prodProv = convertirProdCrud(prodCrud);
+                        if (prodProv != null) {
+                            prodProv.setTipo(tipo);
+                            if (prodProv.getId() == null) {
+                                guardar();
+                            }
+                        }
+                    }
+                    esDetalle = true;
+
+                    selector();
+                }
+
+            }
+        });
     }
 
     @Override
     protected void alComprobarSuscripciones() {
         super.alComprobarSuscripciones();
 
-        limitProdAct.setText(String.valueOf(limiteProdActivos));
-        limitProd.setText(String.valueOf(limiteProdTotal));
+        activityBase.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                limitProdAct.setText(String.valueOf(limiteProdActivos));
+                limitProd.setText(String.valueOf(limiteProdTotal));
+
+            }
+        });
 
     }
 
@@ -150,7 +184,7 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
             if (nn(id) && nn(idClon)) {
 
                 final DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                Query querydb = db.child(PRODUCTOPRO).child(idClon);
+                Query querydb = db.child(PRODUCTOS).child(idClon);
                 querydb.addListenerForSingleValueEvent(new ValueEventListener() {
                     private Productos prodProvClon;
 
@@ -183,16 +217,24 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
                 prodProv = convertirProdCrud(prodCrud);
                 if (prodProv != null) {
                     prodProv.setTipo(tipo);
-                    System.out.println("prodProv = " + prodProv);
-                    if (prodProv.getId() == null) {
-                        esDetalle = true;
-                    }
+                    esDetalle = true;
                 }
             }
+
         }
     }
 
-    private Productos convertirProdCrud(ModeloSQL prodCrud) {
+    @Override
+    protected void setModulo() {
+        gone(btnback);
+        gone(btndelete);
+        gone(btnsave);
+        activityBase.fabNuevo.show();
+        activityBase.fabInicio.hide();
+
+    }
+
+    protected Productos convertirProdCrud(ModeloSQL prodCrud) {
 
         boolean activo = false;
         boolean sincro = false;
@@ -203,7 +245,13 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
             sincro = true;
         }
 
-        Productos prodProv = new Productos(null, prodCrud.getString(PRODUCTO_ID_PRODUCTO),
+        if (tipo.equals(PRODUCTOPRO)) {
+            id = prodCrud.getString(PRODUCTO_ID_PRODFIREPRO);
+        } else if (tipo.equals(PRODUCTOCLI)) {
+            id = prodCrud.getString(PRODUCTO_ID_PRODFIRE);
+        }
+
+        Productos prodProv = new Productos(id, prodCrud.getString(PRODUCTO_ID_PRODUCTO),
                 prodCrud.getString(PRODUCTO_REFERENCIA), prodCrud.getString(PRODUCTO_NOMBRE),
                 prodCrud.getString(PRODUCTO_DESCRIPCION), prodCrud.getString(PRODUCTO_WEB),
                 prodCrud.getDouble(PRODUCTO_DESCPROV), prodCrud.getDouble(PRODUCTO_PRECIO),
@@ -216,9 +264,7 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
         return prodProv;
     }
 
-    private void guardarProdCrud(Productos prodprov) {
-
-        String idCrud = null;
+    protected void actualizarProdCrud(Productos prodprov) {
 
         ContentValues values = new ContentValues();
         if (tipo.equals(PRODUCTOCLI)) {
@@ -226,20 +272,6 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
         } else if (tipo.equals(PRODUCTOPRO)) {
             values.put(PRODUCTO_ID_PRODFIREPRO, prodprov.getId());
         }
-        values.put(PRODUCTO_ID_PRODUCTO, prodprov.getIdCrud());
-        values.put(PRODUCTO_REFERENCIA, prodprov.getRefprov());
-        values.put(PRODUCTO_NOMBRE, prodprov.getNombre());
-        values.put(PRODUCTO_DESCRIPCION, prodprov.getDescripcion());
-        values.put(PRODUCTO_WEB, prodprov.getWeb());
-        values.put(PRODUCTO_DESCPROV, prodprov.getDescProv());
-        values.put(PRODUCTO_PRECIO, prodprov.getPrecio());
-        values.put(PRODUCTO_ID_PROVFIRE, prodprov.getIdprov());
-        values.put(PRODUCTO_CATEGORIA, prodprov.getCategoria());
-        values.put(PRODUCTO_NOMBREPROV, prodprov.getProveedor());
-        values.put(PRODUCTO_ALCANCE, prodprov.getAlcance());
-        values.put(PRODUCTO_TIPO, prodprov.getTipo());
-        values.put(PRODUCTO_ID_CLON, prodprov.getIdClon());
-        values.put(PRODUCTO_RUTAFOTO, prodprov.getRutafoto());
 
         if (prodprov.isActivo()) {
             values.put(PRODUCTO_ACTIVO, 1);
@@ -255,10 +287,6 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
 
         if (nn(prodprov.getIdCrud())) {
             CRUDutil.actualizarRegistro(TABLA_PRODUCTO, prodprov.getIdCrud(), values);
-        } else {
-
-            DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-            db.child(tipo).child(prodprov.getId()).setValue(prodprov);
         }
 
     }
@@ -267,6 +295,6 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
     protected void alGuardar(Productos prodProv) {
         super.alGuardar(prodProv);
 
-        guardarProdCrud(prodProv);
+        actualizarProdCrud(prodProv);
     }
 }

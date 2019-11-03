@@ -21,7 +21,6 @@ import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
-import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
@@ -45,11 +44,12 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
         ContratoPry.Tablas {
 
 
-    private EditMaterial nombreCliente;
-    private EditMaterial direccionCliente;
-    private EditMaterial telefonoCliente;
-    private EditMaterial emailCliente;
-    private EditMaterial contactoCliente;
+    private EditMaterialLayout nombreCliente;
+    private EditMaterialLayout direccionCliente;
+    private EditMaterialLayout telefonoCliente;
+    private EditMaterialLayout emailCliente;
+    private EditMaterialLayout webCliente;
+    private EditMaterialLayout contactoCliente;
     private EditMaterialLayout tipoCliente;
     private ImageButton btnevento;
     private ImageButton mapa;
@@ -57,6 +57,8 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     private ImageButton mail;
     private Button btnclientes;
     private Button btnprospectos;
+    private Button btnClienteWeb;
+    private Button btnClienteWebPro;
     private Button crearPresup;
     private CheckBox activo;
     private String idTipoCliente = null;
@@ -69,6 +71,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     private ImageButton btnNota;
     private ImageButton btnVerNotas;
     private Button crearProyecto;
+    private TextView clienteWeb;
 
 
     public FragmentCRUDCliente() {
@@ -237,6 +240,17 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
         visible(btnevento);
         visible(btnNota);
 
+        if (nnn(modeloSQL.getString(CLIENTE_TIPOFIRE))) {
+            visible(clienteWeb);
+            clienteWeb.setText(modeloSQL.getString(CLIENTE_TIPOFIRE));
+            sincronizarClienteWeb();
+            nombreCliente.setActivo(false);
+            direccionCliente.setActivo(false);
+            emailCliente.setActivo(false);
+            telefonoCliente.setActivo(false);
+            contactoCliente.setActivo(false);
+            webCliente.setActivo(false);
+        }
         idTipoCliente = modeloSQL.getString(CLIENTE_ID_TIPOCLIENTE);
         tipoCliente.getEditText().setTextSize(sizeText * 2);
         tipoCliente.setGravedad(Gravity.CENTER_HORIZONTAL);
@@ -293,6 +307,10 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
 
     }
 
+    private void sincronizarClienteWeb() {
+
+    }
+
     @Override
     protected void setAcciones() {
 
@@ -314,15 +332,18 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
 
         imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
 
+        clienteWeb = vistaForm.addTextView(getString(R.string.clienteweb));
+        gone(clienteWeb);
         tipoCliente = vistaForm.addEditMaterialLayout(getString(R.string.tipo_cliente));
         tipoCliente.setActivo(false);
         tipoCliente.btnAccion2Enable(true);
 
-        vistaForm.addEditMaterialLayout(getString(R.string.nombre), CLIENTE_NOMBRE, null, null);
-        vistaForm.addEditMaterialLayout(getString(R.string.direccion), CLIENTE_DIRECCION, ViewGroupLayout.MAPA, activityBase);
-        vistaForm.addEditMaterialLayout(getString(R.string.telefono), CLIENTE_TELEFONO, ViewGroupLayout.LLAMADA, activityBase);
-        vistaForm.addEditMaterialLayout(getString(R.string.email), CLIENTE_EMAIL, ViewGroupLayout.MAIL, activityBase);
-        vistaForm.addEditMaterialLayout(getString(R.string.contacto), CLIENTE_CONTACTO, null, null);
+        nombreCliente = vistaForm.addEditMaterialLayout(getString(R.string.nombre), CLIENTE_NOMBRE, null, null);
+        direccionCliente = vistaForm.addEditMaterialLayout(getString(R.string.direccion), CLIENTE_DIRECCION, ViewGroupLayout.MAPA, activityBase);
+        telefonoCliente = vistaForm.addEditMaterialLayout(getString(R.string.telefono), CLIENTE_TELEFONO, ViewGroupLayout.LLAMADA, activityBase);
+        emailCliente = vistaForm.addEditMaterialLayout(getString(R.string.email), CLIENTE_EMAIL, ViewGroupLayout.MAIL, activityBase);
+        webCliente = vistaForm.addEditMaterialLayout(getString(R.string.web), CLIENTE_WEB, ViewGroupLayout.WEB, activityBase);
+        contactoCliente = vistaForm.addEditMaterialLayout(getString(R.string.contacto), CLIENTE_CONTACTO, null, null);
         activo = (CheckBox) vistaForm.addVista(new CheckBox(contexto));
         activo.setText(R.string.inactivo);
         activo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

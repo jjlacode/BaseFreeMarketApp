@@ -1,4 +1,4 @@
-package com.codevsolution.base.fcm;
+package com.codevsolution.base.notifications.fcm;
 
 import androidx.annotation.NonNull;
 

@@ -1,4 +1,4 @@
-package com.codevsolution.base.fcm;
+package com.codevsolution.base.notifications.fcm;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,11 +11,11 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
 import com.codevsolution.base.notifications.PushNotificationsActivity;
 import com.codevsolution.base.notifications.PushNotificationsFragment;
 import com.codevsolution.freemarketsapp.R;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 

@@ -12,11 +12,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.LinearLayoutCompat;
+
 import com.chargebee.models.Subscription;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
@@ -26,6 +29,7 @@ import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.style.Dialogos;
+import com.codevsolution.base.style.Estilos;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.codevsolution.freemarketsapp.logica.InteractorSuscriptions;
@@ -44,12 +48,15 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     private Button addPartida;
     private CheckBox fire;
     private CheckBox firePro;
-    private Button opcionesCLI;
-    private Button opcionesPRO;
     private ViewGroupLayout vistaForm;
+    private FragmentBase fragmentBase;
+    private LinearLayoutCompat lyPro;
+    private LinearLayoutCompat lyCli;
+    private AltaProductosPro frPro;
 
     public FragmentCRUDProducto() {
         // Required empty public constructor
+        fragmentBase = this;
     }
 
     @Override
@@ -104,6 +111,22 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
             gone(addPartida);
 
+        }
+
+        if (modeloSQL.getInt(PRODUCTO_FIRE) == 1) {
+            fire.setChecked(true);
+            actualizarProdCli();
+        } else {
+            fire.setChecked(false);
+            gone(lyCli);
+        }
+
+        if (modeloSQL.getInt(PRODUCTO_FIREPRO) == 1) {
+            firePro.setChecked(true);
+            actualizarProdPro();
+        } else {
+            firePro.setChecked(false);
+            gone(lyPro);
         }
 
         //imagen.setTextTitulo(modeloSQL.getString(PRODUCTO_CATEGORIA).toUpperCase());
@@ -172,10 +195,9 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 if (isChecked) {
-                    visible(opcionesCLI);
-                    // Guarda el valor de producto cli a true y actualiza el modelo
-                    CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIRE, 1);
-                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+
+                    actualizarProdCli();
+
                 } else {
 
                     abriDialogoBorrarProdCli();
@@ -192,10 +214,9 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 if (isChecked) {
-                    visible(opcionesPRO);
-                    // Guarda el valor de producto pro a true y actualiza el modelo
-                    CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIREPRO, 1);
-                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+
+                    actualizarProdPro();
+
                 } else {
 
                     abriDialogoBorrarProdPro();
@@ -222,6 +243,8 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         });
         vistaForm.addEditMaterialLayout(getString(R.string.referencia_proveedor), PRODUCTO_REFERENCIA);
         vistaForm.addEditMaterialLayout(getString(R.string.descuento_proveedor), PRODUCTO_DESCPROV);
+        vistaForm.addEditMaterialLayout(getString(R.string.palabras_clave), PRODUCTO_ALCANCE);
+        vistaForm.addEditMaterialLayout(getString(R.string.web), PRODUCTO_WEB);
 
         addPartida = vistaForm.addButtonPrimary(R.string.add_detpartida);
         addPartida.setOnClickListener(new View.OnClickListener() {
@@ -239,36 +262,58 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             }
         });
 
-        /* Botón de opciones para configurar los productos web a clientes finales, es visible si el
-           si el checkbox de productos cli esta chekeado */
-        opcionesCLI = vistaForm.addButtonSecondary(R.string.add_prodwebcli);
-        opcionesCLI.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        lyCli = (LinearLayoutCompat) vistaForm.addVista(new LinearLayoutCompat(contexto));
+        Estilos.setLayoutParams(vistaForm.getViewGroup(), lyCli, ViewGroupLayout.MATCH_PARENT, (int) ((double) getAltoReal()));
 
-                bundle = new Bundle();
-                putBundle(CRUD, modeloSQL);
-                icFragmentos.enviarBundleAFragment(bundle, new AltaProductosCli());
-            }
-        });
-        gone(opcionesCLI);
+        int idViewGroup = lyCli.getId();
+        if (idViewGroup < 0) {
+            idViewGroup = View.generateViewId();
+        }
 
-        /* Botón de opciones para configurar los productos web a profesionales, es visible si el
-           si el checkbox de productos pro esta chekeado */
-        opcionesPRO = vistaForm.addButtonSecondary(R.string.add_prodwebpro);
-        opcionesPRO.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                update();
+        lyCli.setId(idViewGroup);
+        icFragmentos.addFragment(null, new AltaProductosPro(), idViewGroup);
 
-                bundle = new Bundle();
-                putBundle(CRUD, modeloSQL);
-                icFragmentos.enviarBundleAFragment(bundle, new AltaProductosPro());
-            }
-        });
-        gone(opcionesPRO);
+        gone(lyCli);
+
+        lyPro = (LinearLayoutCompat) vistaForm.addVista(new LinearLayoutCompat(contexto));
+        Estilos.setLayoutParams(vistaForm.getViewGroup(), lyCli, ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
+
+        idViewGroup = lyPro.getId();
+        if (idViewGroup < 0) {
+            idViewGroup = View.generateViewId();
+        }
+
+        lyPro.setId(idViewGroup);
+        icFragmentos.addFragment(null, new AltaProductosPro(), idViewGroup);
+
+        gone(lyPro);
+
         actualizarArrays(vistaForm);
 
+    }
+
+    private void actualizarProdCli() {
+
+        visible(lyCli);
+        bundle = new Bundle();
+        putBundle(CRUD, modeloSQL);
+        icFragmentos.enviarBundleAActivity(bundle);
+
+        // Guarda el valor de producto cli a true y actualiza el modelo
+        CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIRE, 1);
+        modeloSQL = CRUDutil.updateModelo(modeloSQL);
+    }
+
+    private void actualizarProdPro() {
+
+        visible(lyPro);
+        bundle = new Bundle();
+        putBundle(CRUD, modeloSQL);
+        icFragmentos.enviarBundleAActivity(bundle);
+
+        // Guarda el valor de producto cli a true y actualiza el modelo
+        CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIREPRO, 1);
+        modeloSQL = CRUDutil.updateModelo(modeloSQL);
 
     }
 
@@ -279,24 +324,46 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             @Override
             public void onNotSubscriptions() {
 
-                Toast.makeText(contexto, "Necesita una suscripcion para poder usar los productos en web", Toast.LENGTH_SHORT).show();
+                activityBase.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(contexto, "Necesita una suscripcion para poder usar los productos en web", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
             public void onProductLimit() {
-                Toast.makeText(contexto, "Ha llegado al limite de productos suscritos", Toast.LENGTH_SHORT).show();
+                activityBase.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(contexto, "Ha llegado al limite de productos suscritos", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
-            public void onError(String msgError) {
-                Toast.makeText(contexto, msgError, Toast.LENGTH_SHORT).show();
+            public void onError(final String msgError) {
+                activityBase.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(contexto, msgError, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
             public void onCheckSuscriptionsOk(ArrayList<Subscription> listaSuscripciones) {
 
-                visible(fire);
-                visible(firePro);
+                activityBase.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        visible(fire);
+                        visible(firePro);
+
+                    }
+                });
 
             }
 
@@ -312,7 +379,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         new Dialogos.DialogoTexto(titulo, mensaje, contexto, new Dialogos.DialogoTexto.OnClick() {
             @Override
             public void onConfirm() {
-                gone(opcionesCLI);
+                gone(lyCli);
                 CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIRE, 0);
                 modeloSQL = CRUDutil.updateModelo(modeloSQL);
                 borrarProdFire(modeloSQL, PRODUCTOCLI);
@@ -342,11 +409,11 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             String idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
             if (nnn(idUser)) {
                 DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                db.child(tipo).child(id).removeValue();
+
+                db.child(PRODUCTOS).child(id).removeValue();
                 db.child(INDICE + tipo).child(idUser).child(id).removeValue();
                 db.child(RATING).child(tipo).child(id).removeValue();
                 ImagenUtil.deleteImagefirestore(id);
-                db.child(MARC).child(id).removeValue();
             }
         }
     }
@@ -359,7 +426,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         new Dialogos.DialogoTexto(titulo, mensaje, contexto, new Dialogos.DialogoTexto.OnClick() {
             @Override
             public void onConfirm() {
-                gone(opcionesPRO);
+                gone(lyPro);
                 CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIREPRO, 0);
                 modeloSQL = CRUDutil.updateModelo(modeloSQL);
                 borrarProdFire(modeloSQL, PRODUCTOPRO);
@@ -447,11 +514,9 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             importeProd.setText(modeloSQL.getString(PRODUCTO_PRECIO));
             String path = modeloSQL.getString(PRODUCTO_RUTAFOTO);
             System.out.println("path = " + path);
-            if (nnn(path) && modeloSQL.getString(PRODUCTO_CATEGORIA).equals(PRODUCTOLOCAL)) {
+            if (nnn(path)) {
                 imagenProd.setImageUriCard(activityBase,path);
-            } else if (nnn(modeloSQL.getString(PRODUCTO_ID_PRODFIRE))) {
-                imagenProd.setImageFirestoreCircle(modeloSQL.getString(PRODUCTO_ID_PRODFIRE));
-            }else {
+            } else {
                 gone(imagenProd);
             }
 

@@ -2,7 +2,7 @@ package com.codevsolution.base.notifications;
 
 import com.codevsolution.base.logica.BasePresenter;
 import com.codevsolution.base.logica.BaseView;
-import com.codevsolution.base.data.PushNotification;
+import com.codevsolution.base.notifications.fcm.data.PushNotification;
 
 import java.util.ArrayList;
 

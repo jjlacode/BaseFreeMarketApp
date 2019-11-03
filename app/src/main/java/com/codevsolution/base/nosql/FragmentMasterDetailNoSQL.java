@@ -16,17 +16,17 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.codevsolution.base.android.controls.ImagenLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltro;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -71,7 +71,11 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
         super.setOnCreateView(view, inflater, container);
 
         setLayoutItem();
-        frLista = view.findViewById(R.id.layout_rv);
+        if (modulo) {
+            frLista = view.findViewById(R.id.layout_rv_mod);
+        } else {
+            frLista = view.findViewById(R.id.layout_rv);
+        }
 
         viewRV = inflater.inflate(R.layout.rvlayout, container, false);
         if (viewRV.getParent() != null) {
@@ -194,6 +198,7 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
         btnback.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                setOnBack();
                 esDetalle = false;
                 System.out.println("esDetalle = " + esDetalle);
                 selector();
@@ -295,6 +300,10 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
         });
 
         setAcciones();
+    }
+
+    protected void setOnBack() {
+
     }
 
     protected void guardar() {

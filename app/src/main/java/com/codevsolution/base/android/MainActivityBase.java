@@ -22,22 +22,21 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.codevsolution.base.chat.FragmentChatBase;
-import com.codevsolution.base.media.ImagenUtil;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.interfaces.ICFragmentos;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
+import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.services.AutoArranque;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.web.FragmentWebView;
 import com.codevsolution.freemarketsapp.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 
 import static android.Manifest.permission.RECEIVE_BOOT_COMPLETED;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.HTTPAYUDA;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.MIPERFIL;
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODUCTOCLI;
 
 public class MainActivityBase extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ICFragmentos,
@@ -62,6 +61,7 @@ public class MainActivityBase extends AppCompatActivity
     protected String accion;
     public ImageView imagenPerfil;
     public DrawerLayout drawer;
+    protected AlRecibirDatos alRecibirDatosListener;
 
     protected void persitencia() {
 
@@ -92,9 +92,9 @@ public class MainActivityBase extends AppCompatActivity
         int ancho = metrics.widthPixels;
         int alto = metrics.heightPixels;
         if (!land) {
-            sizeF = (float) (((float) ancho * (float) alto) / (metrics.densityDpi * 300));
+            sizeF = ((float) ancho * (float) alto) / (metrics.densityDpi * 300);
         } else {
-            sizeF = (float) (((float) ancho * (float) alto) / (metrics.densityDpi * 300));
+            sizeF = ((float) ancho * (float) alto) / (metrics.densityDpi * 300);
         }
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
         if (savedInstanceState != null) {
@@ -237,7 +237,7 @@ public class MainActivityBase extends AppCompatActivity
 
         setOnNavigation(item);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -263,12 +263,51 @@ public class MainActivityBase extends AppCompatActivity
 
         this.bundle = bundle;
 
+        if (alRecibirDatosListener != null) {
+            alRecibirDatosListener.alRecibirDatos(bundle);
+        }
+
     }
 
     @Override
     public void addFragment(Fragment myFragment, int layout) {
 
         getSupportFragmentManager().beginTransaction().add(layout, myFragment).addToBackStack(null).commit();
+    }
+
+    @Override
+    public void addFragment(Bundle bundle, Fragment myFragment, int layout) {
+
+        myFragment.setArguments(bundle);
+
+        this.bundle = bundle;
+
+        if (layout <= 0) {
+            getSupportFragmentManager().beginTransaction().add(R.id.content_main, myFragment).commit();
+        } else {
+            getSupportFragmentManager().beginTransaction().add(layout, myFragment).commit();
+        }
+
+    }
+
+    @Override
+    public void reemplazaFragment(Bundle bundle, Fragment myFragment, int layout) {
+
+        myFragment.setArguments(bundle);
+
+        this.bundle = bundle;
+
+        if (layout <= 0) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_main, myFragment).addToBackStack(null).commit();
+        } else {
+            getSupportFragmentManager().beginTransaction().replace(layout, myFragment).addToBackStack(null).commit();
+        }
+    }
+
+    @Override
+    public void eliminarFragment(Fragment myFragment) {
+
+        getSupportFragmentManager().beginTransaction().remove(myFragment).commit();
     }
 
     @Override
@@ -346,5 +385,12 @@ public class MainActivityBase extends AppCompatActivity
 
     }
 
+    public interface AlRecibirDatos {
+        void alRecibirDatos(Bundle bundle);
+    }
+
+    public void setAlRecibirDatosListener(AlRecibirDatos alRecibirDatosListener) {
+        this.alRecibirDatosListener = alRecibirDatosListener;
+    }
 
 }

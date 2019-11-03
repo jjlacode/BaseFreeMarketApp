@@ -41,7 +41,6 @@ import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
-import com.codevsolution.base.models.Marcador;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.Productos;
 import com.codevsolution.base.models.Rating;
@@ -49,7 +48,6 @@ import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.InteractorSuscriptions;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -93,6 +91,8 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
     protected String idClon;
     protected String idProv;
     private ArrayList<Subscription> listaSus;
+    protected ModeloSQL prodCrud;
+
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
@@ -131,27 +131,31 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             proveedor.setActivo(false);
             precio.setActivo(false);
             etWeb.setActivo(false);
-            zona.setActivo(true);
             InteractorSuscriptions interactorSuscriptions = new InteractorSuscriptions(contexto);
             interactorSuscriptions.comprobarSuscripciones(new InteractorSuscriptions.CheckSubscriptions() {
                 @Override
                 public void onNotSubscriptions() {
 
+                    System.out.println("No hay suscripciones activas");
                 }
 
                 @Override
                 public void onProductLimit() {
 
+                    System.out.println("se ha alcanzado el limite de productos publicados");
                 }
 
                 @Override
                 public void onError(String msgError) {
 
+                    System.out.println(msgError);
                 }
 
                 @Override
                 public void onCheckSuscriptionsOk(ArrayList<Subscription> listaSuscripciones) {
 
+                    System.out.println("---------------------------------Check suscripción OK");
+                    System.out.println("listaSuscripciones.size() = " + listaSuscripciones.size());
                     for (Subscription subscription : listaSuscripciones) {
                         limiteProdActivos += subscription.planQuantity();
                         limiteProdTotal = Math.round(limiteProdActivos * 1.5);
@@ -203,7 +207,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
             String lugar = "";
 
-            for (int i = 5; i >= getAlcance(); i--) {
+            for (int i = 5; i >= mapaZona.getAlcance(); i--) {
 
                 switch (i) {
 
@@ -242,7 +246,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                             if (prod.getValue(Boolean.class)) {
 
                                 DatabaseReference dbproductosprov = FirebaseDatabase.getInstance().getReference().
-                                        child(tipo).child(prod.getKey());
+                                        child(PRODUCTOS).child(prod.getKey());
 
                                 dbproductosprov.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
@@ -312,7 +316,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                     for (DataSnapshot prod : dataSnapshot.getChildren()) {
 
                         DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                        Query querydb = db.child(tipo).child(prod.getKey());
+                        Query querydb = db.child(PRODUCTOS).child(prod.getKey());
 
                         querydb.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -364,7 +368,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             if (nn(id) && prodProv == null) {
 
                 DatabaseReference dbproductosprov = FirebaseDatabase.getInstance().getReference().
-                        child(tipo).child(id);
+                        child(PRODUCTOS).child(id);
 
                 dbproductosprov.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -398,17 +402,11 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             visible(btndelete);
             visible(btnsave);
             visible(chActivo);
-            visible(claves);
-            visible(etWeb);
             gone(proveedor);
             gone(lystars);
             descuento.setActivo(false);
             visible(radioGroupProd);
             gone(verVoto);
-            zona.setActivo(false);
-            visible(opcionesZona);
-            gone(lyMap);
-            gone(radioGroupMap);
             gone(suscripcion);
             visible(suscritos);
             gone(lyChat);
@@ -419,11 +417,18 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                 chActivo.setEnabled(false);
                 chActivo.setChecked(false);
             }
-
+            gone(nombre);
+            gone(descripcion);
+            gone(precio);
+            gone(proveedor);
+            gone(referencia);
+            gone(descuento);
+            gone(imagen);
+            gone(claves);
+            gone(etWeb);
 
         } else {
 
-            gone(opcionesZona);
             visible(proveedor);
             comprobarSuscripcion();
             visible(suscripcion);
@@ -489,6 +494,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
             activityBase.toolbar.setSubtitle(prodProv.getNombre());
             accionesImagen();
+            guardar();
 
         }
 
@@ -508,29 +514,15 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                     if (id != null) {
 
                         DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                        db.child(tipo).child(id).removeValue();
+                        db.child(PRODUCTOS).child(id).removeValue();
                         db.child(INDICE + tipo).child(idUser).child(id).removeValue();
                         db.child(RATING).child(tipo).child(id).removeValue();
                         ImagenUtil.deleteImagefirestore(id);
 
-                        Query querydb = db.child(MARC).child(id);
-                        querydb.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                for (DataSnapshot marcador : dataSnapshot.getChildren()) {
-                                    deleteMarcador(marcador.getValue(Marcador.class), mapa);
+                        esDetalle = false;
+                        nuevo = false;
+                        selector();
 
-                                }
-                                esDetalle = false;
-                                nuevo = false;
-                                selector();
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
                     }
                 }
 
@@ -566,6 +558,17 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                     }
                 }
             });
+            chActivo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                    if (isChecked) {
+                        visible(btnPublicar);
+                    } else {
+                        gone(btnPublicar);
+                    }
+                }
+            });
 
 
         } else {
@@ -584,32 +587,8 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         DatabaseReference db = FirebaseDatabase.getInstance().getReference();
         String sorteo = setTipoSorteo();
 
-        prodProv = new Productos();
-        if (radioButtonProd1.isChecked()) {
-            prodProv.setTipo(PRODUCTOS);
-        } else if (radioButtonProd2.isChecked()) {
-            prodProv.setTipo(SERVICIOS);
-        }
-
-        prodProv.setCategoria(sorteo);
-        prodProv.setNombre(nombre.getTexto());
-        prodProv.setIdprov(idUser);
-        prodProv.setActivo(false);
-        prodProv.setDescripcion(descripcion.getTexto());
-        prodProv.setPrecio(JavaUtil.comprobarDouble(precio.getTexto()));
-        prodProv.setRefprov(referencia.getTexto());
-        prodProv.setProveedor(firebaseFormBase.getNombreBase());
-        prodProv.setAlcance(claves.getTexto());
-        prodProv.setWeb(etWeb.getTexto());
-        prodProv.setTimeStamp(TimeDateUtil.ahora());
-
-        if (sincronizaClon.isChecked()) {
-            prodProv.setSincronizado(true);
-        } else {
-            prodProv.setSincronizado(false);
-        }
-
         final String idSorteo = db.child(sorteo).push().getKey();
+        prodProv.setActivo(false);
         prodProv.setId(idSorteo);
 
         if (idSorteo != null) {
@@ -628,38 +607,10 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                                 public void onComplete(@NonNull Task<Void> task) {
 
                                     if (task.isSuccessful()) {
-                                        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                                        Query querydb = db.child(MARC).child(idUser);
-                                        querydb.addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                                                    Marcador marcador = child.getValue(Marcador.class);
-                                                    DatabaseReference dbmarc = FirebaseDatabase.getInstance().getReference();
-                                                    String idMarc = dbmarc.child(MARC).child(idSorteo).push().getKey();
-                                                    marcador.setKey(idMarc);
-                                                    marcador.setId(idSorteo);
-                                                    marcador.setTipo(finalSorteo);
 
-                                                    dbmarc.child(MARC).child(idSorteo).setValue(setLugarZonaMarc(marcador))
-                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        ImagenUtil.copyImageFirestore(id, idSorteo);
+                                        Toast.makeText(contexto, getString(R.string.sorteo_creado), Toast.LENGTH_SHORT).show();
 
-                                                                @Override
-                                                                public void onComplete(@NonNull Task<Void> task) {
-
-                                                                    ImagenUtil.copyImageFirestore(id, idSorteo);
-                                                                    Toast.makeText(contexto, getString(R.string.sorteo_creado), Toast.LENGTH_SHORT).show();
-
-                                                                }
-                                                            });
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                            }
-                                        });
                                     } else {
                                         Toast.makeText(contexto, getString(R.string.fallo_creando_sorteo), Toast.LENGTH_SHORT).show();
                                     }
@@ -678,81 +629,48 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
     protected void guardar() {
 
         DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-        prodProv = new Productos();
-        if (radioButtonProd1.isChecked()) {
-            prodProv.setTipo(PRODUCTOS);
-        } else if (radioButtonProd2.isChecked()) {
-            prodProv.setTipo(SERVICIOS);
-        }
 
-        prodProv.setCategoria(tipo);
-        prodProv.setNombre(nombre.getTexto());
-        prodProv.setIdprov(idUser);
-        prodProv.setIdClon(idClon);
         prodProv.setActivo(chActivo.isChecked());
         prodProv.setSincronizado(sincronizaClon.isChecked());
-        prodProv.setDescripcion(descripcion.getTexto());
-        prodProv.setPrecio(JavaUtil.comprobarDouble(precio.getTexto()));
-        prodProv.setDescProv(JavaUtil.comprobarDouble(descuento.getTexto()));
-        prodProv.setRefprov(referencia.getTexto());
-        prodProv.setTimeStamp(TimeDateUtil.ahora());
-        if (tipo.equals(SORTEOCLI) || tipo.equals(SORTEOPRO)) {
-            prodProv.setProveedor(proveedor.getTexto());
-        } else {
-            prodProv.setProveedor(firebaseFormBase.getNombreBase());
-        }
-        prodProv.setAlcance(claves.getTexto());
-        prodProv.setWeb(etWeb.getTexto());
 
+        id = prodProv.getId();
+        if (tipo == null) {
+            setTipo();
+        }
         if (nuevo || id == null) {
-            id = db.child(tipo).push().getKey();
+            id = db.child(PRODUCTOS).push().getKey();
             prodProv.setId(id);
 
-            crearProdCrud(prodProv);
-        }else {
+            if (prodProv.getIdCrud() == null) {
+                crearProdCrud(prodProv);
+            } else {
+                actualizarProdCrud(prodProv);
+            }
+        } else if (prodProv.getIdCrud() != null) {
             actualizarProdCrud(prodProv);
         }
 
+        mapaZona.setId(id);
+        mapaZona.setTipo(tipo);
+
         if (id != null) {
 
-            db.child(tipo).child(id).setValue(prodProv).addOnCompleteListener(new OnCompleteListener<Void>() {
+            db.child(PRODUCTOS).child(id).setValue(prodProv).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
 
                     if (nuevo) {
 
-                        DatabaseReference dbindmarc = FirebaseDatabase.getInstance().getReference();
-                        Query queryddindmarc = dbindmarc.child(MARC).child(idUser);
-                        queryddindmarc.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        ListaModeloSQL listaMarcUser = new ListaModeloSQL(CAMPOS_MARCADOR, MARCADOR_ID_REL, idUser, null);
 
-                                for (DataSnapshot marcadorUser : dataSnapshot.getChildren()) {
+                        for (ModeloSQL marcUser : listaMarcUser.getLista()) {
 
-                                    Marcador marcador = marcadorUser.getValue(Marcador.class);
-                                    DatabaseReference dbmarc = FirebaseDatabase.getInstance().getReference();
-                                    String idMarc = dbmarc.child(MARC).child(id).push().getKey();
-                                    marcador.setKey(idMarc);
-                                    marcador.setId(id);
-                                    marcador.setTipo(tipo);
-                                    dbmarc.child(MARC).child(id).child(idMarc).setValue(setLugarZonaMarc(marcador));
-                                    Marker mark = mapa.crearMarcadorMap((double) ((marcador.getLatitud()) / 1000),
-                                            (double) ((marcador.getLongitud()) / 1000), 5, "", "", true);
-                                    marcador.setIdMark(mark.getId());
-                                    listaMarcadores.add(marcador);
+                            mapaZona.crearMarcador(tipo, id, marcUser.getLong(MARCADOR_LATITUD), marcUser.getLong(MARCADOR_LONGITUD));
 
-                                    nuevo = false;
-                                    selector();
-                                }
+                        }
 
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-                        setMarcadores();
+                        nuevo = false;
+                        selector();
 
                         Toast.makeText(contexto, "Registro creado con exito", Toast.LENGTH_SHORT).show();
                     }
@@ -820,64 +738,6 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
     }
 
-    protected void crearProdFire(final String tipoClon) {
-
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-
-        final String idnew = db.child(tipoClon).push().getKey();
-        prodProv.setId(idnew);
-
-        if (nn(id) && nn(idnew)) {
-
-            db.child(INDICE + tipoClon).child(idUser).child(idnew).setValue(false);
-
-            db.child(tipoClon).child(idnew).setValue(prodProv).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-
-                    DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                    Query querydb = db.child(MARC).child(idUser);
-                    querydb.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for (DataSnapshot marcadorUser : dataSnapshot.getChildren()) {
-
-                                Marcador marcador = marcadorUser.getValue(Marcador.class);
-                                DatabaseReference dbmarc = FirebaseDatabase.getInstance().getReference();
-                                String idMarc = dbmarc.child(MARC).child(idnew).push().getKey();
-                                marcador.setKey(idMarc);
-                                marcador.setId(idnew);
-                                marcador.setTipo(tipoClon);
-                                dbmarc.child(MARC).child(idnew).child(idMarc).setValue(setLugarZonaMarc(marcador))
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    ImagenUtil.copyImageFirestore(id, idnew);
-                                                    Toast.makeText(contexto, "Se ha clonado el producto", Toast.LENGTH_SHORT).show();
-                                                } else {
-                                                    Toast.makeText(contexto, "Ha ocurrido un error al clonar producto", Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                        });
-
-
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-
-                }
-            });
-
-        } else {
-            Toast.makeText(contexto, getString(R.string.fallo_subiendo_registro), Toast.LENGTH_SHORT).show();
-        }
-    }
 
     protected String crearProdCrud(Productos prodProv) {
 

@@ -80,6 +80,7 @@ public class ContratoPry implements JavaUtil.Constantes {
 
         //COLUMNAS--------------------------------------------------------
 
+        // TABLA PROYECTO --------------------------------------------------------------------
         String PROYECTO_ID_PROYECTO = CAMPO_ID + TABLA_PROYECTO;
         String PROYECTO_ID_CLIENTE = CAMPO_ID + TABLA_CLIENTE + TABLA_PROYECTO;
         String PROYECTO_ID_ESTADO = CAMPO_ID + TABLA_ESTADO + TABLA_PROYECTO;
@@ -122,12 +123,16 @@ public class ContratoPry implements JavaUtil.Constantes {
         String PROYECTO_DESCRIPCION_ESTADO = CAMPO_DESCRIPCION + TABLA_ESTADO;
         String PROYECTO_TIPOESTADO = CAMPO_TIPO + TABLA_ESTADO;
 
+        // TABLA CLIENTE-----------------------------------------------------------------------
         String CLIENTE_ID_CLIENTE = CAMPO_ID + TABLA_CLIENTE;
+        String CLIENTE_ID_FIRE = CAMPO_ID + "pro_" + TABLA_CLIENTE;
+        String CLIENTE_TIPOFIRE = CAMPO_TIPO + "fire_" + TABLA_CLIENTE;
         String CLIENTE_ID_TIPOCLIENTE = CAMPO_ID + TABLA_TIPOCLIENTE + TABLA_CLIENTE;
         String CLIENTE_NOMBRE = CAMPO_NOMBRE + TABLA_CLIENTE;
         String CLIENTE_DIRECCION = CAMPO_DIRECCION + TABLA_CLIENTE;
         String CLIENTE_TELEFONO = CAMPO_TELEFONO + TABLA_CLIENTE;
         String CLIENTE_EMAIL = CAMPO_EMAIL + TABLA_CLIENTE;
+        String CLIENTE_WEB = CAMPO_WEB + TABLA_CLIENTE;
         String CLIENTE_CONTACTO = CAMPO_CONTACTO + TABLA_CLIENTE;
         String CLIENTE_PESOTIPOCLI = "pesotipo_" + TABLA_CLIENTE;
         String CLIENTE_ACTIVO = CAMPO_ACTIVO + TABLA_CLIENTE;
@@ -138,14 +143,17 @@ public class ContratoPry implements JavaUtil.Constantes {
         String CLIENTE_TIPOCLIENTEPESO = "peso_" + TABLA_TIPOCLIENTE;
         String CLIENTE_DESCRIPCIONTIPOCLI = CAMPO_DESCRIPCION + TABLA_TIPOCLIENTE;
 
+        // TABLA TIPOCLIENTE ------------------------------------------------------------------
         String TIPOCLIENTE_ID_TIPOCLIENTE = CAMPO_ID + TABLA_TIPOCLIENTE;
         String TIPOCLIENTE_DESCRIPCION = CAMPO_DESCRIPCION + TABLA_TIPOCLIENTE;
         String TIPOCLIENTE_PESO = "peso_" + TABLA_TIPOCLIENTE;
 
+        // TABLA ESTADO -----------------------------------------------------------------------
         String ESTADO_ID_ESTADO = CAMPO_ID + TABLA_ESTADO;
         String ESTADO_DESCRIPCION = CAMPO_DESCRIPCION + TABLA_ESTADO;
         String ESTADO_TIPOESTADO = CAMPO_TIPO + TABLA_ESTADO;
 
+        // TABLA PARTIDA ----------------------------------------------------------------------
         String PARTIDA_ID_PROYECTO = CAMPO_ID + TABLA_PARTIDA + TABLA_PROYECTO;
         String PARTIDA_ID_PARTIDA = CAMPO_ID + TABLA_PARTIDA;
         String PARTIDA_ID_PARTIDABASE = CAMPO_ID + TABLA_PARTIDA + TABLA_PARTIDABASE;
@@ -183,7 +191,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         String PARTIDA_PROYECTO_RETRASO = "retraso_proyecto_" + TABLA_PROYECTO;
         String PARTIDA_TIPO_ESTADO = CAMPO_TIPO + TABLA_ESTADO;
 
-
+        // TABLA DETALLE PARTIDAS -------------------------------------------------------------
         String DETPARTIDA_ID_PARTIDA = CAMPO_ID + TABLA_DETPARTIDA + TABLA_PARTIDA;
         String DETPARTIDA_SECUENCIA = CAMPO_SECUENCIA;
         String DETPARTIDA_FECHAINICIOACORDADA = "fechainicioacordada_" + TABLA_DETPARTIDA;
@@ -264,8 +272,10 @@ public class ContratoPry implements JavaUtil.Constantes {
         String PRODUCTO_WEB = "web_" + TABLA_PRODUCTO;
         String PRODUCTO_CATEGORIA = "categoria_" + TABLA_PRODUCTO;
         String PRODUCTO_ALCANCE = "alcance_" + TABLA_PRODUCTO;
+        String PRODUCTO_ALCANCEPRO = "alcancepro_" + TABLA_PRODUCTO;
         String PRODUCTO_TIPO = CAMPO_TIPO + TABLA_PRODUCTO;
         String PRODUCTO_ACTIVO = CAMPO_ACTIVO + TABLA_PRODUCTO;
+        String PRODUCTO_ACTIVOPRO = CAMPO_ACTIVO + "pro_" + TABLA_PRODUCTO;
         String PRODUCTO_SINCRO = "sincro_" + TABLA_PRODUCTO;
         String PRODUCTO_FIRE = "fire_" + TABLA_PRODUCTO;
         String PRODUCTO_FIREPRO = "firepro_" + TABLA_PRODUCTO;
@@ -570,7 +580,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PROYECTO_TIPOESTADO, NULL, INT
         };
 
-        String[] CAMPOS_CLIENTE = {"38", TABLA_CLIENTE,
+        String[] CAMPOS_CLIENTE = {"47", TABLA_CLIENTE,
                 CLIENTE_ID_CLIENTE, "TEXT NON NULL UNIQUE", STRING,
                 CLIENTE_ID_TIPOCLIENTE, String.format("TEXT NON NULL %s", ID_TIPOCLIENTE), STRING,
                 CLIENTE_NOMBRE, "TEXT NON NULL", STRING,
@@ -578,7 +588,10 @@ public class ContratoPry implements JavaUtil.Constantes {
                 CLIENTE_TELEFONO, "TEXT", STRING,
                 CLIENTE_EMAIL, "TEXT", STRING,
                 CLIENTE_CONTACTO, "TEXT", STRING,
+                CLIENTE_WEB, "TEXT", STRING,
                 CLIENTE_RUTAFOTO, "TEXT", STRING,
+                CLIENTE_ID_FIRE, "TEXT NON NULL", STRING,
+                CLIENTE_TIPOFIRE, "TEXT NON NULL", STRING,
                 CLIENTE_PESOTIPOCLI, "INTEGER NON NULL DEFAULT 0", INT,
                 CLIENTE_ACTIVO, "INTEGER NON NULL DEFAULT 0", LONG,
                 CLIENTE_CREATE, "INTEGER NON NULL DEFAULT 0", LONG,
@@ -717,7 +730,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         };
 
 
-        String[] CAMPOS_PRODUCTO = {"77", TABLA_PRODUCTO,
+        String[] CAMPOS_PRODUCTO = {"83", TABLA_PRODUCTO,
                 PRODUCTO_ID_PRODUCTO, "TEXT NON NULL UNIQUE", STRING,
                 PRODUCTO_ID_PRODFIRE, "TEXT", STRING,
                 PRODUCTO_ID_PRODFIREPRO, "TEXT", STRING,
@@ -725,6 +738,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PRODUCTO_ID_PROVFIRE, "TEXT", STRING,
                 PRODUCTO_ID_PROVEEDOR, "TEXT", STRING,
                 PRODUCTO_ALCANCE, "TEXT", STRING,
+                PRODUCTO_ALCANCEPRO, "TEXT", STRING,
                 PRODUCTO_CATEGORIA, "TEXT", STRING,
                 PRODUCTO_TIPO, "TEXT", STRING,
                 PRODUCTO_WEB, "TEXT", STRING,
@@ -738,6 +752,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 PRODUCTO_DESCUENTO, "REAL NON NULL DEFAULT 0", DOUBLE,
                 PRODUCTO_DESCUENTOPRO, "REAL NON NULL DEFAULT 0", DOUBLE,
                 PRODUCTO_ACTIVO, "INTEGER NON NULL DEFAULT 0", INT,
+                PRODUCTO_ACTIVOPRO, "INTEGER NON NULL DEFAULT 0", INT,
                 PRODUCTO_SINCRO, "INTEGER NON NULL DEFAULT 0", INT,
                 PRODUCTO_FIRE, "INTEGER NON NULL DEFAULT 0", INT,
                 PRODUCTO_FIREPRO, "INTEGER NON NULL DEFAULT 0", INT,

@@ -2,9 +2,9 @@ package com.codevsolution.base.notifications;
 
 import android.text.TextUtils;
 
+import com.codevsolution.base.notifications.fcm.data.PushNotification;
+import com.codevsolution.base.notifications.fcm.data.PushNotificationsRepository;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.codevsolution.base.data.PushNotification;
-import com.codevsolution.base.data.PushNotificationsRepository;
 
 import java.util.ArrayList;
 

@@ -39,6 +39,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
     public static final String MAPA = "mapa";
     public static final String MAIL = "mail";
     public static final String LLAMADA = "llamada";
+    public static final String WEB = "web";
 
     public ViewGroupLayout(Context context, ViewGroup viewGroupParent) {
 
@@ -349,6 +350,14 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
                     public void onClickAccion(View view) {
                         editMaterial.setTipo(EditMaterialLayout.TELEFONO);
                         editMaterial.llamar();
+                    }
+                });
+            } else if (modo.equals(WEB)) {
+                editMaterial.setAccionVerWeb(new EditMaterialLayout.ClickAccion() {
+                    @Override
+                    public void onClickAccion(View view) {
+                        editMaterial.setTipo(EditMaterialLayout.URI);
+                        editMaterial.verWeb();
                     }
                 });
             }

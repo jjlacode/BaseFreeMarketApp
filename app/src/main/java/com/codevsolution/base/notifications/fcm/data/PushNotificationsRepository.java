@@ -1,4 +1,4 @@
-package com.codevsolution.base.data;
+package com.codevsolution.base.notifications.fcm.data;
 
 import android.util.ArrayMap;
 

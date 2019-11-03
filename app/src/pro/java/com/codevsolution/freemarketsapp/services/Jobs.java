@@ -519,7 +519,6 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
                                 final Productos prodProv = dataSnapshot1.getValue(Productos.class);
 
-                                System.out.println("service prodProv = " + prodProv.isSincronizado());
                                 if (prodProv != null && prodProv.isSincronizado() && prodProv.getIdClon() != null) {
 
                                     DatabaseReference dbclon = FirebaseDatabase.getInstance().getReference();
@@ -568,7 +567,6 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
                                 final Productos prodProv = dataSnapshot1.getValue(Productos.class);
 
-                                System.out.println("service prodProv = " + prodProv.isSincronizado());
                                 if (prodProv != null && prodProv.isSincronizado() && prodProv.getIdClon() != null) {
 
                                     DatabaseReference dbclon = FirebaseDatabase.getInstance().getReference();

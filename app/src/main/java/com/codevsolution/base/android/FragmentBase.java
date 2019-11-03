@@ -26,7 +26,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -84,7 +83,6 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected ArrayList<EditMaterialLayout> materialEditLayouts;
     protected ArrayList<Integer> recursos;
 
-    protected RelativeLayout frPrincipal;
     protected LinearLayout frdetalle;
     protected LinearLayout frdetalleExtraspost;
     protected LinearLayout frdetalleExtrasante;
@@ -141,6 +139,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected int tiempoGuardado = 1;
     protected int sizeTextD;
     protected boolean swipeOn;
+    protected boolean modulo;
 
 
     @Override
@@ -150,6 +149,12 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         setLayout();
         setLayoutExtra();
         contexto = activityBase;
+        bundle = getArguments();
+
+        System.out.println("getArguments() = " + getArguments());
+        if (nn(bundle)) {
+            modulo = esModulo();
+        }
 
         metrics = new DisplayMetrics();
         activityBase.getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -187,6 +192,10 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         return ((float) metrics.densityDpi / (float) metrics.widthPixels) < 0.30;
     }
 
+    protected boolean esModulo() {
+        return bundle.getBoolean(MODULO, false);
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Nullable
     @Override
@@ -195,27 +204,50 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         inflaterMain = inflater;
         containerMain = container;
 
-        view = inflater.inflate(R.layout.contenido, container, false);
-        land = getResources().getBoolean(R.bool.esLand);
-        tablet = getResources().getBoolean(R.bool.esTablet);
-        System.out.println("land = " + land);
-        System.out.println("tablet = " + tablet);
+        if (modulo) {
+
+            view = inflater.inflate(R.layout.modulo, container, false);
+
+            frdetalle = view.findViewById(R.id.layout_detalle_mod);
+            frdetalleExtraspost = view.findViewById(R.id.layout_extras_post_detalle_mod);
+            frdetalleExtrasante = view.findViewById(R.id.layout_extras_antes_detalle_mod);
+            frCabecera = view.findViewById(R.id.layout_cabecera_mod);
+            frPie = view.findViewById(R.id.layout_pie_mod);
+            frWeb = view.findViewById(R.id.layout_web_detalle_mod);
+            frPubli = view.findViewById(R.id.layout_publi_mod);
+            frLista = view.findViewById(R.id.layout_rv_mod);
+            frCuerpo = view.findViewById(R.id.layout_cuerpo_mod);
+            scrollDetalle = view.findViewById(R.id.scrolldetalle_mod);
+            frameAnimationCuerpo = view.findViewById(R.id.frameanimationcuerpo_mod);
+            timerg = view.findViewById(R.id.chronocrud_mod);
+
+        } else {
+
+            view = inflater.inflate(R.layout.contenido, container, false);
+
+            frdetalle = view.findViewById(R.id.layout_detalle);
+            frdetalleExtraspost = view.findViewById(R.id.layout_extras_post_detalle);
+            frdetalleExtrasante = view.findViewById(R.id.layout_extras_antes_detalle);
+            frCabecera = view.findViewById(R.id.layout_cabecera);
+            frPie = view.findViewById(R.id.layout_pie);
+            frWeb = view.findViewById(R.id.layout_web_detalle);
+            frPubli = view.findViewById(R.id.layout_publi);
+            frLista = view.findViewById(R.id.layout_rv);
+            frCuerpo = view.findViewById(R.id.layout_cuerpo);
+            scrollDetalle = view.findViewById(R.id.scrolldetalle);
+            frameAnimationCuerpo = view.findViewById(R.id.frameanimationcuerpo);
+            timerg = view.findViewById(R.id.chronocrud);
+        }
 
         if (layoutCuerpo == 0) {
             layoutCuerpo = layout;
         }
 
-        frPrincipal = view.findViewById(R.id.contenedor);
-        frdetalle = view.findViewById(R.id.layout_detalle);
-        frdetalleExtraspost = view.findViewById(R.id.layout_extras_post_detalle);
-        frdetalleExtrasante = view.findViewById(R.id.layout_extras_antes_detalle);
-        frCabecera = view.findViewById(R.id.layout_cabecera);
-        frPie = view.findViewById(R.id.layout_pie);
-        frWeb = view.findViewById(R.id.layout_web_detalle);
-        frPubli = view.findViewById(R.id.layout_publi);
-        frLista = view.findViewById(R.id.layout_rv);
-        frCuerpo = view.findViewById(R.id.layout_cuerpo);
-        scrollDetalle = view.findViewById(R.id.scrolldetalle);
+        land = getResources().getBoolean(R.bool.esLand);
+        tablet = getResources().getBoolean(R.bool.esTablet);
+        System.out.println("land = " + land);
+        System.out.println("tablet = " + tablet);
+
 
         if (layoutCuerpo > 0) {
             viewCuerpo = inflater.inflate(layoutCuerpo, container, false);
@@ -261,14 +293,11 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         contexto = activityBase;
 
-        frameAnimationCuerpo = view.findViewById(R.id.frameanimationcuerpo);
         System.out.println("frameAnimationCuerpo = " + frameAnimationCuerpo);
 
         frameAnimationCuerpo.setAncho((int) (ancho * densidad));
 
         gone(frLista);
-
-        timerg = view.findViewById(R.id.chronocrud);
 
         setOnCreateView(view, inflaterMain, containerMain);
 
@@ -292,6 +321,11 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
             }
         });
 
+        if (modulo) {
+            setModulo();
+        }
+
+        System.out.println("Es modulo = " + modulo);
 
         return view;
     }
@@ -308,6 +342,34 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         });
 
         System.out.println("multipanel = " + esMultiPanel(metrics));
+    }
+
+    public void setActivoFrameAnimationCuerpo(boolean activo) {
+        frameAnimationCuerpo.setActivo(activo);
+    }
+
+    public void setScrollingDetalleEnable(boolean enable) {
+        scrollDetalle.setScrollingEnabled(enable);
+    }
+
+    public ICFragmentos getIcFragmentos() {
+        return icFragmentos;
+    }
+
+    public LinearLayout getFrdetalle() {
+        return frdetalle;
+    }
+
+    public LinearLayout getFrdetalleExtraspost() {
+        return frdetalleExtraspost;
+    }
+
+    public LinearLayout getFrdetalleExtrasante() {
+        return frdetalleExtrasante;
+    }
+
+    public int getAltoReal() {
+        return altoReal;
     }
 
     protected void setContext() {
@@ -386,7 +448,10 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected void cargarBundle() {
         Log.d(TAG, getMetodo());
 
-        bundle = getArguments();
+
+    }
+
+    protected void setModulo() {
 
     }
 
@@ -528,9 +593,13 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     }
 
 
-    protected abstract void setLayout();
+    protected void setLayout() {
 
-    protected abstract void setInicio();
+    }
+
+    protected void setInicio() {
+
+    }
 
     /**
      * Asigna el recurso al control en la vista actual
@@ -774,7 +843,11 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     }
 
     protected Serializable getBundleSerial(String key) {
-        return bundle.getSerializable(key);
+
+        if (nn(bundle) && nn(bundle.getSerializable(key))) {
+            return bundle.getSerializable(key);
+        }
+        return null;
     }
 
     protected void gone(View view) {
@@ -1112,7 +1185,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         return view;
     }
 
-    protected void actualizarArrays(ViewGroupLayout vista) {
+    public void actualizarArrays(ViewGroupLayout vista) {
         vistas.addAll(vista.getVistas());
         materialEdits.addAll(vista.getEditMaterials());
         camposEdit.addAll(vista.getCamposEdit());

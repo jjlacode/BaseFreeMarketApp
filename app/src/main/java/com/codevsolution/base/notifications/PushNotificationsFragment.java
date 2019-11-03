@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.codevsolution.base.data.PushNotification;
+import com.codevsolution.base.notifications.fcm.data.PushNotification;
 import com.codevsolution.freemarketsapp.R;
 
 import java.util.ArrayList;
@@ -69,8 +69,8 @@ public class PushNotificationsFragment extends Fragment implements PushNotificat
         View root = inflater.inflate(R.layout.fragment_notifications, container, false);
 
         mNotificatiosAdapter = new PushNotificationsAdapter();
-        mRecyclerView = (RecyclerView) root.findViewById(R.id.rv_notifications_list);
-        mNoMessagesView = (LinearLayout) root.findViewById(R.id.noMessages);
+        mRecyclerView = root.findViewById(R.id.rv_notifications_list);
+        mNoMessagesView = root.findViewById(R.id.noMessages);
         mRecyclerView.setAdapter(mNotificatiosAdapter);
         return root;
     }

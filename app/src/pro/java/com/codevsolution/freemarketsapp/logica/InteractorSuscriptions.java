@@ -233,64 +233,73 @@ public class InteractorSuscriptions extends Interactor {
                         //Environment.configure("codevsolution-test","test_RqYREPeEdnp7KP16xeQTDRfzAg7cdB7xt");
 
 
-                        ListResult result = null;
-                        try {
-                            result = Subscription.list()
-                                    .customerId().is(idUser)
-                                    .request();
+                        Thread th = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    ListResult result = Subscription.list()
+                                            .customerId().is(idUser)
+                                            .request();
 
-                            for (ListResult.Entry entry : result) {
-                                Subscription subscription = entry.subscription();
-                                if (!subscription.status().equals(Subscription.Status.CANCELLED)) {
-                                    listaSus.add(subscription);
-                                }
-                                DatabaseReference db = FirebaseDatabase.getInstance().getReference().child(idUser);
-                                db.child(SUSESTADO).setValue(subscription.status());
+                                    for (ListResult.Entry entry : result) {
+                                        Subscription subscription = entry.subscription();
+                                        if (!subscription.status().equals(Subscription.Status.CANCELLED)) {
+                                            listaSus.add(subscription);
+                                        }
+                                        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child(idUser);
+                                        db.child(SUSESTADO).setValue(subscription.status());
 
-                            }
+                                    }
 
-                            int totProd = 0;
-                            int totProdCliente = 0;
-                            if (listaSus != null && listaSus.size() > 0) {
-                                for (Subscription subscription : listaSus) {
-                                    if (!subscription.status().equals(Subscription.Status.CANCELLED)) {
-                                        totProd += subscription.planQuantity();
+                                    int totProd = 0;
+                                    int totProdCliente = 0;
+                                    if (listaSus != null && listaSus.size() > 0) {
+                                        for (Subscription subscription : listaSus) {
+                                            if (!subscription.status().equals(Subscription.Status.CANCELLED)) {
+                                                totProd += subscription.planQuantity();
+                                            }
+                                        }
+                                    } else {
+                                        if (checkSubscriptionsListener != null) {
+                                            checkSubscriptionsListener.onNotSubscriptions();
+                                        }
+                                    }
+                                    totProd *= 1.5;
+                                    ListaModeloSQL listaProd = CRUDutil.setListaModelo(CAMPOS_PRODUCTO);
+                                    for (ModeloSQL prod : listaProd.getLista()) {
+                                        if (prod.getInt(PRODUCTO_FIRE) == 1) {
+                                            totProdCliente++;
+                                        }
+                                        if (prod.getInt(PRODUCTO_FIREPRO) == 1) {
+                                            totProdCliente++;
+                                        }
+                                    }
+                                    if (totProd > totProdCliente) {
+
+                                        if (checkSubscriptionsListener != null) {
+                                            checkSubscriptionsListener.onCheckSuscriptionsOk(listaSus);
+                                        }
+
+                                    } else {
+                                        if (checkSubscriptionsListener != null) {
+                                            checkSubscriptionsListener.onProductLimit();
+                                        }
+                                    }
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    if (checkSubscriptionsListener != null) {
+                                        checkSubscriptionsListener.onError(e.getMessage());
                                     }
                                 }
-                            } else {
-                                if (checkSubscriptionsListener != null) {
-                                    checkSubscriptionsListener.onNotSubscriptions();
-                                }
-                            }
-                            totProd *= 1.5;
-                            ListaModeloSQL listaProd = CRUDutil.setListaModelo(CAMPOS_PRODUCTO);
-                            for (ModeloSQL prod : listaProd.getLista()) {
-                                if (prod.getInt(PRODUCTO_FIRE) == 1) {
-                                    totProdCliente++;
-                                }
-                                if (prod.getInt(PRODUCTO_FIREPRO) == 1) {
-                                    totProdCliente++;
-                                }
-                            }
-                            if (totProd > totProdCliente) {
 
-                                if (checkSubscriptionsListener != null) {
-                                    checkSubscriptionsListener.onCheckSuscriptionsOk(listaSus);
-                                }
-
-                            } else {
-                                if (checkSubscriptionsListener != null) {
-                                    checkSubscriptionsListener.onProductLimit();
-                                }
                             }
 
+                        });
+                        th.start();
 
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            if (checkSubscriptionsListener != null) {
-                                checkSubscriptionsListener.onError(e.getMessage());
-                            }
-                        }
+
+
                     }
 
 

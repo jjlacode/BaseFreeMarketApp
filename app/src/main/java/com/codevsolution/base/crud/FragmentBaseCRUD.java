@@ -547,18 +547,13 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
     protected boolean comprobarDatos() {
 
-        /*
-        for (EditMaterial editMaterial : materialEdits) {
-            if (!editMaterial.getValido()){
-                return false;
-            }
-        }
 
-         */
+        if (id != null) {
 
-        for (EditMaterial editMaterial : materialEdits) {
-            if (editMaterial.getTexto().equals("")) {
-                return false;
+            for (EditMaterial editMaterial : materialEdits) {
+                if (editMaterial.getTexto().equals("")) {
+                    return false;
+                }
             }
         }
 

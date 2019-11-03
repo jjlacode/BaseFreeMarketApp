@@ -35,7 +35,6 @@ import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.models.FirebaseFormBase;
 import com.codevsolution.base.models.ListaModeloSQL;
-import com.codevsolution.base.models.Marcador;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.Productos;
 import com.codevsolution.base.sqlite.ContratoSystem;
@@ -93,7 +92,6 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             telefono.setActivo(true);
             email.setActivo(true);
             etWeb.setActivo(true);
-            zona.setActivo(true);
         } else {
             gone(btnEnviarNoticias);
             gone(chActivo);
@@ -137,7 +135,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
             String lugar = "";
 
-            for (int i = 5; i >= getAlcance(); i--) {
+            for (int i = 5; i >= mapaZona.getAlcance(); i--) {
 
                 switch (i) {
 
@@ -251,8 +249,10 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
     @Override
     protected void cargarBundle() {
         super.cargarBundle();
-        activityBase.fabNuevo.hide();
-        activityBase.fabInicio.show();
+        if (!modulo) {
+            activityBase.fabNuevo.hide();
+            activityBase.fabInicio.show();
+        }
     }
 
 
@@ -260,9 +260,10 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
         if (tipoForm.equals(NUEVO)) {
 
-
-            activityBase.fabNuevo.hide();
-            activityBase.fabInicio.show();
+            if (!modulo) {
+                activityBase.fabNuevo.hide();
+                activityBase.fabInicio.show();
+            }
             visible(btnEnviarNoticias);
             gone(btndelete);
             visible(btnsave);
@@ -271,9 +272,6 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             visible(etWeb);
 
             gone(verVoto);
-            zona.setActivo(false);
-            visible(opcionesZona);
-            gone(lyMap);
             gone(suscripcion);
             visible(suscritos);
             gone(lyChat);
@@ -284,7 +282,6 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
         } else {
 
-            gone(opcionesZona);
             comprobarSuscripcion();
             visible(suscripcion);
             gone(suscritos);
@@ -362,33 +359,6 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
                         db.child(RATING).child(tipo).child(idUser).removeValue();
                         ImagenUtil.deleteImagefirestore(idUser);
 
-                        db.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                for (final DataSnapshot child : dataSnapshot.getChildren()) {
-
-                                    final DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                                    Query querydb = db.child(MARC + tipo).child(child.getKey());
-                                    querydb.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            deleteMarcador(dataSnapshot.getValue(Marcador.class), mapa);
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
-
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
                     }
                 }
             });

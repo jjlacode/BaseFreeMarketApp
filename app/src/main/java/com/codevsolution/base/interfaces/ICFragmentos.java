@@ -14,6 +14,12 @@ public interface ICFragmentos {
 
     void addFragment(Fragment myFragment, int layout);
 
+    void addFragment(Bundle bundle, Fragment myFragment, int layout);
+
+    void reemplazaFragment(Bundle bundle, Fragment myFragment, int layout);
+
+    void eliminarFragment(Fragment myFragment);
+
     void fabVisible();
 
     void snackBarShow(View view, String mensaje);

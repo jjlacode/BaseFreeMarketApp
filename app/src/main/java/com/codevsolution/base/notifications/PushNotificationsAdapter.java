@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.codevsolution.base.data.PushNotification;
+import com.codevsolution.base.notifications.fcm.data.PushNotification;
 import com.codevsolution.freemarketsapp.R;
 
 import java.util.ArrayList;
@@ -69,10 +69,10 @@ public class PushNotificationsAdapter
 
         public ViewHolder(View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.tv_title);
-            description = (TextView) itemView.findViewById(R.id.tv_description);
-            expiryDate = (TextView) itemView.findViewById(R.id.tv_expiry_date);
-            discount = (TextView) itemView.findViewById(R.id.tv_discount);
+            title = itemView.findViewById(R.id.tv_title);
+            description = itemView.findViewById(R.id.tv_description);
+            expiryDate = itemView.findViewById(R.id.tv_expiry_date);
+            discount = itemView.findViewById(R.id.tv_discount);
         }
     }
 }

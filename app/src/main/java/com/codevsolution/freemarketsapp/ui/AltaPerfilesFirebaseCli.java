@@ -1,8 +1,6 @@
 package com.codevsolution.freemarketsapp.ui;
 
-import com.codevsolution.base.nosql.FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb;
-
-public class AltaPerfilesFirebaseCli extends FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb {
+public class AltaPerfilesFirebaseCli extends AltaPerfilesFirebase {
 
 
     @Override

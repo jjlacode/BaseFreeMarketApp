@@ -175,6 +175,21 @@ public class AppActivity extends Application {
         }
     }
 
+    public static void verWeb(Context contexto, String url, AppCompatActivity activity) {
+
+        if (!url.startsWith("http://") && !url.startsWith("https://"))
+            url = "http://" + url;
+
+        try {
+            Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            activity.startActivity(myIntent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(contexto, "No application can handle this request."
+                    + " Please install a webbrowser", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+    }
+
     public static void reproducirAudio(MediaPlayer reproductor, String path, boolean reproduciendo) {
 
         if (reproduciendo) {
@@ -190,6 +205,7 @@ public class AppActivity extends Application {
         }
     }
 
+    @SuppressLint("MissingPermission")
     public static void hacerLlamada(Context context, String phoneNo, AppCompatActivity activity) {
 
         if (CheckPermisos.validarPermisos(activity, CALL_PHONE, 100)) {

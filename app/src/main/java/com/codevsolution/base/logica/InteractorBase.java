@@ -65,6 +65,8 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
         String PARTICIPANTES = "participantes";
         String CHAT = "chat";
         String DETCHAT = "detchat";
+        String MARCADOR = "marcador";
+        String ZONA = "zona";
         String IDCHATF = "idchatBase";
         String NOMBRECHAT = "nombre_chat";
         String LOG = "log";
@@ -76,6 +78,7 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
         String TABLAS = "tablas";
         String NUEVO = getAppContext().getString(R.string.nuevo);
         String CRUD = "crud";
+        String MODULO = "modulo";
         String SORTEO = "sorteo";
         String SORTEOPRO = "sorteo_pro";
         String SORTEOCLI = "sorteo_cli";

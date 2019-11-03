@@ -479,6 +479,9 @@
     <string name="pagina">Pagina</string>
     <string name="producto_web">Producto web cliente</string>
     <string name="producto_web_pro">Producto web Pro</string>
+    <string name="publicar">Publicar</string>
+    <string name="importar_a_prospectos">Importar a prospectos</string>
+    <string name="importar_a_clientes">Importar a clientes</string>
 
 
 </resources>
