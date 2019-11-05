@@ -140,6 +140,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected int sizeTextD;
     protected boolean swipeOn;
     protected boolean modulo;
+    protected FragmentBase fragment;
+
 
 
     @Override

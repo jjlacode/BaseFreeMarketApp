@@ -62,6 +62,8 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
         String MULTI = "multi";
         String SUSCRIPCIONES = "suscripciones";
         String SUSCRIPCIONESPRO = "suscripcionespro";
+        String SUSCRIPCIONESSORTEOSCLI = "suscripciones_sorteoscli";
+        String SUSCRIPCIONESSORTEOSPRO = "suscripciones_sorteospro";
         String PARTICIPANTES = "participantes";
         String CHAT = "chat";
         String DETCHAT = "detchat";

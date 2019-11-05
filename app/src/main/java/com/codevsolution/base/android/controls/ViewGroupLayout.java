@@ -134,7 +134,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         return vista;
     }
 
-    public View addVista(View vista, int peso) {
+    public View addVista(View vista, float peso) {
 
         vistas.add(vista);
 

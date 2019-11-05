@@ -218,7 +218,7 @@ public class Estilos {
 
     }
 
-    public static void setLayoutParams(ViewGroup viewGroup, View view, int peso) {
+    public static void setLayoutParams(ViewGroup viewGroup, View view, float peso) {
 
         if (viewGroup instanceof LinearLayoutCompat) {
             LinearLayoutCompat.LayoutParams params;

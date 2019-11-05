@@ -19,7 +19,6 @@ import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
-import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
@@ -49,14 +48,13 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     private CheckBox fire;
     private CheckBox firePro;
     private ViewGroupLayout vistaForm;
-    private FragmentBase fragmentBase;
     private LinearLayoutCompat lyPro;
     private LinearLayoutCompat lyCli;
     private AltaProductosPro frPro;
 
     public FragmentCRUDProducto() {
         // Required empty public constructor
-        fragmentBase = this;
+        fragment = this;
     }
 
     @Override

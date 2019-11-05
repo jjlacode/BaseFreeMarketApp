@@ -17,7 +17,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 
@@ -30,6 +29,8 @@ import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.chat.FragmentChatBase;
 import com.codevsolution.base.crud.CRUDutil;
+import com.codevsolution.base.firebase.ContratoFirebase;
+import com.codevsolution.base.firebase.FirebaseUtil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.media.ImagenUtil;
@@ -51,7 +52,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
-        extends FragmentMasterDetailNoSQLFirebaseRatingWebMapSus implements ContratoSystem.Tablas, InteractorBase.Constantes {
+        extends FragmentMasterDetailNoSQLFirebaseRatingWebMapSus implements ContratoSystem.Tablas,
+        InteractorBase.Constantes, ContratoFirebase.rutas {
 
     protected EditMaterial nombre;
     protected EditMaterial descripcion;
@@ -388,6 +390,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
         firebaseFormBase.setWebBase(etWeb.getTexto());
         firebaseFormBase.setIdchatBase(idUser);
 
+        /*
         db.child(tipo).child(idUser).setValue(firebaseFormBase, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
@@ -396,7 +399,22 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             }
         });
         db.child(PERFIL).child(tipo).child(idUser).setValue(true);
+        */
 
+        String[] rutaTipo = {tipo};
+        firebaseUtil.setValue(rutaTipo, idUser, firebaseFormBase, new FirebaseUtil.OnSetValue() {
+            @Override
+            public void onSetValueOk(String key) {
+                nuevo = false;
+            }
+
+            @Override
+            public void onSetValueFail(String key) {
+
+            }
+        });
+        String[] ruta = {PERFIL, tipo};
+        firebaseUtil.setValue(ruta, idUser, true, null);
     }
 
     @Override

@@ -10,11 +10,12 @@ import android.view.ViewGroup;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.codevsolution.base.android.controls.ImagenLayout;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.FragmentBase;
+import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.firebase.FirebaseUtil;
 import com.codevsolution.base.media.MediaUtil;
+import com.google.firebase.database.GenericTypeIndicator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public abstract class FragmentNoSQL extends FragmentBase {
     final protected int COD_SELECCIONA = 20;
     protected ImagenLayout imagen;
     protected GenericTypeIndicator<ArrayList<String>> tipoArrayListsString;
+    protected FirebaseUtil firebaseUtil = new FirebaseUtil();
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {

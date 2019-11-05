@@ -3,13 +3,13 @@ package com.codevsolution.base.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.style.Estilos;
 
 import java.util.ArrayList;
 
@@ -57,12 +57,10 @@ public class RVAdapter extends RecyclerView.Adapter<BaseViewHolder>
     @Override
     public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
 
-        View view = null;
-        if (layout > 0) {
-            view = LayoutInflater.from(parent.getContext()).inflate(layout, null, false);
-        } else {
-            view = new RelativeLayout(parent.getContext());
+        if (layout <= 0) {
+            layout = Estilos.getIdLayout(parent.getContext(), "item_list_layout");
         }
+        View view = LayoutInflater.from(parent.getContext()).inflate(layout, null, false);
 
         view.setOnClickListener(this);
         view.setOnLongClickListener(this);

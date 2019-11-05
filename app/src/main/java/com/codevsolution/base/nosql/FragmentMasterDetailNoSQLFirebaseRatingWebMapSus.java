@@ -13,11 +13,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
-import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +43,7 @@ import com.codevsolution.base.models.FirebaseFormBase;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.Rating;
+import com.codevsolution.base.rating.RatingBase;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
@@ -71,26 +70,26 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
     protected NestedScrollView lyweb;
     protected String web;
     protected String stemp = "";
-    protected ImageButton votar;
-    protected ImageButton verVoto;
-    private EditMaterial voto;
-    private EditMaterial comentario;
-    protected LinearLayout lyvoto;
-    protected RatingBar ratingBar;
-    protected RatingBar ratingBarUser;
-    private float rating, nVotos, st1, st2, st3, st4, st5;
-    private TextView tvst1, tvst2, tvst3, tvst4, tvst5, totVotos;
-    private RecyclerView rvcoment;
-    private RelativeLayout rlcoment;
-    private ImageButton verComents;
-    protected LinearLayout lystars;
-    private ArrayList<Rating> listaVotos;
-    private float votoUser;
+    //protected ImageButton votar;
+    //protected ImageButton verVoto;
+    //private EditMaterial voto;
+    //private EditMaterial comentario;
+    //protected LinearLayout lyvoto;
+    //protected RatingBar ratingBar;
+    //protected RatingBar ratingBarUser;
+    //private float rating, nVotos, st1, st2, st3, st4, st5;
+    //private TextView tvst1, tvst2, tvst3, tvst4, tvst5, totVotos;
+    //private RecyclerView rvcoment;
+    //private RelativeLayout rlcoment;
+    //private ImageButton verComents;
+    //protected LinearLayout lystars;
+    //private ArrayList<Rating> listaVotos;
+    //private float votoUser;
     protected String idRating;
-    private ArrayList<Rating> listaComents;
-    private TextView ultimoVoto;
+    //private ArrayList<Rating> listaComents;
+    //private TextView ultimoVoto;
     private int posicion;
-    protected String nombreVoto;
+    //protected String nombreVoto;
     protected String tipo;
     protected String perfil;
     protected String tipoForm;
@@ -118,6 +117,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
     protected boolean location;
     protected MapZona mapaZona;
     protected Button btnPublicar;
+    protected RatingBase ratingBase;
 
 
     @Override
@@ -242,6 +242,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
             mapaZona.setTipo(tipo);
         }
 
+        ratingBase = new RatingBase(fragment, frdetalleExtraspost, activityBase);
 
 
         View viewChatRec = inflater.inflate(R.layout.fragment_chat_base, container, false);
@@ -261,24 +262,24 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         });
 
         chActivo = (Switch) ctrl(R.id.chactivo);
-        ratingBar = view.findViewById(R.id.ratingBarFreelance);
-        ratingBarUser = view.findViewById(R.id.ratingBarUserFreelance);
-        votar = (ImageButton) ctrl(R.id.btn_votarfreelance);
-        verVoto = (ImageButton) ctrl(R.id.btn_vervotofreelance);
-        voto = (EditMaterial) ctrl(R.id.etvotodetfreelance);
-        comentario = (EditMaterial) ctrl(R.id.etcomentdetfreelance);
-        lyvoto = view.findViewById(R.id.lyvoto);
-        lystars = view.findViewById(R.id.lystars);
-        tvst1 = view.findViewById(R.id.tvstar1);
-        tvst2 = view.findViewById(R.id.tvstar2);
-        tvst3 = view.findViewById(R.id.tvstar3);
-        tvst4 = view.findViewById(R.id.tvstar4);
-        tvst5 = view.findViewById(R.id.tvstar5);
-        totVotos = view.findViewById(R.id.totalvotos);
-        ultimoVoto = view.findViewById(R.id.ultimovoto);
-        rvcoment = view.findViewById(R.id.rvcomentariosstar);
-        rlcoment = view.findViewById(R.id.rlcomentariosstar);
-        verComents = view.findViewById(R.id.btn_comentstar);
+        //ratingBar = view.findViewById(R.id.ratingBarFreelance);
+        //ratingBarUser = view.findViewById(R.id.ratingBarUserFreelance);
+        //votar = (ImageButton) ctrl(R.id.btn_votarfreelance);
+        //verVoto = (ImageButton) ctrl(R.id.btn_vervotofreelance);
+        //voto = (EditMaterial) ctrl(R.id.etvotodetfreelance);
+        //comentario = (EditMaterial) ctrl(R.id.etcomentdetfreelance);
+        //lyvoto = view.findViewById(R.id.lyvoto);
+        //lystars = view.findViewById(R.id.lystars);
+        //tvst1 = view.findViewById(R.id.tvstar1);
+        //tvst2 = view.findViewById(R.id.tvstar2);
+        //tvst3 = view.findViewById(R.id.tvstar3);
+        //tvst4 = view.findViewById(R.id.tvstar4);
+        //tvst5 = view.findViewById(R.id.tvstar5);
+        //totVotos = view.findViewById(R.id.totalvotos);
+        //ultimoVoto = view.findViewById(R.id.ultimovoto);
+        //rvcoment = view.findViewById(R.id.rvcomentariosstar);
+        //rlcoment = view.findViewById(R.id.rlcomentariosstar);
+        //verComents = view.findViewById(R.id.btn_comentstar);
         btnEnviarNoticias = (Button) ctrl(R.id.btn_enviar_noticias);
         suscripcion = (Switch) ctrl(R.id.swsuscripcion);
         suscritos = (EditMaterial) ctrl(R.id.etsuscritos);
@@ -288,8 +289,8 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         lyChat = (LinearLayout) ctrl(R.id.ly_chat);
         gone(rvMsgChat);
 
-        gone(lyvoto);
-        ratingBar.setIsIndicator(true);
+        //gone(lyvoto);
+        //ratingBar.setIsIndicator(true);
 
         viewWeb = inflater.inflate(R.layout.layout_webview, container, false);
         if (viewWeb.getParent() != null) {
@@ -940,7 +941,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
     }
 
-    public void recuperarVotoUsuario(final RatingBar ratingBarUser, final Context contexto, final String id) {
+    public void recuperarVotoUsuario(final Context contexto, final String id) {
 
         idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
         perfilUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
@@ -961,12 +962,14 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
                     Rating rat = dataSnapshot.getValue(Rating.class);
 
                     if (rat != null) {
-                        votoUser = rat.getValor();
-                        comentario.setText(rat.getComentario());
+                        //votoUser = rat.getValor();
+                        //comentario.setText(rat.getComentario());
+                        ratingBase.setVotoUser(rat.getValor());
+                        ratingBase.setComentario(rat.getComentario());
                     }
 
-                    voto.setText(String.valueOf(votoUser));
-                    ratingBarUser.setRating(votoUser);
+                    //voto.setText(String.valueOf(votoUser));
+                    // ratingBarUser.setRating(votoUser);
                     int color = 0;
                     if (votoUser > 3) {
                         color = R.color.Color_star_ok;

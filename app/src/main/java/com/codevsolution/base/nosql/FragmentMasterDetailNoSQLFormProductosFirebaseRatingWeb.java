@@ -37,6 +37,8 @@ import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.chat.FragmentChatBase;
 import com.codevsolution.base.crud.CRUDutil;
+import com.codevsolution.base.firebase.ContratoFirebase;
+import com.codevsolution.base.firebase.FirebaseUtil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.media.ImagenUtil;
@@ -655,6 +657,33 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
         if (id != null) {
 
+            firebaseUtil.setValue(ContratoFirebase.getRutaProductos(), id, prodProv, new FirebaseUtil.OnSetValue() {
+                @Override
+                public void onSetValueOk(String key) {
+
+                    if (nuevo) {
+
+                        ListaModeloSQL listaMarcUser = new ListaModeloSQL(CAMPOS_MARCADOR, MARCADOR_ID_REL, idUser, null);
+
+                        for (ModeloSQL marcUser : listaMarcUser.getLista()) {
+
+                            mapaZona.crearMarcador(tipo, id, marcUser.getLong(MARCADOR_LATITUD), marcUser.getLong(MARCADOR_LONGITUD));
+
+                        }
+
+                        nuevo = false;
+                        selector();
+
+                        Toast.makeText(contexto, "Registro creado con exito", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onSetValueFail(String key) {
+
+                }
+            });
+            /*
             db.child(PRODUCTOS).child(id).setValue(prodProv).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -678,14 +707,18 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
             });
 
+             */
+
             if (!nuevo) {
                 Toast.makeText(contexto, "Registro actualizado con exito", Toast.LENGTH_SHORT).show();
             }
 
             if (chActivo.isChecked()) {
-                db.child(INDICE + tipo).child(idUser).child(id).setValue(true);
+                firebaseUtil.setValue(ContratoFirebase.getRutaIndiceProducto(tipo), id, true, null);
+                //db.child(INDICE + tipo).child(idUser).child(id).setValue(true);
             } else {
-                db.child(INDICE + tipo).child(idUser).child(id).setValue(false);
+                firebaseUtil.setValue(ContratoFirebase.getRutaIndiceProducto(tipo), id, false, null);
+                //db.child(INDICE + tipo).child(idUser).child(id).setValue(false);
             }
 
             if (prodProv.getRutafoto() != null) {
