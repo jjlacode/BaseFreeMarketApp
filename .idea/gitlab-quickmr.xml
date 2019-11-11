@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="gitlab-quickmr">
+    <option name="gitLabUri" value="https://gitlab.codevsolution.com/api/v4" />
+    <option name="defaultAssignees">
+      <list>
+        <User>
+          <option name="id" value="4" />
+          <option name="name" value="Jjlacode" />
+          <option name="username" value="jjlacode" />
+        </User>
+      </list>
+    </option>
+    <option name="defaultTargetBranch" value="master" />
+    <option name="defaultTitle" value="master" />
+    <option name="defaultDescription" value="" />
+  </component>
+</project>
