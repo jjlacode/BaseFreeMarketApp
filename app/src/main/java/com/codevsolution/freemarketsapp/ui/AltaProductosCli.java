@@ -1,39 +1,60 @@
 package com.codevsolution.freemarketsapp.ui;
 
+import android.os.Bundle;
 import android.view.ViewGroup;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.codevsolution.base.android.FragmentBase;
-import com.codevsolution.base.android.controls.ViewGroupLayout;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
-import com.codevsolution.base.style.Estilos;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
 public class AltaProductosCli extends AltaProductosFirebase
         implements Interactor.ConstantesPry, ContratoPry.Tablas {
 
     private ViewGroup viewGroup;
-    private FragmentBase frParent;
-    private AppCompatActivity activityBase;
+    private FragmentCRUDProducto parent;
 
     public AltaProductosCli() {
+
+
     }
 
-    public AltaProductosCli(FragmentBase frParent, ViewGroup viewGroup, AppCompatActivity activityBase, String id) {
-        this.viewGroup = viewGroup;
-        this.frParent = frParent;
-        this.activityBase = activityBase;
-        this.id = id;
-        int idViewGroup = this.viewGroup.getId();
-        System.out.println("idViewGroup = " + idViewGroup);
-        if (idViewGroup < 0) {
-            idViewGroup = ViewGroup.generateViewId();
-        }
-        this.viewGroup.setId(idViewGroup);
-        this.frParent.getIcFragmentos().addFragment(this, idViewGroup);
-        esDetalle = true;
-        Estilos.setLayoutParams((ViewGroup) this.viewGroup.getParent(), this.viewGroup, ViewGroupLayout.MATCH_PARENT, (int) ((double) this.frParent.getAltoReal()));
+    public AltaProductosCli(FragmentCRUDProducto parent) {
+
+        this.parent = parent;
+    }
+
+    @Override
+    protected void setInicio() {
+        super.setInicio();
+
+        parent.setOnSetDatosCliListener(new FragmentCRUDProducto.OnSetDatosCli() {
+            @Override
+            public void onSetDatos(Bundle bundle) {
+
+                System.out.println(TAG + " Al recibir datos de activity");
+                if (nn(bundle)) {
+
+                    System.out.println("bundle = " + bundle);
+                    prodCrud = (ModeloSQL) bundle.getSerializable(CRUD);
+
+                    System.out.println("prodCrud = " + prodCrud);
+                    if (prodCrud != null) {
+                        prodProv = convertirProdCrud(prodCrud);
+                        if (prodProv != null) {
+                            prodProv.setTipo(tipo);
+                            if (prodProv.getId() == null) {
+                                guardar();
+
+                            }
+                            System.out.println("prodProv = " + prodProv.toString());
+                        }
+                    }
+                    esDetalle = true;
+
+                    selector();
+                }
+            }
+        });
     }
 
     @Override
@@ -45,7 +66,5 @@ public class AltaProductosCli extends AltaProductosFirebase
     protected String setTipoSorteo() {
         return SORTEOCLI;
     }
-
-
 
 }

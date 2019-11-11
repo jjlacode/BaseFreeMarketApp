@@ -13,6 +13,7 @@
         <item name="android:alertDialogStyle">@style/AlertDialogCodev</item>
     </style>
 
+    <style name="ratingBarSmall" parent="android:style/Widget.Material.RatingBar.Small"></style>
 
     <style name="Widget.Design.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="hintTextAppearance">@style/AppTheme.TextFloatLabelAppearance</item>

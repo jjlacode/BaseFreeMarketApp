@@ -18,9 +18,9 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.freemarketsapp.R;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.codevsolution.freemarketsapp.R;
 
 public class EditMaterial extends LinearLayoutCompat {
 
@@ -46,6 +46,7 @@ public class EditMaterial extends LinearLayoutCompat {
     public EditMaterial(Context context) {
         super(context);
         inicializar();
+
     }
 
     public EditMaterial(Context context, @Nullable AttributeSet attrs) {
@@ -489,7 +490,7 @@ public class EditMaterial extends LinearLayoutCompat {
         float alto = metrics.heightPixels;
 
 
-        float size = ((float) (alto * ancho) / (metrics.densityDpi * 300));
+        float size = ((alto * ancho) / (metrics.densityDpi * 300));
         editText.setTextSize(size);
     }
 

@@ -575,29 +575,11 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         @Override
         protected void onPostExecute(ModeloSQL modeloSQL) {
             super.onPostExecute(modeloSQL);
-            new TareaActualizaProdProvPartidaProy().execute(modeloSQL);
-
-        }
-
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    public class TareaActualizaProdProvPartidaProy extends AsyncTask<ModeloSQL, Float, ModeloSQL> {
-
-        @Override
-        protected ModeloSQL doInBackground(ModeloSQL... modeloSQLS) {
-
-            Interactor.Calculos.actualizarProdProvPartidaProy(modeloSQLS[0].getString(PARTIDA_ID_PARTIDA));
-            return modeloSQLS[0];
-        }
-
-        @Override
-        protected void onPostExecute(ModeloSQL modeloSQL) {
-            super.onPostExecute(modeloSQL);
             new TareaActualizaPartidaProy().execute(modeloSQL.getString(PARTIDA_ID_PARTIDA));
-
         }
+
     }
+
 
     @SuppressLint("StaticFieldLeak")
     public class TareaActualizaPartidaProy extends AsyncTask<String, Float, Integer> {

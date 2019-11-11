@@ -2,6 +2,8 @@ package com.codevsolution.base.nosql;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,13 +20,13 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.NestedScrollView;
 
 import com.chargebee.models.Subscription;
@@ -34,7 +36,9 @@ import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.chat.FragmentChatBase;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.firebase.ContratoFirebase;
@@ -47,6 +51,7 @@ import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.Productos;
 import com.codevsolution.base.models.Rating;
 import com.codevsolution.base.sqlite.ContratoSystem;
+import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.InteractorSuscriptions;
@@ -65,14 +70,14 @@ import java.util.List;
 public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         extends FragmentMasterDetailNoSQLFirebaseRatingWebMapSus implements ContratoSystem.Tablas, InteractorBase.Constantes {
 
-    protected EditMaterial nombre;
-    protected EditMaterial descripcion;
-    protected EditMaterial referencia;
-    protected EditMaterial proveedor;
-    protected EditMaterial precio;
-    protected EditMaterial descuento;
-    protected EditMaterial claves;
-    protected EditMaterial etWeb;
+    protected EditMaterialLayout nombre;
+    protected EditMaterialLayout descripcion;
+    protected EditMaterialLayout referencia;
+    protected EditMaterialLayout proveedor;
+    protected EditMaterialLayout precio;
+    protected EditMaterialLayout descuento;
+    protected EditMaterialLayout claves;
+    protected EditMaterialLayout etWeb;
     protected EditMaterial limitProdAct;
     protected EditMaterial prodActUsados;
     protected EditMaterial limitProd;
@@ -88,9 +93,6 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
     protected Productos prodProv;
     protected Button btnSortear;
     protected Button btnClonar;
-    protected Button btnClonarPro;
-    protected Switch sincronizaClon;
-    protected String idClon;
     protected String idProv;
     private ArrayList<Subscription> listaSus;
     protected ModeloSQL prodCrud;
@@ -100,29 +102,26 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
         super.setOnCreateView(view, inflater, container);
 
-        View viewFB = inflater.inflate(R.layout.fragment_formulario_prodprov, container, false);
-        if (viewFB.getParent() != null) {
-            ((ViewGroup) viewFB.getParent()).removeView(viewFB); // <- fix
-        }
-        frdetalleExtrasante.addView(viewFB);
+        ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalleExtrasante);
 
-        nombre = (EditMaterial) ctrl(R.id.etnombreformprodprov);
-        descripcion = (EditMaterial) ctrl(R.id.etdescformprodprov);
-        referencia = (EditMaterial) ctrl(R.id.etrefformprodprov);
-        proveedor = (EditMaterial) ctrl(R.id.etproveedorformprodprov);
-        precio = (EditMaterial) ctrl(R.id.etprecioformprodprov);
-        descuento = (EditMaterial) ctrl(R.id.etdescuentoformprodprov);
-        claves = (EditMaterial) ctrl(R.id.etclavesformprodprov);
-        etWeb = (EditMaterial) ctrl(R.id.etwebformprodprov);
-        imagen = (ImagenLayout) ctrl(R.id.imgformprodprov);
-        imagen.setIcfragmentos(icFragmentos);
-        radioGroupProd = (RadioGroup) ctrl(R.id.radio_group_prod);
-        radioButtonProd1 = (RadioButton) ctrl(R.id.radioButtonprod);
-        radioButtonProd2 = (RadioButton) ctrl(R.id.radioButtonserv);
-        btnSortear = (Button) ctrl(R.id.btn_sorteo_prod);
-        btnClonar = (Button) ctrl(R.id.btn_clonar_prod);
-        btnClonarPro = (Button) ctrl(R.id.btn_clonar_prod_pro);
-        sincronizaClon = (Switch) ctrl(R.id.sw_sincroniza_clon);
+        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
+        imagen.setFocusable(false);
+        nombre = vistaForm.addEditMaterialLayout(getString(R.string.nombre));
+        descripcion = vistaForm.addEditMaterialLayout(getString(R.string.descripcion));
+        referencia = vistaForm.addEditMaterialLayout(getString(R.string.descripcion));
+        proveedor = vistaForm.addEditMaterialLayout(getString(R.string.proveedor));
+        precio = vistaForm.addEditMaterialLayout(getString(R.string.importe));
+        descuento = vistaForm.addEditMaterialLayout(getString(R.string.descuento_proveedor));
+        claves = vistaForm.addEditMaterialLayout(getString(R.string.palabras_clave));
+        etWeb = vistaForm.addEditMaterialLayout(getString(R.string.web));
+        radioGroupProd = (RadioGroup) vistaForm.addVista(new RadioGroup(contexto));
+        radioButtonProd1 = (RadioButton) vistaForm.addVista(new RadioButton(contexto));
+        radioButtonProd1.setText(R.string.producto);
+        radioButtonProd2 = (RadioButton) vistaForm.addVista(new RadioButton(contexto));
+        radioButtonProd2.setText(R.string.servicios);
+        btnSortear = vistaForm.addButtonSecondary(R.string.sortear);
+        btnClonar = vistaForm.addButtonSecondary(R.string.clonar_prod_a_cliente);
+        gone(btnClonar);
 
 
         if (tipoForm.equals(NUEVO)) {
@@ -171,7 +170,6 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             gone(btnEnviarNoticias);
             gone(chActivo);
             btnClonar.setEnabled(false);
-            btnClonarPro.setEnabled(false);
 
         }
 
@@ -183,7 +181,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
     @Override
     protected void setLayoutItem() {
 
-        layoutItem = R.layout.item_list_firebase_formproducto_rating_web;
+        layoutItemRv = R.layout.item_list_firebase_formproducto_rating_web;
 
     }
 
@@ -303,7 +301,6 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
             gone(btnEnviarNoticias);
             gone(chActivo);
-            gone(verVoto);
             gone(frCabecera);
 
             lista = new ArrayList<Productos>();
@@ -404,11 +401,8 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             visible(btndelete);
             visible(btnsave);
             visible(chActivo);
-            gone(proveedor);
-            gone(lystars);
             descuento.setActivo(false);
             visible(radioGroupProd);
-            gone(verVoto);
             gone(suscripcion);
             visible(suscritos);
             gone(lyChat);
@@ -417,21 +411,19 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                 chActivo.setEnabled(true);
             } else {
                 chActivo.setEnabled(false);
-                chActivo.setChecked(false);
             }
-            gone(nombre);
-            gone(descripcion);
-            gone(precio);
-            gone(proveedor);
-            gone(referencia);
-            gone(descuento);
-            gone(imagen);
-            gone(claves);
-            gone(etWeb);
+            gone(nombre.getLinearLayout());
+            gone(descripcion.getLinearLayout());
+            gone(precio.getLinearLayout());
+            gone(proveedor.getLinearLayout());
+            gone(referencia.getLinearLayout());
+            gone(descuento.getLinearLayout());
+            gone(claves.getLinearLayout());
+            gone(etWeb.getLinearLayout());
 
         } else {
 
-            visible(proveedor);
+            visible(proveedor.getLinearLayout());
             comprobarSuscripcion();
             visible(suscripcion);
             gone(suscritos);
@@ -458,16 +450,6 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
         if (prodProv != null && !nuevo) {
 
-            if (nn(prodProv.getIdClon())) {
-                visible(sincronizaClon);
-            }
-
-            if (prodProv.isSincronizado()) {
-                sincronizaClon.setChecked(true);
-            } else {
-                sincronizaClon.setChecked(false);
-            }
-
             if (prodProv.getTipo().equals(PRODUCTOS)) {
                 radioButtonProd1.setChecked(true);
                 radioButtonProd2.setChecked(false);
@@ -485,7 +467,6 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             claves.setText(prodProv.getAlcance());
             web = prodProv.getWeb();
             etWeb.setText(prodProv.getWeb());
-            idClon = prodProv.getIdClon();
             idProv = prodProv.getIdprov();
 
             id = prodProv.getId();
@@ -496,7 +477,9 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
             activityBase.toolbar.setSubtitle(prodProv.getNombre());
             accionesImagen();
-            guardar();
+            if (nn(prodCrud)) {
+                guardar();
+            }
 
         }
 
@@ -536,16 +519,6 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
                     crearSorteo();
 
-                }
-            });
-
-            sincronizaClon.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
-                    if (b && nn(prodProv)) {
-                        //    sincronizarClon(prodProv);
-                    }
                 }
             });
 
@@ -630,32 +603,25 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
     @Override
     protected void guardar() {
 
+        System.out.println("Guardando prodProv");
         DatabaseReference db = FirebaseDatabase.getInstance().getReference();
 
         prodProv.setActivo(chActivo.isChecked());
-        prodProv.setSincronizado(sincronizaClon.isChecked());
 
         id = prodProv.getId();
         if (tipo == null) {
             setTipo();
         }
-        if (nuevo || id == null) {
-            id = db.child(PRODUCTOS).push().getKey();
-            prodProv.setId(id);
-
-            if (prodProv.getIdCrud() == null) {
-                crearProdCrud(prodProv);
-            } else {
-                actualizarProdCrud(prodProv);
-            }
-        } else if (prodProv.getIdCrud() != null) {
-            actualizarProdCrud(prodProv);
+        if (prodProv.getIdprov() == null) {
+            prodProv.setIdprov(idUser);
+        }
+        if (id == null) {
+            nuevo = true;
         }
 
         mapaZona.setId(id);
         mapaZona.setTipo(tipo);
 
-        if (id != null) {
 
             firebaseUtil.setValue(ContratoFirebase.getRutaProductos(), id, prodProv, new FirebaseUtil.OnSetValue() {
                 @Override
@@ -673,47 +639,22 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
                         nuevo = false;
                         selector();
+                        prodProv.setId(key);
 
                         Toast.makeText(contexto, "Registro creado con exito", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(contexto, "Registro actualizado con exito", Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onSetValueFail(String key) {
 
+                    Toast.makeText(contexto, getString(R.string.fallo_subiendo_registro), Toast.LENGTH_SHORT).show();
                 }
             });
-            /*
-            db.child(PRODUCTOS).child(id).setValue(prodProv).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
 
-                    if (nuevo) {
-
-                        ListaModeloSQL listaMarcUser = new ListaModeloSQL(CAMPOS_MARCADOR, MARCADOR_ID_REL, idUser, null);
-
-                        for (ModeloSQL marcUser : listaMarcUser.getLista()) {
-
-                            mapaZona.crearMarcador(tipo, id, marcUser.getLong(MARCADOR_LATITUD), marcUser.getLong(MARCADOR_LONGITUD));
-
-                        }
-
-                        nuevo = false;
-                        selector();
-
-                        Toast.makeText(contexto, "Registro creado con exito", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-            });
-
-             */
-
-            if (!nuevo) {
-                Toast.makeText(contexto, "Registro actualizado con exito", Toast.LENGTH_SHORT).show();
-            }
-
-            if (chActivo.isChecked()) {
+        if (chActivo.isChecked() && id != null) {
                 firebaseUtil.setValue(ContratoFirebase.getRutaIndiceProducto(tipo), id, true, null);
                 //db.child(INDICE + tipo).child(idUser).child(id).setValue(true);
             } else {
@@ -721,60 +662,25 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                 //db.child(INDICE + tipo).child(idUser).child(id).setValue(false);
             }
 
-            if (prodProv.getRutafoto() != null) {
-                guardarImagen(prodProv.getRutafoto());
-            }
-
-            alGuardar(prodProv);
-
-        } else {
-            Toast.makeText(contexto, getString(R.string.fallo_subiendo_registro), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    protected void actualizarProdCrud(Productos prodProv) {
-
-    }
-
-
-    protected void alGuardar(Productos prodProv) {
-
-    }
-
-    protected void clonarProd(final String tipoClon) {
-
-
-        prodProv = new Productos();
-
-        if (radioButtonProd1.isChecked()) {
-            prodProv.setTipo(PRODUCTOS);
-        } else if (radioButtonProd2.isChecked()) {
-            prodProv.setTipo(SERVICIOS);
+        if (nn(prodCrud) && nn(prodProv)) {
+            alGuardar(prodProv, prodCrud);
         }
 
+    }
 
-        prodProv.setCategoria(tipoClon);
-        prodProv.setNombre(nombre.getTexto());
-        prodProv.setIdprov(idProv);
-        prodProv.setIdClon(id);
-        prodProv.setActivo(false);
-        prodProv.setDescripcion(descripcion.getTexto());
-        prodProv.setPrecio(JavaUtil.comprobarDouble(precio.getTexto()));
-        prodProv.setRefprov(referencia.getTexto());
-        prodProv.setProveedor(proveedor.getTexto());
-        prodProv.setAlcance(claves.getTexto());
-        prodProv.setWeb(etWeb.getTexto());
-        prodProv.setTimeStamp(TimeDateUtil.ahora());
-
-        prodProv.setIdCrud(crearProdCrud(prodProv));
-
+    protected void actualizarProdCrud(Productos prodProv, ModeloSQL prodCrud) {
 
     }
 
 
-    protected String crearProdCrud(Productos prodProv) {
+    protected void alGuardar(Productos prodProv, ModeloSQL prodCrud) {
 
-        return null;
+    }
+
+
+    protected void crearProdCrud(Productos prodProv) {
+
+
     }
 
     protected void sincronizarClon(final Productos prodProv) {
@@ -802,7 +708,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             FirebaseDatabase.getInstance().getReference().child(RATING).child(id).child(idUser + perfilUser).setValue(rat, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                    recuperarVotos(ratingBar, id);
+                    recuperarVotos(id);
                 }
             });
         } else {
@@ -1043,17 +949,153 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             }
 
             ratingBarCard.setRating(0);
-            recuperarVotos(ratingBarCard, prodProv.getId());
+            recuperarVotos(prodProv.getId());
             ratingBarCard.setIsIndicator(true);
 
             ratingBarUserCard.setRating(0);
-            recuperarVotoUsuario(ratingBarUserCard, contexto, prodProv.getId());
+            recuperarVotoUsuario(contexto, prodProv.getId());
             ratingBarUserCard.setIsIndicator(true);
 
 
             super.bind(lista, position);
         }
 
+        protected void recuperarVotos(final String id) {
+
+            DatabaseReference db;
+
+            if (id != null) {
+                db = FirebaseDatabase.getInstance().getReference().child(RATING).child(id);
+
+
+                ValueEventListener valueEventListener = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        ArrayList<Rating> listaVotos = new ArrayList<>();
+
+                        for (DataSnapshot child : dataSnapshot.getChildren()) {
+
+                            System.out.println("child.getValue() = " + child.getValue());
+                            listaVotos.add(child.getValue(Rating.class));
+
+                        }
+
+                        ratingBarCard.setRating(0.0f);
+                        Drawable progressDrawable = ratingBarCard.getProgressDrawable();
+                        if (progressDrawable != null) {
+                            DrawableCompat.setTint(progressDrawable, Estilos.getIdDrawable(contexto, "color_star_defecto"));
+                        }
+
+                        float rating = 0.0f;
+                        float nVotos = 0.0f;
+                        long ultimoVotoTemp = 0;
+
+
+                        for (Rating rat : listaVotos) {
+
+                            float voto = rat.getValor();
+
+                            System.out.println("voto = " + voto);
+
+                            if (voto == 1) {
+                                nVotos++;
+                            } else if (voto == 2) {
+                                nVotos++;
+                            } else if (voto == 3) {
+                                nVotos++;
+                            } else if (voto == 4) {
+                                nVotos++;
+                            } else if (voto == 5) {
+                                nVotos++;
+                            }
+
+                            rating += voto;
+
+                            if (rat.getFecha() > ultimoVotoTemp) {
+                                ultimoVotoTemp = rat.getFecha();
+                            }
+                        }
+
+                        if (nVotos > 0) {
+                            rating /= nVotos;
+                            ratingBarCard.setRating(rating);
+                        } else {
+                            ratingBarCard.setRating(0.0f);
+                        }
+
+                        String color = "";
+                        if (rating > 3) {
+                            color = "Color_star_ok";
+                        } else if (rating > 1.5) {
+                            color = "Color_star_acept";
+                        } else if (rating > 0) {
+                            color = "Color_star_notok";
+                        } else {
+                            color = "color_star_defecto";
+                        }
+
+                        ratingBarCard.setProgressTintList(ColorStateList.valueOf(Estilos.getIdColor(contexto, color)));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                };
+
+                db.addValueEventListener(valueEventListener);
+            }
+
+        }
+
+        public void recuperarVotoUsuario(final Context contexto, final String id) {
+
+            idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
+            perfilUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
+            DatabaseReference db;
+
+            if (id != null && tipo != null) {
+                db = FirebaseDatabase.getInstance().getReference().child(RATING).child(id).child(idUser + perfilUser);
+
+
+                ValueEventListener valueEventListener = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+                        Rating rat = dataSnapshot.getValue(Rating.class);
+
+                        if (rat != null) {
+                            float rating = rat.getValor();
+                            ratingBarUserCard.setRating(rating);
+
+                            String color = "";
+                            if (rating > 3) {
+                                color = "Color_star_ok";
+                            } else if (rating > 1.5) {
+                                color = "Color_star_acept";
+                            } else if (rating > 0) {
+                                color = "Color_star_notok";
+                            } else {
+                                color = "color_star_defecto";
+                            }
+
+                            ratingBarUserCard.setProgressTintList(ColorStateList.valueOf(Estilos.getIdColor(contexto, color)));
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                };
+
+                db.addValueEventListener(valueEventListener);
+
+            }
+        }
         @Override
         public BaseViewHolder holder(View view) {
             return new ViewHolderRVFormProdProvRatingWeb(view);

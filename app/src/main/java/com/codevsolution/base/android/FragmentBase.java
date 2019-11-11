@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.XmlResourceParser;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -43,6 +44,7 @@ import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.models.Contactos;
 import com.codevsolution.base.models.DestinosVoz;
+import com.codevsolution.base.style.Estilos;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
@@ -143,14 +145,14 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected FragmentBase fragment;
 
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, getMetodo());
 
+        contexto = activityBase;
         setLayout();
         setLayoutExtra();
-        contexto = activityBase;
+
         bundle = getArguments();
 
         System.out.println("getArguments() = " + getArguments());
@@ -1145,22 +1147,20 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         return string != null && !string.equals(NULL);
     }
 
-    protected void changeFragment(Fragment fragment) {
+    protected void changeFragment(Bundle bundle, Fragment fragment, int layout) {
 
-        activityBase.getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_main, fragment).addToBackStack(null).commit();
+        activityBase.reemplazaFragment(bundle, fragment, layout);
     }
 
-    protected void addFragment(Fragment fragment) {
+    protected void addFragment(Bundle bundle, Fragment fragment, int layout) {
 
-        activityBase.getSupportFragmentManager().beginTransaction()
-                .add(R.id.content_main, fragment).addToBackStack(null).commit();
+        activityBase.addFragment(bundle, fragment, layout);
     }
 
     protected void removeFragment(Fragment fragment) {
 
-        activityBase.getSupportFragmentManager().beginTransaction()
-                .remove(fragment).commit();
+        activityBase.eliminarFragment(fragment);
+
     }
 
     protected View addVista(int layout, ViewGroup viewGroup) {
@@ -1194,5 +1194,32 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         materialEditLayouts.addAll(vista.getEditMaterialLayouts());
     }
 
+    protected int getId(String recurso) {
+        return Estilos.getIdResource(contexto, recurso);
+    }
+
+    protected XmlResourceParser getLayout(String layout) {
+        return Estilos.getLayout(contexto, layout);
+    }
+
+    protected int getIdLayout(String layout) {
+        return Estilos.getIdLayout(contexto, layout);
+    }
+
+    protected int color(String color) {
+        return Estilos.getIdColor(contexto, color);
+    }
+
+    protected String getString(String string) {
+        return Estilos.getString(contexto, string);
+    }
+
+    protected int getIdString(String string) {
+        return Estilos.getIdStrig(contexto, string);
+    }
+
+    protected int getIdDrawable(String drawable) {
+        return Estilos.getIdDrawable(contexto, drawable);
+    }
 
 }

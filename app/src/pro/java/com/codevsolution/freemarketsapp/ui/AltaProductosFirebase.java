@@ -1,7 +1,6 @@
 package com.codevsolution.freemarketsapp.ui;
 
 import android.content.ContentValues;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +8,6 @@ import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 
-import com.codevsolution.base.android.MainActivityBase;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.media.ImagenUtil;
@@ -17,13 +15,13 @@ import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.Productos;
 import com.codevsolution.base.nosql.FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb;
 import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
@@ -44,6 +42,15 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
 
     @Override
     protected void setLayout() {
+
+    }
+
+    @Override
+    protected void selector() {
+        super.selector();
+        activityBase.fabInicio.hide();
+        activityBase.fabNuevo.show();
+
 
     }
 
@@ -79,11 +86,11 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
 
                         prodActUsados.setText(String.valueOf(contadorProdActivo));
                         prodUsados.setText(String.valueOf(contadorProdTotal));
-                        if (contadorProdTotal < limiteProdTotal) {
-                            activityBase.fabNuevo.show();
-                        } else {
-                            activityBase.fabNuevo.hide();
-                        }
+                        //if (contadorProdTotal < limiteProdTotal) {
+
+                        //} else {
+                        //    activityBase.fabNuevo.hide();
+                        //}
 
                         chActivo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                             @Override
@@ -117,31 +124,7 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
             }
         });
 
-        activityBase.setAlRecibirDatosListener(new MainActivityBase.AlRecibirDatos() {
-            @Override
-            public void alRecibirDatos(Bundle bundle) {
 
-                System.out.println("Al recibir datos de activity");
-                if (nn(bundle)) {
-
-                    System.out.println("bundle = " + bundle);
-                    prodCrud = (ModeloSQL) getBundleSerial(CRUD);
-                    if (prodCrud != null) {
-                        prodProv = convertirProdCrud(prodCrud);
-                        if (prodProv != null) {
-                            prodProv.setTipo(tipo);
-                            if (prodProv.getId() == null) {
-                                guardar();
-                            }
-                        }
-                    }
-                    esDetalle = true;
-
-                    selector();
-                }
-
-            }
-        });
     }
 
     @Override
@@ -164,7 +147,7 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
     protected void setDatos() {
         super.setDatos();
 
-        visible(descuento);
+        gone(imagen);
     }
 
     @Override
@@ -172,39 +155,6 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
         return NUEVO;
     }
 
-    protected void sincronizarClon(final Productos prodProv) {
-
-        final String tipo = prodProv.getCategoria();
-
-        if (nn(prodProv) && nn(prodProv.getIdClon()) && !prodProv.getIdClon().isEmpty()) {
-
-            final String id = prodProv.getId();
-            final String idClon = prodProv.getIdClon();
-
-            if (nn(id) && nn(idClon)) {
-
-                final DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                Query querydb = db.child(PRODUCTOS).child(idClon);
-                querydb.addListenerForSingleValueEvent(new ValueEventListener() {
-                    private Productos prodProvClon;
-
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        prodProvClon = dataSnapshot.getValue(Productos.class);
-                        db.child(tipo).child(id).setValue(prodProvClon);
-                        ImagenUtil.copyImageFirestore(idClon, id);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-            }
-        }
-    }
 
     @Override
     protected void cargarBundle() {
@@ -229,6 +179,9 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
         gone(btnback);
         gone(btndelete);
         gone(btnsave);
+        gone(lupa);
+        gone(auto);
+        gone(renovar);
         activityBase.fabNuevo.show();
         activityBase.fabInicio.hide();
 
@@ -236,65 +189,204 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
 
     protected Productos convertirProdCrud(ModeloSQL prodCrud) {
 
+        System.out.println("Convirtiendo prodCrud en prodProv");
+
         boolean activo = false;
-        boolean sincro = false;
-        if (prodCrud.getInt(PRODUCTO_ACTIVO) == 1) {
-            activo = true;
-        }
-        if (prodCrud.getInt(PRODUCTO_SINCRO) == 1) {
-            sincro = true;
-        }
+
 
         if (tipo.equals(PRODUCTOPRO)) {
             id = prodCrud.getString(PRODUCTO_ID_PRODFIREPRO);
+            if (prodCrud.getInt(PRODUCTO_ACTIVOPRO) == 1) {
+                activo = true;
+            }
+            Productos prodProv = new Productos(id,
+                    prodCrud.getString(PRODUCTO_REFERENCIAPRO),
+                    prodCrud.getString(PRODUCTO_NOMBREPRO),
+                    prodCrud.getString(PRODUCTO_DESCRIPCIONPRO),
+                    prodCrud.getString(PRODUCTO_CATEGORIAPRO),
+                    prodCrud.getString(PRODUCTO_SUBCATEGORIAPRO),
+                    prodCrud.getString(PRODUCTO_WEBPRO),
+                    prodCrud.getDouble(PRODUCTO_DESCUENTOPRO),
+                    prodCrud.getDouble(PRODUCTO_PRECIO),
+                    prodCrud.getString(PRODUCTO_NOMBREPROV),
+                    idUser,
+                    prodCrud.getString(PRODUCTO_ALCANCEPRO),
+                    prodCrud.getString(PRODUCTO_TIPO),
+                    activo,
+                    prodCrud.getLong(PRODUCTO_TIMESTAMP));
+
+            return prodProv;
         } else if (tipo.equals(PRODUCTOCLI)) {
             id = prodCrud.getString(PRODUCTO_ID_PRODFIRE);
+            if (prodCrud.getInt(PRODUCTO_ACTIVO) == 1) {
+                activo = true;
+            }
+            Productos prodProv = new Productos(id,
+                    prodCrud.getString(PRODUCTO_REFERENCIA),
+                    prodCrud.getString(PRODUCTO_NOMBRE),
+                    prodCrud.getString(PRODUCTO_DESCRIPCION),
+                    prodCrud.getString(PRODUCTO_CATEGORIA),
+                    prodCrud.getString(PRODUCTO_SUBCATEGORIA),
+                    prodCrud.getString(PRODUCTO_WEB),
+                    prodCrud.getDouble(PRODUCTO_DESCUENTO),
+                    prodCrud.getDouble(PRODUCTO_PRECIO),
+                    prodCrud.getString(PRODUCTO_NOMBREPROV),
+                    idUser,
+                    prodCrud.getString(PRODUCTO_ALCANCE),
+                    prodCrud.getString(PRODUCTO_TIPO),
+                    activo,
+                    prodCrud.getLong(PRODUCTO_TIMESTAMP));
+
+            return prodProv;
         }
 
-        Productos prodProv = new Productos(id, prodCrud.getString(PRODUCTO_ID_PRODUCTO),
-                prodCrud.getString(PRODUCTO_REFERENCIA), prodCrud.getString(PRODUCTO_NOMBRE),
-                prodCrud.getString(PRODUCTO_DESCRIPCION), prodCrud.getString(PRODUCTO_WEB),
-                prodCrud.getDouble(PRODUCTO_DESCPROV), prodCrud.getDouble(PRODUCTO_PRECIO),
-                prodCrud.getString(PRODUCTO_ID_PROVEEDOR), tipo,
-                prodCrud.getString(PRODUCTO_ID_PROVFIRE), prodCrud.getString(PRODUCTO_ALCANCE),
-                prodCrud.getString(PRODUCTO_TIPO), activo,
-                prodCrud.getString(PRODUCTO_ID_CLON), prodCrud.getString(PRODUCTO_RUTAFOTO),
-                sincro, prodCrud.getLong(PRODUCTO_TIMESTAMP));
-
-        return prodProv;
+        return null;
     }
 
-    protected void actualizarProdCrud(Productos prodprov) {
+    @Override
+    protected void actualizarProdCrud(Productos prodprov, ModeloSQL prodCrud) {
 
         ContentValues values = new ContentValues();
         if (tipo.equals(PRODUCTOCLI)) {
             values.put(PRODUCTO_ID_PRODFIRE, prodprov.getId());
+            if (prodprov.isActivo()) {
+                values.put(PRODUCTO_ACTIVO, 1);
+            } else {
+                values.put(PRODUCTO_ACTIVO, 0);
+            }
         } else if (tipo.equals(PRODUCTOPRO)) {
             values.put(PRODUCTO_ID_PRODFIREPRO, prodprov.getId());
+            if (prodprov.isActivo()) {
+                values.put(PRODUCTO_ACTIVOPRO, 1);
+            } else {
+                values.put(PRODUCTO_ACTIVOPRO, 0);
+            }
         }
 
-        if (prodprov.isActivo()) {
-            values.put(PRODUCTO_ACTIVO, 1);
-        } else {
-            values.put(PRODUCTO_ACTIVO, 0);
-        }
-
-        if (prodprov.isSincronizado()) {
-            values.put(PRODUCTO_SINCRO, 1);
-        } else {
-            values.put(PRODUCTO_SINCRO, 0);
-        }
-
-        if (nn(prodprov.getIdCrud())) {
-            CRUDutil.actualizarRegistro(TABLA_PRODUCTO, prodprov.getIdCrud(), values);
-        }
+        CRUDutil.actualizarRegistro(prodCrud, values);
 
     }
 
-    @Override
-    protected void alGuardar(Productos prodProv) {
-        super.alGuardar(prodProv);
+    protected void sincronizarClon(final Productos prodProv, ModeloSQL producto) {
 
-        actualizarProdCrud(prodProv);
+        final String tipo = producto.getString(PRODUCTO_TIPO);
+        String idClon = producto.getString(PRODUCTO_ID_CLON);
+        Productos prod = new Productos();
+        String id = null;
+        String nombre = prodProv.getNombre();
+        String descripcion = prodProv.getDescripcion();
+        String alcance = prodProv.getAlcance();
+        String categoria = prodProv.getCategoria();
+        String subCategoria = prodProv.getSubCategoria();
+        String referencia = prodProv.getRefprov();
+        double precio = prodProv.getPrecio();
+        double descuento = prodProv.getDescProv();
+
+        if (idClon != null && !idClon.isEmpty() && idClon.equals(prodProv.getId())) {
+
+            System.out.println("sincronizando prod");
+            ContentValues valores = new ContentValues();
+
+            if (tipo.equals(PRODUCTOCLI)) {
+
+                id = producto.getString(PRODUCTO_ID_PRODFIRE);
+                prod.setId(id);
+                prod.setTipo(PRODUCTOCLI);
+                if (producto.getInt(PRODUCTO_ACTIVO) == 1) {
+                    prod.setActivo(true);
+                } else {
+                    prod.setActivo(false);
+                }
+
+                if (producto.getInt(PRODUCTO_SINCRONOMBRE) == 1) {
+                    valores.put(PRODUCTO_NOMBRE, nombre);
+                    prod.setNombre(nombre);
+                }
+                if (producto.getInt(PRODUCTO_SINCRODESCRIPCION) == 1) {
+                    valores.put(PRODUCTO_DESCRIPCION, descripcion);
+                    prod.setDescripcion(descripcion);
+                }
+                if (producto.getInt(PRODUCTO_SINCROALCANCE) == 1) {
+                    valores.put(PRODUCTO_ALCANCE, alcance);
+                    prod.setAlcance(alcance);
+                }
+                if (producto.getInt(PRODUCTO_SINCROCATEGORIA) == 1) {
+                    valores.put(PRODUCTO_CATEGORIA, categoria);
+                    prod.setCategoria(categoria);
+                }
+                if (producto.getInt(PRODUCTO_SINCROSUBCATEGORIA) == 1) {
+                    valores.put(PRODUCTO_SUBCATEGORIA, subCategoria);
+                    prod.setSubCategoria(subCategoria);
+                }
+                if (producto.getInt(PRODUCTO_SINCROREFERENCIA) == 1) {
+                    valores.put(PRODUCTO_REFERENCIA, referencia);
+                    prod.setRefprov(referencia);
+                }
+                if (producto.getInt(PRODUCTO_SINCROIMAGEN) == 1) {
+                    ImagenUtil.copyImageFirestoreToCrud(idClon + PRODUCTOPRO, producto, "");
+                }
+
+            } else if (tipo.equals(PRODUCTOPRO)) {
+
+                id = producto.getString(PRODUCTO_ID_PRODFIREPRO);
+                prod.setId(id);
+                prod.setTipo(PRODUCTOPRO);
+                if (producto.getInt(PRODUCTO_ACTIVOPRO) == 1) {
+                    prod.setActivo(true);
+                } else {
+                    prod.setActivo(false);
+                }
+
+
+                if (producto.getInt(PRODUCTO_SINCRONOMBREPRO) == 1) {
+                    valores.put(PRODUCTO_NOMBREPRO, nombre);
+                    prod.setNombre(nombre);
+                }
+                if (producto.getInt(PRODUCTO_SINCRODESCRIPCIONPRO) == 1) {
+                    valores.put(PRODUCTO_DESCRIPCIONPRO, descripcion);
+                    prod.setDescripcion(descripcion);
+                }
+                if (producto.getInt(PRODUCTO_SINCROALCANCEPRO) == 1) {
+                    valores.put(PRODUCTO_ALCANCEPRO, alcance);
+                    prod.setAlcance(alcance);
+                }
+                if (producto.getInt(PRODUCTO_SINCROCATEGORIAPRO) == 1) {
+                    valores.put(PRODUCTO_CATEGORIAPRO, categoria);
+                    prod.setCategoria(categoria);
+                }
+                if (producto.getInt(PRODUCTO_SINCROSUBCATEGORIAPRO) == 1) {
+                    valores.put(PRODUCTO_SUBCATEGORIAPRO, subCategoria);
+                    prod.setSubCategoria(subCategoria);
+                }
+                if (producto.getInt(PRODUCTO_SINCROREFERENCIAPRO) == 1) {
+                    valores.put(PRODUCTO_REFERENCIAPRO, referencia);
+                    prod.setRefprov(referencia);
+                }
+                if (producto.getInt(PRODUCTO_SINCROIMAGENPRO) == 1) {
+                    ImagenUtil.copyImageFirestoreToCrud(idClon + PRODUCTOPRO, producto, PRO);
+                }
+            }
+
+            valores.put(PRODUCTO_PRECIO, precio);
+            valores.put(PRODUCTO_DESCPROV, descuento);
+            valores.put(PRODUCTO_ULTIMASINCRO, TimeDateUtil.ahora());
+            prod.setTimeStamp(TimeDateUtil.ahora());
+            prod.setIdprov(idUser);
+
+            CRUDutil.actualizarRegistro(producto, valores);
+
+            if (id != null) {
+                DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                db.child(PRODUCTOS).child(id).setValue(prod);
+            }
+
+        }
+    }
+
+    @Override
+    protected void alGuardar(Productos prodProv, ModeloSQL prodCrud) {
+        super.alGuardar(prodProv, prodCrud);
+
+        actualizarProdCrud(prodProv, prodCrud);
     }
 }

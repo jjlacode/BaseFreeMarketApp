@@ -12,6 +12,8 @@ public interface ICFragmentos {
 
     void enviarBundleAActivity(Bundle bundle);
 
+    void enviarBundleFragmentFragment(Bundle bundle);
+
     void addFragment(Fragment myFragment, int layout);
 
     void addFragment(Bundle bundle, Fragment myFragment, int layout);

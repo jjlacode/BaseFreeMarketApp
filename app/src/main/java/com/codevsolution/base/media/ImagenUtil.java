@@ -16,6 +16,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.crud.CRUDutil;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,6 +36,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.CAMPO_RUTAFOTO;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.PATH;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.PERSISTENCIA;
@@ -684,6 +687,43 @@ public class ImagenUtil {
                                     }
                                 });
 
+
+                            } else {
+                                System.out.println("Copiar imagen firestore.getException() = " + task.getException());
+                            }
+                        }
+                    });
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        tn.start();
+
+
+    }
+
+    public static void copyImageFirestoreToCrud(final String pathsource, final ModeloSQL modeloSQL, final String sufijoCampo) {
+
+        Thread tn = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference storageRefOrigen = storage.getReference().child(pathsource);
+                File foto = null;
+                try {
+                    foto = createImageFile();
+                    final File finalFoto = foto;
+                    storageRefOrigen.getFile(foto).addOnCompleteListener(new OnCompleteListener<FileDownloadTask.TaskSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<FileDownloadTask.TaskSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                System.out.println("Cargada imagen origen");
+
+                                CRUDutil.actualizarCampo(modeloSQL, CAMPO_RUTAFOTO + sufijoCampo, finalFoto.getAbsolutePath());
+                                System.out.println("Copiada imagen firestore");
 
                             } else {
                                 System.out.println("Copiar imagen firestore.getException() = " + task.getException());

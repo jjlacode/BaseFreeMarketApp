@@ -25,8 +25,6 @@ import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -62,31 +60,33 @@ public abstract class FragmentCRUD extends FragmentCUD {
         super.setOnCreateView(view, inflater, container);
         Log.d(TAG, getMetodo());
 
-        frLista = view.findViewById(R.id.layout_rv);
+        //frLista = view.findViewById(R.id.layout_rv);
+        frLista = view.findViewById(getId("layout_rv"));
 
-        viewRV = inflater.inflate(R.layout.rvlayout, container, false);
+        //viewRV = inflater.inflate(R.layout.rvlayout, container, false);
+        viewRV = inflater.inflate(getLayout("rvlayout"), container, false);
         if (viewRV.getParent() != null) {
             ((ViewGroup) viewRV.getParent()).removeView(viewRV); // <- fix
         }
         frLista.addView(viewRV);
 
-        rv = view.findViewById(R.id.rv);
-        refreshLayout = view.findViewById(R.id.swipeRefresh);
-        auto = view.findViewById(R.id.auto);
-        buscar = view.findViewById(R.id.imgbuscar);
-        renovar = view.findViewById(R.id.imgrenovar);
-        inicio = view.findViewById(R.id.imginicio);
-        lupa = view.findViewById(R.id.imgsearch);
-        voz = view.findViewById(R.id.imgvoz);
-        frameAnimation = view.findViewById(R.id.frameanimation);
+        rv = view.findViewById(getId("rv"));
+        refreshLayout = view.findViewById(getId("swipeRefresh"));
+        auto = view.findViewById(getId("auto"));
+        buscar = view.findViewById(getId("imgbuscar"));
+        renovar = view.findViewById(getId("imgrenovar"));
+        inicio = view.findViewById(getId("imginicio"));
+        lupa = view.findViewById(getId("imgsearch"));
+        voz = view.findViewById(getId("imgvoz"));
+        frameAnimation = view.findViewById(getId("frameanimation"));
 
         frameAnimation.setAncho((int) (ancho * densidad));
 
         refreshLayout.setColorSchemeResources(
-                R.color.s1,
-                R.color.s2,
-                R.color.s3,
-                R.color.s4
+                color("s1"),
+                color("s2"),
+                color("s3"),
+                color("s4")
         );
 
         if (land) {
@@ -99,7 +99,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
     @Override
     protected void setLayout() {
-        layoutPie = R.layout.btn_sdb;
+        layoutPie = getIdLayout("btn_sdb");
     }
 
     protected void selector() {
@@ -227,7 +227,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
                 }
                 setRv();
                 if (subTitulo == null) {
-                    activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
+                    activityBase.toolbar.setSubtitle(tituloPlural);
                 }
                 enviarAct();
             }
@@ -642,7 +642,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
         }
 
         if (subTitulo == null) {
-            activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
+            activityBase.toolbar.setSubtitle(tituloPlural);
         }
 
     }
@@ -805,7 +805,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
                     }
                     setRv();
                     if (subTitulo == null) {
-                        activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
+                        activityBase.toolbar.setSubtitle(tituloPlural);
                     }
                     //auto.setText("");
                     enviarAct();

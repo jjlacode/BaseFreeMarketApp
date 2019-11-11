@@ -507,6 +507,14 @@
     <string name="publicar">Publicar</string>
     <string name="importar_a_prospectos">Importar a prospectos</string>
     <string name="importar_a_clientes">Importar a clientes</string>
+    <string name="ver_web">Ver web</string>
+    <string name="descuento_pro">Descuento pro</string>
+    <string name="descuento_cli">Descuento cliente final</string>
+    <string name="webpro">Web pro</string>
+    <string name="palabras_clavepro">Palabras clave pro</string>
+    <string name="referencia_proveedorpro">Referencia proveedor pro</string>
+    <string name="descripcionpro">Descripcion pro</string>
+    <string name="nombrepro">Nombre pro</string>
 
 
 </resources>

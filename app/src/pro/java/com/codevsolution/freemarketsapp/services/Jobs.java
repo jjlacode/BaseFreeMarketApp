@@ -1,12 +1,15 @@
 package com.codevsolution.freemarketsapp.services;
 
+import android.content.ContentValues;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.ImagenUtil;
+import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.MsgChat;
 import com.codevsolution.base.models.Productos;
@@ -504,101 +507,30 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
         if (ahora > timeClon) {
 
 
-            DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+            ListaModeloSQL listaProd = CRUDutil.setListaModelo(CAMPOS_PRODUCTO);
+            for (final ModeloSQL producto : listaProd.getLista()) {
 
-            db.child(INDICE + PRODUCTOCLI).child(idUser).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (producto.getInt(PRODUCTO_SINCRO) == 1) {
 
-                    for (DataSnapshot prodCli : dataSnapshot.getChildren()) {
-                        System.out.println("prodCli = " + prodCli.getKey());
+                    DatabaseReference dbclon = FirebaseDatabase.getInstance().getReference();
+                    dbclon.child(PRODUCTOPRO).child(producto.getString(PRODUCTO_ID_CLON)).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                        db.child(PRODUCTOCLI).child(prodCli.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
-                                final Productos prodProv = dataSnapshot1.getValue(Productos.class);
-
-                                if (prodProv != null && prodProv.isSincronizado() && prodProv.getIdClon() != null) {
-
-                                    DatabaseReference dbclon = FirebaseDatabase.getInstance().getReference();
-                                    dbclon.child(PRODUCTOPRO).child(prodProv.getIdClon()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                                            sincronizarClon(prodProv);
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
-                                }
+                            Productos prodProv = dataSnapshot.getValue(Productos.class);
+                            if (prodProv != null && producto.getLong(PRODUCTO_ULTIMASINCRO) < prodProv.getTimeStamp()) {
+                                sincronizarClon(prodProv, producto);
                             }
+                        }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                            }
-                        });
-
-
-                    }
+                        }
+                    });
                 }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-            db = FirebaseDatabase.getInstance().getReference();
-            db.child(INDICE + PRODUCTOPRO).child(idUser).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    for (DataSnapshot prodCli : dataSnapshot.getChildren()) {
-                        System.out.println("prodCli = " + prodCli.getKey());
-
-                        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                        db.child(PRODUCTOPRO).child(prodCli.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
-                                final Productos prodProv = dataSnapshot1.getValue(Productos.class);
-
-                                if (prodProv != null && prodProv.isSincronizado() && prodProv.getIdClon() != null) {
-
-                                    DatabaseReference dbclon = FirebaseDatabase.getInstance().getReference();
-                                    dbclon.child(PRODUCTOPRO).child(prodProv.getIdClon()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                                            sincronizarClon(prodProv);
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
             timeClon = ahora + MINUTOSLONG;
         }
 
@@ -606,51 +538,119 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
 
     }
 
-    protected void sincronizarClon(final Productos prodProv) {
+    protected void sincronizarClon(final Productos prodProv, ModeloSQL producto) {
 
-        final String tipo = prodProv.getCategoria();
+        final String tipo = producto.getString(PRODUCTO_TIPO);
+        String idClon = producto.getString(PRODUCTO_ID_CLON);
+        Productos prod = new Productos();
+        String id = null;
+        String nombre = prodProv.getNombre();
+        String descripcion = prodProv.getDescripcion();
+        String alcance = prodProv.getAlcance();
+        String categoria = prodProv.getCategoria();
+        String subCategoria = prodProv.getSubCategoria();
+        String referencia = prodProv.getRefprov();
+        double precio = prodProv.getPrecio();
+        double descuento = prodProv.getDescProv();
 
-        if (prodProv.getIdClon() != null && !prodProv.getIdClon().isEmpty()) {
+        if (idClon != null && !idClon.isEmpty() && idClon.equals(prodProv.getId())) {
 
-            System.out.println("sync");
-            final String id = prodProv.getId();
-            final String idClon = prodProv.getIdClon();
+            System.out.println("sincronizando prod");
+            ContentValues valores = new ContentValues();
 
-            if (id != null && idClon != null) {
+            if (tipo.equals(PRODUCTOCLI)) {
 
-                final DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                Query querydb = db.child(PRODUCTOPRO).child(idClon);
-                querydb.addListenerForSingleValueEvent(new ValueEventListener() {
-                    private Productos prodProvClon;
+                id = producto.getString(PRODUCTO_ID_PRODFIRE);
+                prod.setId(id);
+                prod.setTipo(PRODUCTOCLI);
+                if (producto.getInt(PRODUCTO_ACTIVO) == 1) {
+                    prod.setActivo(true);
+                } else {
+                    prod.setActivo(false);
+                }
 
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (producto.getInt(PRODUCTO_SINCRONOMBRE) == 1) {
+                    valores.put(PRODUCTO_NOMBRE, nombre);
+                    prod.setNombre(nombre);
+                }
+                if (producto.getInt(PRODUCTO_SINCRODESCRIPCION) == 1) {
+                    valores.put(PRODUCTO_DESCRIPCION, descripcion);
+                    prod.setDescripcion(descripcion);
+                }
+                if (producto.getInt(PRODUCTO_SINCROALCANCE) == 1) {
+                    valores.put(PRODUCTO_ALCANCE, alcance);
+                    prod.setAlcance(alcance);
+                }
+                if (producto.getInt(PRODUCTO_SINCROCATEGORIA) == 1) {
+                    valores.put(PRODUCTO_CATEGORIA, categoria);
+                    prod.setCategoria(categoria);
+                }
+                if (producto.getInt(PRODUCTO_SINCROSUBCATEGORIA) == 1) {
+                    valores.put(PRODUCTO_SUBCATEGORIA, subCategoria);
+                    prod.setSubCategoria(subCategoria);
+                }
+                if (producto.getInt(PRODUCTO_SINCROREFERENCIA) == 1) {
+                    valores.put(PRODUCTO_REFERENCIA, referencia);
+                    prod.setRefprov(referencia);
+                }
+                if (producto.getInt(PRODUCTO_SINCROIMAGEN) == 1) {
+                    ImagenUtil.copyImageFirestoreToCrud(idClon + PRODUCTOPRO, producto, "");
+                }
 
-                        prodProvClon = dataSnapshot.getValue(Productos.class);
-                        if (prodProvClon.getTimeStamp() > prodProv.getTimeStamp()) {
-                            System.out.println("sincronizando prod");
-                            prodProvClon.setDescProv(prodProv.getDescProv());
-                            prodProvClon.setIdClon(prodProvClon.getId());
-                            prodProvClon.setId(id);
-                            prodProvClon.setSincronizado(true);
-                            prodProvClon.setTipo(prodProv.getTipo());
-                            prodProvClon.setCategoria(tipo);
-                            prodProvClon.setActivo(prodProv.isActivo());
-                            prodProvClon.setWeb(prodProv.getWeb());
-                            prodProvClon.setRefprov(prodProv.getRefprov());
-                            prodProvClon.setTimeStamp(TimeDateUtil.ahora());
-                            db.child(tipo).child(id).setValue(prodProvClon);
-                            ImagenUtil.copyImageFirestore(idClon, id);
-                        }
-                    }
+            } else if (tipo.equals(PRODUCTOPRO)) {
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                id = producto.getString(PRODUCTO_ID_PRODFIREPRO);
+                prod.setId(id);
+                prod.setTipo(PRODUCTOPRO);
+                if (producto.getInt(PRODUCTO_ACTIVOPRO) == 1) {
+                    prod.setActivo(true);
+                } else {
+                    prod.setActivo(false);
+                }
 
-                    }
-                });
 
+                if (producto.getInt(PRODUCTO_SINCRONOMBREPRO) == 1) {
+                    valores.put(PRODUCTO_NOMBREPRO, nombre);
+                    prod.setNombre(nombre);
+                }
+                if (producto.getInt(PRODUCTO_SINCRODESCRIPCIONPRO) == 1) {
+                    valores.put(PRODUCTO_DESCRIPCIONPRO, descripcion);
+                    prod.setDescripcion(descripcion);
+                }
+                if (producto.getInt(PRODUCTO_SINCROALCANCEPRO) == 1) {
+                    valores.put(PRODUCTO_ALCANCEPRO, alcance);
+                    prod.setAlcance(alcance);
+                }
+                if (producto.getInt(PRODUCTO_SINCROCATEGORIAPRO) == 1) {
+                    valores.put(PRODUCTO_CATEGORIAPRO, categoria);
+                    prod.setCategoria(categoria);
+                }
+                if (producto.getInt(PRODUCTO_SINCROSUBCATEGORIAPRO) == 1) {
+                    valores.put(PRODUCTO_SUBCATEGORIAPRO, subCategoria);
+                    prod.setSubCategoria(subCategoria);
+                }
+                if (producto.getInt(PRODUCTO_SINCROREFERENCIAPRO) == 1) {
+                    valores.put(PRODUCTO_REFERENCIAPRO, referencia);
+                    prod.setRefprov(referencia);
+                }
+                if (producto.getInt(PRODUCTO_SINCROIMAGENPRO) == 1) {
+                    ImagenUtil.copyImageFirestoreToCrud(idClon + PRODUCTOPRO, producto, PRO);
+                }
             }
+
+            valores.put(PRODUCTO_PRECIO, precio);
+            valores.put(PRODUCTO_DESCPROV, descuento);
+            valores.put(PRODUCTO_ULTIMASINCRO, TimeDateUtil.ahora());
+            prod.setTimeStamp(TimeDateUtil.ahora());
+            prod.setIdprov(idUser);
+
+            CRUDutil.actualizarRegistro(producto, valores);
+
+            if (id != null) {
+                DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                db.child(PRODUCTOS).child(id).setValue(prod);
+            }
+
         }
     }
 

@@ -27,8 +27,6 @@ import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -80,15 +78,15 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         super.setOnCreateView(view, inflater, container);
         Log.d(TAG, getMetodo());
 
-        btnback = view.findViewById(R.id.btn_back);
-        btnsave = view.findViewById(R.id.btn_save);
-        btndelete = view.findViewById(R.id.btn_del);
+        btnback = view.findViewById(getId("btn_back"));
+        btnsave = view.findViewById(getId("btn_save"));
+        btndelete = view.findViewById(getId("btn_del"));
 
         if (autoGuardado){
             gone(btnsave);
         }
 
-        activityBase.fabInicio.hide();
+        //activityBase.fabInicio.hide();
 
     }
 
@@ -97,7 +95,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         super.setLayoutExtra();
         Log.d(TAG, getMetodo());
 
-        layoutPie = R.layout.btn_sdb;
+        layoutPie = getIdLayout("btn_sdb");
         setTabla();
         setTablaCab();
         setCampos();
@@ -142,7 +140,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
             actualtemp = bundle.getString(ACTUALTEMP);
             nuevo = bundle.getBoolean(NUEVOREGISTRO);
             if (subTitulo == null) {
-                subTitulo = Interactor.setNamefdef();
+                subTitulo = getString(tituloPlural);
             }
             listab = (ListaModeloSQL) bundle.getSerializable(LISTA);
 
@@ -230,7 +228,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
             if (modeloSQL == null && id != null && tablaCab == null) {
                 modeloSQL = CRUDutil.updateModelo(campos, id);
-            } else if (modeloSQL == null && id != null && tablaCab != null && secuencia > 0) {
+            } else if (modeloSQL == null && id != null && secuencia > 0) {
                 modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
             }
 
@@ -253,7 +251,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
                 try {
 
-                    imagen.setImageResource(R.drawable.logo, (int) (anchoReal * 0.25f), (int) (altoReal * 0.15f));
+                    imagen.setImageResource(getIdDrawable("logo"), (int) (anchoReal * 0.25f), (int) (altoReal * 0.15f));
                     imagen.setGoneBtn();
                     imagen.setFocusable(false);
 
@@ -280,7 +278,75 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
                 try {
 
-                    imagen.setImageResource(R.drawable.logo, (int) (anchoReal * 0.25f), (int) (altoReal * 0.15f));
+                    imagen.setImageResource(getIdDrawable("logo"), (int) (anchoReal * 0.25f), (int) (altoReal * 0.15f));
+                    imagen.setGoneBtn();
+                    imagen.setFocusable(false);
+
+
+                } catch (Exception er) {
+                    er.printStackTrace();
+                }
+            }
+        }
+    }
+
+    protected void setImagen(ImagenLayout imagen, String campoImagen) {
+        Log.d(TAG, getMetodo());
+
+        try {
+
+            if (modeloSQL == null && id != null && tablaCab == null) {
+                modeloSQL = CRUDutil.updateModelo(campos, id);
+            } else if (modeloSQL == null && id != null && secuencia > 0) {
+                modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
+            }
+
+            if (modeloSQL != null && modeloSQL.getString(campoImagen) != null) {
+
+                path = modeloSQL.getString(campoImagen);
+
+            }
+
+            if (nnn(path)) {
+
+                System.out.println("path = " + path);
+                //imagen.setImageUri(path, (int)(anchoReal*0.25f),(int)(altoReal*0.15f));
+                imagen.setImageUriPerfil(activityBase, path);
+                imagen.setIcfragmentos(icFragmentos);
+                imagen.setVisibleBtn();
+                imagen.setFocusable(false);
+
+            } else {
+
+                try {
+
+                    imagen.setImageResource(getIdDrawable("logo"), (int) (anchoReal * 0.25f), (int) (altoReal * 0.15f));
+                    imagen.setGoneBtn();
+                    imagen.setFocusable(false);
+
+                } catch (Exception er) {
+                    er.printStackTrace();
+                }
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            if (path != null) {
+
+                //imagen.setImageUri(path, (int)(anchoReal*0.25f),(int)(altoReal*0.15f));
+                imagen.setImageUriPerfil(activityBase, path);
+                imagen.setIcfragmentos(icFragmentos);
+                imagen.setVisibleBtn();
+                imagen.setFocusable(false);
+
+
+            } else {
+
+                try {
+
+                    imagen.setImageResource(getIdDrawable("logo"), (int) (anchoReal * 0.25f), (int) (altoReal * 0.15f));
                     imagen.setGoneBtn();
                     imagen.setFocusable(false);
 
@@ -465,16 +531,21 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         //if (editMaterial.getValido()) {
         for (Object o : camposEdit) {
             if (((Map) o).get("materialEdit") == editMaterial) {
-                valores = new ContentValues();
-                valores.put((String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
-                if (secuencia > 0) {
-                    int i = ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
-                    modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
-                    System.out.println("guardados = " + i);
+
+                if (nn(modeloSQL)) {
+                    CRUDutil.actualizarCampo(modeloSQL, (String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
                 } else {
-                    int x = ConsultaBD.updateRegistro(tabla, id, valores);
-                    modeloSQL = CRUDutil.updateModelo(campos, id);
-                    System.out.println("guardados = " + x);
+                    valores = new ContentValues();
+                    valores.put((String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
+                    if (secuencia > 0) {
+                        int i = ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+                        modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
+                        System.out.println("guardados = " + i);
+                    } else {
+                        int x = ConsultaBD.updateRegistro(tabla, id, valores);
+                        modeloSQL = CRUDutil.updateModelo(campos, id);
+                        System.out.println("guardados = " + x);
+                    }
                 }
             }
         }
@@ -486,16 +557,21 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         //if (editMaterial.getValido()) {
         for (Object o : camposEdit) {
             if (((Map) o).get("materialEdit") == editMaterial) {
-                valores = new ContentValues();
-                valores.put((String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
-                if (secuencia > 0) {
-                    int i = ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
-                    modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
-                    System.out.println("guardados = " + i);
+                if (nn(modeloSQL)) {
+                    CRUDutil.actualizarCampo(modeloSQL, (String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
                 } else {
-                    int x = ConsultaBD.updateRegistro(tabla, id, valores);
-                    modeloSQL = CRUDutil.updateModelo(campos, id);
-                    System.out.println("guardados = " + x);
+
+                    valores = new ContentValues();
+                    valores.put((String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
+                    if (secuencia > 0) {
+                        int i = ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+                        modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
+                        System.out.println("guardados = " + i);
+                    } else {
+                        int x = ConsultaBD.updateRegistro(tabla, id, valores);
+                        modeloSQL = CRUDutil.updateModelo(campos, id);
+                        System.out.println("guardados = " + x);
+                    }
                 }
             }
         }
@@ -505,14 +581,19 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     protected void guardarEdit(ArrayList<Map> camposEdit, EditMaterial editMaterial, String tabla, String id, int secuencia) {
         for (Object o : camposEdit) {
             if (((Map) o).get("materialEdit") == editMaterial) {
-                ContentValues valores = new ContentValues();
-                valores.put((String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
-                if (secuencia > 0) {
-                    int i = ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
-                    System.out.println("guardados = " + i);
+                if (nn(modeloSQL)) {
+                    CRUDutil.actualizarCampo(modeloSQL, (String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
                 } else {
-                    int x = ConsultaBD.updateRegistro(tabla, id, valores);
-                    System.out.println("guardados = " + x);
+
+                    ContentValues valores = new ContentValues();
+                    valores.put((String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
+                    if (secuencia > 0) {
+                        int i = ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+                        System.out.println("guardados = " + i);
+                    } else {
+                        int x = ConsultaBD.updateRegistro(tabla, id, valores);
+                        System.out.println("guardados = " + x);
+                    }
                 }
             }
         }
@@ -694,6 +775,55 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         builder.show();
     }
 
+    protected void mostrarDialogoOpcionesImagen(final Context contexto, String campoImagen) {
+        Log.d(TAG, getMetodo());
+
+        this.campoImagen = campoImagen;
+        final CharSequence[] opciones = {"Hacer foto desde cámara",
+                "Elegir de la galería", "Quitar foto", "Cancelar"};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
+        builder.setTitle("Elige una opción");
+        builder.setItems(opciones, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                mediaUtil = new MediaUtil(contexto);
+
+
+                if (opciones[which].equals("Hacer foto desde cámara")) {
+
+                    try {
+                        if (onUpdate()) {
+                            startActivityForResult(mediaUtil.takePhotoIntent(), COD_FOTO);
+                            mediaUtil.addPhotoToGallery();
+                            path = mediaUtil.getPath(mediaUtil.getPhotoUri());
+                            AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PATH, path);
+                            onUpdate();
+                        }
+
+                    } catch (IOException e) {
+                        Log.e("DialogoOpcionesImagen", e.toString());
+                    }
+
+                } else if (opciones[which].equals("Elegir de la galería")) {
+
+                    if (onUpdate()) {
+                        startActivityForResult(mediaUtil.openGalleryIntent(), COD_SELECCIONA);
+                    }
+
+                } else if (opciones[which].equals("Quitar foto")) {
+
+                    path = null;
+                    onUpdate();
+
+                } else {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -710,11 +840,18 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                 case COD_FOTO:
 
                     path = AndroidUtil.getSharePreference(contexto, PERSISTENCIA, PATH, path);
+                    if (nn(modeloSQL) && nnn(path) && nnn(campoImagen)) {
+                        CRUDutil.actualizarCampo(modeloSQL, campoImagen, path);
+                    }
 
                 case COD_SELECCIONA:
 
                     if (data != null && data.getData() != null) {
                         path = mediaUtil.getPath(data.getData());
+                        if (nn(modeloSQL) && nnn(path) && nnn(campoImagen)) {
+                            CRUDutil.actualizarCampo(modeloSQL, campoImagen, path);
+                        }
+
                     }
                     onUpdate();
                     break;
@@ -730,6 +867,8 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
             }
         }
+
+        campoImagen = CAMPO_RUTAFOTO;
     }
 
     protected void visibleSoloBtnBack() {
@@ -846,7 +985,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     protected void setImagenUriCircle(Context contexto, String rutaFoto, ImageView imagen) {
 
         MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageUriCircle(rutaFoto, imagen, R.drawable.ic_add_a_photo_black_24dp);
+        imagenUtil.setImageUriCircle(rutaFoto, imagen, getIdDrawable("ic_add_a_photo_black_24dp"));
 
     }
 
@@ -854,7 +993,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     protected void setImagenFireStoreCircle(Context contexto, String rutaFoto, ImageView imagen) {
 
         MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagenUtil.setImageFireStoreCircle(rutaFoto, imagen, R.drawable.ic_add_a_photo_black_24dp);
+        imagenUtil.setImageFireStoreCircle(rutaFoto, imagen, getIdDrawable("ic_add_a_photo_black_24dp"));
 
     }
 
@@ -926,24 +1065,24 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         String selDelete;
 
         if (nuevo) {
-            selDelete = getString(R.string.limpiar_formulario);
+            selDelete = getString(getIdString("limpiar_formulario"));
 
         } else {
-            selDelete = getString(R.string.confirmar_borrado);
+            selDelete = getString(getIdString("confirmar_borrado"));
         }
 
-        final CharSequence[] opciones = {selDelete, getString(R.string.cancelar)};
+        final CharSequence[] opciones = {selDelete, getString(getIdString("cancelar"))};
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle(getString(R.string.borrar));
+        builder.setTitle(getString(getIdString("borrar")));
         builder.setItems(opciones, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                if (opciones[which].equals(getString(R.string.limpiar_formulario))) {
+                if (opciones[which].equals(getString(getIdString("limpiar_formulario")))) {
 
                     onDelete();
 
-                } else if (opciones[which].equals(getString(R.string.confirmar_borrado))) {
+                } else if (opciones[which].equals(getString(getIdString("confirmar_borrado")))) {
 
                     onDelete();
 

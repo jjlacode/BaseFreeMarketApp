@@ -36,6 +36,7 @@ import com.codevsolution.freemarketsapp.R;
 
 import java.util.ArrayList;
 
+import static com.codevsolution.base.style.Estilos.Constantes.ATTR;
 import static com.codevsolution.base.style.Estilos.Constantes.BTNPRIMARY;
 import static com.codevsolution.base.style.Estilos.Constantes.BTNSECONDARY;
 import static com.codevsolution.base.style.Estilos.Constantes.BTNTRANSPARENTE;
@@ -76,6 +77,7 @@ public class Estilos {
         String STYLE = "style";
         String DIMENS = "dimen";
         String ID = "id";
+        String ATTR = "attr";
         String BTNPRIMARY = "boton_redondo_primary";
         String BTNSECONDARY = "boton_redondo_secondary";
         String BTNTRANSPARENTE = "boton_redondo_blanco";
@@ -362,6 +364,10 @@ public class Estilos {
     public static int getIdStyle(Context context, String nombre) {
         return context.getResources()
                 .getIdentifier(nombre, STYLE, context.getPackageName());
+    }
+
+    public static int getIdAttribute(Context context, String nombre) {
+        return context.getResources().getIdentifier(nombre, ATTR, context.getPackageName());
     }
 
     public static int getIdDimens(Context context, String nombre) {

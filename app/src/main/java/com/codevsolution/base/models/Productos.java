@@ -6,15 +6,15 @@ public class Productos implements Serializable {
 
     private String id;
 
-    private String idCrud;
-
-    private String idClon;
-
     private String refprov;
 
     private String nombre;
 
     private String descripcion;
+
+    private String categoria;
+
+    private String subCategoria;
 
     private String web;
 
@@ -24,8 +24,6 @@ public class Productos implements Serializable {
 
     private String proveedor;
 
-    private String categoria;
-
     private String idprov;
 
     private String alcance;
@@ -34,37 +32,30 @@ public class Productos implements Serializable {
 
     private boolean activo;
 
-    private boolean sincronizado;
-
-    private String rutafoto;
-
     private long timeStamp;
 
 
     public Productos() {
     }
 
-    public Productos(String id, String idCrud, String refprov, String nombre, String descripcion, String web,
-                     double descProv, double precio, String proveedor, String categoria,
-                     String idprov, String alcance, String tipo, boolean activo,
-                     String idClon, String rutafoto, boolean sincronizado, long timeStamp) {
+    public Productos(String id, String refprov, String nombre, String descripcion,
+                     String categoria, String subCategoria, String web, double descProv,
+                     double precio, String proveedor, String idprov, String alcance,
+                     String tipo, boolean activo, long timeStamp) {
         this.id = id;
-        this.idCrud = idCrud;
         this.refprov = refprov;
         this.nombre = nombre;
         this.descripcion = descripcion;
+        this.categoria = categoria;
+        this.subCategoria = subCategoria;
         this.web = web;
         this.descProv = descProv;
         this.precio = precio;
         this.proveedor = proveedor;
-        this.categoria = categoria;
         this.idprov = idprov;
         this.alcance = alcance;
         this.tipo = tipo;
         this.activo = activo;
-        this.rutafoto = rutafoto;
-        this.idClon = idClon;
-        this.sincronizado = sincronizado;
         this.timeStamp = timeStamp;
     }
 
@@ -74,14 +65,6 @@ public class Productos implements Serializable {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getIdCrud() {
-        return idCrud;
-    }
-
-    public void setIdCrud(String idCrud) {
-        this.idCrud = idCrud;
     }
 
     public String getRefprov() {
@@ -124,14 +107,6 @@ public class Productos implements Serializable {
         this.proveedor = proveedor;
     }
 
-    public String getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
-    }
-
     public double getDescProv() {
         return descProv;
     }
@@ -172,22 +147,6 @@ public class Productos implements Serializable {
         this.activo = activo;
     }
 
-    public String getRutafoto() {
-        return rutafoto;
-    }
-
-    public void setRutafoto(String rutafoto) {
-        this.rutafoto = rutafoto;
-    }
-
-    public String getIdClon() {
-        return idClon;
-    }
-
-    public void setIdClon(String idClon) {
-        this.idClon = idClon;
-    }
-
     public String getTipo() {
         return tipo;
     }
@@ -196,20 +155,28 @@ public class Productos implements Serializable {
         this.tipo = tipo;
     }
 
-    public boolean isSincronizado() {
-        return sincronizado;
-    }
-
-    public void setSincronizado(boolean sincronizado) {
-        this.sincronizado = sincronizado;
-    }
-
     public long getTimeStamp() {
         return timeStamp;
     }
 
     public void setTimeStamp(long timeStamp) {
         this.timeStamp = timeStamp;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public String getSubCategoria() {
+        return subCategoria;
+    }
+
+    public void setSubCategoria(String subCategoria) {
+        this.subCategoria = subCategoria;
     }
 }
 

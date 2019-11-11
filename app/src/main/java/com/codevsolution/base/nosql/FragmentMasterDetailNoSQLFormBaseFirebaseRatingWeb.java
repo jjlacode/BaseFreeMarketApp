@@ -2,6 +2,7 @@ package com.codevsolution.base.nosql;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,11 +13,11 @@ import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 
@@ -27,9 +28,11 @@ import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.RatingBarLayout;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
+import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.chat.FragmentChatBase;
 import com.codevsolution.base.crud.CRUDutil;
-import com.codevsolution.base.firebase.ContratoFirebase;
 import com.codevsolution.base.firebase.FirebaseUtil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
@@ -38,7 +41,9 @@ import com.codevsolution.base.models.FirebaseFormBase;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.Productos;
+import com.codevsolution.base.models.Rating;
 import com.codevsolution.base.sqlite.ContratoSystem;
+import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
 import com.google.firebase.database.DataSnapshot;
@@ -53,7 +58,7 @@ import java.util.List;
 
 public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
         extends FragmentMasterDetailNoSQLFirebaseRatingWebMapSus implements ContratoSystem.Tablas,
-        InteractorBase.Constantes, ContratoFirebase.rutas {
+        InteractorBase.Constantes {
 
     protected EditMaterial nombre;
     protected EditMaterial descripcion;
@@ -105,7 +110,8 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
     @Override
     protected void setLayoutItem() {
 
-        layoutItem = R.layout.item_list_firebase_formbase_rating_web;
+        layoutItemRv = 0;
+        layoutItemAuto = R.layout.item_list_firebase_formbase_rating_web;
 
 
     }
@@ -208,7 +214,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
         } else if (tipoForm.equals(NUEVO)) {
 
-            gone(verVoto);
+            //gone(verVoto);
             gone(frCabecera);
             gone(rv);
             id = idUser;
@@ -273,7 +279,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             visible(claves);
             visible(etWeb);
 
-            gone(verVoto);
+            ratingBase.setVisibilidadBtnVerVotoUser(false);
             gone(suscripcion);
             visible(suscritos);
             gone(lyChat);
@@ -289,7 +295,6 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             gone(suscritos);
             gone(btndelete);
             gone(btnsave);
-            visible(lyChat);
 
             if (idChat == null) {
                 ListaModeloSQL listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
@@ -329,6 +334,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             chActivo.setChecked(firebaseFormBase.isActivo());
 
             accionesImagen();
+
         } else {
             guardar();
         }
@@ -339,7 +345,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
     protected void onGuardarImagen(String path) {
         super.onGuardarImagen(path);
 
-        ImagenUtil.setImageFireStoreCircle(idUser, activityBase.imagenPerfil);
+        ImagenUtil.setImageFireStoreCircle(idUser + tipo, activityBase.imagenPerfil);
     }
 
     @Override
@@ -406,6 +412,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             @Override
             public void onSetValueOk(String key) {
                 nuevo = false;
+                System.out.println("Guardado ok");
             }
 
             @Override
@@ -498,7 +505,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
     private class ViewHolderRVFormBaseRatingWeb extends BaseViewHolder implements TipoViewHolder {
 
-        ImageView imagen;
+        ViewImagenLayout imagen;
         TextView nombre;
         TextView descripcion;
         TextView direccion;
@@ -506,26 +513,17 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
         TextView email;
         ImageButton btnchat;
         WebView webView;
-        RatingBar ratingBarCard;
-        RatingBar ratingBarUserCard;
+        RatingBarLayout ratingBarCard;
+        RatingBarLayout ratingBarUserCard;
         NestedScrollView lylweb;
         String web;
+        CardView card;
+        RelativeLayout relativeLayout;
 
         public ViewHolderRVFormBaseRatingWeb(View view) {
             super(view);
 
-            imagen = view.findViewById(R.id.imglformbaseratingweb);
-            nombre = view.findViewById(R.id.tvnomlformbaseratingweb);
-            descripcion = view.findViewById(R.id.tvdesclformbaseratingweb);
-            direccion = view.findViewById(R.id.tvdirlformbaseratingweb);
-            telefono = view.findViewById(R.id.tvtelefonolformbaseratingweb);
-            email = view.findViewById(R.id.tvemaillformbaseratingweb);
-            webView = view.findViewById(R.id.browserweblformbaseratingweb);
-            btnchat = view.findViewById(R.id.btnchatlformbaseratingweb);
-            ratingBarCard = view.findViewById(R.id.ratingBarCardformbaseratingweb);
-            ratingBarUserCard = view.findViewById(R.id.ratingBarUserCardformbaseratingweb);
-
-            lylweb = view.findViewById(R.id.lylwebformbaseratingweb);
+            relativeLayout = view.findViewById(Estilos.getIdResource(contexto, "ry_item_list"));
 
         }
 
@@ -534,25 +532,64 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
             final FirebaseFormBase firebaseFormBase = (FirebaseFormBase) lista.get(position);
 
-            nombre.setText(firebaseFormBase.getNombreBase());
-            descripcion.setText(firebaseFormBase.getDescripcionBase());
-            direccion.setText(firebaseFormBase.getDireccionBase());
-            telefono.setText(firebaseFormBase.getTelefonoBase());
-            email.setText(firebaseFormBase.getEmailBase());
+            ViewGroupLayout vistaCard = new ViewGroupLayout(contexto, relativeLayout, new CardView(contexto));
+            card = (CardView) vistaCard.getViewGroup();
+            LinearLayoutCompat mainLinear = (LinearLayoutCompat) vistaCard.addVista(new LinearLayoutCompat(contexto));
+            mainLinear.setOrientation(LinearLayoutCompat.VERTICAL);
+            ViewGroupLayout vistaDatos = new ViewGroupLayout(contexto, mainLinear);
+            vistaDatos.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+            Estilos.setLayoutParams(mainLinear, vistaDatos.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
+            ViewGroupLayout vistaImagen = new ViewGroupLayout(contexto, vistaDatos.getViewGroup());
+            vistaImagen.setOrientacion(ViewGroupLayout.ORI_LLC_VERTICAL, 2.5f);
+            Estilos.setLayoutParams(vistaDatos.getViewGroup(), vistaImagen.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.MATCH_PARENT, 2.5f, 0);
+            imagen = vistaImagen.addImagenLayout();
+            Estilos.setLayoutParams(vistaImagen.getViewGroup(), imagen.getLinearLayoutCompat(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.MATCH_PARENT);
+            ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, vistaDatos.getViewGroup());
+            vistaForm.setOrientacion(ViewGroupLayout.ORI_LLC_VERTICAL, 1f);
+            Estilos.setLayoutParams(vistaDatos.getViewGroup(), vistaForm.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT, 1, 0);
+            nombre = vistaForm.addTextView(firebaseFormBase.getNombreBase());
+            nombre.setTextSize(sizeText * 1.5f);
+            nombre.setTypeface(Typeface.DEFAULT_BOLD);
+            if (nnn(firebaseFormBase.getDescripcionBase())) {
+                descripcion = vistaForm.addTextView(firebaseFormBase.getDescripcionBase());
+            }
+            direccion = vistaForm.addTextView(firebaseFormBase.getDireccionBase());
+            telefono = vistaForm.addTextView(firebaseFormBase.getTelefonoBase());
+            email = vistaForm.addTextView(firebaseFormBase.getEmailBase());
+            ViewGroupLayout vistaChat = new ViewGroupLayout(contexto, vistaDatos.getViewGroup());
+            vistaChat.setOrientacion(ViewGroupLayout.ORI_LLC_VERTICAL, 2.5f);
+            Estilos.setLayoutParams(vistaDatos.getViewGroup(), vistaChat.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT, 2.5f, 0);
+            btnchat = vistaChat.addImageButtonSecundary(Estilos.getIdDrawable(contexto, "ic_chat_indigo"));
+
+            ratingBarCard = new RatingBarLayout(contexto, mainLinear, true, false);
+            Estilos.setLayoutParams(mainLinear, ratingBarCard.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
+            ratingBarUserCard = new RatingBarLayout(contexto, mainLinear, true, true);
+            Estilos.setLayoutParams(mainLinear, ratingBarUserCard.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
+
+            lylweb = new NestedScrollView(contexto);
+            mainLinear.addView(lylweb);
+            lylweb.setFillViewport(true);
+            Estilos.setLayoutParams(mainLinear, lylweb, ViewGroupLayout.MATCH_PARENT, (int) ((double) (altoReal) / 3));
+            webView = new WebView(contexto);
+            lylweb.addView(webView);
+            webView.setNestedScrollingEnabled(true);
+            Estilos.setLayoutParams(lylweb, webView, ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
+
             web = firebaseFormBase.getWebBase();
 
-            if (nn(firebaseFormBase.getIdchatBase()) && !firebaseFormBase.getIdchatBase().equals("")) {
-                ImagenUtil.setImageFireStoreCircle(firebaseFormBase.getIdchatBase() +
-                        firebaseFormBase.getTipoBase(), imagen);
-            }
 
+            if (nn(firebaseFormBase.getIdchatBase()) && !firebaseFormBase.getIdchatBase().equals("")) {
+
+                imagen.setImageFirestorePerfil(activityBase, firebaseFormBase.getIdchatBase() +
+                        firebaseFormBase.getTipoBase());
+            }
             if (web != null && JavaUtil.isValidURL(web)) {
 
                 visible(lylweb);
 
                 webView.getSettings().setJavaScriptEnabled(true);
                 webView.getSettings().setBuiltInZoomControls(true);
-                webView.getSettings().setDisplayZoomControls(false);
+                webView.getSettings().setDisplayZoomControls(true);
 
                 webView.setWebViewClient(new WebViewClient() {
 
@@ -567,6 +604,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             } else {
                 gone(lylweb);
             }
+
 
             btnchat.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -597,16 +635,123 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
                 }
             });
 
-            ratingBarCard.setRating(0);
-            recuperarVotos(ratingBarCard, firebaseFormBase.getIdchatBase());
-            ratingBarCard.setIsIndicator(true);
+            ratingBarCard.setBarRating(0);
+            recuperarVotos(firebaseFormBase.getIdchatBase());
 
-            ratingBarUserCard.setRating(0);
-            recuperarVotoUsuario(ratingBarUserCard, contexto, firebaseFormBase.getIdchatBase());
-            ratingBarUserCard.setIsIndicator(true);
+            ratingBarUserCard.setBarRating(0);
+            recuperarVotoUsuario(contexto, firebaseFormBase.getIdchatBase());
 
 
             super.bind(lista, position);
+        }
+
+        protected void recuperarVotos(final String id) {
+
+            DatabaseReference db;
+
+            if (id != null) {
+                db = FirebaseDatabase.getInstance().getReference().child(RATING).child(id);
+
+
+                ValueEventListener valueEventListener = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        ArrayList<Rating> listaVotos = new ArrayList<>();
+
+                        for (DataSnapshot child : dataSnapshot.getChildren()) {
+
+                            System.out.println("child.getValue() = " + child.getValue());
+                            listaVotos.add(child.getValue(Rating.class));
+
+                        }
+
+                        ratingBarCard.setBarRating(0.0f);
+
+                        float rating = 0.0f;
+                        float nVotos = 0.0f;
+                        long ultimoVotoTemp = 0;
+
+
+                        for (Rating rat : listaVotos) {
+
+                            float voto = rat.getValor();
+
+                            System.out.println("voto = " + voto);
+
+                            if (voto == 1) {
+                                nVotos++;
+                            } else if (voto == 2) {
+                                nVotos++;
+                            } else if (voto == 3) {
+                                nVotos++;
+                            } else if (voto == 4) {
+                                nVotos++;
+                            } else if (voto == 5) {
+                                nVotos++;
+                            }
+
+                            rating += voto;
+
+                            if (rat.getFecha() > ultimoVotoTemp) {
+                                ultimoVotoTemp = rat.getFecha();
+                            }
+                        }
+
+                        if (nVotos > 0) {
+                            rating /= nVotos;
+                            ratingBarCard.setBarRating(rating);
+                        } else {
+                            ratingBarCard.setBarRating(0.0f);
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                };
+
+                db.addValueEventListener(valueEventListener);
+            }
+
+        }
+
+        public void recuperarVotoUsuario(final Context contexto, final String id) {
+
+            idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
+            perfilUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
+            DatabaseReference db;
+
+            if (id != null && tipo != null) {
+                db = FirebaseDatabase.getInstance().getReference().child(RATING).child(id).child(idUser + perfilUser);
+
+
+                ValueEventListener valueEventListener = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+                        Rating rat = dataSnapshot.getValue(Rating.class);
+
+                        if (rat != null) {
+                            float rating = rat.getValor();
+                            ratingBarUserCard.setBarRating(rating);
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                };
+
+                db.addValueEventListener(valueEventListener);
+
+            }
         }
 
         @Override

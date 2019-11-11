@@ -12,8 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.widget.LinearLayoutCompat;
-
 import com.chargebee.models.Subscription;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
@@ -48,9 +46,12 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     private CheckBox fire;
     private CheckBox firePro;
     private ViewGroupLayout vistaForm;
-    private LinearLayoutCompat lyPro;
-    private LinearLayoutCompat lyCli;
-    private AltaProductosPro frPro;
+    private ViewGroupLayout lyPro;
+    private ViewGroupLayout lyCli;
+    private OnSetDatosCli onSetDatosCliListener;
+    private OnSetDatosPro onSetDatosProListener;
+    private ImagenLayout imagenPro;
+
 
     public FragmentCRUDProducto() {
         // Required empty public constructor
@@ -116,7 +117,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             actualizarProdCli();
         } else {
             fire.setChecked(false);
-            gone(lyCli);
+            gone(lyCli.getViewGroup());
         }
 
         if (modeloSQL.getInt(PRODUCTO_FIREPRO) == 1) {
@@ -124,8 +125,9 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             actualizarProdPro();
         } else {
             firePro.setChecked(false);
-            gone(lyPro);
+            gone(lyPro.getViewGroup());
         }
+
 
         //imagen.setTextTitulo(modeloSQL.getString(PRODUCTO_CATEGORIA).toUpperCase());
 
@@ -149,6 +151,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         onUpdate();
 
     }
+
 
     @Override
     protected void onClickRV(View v) {
@@ -260,31 +263,55 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             }
         });
 
-        lyCli = (LinearLayoutCompat) vistaForm.addVista(new LinearLayoutCompat(contexto));
-        Estilos.setLayoutParams(vistaForm.getViewGroup(), lyCli, ViewGroupLayout.MATCH_PARENT, (int) ((double) getAltoReal()));
+        lyCli = new ViewGroupLayout(contexto, vistaForm.getViewGroup());//(LinearLayoutCompat) vistaForm.addVista(new LinearLayoutCompat(contexto));
+        Estilos.setLayoutParams(vistaForm.getViewGroup(), lyCli.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
 
-        int idViewGroup = lyCli.getId();
+        lyCli.addEditMaterialLayout(getString(R.string.descuento_cli), PRODUCTO_DESCUENTO);
+
+        int idViewGroup = lyCli.getViewGroup().getId();
         if (idViewGroup < 0) {
             idViewGroup = View.generateViewId();
         }
 
-        lyCli.setId(idViewGroup);
-        icFragmentos.addFragment(null, new AltaProductosPro(), idViewGroup);
+        lyCli.getViewGroup().setId(idViewGroup);
+        bundle = new Bundle();
+        putBundle(MODULO, true);
+        addFragment(bundle, new AltaProductosCli(this), idViewGroup);
 
-        gone(lyCli);
+        gone(lyCli.getViewGroup());
 
-        lyPro = (LinearLayoutCompat) vistaForm.addVista(new LinearLayoutCompat(contexto));
-        Estilos.setLayoutParams(vistaForm.getViewGroup(), lyCli, ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
+        lyPro = new ViewGroupLayout(contexto, vistaForm.getViewGroup());//(LinearLayoutCompat) vistaForm.addVista(new LinearLayoutCompat(contexto));
+        Estilos.setLayoutParams(vistaForm.getViewGroup(), lyPro.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
 
-        idViewGroup = lyPro.getId();
+        imagenPro = (ImagenLayout) lyPro.addVista(new ImagenLayout(contexto));
+        imagenPro.setFocusable(false);
+        imagenPro.setTextTitulo(R.string.producto_web_pro);
+        imagenPro.setFondoTitulo(Estilos.colorSecondary);
+        imagenPro.setSizeTextTitulo(sizeText * 1.5f);
+        imagenPro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mostrarDialogoOpcionesImagen(contexto, PRODUCTO_RUTAFOTOPRO);
+            }
+        });
+        lyPro.addEditMaterialLayout(getString(R.string.nombrepro), PRODUCTO_NOMBREPRO);
+        lyPro.addEditMaterialLayout(getString(R.string.descripcionpro), PRODUCTO_DESCRIPCIONPRO);
+        lyPro.addEditMaterialLayout(getString(R.string.referencia_proveedorpro), PRODUCTO_REFERENCIAPRO);
+        lyPro.addEditMaterialLayout(getString(R.string.descuento_pro), PRODUCTO_DESCUENTOPRO);
+        lyPro.addEditMaterialLayout(getString(R.string.palabras_clavepro), PRODUCTO_ALCANCEPRO);
+        lyPro.addEditMaterialLayout(getString(R.string.webpro), PRODUCTO_WEBPRO);
+
+        idViewGroup = lyPro.getViewGroup().getId();
         if (idViewGroup < 0) {
             idViewGroup = View.generateViewId();
         }
 
-        lyPro.setId(idViewGroup);
-        icFragmentos.addFragment(null, new AltaProductosPro(), idViewGroup);
+        lyPro.getViewGroup().setId(idViewGroup);
+        bundle = new Bundle();
+        putBundle(MODULO, true);
+        addFragment(bundle, new AltaProductosPro(this), idViewGroup);
 
-        gone(lyPro);
+        gone(lyPro.getViewGroup());
 
         actualizarArrays(vistaForm);
 
@@ -292,10 +319,13 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
     private void actualizarProdCli() {
 
-        visible(lyCli);
+        System.out.println("Actualiza prodCli");
+        visible(lyCli.getViewGroup());
         bundle = new Bundle();
         putBundle(CRUD, modeloSQL);
-        icFragmentos.enviarBundleAActivity(bundle);
+        if (onSetDatosCliListener != null) {
+            onSetDatosCliListener.onSetDatos(bundle);
+        }
 
         // Guarda el valor de producto cli a true y actualiza el modelo
         CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIRE, 1);
@@ -304,10 +334,14 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
     private void actualizarProdPro() {
 
-        visible(lyPro);
+        System.out.println("Actualiza prodPro");
+        visible(lyPro.getViewGroup());
+        setImagen(imagenPro, PRODUCTO_RUTAFOTOPRO);
         bundle = new Bundle();
         putBundle(CRUD, modeloSQL);
-        icFragmentos.enviarBundleAActivity(bundle);
+        if (onSetDatosProListener != null) {
+            onSetDatosProListener.onSetDatos(bundle);
+        }
 
         // Guarda el valor de producto cli a true y actualiza el modelo
         CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIREPRO, 1);
@@ -377,7 +411,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         new Dialogos.DialogoTexto(titulo, mensaje, contexto, new Dialogos.DialogoTexto.OnClick() {
             @Override
             public void onConfirm() {
-                gone(lyCli);
+                gone(lyCli.getViewGroup());
                 CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIRE, 0);
                 modeloSQL = CRUDutil.updateModelo(modeloSQL);
                 borrarProdFire(modeloSQL, PRODUCTOCLI);
@@ -424,7 +458,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         new Dialogos.DialogoTexto(titulo, mensaje, contexto, new Dialogos.DialogoTexto.OnClick() {
             @Override
             public void onConfirm() {
-                gone(lyPro);
+                gone(lyPro.getViewGroup());
                 CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIREPRO, 0);
                 modeloSQL = CRUDutil.updateModelo(modeloSQL);
                 borrarProdFire(modeloSQL, PRODUCTOPRO);
@@ -527,5 +561,19 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         }
     }
 
+    public interface OnSetDatosCli {
+        void onSetDatos(Bundle bundle);
+    }
 
+    public void setOnSetDatosCliListener(OnSetDatosCli onSetDatosCliListener) {
+        this.onSetDatosCliListener = onSetDatosCliListener;
+    }
+
+    public interface OnSetDatosPro {
+        void onSetDatos(Bundle bundle);
+    }
+
+    public void setOnSetDatosProListener(OnSetDatosPro onSetDatosProListener) {
+        this.onSetDatosProListener = onSetDatosProListener;
+    }
 }

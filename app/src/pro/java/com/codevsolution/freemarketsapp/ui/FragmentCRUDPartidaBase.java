@@ -58,7 +58,6 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
     private EditMaterialLayout importePartida;
     private ImageButton btnNuevaTarea;
     private ImageButton btnNuevoProd;
-    private ImageButton btnNuevoProdProv;
     private Button btnpart;
 
     private RecyclerView rvdetalles;
@@ -166,20 +165,6 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
             }
 
         });
-        btnNuevoProdProv = vistaBtn.addImageButtonSecundary(R.drawable.ic_catalogo_indigo, 1);
-        btnNuevoProdProv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                update();
-                AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PARTIDABASE_ID_PARTIDABASE, id);
-                bundle = new Bundle();
-                putBundle(ORIGEN, PARTIDABASE);
-                icFragmentos.enviarBundleAFragment(bundle, new ListadoProductosPro());
-
-            }
-
-        });
         rvdetalles = (RecyclerView) vistaForm.addVista(new RecyclerView(contexto));
 
     }
@@ -225,7 +210,6 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
         }
         visible(btnNuevaTarea);
         visible(btnNuevoProd);
-        visible(btnNuevoProdProv);
         visible(nombrePartida.getLinearLayout());
         visible(btndelete);
 

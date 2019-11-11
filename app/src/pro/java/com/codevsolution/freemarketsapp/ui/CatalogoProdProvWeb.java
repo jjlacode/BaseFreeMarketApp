@@ -223,7 +223,7 @@ public class CatalogoProdProvWeb extends FragmentMasterDetailNoSQL {
     @Override
     protected void setLayout() {
 
-        layoutItem = R.layout.item_list_catalogo_prod_prov_web;
+        layoutItemRv = R.layout.item_list_catalogo_prod_prov_web;
         layoutCuerpo = R.layout.catalogo_prod_prov_web;
 
     }

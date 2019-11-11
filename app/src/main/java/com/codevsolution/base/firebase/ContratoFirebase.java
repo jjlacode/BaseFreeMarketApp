@@ -41,8 +41,8 @@ public class ContratoFirebase implements InteractorBase.Constantes, JavaUtil.Con
         return new String[]{SUSCRIPCIONES, idTipo};
     }
 
-    public static String[] getRutaLocalizacionUser() {
-        return new String[]{idUser, LOCALIZACION};
+    public static String[] getRutaUser() {
+        return new String[]{idUser};
     }
 
     public static String[] getRutaSuscripcionesProUser() {
@@ -56,5 +56,6 @@ public class ContratoFirebase implements InteractorBase.Constantes, JavaUtil.Con
     public static String[] getRutaSuscripcionesSorteosProUser() {
         return new String[]{idUser, SUSCRIPCIONESSORTEOSPRO};
     }
+
 
 }

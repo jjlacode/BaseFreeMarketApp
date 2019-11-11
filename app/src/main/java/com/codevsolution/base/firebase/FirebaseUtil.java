@@ -8,6 +8,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 public class FirebaseUtil {
 
     private DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+    protected GenericTypeIndicator<ArrayList<String>> tipoArrayListsString = new GenericTypeIndicator<ArrayList<String>>() {
+    };
 
     public FirebaseUtil() {
     }
@@ -24,7 +27,7 @@ public class FirebaseUtil {
         return db;
     }
 
-    public void getValue(String[] ruta, String id, final String clase, final OnGetValue onGetValueListener) {
+    public void getValue(String[] ruta, String id, final Class<?> clase, final OnGetValue onGetValueListener) {
 
         if (id != null) {
 
@@ -56,11 +59,7 @@ public class FirebaseUtil {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (onGetValueListener != null) {
-                        try {
-                            onGetValueListener.onGetValue(dataSnapshot.getValue((Class.forName(clase)).getClass()));
-                        } catch (ClassNotFoundException e) {
-                            e.printStackTrace();
-                        }
+                        onGetValueListener.onGetValue(dataSnapshot.getValue(clase));
 
                     }
                 }
@@ -97,7 +96,7 @@ public class FirebaseUtil {
 
             }
 
-            final ArrayList<Class<?>> listaValores = new ArrayList<>();
+            final ArrayList<Object> listaValores = new ArrayList<>();
 
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -105,11 +104,101 @@ public class FirebaseUtil {
 
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
 
-                        try {
-                            listaValores.add(child.getValue((Class.forName(clase)).getClass()));
-                        } catch (ClassNotFoundException e) {
-                            e.printStackTrace();
-                        }
+                        listaValores.add(child.getValue(clase));
+                    }
+                    if (onGetValueListener != null) {
+                        onGetValueListener.onGetValue(listaValores);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        }
+
+    }
+
+    public void getValue(String[] ruta, String id, final OnGetValue onGetValueListener) {
+
+        if (id != null) {
+
+            DatabaseReference query = null;
+            switch (ruta.length) {
+                case 0:
+                    query = db.child(id);
+                    break;
+                case 1:
+                    query = db.child(ruta[0]).child(id);
+                    break;
+                case 2:
+                    query = db.child(ruta[0]).child(ruta[1]).child(id);
+                    break;
+                case 3:
+                    query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(id);
+                    break;
+                case 4:
+                    query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(id);
+                    break;
+                case 5:
+                    query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).child(id);
+                    break;
+
+            }
+
+
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (onGetValueListener != null) {
+                        onGetValueListener.onGetValue(dataSnapshot.getValue(tipoArrayListsString));
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        } else {
+
+            DatabaseReference query = null;
+
+            switch (ruta.length) {
+                case 0:
+                    query = db;
+                    break;
+                case 1:
+                    query = db.child(ruta[0]);
+                    break;
+                case 2:
+                    query = db.child(ruta[0]).child(ruta[1]);
+                    break;
+                case 3:
+                    query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]);
+                    break;
+                case 4:
+                    query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]);
+                    break;
+                case 5:
+                    query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]);
+                    break;
+
+            }
+
+            final ArrayList<Object> listaValores = new ArrayList<>();
+
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+
+                        listaValores.add(child.getValue(tipoArrayListsString));
                     }
                     if (onGetValueListener != null) {
                         onGetValueListener.onGetValue(listaValores);
@@ -189,6 +278,10 @@ public class FirebaseUtil {
     public void setValue(String[] ruta, String id, Object valor, final OnSetValue onSetValueListener) {
 
         Task<Void> query = null;
+        boolean nuevo = false;
+        if (id == null) {
+            nuevo = true;
+        }
 
         switch (ruta.length) {
             case 0:
@@ -237,8 +330,10 @@ public class FirebaseUtil {
 
                 if (onSetValueListener != null) {
                     if (task.isSuccessful()) {
+                        System.out.println("Prod Fire creado con exito");
                         onSetValueListener.onSetValueOk(finalId);
                     } else {
+                        System.out.println("error creando Prod Fire");
                         onSetValueListener.onSetValueFail(finalId);
                     }
                 }
@@ -486,11 +581,89 @@ public class FirebaseUtil {
         });
     }
 
+    public void removeValue(String[] ruta, String id, final OnRemoveValue onRemoveValueListener) {
+
+        if (id != null) {
+
+            DatabaseReference query = null;
+            switch (ruta.length) {
+                case 0:
+                    query = db.child(id);
+                    break;
+                case 1:
+                    query = db.child(ruta[0]).child(id);
+                    break;
+                case 2:
+                    query = db.child(ruta[0]).child(ruta[1]).child(id);
+                    break;
+                case 3:
+                    query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(id);
+                    break;
+                case 4:
+                    query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(id);
+                    break;
+                case 5:
+                    query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).child(id);
+                    break;
+
+            }
+
+
+            query.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+
+                    if (onRemoveValueListener != null) {
+                        if (task.isSuccessful()) {
+                            onRemoveValueListener.onRemoveValueOk();
+                        } else {
+                            onRemoveValueListener.onRemoveValueFail();
+                        }
+                    }
+                }
+            });
+
+        } else {
+
+            DatabaseReference query = null;
+
+            switch (ruta.length) {
+                case 0:
+                    query = db;
+                    break;
+                case 1:
+                    query = db.child(ruta[0]);
+                    break;
+                case 2:
+                    query = db.child(ruta[0]).child(ruta[1]);
+                    break;
+                case 3:
+                    query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]);
+                    break;
+                case 4:
+                    query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]);
+                    break;
+                case 5:
+                    query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]);
+                    break;
+
+            }
+
+        }
+    }
+
+    public interface OnRemoveValue {
+
+        void onRemoveValueOk();
+
+        void onRemoveValueFail();
+    }
+
     public interface OnGetValue {
 
-        void onGetValue(Class<?> objeto);
+        void onGetValue(Object objeto);
 
-        void onGetValue(ArrayList<Class<?>> listaObjetos);
+        void onGetValue(ArrayList listaObjetos);
     }
 
     public interface OnSetValue {

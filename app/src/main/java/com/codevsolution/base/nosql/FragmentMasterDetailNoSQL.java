@@ -36,7 +36,8 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
 
     protected LinearLayout frLista;
     protected View viewRV;
-    protected int layoutItem;
+    protected int layoutItemRv;
+    protected int layoutItemAuto;
     protected RecyclerView rv;
     protected AutoCompleteTextView auto;
     protected ArrayList listafiltrada;
@@ -344,7 +345,7 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
         layoutManager = new GridLayoutManager(contexto, columnas);
         setManagerRV();
         rv.setLayoutManager(layoutManager);
-        adaptadorRV = new RVAdapter(setViewHolder(view), lista, layoutItem);
+        adaptadorRV = new RVAdapter(setViewHolder(view), lista, layoutItemRv);
         rv.setAdapter(adaptadorRV);
 
         adaptadorRV.setOnClickListener(new View.OnClickListener() {
@@ -355,7 +356,7 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
             }
         });
 
-        adaptadorFiltro = setAdaptadorAuto(contexto, layoutItem, lista);
+        adaptadorFiltro = setAdaptadorAuto(contexto, layoutItemAuto, lista);
 
         auto.setAdapter(adaptadorFiltro);
 
@@ -555,11 +556,12 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
             activityBase.fabVoz.setSize(FloatingActionButton.SIZE_MINI);
 
         } else {
-            activityBase.fabVoz.show();
-            activityBase.fabNuevo.show();
             activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_NORMAL);
             activityBase.fabInicio.setSize(FloatingActionButton.SIZE_NORMAL);
             activityBase.fabVoz.setSize(FloatingActionButton.SIZE_NORMAL);
+            activityBase.fabVoz.show();
+            activityBase.fabNuevo.show();
+
 
             if (grabarVoz == null) {
                 listaRV();

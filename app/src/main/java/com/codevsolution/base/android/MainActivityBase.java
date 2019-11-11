@@ -61,7 +61,6 @@ public class MainActivityBase extends AppCompatActivity
     protected String accion;
     public ImageView imagenPerfil;
     public DrawerLayout drawer;
-    protected AlRecibirDatos alRecibirDatosListener;
 
     protected void persitencia() {
 
@@ -263,9 +262,11 @@ public class MainActivityBase extends AppCompatActivity
 
         this.bundle = bundle;
 
-        if (alRecibirDatosListener != null) {
-            alRecibirDatosListener.alRecibirDatos(bundle);
-        }
+    }
+
+    @Override
+    public void enviarBundleFragmentFragment(Bundle bundle) {
+
 
     }
 
@@ -283,9 +284,9 @@ public class MainActivityBase extends AppCompatActivity
         this.bundle = bundle;
 
         if (layout <= 0) {
-            getSupportFragmentManager().beginTransaction().add(R.id.content_main, myFragment).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.content_main, myFragment).addToBackStack(null).commit();
         } else {
-            getSupportFragmentManager().beginTransaction().add(layout, myFragment).commit();
+            getSupportFragmentManager().beginTransaction().add(layout, myFragment).addToBackStack(null).commit();
         }
 
     }
@@ -383,14 +384,6 @@ public class MainActivityBase extends AppCompatActivity
 
         }
 
-    }
-
-    public interface AlRecibirDatos {
-        void alRecibirDatos(Bundle bundle);
-    }
-
-    public void setAlRecibirDatosListener(AlRecibirDatos alRecibirDatosListener) {
-        this.alRecibirDatosListener = alRecibirDatosListener;
     }
 
 }

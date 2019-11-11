@@ -13,7 +13,6 @@ import android.text.TextUtils;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.codevsolution.base.android.AndroidUtil;
@@ -23,7 +22,6 @@ import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.models.DestinosVoz;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
-import com.codevsolution.base.models.Productos;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.TimeDateUtil;
@@ -32,11 +30,6 @@ import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.services.EventosReceiver;
 import com.codevsolution.freemarketsapp.ui.CalendarioEventos;
 import com.codevsolution.freemarketsapp.ui.MenuInicio;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -2493,52 +2486,6 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                 ConsultaBD.putDato(valores, CAMPOS_CLIENTE, CLIENTE_ID_TIPOCLIENTE, cliente.getString(CLIENTE_ID_TIPOCLIENTE));
                 ConsultaBD.putDato(valores, CAMPOS_CLIENTE, CLIENTE_PESOTIPOCLI, cliente.getInt(CLIENTE_PESOTIPOCLI));
                 ConsultaBD.updateRegistro(TABLA_CLIENTE, cliente.getString(CLIENTE_ID_CLIENTE), valores);
-            }
-
-        }
-
-        public static void actualizarProdProvPartidaProy(String idPartida) {
-
-            ArrayList<ModeloSQL> listaDetPartida;
-            listaDetPartida = ConsultaBD.queryListDetalle(CAMPOS_DETPARTIDA, idPartida, TABLA_PARTIDA);
-            final ModeloSQL partida = ConsultaBD.queryObject(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, idPartida, null,
-                    JavaUtil.Constantes.IGUAL, null);
-            for (final ModeloSQL detPartida : listaDetPartida) {
-
-                if (detPartida.getString(DETPARTIDA_TIPO).equals(TIPOPRODUCTOPROV)) {
-
-                    DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                    db.child(PRODUCTOPRO).child(detPartida.getString(DETPARTIDA_ID_DETPARTIDA)).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                            Productos prodProv = dataSnapshot.getValue(Productos.class);
-
-                            ContentValues valores = new ContentValues();
-
-                            valores.put(DETPARTIDA_NOMBRE, prodProv.getNombre());
-                            valores.put(DETPARTIDA_DESCRIPCION, prodProv.getDescripcion());
-                            valores.put(DETPARTIDA_REFPROVCAT, prodProv.getRefprov());
-                            valores.put(DETPARTIDA_RUTAFOTO, prodProv.getRutafoto());
-
-                            if (partida.getInt(PARTIDA_TIPO_ESTADO) == 1) {
-                                valores.put(DETPARTIDA_PRECIO, prodProv.getPrecio());
-                                valores.put(DETPARTIDA_DESCUENTOPROVCAT, prodProv.getDescProv());
-                            }
-
-                            int res = CRUDutil.actualizarRegistro(detPartida, valores);
-                            System.out.println("detpartidas actualizadas = " + res);
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-
-                }
-
             }
 
         }

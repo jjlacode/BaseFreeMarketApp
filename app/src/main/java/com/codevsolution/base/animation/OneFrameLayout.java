@@ -43,7 +43,7 @@ public class OneFrameLayout extends FrameLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
 
-        if (activo) {
+        if (activo && onSwipeListener != null) {
 
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:

@@ -17,15 +17,6 @@ public class ListadosPerfilesFirebasePro extends FragmentMasterDetailNoSQLFormBa
 
     }
 
-    @Override
-    protected void accionesImagen() {
-
-        imagen.setVisibleBtn();
-        imagen.setImageFirestore(firebaseFormBase.getIdchatBase());
-
-        System.out.println("Acciones listados firebase");
-
-    }
 
     @Override
     protected void setLayout() {

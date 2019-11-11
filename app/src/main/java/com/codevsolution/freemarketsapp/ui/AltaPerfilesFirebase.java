@@ -46,6 +46,13 @@ public abstract class AltaPerfilesFirebase extends FragmentMasterDetailNoSQLForm
         });
     }
 
+    @Override
+    protected void selector() {
+        super.selector();
+        activityBase.fabInicio.hide();
+
+    }
+
     protected void importarCliente(String tipoCliente) {
 
         ContentValues valores = new ContentValues();

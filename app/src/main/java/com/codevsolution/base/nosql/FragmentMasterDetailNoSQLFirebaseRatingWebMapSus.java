@@ -1,8 +1,6 @@
 package com.codevsolution.base.nosql;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,26 +13,22 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RatingBar;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.codevsolution.base.adapter.BaseViewHolder;
-import com.codevsolution.base.adapter.RVAdapter;
-import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.chat.EnviarNoticias;
 import com.codevsolution.base.crud.CRUDutil;
+import com.codevsolution.base.firebase.ContratoFirebase;
+import com.codevsolution.base.firebase.FirebaseUtil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.localizacion.LocalizacionUtils;
 import com.codevsolution.base.localizacion.MapZona;
@@ -43,7 +37,7 @@ import com.codevsolution.base.models.FirebaseFormBase;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.Rating;
-import com.codevsolution.base.rating.RatingBase;
+import com.codevsolution.base.rating.RatingVotoUserComents;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
@@ -70,26 +64,9 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
     protected NestedScrollView lyweb;
     protected String web;
     protected String stemp = "";
-    //protected ImageButton votar;
-    //protected ImageButton verVoto;
-    //private EditMaterial voto;
-    //private EditMaterial comentario;
-    //protected LinearLayout lyvoto;
-    //protected RatingBar ratingBar;
-    //protected RatingBar ratingBarUser;
-    //private float rating, nVotos, st1, st2, st3, st4, st5;
-    //private TextView tvst1, tvst2, tvst3, tvst4, tvst5, totVotos;
-    //private RecyclerView rvcoment;
-    //private RelativeLayout rlcoment;
-    //private ImageButton verComents;
-    //protected LinearLayout lystars;
-    //private ArrayList<Rating> listaVotos;
-    //private float votoUser;
     protected String idRating;
-    //private ArrayList<Rating> listaComents;
-    //private TextView ultimoVoto;
     private int posicion;
-    //protected String nombreVoto;
+    protected String nombreVoto;
     protected String tipo;
     protected String perfil;
     protected String tipoForm;
@@ -117,7 +94,8 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
     protected boolean location;
     protected MapZona mapaZona;
     protected Button btnPublicar;
-    protected RatingBase ratingBase;
+    protected RatingVotoUserComents ratingBase;
+    protected Button btnWeb;
 
 
     @Override
@@ -127,16 +105,23 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         tipoForm = setTipoForm();
         tipo = setTipo();
 
+        btnPublicar = new Button(contexto);
+        btnPublicar.setBackground(Estilos.getBotonSecondary());
+        btnPublicar.setText(Estilos.getString(contexto, "publicar"));
+        frdetalleExtraspost.addView(btnPublicar);
+        btnPublicar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                guardar();
+            }
+        });
+
+
         View viewSC = inflater.inflate(R.layout.layout_suscripcion, container, false);
         if (viewSC.getParent() != null) {
             ((ViewGroup) viewSC.getParent()).removeView(viewSC); // <- fix
         }
         frdetalleExtraspost.addView(viewSC);
-        View viewRB = inflater.inflate(R.layout.layout_rating, container, false);
-        if (viewRB.getParent() != null) {
-            ((ViewGroup) viewRB.getParent()).removeView(viewRB); // <- fix
-        }
-        frdetalleExtraspost.addView(viewRB);
 
         if (tipoForm.equals(NUEVO)) {
 
@@ -162,13 +147,15 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
                 @Override
                 public void onMarkerDragEnd(ListaModeloSQL listaZonasDel, ListaModeloSQL listaZonasAdd, ArrayList<String> paisUser) {
 
-                    DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                    //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
                     for (ModeloSQL zona : listaZonasDel.getLista()) {
-                        db.child(LUGARES).child(tipo).child(zona.getString(ZONA_NOMBRE)).child(id).removeValue();
+                        //db.child(LUGARES).child(tipo).child(zona.getString(ZONA_NOMBRE)).child(id).removeValue();
+                        firebaseUtil.removeValue(new String[]{LUGARES, tipo, zona.getString(ZONA_NOMBRE)}, id, null);
                     }
 
                     for (ModeloSQL zona : listaZonasAdd.getLista()) {
-                        db.child(LUGARES).child(tipo).child(zona.getString(ZONA_NOMBRE)).child(id).setValue(true);
+                        //db.child(LUGARES).child(tipo).child(zona.getString(ZONA_NOMBRE)).child(id).setValue(true);
+                        firebaseUtil.setValue(new String[]{LUGARES, tipo, zona.getString(ZONA_NOMBRE)}, id, true, null);
                     }
 
                 }
@@ -212,15 +199,17 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
                 @Override
                 public void onMyLocationClickListener(long latUser, long lonUser, ArrayList<String> paisUser) {
 
-                    DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                    db.child(idUser).child(LOCALIZACION).setValue(paisUser);
+                    //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                    //db.child(idUser).child(LOCALIZACION).setValue(paisUser);
+                    firebaseUtil.setValue(ContratoFirebase.getRutaUser(), LOCALIZACION, paisUser, null);
                 }
 
                 @Override
                 public void onMarkerDragEnd(ListaModeloSQL listaZonasDel, ListaModeloSQL listaZonasAdd, ArrayList<String> paisUser) {
 
-                    DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                    db.child(idUser).child(LOCALIZACION).setValue(paisUser);
+                    //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                    //db.child(idUser).child(LOCALIZACION).setValue(paisUser);
+                    firebaseUtil.setValue(ContratoFirebase.getRutaUser(), LOCALIZACION, paisUser, null);
                 }
             });
 
@@ -228,8 +217,9 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
                 @Override
                 public void onEnable(ArrayList<String> listaUbicaciones) {
 
-                    DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                    db.child(idUser).child(LOCALIZACION).setValue(listaUbicaciones);
+                    //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                    //db.child(idUser).child(LOCALIZACION).setValue(listaUbicaciones);
+                    firebaseUtil.setValue(ContratoFirebase.getRutaUser(), LOCALIZACION, listaUbicaciones, null);
                 }
 
                 @Override
@@ -242,44 +232,69 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
             mapaZona.setTipo(tipo);
         }
 
-        ratingBase = new RatingBase(fragment, frdetalleExtraspost, activityBase);
+        ratingBase = new RatingVotoUserComents(this, frdetalleExtraspost, activityBase);
+        Estilos.setLayoutParams(frdetalleExtraspost, ratingBase.getVievGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
 
+        ratingBase.setOnEnviarVotoListener(new RatingVotoUserComents.OnEnviarVoto() {
+            @Override
+            public void onClickEnviar(float votoUser, String comentario) {
+
+                enviarVoto(contexto, id, votoUser, comentario);
+            }
+        });
 
         View viewChatRec = inflater.inflate(R.layout.fragment_chat_base, container, false);
         if (viewChatRec.getParent() != null) {
             ((ViewGroup) viewChatRec.getParent()).removeView(viewChatRec); // <- fix
         }
         frdetalleExtraspost.addView(viewChatRec);
-        btnPublicar = new Button(contexto);
-        btnPublicar.setBackground(Estilos.getBotonSecondary());
-        btnPublicar.setText(Estilos.getString(contexto, "publicar"));
-        frdetalleExtraspost.addView(btnPublicar);
-        btnPublicar.setOnClickListener(new View.OnClickListener() {
+
+        btnWeb = new Button(contexto);
+        btnWeb.setBackground(Estilos.getBotonSecondary());
+        btnWeb.setText(Estilos.getString(contexto, "ver_web"));
+        frdetalleExtraspost.addView(btnWeb);
+        btnWeb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                guardar();
+                if (lyweb.getVisibility() == View.GONE) {
+                    visible(lyweb);
+                    browser.getSettings().setJavaScriptEnabled(true);
+                    browser.getSettings().setBuiltInZoomControls(true);
+                    browser.getSettings().setDisplayZoomControls(false);
+
+                    browser.setWebViewClient(new WebViewClient() {
+
+                        @Override
+                        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                            view.loadUrl(url);
+                            return true;
+                        }
+                    });
+
+
+                    browser.loadUrl(web);
+                    browser.setWebChromeClient(new WebChromeClient() {
+                        @Override
+                        public void onProgressChanged(WebView view, int progress) {
+                            progressBarWeb.setProgress(0);
+                            progressBarWeb.setVisibility(View.VISIBLE);
+                            progressBarWeb.setProgress(progress * 1000);
+
+                            progressBarWeb.incrementProgressBy(progress);
+
+                            if (progress == 100) {
+                                progressBarWeb.setVisibility(View.GONE);
+                            }
+                        }
+                    });
+                } else {
+                    gone(lyweb);
+                }
             }
         });
 
+
         chActivo = (Switch) ctrl(R.id.chactivo);
-        //ratingBar = view.findViewById(R.id.ratingBarFreelance);
-        //ratingBarUser = view.findViewById(R.id.ratingBarUserFreelance);
-        //votar = (ImageButton) ctrl(R.id.btn_votarfreelance);
-        //verVoto = (ImageButton) ctrl(R.id.btn_vervotofreelance);
-        //voto = (EditMaterial) ctrl(R.id.etvotodetfreelance);
-        //comentario = (EditMaterial) ctrl(R.id.etcomentdetfreelance);
-        //lyvoto = view.findViewById(R.id.lyvoto);
-        //lystars = view.findViewById(R.id.lystars);
-        //tvst1 = view.findViewById(R.id.tvstar1);
-        //tvst2 = view.findViewById(R.id.tvstar2);
-        //tvst3 = view.findViewById(R.id.tvstar3);
-        //tvst4 = view.findViewById(R.id.tvstar4);
-        //tvst5 = view.findViewById(R.id.tvstar5);
-        //totVotos = view.findViewById(R.id.totalvotos);
-        //ultimoVoto = view.findViewById(R.id.ultimovoto);
-        //rvcoment = view.findViewById(R.id.rvcomentariosstar);
-        //rlcoment = view.findViewById(R.id.rlcomentariosstar);
-        //verComents = view.findViewById(R.id.btn_comentstar);
         btnEnviarNoticias = (Button) ctrl(R.id.btn_enviar_noticias);
         suscripcion = (Switch) ctrl(R.id.swsuscripcion);
         suscritos = (EditMaterial) ctrl(R.id.etsuscritos);
@@ -301,6 +316,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         browser = view.findViewById(R.id.webBrowser);
         progressBarWeb = view.findViewById(R.id.progressBarWeb);
         lyweb = view.findViewById(R.id.lywebBrowser);
+        gone(lyweb);
 
         idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
 
@@ -319,6 +335,19 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
             });
 
 
+            firebaseUtil.getValue(ContratoFirebase.getRutaUser(), LOCALIZACION, new FirebaseUtil.OnGetValue() {
+                @Override
+                public void onGetValue(Object objeto) {
+
+
+                }
+
+                @Override
+                public void onGetValue(ArrayList listaObjetos) {
+
+                    paisUser = (ArrayList<String>) listaObjetos;
+                }
+            });
             DatabaseReference db = FirebaseDatabase.getInstance().getReference();
             Query querydbLocal = db.child(idUser).child(LOCALIZACION);
             querydbLocal.addValueEventListener(new ValueEventListener() {
@@ -342,18 +371,23 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
                 LinearLayout.LayoutParams.MATCH_PARENT, (int) ((double) altoReal / 2)
         );
         lyChat.setLayoutParams(lp);
+        gone(lyChat);
+        lyChat.setBackgroundColor(Estilos.colorSecondary(contexto));
 
     }
 
     private void actualizarZonas(ListaModeloSQL listaZonasDel, ListaModeloSQL listaZonasAdd) {
 
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-        for (ModeloSQL zona : listaZonasDel.getLista()) {
-            db.child(LUGARES).child(tipo).child(zona.getString(ZONA_NOMBRE)).child(id).removeValue();
-        }
+        if (nnn(id) && nnn(tipo)) {
 
-        for (ModeloSQL zona : listaZonasAdd.getLista()) {
-            db.child(LUGARES).child(tipo).child(zona.getString(ZONA_NOMBRE)).child(id).setValue(true);
+            DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+            for (ModeloSQL zona : listaZonasDel.getLista()) {
+                db.child(LUGARES).child(tipo).child(zona.getString(ZONA_NOMBRE)).child(id).removeValue();
+            }
+
+            for (ModeloSQL zona : listaZonasAdd.getLista()) {
+                db.child(LUGARES).child(tipo).child(zona.getString(ZONA_NOMBRE)).child(id).setValue(true);
+            }
         }
     }
 
@@ -399,8 +433,9 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
             setDatos();
             if (!tipoForm.equals(NUEVO)) {
 
-                recuperarVotoUsuario(ratingBarUser, contexto, idRating);
+                recuperarVotoUsuario(contexto, idRating);
                 AndroidUtil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, id);
+                gone(btnPublicar);
 
             } else {
 
@@ -410,12 +445,11 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
             if (!nuevo) {
                 if (nn(firebaseFormBase)) {
                     idRating = setIdRating();
-                    recuperarVotos(ratingBar, idRating);
+                    recuperarVotos(idRating);
                     recuperarComentarios(idRating);
                 }
             }
 
-            gone(lyvoto);
             onSetDatos();
         } else {
             AndroidUtil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, NULL);
@@ -434,48 +468,21 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
             mapaZona.setId(id);
         }
 
+        recuperarVotoUsuario(contexto, idRating);
+
         if (web != null && !web.equals("") && JavaUtil.isValidURL(web)) {
 
-            visible(lyweb);
+            visible(btnWeb);
 
             // Cargamos la web
 
 
-            browser.getSettings().setJavaScriptEnabled(true);
-            browser.getSettings().setBuiltInZoomControls(true);
-            browser.getSettings().setDisplayZoomControls(false);
 
-            browser.setWebViewClient(new WebViewClient() {
-
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    view.loadUrl(url);
-                    return true;
-                }
-            });
-
-
-            browser.loadUrl(web);
-            browser.setWebChromeClient(new WebChromeClient() {
-                @Override
-                public void onProgressChanged(WebView view, int progress) {
-                    progressBarWeb.setProgress(0);
-                    progressBarWeb.setVisibility(View.VISIBLE);
-                    progressBarWeb.setProgress(progress * 1000);
-
-                    progressBarWeb.incrementProgressBy(progress);
-
-                    if (progress == 100) {
-                        progressBarWeb.setVisibility(View.GONE);
-                    }
-                }
-            });
 
 
         } else {
-            gone(lyweb);
+            gone(btnWeb);
         }
-
 
 
     }
@@ -530,6 +537,8 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
                     if (nn(dataSnapshot.getValue())) {
                         suscripcion.setChecked(true);
+                        visible(noticias);
+
                     } else {
                         suscripcion.setChecked(false);
                         DatabaseReference dbsus = FirebaseDatabase.getInstance().getReference();
@@ -600,71 +609,6 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
     protected void acciones() {
 
         super.acciones();
-
-        ratingBarUser.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            @Override
-            public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
-
-                if (b) {
-
-                    int color = 0;
-                    if (v > 3) {
-                        color = R.color.Color_star_ok;
-                    } else if (v > 1.5) {
-                        color = R.color.Color_star_acept;
-                    } else if (v > 0) {
-                        color = R.color.Color_star_notok;
-                    } else {
-                        color = R.color.color_star_defecto;
-                    }
-
-                    ratingBarUser.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(contexto, color)));
-
-                    voto.setText(String.valueOf((int) (v)));
-                    votoUser = v;
-                }
-            }
-        });
-
-        votar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                gone(lyvoto);
-                enviarVoto(contexto, idRating, votoUser, comentario.getTexto());
-            }
-        });
-
-        verVoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (lyvoto.getVisibility() == View.VISIBLE) {
-                    gone(lyvoto);
-                } else {
-                    visible(lyvoto);
-                    recuperarVotoUsuario(ratingBarUser, contexto, idRating);
-                }
-
-            }
-        });
-
-        verComents.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (rlcoment.getVisibility() == View.VISIBLE) {
-                    gone(rlcoment);
-                    gone(lystars);
-                } else {
-
-                    recuperarComentarios(idRating);
-                    visible(rlcoment);
-                    visible(lystars);
-
-                }
-            }
-        });
 
         if (tipoForm.equals(NUEVO)) {
 
@@ -818,7 +762,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
             FirebaseDatabase.getInstance().getReference().child(RATING).child(id).child(idUser + perfilUser).setValue(rat, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                    recuperarVotos(ratingBar, id);
+                    recuperarVotos(id);
                 }
             });
         } else {
@@ -827,14 +771,8 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
     }
 
-    protected void recuperarVotos(final RatingBar ratingBar, final String id) {
+    protected void recuperarVotos(final String id) {
 
-        ratingBar.setRating(0.0f);
-        Drawable progressDrawable = ratingBar.getProgressDrawable();
-        if (progressDrawable != null) {
-            DrawableCompat.setTint(progressDrawable,
-                    contexto.getResources().getColor(R.color.color_star_defecto));
-        }
 
         if (id != null) {
             db = FirebaseDatabase.getInstance().getReference().child(RATING).child(id);
@@ -844,7 +782,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    listaVotos = new ArrayList<>();
+                    ArrayList<Rating> listaVotos = new ArrayList<>();
 
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
 
@@ -853,81 +791,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
                     }
 
-                    rating = 0.0f;
-                    nVotos = 0.0f;
-                    st1 = 0;
-                    st2 = 0;
-                    st3 = 0;
-                    st4 = 0;
-                    st5 = 0;
-                    long ultimoVotoTemp = 0;
-
-
-                    for (Rating rat : listaVotos) {
-
-                        //System.out.println("rat tipo= " + rat.getTipo());
-                        //System.out.println("tipo = " + tipo);
-                        //if (rat.getTipo().equals(tipo)) {
-
-                        float voto = rat.getValor();
-
-                        System.out.println("voto = " + voto);
-
-                        if (voto == 1) {
-                            st1++;
-                            nVotos++;
-                        } else if (voto == 2) {
-                            st2++;
-                            nVotos++;
-                        } else if (voto == 3) {
-                            st3++;
-                            nVotos++;
-                        } else if (voto == 4) {
-                            st4++;
-                            nVotos++;
-                        } else if (voto == 5) {
-                            st5++;
-                            nVotos++;
-                        }
-
-                        rating += voto;
-                        //}
-                        if (rat.getFecha() > ultimoVotoTemp) {
-                            ultimoVotoTemp = rat.getFecha();
-                        }
-                    }
-
-                    tvst5.setText(JavaUtil.getDecimales(st5, "0"));
-                    tvst4.setText(JavaUtil.getDecimales(st4, "0"));
-                    tvst3.setText(JavaUtil.getDecimales(st3, "0"));
-                    tvst2.setText(JavaUtil.getDecimales(st2, "0"));
-                    tvst1.setText(JavaUtil.getDecimales(st1, "0"));
-                    totVotos.setText("Numero de valoraciones: " + JavaUtil.getDecimales(nVotos, "0"));
-                    if (ultimoVotoTemp > 0) {
-                        ultimoVoto.setText("Ultima valoración: " + TimeDateUtil.getDateString(ultimoVotoTemp));
-                    } else {
-                        ultimoVoto.setText("Sin valoraciones todavía");
-                    }
-
-                    if (nVotos > 0) {
-                        rating /= nVotos;
-                        ratingBar.setRating(rating);
-                    } else {
-                        ratingBar.setRating(0.0f);
-                    }
-
-                    int color = 0;
-                    if (rating > 3) {
-                        color = R.color.Color_star_ok;
-                    } else if (rating > 1.5) {
-                        color = R.color.Color_star_acept;
-                    } else if (rating > 0) {
-                        color = R.color.Color_star_notok;
-                    } else {
-                        color = R.color.color_star_defecto;
-                    }
-
-                    ratingBar.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(contexto, color)));
+                    ratingBase.recuperarVotos(listaVotos);
                 }
 
                 @Override
@@ -946,9 +810,6 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
         perfilUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);
 
-        votoUser = 0.0f;
-        comentario.setText("");
-        ratingBarUser.setRating(votoUser);
 
         if (id != null && tipo != null) {
             db = FirebaseDatabase.getInstance().getReference().child(RATING).child(id).child(idUser + perfilUser);
@@ -962,26 +823,9 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
                     Rating rat = dataSnapshot.getValue(Rating.class);
 
                     if (rat != null) {
-                        //votoUser = rat.getValor();
-                        //comentario.setText(rat.getComentario());
-                        ratingBase.setVotoUser(rat.getValor());
-                        ratingBase.setComentario(rat.getComentario());
-                    }
 
-                    //voto.setText(String.valueOf(votoUser));
-                    // ratingBarUser.setRating(votoUser);
-                    int color = 0;
-                    if (votoUser > 3) {
-                        color = R.color.Color_star_ok;
-                    } else if (votoUser > 1.5) {
-                        color = R.color.Color_star_acept;
-                    } else if (votoUser > 0) {
-                        color = R.color.Color_star_notok;
-                    } else {
-                        color = R.color.color_star_defecto;
+                        ratingBase.recuperarVotosUsuario(rat.getValor(), rat.getComentario());
                     }
-
-                    ratingBarUser.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(contexto, color)));
 
                 }
 
@@ -1007,7 +851,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    listaComents = new ArrayList<>();
+                    ArrayList<Rating> listaComents = new ArrayList<>();
 
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
 
@@ -1015,8 +859,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
                     }
 
-                    RVAdapter adapter = new RVAdapter(new ViewHolderRVComents(view), listaComents, R.layout.item_coments);
-                    rvcoment.setAdapter(adapter);
+                    ratingBase.recuperarComentarios(listaComents);
 
                 }
 
@@ -1070,17 +913,22 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
     protected void guardarImagen(String path) {
         super.guardarImagen(path);
 
-        ImagenUtil.guardarImageFirestore(id, imagen, path);
+        if (nnn(id) && nnn(tipo)) {
+            ImagenUtil.guardarImageFirestore(id, imagen, path);
+            ImagenUtil.guardarImageFirestore(id + tipo, imagen, path);
+        }
     }
 
     protected void accionesImagen() {
 
+        System.out.println("Acciones imagen");
+        System.out.println("tipoForm = " + tipoForm);
         imagen.setVisibleBtn();
 
         if (tipoForm.equals(NUEVO)) {
-            if (id != null) {
+            if (nnn(id) && nnn(tipo)) {
                 visible(imagen);
-                imagen.setImageFirestorePerfil(activityBase, id);
+                imagen.setImageFirestorePerfil(activityBase, id + tipo);
 
             } else {
                 gone(imagen);
@@ -1096,63 +944,14 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
         } else {
 
-            imagen.setImageFirestorePerfil(activityBase, id);
-
-
-        }
-    }
-
-    public class ViewHolderRVComents extends BaseViewHolder implements TipoViewHolder {
-
-        TextView comentario;
-        TextView nombreComent;
-        TextView fechaComent;
-        TextView tipoComment;
-        RatingBar ratingBarComent;
-
-        public ViewHolderRVComents(View itemView) {
-            super(itemView);
-
-            comentario = itemView.findViewById(R.id.tvcoments);
-            nombreComent = itemView.findViewById(R.id.tvnombrecoments);
-            fechaComent = itemView.findViewById(R.id.tvfechacoments);
-            ratingBarComent = itemView.findViewById(R.id.ratingBarcoment);
-            tipoComment = itemView.findViewById(R.id.tvtipocoments);
-        }
-
-        @Override
-        public void bind(ArrayList<?> lista, int position) {
-            super.bind(lista, position);
-
-            Rating rating = (Rating) lista.get(position);
-
-            comentario.setText(rating.getComentario());
-            nombreComent.setText(rating.getNombreUser());
-            fechaComent.setText(TimeDateUtil.getDateString(rating.getFecha()));
-            tipoComment.setText(rating.getTipo());
-            float ratUser = rating.getValor();
-            ratingBarComent.setRating(ratUser);
-
-            int color = 0;
-            if (ratUser > 3) {
-                color = R.color.Color_star_ok;
-            } else if (ratUser > 1.5) {
-                color = R.color.Color_star_acept;
-            } else if (ratUser > 0) {
-                color = R.color.Color_star_notok;
-            } else {
-                color = R.color.color_star_defecto;
+            if (nnn(id) && nnn(tipo)) {
+                System.out.println("id+tipo = " + (id + tipo));
+                imagen.setImageFirestorePerfil(activityBase, id + tipo);
             }
 
-            ratingBarComent.setProgressTintList(ColorStateList.valueOf(ContextCompat.getColor(contexto, color)));
 
-
-        }
-
-        @Override
-        public BaseViewHolder holder(View view) {
-            return new ViewHolderRVComents(view);
         }
     }
+
 
 }
