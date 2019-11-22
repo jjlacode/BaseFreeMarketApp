@@ -4,22 +4,27 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
-import android.os.Environment;
+import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.codevsolution.base.android.controls.ViewGroupLayout;
+import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.Contador;
 import com.codevsolution.freemarketsapp.R;
 
 import java.io.File;
 import java.io.IOException;
 
-public class AudioPlayRec implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener {
+public class AudioPlayRec implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, MediaController.MediaPlayerControl {
 
     private MediaPlayer mp;
     private MediaRecorder recorder;
@@ -44,29 +49,20 @@ public class AudioPlayRec implements MediaPlayer.OnCompletionListener, MediaPlay
     private int alto;
     private int leng;
     private Contador contador;
+    private ViewGroupLayout vistaAudioVideoControl;
+    private MediaController mediaController;
+    private Handler handler = new Handler();
+    private ViewGroupLayout vistaForm;
+    private ViewGroup viewGroup;
 
 
-    public AudioPlayRec(AppCompatActivity activity, View view, Context context) {
+    public AudioPlayRec(AppCompatActivity activity, View view, Context context, ViewGroup viewGroup) {
 
         this.view = view;
         this.context = context;
         this.activity = activity;
-
-    }
-
-    public AudioPlayRec(AppCompatActivity activity, View view, Context context, int rRec,
-                        int rPlay, int rStop, int rPause, int rEstado, int rBar) {
-
-        btnRec = view.findViewById(rRec);
-        btnPlay = view.findViewById(rPlay);
-        btnStop = view.findViewById(rStop);
-        btnPause = view.findViewById(rPause);
-        estado = view.findViewById(rEstado);
-        bar = view.findViewById(rBar);
-        this.view = view;
-        this.context = context;
-        this.activity = activity;
-        init();
+        this.viewGroup = viewGroup;
+        crearLayout(viewGroup);
 
     }
 
@@ -116,7 +112,7 @@ public class AudioPlayRec implements MediaPlayer.OnCompletionListener, MediaPlay
         }
 
         if (path != null) {
-            prepararPlayAudio();
+            prepararPlay();
         } else {
 
             btnRec.setVisibility(View.VISIBLE);
@@ -141,6 +137,7 @@ public class AudioPlayRec implements MediaPlayer.OnCompletionListener, MediaPlay
 
                 reproducir();
                 btnStop.setVisibility(View.VISIBLE);
+                vistaAudioVideoControl.getViewGroup().setVisibility(View.VISIBLE);
                 btnPause.setVisibility(View.VISIBLE);
                 btnPlay.setVisibility(View.GONE);
                 bar.setVisibility(View.VISIBLE);
@@ -171,6 +168,33 @@ public class AudioPlayRec implements MediaPlayer.OnCompletionListener, MediaPlay
 
             }
         });
+        Estilos.setLayoutParams(viewGroup, vistaForm.getViewGroup(), ancho, (int) ((double) alto / 3));
+        vistaForm.getViewGroup().setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                mediaController.setEnabled(true);
+                mediaController.show();
+                return true;
+            }
+        });
+    }
+
+    private void crearLayout(ViewGroup viewGroup) {
+
+        viewGroup.removeAllViewsInLayout();
+        vistaForm = new ViewGroupLayout(context, viewGroup);
+        estado = vistaForm.addTextView("");
+
+        vistaAudioVideoControl = new ViewGroupLayout(context, vistaForm.getViewGroup());
+        vistaAudioVideoControl.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+
+        btnRec = vistaAudioVideoControl.addImageView(R.drawable.ic_rec_indigo, 1);
+        btnStop = vistaAudioVideoControl.addImageView(R.drawable.ic_stop_indigo, 1);
+        btnPause = vistaAudioVideoControl.addImageView(R.drawable.ic_pausa_indigo, 1);
+        btnPlay = vistaAudioVideoControl.addImageView(R.drawable.ic_play_indigo, 1);
+        bar = (ProgressBar) vistaForm.addVista(new ProgressBar(context, null, Estilos.pBarStyleAcept(context)));
+        // Estilos.getIdStyle(context,"Widget.Holo.ProgressBar.Horizontal")));
 
     }
 
@@ -182,43 +206,26 @@ public class AudioPlayRec implements MediaPlayer.OnCompletionListener, MediaPlay
         return path;
     }
 
-    public void setBtnPlay(int rplay) {
-
-        btnPlay = view.findViewById(rplay);
-    }
-
-    public void setBtnRec(int rRec) {
-
-        btnRec = view.findViewById(rRec);
-    }
-
-    public void setBtnStop(int rStop) {
-
-        btnPlay = view.findViewById(rStop);
-    }
-
-    public void setBtnPause(int rpause) {
-
-        btnPause = view.findViewById(rpause);
-    }
-
     public void setEstado(int rEstado) {
         estado = view.findViewById(rEstado);
+    }
+
+    public void prepareRecorderAudio() {
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        try {
+            path = MediaUtil.createAudioFile(context).getAbsolutePath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void grabar() {
 
         recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        File pathAudio = new File(Environment.getExternalStorageDirectory().getPath());
-        try {
-            archivo = File.createTempFile("audio", ".3gp", pathAudio);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        path = archivo.getAbsolutePath();
+        prepareRecorderAudio();
         recorder.setOutputFile(path);
         listener.onRec(path);
         try {
@@ -228,6 +235,7 @@ public class AudioPlayRec implements MediaPlayer.OnCompletionListener, MediaPlay
         }
         recorder.start();
         grabando = true;
+        estado.setVisibility(View.VISIBLE);
         estado.setText(context.getString(R.string.grabando));
 
     }
@@ -239,30 +247,35 @@ public class AudioPlayRec implements MediaPlayer.OnCompletionListener, MediaPlay
             grabando = false;
             recorder.release();
             listener.onEndRec();
-            prepararPlayAudio();
+            prepararPlay();
 
         } else if (reproduciendo) {
             mp.stop();
+            mediaController.hide();
             leng = 0;
             reproduciendo = false;
             contador.stop();
             bar.setVisibility(View.GONE);
             bar.setProgress(0);
-            prepararPlayAudio();
+            prepararPlay();
         }
 
     }
 
     public void reproducir() {
 
+
         if (reproduciendo) {
+
             mp.seekTo(leng);
+        }
+
             mp.start();
-        } else {
-            mp.start();
-            estado.setText(context.getString(R.string.play_audio));
+        estado.setVisibility(View.VISIBLE);
+        estado.setText(context.getString(R.string.play));
             reproduciendo = true;
             mp.setOnCompletionListener(this);
+        bar.setVisibility(View.VISIBLE);
             bar.setMax(mp.getDuration());
             contador = new Contador();
             contador.setListener(new Contador.Listener() {
@@ -273,10 +286,10 @@ public class AudioPlayRec implements MediaPlayer.OnCompletionListener, MediaPlay
                 }
             });
             contador.start(500);
-        }
+        btnStop.setVisibility(View.VISIBLE);
     }
 
-    public void prepararPlayAudio() {
+    public void prepararPlay() {
 
         mp = new MediaPlayer();
         Uri uri = Uri.fromFile(new File(path));
@@ -303,7 +316,7 @@ public class AudioPlayRec implements MediaPlayer.OnCompletionListener, MediaPlay
         leng = 0;
         bar.setProgress(0);
         contador.stop();
-        prepararPlayAudio();
+        prepararPlay();
         estado.setText(context.getString(R.string.listo_play));
 
     }
@@ -316,8 +329,66 @@ public class AudioPlayRec implements MediaPlayer.OnCompletionListener, MediaPlay
         btnRec.setVisibility(View.GONE);
         btnPlay.setVisibility(View.VISIBLE);
         estado.setText(context.getString(R.string.listo_play));
+        mediaController = new MediaController(context);
+        mediaController.setMediaPlayer(this);
+        mediaController.setAnchorView(vistaForm.getViewGroup());
 
+        handler.post(new Runnable() {
+            public void run() {
+                mediaController.setEnabled(true);
+                mediaController.show();
+            }
+        });
     }
+
+    //--MediaPlayerControl methods----------------------------------------------------
+    public void start() {
+        reproducir();
+    }
+
+
+    public void pause() {
+        mp.pause();
+        contador.pause();
+        leng = mp.getCurrentPosition();
+    }
+
+    public int getDuration() {
+        return mp.getDuration();
+    }
+
+    public int getCurrentPosition() {
+        return mp.getCurrentPosition();
+    }
+
+    public void seekTo(int i) {
+        mp.seekTo(i);
+    }
+
+    public boolean isPlaying() {
+        return mp.isPlaying();
+    }
+
+    public int getBufferPercentage() {
+        return 0;
+    }
+
+    public boolean canPause() {
+        return true;
+    }
+
+    public boolean canSeekBackward() {
+        return true;
+    }
+
+    public boolean canSeekForward() {
+        return true;
+    }
+
+    public int getAudioSessionId() {
+        return 0;
+    }
+    //------------------------------------------------------------
 
     public void setListener(Listeners listener) {
         this.listener = listener;
@@ -335,5 +406,6 @@ public class AudioPlayRec implements MediaPlayer.OnCompletionListener, MediaPlay
         // Determinar que siempre sera multipanel
         return ((float) metrics.densityDpi / (float) metrics.widthPixels) < 0.30;
     }
+
 
 }

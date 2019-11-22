@@ -28,8 +28,8 @@ public class MenuGestionProyectos extends FragmentGridImagen implements Contrato
     private String tareasEjecucion;
     private String treking;
     private String trabajos;
-    private String salir;
-    private String catalogo;
+    private String clientes;
+    private String partidasBase;
     private String proyectos;
 
     @Override
@@ -50,13 +50,15 @@ public class MenuGestionProyectos extends FragmentGridImagen implements Contrato
         tareasEjecucion = getString(R.string.tareas_ejecucion);
         treking = getString(R.string.treking);
         trabajos = getString(R.string.trabajos);
-        salir = getString(R.string.salir);
-        catalogo = getString(R.string.partidas_base);
+        clientes = getString(R.string.clientes);
+        partidasBase = getString(R.string.partidas_base);
         proyectos = getString(R.string.proyectos_y_presupuestos);
 
         lista = new ArrayList<GridModel>();
 
         lista.add(new GridModel(R.drawable.logofp, proyectos));
+        lista.add(new GridModel(R.drawable.ic_clientes_indigo, clientes));
+        lista.add(new GridModel(R.drawable.ic_proveedor_indigo, proveedores));
         lista.add(new GridModel(R.drawable.ic_proy_curso_indigo, proyectosCurso));
         lista.add(new GridModel(R.drawable.ic_tareas_indigo, tareasEjecucion));
         lista.add(new GridModel(R.drawable.ic_treking_indigo, treking));
@@ -65,9 +67,7 @@ public class MenuGestionProyectos extends FragmentGridImagen implements Contrato
         lista.add(new GridModel(R.drawable.ic_cobros_indigo, pendienteCobro));
         lista.add(new GridModel(R.drawable.ic_tareas_indigo, trabajos));
         lista.add(new GridModel(R.drawable.ic_producto_indigo, productos));
-        lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, catalogo));
-        lista.add(new GridModel(R.drawable.ic_proveedor_indigo, proveedores));
-        lista.add(new GridModel(R.drawable.ic_salir_rojo, salir));
+        lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, partidasBase));
 
     }
 
@@ -117,7 +117,7 @@ public class MenuGestionProyectos extends FragmentGridImagen implements Contrato
             activityBase.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_main, new FragmentCRUDTrabajo()).addToBackStack(null).commit();
 
-        } else if (nombre.equals(catalogo)) {
+        } else if (nombre.equals(partidasBase)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_main, new FragmentCRUDPartidaBase()).addToBackStack(null).commit();
@@ -127,12 +127,10 @@ public class MenuGestionProyectos extends FragmentGridImagen implements Contrato
             activityBase.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_main, new FragmentCRUDProyecto()).addToBackStack(null).commit();
 
-        } else if (nombre.equals(salir)) {
+        } else if (nombre.equals(clientes)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new TrabajosSem()).addToBackStack(null).commit();
-
-            //activityBase.finish();
+                    .replace(R.id.content_main, new FragmentCRUDCliente()).addToBackStack(null).commit();
 
         }
 

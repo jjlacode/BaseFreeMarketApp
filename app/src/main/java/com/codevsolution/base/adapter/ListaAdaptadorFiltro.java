@@ -63,8 +63,10 @@ public abstract class ListaAdaptadorFiltro extends ArrayAdapter {
                     suggestion = onFilter(entradas, constraint);
                     // Query the autocomplete API for the entered constraint
                     // Results
-                    results.values = suggestion;
-                    results.count = suggestion.size();
+                    if (suggestion != null) {
+                        results.values = suggestion;
+                        results.count = suggestion.size();
+                    }
                 }
                 return results;
             }

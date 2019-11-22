@@ -60,7 +60,7 @@ public abstract class FragmentMesHorario extends FragmentMes implements
             super(itemView);
 
             relativeLayout = itemView.findViewById(R.id.ry_item_list);
-            btnDia = itemView.findViewById(R.id.textViewDay);
+            //btnDia = itemView.findViewById(R.id.textViewDay);
             this.textColorSelectedDay = contexto.getResources().getColor(R.color.colorSecondaryDark);
             this.backgroundColorSelectedDay = contexto.getResources().getColor(R.color.Color_contador_notok);
             this.textColorInicioDay = contexto.getResources().getColor(R.color.colorSecondaryDark);
@@ -86,12 +86,13 @@ public abstract class FragmentMesHorario extends FragmentMes implements
             ViewGroupLayout vistaCard = new ViewGroupLayout(contexto, relativeLayout, new CardView(contexto));
             card = (CardView) vistaCard.getViewGroup();
             LinearLayoutCompat mainLinear = (LinearLayoutCompat) vistaCard.addVista(new LinearLayoutCompat(contexto));
-            mainLinear.setOrientation(ViewGroupLayout.ORI_LLC_HORIZONTAL);
-            ViewGroupLayout vistaLinear = new ViewGroupLayout(contexto, mainLinear);
+            mainLinear.setOrientation(ViewGroupLayout.ORI_LLC_VERTICAL);
+            ViewGroupLayout vistaLinear2 = new ViewGroupLayout(contexto, mainLinear);
+            vistaLinear2.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
 
-            verDia = vistaLinear.addImageButtonSecundary(Estilos.getIdDrawable(contexto, "ic_ver_indigo"));
-            Estilos.setLayoutParams(vistaLinear.getViewGroup(), verDia, Estilos.Constantes.MATCH_PARENT,
-                    (int) (Estilos.getAltoBoton(activityBase, 0.3f)));
+            verDia = vistaLinear2.addImageButtonSecundary(Estilos.getIdDrawable(contexto, "ic_evento_indigo"), 1);
+            Estilos.setLayoutParams(vistaLinear2.getViewGroup(), verDia, ViewGroup.LayoutParams.MATCH_PARENT,
+                    (int) (Estilos.getAltoBoton(activityBase, 0.5f)), 1, 0);
             verDia.setScaleType(ImageView.ScaleType.FIT_CENTER);
             verDia.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -99,7 +100,17 @@ public abstract class FragmentMesHorario extends FragmentMes implements
                     setVerDia(cal.getTimeInMillis(), setListaDia(cal.getTimeInMillis()));
                 }
             });
-
+            verSemana = vistaLinear2.addImageButtonPrimary(Estilos.getIdDrawable(contexto, "ic_semana_indigo"), 1);
+            Estilos.setLayoutParams(vistaLinear2.getViewGroup(), verSemana, ViewGroup.LayoutParams.MATCH_PARENT,
+                    (int) (Estilos.getAltoBoton(activityBase, 0.5f)), 1, 0);
+            verSemana.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            verSemana.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    abrirSemana(cal.getTimeInMillis());
+                }
+            });
+            ViewGroupLayout vistaLinear = new ViewGroupLayout(contexto, mainLinear);
             ModeloSQL perfil = CRUDutil.updateModelo(CAMPOS_PERFIL, PERFIL_NOMBRE, Interactor.perfila, null, IGUAL, null);
             if ((nomDay == Calendar.SUNDAY && perfil.getDouble(PERFIL_HORASDOMINGO) == 0) ||
                     (nomDay == Calendar.MONDAY && perfil.getDouble(PERFIL_HORASLUNES) == 0) ||
@@ -109,14 +120,13 @@ public abstract class FragmentMesHorario extends FragmentMes implements
                     (nomDay == Calendar.FRIDAY && perfil.getDouble(PERFIL_HORASVIERNES) == 0) ||
                     (nomDay == Calendar.SATURDAY && perfil.getDouble(PERFIL_HORASSABADO) == 0)) {
                 btnDia = vistaLinear.addButtonPrimary(null);
-                Estilos.setLayoutParams(vistaLinear.getViewGroup(), btnDia, Estilos.Constantes.MATCH_PARENT,
-                        (int) (Estilos.getAltoBoton(activityBase, 1)));
+                Estilos.setLayoutParams(vistaLinear.getViewGroup(), btnDia, ViewGroup.LayoutParams.MATCH_PARENT,
+                        (int) (Estilos.getAltoBoton(activityBase, 1.3f)));
                 descanso = true;
             } else {
                 btnDia = vistaLinear.addButtonTrans(null);
-                Estilos.setLayoutParams(vistaLinear.getViewGroup(), btnDia, Estilos.Constantes.MATCH_PARENT,
-                        (int) (Estilos.getAltoBoton(activityBase, 1)));
-
+                Estilos.setLayoutParams(vistaLinear.getViewGroup(), btnDia, ViewGroup.LayoutParams.MATCH_PARENT,
+                        (int) (Estilos.getAltoBoton(activityBase, 1.3f)));
                 if (campoCard != null) {
                     recyclerView = (RecyclerView) vistaLinear.addVista(new RecyclerView(contexto));
                     recyclerView.setLayoutManager(new LinearLayoutManager(contexto));
@@ -134,6 +144,7 @@ public abstract class FragmentMesHorario extends FragmentMes implements
             btnDia.setTextSize(sizeText);
 
             if (!descanso) {
+
                 if (dia.isBusca()) {
                     btnDia.setTextColor(textColorBuscaDay);
                     card.setBackgroundColor(backgroundColorBuscaDay);
@@ -170,14 +181,10 @@ public abstract class FragmentMesHorario extends FragmentMes implements
                     if (recyclerView != null)
                         recyclerView.setBackgroundColor(dia.getBackgroundColorNV());
                 }
+
             } else {
                 btnDia.setTextColor(dia.getTextColorNV());
-                btnDia.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        abrirSemana(cal.getTimeInMillis());
-                    }
-                });
+
                 card.setBackgroundColor(dia.getBackgroundColorNV());
                 if (recyclerView != null)
                     recyclerView.setBackgroundColor(dia.getBackgroundColorNV());
@@ -195,6 +202,7 @@ public abstract class FragmentMesHorario extends FragmentMes implements
 
                     //dayOnClickListener.dayOnClick(dia, position);
                     onDayClickListener.dayOnClick(dia, position);
+                    System.out.println("btnDia onClick");
                 }
             });
 
@@ -203,6 +211,7 @@ public abstract class FragmentMesHorario extends FragmentMes implements
                 public boolean onLongClick(View view) {
                     //dayOnClickListener.dayOnLongClik(dia, position);
                     onDayClickListener.dayOnLongClik(dia, position);
+                    System.out.println("btnDia onClickLong");
                     return false;
                 }
             });

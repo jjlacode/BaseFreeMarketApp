@@ -1,9 +1,12 @@
 package com.codevsolution.base.android.controls;
 
 import android.content.Context;
+import android.os.Build;
+import android.speech.tts.TextToSpeech;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.Gravity;
 import android.view.View;
@@ -23,6 +26,8 @@ import com.codevsolution.base.style.Estilos;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.Locale;
+
 public class EditMaterialLayout implements Estilos.Constantes {
 
     private LinearLayoutCompat linearLayout;
@@ -35,6 +40,7 @@ public class EditMaterialLayout implements Estilos.Constantes {
     private Button btnText;
     private AlCambiarListener listener;
     private AudioATexto grabarListener;
+    private TextToSpeech tts;
     private CambioFocoEdit listenerFoco;
     private ClickAccion listenerAccion;
     private ClickAccion2 listenerAccion2;
@@ -47,6 +53,11 @@ public class EditMaterialLayout implements Estilos.Constantes {
     private int weight = 5;
     private boolean valido;
     private boolean obligatorio;
+    private String asunto;
+    private String mensaje;
+    private String path;
+    private int id;
+
 
     public static final int NUMERO = 2;
     public static final int TEXTO = 1;
@@ -76,6 +87,7 @@ public class EditMaterialLayout implements Estilos.Constantes {
     private boolean activo;
     private boolean excedido;
     private Context context;
+    TextToSpeech.OnInitListener ttsListener;
 
 
     public EditMaterialLayout(ViewGroup viewGroup, Context context) {
@@ -102,6 +114,8 @@ public class EditMaterialLayout implements Estilos.Constantes {
 
     public EditMaterialLayout(ViewGroup viewGroup, Context context, int hint, boolean activo) {
         this.context = context;
+        this.viewGroup = viewGroup;
+
         setHint(context.getString(hint));
         setActivo(activo);
         inicializar();
@@ -122,7 +136,25 @@ public class EditMaterialLayout implements Estilos.Constantes {
         asignarEventos();
         setWeigthLayout();
         comprobarEdit();
+        id = View.generateViewId();
+        btnInicio.setFocusable(false);
+        btnAccion.setFocusable(false);
+        btnAccion2.setFocusable(false);
+        btnText.setFocusable(false);
 
+    }
+
+    private void speakOut() {
+        String text = getTexto();
+        if (text == null || text.isEmpty())
+            return;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            String utteranceId = this.hashCode() + "";
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId);
+        } else {
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+        }
     }
 
     public void setViewGroup() {
@@ -158,6 +190,10 @@ public class EditMaterialLayout implements Estilos.Constantes {
         linearLayout.addView(btnText);
     }
 
+    public int getId() {
+        return id;
+    }
+
     public LinearLayoutCompat getLinearLayout() {
         return linearLayout;
     }
@@ -180,6 +216,47 @@ public class EditMaterialLayout implements Estilos.Constantes {
         view.setLayoutParams(params);
 
 
+    }
+
+    public void setTTS(boolean enable) {
+
+        if (enable) {
+
+            btnAccionEnable(true);
+            setImgBtnAccion(Estilos.getIdDrawable(context, "ic_play_indigo"));
+
+
+            btnAccion.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+                        @Override
+                        public void onInit(int status) {
+                            if (status == TextToSpeech.SUCCESS) {
+                                int result = tts.setLanguage(Locale.getDefault());
+
+                                if (result == TextToSpeech.LANG_MISSING_DATA
+                                        || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                                    Log.e("TTS", "This Language is not supported");
+                                } else {
+                                    speakOut();
+                                }
+                            } else {
+                                Log.e("TTS", "Initilization Failed!");
+                            }
+                        }
+                    });
+                }
+            });
+        } else {
+
+            btnAccionEnable(false);
+            if (tts != null) {
+                tts.stop();
+                tts.shutdown();
+            }
+        }
     }
 
     public void setAlCambiarListener(AlCambiarListener l) {
@@ -506,6 +583,16 @@ public class EditMaterialLayout implements Estilos.Constantes {
         this.listenerAccion = listenerAccion;
     }
 
+    public void setAccionFecha(ClickAccion listenerAccion) {
+
+        btnAccionEnable(true);
+        setActivo(false);
+        setImgBtnAccion(context.getResources().
+                getIdentifier("ic_evento_indigo", DRAWABLE,
+                        context.getPackageName()));
+        this.listenerAccion = listenerAccion;
+    }
+
     public void setAccionVerMapa(ClickAccion listenerAccion) {
 
         btnAccionEnable(true);
@@ -541,6 +628,46 @@ public class EditMaterialLayout implements Estilos.Constantes {
             AppActivity.enviarEmail(context, getTexto());
         }
 
+    }
+
+    public void enviarEmail(String asunto, String texto) {
+
+        if (valido) {
+            AppActivity.enviarEmail(context, getTexto(), asunto, texto);
+        }
+
+    }
+
+    public void enviarEmail(String asunto, String texto, String path) {
+
+        if (valido) {
+            AppActivity.enviarEmail(context, getTexto(), asunto, texto, path);
+        }
+
+    }
+
+    public void setAsunto(String asunto) {
+        this.asunto = asunto;
+    }
+
+    public void setMensaje(String mensaje) {
+        this.mensaje = mensaje;
+    }
+
+    public void setPathEmail(String path) {
+        this.path = path;
+    }
+
+    public String getAsunto() {
+        return asunto;
+    }
+
+    public String getMensaje() {
+        return mensaje;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     public void verEnMapa() {
@@ -618,9 +745,10 @@ public class EditMaterialLayout implements Estilos.Constantes {
         excedido = false;
         if (obligatorio && getActivo() && ((getText() == null) || (getText() != null && getTexto().equals("")) ||
                 (getText() != null && getTexto().equals("0.0")))) {
-            editText.setBackgroundColor(context.getResources().getColor(context.getResources().
-                    getIdentifier(COLOREDITVACIO, COLOR,
-                            context.getPackageName())));
+            //editText.setBackgroundColor(context.getResources().getColor(context.getResources().
+            //        getIdentifier(COLOREDITVACIO, COLOR,
+            //                context.getPackageName())));
+            editText.setBackground(Estilos.getDrawable(context, "edit_error"));
             editText.setTextColor(context.getResources().getColor(context.getResources().
                     getIdentifier(COLORSECONDARYDARK, COLOR,
                             context.getPackageName())));
@@ -640,6 +768,7 @@ public class EditMaterialLayout implements Estilos.Constantes {
             excedido = true;
             textInputLayout.setErrorEnabled(true);
             textInputLayout.setError("Excedido el numero de caracteres");
+            editText.setBackground(Estilos.getDrawable(context, "edit_error"));
 
 
         } else {
@@ -648,10 +777,12 @@ public class EditMaterialLayout implements Estilos.Constantes {
             }
 
         }
-        if (tipoDato == EMAIL) {
+        if (tipoDato == TEXTO + EMAIL) {
             if (!Patterns.EMAIL_ADDRESS.matcher(getTexto()).matches()) {
                 textInputLayout.setErrorEnabled(true);
                 textInputLayout.setError("Correo electrónico inválido");
+                editText.setBackground(Estilos.getDrawable(context, "edit_error"));
+
                 if (obligatorio) {
                     valido = false;
                 }
@@ -664,6 +795,8 @@ public class EditMaterialLayout implements Estilos.Constantes {
             if (!Patterns.PHONE.matcher(getTexto()).matches()) {
                 textInputLayout.setErrorEnabled(true);
                 textInputLayout.setError("telefono invalido");
+                editText.setBackground(Estilos.getDrawable(context, "edit_error"));
+
                 if (obligatorio) {
                     valido = false;
                 }
@@ -672,10 +805,12 @@ public class EditMaterialLayout implements Estilos.Constantes {
                     textInputLayout.setError(null);
                 }
             }
-        } else if (tipoDato == URI) {
+        } else if (tipoDato == TEXTO + URI) {
             if (!Patterns.WEB_URL.matcher(getTexto()).matches()) {
                 textInputLayout.setErrorEnabled(true);
                 textInputLayout.setError("web invalida");
+                editText.setBackground(Estilos.getDrawable(context, "edit_error"));
+
                 if (obligatorio) {
                     valido = false;
                 }
@@ -781,6 +916,7 @@ public class EditMaterialLayout implements Estilos.Constantes {
 
     public void setActivo(boolean activo) {
         editText.setEnabled(activo);
+
         if (!activo){
             btnInicioVisible(false);
         }

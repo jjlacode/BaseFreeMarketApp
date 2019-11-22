@@ -3,8 +3,8 @@ package com.codevsolution.freemarketsapp.services;
 import android.content.Context;
 import android.content.Intent;
 
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.services.ReceiverBase;
 import com.codevsolution.freemarketsapp.MainActivity;
 import com.codevsolution.freemarketsapp.R;
@@ -13,13 +13,6 @@ import com.codevsolution.freemarketsapp.logica.Interactor;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.SORTEO;
 
 public class SorteosReceiver extends ReceiverBase implements JavaUtil.Constantes {
-
-    public SorteosReceiver(Messenger messenger) {
-        super(messenger);
-    }
-
-    public SorteosReceiver() {
-    }
 
     @Override
     public void onReceiver(Context context, Intent intent) {

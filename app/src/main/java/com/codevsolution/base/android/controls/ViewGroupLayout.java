@@ -4,7 +4,9 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -40,6 +42,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
     public static final String MAIL = "mail";
     public static final String LLAMADA = "llamada";
     public static final String WEB = "web";
+    public static final String FECHA = "fecha";
 
     public ViewGroupLayout(Context context, ViewGroup viewGroupParent) {
 
@@ -162,7 +165,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         return viewGroupParent;
     }
 
-    public ViewImagenLayout addImagenLayout(){
+    public ViewImagenLayout addViewImagenLayout() {
 
         ViewImagenLayout imagenLayout = new ViewImagenLayout(viewGroup,context);
         Estilos.setLayoutParams(viewGroup, imagenLayout.getLinearLayoutCompat());
@@ -170,12 +173,98 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         return imagenLayout;
     }
 
-    public ViewImagenLayout addImagenLayout(int peso) {
+    public ViewImagenLayout addViewImagenLayout(int peso) {
 
         ViewImagenLayout imagenLayout = new ViewImagenLayout(viewGroup, context);
         Estilos.setLayoutParams(viewGroup, imagenLayout.getLinearLayoutCompat(), peso);
 
         return imagenLayout;
+    }
+
+    public ImagenLayout addImagenLayout() {
+
+        ImagenLayout imagenLayout = new ImagenLayout(context);
+        vistas.add(imagenLayout);
+        viewGroup.addView(imagenLayout);
+        Estilos.setLayoutParams(viewGroup, imagenLayout);
+
+        return imagenLayout;
+    }
+
+    public ImagenLayout addImagenLayout(int peso) {
+
+        ImagenLayout imagenLayout = new ImagenLayout(context);
+        vistas.add(imagenLayout);
+        viewGroup.addView(imagenLayout);
+        Estilos.setLayoutParams(viewGroup, imagenLayout, peso);
+
+        return imagenLayout;
+    }
+
+    public ImageView addImageView() {
+
+        ImageView imageView = new ImageView(context);
+        vistas.add(imageView);
+        viewGroup.addView(imageView);
+        Estilos.setLayoutParams(viewGroup, imageView);
+
+        return imageView;
+    }
+
+    public ImageView addImageView(float peso) {
+
+        ImageView imageView = new ImageView(context);
+        vistas.add(imageView);
+        viewGroup.addView(imageView);
+        Estilos.setLayoutParams(viewGroup, imageView, peso);
+
+        return imageView;
+    }
+
+    public ImageView addImageView(int drawable) {
+
+        ImageView imageView = new ImageView(context);
+        imageView.setImageResource(drawable);
+        vistas.add(imageView);
+        viewGroup.addView(imageView);
+        Estilos.setLayoutParams(viewGroup, imageView);
+
+        return imageView;
+    }
+
+    public ImageView addImageView(int drawable, float peso) {
+
+        ImageView imageView = new ImageView(context);
+        imageView.setImageResource(drawable);
+        vistas.add(imageView);
+        viewGroup.addView(imageView);
+        Estilos.setLayoutParams(viewGroup, imageView, peso);
+
+        return imageView;
+    }
+
+    public CheckBox addCheckBox(String texto, boolean checked) {
+
+        CheckBox checkBox = new CheckBox(context);
+        checkBox.setText(texto);
+        checkBox.setChecked(checked);
+        vistas.add(checkBox);
+        viewGroup.addView(checkBox);
+        Estilos.setLayoutParams(viewGroup, checkBox);
+
+        return checkBox;
+    }
+
+    public CheckBox addCheckBox(int recTexto, boolean checked) {
+
+        CheckBox checkBox = new CheckBox(context);
+        checkBox.setText(recTexto);
+        checkBox.setChecked(checked);
+        vistas.add(checkBox);
+        viewGroup.addView(checkBox);
+        Estilos.setLayoutParams(viewGroup, checkBox);
+
+        return checkBox;
     }
 
     public TextView addTextView(String text) {
@@ -191,6 +280,30 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
     }
 
     public TextView addTextView(String text, int peso) {
+
+        TextView textView = new TextView(context);
+        textView.setText(text);
+        textView.setVisibility(View.VISIBLE);
+        vistas.add(textView);
+        viewGroup.addView(textView);
+        Estilos.setLayoutParams(viewGroup, textView, peso);
+
+        return textView;
+    }
+
+    public TextView addTextView(int text) {
+
+        TextView textView = new TextView(context);
+        textView.setText(text);
+        textView.setVisibility(View.VISIBLE);
+        vistas.add(textView);
+        viewGroup.addView(textView);
+        Estilos.setLayoutParams(viewGroup, textView);
+
+        return textView;
+    }
+
+    public TextView addTextView(int text, int peso) {
 
         TextView textView = new TextView(context);
         textView.setText(text);
@@ -223,6 +336,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         editMaterial.getLinearLayout().setVisibility(View.VISIBLE);
         Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout());
         editMaterialLayouts.add(editMaterial);
+        vistas.add(editMaterial.getLinearLayout());
 
         return editMaterial;
     }
@@ -234,7 +348,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         editMaterial.getLinearLayout().setVisibility(View.VISIBLE);
         Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout(), peso);
         editMaterialLayouts.add(editMaterial);
-
+        vistas.add(editMaterial.getLinearLayout());
         return editMaterial;
     }
 
@@ -245,7 +359,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         editMaterial.getLinearLayout().setVisibility(View.VISIBLE);
         Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout());
         editMaterialLayouts.add(editMaterial);
-
+        vistas.add(editMaterial.getLinearLayout());
         return editMaterial;
     }
 
@@ -256,7 +370,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         editMaterial.getLinearLayout().setVisibility(View.VISIBLE);
         Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout(), peso);
         editMaterialLayouts.add(editMaterial);
-
+        vistas.add(editMaterial.getLinearLayout());
         return editMaterial;
     }
 
@@ -271,7 +385,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         mapaCtrl.put("materialEdit", editMaterial);
         mapaCtrl.put("campoEdit", campoEdit);
         camposEdit.add(mapaCtrl);
-
+        vistas.add(editMaterial.getLinearLayout());
         return editMaterial;
     }
 
@@ -286,7 +400,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         mapaCtrl.put("materialEdit", editMaterial);
         mapaCtrl.put("campoEdit", campoEdit);
         camposEdit.add(mapaCtrl);
-
+        vistas.add(editMaterial.getLinearLayout());
         return editMaterial;
     }
 
@@ -301,7 +415,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         mapaCtrl.put("materialEdit", editMaterial);
         mapaCtrl.put("campoEdit", campoEdit);
         camposEdit.add(mapaCtrl);
-
+        vistas.add(editMaterial.getLinearLayout());
         return editMaterial;
     }
 
@@ -316,7 +430,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         mapaCtrl.put("materialEdit", editMaterial);
         mapaCtrl.put("campoEdit", campoEdit);
         camposEdit.add(mapaCtrl);
-
+        vistas.add(editMaterial.getLinearLayout());
         return editMaterial;
     }
 
@@ -329,35 +443,43 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
 
         if (modo != null) {
             if (modo.equals(MAPA)) {
+                editMaterial.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.MULTI | EditMaterialLayout.DIRECCION);
                 editMaterial.setAccionVerMapa(new EditMaterialLayout.ClickAccion() {
                     @Override
                     public void onClickAccion(View view) {
-                        editMaterial.setTipo(EditMaterialLayout.DIRECCION);
                         editMaterial.verEnMapa();
                     }
                 });
             } else if (modo.equals(MAIL)) {
+                editMaterial.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.EMAIL);
                 editMaterial.setAccionEnviarMail(new EditMaterialLayout.ClickAccion() {
                     @Override
                     public void onClickAccion(View view) {
-                        editMaterial.setTipo(EditMaterialLayout.EMAIL);
                         editMaterial.enviarEmail();
                     }
                 });
             } else if (modo.equals(LLAMADA)) {
+                editMaterial.setTipo(EditMaterialLayout.TELEFONO);
                 editMaterial.setAccionLlamada(activity, new EditMaterialLayout.ClickAccion() {
                     @Override
                     public void onClickAccion(View view) {
-                        editMaterial.setTipo(EditMaterialLayout.TELEFONO);
                         editMaterial.llamar();
                     }
                 });
             } else if (modo.equals(WEB)) {
+                editMaterial.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.URI);
                 editMaterial.setAccionVerWeb(new EditMaterialLayout.ClickAccion() {
                     @Override
                     public void onClickAccion(View view) {
-                        editMaterial.setTipo(EditMaterialLayout.URI);
                         editMaterial.verWeb();
+                    }
+                });
+            } else if (modo.equals(FECHA)) {
+                editMaterial.setTipo(EditMaterialLayout.FECHA);
+                editMaterial.setAccionFecha(new EditMaterialLayout.ClickAccion() {
+                    @Override
+                    public void onClickAccion(View view) {
+
                     }
                 });
             }
@@ -368,7 +490,43 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         mapaCtrl.put("materialEdit", editMaterial);
         mapaCtrl.put("campoEdit", campoEdit);
         camposEdit.add(mapaCtrl);
+        vistas.add(editMaterial.getLinearLayout());
+        return editMaterial;
+    }
 
+    public EditMaterialLayout addEditMaterialLayoutFecha(String hint, float peso, EditMaterialLayout.ClickAccion clickAccion) {
+
+        final EditMaterialLayout editMaterial = new EditMaterialLayout(viewGroup, context);
+        editMaterial.setHint(hint);
+
+        editMaterial.setTipo(EditMaterialLayout.FECHA);
+        editMaterial.setAccionFecha(clickAccion);
+
+        Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout(), peso);
+        editMaterialLayouts.add(editMaterial);
+        vistas.add(editMaterial.getLinearLayout());
+        return editMaterial;
+    }
+
+    public EditMaterialLayout addEditMaterialLayoutMailFull(String hint, String campoEdit) {
+
+        final EditMaterialLayout editMaterial = new EditMaterialLayout(viewGroup, context);
+        editMaterial.setHint(hint);
+
+        editMaterial.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.EMAIL);
+        editMaterial.setAccionEnviarMail(new EditMaterialLayout.ClickAccion() {
+            @Override
+            public void onClickAccion(View view) {
+                editMaterial.enviarEmail(editMaterial.getAsunto(), editMaterial.getMensaje(), editMaterial.getPath());
+            }
+        });
+        Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout());
+        editMaterialLayouts.add(editMaterial);
+        Map mapaCtrl = new HashMap();
+        mapaCtrl.put("materialEdit", editMaterial);
+        mapaCtrl.put("campoEdit", campoEdit);
+        camposEdit.add(mapaCtrl);
+        vistas.add(editMaterial.getLinearLayout());
         return editMaterial;
     }
 

@@ -18,6 +18,7 @@ import com.codevsolution.base.android.FragmentRV;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
 
@@ -33,6 +34,7 @@ public abstract class DiaCalBase extends FragmentRV {
     protected long fecha;
     protected long horaCal;
     protected String campo;
+    private boolean descanso;
 
     @Override
     protected void cargarBundle() {
@@ -171,14 +173,16 @@ public abstract class DiaCalBase extends FragmentRV {
 
     protected void mostrarDialogNuevo(final Object object) {
 
-        final CharSequence[] opciones = {getString(R.string.crear_nuevo), getString(R.string.cancelar)};
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle(getString(R.string.nuevo));
+        final CharSequence[] opciones = {Estilos.getString(contexto, "crear_nuevo"),
+                Estilos.getString(contexto, "cancelar")};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
+        builder.setTitle(Estilos.getString(contexto, "nuevo"));
         builder.setItems(opciones, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                if (opciones[which].equals(getString(R.string.crear_nuevo))) {
+                if (opciones[which].equals(Estilos.getString(contexto, "crear_nuevo"))) {
+
 
                     onClickHora((DiaCal) object);
 
@@ -221,12 +225,16 @@ public abstract class DiaCalBase extends FragmentRV {
 
     }
 
-    protected int setColorCard(long fecha, long horaCal) {
-        return R.color.Color_card_defecto;
+    protected boolean setColorCard(long fecha, long horaCal) {
+        return false;
+    }
+
+    protected boolean getDescanso() {
+        return descanso;
     }
 
 
-        public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
+    public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
 
         TextView hora;
         CardView card;
@@ -261,7 +269,13 @@ public abstract class DiaCalBase extends FragmentRV {
                 }
             });
 
-            card.setCardBackgroundColor(getResources().getColor(setColorCard(fecha,horaCal)));
+            if (setColorCard(fecha, horaCal)) {
+                card.setCardBackgroundColor(getResources().getColor(Estilos.colorPrimary(contexto)));
+                descanso = false;
+            } else {
+                card.setCardBackgroundColor(Estilos.getColor(contexto, "Color_cal_notok"));
+                descanso = true;
+            }
 
             super.bind(lista, position);
         }

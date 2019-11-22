@@ -114,6 +114,7 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
                 if (evento != null && evento.getLong(EVENTO_AVISO) > 0 &&
                         evento.getDouble(EVENTO_COMPLETADA) < 100) {
 
+                    System.out.println("intent aviso evento");
                     Intent intent = new Intent(ACCION_AVISOEVENTO).putExtra(EVENTO, evento);
 
                     sendBroadcast(intent);

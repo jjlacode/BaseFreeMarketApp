@@ -6,10 +6,11 @@ import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -25,12 +26,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 
 import com.codevsolution.base.adapter.BaseViewHolder;
-import com.codevsolution.base.adapter.ListaAdaptadorFiltro;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
-import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.javautil.JavaUtil;
@@ -39,57 +39,59 @@ import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.style.Dialogos;
 import com.codevsolution.base.time.DatePickerFragment;
+import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.base.time.TimePickerFragment;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.codevsolution.base.android.AppActivity.viewOnMapA;
 import static com.codevsolution.base.javautil.JavaUtil.getDate;
 import static com.codevsolution.base.javautil.JavaUtil.getTime;
 import static com.codevsolution.base.javautil.JavaUtil.hoy;
 import static com.codevsolution.base.time.calendar.DiaCalBase.HORACAL;
-import static com.codevsolution.freemarketsapp.logica.Interactor.setNamefdef;
 
 public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.ConstantesPry,
         ContratoPry.Tablas, Interactor.TiposEvento {
 
-    private AutoCompleteTextView proyRel;
-    private AutoCompleteTextView cliRel;
-    private EditMaterial descipcion;
-    private EditMaterial lugar;
-    private EditMaterial telefono;
-    private EditMaterial email;
-    private EditMaterial asunto;
-    private EditMaterial mensaje;
-    private EditMaterial fechaIni;
-    private EditMaterial fechaFin;
-    private EditMaterial horaIni;
-    private EditMaterial horaFin;
-    private EditMaterial repAnios;
-    private EditMaterial repMeses;
-    private EditMaterial repDias;
-    private EditMaterial drepAnios;
-    private EditMaterial drepMeses;
-    private EditMaterial drepDias;
-    private EditMaterial avisoMinutos;
-    private EditMaterial avisoHoras;
-    private EditMaterial avisoDias;
+    private EditMaterialLayout proyRel;
+    private EditMaterialLayout cliRel;
+    private EditMaterialLayout descipcion;
+    private EditMaterialLayout lugar;
+    private EditMaterialLayout telefono;
+    private EditMaterialLayout email;
+    private EditMaterialLayout asunto;
+    private EditMaterialLayout mensaje;
+    private EditMaterialLayout fechaIni;
+    private EditMaterialLayout fechaFin;
+    private EditMaterialLayout horaIni;
+    private EditMaterialLayout horaFin;
+    private EditMaterialLayout repAnios;
+    private EditMaterialLayout repMeses;
+    private EditMaterialLayout repDias;
+    private EditMaterialLayout drepAnios;
+    private EditMaterialLayout drepMeses;
+    private EditMaterialLayout drepDias;
+    private EditMaterialLayout avisoMinutos;
+    private EditMaterialLayout avisoHoras;
+    private EditMaterialLayout avisoDias;
     private CheckBox aviso;
     private CheckBox repeticiones;
     private CheckBox mismoDiaMes;
     private CheckBox mismoDiaAnio;
     private CheckBox chNotificado;
-    private TextView laviso;
     private TextView lrep;
     private TextView ldrep;
-    private TextView tipoEvento;
     private ImageButton btnNota;
     private ImageButton btnVerNotas;
     private Button btnVerRepeticiones;
+    private Button generarRepeticiones;
+    private Button generarAviso;
 
     private ArrayList<ModeloSQL> listaClientes;
     private ArrayList<ModeloSQL> listaProyectos;
@@ -105,21 +107,18 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
 
     private String idMulti;
-    private EditMaterial completa;
+    private EditMaterialLayout completa;
 
-    private ImageButton btnhfin;
-    private ImageButton btnhini;
-    private ImageButton btnffin;
-    private ImageButton btnfini;
-    private ImageButton imgmapa;
-    private ImageButton imgllamada;
-    private ImageButton imgemail;
-    private CheckBox relCli;
-    private CheckBox relProy;
     private CheckBox completada;
     private ModeloSQL proyecto;
     private ModeloSQL cliente;
     private int notificado;
+    private TextView textAviso;
+    private TextView fechaAvisoTxt;
+    private ViewGroupLayout vistaAviso;
+    private Button btnColor;
+    //private Button btnRelCli;
+    //private Button btnRelProy;
 
 
     public FragmentCRUDEvento() {
@@ -137,6 +136,538 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
     }
 
     @Override
+    protected void setInicio() {
+
+        ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
+
+        imagen = vistaForm.addViewImagenLayout();
+        descipcion = vistaForm.addEditMaterialLayout(R.string.descripcion, EVENTO_DESCRIPCION);
+        ViewGroupLayout vistaFecha = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaFecha.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+        fechaIni = vistaFecha.addEditMaterialLayoutFecha(getString(R.string.fecha_ini_evento),
+                1, view -> showDatePickerDialogInicio());
+
+        horaIni = vistaFecha.addEditMaterialLayoutFecha(getString(R.string.hora_ini_evento),
+                2, view -> showTimePickerDialogini());
+
+        actualizarArrays(vistaFecha);
+        ViewGroupLayout vistaFechaFin = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaFechaFin.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+        fechaFin = vistaFechaFin.addEditMaterialLayoutFecha(getString(R.string.fecha_fin_evento),
+                1, view -> showDatePickerDialogFin());
+        horaFin = vistaFechaFin.addEditMaterialLayoutFecha(getString(R.string.hora_fin_evento),
+                2, view -> showTimePickerDialogfin());
+        actualizarArrays(vistaFechaFin);
+        lugar = vistaForm.addEditMaterialLayout(getString(R.string.lugar_cita), EVENTO_DIRECCION, ViewGroupLayout.MAPA, activityBase);
+        email = vistaForm.addEditMaterialLayoutMailFull(getString(R.string.email), EVENTO_EMAIL);
+        telefono = vistaForm.addEditMaterialLayout(getString(R.string.telefono), EVENTO_TELEFONO, ViewGroupLayout.LLAMADA, activityBase);
+        asunto = vistaForm.addEditMaterialLayout(R.string.asunto, EVENTO_ASUNTO);
+        mensaje = vistaForm.addEditMaterialLayout(R.string.texto_mensaje, EVENTO_MENSAJE);
+        btnColor = vistaForm.addButtonTrans(R.string.color_trabajo);
+        btnColor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Dialogos.PaletaColoresDialog(new Dialogos.PaletaColoresDialog.OnClick() {
+                    @Override
+                    public void onClick(String color) {
+                        btnColor.setBackgroundColor(Color.parseColor(color));
+                        CRUDutil.actualizarCampo(modeloSQL, EVENTO_COLOR, color);
+                        modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                    }
+                }, contexto).show(getFragmentManager(), "paletacolores");
+            }
+        });
+        aviso = vistaForm.addCheckBox(R.string.aviso, false);
+        aviso.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+            if (isChecked) {
+
+                if (!eventoPasado()) {
+
+                    chNotificado.setVisibility(View.VISIBLE);
+                    visible(generarAviso);
+                    visible(vistaAviso.getViewGroup());
+
+                } else {
+                    Toast.makeText(contexto, R.string.evento_pasado, Toast.LENGTH_SHORT).show();
+                    aviso.setChecked(false);
+                }
+
+            } else {
+
+                gone(vistaAviso.getViewGroup());
+                gone(chNotificado);
+                gone(generarAviso);
+
+            }
+        });
+        vistaAviso = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaAviso.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+        avisoDias = vistaAviso.addEditMaterialLayout(R.string.dias, 1);
+        avisoHoras = vistaAviso.addEditMaterialLayout(R.string.horas, 1);
+        avisoMinutos = vistaAviso.addEditMaterialLayout(R.string.minutos, 1);
+        actualizarArrays(vistaAviso);
+        generarAviso = vistaForm.addButtonPrimary(R.string.generar_aviso);
+        generarAviso.setOnClickListener(v -> {
+
+            long fechaaviso = (JavaUtil.comprobarLong(avisoMinutos.getText().toString()) * MINUTOSLONG) +
+                    (JavaUtil.comprobarLong(avisoHoras.getText().toString()) * HORASLONG) +
+                    (JavaUtil.comprobarLong(avisoDias.getText().toString()) * DIASLONG);
+
+
+            long fechaHoraEvento;
+
+            if (tevento.equals(TIPOEVENTOTAREA)) {
+                fechaHoraEvento = modeloSQL.getLong(EVENTO_FECHAFINEVENTO) +
+                        modeloSQL.getLong(EVENTO_HORAFINEVENTO);
+            } else {
+                fechaHoraEvento = modeloSQL.getLong(EVENTO_FECHAINIEVENTO) +
+                        modeloSQL.getLong(EVENTO_HORAINIEVENTO);
+            }
+
+            System.out.println("fechaHoraEvento = " + TimeDateUtil.getDateTimeString(fechaHoraEvento));
+            System.out.println("fechaHoraAviso = " + TimeDateUtil.getDateTimeString(fechaHoraEvento - fechaaviso));
+
+            if (fechaaviso > 0 && TimeDateUtil.ahora() < fechaHoraEvento - fechaaviso) {
+
+                if (avisoDias.getLinearLayout().getVisibility() == View.VISIBLE) {
+
+
+                    String saviso = getString(R.string.avisar) +
+                            " " +
+                            avisoDias.getTexto() +
+                            " " +
+                            getString(R.string.dias) +
+                            " " +
+                            getString(R.string.y) +
+                            " " +
+                            avisoHoras.getTexto() +
+                            " " +
+                            getString(R.string.horas) +
+                            " " +
+                            getString(R.string.y) +
+                            " " +
+                            avisoMinutos.getTexto() +
+                            " " +
+                            getString(R.string.minutos) +
+                            " " +
+                            getString(R.string.antes);
+
+                    textAviso.setText(saviso);
+                    textAviso.setTextColor(getResources().getColor(R.color.colorAccent));
+                    textAviso.setGravity(Gravity.CENTER);
+                    fechaAvisoTxt.setText(TimeDateUtil.getDateTimeString(fechaHoraEvento - fechaaviso));
+                    fechaAvisoTxt.setTextColor(getResources().getColor(R.color.colorAccent));
+                    fechaAvisoTxt.setGravity(Gravity.CENTER);
+                    CRUDutil.actualizarCampo(modeloSQL, EVENTO_AVISO, fechaaviso);
+                    visible(textAviso);
+                    visible(fechaAvisoTxt);
+
+                } else {
+                    visible(avisoDias.getLinearLayout());
+                    visible(avisoHoras.getLinearLayout());
+                    visible(avisoMinutos.getLinearLayout());
+                    CRUDutil.actualizarCampo(modeloSQL, EVENTO_AVISO, 0);
+                }
+            } else if (TimeDateUtil.ahora() > fechaHoraEvento - fechaaviso) {
+
+                Toast.makeText(contexto, R.string.fecha_aviso_pasada, Toast.LENGTH_SHORT).show();
+
+            } else {
+
+                aviso.setChecked(false);
+                visible(aviso);
+                gone(generarAviso);
+                gone(textAviso);
+                gone(chNotificado);
+                gone(avisoDias.getLinearLayout());
+                gone(avisoHoras.getLinearLayout());
+                gone(avisoMinutos.getLinearLayout());
+
+            }
+        });
+        textAviso = vistaForm.addTextView(R.string.aviso);
+        fechaAvisoTxt = vistaForm.addTextView(R.string.aviso);
+        chNotificado = vistaForm.addCheckBox(R.string.notificado, false);
+        chNotificado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (!isChecked) {
+                    notificado = 0;
+                    CRUDutil.actualizarCampo(modeloSQL, EVENTO_NOTIFICADO, 0);
+                    gone(chNotificado);
+                    visible(aviso);
+                    aviso.setChecked(false);
+                    gone(textAviso);
+                } else {
+                    notificado = 1;
+                    CRUDutil.actualizarCampo(modeloSQL, EVENTO_NOTIFICADO, 1);
+                    aviso.setChecked(false);
+                    CRUDutil.actualizarCampo(modeloSQL, EVENTO_AVISO, 0);
+                    gone(generarAviso);
+                    gone(vistaAviso.getViewGroup());
+                    textAviso.setText(R.string.aviso_notificado);
+                    gone(fechaAvisoTxt);
+                    visible(textAviso);
+
+
+                }
+                CRUDutil.actualizarCampo(modeloSQL, EVENTO_NOTIFICADO, notificado);
+                modeloSQL = CRUDutil.updateModelo(modeloSQL);
+            }
+        });
+        btnVerRepeticiones = vistaForm.addButtonSecondary(R.string.ver_repeticiones);
+        btnVerRepeticiones.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                verRepeticiones();
+            }
+        });
+        repeticiones = vistaForm.addCheckBox(R.string.modificar_repeticiones, false);
+        repeticiones.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+
+                    mismoDiaMes.setVisibility(View.VISIBLE);
+                    mismoDiaAnio.setVisibility(View.VISIBLE);
+                    repAnios.getLinearLayout().setVisibility(View.VISIBLE);
+                    repMeses.getLinearLayout().setVisibility(View.VISIBLE);
+                    repDias.getLinearLayout().setVisibility(View.VISIBLE);
+                    drepAnios.getLinearLayout().setVisibility(View.VISIBLE);
+                    drepMeses.getLinearLayout().setVisibility(View.VISIBLE);
+                    drepDias.getLinearLayout().setVisibility(View.VISIBLE);
+                    lrep.setVisibility(View.VISIBLE);
+                    ldrep.setVisibility(View.VISIBLE);
+                    visible(generarRepeticiones);
+
+                } else if (idMulti == null) {
+
+                    mismoDiaMes.setVisibility(View.GONE);
+                    mismoDiaAnio.setVisibility(View.GONE);
+                    repAnios.getLinearLayout().setVisibility(View.GONE);
+                    repMeses.getLinearLayout().setVisibility(View.GONE);
+                    repDias.getLinearLayout().setVisibility(View.GONE);
+                    repAnios.setText("0");
+                    repMeses.setText("0");
+                    repDias.setText("0");
+                    drepAnios.getLinearLayout().setVisibility(View.GONE);
+                    drepMeses.getLinearLayout().setVisibility(View.GONE);
+                    drepDias.getLinearLayout().setVisibility(View.GONE);
+                    drepAnios.setText("0");
+                    drepMeses.setText("0");
+                    drepDias.setText("0");
+                    lrep.setVisibility(View.GONE);
+                    ldrep.setVisibility(View.GONE);
+                    gone(generarRepeticiones);
+
+                }
+            }
+        });
+        mismoDiaMes = vistaForm.addCheckBox(R.string.mismo_dia_mes, false);
+        mismoDiaMes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+
+                    mismoDiaAnio.setVisibility(View.GONE);
+                    repAnios.getLinearLayout().setVisibility(View.GONE);
+                    repMeses.getLinearLayout().setVisibility(View.GONE);
+                    repDias.getLinearLayout().setVisibility(View.GONE);
+                    repAnios.setText("0");
+                    repMeses.setText("0");
+                    repDias.setText("0");
+                } else {
+
+                    mismoDiaAnio.setVisibility(View.VISIBLE);
+                    repAnios.getLinearLayout().setVisibility(View.VISIBLE);
+                    repMeses.getLinearLayout().setVisibility(View.VISIBLE);
+                    repDias.getLinearLayout().setVisibility(View.VISIBLE);
+                    repAnios.setText("0");
+                    repMeses.setText("0");
+                    repDias.setText("0");
+
+                }
+            }
+        });
+
+        mismoDiaAnio = vistaForm.addCheckBox(R.string.mismo_dia_anio, false);
+        mismoDiaAnio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+
+                    mismoDiaMes.setVisibility(View.GONE);
+                    repAnios.getLinearLayout().setVisibility(View.GONE);
+                    repMeses.getLinearLayout().setVisibility(View.GONE);
+                    repDias.getLinearLayout().setVisibility(View.GONE);
+                    repAnios.setText("0");
+                    repMeses.setText("0");
+                    repDias.setText("0");
+                } else {
+
+                    mismoDiaMes.setVisibility(View.VISIBLE);
+                    repAnios.getLinearLayout().setVisibility(View.VISIBLE);
+                    repMeses.getLinearLayout().setVisibility(View.VISIBLE);
+                    repDias.getLinearLayout().setVisibility(View.VISIBLE);
+                    repAnios.setText("0");
+                    repMeses.setText("0");
+                    repDias.setText("0");
+
+                }
+            }
+        });
+        ViewGroupLayout vistaRep = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaRep.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+        lrep = vistaRep.addTextView(R.string.repetir_evento, 1);
+        repAnios = vistaRep.addEditMaterialLayout(R.string.anios, 1);
+        repMeses = vistaRep.addEditMaterialLayout(R.string.meses, 1);
+        repDias = vistaRep.addEditMaterialLayout(R.string.dias, 1);
+        actualizarArrays(vistaRep);
+
+        ViewGroupLayout vistaDur = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaDur.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+        ldrep = vistaDur.addTextView(R.string.duracion, 1);
+        drepAnios = vistaDur.addEditMaterialLayout(R.string.anios, 1);
+        drepMeses = vistaDur.addEditMaterialLayout(R.string.meses, 1);
+        drepDias = vistaDur.addEditMaterialLayout(R.string.dias, 1);
+        actualizarArrays(vistaDur);
+
+        generarRepeticiones = vistaForm.addButtonPrimary(R.string.generar_repeticiones);
+        generarRepeticiones.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                boolean nuevo = false;
+
+                if (idMulti != null) {
+                    String seleccion = ContratoPry.Tablas.EVENTO_IDMULTI + " = '" + idMulti +
+                            "' AND " + ContratoPry.Tablas.EVENTO_ID_EVENTO +
+                            " <> '" + id + "'";
+                    ConsultaBD.deleteRegistros(TABLA_EVENTO, seleccion);
+
+                } else {
+                    idMulti = id;
+                    nuevo = true;
+                }
+
+                valores = new ContentValues();
+
+                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_IDMULTI, idMulti);
+
+                ConsultaBD.updateRegistro(TABLA_EVENTO, idMulti, valores);
+
+                long hoy = hoy();
+                if (finiEvento == 0) {
+                    finiEvento = hoy;
+                }
+
+                int dia = JavaUtil.diaMes(finiEvento);
+
+                long diffecha = ffinEvento - finiEvento;
+
+                long offRep = 0;
+                long fecharep = 0;
+
+                if (mismoDiaMes.isChecked()) {
+
+                    fecharep = JavaUtil.mismoDiaMes(finiEvento, dia);
+
+                } else if (mismoDiaAnio.isChecked()) {
+
+                    fecharep = JavaUtil.mismoDiaAnio(finiEvento, dia);
+
+                } else {
+
+                    offRep = (JavaUtil.comprobarLong(repAnios.getText().toString()) * ANIOSLONG) +
+                            (JavaUtil.comprobarLong(repMeses.getText().toString()) * MESESLONG) +
+                            (JavaUtil.comprobarLong(repDias.getText().toString()) * DIASLONG);
+
+                    fecharep = finiEvento + offRep;
+
+                }
+
+                long duracionRep = (JavaUtil.comprobarLong(drepAnios.getText().toString()) * ANIOSLONG) +
+                        (JavaUtil.comprobarLong(drepMeses.getText().toString()) * MESESLONG) +
+                        (JavaUtil.comprobarLong(drepDias.getText().toString()) * DIASLONG);
+
+
+                int reg = 0;
+
+                while (duracionRep + hoy > fecharep) {
+
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, fecharep);
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTOF, getDate(fecharep));
+
+
+                    if (tevento.equals(Interactor.TiposEvento.TIPOEVENTOEVENTO)) {
+                        ConsultaBD.putDato(valores, campos, EVENTO_FECHAFINEVENTO, String.valueOf(fecharep + diffecha));
+                        ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTOF, getDate(fecharep + diffecha));
+
+                    }
+                    Uri uri = ConsultaBD.insertRegistro(TABLA_EVENTO, valores);
+
+                    if (uri != null) {
+                        reg++;
+                    }
+
+                    if (mismoDiaMes.isChecked()) {
+
+                        fecharep = JavaUtil.mismoDiaMes(fecharep, dia);
+
+                    } else if (mismoDiaAnio.isChecked()) {
+
+                        fecharep = JavaUtil.mismoDiaAnio(fecharep, dia);
+
+                    } else {
+
+                        fecharep += offRep;
+                    }
+                }
+
+                if (nuevo && reg > 0) {
+                    Toast.makeText(contexto, R.string.repeticiones_creadas, Toast.LENGTH_SHORT).show();
+                } else if (reg > 0) {
+                    Toast.makeText(contexto, R.string.repeticiones_actualizadas, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(contexto, R.string.no_actualizado, Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+        proyRel = vistaForm.addEditMaterialLayout(R.string.proyecto_relacionado);
+        proyRel.getEditText().setEnabled(false);
+        proyRel.getBtnInicio().setImageResource(R.drawable.ic_search_black_24dp);
+        proyRel.getBtnInicio().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                bundle = new Bundle();
+                putBundle(ORIGEN, EVENTO);
+                putBundle(EVENTO, modeloSQL);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
+            }
+        });
+        proyRel.setImgBtnAccion(R.drawable.ic_eliminar_acent);
+        proyRel.setClickAccion(new EditMaterialLayout.ClickAccion() {
+            @Override
+            public void onClickAccion(View view) {
+
+                idProyecto = null;
+                nombreProyecto = null;
+                proyRel.setText(null);
+                CRUDutil.actualizarCampoNull(modeloSQL, EVENTO_PROYECTOREL);
+                CRUDutil.actualizarCampoNull(modeloSQL, EVENTO_NOMPROYECTOREL);
+                CRUDutil.actualizarCampoNull(modeloSQL, EVENTO_CLIENTEREL);
+                CRUDutil.actualizarCampoNull(modeloSQL, EVENTO_NOMCLIENTEREL);
+                CRUDutil.updateModelo(modeloSQL);
+
+            }
+        });
+
+        cliRel = vistaForm.addEditMaterialLayout(R.string.cliente_relacionado);
+        cliRel.getEditText().setEnabled(false);
+        cliRel.getBtnInicio().setImageResource(R.drawable.ic_search_black_24dp);
+        cliRel.getBtnInicio().setOnClickListener(v -> {
+
+            bundle = new Bundle();
+            putBundle(ORIGEN, EVENTO);
+            putBundle(EVENTO, modeloSQL);
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDCliente());
+        });
+        cliRel.setImgBtnAccion(R.drawable.ic_eliminar_acent);
+        cliRel.setClickAccion(view -> {
+
+            idCliente = null;
+            nombreCliente = null;
+            cliRel.setText(null);
+            CRUDutil.actualizarCampoNull(modeloSQL, EVENTO_CLIENTEREL);
+            CRUDutil.actualizarCampoNull(modeloSQL, EVENTO_NOMCLIENTEREL);
+            CRUDutil.updateModelo(modeloSQL);
+
+        });
+
+        ViewGroupLayout vistaComplet = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaComplet.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+        completa = vistaComplet.addEditMaterialLayout(R.string.completa, EVENTO_COMPLETADA, 1);
+        completada = vistaComplet.addCheckBox(R.string.completada, false);
+        completada.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+            if (isChecked) {
+                completa.setText("100.0");
+                CRUDutil.actualizarCampo(modeloSQL, EVENTO_COMPLETADA, 100);
+            } else {
+                completa.setText("0.0");
+            }
+        });
+        actualizarArrays(vistaComplet);
+
+        ViewGroupLayout vistaNotas = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaNotas.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+        btnNota = vistaNotas.addImageButtonSecundary(R.drawable.ic_nueva_nota_indigo, 1);
+        btnNota.setOnClickListener(v -> {
+
+            enviarBundle();
+            bundle.putString(IDREL, modeloSQL.getString(EVENTO_ID_EVENTO));
+            bundle.putString(SUBTITULO, modeloSQL.getString(EVENTO_DESCRIPCION));
+            bundle.putString(ORIGEN, EVENTO);
+            bundle.putString(ACTUAL, NOTA);
+            bundle.putSerializable(MODELO, null);
+            bundle.putSerializable(LISTA, null);
+            bundle.putString(CAMPO_ID, null);
+            bundle.putBoolean(NUEVOREGISTRO, true);
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevaNota());
+        });
+        btnVerNotas = vistaNotas.addImageButtonSecundary(R.drawable.ic_lista_notas_indigo, 1);
+        btnVerNotas.setOnClickListener(v -> {
+
+            enviarBundle();
+            bundle.putString(IDREL, modeloSQL.getString(EVENTO_ID_EVENTO));
+            bundle.putString(SUBTITULO, modeloSQL.getString(EVENTO_DESCRIPCION));
+            bundle.putString(ORIGEN, EVENTO);
+            bundle.putString(ACTUAL, NOTA);
+            bundle.putSerializable(LISTA, null);
+            bundle.putSerializable(MODELO, null);
+            bundle.putString(CAMPO_ID, null);
+            icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
+        });
+        actualizarArrays(vistaNotas);
+        actualizarArrays(vistaForm);
+
+    }
+
+    private boolean eventoPasado() {
+
+        long fechaHoraEvento = 0;
+
+        if (!tevento.equals(TIPOEVENTOTAREA)) {
+
+            fechaHoraEvento = finiEvento + hiniEvento;
+
+        } else {
+
+            fechaHoraEvento = ffinEvento + hfinEvento;
+        }
+
+        return TimeDateUtil.ahora() >= fechaHoraEvento;
+    }
+
+    @Override
+    protected void setLayout() {
+
+        //layoutCuerpo = R.layout.fragment_crud_evento;
+        layoutItem = R.layout.item_list_evento;
+
+    }
+
+    @Override
     protected void setLista() {
 
         if (origen != null && origen.equals(CALENDARIO)) {
@@ -146,114 +677,38 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
     }
 
     @Override
+    protected void alGuardarCampo(EditMaterialLayout editMaterialLayout) {
+        super.alGuardarCampo(editMaterialLayout);
+
+        if (editMaterialLayout.getId() == asunto.getId()) {
+            email.setAsunto(editMaterialLayout.getTexto());
+        } else if (editMaterialLayout.getId() == mensaje.getId()) {
+            email.setMensaje(editMaterialLayout.getTexto());
+        }
+    }
+
+    @Override
     protected void onClickNuevo() {
-        icFragmentos.enviarBundleAFragment(null,new FragmentNuevoEvento());
+        icFragmentos.enviarBundleAFragment(null, new FragmentNuevoEvento());
     }
 
     @Override
     protected void setNuevo() {
 
-        allGone();
-        visibleSoloBtnBack();
-        gone(frLista);
-        visible(frdetalle);
 
-        switch (tevento) {
+        comprobarCliProy();
 
-
-            case TIPOEVENTOTAREA:
-
-                subTitulo = getString(R.string.nueva_tarea);
-                visible(descipcion);
-                asunto.setVisibility(View.VISIBLE);
-                mensaje.setVisibility(View.VISIBLE);
-                fechaFin.setVisibility(View.VISIBLE);
-                horaFin.setVisibility(View.VISIBLE);
-                btnffin.setVisibility(View.VISIBLE);
-                btnhfin.setVisibility(View.VISIBLE);
-                comprobarCliProy();
-                break;
-
-            case TIPOEVENTOCITA:
-
-                subTitulo = getString(R.string.nueva_cita);
-                visible(descipcion);
-                lugar.setVisibility(View.VISIBLE);
-                asunto.setVisibility(View.VISIBLE);
-                mensaje.setVisibility(View.VISIBLE);
-                fechaIni.setVisibility(View.VISIBLE);
-                horaIni.setVisibility(View.VISIBLE);
-                btnfini.setVisibility(View.VISIBLE);
-                btnhini.setVisibility(View.VISIBLE);
-                repeticiones.setVisibility(View.VISIBLE);
-                aviso.setVisibility(View.VISIBLE);
-                asunto.setVisibility(View.VISIBLE);
-                mensaje.setVisibility(View.VISIBLE);
-                comprobarCliProy();
-                break;
-
-
-            case TIPOEVENTOLLAMADA:
-
-                subTitulo = getString(R.string.nueva_llamada);
-                visible(descipcion);
-                telefono.setVisibility(View.VISIBLE);
-                asunto.setVisibility(View.VISIBLE);
-                mensaje.setVisibility(View.VISIBLE);
-                fechaIni.setVisibility(View.VISIBLE);
-                horaIni.setVisibility(View.VISIBLE);
-                btnfini.setVisibility(View.VISIBLE);
-                btnhini.setVisibility(View.VISIBLE);
-                repeticiones.setVisibility(View.VISIBLE);
-                aviso.setVisibility(View.VISIBLE);
-                asunto.setVisibility(View.VISIBLE);
-                mensaje.setVisibility(View.VISIBLE);
-                comprobarCliProy();
-                break;
-
-            case TIPOEVENTOEMAIL:
-
-                subTitulo = getString(R.string.nuevo_email);
-                visible(descipcion);
-                email.setVisibility(View.VISIBLE);
-                asunto.setVisibility(View.VISIBLE);
-                mensaje.setVisibility(View.VISIBLE);
-                fechaIni.setVisibility(View.VISIBLE);
-                horaIni.setVisibility(View.VISIBLE);
-                btnfini.setVisibility(View.VISIBLE);
-                btnhini.setVisibility(View.VISIBLE);
-                repeticiones.setVisibility(View.VISIBLE);
-                aviso.setVisibility(View.VISIBLE);
-                asunto.setVisibility(View.VISIBLE);
-                mensaje.setVisibility(View.VISIBLE);
-                comprobarCliProy();
-
-            case TIPOEVENTOEVENTO:
-
-                subTitulo = getString(R.string.nuevo_evento);
-                visible(descipcion);
-                fechaIni.setVisibility(View.VISIBLE);
-                horaIni.setVisibility(View.VISIBLE);
-                fechaFin.setVisibility(View.VISIBLE);
-                horaFin.setVisibility(View.VISIBLE);
-                btnfini.setVisibility(View.VISIBLE);
-                btnhini.setVisibility(View.VISIBLE);
-                btnffin.setVisibility(View.VISIBLE);
-                btnhfin.setVisibility(View.VISIBLE);
-                repeticiones.setVisibility(View.VISIBLE);
-                aviso.setVisibility(View.VISIBLE);
-                asunto.setVisibility(View.VISIBLE);
-                mensaje.setVisibility(View.VISIBLE);
-                comprobarCliProy();
-
-        }
 
     }
 
     @Override
     protected void mostrarDialogDelete() {
 
-        delete();
+        if (idMulti == null) {
+            delete();
+        } else {
+            super.mostrarDialogDelete();
+        }
     }
 
     @Override
@@ -263,201 +718,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
     }
 
-    @Override
-    protected boolean update() {
-
-        if (id==null){
-            return registrar();
-        }else {
-
-            valores = new ContentValues();
-
-            if (idProyecto != null) {
-
-                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_NOMPROYECTOREL, nombreProyecto);
-                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_PROYECTOREL, idProyecto);
-
-            }
-            if (idCliente != null) {
-
-                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_NOMCLIENTEREL, nombreCliente);
-                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_CLIENTEREL, idCliente);
-            }
-
-            switch (tevento) {
-
-                case TIPOEVENTOTAREA:
-
-                    ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                    ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTO, ffinEvento);
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAFINEVENTO, hfinEvento);
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTOF, getDate(ffinEvento));
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAFINEVENTOF, getTime(hfinEvento));
-
-
-                    break;
-
-                case TIPOEVENTOCITA:
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, finiEvento);
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, hiniEvento);
-                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
-                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_DIRECCION, lugar.getText().toString());
-                    ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                    ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
-                    break;
-
-                case TIPOEVENTOEMAIL:
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, finiEvento);
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, hiniEvento);
-                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
-                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_EMAIL, email.getText().toString());
-                    ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                    ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
-                    break;
-
-                case TIPOEVENTOLLAMADA:
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, finiEvento);
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, hiniEvento);
-                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
-                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_TELEFONO, telefono.getText().toString());
-                    ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                    ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
-                    break;
-
-                case Interactor.TiposEvento.TIPOEVENTOEVENTO:
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, finiEvento);
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTO, ffinEvento);
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, hiniEvento);
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAFINEVENTO, hfinEvento);
-                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
-                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
-                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTOF,fechaFin.getText().toString());
-                    ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTOF,horaFin.getText().toString());
-                    ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                    ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
-
-                    break;
-
-            }
-
-            ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_DESCRIPCION, descipcion.getText().toString());
-            ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_TIPO, tevento);
-            ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_COMPLETADA, JavaUtil.comprobarDouble(completa.getText().toString()));
-            ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_RUTAFOTO, path);
-            ConsultaBD.putDato(valores,campos,EVENTO_NOTIFICADO,notificado);
-
-            if (aviso.isChecked()) {
-
-
-                long fechaaviso = (JavaUtil.comprobarLong(avisoMinutos.getText().toString()) * MINUTOSLONG) +
-                        (JavaUtil.comprobarLong(avisoHoras.getText().toString()) * HORASLONG) +
-                        (JavaUtil.comprobarLong(avisoDias.getText().toString()) * DIASLONG);
-                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, fechaaviso);
-
-            } else {
-
-                if (modeloSQL != null) {
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, modeloSQL.getLong(EVENTO_AVISO));
-                }
-            }
-
-            if (idMulti==null && repeticiones.isChecked()){
-                ConsultaBD.putDato(valores,campos,EVENTO_IDMULTI,id);
-            }
-
-            ConsultaBD.updateRegistro(TABLA_EVENTO, id, valores);
-            modeloSQL = CRUDutil.updateModelo(campos, id);
-
-            if (repeticiones.isChecked()) {
-
-                idMulti = modeloSQL.getString(EVENTO_IDMULTI);
-
-                String seleccion = ContratoPry.Tablas.EVENTO_IDMULTI + " = '" + idMulti +
-                        "' AND " + ContratoPry.Tablas.EVENTO_ID_EVENTO +
-                        " <> '" + id + "'";
-                if (ConsultaBD.deleteRegistros(TABLA_EVENTO, seleccion)>=0) {
-
-                    long hoy = hoy();
-                    if (finiEvento == 0) {
-                        finiEvento = hoy;
-                    }
-
-                    int dia = JavaUtil.diaMes(finiEvento);
-
-                    long diffecha = ffinEvento - finiEvento;
-
-                    long offRep = 0;
-                    long fecharep = 0;
-
-                    if (mismoDiaMes.isChecked()){
-
-                        fecharep = JavaUtil.mismoDiaMes(finiEvento,dia);
-
-                    }else if (mismoDiaAnio.isChecked()){
-
-                        fecharep = JavaUtil.mismoDiaAnio(finiEvento,dia);
-
-                    }else {
-                        offRep = (JavaUtil.comprobarLong(repAnios.getText().toString()) * ANIOSLONG) +
-                                (JavaUtil.comprobarLong(repMeses.getText().toString()) * MESESLONG) +
-                                (JavaUtil.comprobarLong(repDias.getText().toString()) * DIASLONG);
-
-                        fecharep = finiEvento + offRep;
-                    }
-
-                    long duracionRep = (JavaUtil.comprobarLong(drepAnios.getText().toString()) * ANIOSLONG) +
-                            (JavaUtil.comprobarLong(drepMeses.getText().toString()) * MESESLONG) +
-                            (JavaUtil.comprobarLong(drepDias.getText().toString()) * DIASLONG);
-
-
-
-                    while (duracionRep + hoy > fecharep) {
-
-                        ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, fecharep);
-                        ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTOF, getDate(fecharep));
-
-                        if (tevento.equals(Interactor.TiposEvento.TIPOEVENTOEVENTO)) {
-                            ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTO, (fecharep + diffecha));
-                            ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTOF, getDate(fecharep + diffecha));
-
-                        }
-                        ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_COMPLETADA, 0);
-
-                        ConsultaBD.insertRegistro(TABLA_EVENTO, valores);
-
-                        if (mismoDiaMes.isChecked()){
-
-                            fecharep = JavaUtil.mismoDiaMes(fecharep,dia);
-
-                        }else if (mismoDiaAnio.isChecked()){
-
-                            fecharep = JavaUtil.mismoDiaAnio(fecharep,dia);
-
-                        }else {
-
-                            fecharep += offRep;
-
-                        }
-
-                    }
-                }
-
-                Toast.makeText(contexto, "Repeticiones actualizadas", Toast.LENGTH_SHORT).show();
-
-            }
-
-            Toast.makeText(contexto, "Registro actualizado", Toast.LENGTH_SHORT).show();
-
-            modeloSQL = CRUDutil.updateModelo(campos, id);
-            setDatos();
-            return true;
-        }
-
-    }
 
 
     @Override
@@ -483,11 +743,35 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
     @Override
     protected void setBundle() {
 
-        proyecto = (ModeloSQL) bundle.getSerializable(TABLA_PROYECTO);
-        cliente = (ModeloSQL) bundle.getSerializable(TABLA_CLIENTE);
+        proyecto = (ModeloSQL) bundle.getSerializable(PROYECTO);
+        cliente = (ModeloSQL) bundle.getSerializable(CLIENTE);
         tevento = bundle.getString(TIPO);
+        long fecha = bundle.getLong(FECHA);
+        long hora = bundle.getLong(HORACAL);
+        if (tevento != null && tevento.equals(TIPOEVENTOTAREA)) {
+            if (fecha > 0) {
+                ffinEvento = fecha;
+            }
+            if (hora > 0) {
+                hfinEvento = hora;
+            }
+        } else {
+            if (fecha > 0) {
+                finiEvento = fecha;
+            }
+            if (hora > 0) {
+                hiniEvento = hora;
+            }
+        }
+        origen = bundle.getString(ORIGEN);
+
         if (modeloSQL != null) {
             idMulti = modeloSQL.getString(EVENTO_IDMULTI);
+            tevento = modeloSQL.getString(EVENTO_TIPO);
+        }
+        System.out.println("origen = " + origen);
+        if (origen == null) {
+            origen = EVENTO;
         }
 
     }
@@ -495,6 +779,26 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
     @Override
     protected void setDatos() {
 
+        gone(btnsave);
+
+        if (modeloSQL.getString(EVENTO_RUTAFOTO) == null) {
+
+            if (proyecto != null && proyecto.getString(PROYECTO_RUTAFOTO) != null) {
+                path = proyecto.getString(PROYECTO_RUTAFOTO);
+                imagen.setImageUri(path);
+            } else if (cliente != null && cliente.getString(CLIENTE_RUTAFOTO) != null) {
+                path = cliente.getString(CLIENTE_RUTAFOTO);
+                imagen.setImageUri(path);
+            }
+
+            CRUDutil.actualizarCampo(modeloSQL, EVENTO_RUTAFOTO, path);
+        }
+
+        if (modeloSQL.getString(EVENTO_COLOR) != null) {
+            btnColor.setBackgroundColor(Color.parseColor(modeloSQL.getString(EVENTO_COLOR)));
+        }
+
+        email.setPathEmail(modeloSQL.getString(EVENTO_RUTAADJUNTO));
         allGone();
         btnVerNotas.setVisibility(View.VISIBLE);
         btnNota.setVisibility(View.VISIBLE);
@@ -504,13 +808,24 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
         mismoDiaMes.setChecked(false);
         mismoDiaAnio.setChecked(false);
         chNotificado.setVisibility(View.GONE);
-        visible(imagen);
-        visible(descipcion);
-        visible(relCli);
-        visible(relProy);
-        visiblePie();
+        visible(imagen.getLinearLayoutCompat());
+        visible(descipcion.getLinearLayout());
+        visible(cliRel.getLinearLayout());
+        visible(proyRel.getLinearLayout());
+        visible(generarRepeticiones);
+        visible(avisoDias.getLinearLayout());
+        visible(avisoHoras.getLinearLayout());
+        visible(avisoMinutos.getLinearLayout());
+        visible(btnColor);
 
         completa.setText(modeloSQL.getString(EVENTO_COMPLETADA));
+
+        notificado = modeloSQL.getInt(EVENTO_NOTIFICADO);
+
+        finiEvento = modeloSQL.getLong(EVENTO_FECHAINIEVENTO);
+        hiniEvento = modeloSQL.getLong(EVENTO_HORAINIEVENTO);
+        ffinEvento = modeloSQL.getLong(EVENTO_FECHAFINEVENTO);
+        hfinEvento = modeloSQL.getLong(EVENTO_HORAFINEVENTO);
 
         if (ConsultaBD.checkQueryList(CAMPOS_NOTA,NOTA_ID_RELACIONADO,id,null,IGUAL,null)){
             btnVerNotas.setVisibility(View.VISIBLE);
@@ -519,22 +834,16 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
         }
 
 
-        notificado = modeloSQL.getInt(EVENTO_NOTIFICADO);
-
         if (modeloSQL.getString(EVENTO_PROYECTOREL) != null) {
 
             idProyecto = modeloSQL.getString(EVENTO_PROYECTOREL);
             nombreProyecto = modeloSQL.getString(EVENTO_NOMPROYECTOREL);
             proyRel.setText(nombreProyecto);
-            relProy.setChecked(true);
             idCliente = modeloSQL.getString(EVENTO_CLIENTEREL);
             nombreCliente = modeloSQL.getString(EVENTO_NOMCLIENTEREL);
             cliRel.setText(nombreCliente);
-            relCli.setChecked(true);
-            proyRel.setVisibility(View.VISIBLE);
-            cliRel.setVisibility(View.VISIBLE);
-            proyRel.setEnabled(false);
-            cliRel.setEnabled(false);
+            proyRel.getLinearLayout().setVisibility(View.VISIBLE);
+            cliRel.getLinearLayout().setVisibility(View.VISIBLE);
             activityBase.toolbar.setSubtitle(nombreProyecto);
 
 
@@ -547,29 +856,30 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
             }
 
             cliRel.setText(nombreCliente);
-            relCli.setChecked(true);
-            cliRel.setVisibility(View.VISIBLE);
-            cliRel.setEnabled(false);
+            cliRel.getLinearLayout().setVisibility(View.VISIBLE);
+        } else {
+            comprobarCliProy();
         }
 
         repeticiones.setChecked(false);
-        completa.setVisibility(View.VISIBLE);
+        completa.getLinearLayout().setVisibility(View.VISIBLE);
 
         idMulti = modeloSQL.getString(EVENTO_IDMULTI);
 
         if (idMulti==null){
             repeticiones.setText(getString(R.string.crear_repeticiones));
+            gone(generarRepeticiones);
             btnVerRepeticiones.setVisibility(View.GONE);
         }else{
 
-            repeticiones.setText(getString(R.string.modificar_repeticiones));
+            generarRepeticiones.setText(getString(R.string.modificar_repeticiones));
+            gone(repeticiones);
             btnVerRepeticiones.setVisibility(View.VISIBLE);
 
         }
 
         if (modeloSQL != null) {
             tevento = modeloSQL.getString(EVENTO_TIPO);
-            tipoEvento.setVisibility(View.VISIBLE);
             descipcion.setText(modeloSQL.getString(EVENTO_DESCRIPCION));
             asunto.setText(modeloSQL.getString(EVENTO_ASUNTO));
             mensaje.setText(modeloSQL.getString(EVENTO_MENSAJE));
@@ -579,122 +889,163 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
                 long[] res = JavaUtil.longA_ddhhmm(modeloSQL.getLong(EVENTO_AVISO));
 
-                avisoDias.setText(String.valueOf(res[0]));
-                avisoHoras.setText(String.valueOf(res[1]));
-                avisoMinutos.setText(String.valueOf(res[2]));
                 aviso.setChecked(true);
-                avisoDias.setVisibility(View.VISIBLE);
-                avisoHoras.setVisibility(View.VISIBLE);
-                avisoMinutos.setVisibility(View.VISIBLE);
-                laviso.setVisibility(View.VISIBLE);
+                generarAviso.setText(R.string.modificar_aviso);
                 chNotificado.setVisibility(View.VISIBLE);
+                visible(textAviso);
+                visible(fechaAvisoTxt);
+
                 if (notificado==1){
                     chNotificado.setChecked(true);
+                    visible(chNotificado);
+                    aviso.setChecked(false);
+                    CRUDutil.actualizarCampo(modeloSQL, EVENTO_AVISO, 0);
+                    gone(generarAviso);
+                    gone(vistaAviso.getViewGroup());
+                    textAviso.setText(R.string.aviso_notificado);
+                    gone(fechaAvisoTxt);
+
                 }else{
                     chNotificado.setChecked(false);
+                    visible(generarAviso);
+                    visible(textAviso);
+                    visible(fechaAvisoTxt);
+                    visible(vistaAviso.getViewGroup());
+                    avisoDias.setText(String.valueOf(res[0]));
+                    avisoHoras.setText(String.valueOf(res[1]));
+                    avisoMinutos.setText(String.valueOf(res[2]));
+
+                    String saviso = getString(R.string.avisar) +
+                            " " +
+                            avisoDias.getTexto() +
+                            " " +
+                            getString(R.string.dias) +
+                            " " +
+                            getString(R.string.y) +
+                            " " +
+                            avisoHoras.getTexto() +
+                            " " +
+                            getString(R.string.horas) +
+                            " " +
+                            getString(R.string.y) +
+                            " " +
+                            avisoMinutos.getTexto() +
+                            " " +
+                            getString(R.string.minutos) +
+                            " " +
+                            getString(R.string.antes);
+
+                    textAviso.setText(saviso);
+                    textAviso.setTextColor(getResources().getColor(R.color.colorAccent));
+                    textAviso.setGravity(Gravity.CENTER);
+
+                    long fechaaviso = (JavaUtil.comprobarLong(avisoMinutos.getText().toString()) * MINUTOSLONG) +
+                            (JavaUtil.comprobarLong(avisoHoras.getText().toString()) * HORASLONG) +
+                            (JavaUtil.comprobarLong(avisoDias.getText().toString()) * DIASLONG);
+
+
+                    long fechaHoraEvento;
+
+                    if (tevento.equals(TIPOEVENTOTAREA)) {
+                        fechaHoraEvento = modeloSQL.getLong(EVENTO_FECHAFINEVENTO) +
+                                modeloSQL.getLong(EVENTO_HORAFINEVENTO);
+                    } else {
+                        fechaHoraEvento = modeloSQL.getLong(EVENTO_FECHAINIEVENTO) +
+                                modeloSQL.getLong(EVENTO_HORAINIEVENTO);
+                    }
+
+                    fechaAvisoTxt.setText(TimeDateUtil.getDateTimeString(fechaHoraEvento - fechaaviso));
+                    fechaAvisoTxt.setTextColor(getResources().getColor(R.color.colorAccent));
+                    fechaAvisoTxt.setGravity(Gravity.CENTER);
+
+
                 }
 
             } else {
-                avisoDias.setVisibility(View.GONE);
-                avisoHoras.setVisibility(View.GONE);
-                avisoMinutos.setVisibility(View.GONE);
-                laviso.setVisibility(View.GONE);
+                gone(vistaAviso.getViewGroup());
+                avisoDias.setText("0");
+                avisoHoras.setText("0");
+                avisoMinutos.setText("0");
                 aviso.setChecked(false);
-                chNotificado.setVisibility(View.GONE);
+                visible(aviso);
+                gone(generarAviso);
+
+                if (notificado == 1) {
+                    chNotificado.setChecked(true);
+                    textAviso.setText(R.string.aviso_notificado);
+                    gone(fechaAvisoTxt);
+                    visible(textAviso);
+
+                } else {
+
+                    chNotificado.setChecked(false);
+                    chNotificado.setVisibility(View.GONE);
+                    gone(textAviso);
+                    gone(fechaAvisoTxt);
+
+                }
             }
         }
 
         if (tevento!=null) {
 
-            tipoEvento.setText(tevento.toUpperCase());
+            imagen.setTextTitulo(tevento.toUpperCase());
+            imagen.setSizeTextTitulo(sizeText * 2);
+            imagen.getTitulo().setGravity(Gravity.CENTER);
+            fechaIni.getLinearLayout().setVisibility(View.VISIBLE);
+            horaIni.getLinearLayout().setVisibility(View.VISIBLE);
+            fechaFin.getLinearLayout().setVisibility(View.VISIBLE);
+            horaFin.getLinearLayout().setVisibility(View.VISIBLE);
+
+            if (finiEvento == 0) {
+                fechaIni.setText(getString(R.string.sinfecha));
+            } else {
+                fechaIni.setText(TimeDateUtil.getDateString(finiEvento));
+            }
+            if (hiniEvento == 0) {
+                horaIni.setText(getString(R.string.sinhora));
+            } else {
+                horaIni.setText(TimeDateUtil.getTimeString(hiniEvento));
+            }
+            if (ffinEvento == 0) {
+                fechaFin.setText(getString(R.string.sinfecha));
+            } else {
+                fechaFin.setText(TimeDateUtil.getDateString(ffinEvento));
+            }
+            if (hfinEvento == 0) {
+                horaFin.setText(getString(R.string.sinhora));
+            } else {
+                horaFin.setText(TimeDateUtil.getTimeString(hfinEvento));
+            }
 
             switch (tevento) {
 
                 case TIPOEVENTOTAREA:
 
-                    fechaFin.setVisibility(View.VISIBLE);
-                    horaFin.setVisibility(View.VISIBLE);
-                    btnffin.setVisibility(View.VISIBLE);
-                    btnhfin.setVisibility(View.VISIBLE);
-                    ffinEvento = modeloSQL.getLong(EVENTO_FECHAFINEVENTO);
-                    fechaFin.setText(getDate(ffinEvento));
-                    hfinEvento = modeloSQL.getLong(EVENTO_HORAFINEVENTO);
-                    horaFin.setText(getTime(hfinEvento));
-
                     break;
 
                 case TIPOEVENTOCITA:
-                    lugar.setVisibility(View.VISIBLE);
-                    imgmapa.setVisibility(View.VISIBLE);
-                    asunto.setVisibility(View.VISIBLE);
-                    fechaIni.setVisibility(View.VISIBLE);
-                    horaIni.setVisibility(View.VISIBLE);
-                    btnfini.setVisibility(View.VISIBLE);
-                    btnhini.setVisibility(View.VISIBLE);
-                    repeticiones.setVisibility(View.VISIBLE);
-                    aviso.setVisibility(View.VISIBLE);
+                    lugar.getLinearLayout().setVisibility(View.VISIBLE);
+                    asunto.getLinearLayout().setVisibility(View.VISIBLE);
                     lugar.setText(modeloSQL.getString(EVENTO_DIRECCION));
-                    finiEvento = modeloSQL.getLong(EVENTO_FECHAINIEVENTO);
-                    fechaIni.setText(getDate(finiEvento));
-                    hiniEvento = modeloSQL.getLong(EVENTO_HORAINIEVENTO);
-                    horaIni.setText(getTime(hiniEvento));
                     break;
 
                 case TIPOEVENTOEMAIL:
-                    email.setVisibility(View.VISIBLE);
-                    imgemail.setVisibility(View.VISIBLE);
-                    asunto.setVisibility(View.VISIBLE);
-                    mensaje.setVisibility(View.VISIBLE);
-                    fechaIni.setVisibility(View.VISIBLE);
-                    horaIni.setVisibility(View.VISIBLE);
-                    btnfini.setVisibility(View.VISIBLE);
-                    btnhini.setVisibility(View.VISIBLE);
-                    repeticiones.setVisibility(View.VISIBLE);
-                    aviso.setVisibility(View.VISIBLE);
+                    email.getLinearLayout().setVisibility(View.VISIBLE);
+                    asunto.getLinearLayout().setVisibility(View.VISIBLE);
+                    mensaje.getLinearLayout().setVisibility(View.VISIBLE);
                     email.setText(modeloSQL.getString(EVENTO_EMAIL));
-                    finiEvento = modeloSQL.getLong(EVENTO_FECHAINIEVENTO);
-                    fechaIni.setText(getDate(finiEvento));
-                    hiniEvento = modeloSQL.getLong(EVENTO_HORAINIEVENTO);
-                    horaIni.setText(getTime(hiniEvento));
                     break;
 
                 case TIPOEVENTOLLAMADA:
-                    telefono.setVisibility(View.VISIBLE);
-                    imgllamada.setVisibility(View.VISIBLE);
-                    asunto.setVisibility(View.VISIBLE);
-                    mensaje.setVisibility(View.VISIBLE);
-                    fechaIni.setVisibility(View.VISIBLE);
-                    horaIni.setVisibility(View.VISIBLE);
-                    btnfini.setVisibility(View.VISIBLE);
-                    btnhini.setVisibility(View.VISIBLE);
-                    repeticiones.setVisibility(View.VISIBLE);
-                    aviso.setVisibility(View.VISIBLE);
+                    telefono.getLinearLayout().setVisibility(View.VISIBLE);
+                    asunto.getLinearLayout().setVisibility(View.VISIBLE);
+                    mensaje.getLinearLayout().setVisibility(View.VISIBLE);
                     telefono.setText(modeloSQL.getString(EVENTO_TELEFONO));
-                    finiEvento = modeloSQL.getLong(EVENTO_FECHAINIEVENTO);
-                    fechaIni.setText(getDate(finiEvento));
-                    hiniEvento = modeloSQL.getLong(EVENTO_HORAINIEVENTO);
-                    horaIni.setText(getTime(hiniEvento));
                     break;
 
                 case Interactor.TiposEvento.TIPOEVENTOEVENTO:
-                    fechaIni.setVisibility(View.VISIBLE);
-                    horaIni.setVisibility(View.VISIBLE);
-                    fechaFin.setVisibility(View.VISIBLE);
-                    horaFin.setVisibility(View.VISIBLE);
-                    btnfini.setVisibility(View.VISIBLE);
-                    btnhini.setVisibility(View.VISIBLE);
-                    btnffin.setVisibility(View.VISIBLE);
-                    btnhfin.setVisibility(View.VISIBLE);
-                    repeticiones.setVisibility(View.VISIBLE);
-                    aviso.setVisibility(View.VISIBLE);
-                    finiEvento = modeloSQL.getLong(EVENTO_FECHAINIEVENTO);
-                    fechaIni.setText(getDate(finiEvento));
-                    hiniEvento = modeloSQL.getLong(EVENTO_HORAINIEVENTO);
-                    horaIni.setText(getTime(hiniEvento));
-                    ffinEvento = modeloSQL.getLong(EVENTO_FECHAFINEVENTO);
-                    fechaFin.setText(getDate(ffinEvento));
-                    hfinEvento = modeloSQL.getLong(EVENTO_HORAFINEVENTO);
-                    horaFin.setText(getTime(hfinEvento));
+
                     break;
 
             }
@@ -704,425 +1055,63 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
     private void comprobarCliProy(){
 
-        if (cliente != null) {
 
-            idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
-            relCli.setChecked(true);
-            activityBase.toolbar.setSubtitle(subTitulo +" - "+cliente.getString(CLIENTE_NOMBRE));
-
-        }
-        if (proyecto!=null) {
+        if (proyecto != null) {
 
             idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
-            relProy.setChecked(true);
-            activityBase.toolbar.setSubtitle(subTitulo+" - "+proyecto.getString(PROYECTO_NOMBRE));
+            nombreProyecto = proyecto.getString(PROYECTO_NOMBRE);
+            proyRel.setText(nombreProyecto);
+            visible(proyRel.getLinearLayout());
+            CRUDutil.actualizarCampo(modeloSQL, EVENTO_PROYECTOREL, idProyecto);
+            CRUDutil.actualizarCampo(modeloSQL, EVENTO_NOMPROYECTOREL, nombreProyecto);
+            cliente = CRUDutil.updateModelo(CAMPOS_CLIENTE, proyecto.getString(PROYECTO_ID_CLIENTE));
+            idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
+            nombreCliente = cliente.getString(CLIENTE_NOMBRE);
+            cliRel.setText(nombreCliente);
+            visible(cliRel.getLinearLayout());
+            telefono.setText(cliente.getString(CLIENTE_TELEFONO));
+            lugar.setText(cliente.getString(CLIENTE_DIRECCION));
+            email.setText(cliente.getString(CLIENTE_EMAIL));
+            CRUDutil.actualizarCampo(modeloSQL, EVENTO_CLIENTEREL, idCliente);
+            CRUDutil.actualizarCampo(modeloSQL, EVENTO_NOMCLIENTEREL, nombreCliente);
+            CRUDutil.actualizarCampo(modeloSQL, EVENTO_TELEFONO, cliente.getString(CLIENTE_TELEFONO));
+            CRUDutil.actualizarCampo(modeloSQL, EVENTO_DIRECCION, cliente.getString(CLIENTE_DIRECCION));
+            CRUDutil.actualizarCampo(modeloSQL, EVENTO_EMAIL, cliente.getString(CLIENTE_EMAIL));
 
-        }else {
+            activityBase.toolbar.setSubtitle(subTitulo + " - " + proyecto.getString(PROYECTO_NOMBRE) + " - " + cliente.getString(CLIENTE_NOMBRE));
+
+        } else if (cliente != null) {
+
+            idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
+            nombreCliente = cliente.getString(CLIENTE_NOMBRE);
+            cliRel.setText(nombreCliente);
+            telefono.setText(cliente.getString(CLIENTE_TELEFONO));
+            lugar.setText(cliente.getString(CLIENTE_DIRECCION));
+            email.setText(cliente.getString(CLIENTE_EMAIL));
+            CRUDutil.actualizarCampo(modeloSQL, EVENTO_CLIENTEREL, idCliente);
+            CRUDutil.actualizarCampo(modeloSQL, EVENTO_NOMCLIENTEREL, nombreCliente);
+            CRUDutil.actualizarCampo(modeloSQL, EVENTO_TELEFONO, cliente.getString(CLIENTE_TELEFONO));
+            CRUDutil.actualizarCampo(modeloSQL, EVENTO_DIRECCION, cliente.getString(CLIENTE_DIRECCION));
+            CRUDutil.actualizarCampo(modeloSQL, EVENTO_EMAIL, cliente.getString(CLIENTE_EMAIL));
+
+            activityBase.toolbar.setSubtitle(subTitulo + " - " + cliente.getString(CLIENTE_NOMBRE));
+
+        } else {
 
             activityBase.toolbar.setSubtitle(subTitulo);
 
         }
 
-        if (idProyecto!=null){
-
-            proyRel.setVisibility(View.VISIBLE);
-            nombreProyecto = proyecto.getString(PROYECTO_NOMBRE);
-            proyRel.setText(nombreProyecto);
-            cliRel.setVisibility(View.VISIBLE);
-            lugar.setText(cliente.getString(CLIENTE_DIRECCION));
-            telefono.setText(cliente.getString(CLIENTE_TELEFONO));
-            email.setText(cliente.getString(CLIENTE_EMAIL));
-            nombreCliente = cliente.getString(CLIENTE_NOMBRE);
-            cliRel.setText(nombreCliente);
-
-        }else if (idCliente!=null){
-
-            //relCli.setVisibility(View.GONE);
-            cliRel.setVisibility(View.VISIBLE);
-            lugar.setText(cliente.getString(CLIENTE_DIRECCION));
-            telefono.setText(cliente.getString(CLIENTE_TELEFONO));
-            email.setText(cliente.getString(CLIENTE_EMAIL));
-            nombreCliente = cliente.getString(CLIENTE_NOMBRE);
-            cliRel.setText(nombreCliente);
-        }
-
-        relProy.setVisibility(View.VISIBLE);
-        relCli.setVisibility(View.VISIBLE);
-        imagen.setVisibility(View.VISIBLE);
+        imagen.getLinearLayoutCompat().setVisibility(View.VISIBLE);
         repeticiones.setText(getString(R.string.crear_repeticiones));
-        if (origen.equals(CALENDARIO)){
-            finiEvento = bundle.getLong(FECHA);
-            fechaIni.setText(getDate(finiEvento));
-        }
-        if (origen.equals(CALENDARIO)){
-            hiniEvento = bundle.getLong(HORACAL);
-            horaIni.setText(getTime(hiniEvento));
-        }
 
-        visibleBtnBackSave();
-        if (lista!=null && lista.sizeLista()>0){
+        if (lista != null && lista.sizeLista() > 0) {
             visible(frLista);
         }
-    }
 
-    @Override
-    protected void setAcciones() {
-
-        setAdaptadorClientes(cliRel);
-
-        setAdaptadorProyectos(proyRel);
-
-
-        btnfini.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialogInicio();
-            }
-        });
-
-        fechaIni.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                showDatePickerDialogInicio();
-
-            }
-        }) ;
-
-        btnffin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialogFin();
-            }
-        });
-        fechaFin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                showDatePickerDialogFin();
-
-            }
-        }) ;
-        btnhini.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTimePickerDialogini();
-            }
-        });
-        horaIni.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                showTimePickerDialogini();
-
-            }
-        }) ;
-        btnhfin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTimePickerDialogfin();
-            }
-        });
-        horaFin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                showTimePickerDialogfin();
-
-            }
-        }) ;
-
-        imgllamada.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                AppActivity.hacerLlamada(AppActivity.getAppContext()
-                        , modeloSQL.getString(EVENTO_TELEFONO));
-            }
-        });
-
-        imgemail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                AppActivity.enviarEmail(contexto, modeloSQL.getString(EVENTO_EMAIL),
-                        modeloSQL.getString(EVENTO_ASUNTO), modeloSQL.getString(EVENTO_MENSAJE),
-                        modeloSQL.getString(EVENTO_RUTAADJUNTO));
-
-            }
-        });
-
-        imgmapa.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (!lugar.getText().toString().equals("")){
-
-                    viewOnMapA(contexto, modeloSQL.getString(EVENTO_DIRECCION));
-                }
-
-            }
-        });
-
-
-        aviso.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (isChecked){
-
-                    avisoDias.setVisibility(View.VISIBLE);
-                    avisoHoras.setVisibility(View.VISIBLE);
-                    avisoMinutos.setVisibility(View.VISIBLE);
-                    laviso.setVisibility(View.VISIBLE);
-                    if (finiEvento>hoy()) {
-                        notificado = 0;
-                    }
-                    chNotificado.setVisibility(View.VISIBLE);
-
-                }else{
-
-                    avisoDias.setVisibility(View.GONE);
-                    avisoHoras.setVisibility(View.GONE);
-                    avisoMinutos.setVisibility(View.GONE);
-                    laviso.setVisibility(View.GONE);
-                    avisoDias.setText("0");
-                    avisoHoras.setText("0");
-                    avisoMinutos.setText("0");
-                    chNotificado.setVisibility(View.GONE);
-
-                }
-            }
-        });
-
-        chNotificado.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (!isChecked){
-                    notificado = 0;
-                }else{
-                    notificado = 1;
-                }
-            }
-        });
-
-        repeticiones.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (isChecked){
-
-                    mismoDiaMes.setVisibility(View.VISIBLE);
-                    mismoDiaAnio.setVisibility(View.VISIBLE);
-                    repAnios.setVisibility(View.VISIBLE);
-                    repMeses.setVisibility(View.VISIBLE);
-                    repDias.setVisibility(View.VISIBLE);
-                    drepAnios.setVisibility(View.VISIBLE);
-                    drepMeses.setVisibility(View.VISIBLE);
-                    drepDias.setVisibility(View.VISIBLE);
-                    lrep.setVisibility(View.VISIBLE);
-                    ldrep.setVisibility(View.VISIBLE);
-
-                }else{
-
-                    mismoDiaMes.setVisibility(View.GONE);
-                    mismoDiaAnio.setVisibility(View.GONE);
-                    repAnios.setVisibility(View.GONE);
-                    repMeses.setVisibility(View.GONE);
-                    repDias.setVisibility(View.GONE);
-                    repAnios.setText("0");
-                    repMeses.setText("0");
-                    repDias.setText("0");
-                    drepAnios.setVisibility(View.GONE);
-                    drepMeses.setVisibility(View.GONE);
-                    drepDias.setVisibility(View.GONE);
-                    drepAnios.setText("0");
-                    drepMeses.setText("0");
-                    drepDias.setText("0");
-                    lrep.setVisibility(View.GONE);
-                    ldrep.setVisibility(View.GONE);
-
-                }
-            }
-        });
-
-        mismoDiaMes.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (isChecked){
-
-                    mismoDiaAnio.setVisibility(View.GONE);
-                    repAnios.setVisibility(View.GONE);
-                    repMeses.setVisibility(View.GONE);
-                    repDias.setVisibility(View.GONE);
-                    repAnios.setText("0");
-                    repMeses.setText("0");
-                    repDias.setText("0");
-                }else{
-
-                    mismoDiaAnio.setVisibility(View.VISIBLE);
-                    repAnios.setVisibility(View.VISIBLE);
-                    repMeses.setVisibility(View.VISIBLE);
-                    repDias.setVisibility(View.VISIBLE);
-                    repAnios.setText("0");
-                    repMeses.setText("0");
-                    repDias.setText("0");
-
-                }
-            }
-        });
-
-        mismoDiaAnio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (isChecked){
-
-                    mismoDiaMes.setVisibility(View.GONE);
-                    repAnios.setVisibility(View.GONE);
-                    repMeses.setVisibility(View.GONE);
-                    repDias.setVisibility(View.GONE);
-                    repAnios.setText("0");
-                    repMeses.setText("0");
-                    repDias.setText("0");
-                }else{
-
-                    mismoDiaMes.setVisibility(View.VISIBLE);
-                    repAnios.setVisibility(View.VISIBLE);
-                    repMeses.setVisibility(View.VISIBLE);
-                    repDias.setVisibility(View.VISIBLE);
-                    repAnios.setText("0");
-                    repMeses.setText("0");
-                    repDias.setText("0");
-
-                }
-            }
-        });
-
-        relProy.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (isChecked){
-
-                    proyRel.setVisibility(View.VISIBLE);
-
-                }else{
-
-                    proyRel.setVisibility(View.GONE);
-                    idProyecto = null;
-                    nombreProyecto = null;
-                    proyRel.setText(null);
-                    relProy.setEnabled(true);
-
-                }
-            }
-        });
-
-        relCli.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (isChecked){
-
-                    cliRel.setVisibility(View.VISIBLE);
-
-                }else{
-
-                    cliRel.setVisibility(View.GONE);
-                    idCliente = null;
-                    nombreCliente = null;
-                    cliRel.setText(null);
-                    relCli.setEnabled(true);
-
-                }
-            }
-        });
-
-        proyRel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                ModeloSQL proyecto = (ModeloSQL) proyRel.getAdapter().getItem(position);
-                idProyecto = proyecto.getString(PROYECTO_ID_PROYECTO);
-                nombreProyecto = proyecto.getString(PROYECTO_NOMBRE);
-                proyRel.setText(nombreProyecto);
-                cliRel.setText(proyecto.getString(PROYECTO_CLIENTE_NOMBRE));
-
-            }
-
-        });
-
-        cliRel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                ModeloSQL cliente = (ModeloSQL) cliRel.getAdapter().getItem(position);
-                idCliente = cliente.getString(CLIENTE_ID_CLIENTE);
-                nombreCliente = cliente.getString(CLIENTE_NOMBRE);
-                cliRel.setText(nombreCliente);
-                telefono.setText(cliente.getString(CLIENTE_TELEFONO));
-                lugar.setText(cliente.getString(CLIENTE_DIRECCION));
-                email.setText(cliente.getString(CLIENTE_EMAIL));
-
-            }
-
-        });
-
-        btnNota.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                enviarBundle();
-                bundle.putString(IDREL, modeloSQL.getString(EVENTO_ID_EVENTO));
-                bundle.putString(SUBTITULO, modeloSQL.getString(EVENTO_DESCRIPCION));
-                bundle.putString(ORIGEN, EVENTO);
-                bundle.putString(ACTUAL,NOTA);
-                bundle.putSerializable(MODELO,null);
-                bundle.putSerializable(LISTA,null);
-                bundle.putString(CAMPO_ID,null);
-                bundle.putBoolean(NUEVOREGISTRO,true);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevaNota());
-            }
-        });
-
-        btnVerNotas.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                enviarBundle();
-                bundle.putString(IDREL, modeloSQL.getString(EVENTO_ID_EVENTO));
-                bundle.putString(SUBTITULO, modeloSQL.getString(EVENTO_DESCRIPCION));
-                bundle.putString(ORIGEN, EVENTO);
-                bundle.putString(ACTUAL,NOTA);
-                bundle.putSerializable(LISTA,null);
-                bundle.putSerializable(MODELO,null);
-                bundle.putString(CAMPO_ID,null);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
-            }
-        });
-
-        btnVerRepeticiones.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                verRepeticiones();
-            }
-        });
-
-        completada.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (isChecked){
-                    completa.setText("100.0");
-                }else{
-                    completa.setText("0.0");
-                }
-            }
-        });
-
+        if (nuevo) {
+            onUpdate();
+        }
 
     }
 
@@ -1130,9 +1119,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
         idMulti = modeloSQL.getString(EVENTO_IDMULTI);
         listab = new ListaModeloSQL(campos, EVENTO_IDMULTI, idMulti, null, IGUAL, null);
-        id = null;
-        modeloSQL = null;
-        selector();
+        onBack();
     }
 
     @Override
@@ -1143,281 +1130,42 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
         tituloNuevo = R.string.nuevo_evento;
     }
 
-
-    @Override
-    protected void setInicio() {
-
-        imagen = (ImagenLayout) ctrl(R.id.imgudevento);
-        if (proyecto!=null && proyecto.getString(PROYECTO_RUTAFOTO)!=null){
-            path = proyecto.getString(PROYECTO_RUTAFOTO);
-            imagen.setImageUri(path);
-        }
-        tipoEvento = (TextView) ctrl(R.id.tvtipoudevento);
-        proyRel = (AutoCompleteTextView) ctrl(R.id.sppryudevento);
-        cliRel = (AutoCompleteTextView) ctrl(R.id.spcliudevento);
-        descipcion = (EditMaterial) ctrl(R.id.etdescudevento, EVENTO_DESCRIPCION);
-        lugar = (EditMaterial) ctrl(R.id.etlugarudevento, EVENTO_DIRECCION);
-        email = (EditMaterial) ctrl(R.id.etemailudevento, EVENTO_EMAIL);
-        telefono = (EditMaterial) ctrl(R.id.ettelefonoudevento, EVENTO_TELEFONO);
-        fechaIni = (EditMaterial) ctrl(R.id.etfechainiudevento);
-        horaIni = (EditMaterial) ctrl(R.id.ethorainiudevento);
-        fechaFin = (EditMaterial) ctrl(R.id.etfechafinudevento);
-        horaFin = (EditMaterial) ctrl(R.id.ethorafinudevento);
-        repAnios = (EditMaterial) ctrl(R.id.etrepaniosudevento);
-        repMeses = (EditMaterial) ctrl(R.id.etrepmesesudevento);
-        repDias = (EditMaterial) ctrl(R.id.etrepdiasudevento);
-        drepAnios = (EditMaterial) ctrl(R.id.etrepdaniosudevento);
-        drepMeses = (EditMaterial) ctrl(R.id.etrepdmesesudevento);
-        drepDias = (EditMaterial) ctrl(R.id.etrepddiasudevento);
-        avisoDias = (EditMaterial) ctrl(R.id.etdiasudevento);
-        avisoHoras = (EditMaterial) ctrl(R.id.ethorasudevento);
-        avisoMinutos = (EditMaterial) ctrl(R.id.etminutosudevento);
-        aviso = (CheckBox) ctrl(R.id.chavisoudevento);
-        repeticiones = (CheckBox) ctrl(R.id.chrptudevento);
-        mismoDiaMes = (CheckBox) ctrl(R.id.chmmesevento);
-        mismoDiaAnio = (CheckBox) ctrl(R.id.chmanioevento);
-        relProy = (CheckBox) ctrl(R.id.chpryudevento);
-        relCli = (CheckBox) ctrl(R.id.chcliudevento);
-        laviso = (TextView) ctrl(R.id.ltvavisoudevento);
-        lrep = (TextView) ctrl(R.id.ltvreptudevento);
-        ldrep = (TextView) ctrl(R.id.ltvdreptudevento);
-        btnfini = (ImageButton) ctrl(R.id.imgbtnfiniudevento);
-        btnffin = (ImageButton) ctrl(R.id.imgbtnffinudevento);
-        btnhini = (ImageButton) ctrl(R.id.imgbtnhiniudevento);
-        btnhfin = (ImageButton) ctrl(R.id.imgbtnhfinudevento);
-        completa = (EditMaterial) ctrl(R.id.etcompletadaudevento, EVENTO_COMPLETADA);
-        btnNota = (ImageButton) ctrl(R.id.btn_crearnota_evento);
-        btnVerNotas = (ImageButton) ctrl(R.id.btn_vernotas_evento);
-        btnVerRepeticiones = (Button) ctrl(R.id.btnverrepevento);
-        imgmapa = (ImageButton) ctrl(R.id.imgmapaevento);
-        imgllamada = (ImageButton) ctrl(R.id.imgllamadaevento);
-        imgemail = (ImageButton) ctrl(R.id.imgemailevento);
-        asunto = (EditMaterial) ctrl(R.id.etasuntoevento, EVENTO_ASUNTO);
-        mensaje = (EditMaterial) ctrl(R.id.etmensajeevento, EVENTO_MENSAJE);
-        chNotificado = (CheckBox) ctrl(R.id.chnotificadoevento);
-        completada = (CheckBox) ctrl(R.id.chcompletadaevento);
-
-    }
-
-    @Override
-    protected void setLayout() {
-
-        layoutCuerpo = R.layout.fragment_crud_evento;
-        layoutItem = R.layout.item_list_evento;
-
-    }
-
-    @Override
-    protected boolean registrar() {
-
-        valores = new ContentValues();
-
-        if (idProyecto!=null){
-
-            ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMPROYECTOREL,nombreProyecto);
-            ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_PROYECTOREL,idProyecto);
-
-        }
-        if (idCliente!=null){
-
-            ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_NOMCLIENTEREL,nombreCliente);
-            ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_CLIENTEREL,idCliente);
-        }
-
-        if (path!=null){
-
-            ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_RUTAFOTO,path);
-        }
-
-        switch (tevento){
-
-            case TAREA:
-
-                System.out.println("ffinEvento = " + ffinEvento);
-                System.out.println("hfinEvento = " + hfinEvento);
-
-                if (ffinEvento==0){ffinEvento = JavaUtil.hoyFecha();}
-                if (hfinEvento==0){hfinEvento = JavaUtil.hoyHora();}
-                ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
-                ConsultaBD.putDato(valores, CAMPOS_EVENTO,EVENTO_FECHAFINEVENTO, ffinEvento);
-                ConsultaBD.putDato(valores, CAMPOS_EVENTO,EVENTO_HORAFINEVENTO, hfinEvento);
-                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTOF, getDate(ffinEvento));
-                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_HORAFINEVENTOF, getTime(hfinEvento));
-
-
-                break;
-
-            case TIPOEVENTOCITA:
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
-                ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
-
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO, EVENTO_DIRECCION,lugar.getText().toString());
-
-                if (lugar==null || lugar.getText().toString().equals("")){
-                    Toast.makeText(getContext(), "Debe introducir una direccion para la cita",
-                            Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-                break;
-
-            case TIPOEVENTOEMAIL:
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_EMAIL,email.getText().toString());
-                if (email==null || email.getText().toString().equals("")) {
-                    Toast.makeText(getContext(), "Debe introducir una direccion de email",
-                            Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-                ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
-                break;
-
-            case TIPOEVENTOLLAMADA:
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_TELEFONO,telefono.getText().toString());
-
-                if (telefono==null || telefono.getText().toString().equals("")) {
-                    Toast.makeText(getContext(), "Debe introducir un numero de telefono",
-                            Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-                ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
-                break;
-
-            case Interactor.TiposEvento.TIPOEVENTOEVENTO:
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTO,finiEvento);
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTO,hiniEvento);
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTO,ffinEvento);
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTO,hfinEvento);
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAINIEVENTOF,fechaIni.getText().toString());
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAINIEVENTOF,horaIni.getText().toString());
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_FECHAFINEVENTOF,fechaFin.getText().toString());
-                ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_HORAFINEVENTOF,horaFin.getText().toString());
-                ConsultaBD.putDato(valores,campos,EVENTO_ASUNTO,asunto.getText().toString());
-                ConsultaBD.putDato(valores,campos,EVENTO_MENSAJE,mensaje.getText().toString());
-
-                break;
-
-        }
-
-        ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_DESCRIPCION,descipcion.getText().toString());
-        ConsultaBD.putDato(valores,CAMPOS_EVENTO, EVENTO_TIPO,tevento);
-
-        if (aviso.isChecked() && !tevento.equals(TIPOEVENTOTAREA)){
-
-            long fechaaviso = (JavaUtil.comprobarLong(avisoMinutos.getText().toString()) * MINUTOSLONG) +
-                    (JavaUtil.comprobarLong(avisoHoras.getText().toString()) * HORASLONG) +
-                    (JavaUtil.comprobarLong(avisoDias.getText().toString()) * DIASLONG);
-            ConsultaBD.putDato(valores,CAMPOS_EVENTO,EVENTO_AVISO,fechaaviso);
-
-
-        }
-
-            id = ConsultaBD.idInsertRegistro(tabla, valores);
-
-        modeloSQL = new ModeloSQL(campos, id);//consulta.queryObject(campos,id);
-
-            if (repeticiones.isChecked() && !tevento.equals(TIPOEVENTOTAREA)) {
-
-                idMulti = id;
-
-                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_IDMULTI, idMulti);
-
-                ConsultaBD.updateRegistro(TABLA_EVENTO, idMulti, valores);
-
-                long hoy = hoy();
-                if (finiEvento == 0) {
-                    finiEvento = hoy;
-                }
-
-                int dia = JavaUtil.diaMes(finiEvento);
-
-                long diffecha = ffinEvento - finiEvento;
-
-                long offRep = 0;
-                long fecharep = 0;
-
-                if (mismoDiaMes.isChecked()){
-
-                    fecharep = JavaUtil.mismoDiaMes(finiEvento,dia);
-
-                }else if (mismoDiaAnio.isChecked()){
-
-                    fecharep = JavaUtil.mismoDiaAnio(finiEvento,dia);
-
-                }else {
-
-                    offRep = (JavaUtil.comprobarLong(repAnios.getText().toString()) * ANIOSLONG) +
-                            (JavaUtil.comprobarLong(repMeses.getText().toString()) * MESESLONG) +
-                            (JavaUtil.comprobarLong(repDias.getText().toString()) * DIASLONG);
-
-                    fecharep = finiEvento + offRep;
-
-                }
-
-                long duracionRep = (JavaUtil.comprobarLong(drepAnios.getText().toString()) * ANIOSLONG) +
-                        (JavaUtil.comprobarLong(drepMeses.getText().toString()) * MESESLONG) +
-                        (JavaUtil.comprobarLong(drepDias.getText().toString()) * DIASLONG);
-
-
-                while (duracionRep + hoy > fecharep) {
-
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, fecharep);
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTOF, getDate(fecharep));
-
-
-                    if (tevento.equals(Interactor.TiposEvento.TIPOEVENTOEVENTO)) {
-                        ConsultaBD.putDato(valores,campos,EVENTO_FECHAFINEVENTO, String.valueOf(fecharep + diffecha));
-                        ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTOF, getDate(fecharep + diffecha));
-
-                    }
-                    ConsultaBD.insertRegistro(TABLA_EVENTO, valores);
-
-                    if (mismoDiaMes.isChecked()){
-
-                        fecharep = JavaUtil.mismoDiaMes(fecharep,dia);
-
-                    }else if (mismoDiaAnio.isChecked()){
-
-                        fecharep = JavaUtil.mismoDiaAnio(fecharep,dia);
-
-                    }else {
-
-                        fecharep += offRep;
-                    }
-                }
-
-            }
-
-
-        if (modeloSQL != null) {
-                Toast.makeText(getContext(), "Registro creado",
-                        Toast.LENGTH_SHORT).show();
-            modeloSQL = CRUDutil.updateModelo(campos, id);
-                nuevo = false;
-                return true;
-            }
-
-        Toast.makeText(getContext(), "Error al crear registro",
-                Toast.LENGTH_SHORT).show();
-            return true;
-
-    }
-
     @Override
     protected void setContenedor() {
+
+        setDato(EVENTO_TIPO, tevento);
+        if (finiEvento > 0) {
+            setDato(EVENTO_FECHAINIEVENTO, finiEvento);
+            setDato(EVENTO_FECHAINIEVENTOF, TimeDateUtil.getDateString(finiEvento));
+            if (ffinEvento == 0) {
+                setDato(EVENTO_FECHAFINEVENTO, finiEvento);
+                setDato(EVENTO_FECHAFINEVENTOF, TimeDateUtil.getDateString(finiEvento));
+            }
+        }
+        if (ffinEvento > 0) {
+            setDato(EVENTO_FECHAFINEVENTO, ffinEvento);
+            setDato(EVENTO_FECHAFINEVENTOF, TimeDateUtil.getDateString(ffinEvento));
+            if (finiEvento == 0) {
+                setDato(EVENTO_FECHAINIEVENTO, ffinEvento);
+                setDato(EVENTO_FECHAINIEVENTOF, TimeDateUtil.getDateString(ffinEvento));
+            }
+        }
+        if (hiniEvento > 0) {
+            setDato(EVENTO_HORAINIEVENTO, hiniEvento);
+            setDato(EVENTO_HORAINIEVENTOF, TimeDateUtil.getTimeString(hiniEvento));
+            if (hfinEvento == 0) {
+                setDato(EVENTO_HORAFINEVENTO, hiniEvento);
+                setDato(EVENTO_HORAFINEVENTOF, TimeDateUtil.getTimeString(hiniEvento));
+            }
+        }
+        if (hfinEvento > 0) {
+            setDato(EVENTO_HORAFINEVENTO, hfinEvento);
+            setDato(EVENTO_HORAFINEVENTOF, TimeDateUtil.getTimeString(hfinEvento));
+            if (hiniEvento > 0) {
+                setDato(EVENTO_HORAINIEVENTO, hfinEvento);
+                setDato(EVENTO_HORAINIEVENTOF, TimeDateUtil.getTimeString(hfinEvento));
+            }
+        }
 
     }
 
@@ -1454,10 +1202,13 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                 break;
             default:
 
-                activityBase.toolbar.setSubtitle(setNamefdef());
+                if (subTitulo != null) {
+                    activityBase.toolbar.setSubtitle(subTitulo);
+                }
                 idCliente = null;
                 idProyecto = null;
                 idMulti = null;
+                nuevo = false;
 
                 break;
         }
@@ -1577,9 +1328,15 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
         }
 
         @Override
-        public void bind(final ModeloSQL modeloSQL) {
+        public void bind(@NotNull final ModeloSQL modeloSQL) {
 
-            tipo.setText(modeloSQL.getString(EVENTO_TIPO).toUpperCase());
+            String tEvento = modeloSQL.getString(EVENTO_TIPO);
+
+            if (tEvento == null) {
+                tEvento = TIPOEVENTOCITA;
+            }
+
+            tipo.setText(tEvento.toUpperCase());
             descripcion.setText(modeloSQL.getString(EVENTO_DESCRIPCION));
             telefono.setText(modeloSQL.getString(EVENTO_TELEFONO));
             lugar.setText(modeloSQL.getString(EVENTO_DIRECCION));
@@ -1592,24 +1349,23 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
             horafin.setText(getTime(modeloSQL.getLong(EVENTO_HORAFINEVENTO)));
             double completada = modeloSQL.getDouble(EVENTO_COMPLETADA);
             System.out.println("completada = " + completada);
-            if (completada==0){
+            if (completada == 0) {
                 pbar.setVisibility(View.GONE);
                 completa.setChecked(false);
                 porccompleta.setVisibility(View.GONE);
-            }else if (completada>99) {
+            } else if (completada > 99) {
                 completa.setChecked(true);
                 pbar.setVisibility(View.GONE);
                 porccompleta.setVisibility(View.GONE);
 
-            }else{
+            } else {
                 pbar.setVisibility(View.VISIBLE);
                 porccompleta.setVisibility(View.VISIBLE);
                 completa.setChecked(false);
-                pbar.setProgress((int)completada);
+                pbar.setProgress((int) completada);
                 porccompleta.setText(String.format("%s %s", modeloSQL.getDouble(EVENTO_COMPLETADA), "%"));
             }
 
-            String tipoEvento = modeloSQL.getString(EVENTO_TIPO);
 
             fechaini.setVisibility(View.GONE);
             fechafin.setVisibility(View.GONE);
@@ -1622,7 +1378,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
             lugar.setVisibility(View.GONE);
             email.setVisibility(View.GONE);
 
-            switch (tipoEvento){
+            switch (tEvento) {
 
                 case TAREA:
                     fechafin.setVisibility(View.VISIBLE);
@@ -1667,7 +1423,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
                 long retraso = hoy() - modeloSQL.getLong(EVENTO_FECHAINIEVENTO);
 
-                if (!tipoEvento.equals(TIPOEVENTOTAREA)) {
+                if (!tEvento.equals(TIPOEVENTOTAREA)) {
                     if (retraso > 3 * Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
                     } else if (retraso > Interactor.DIASLONG) {
@@ -1675,7 +1431,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                     } else {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
                     }//imgret.setImageResource(R.drawable.alert_box_v);}
-                }else {
+                } else {
                     retraso = hoy() - modeloSQL.getLong(EVENTO_FECHAFINEVENTO);
                     if (retraso > 3 * Interactor.DIASLONG) {
                         card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_notok));
@@ -1686,13 +1442,13 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                     }
                 }
 
-            }else{
+            } else {
                 card.setCardBackgroundColor(getResources().getColor(R.color.Color_card_ok));
             }
 
 
             btneditar.setVisibility(View.GONE);
-            btneditar.setText("EDITAR "+ tipoEvento.toUpperCase());
+            btneditar.setText("EDITAR " + tEvento.toUpperCase());
             btnllamada.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -1757,6 +1513,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
                 }
             });
+
             super.bind(modeloSQL);
         }
 
@@ -1938,146 +1695,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
         }
     }
 
-
-    private void setAdaptadorProyectos(final AutoCompleteTextView autoCompleteTextView){
-
-
-        listaProyectos =  ConsultaBD.queryList(CAMPOS_PROYECTO,null,null);
-
-        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltroModelo(getContext(),
-                R.layout.item_list_proyecto,listaProyectos,CAMPOS_PROYECTO) {
-
-            @Override
-            protected void setEntradas(int posicion, View view, ArrayList<ModeloSQL> entrada) {
-
-                ImageView imagen = view.findViewById(R.id.imglistaproyectos);
-                TextView nombre = view.findViewById(R.id.tvnombrelistaproyectos);
-                TextView descripcion = view.findViewById(R.id.tvdesclistaproyectos);
-                ImageView imgcli = view.findViewById(R.id.imgclientelistaproyectos);
-                TextView nomcli = view.findViewById(R.id.tvnombreclientelistaproyectos);
-                ImageView imgest = view.findViewById(R.id.imgestadolistaproyectos);
-                TextView estado = view.findViewById(R.id.tvestadolistaproyectos);
-                ProgressBar bar = view.findViewById(R.id.progressBarlistaproyectos);
-
-                descripcion.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.PROYECTO_DESCRIPCION));
-
-                nombre.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.PROYECTO_NOMBRE));
-                nomcli.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.CLIENTE_NOMBRE));
-                estado.setText(entrada.get(posicion).getCampos(ContratoPry.Tablas.ESTADO_DESCRIPCION));
-
-                bar.setProgress(Integer.parseInt(entrada.get(posicion).getCampos
-                        (ContratoPry.Tablas.PROYECTO_TOTCOMPLETADO)));
-
-                long retraso = Long.parseLong(entrada.get(posicion).getCampos
-                        (ContratoPry.Tablas.PROYECTO_RETRASO));
-                if (retraso > 3 * Interactor.DIASLONG) {
-                    imgest.setImageResource(R.drawable.alert_box_r);
-                } else if (retraso > Interactor.DIASLONG) {
-                    imgest.setImageResource(R.drawable.alert_box_a);
-                } else {
-                    imgest.setImageResource(R.drawable.alert_box_v);
-                }
-
-                if (entrada.get(posicion).getCampos(ContratoPry.Tablas.PROYECTO_RUTAFOTO) != null) {
-                    imagen.setImageURI(Uri.parse(entrada.get(posicion).getCampos
-                            (ContratoPry.Tablas.PROYECTO_RUTAFOTO)));
-                }
-                int peso = Integer.parseInt(entrada.get(posicion).getCampos
-                        (ContratoPry.Tablas.CLIENTE_PESOTIPOCLI));
-
-                if (peso > 6) {
-                    imgcli.setImageResource(R.drawable.clientev);
-                } else if (peso > 3) {
-                    imgcli.setImageResource(R.drawable.clientea);
-                } else if (peso > 0) {
-                    imgcli.setImageResource(R.drawable.clienter);
-                } else {
-                    imgcli.setImageResource(R.drawable.cliente);
-                }
-
-
-                super.setEntradas(posicion, view, entrada);
-            }
-
-
-        });
-
-    }
-
-    private void setAdaptadorClientes(final AutoCompleteTextView autoCompleteTextView) {
-
-
-        listaClientes = ConsultaBD.queryList(CAMPOS_CLIENTE, null, null);
-
-        autoCompleteTextView.setAdapter(new ListaAdaptadorFiltro(getContext(),
-                R.layout.item_list_cliente, listaClientes) {
-
-            @Override
-            public void onEntrada(Object entrada, View view) {
-
-                //ImagenLayout imgcli = view.findViewById(R.id.imglcliente);
-                //ImagenLayout imgcliPeso = view.findViewById(R.id.imglclientepeso);
-                TextView nombreCli = view.findViewById(R.id.tvnomclilcliente);
-                TextView contactoCli = view.findViewById(R.id.tvcontacclilcliente);
-                TextView telefonoCli = view.findViewById(R.id.tvtelclilcliente);
-                TextView emailCli = view.findViewById(R.id.tvemailclilcliente);
-                TextView dirCli = view.findViewById(R.id.tvdirclilcliente);
-
-                dirCli.setText(((ModeloSQL) entrada).getString(CLIENTE_DIRECCION));
-
-                int peso = ((ModeloSQL) entrada).getInt
-                        (CLIENTE_PESOTIPOCLI);
-
-                /*
-                if (peso > 6) {
-                    imgcliPeso.setImageResource(R.drawable.clientev);
-                } else if (peso > 3) {
-                    imgcliPeso.setImageResource(R.drawable.clientea);
-                } else if (peso > 0) {
-                    imgcliPeso.setImageResource(R.drawable.clienter);
-                } else {
-                    imgcliPeso.setImageResource(R.drawable.cliente);
-                }
-
-                 */
-
-                nombreCli.setText(((ModeloSQL) entrada).getString(CLIENTE_NOMBRE));
-                contactoCli.setText(((ModeloSQL) entrada).getString(CLIENTE_CONTACTO));
-                telefonoCli.setText(((ModeloSQL) entrada).getString(CLIENTE_TELEFONO));
-                emailCli.setText(((ModeloSQL) entrada).getString(CLIENTE_EMAIL));
-                //imgcli.setImageUriPerfil(activityBase, ((ModeloSQL) entrada).getString(CLIENTE_RUTAFOTO));
-
-
-            }
-
-            @Override
-            public List onFilter(ArrayList entradas, CharSequence constraint) {
-
-                List suggestion = new ArrayList();
-
-                for (Object item : entradas) {
-
-                    for (int i = 2; i < CAMPOS_CLIENTE.length; i += 3) {
-
-
-                        if (((ModeloSQL) item).getString(CAMPOS_CLIENTE[i]) != null && !((ModeloSQL) item).getString(CAMPOS_CLIENTE[i]).equals("")) {
-                            if (((ModeloSQL) item).getString(CAMPOS_CLIENTE[i]).toLowerCase().contains(constraint.toString().toLowerCase())) {
-
-                                suggestion.add(item);
-                                break;
-                            }
-                        }
-                    }
-
-                }
-
-                return null;
-            }
-
-        });
-
-    }
-
     private void showDatePickerDialogInicio() {
         DatePickerFragment newFragment = DatePickerFragment.newInstance
                 (hoy(), new DatePickerDialog.OnDateSetListener() {
@@ -2085,11 +1702,17 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         finiEvento = JavaUtil.fechaALong(year, month, day);
                         String selectedDate = getDate(finiEvento);
+                        CRUDutil.actualizarCampo(modeloSQL, EVENTO_FECHAINIEVENTO, finiEvento);
+                        CRUDutil.actualizarCampo(modeloSQL, EVENTO_FECHAINIEVENTOF, selectedDate);
+                        if (ffinEvento == 0) {
+                            CRUDutil.actualizarCampo(modeloSQL, EVENTO_FECHAFINEVENTO, finiEvento);
+                            CRUDutil.actualizarCampo(modeloSQL, EVENTO_FECHAFINEVENTOF, selectedDate);
+                        }
+                        modeloSQL = CRUDutil.updateModelo(modeloSQL);
                         fechaIni.setText(selectedDate);
                         if (!tevento.equals(Interactor.TiposEvento.TIPOEVENTOEVENTO)) {
                             fechaFin.setText(selectedDate);
                         }
-
                     }
                 });
 
@@ -2103,6 +1726,13 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                         ffinEvento = JavaUtil.fechaALong(year, month, day);
                         String selectedDate = getDate(ffinEvento);
+                        CRUDutil.actualizarCampo(modeloSQL, EVENTO_FECHAFINEVENTO, ffinEvento);
+                        CRUDutil.actualizarCampo(modeloSQL, EVENTO_FECHAFINEVENTOF, selectedDate);
+                        if (finiEvento == 0) {
+                            CRUDutil.actualizarCampo(modeloSQL, EVENTO_FECHAINIEVENTO, ffinEvento);
+                            CRUDutil.actualizarCampo(modeloSQL, EVENTO_FECHAINIEVENTOF, selectedDate);
+                        }
+                        modeloSQL = CRUDutil.updateModelo(modeloSQL);
                         fechaFin.setText(selectedDate);
                     }
                 });
@@ -2117,9 +1747,16 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
-                        hiniEvento = JavaUtil.sumaHoraMin(JavaUtil.horaALong(hourOfDay,minute));
+                        hiniEvento = JavaUtil.horaALong(hourOfDay, minute);
+                        String selectedHour = TimeDateUtil.getTimeString(hiniEvento);
+                        CRUDutil.actualizarCampo(modeloSQL, EVENTO_HORAINIEVENTO, hiniEvento);
+                        CRUDutil.actualizarCampo(modeloSQL, EVENTO_HORAINIEVENTOF, selectedHour);
+                        if (hfinEvento == 0) {
+                            CRUDutil.actualizarCampo(modeloSQL, EVENTO_HORAFINEVENTO, hiniEvento);
+                            CRUDutil.actualizarCampo(modeloSQL, EVENTO_HORAFINEVENTOF, selectedHour);
+                        }
+                        modeloSQL = CRUDutil.updateModelo(modeloSQL);
                         System.out.println("hiniEvento = " + hiniEvento);
-                        String selectedHour = getTime(hiniEvento);
                         horaIni.setText(selectedHour);
 
                     }
@@ -2135,8 +1772,15 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
-                        hfinEvento = JavaUtil.sumaHoraMin(JavaUtil.horaALong(hourOfDay,minute));
-                        String selectedHour = getTime(hfinEvento);
+                        hfinEvento = JavaUtil.horaALong(hourOfDay, minute);
+                        String selectedHour = TimeDateUtil.getTimeString(hfinEvento);
+                        CRUDutil.actualizarCampo(modeloSQL, EVENTO_HORAFINEVENTO, hfinEvento);
+                        CRUDutil.actualizarCampo(modeloSQL, EVENTO_HORAFINEVENTOF, selectedHour);
+                        if (hiniEvento == 0) {
+                            CRUDutil.actualizarCampo(modeloSQL, EVENTO_HORAINIEVENTO, hfinEvento);
+                            CRUDutil.actualizarCampo(modeloSQL, EVENTO_HORAINIEVENTOF, selectedHour);
+                        }
+                        modeloSQL = CRUDutil.updateModelo(modeloSQL);
                         horaFin.setText(selectedHour);
 
                     }

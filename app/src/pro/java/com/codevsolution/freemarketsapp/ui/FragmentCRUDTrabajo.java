@@ -15,7 +15,6 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
@@ -135,8 +134,8 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
 
         ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
 
-        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
-        imagen.setFocusable(false);
+        imagen = vistaForm.addViewImagenLayout();
+        imagen.getLinearLayoutCompat().setFocusable(false);
         vistaForm.addEditMaterialLayout(getString(R.string.nombre), TRABAJO_NOMBRE, null, null);
         vistaForm.addEditMaterialLayout(getString(R.string.descripcion), TRABAJO_DESCRIPCION, null, null);
         EditMaterialLayout tiempo = vistaForm.addEditMaterialLayout(getString(R.string.tiempo), TRABAJO_TIEMPO, null, null);

@@ -20,8 +20,8 @@ public class FragmentNuevoEvento extends FragmentGridImagen implements Interacto
     private String nuevoEvento;
     private String volver;
     private String origen;
-    private long fecha = -1;
-    private long hora = -1;
+    private long fecha;
+    private long hora;
 
     @Override
     protected void setContext() {
@@ -94,10 +94,18 @@ public class FragmentNuevoEvento extends FragmentGridImagen implements Interacto
         }
 
         if (tipoEvento!=null) {
-            bundle = new Bundle();
+
+            if (bundle == null) {
+                bundle = new Bundle();
+            }
+            if (origen == null) {
+                origen = EVENTO;
+            }
             bundle.putString(TIPO, tipoEvento);
             bundle.putString(ACTUAL, EVENTO);
-            bundle.putString(ORIGEN, EVENTO);
+            bundle.putString(ORIGEN, origen);
+            bundle.putLong(HORACAL, hora);
+            bundle.putLong(FECHA, fecha);
             bundle.putBoolean(NUEVOREGISTRO, true);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
         }

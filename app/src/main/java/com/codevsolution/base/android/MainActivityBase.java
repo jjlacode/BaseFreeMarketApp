@@ -71,6 +71,7 @@ public class MainActivityBase extends AppCompatActivity
         bundle.putString(ACTUAL, persistencia.getString(ACTUAL, ""));
         bundle.putString(ACTUALTEMP, persistencia.getString(ACTUALTEMP, ""));
         bundle.putString(CAMPO_ID, persistencia.getString(CAMPO_ID, ""));
+        bundle.putString(IDREL, persistencia.getString(IDREL, ""));
         bundle.putInt(CAMPO_SECUENCIA, persistencia.getInt(CAMPO_SECUENCIA, 0));
 
     }
@@ -98,7 +99,7 @@ public class MainActivityBase extends AppCompatActivity
         PreferenceManager.setDefaultValues(this, R.xml.settings, false);
         if (savedInstanceState != null) {
 
-            persitencia();
+            //persitencia();
 
         } else {
 
@@ -286,6 +287,7 @@ public class MainActivityBase extends AppCompatActivity
         if (layout <= 0) {
             getSupportFragmentManager().beginTransaction().add(R.id.content_main, myFragment).addToBackStack(null).commit();
         } else {
+
             getSupportFragmentManager().beginTransaction().add(layout, myFragment).addToBackStack(null).commit();
         }
 

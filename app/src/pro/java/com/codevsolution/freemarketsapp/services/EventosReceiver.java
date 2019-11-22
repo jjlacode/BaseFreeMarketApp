@@ -20,20 +20,8 @@ import static com.codevsolution.base.logica.InteractorBase.Constantes.EXTRA_ID;
 
 public class EventosReceiver extends ReceiverBase implements JavaUtil.Constantes {
 
-    public EventosReceiver(Messenger messenger) {
-        super(messenger);
-    }
-
-    public EventosReceiver() {
-    }
-
     @Override
     public void onReceiver(Context context, Intent intent) {
-
-        System.out.println("context EventosReceiver= " + context);
-
-        System.out.println("Recibiendo " + intent.getExtras().toString());
-        System.out.println("intent Accion= " + intent.getAction());
 
         int contnot = AndroidUtil.getSharePreference(context, NOTIFICACIONES, CONTNOT, 0);
 
@@ -48,7 +36,14 @@ public class EventosReceiver extends ReceiverBase implements JavaUtil.Constantes
                         contnot, R.drawable.alert_box_r, "Aviso evento próximo a vencer",
                         contenido);
                 ContentValues valores = new ContentValues();
-                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_NOTIFICADO, 1);
+                if (evento.getLong(EVENTO_AVISO) < MINUTOSLONG * 2) {
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, 0);
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_NOTIFICADO, 1);
+
+                } else {
+                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, Math.round((double) evento.getLong(EVENTO_AVISO) / 2));
+
+                }
                 ConsultaBD.updateRegistro(TABLA_EVENTO, evento.getString(EVENTO_ID_EVENTO), valores);
                 AndroidUtil.setSharePreference(context, NOTIFICACIONES, CONTNOT, contnot + 1);
             }

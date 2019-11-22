@@ -19,7 +19,6 @@ import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
-import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
@@ -121,7 +120,7 @@ public class DiaCalTrabajos extends DiaCalHorario implements ContratoPry.Tablas,
         @Override
         public void bind(final ModeloSQL segmento) {
 
-            if (setColorCard(fecha, horaCal) == Estilos.getIdColor(contexto, Estilos.Constantes.COLORPRIMARY) &&
+            if (!getDescanso() &&
                     segmento.getLong(AGENDA_VALORENTRADA) <= horaCal + TimeDateUtil.soloFecha(fecha)
                     && segmento.getLong(AGENDA_VALORSALIDA) > horaCal + TimeDateUtil.soloFecha(fecha)) {
                 visible(card);

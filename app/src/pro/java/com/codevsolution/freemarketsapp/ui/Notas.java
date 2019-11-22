@@ -19,13 +19,12 @@ import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.time.Day;
 import com.codevsolution.base.time.ListaDays;
 import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.base.time.calendar.FragmentMes;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
 
-public class Notas extends FragmentMes {
+public class Notas extends FragmentMesHorario {
 
     @Override
     protected ListaModeloSQL setListaDia(long fecha) {

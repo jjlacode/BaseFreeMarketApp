@@ -20,6 +20,7 @@ import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.login.LoginActivity;
 import com.codevsolution.base.media.VisorPDFEmail;
 import com.codevsolution.base.models.ListaModeloSQL;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.SQLiteUtil;
 import com.codevsolution.base.web.FragmentWebView;
@@ -68,6 +69,8 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
             System.out.println("Accion ver");
 
             String idEvento = intent.getStringExtra(EXTRA_IDEVENTO);
+            ModeloSQL evento = CRUDutil.updateModelo(CAMPOS_EVENTO, idEvento);
+            CRUDutil.actualizarCampo(evento, EVENTO_NOTIFICADO, 1);
             bundle.putString(ACTUAL, intent.getStringExtra(EXTRA_ACTUAL));
             bundle.putString(CAMPO_ID, idEvento);
             NotificationManager notifyMgr = (NotificationManager)

@@ -136,6 +136,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private int pageNumber;
     private EditMaterialLayout etNumeroPag;
     private long timeStamp;
+    private Button btnAsignarAEvento;
+    private ModeloSQL evento;
 
     public FragmentCRUDProyecto() {
         // Required empty public constructor
@@ -314,6 +316,11 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 break;
         }
         setSubtitulo(actual);
+
+        evento = (ModeloSQL) bundle.getSerializable(EVENTO);
+        if (evento != null) {
+            visible(btnAsignarAEvento);
+        }
 
     }
 
@@ -608,8 +615,21 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
 
-        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
-        imagen.setFocusable(false);
+        btnAsignarAEvento = vistaForm.addButtonPrimary(R.string.asignar_evento);
+        btnAsignarAEvento.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                bundle = new Bundle();
+                putBundle(PROYECTO, modeloSQL);
+                putBundle(MODELO, evento);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
+            }
+        });
+        gone(btnAsignarAEvento);
+        imagen = vistaForm.addViewImagenLayout();
+
+        imagen.getLinearLayoutCompat().setFocusable(false);
         imagen.setTextTitulo(tituloSingular);
         nombrePry = vistaForm.addEditMaterialLayout(getString(R.string.nombre), PROYECTO_NOMBRE, null, null);
         descripcionPry = vistaForm.addEditMaterialLayout(getString(R.string.descripcion), PROYECTO_DESCRIPCION, null, null);
@@ -994,7 +1014,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         importeCalculadoPry.getLinearLayout().setVisibility(View.VISIBLE);
         fechaEntradaPry.getLinearLayout().setVisibility(View.VISIBLE);
         visible(btnNota);
-        visible(imagen);
+        visible(imagen.getLinearLayoutCompat());
         visible(chSplit);
         visible(chFija);
         visible(precioHora.getLinearLayout());
@@ -1723,13 +1743,13 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             mainLinear.setOrientation(ViewGroupLayout.ORI_LLC_HORIZONTAL);
             ViewGroupLayout vistaImagen = new ViewGroupLayout(contexto, mainLinear);
             vistaImagen.setOrientacion(ViewGroupLayout.ORI_LLC_VERTICAL, 2.5f);
-            imagenProyecto = vistaImagen.addImagenLayout(1);
+            imagenProyecto = vistaImagen.addViewImagenLayout(1);
             Estilos.setLayoutParams(mainLinear, imagenProyecto.getLinearLayoutCompat(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT, 1, 5);
             ViewGroupLayout vistaImagen2 = new ViewGroupLayout(contexto, vistaImagen.getViewGroup());
             vistaImagen2.setOrientacion(Estilos.Constantes.ORI_LLC_HORIZONTAL, 3f);
-            imagenCliente = vistaImagen2.addImagenLayout(1);
+            imagenCliente = vistaImagen2.addViewImagenLayout(1);
             Estilos.setLayoutParams(vistaImagen2.getViewGroup(), imagenCliente.getLinearLayoutCompat(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT, 1, 5);
-            imagenEstado = vistaImagen2.addImagenLayout(1);
+            imagenEstado = vistaImagen2.addViewImagenLayout(1);
             Estilos.setLayoutParams(vistaImagen2.getViewGroup(), imagenEstado.getLinearLayoutCompat(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.MATCH_PARENT, 1, 5);
             ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, mainLinear);
             vistaForm.setOrientacion(ViewGroupLayout.ORI_LL_VERTICAL, 1);

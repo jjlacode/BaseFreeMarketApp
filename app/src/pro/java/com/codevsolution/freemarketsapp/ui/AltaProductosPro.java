@@ -10,7 +10,6 @@ public class AltaProductosPro extends AltaProductosFirebase implements Interacto
     private FragmentCRUDProducto parent;
 
     public AltaProductosPro() {
-
     }
 
     public AltaProductosPro(FragmentCRUDProducto parent) {
@@ -19,37 +18,36 @@ public class AltaProductosPro extends AltaProductosFirebase implements Interacto
     }
 
     @Override
-    protected void setInicio() {
-        super.setInicio();
+    protected boolean getDatos() {
+        return iniciado;
+    }
+
+    @Override
+    protected void cargarDatos() {
 
         parent.setOnSetDatosProListener(new FragmentCRUDProducto.OnSetDatosPro() {
             @Override
             public void onSetDatos(Bundle bundle) {
 
-                System.out.println(TAG + " Al recibir datos de activity");
                 if (nn(bundle)) {
 
-                    System.out.println("bundle = " + bundle);
                     prodCrud = (ModeloSQL) bundle.getSerializable(CRUD);
-
-                    System.out.println("prodCrud = " + prodCrud);
                     if (prodCrud != null) {
                         prodProv = convertirProdCrud(prodCrud);
                         if (prodProv != null) {
-                            prodProv.setTipo(tipo);
-                            if (prodProv.getId() == null) {
-                                guardar();
-
-                            }
-                            System.out.println("prodProv = " + prodProv.toString());
+                            prodProv.setTipo(PRODUCTOPRO);
+                            esDetalle = true;
+                            iniciado = true;
+                            System.out.println("iniciadoPro = " + iniciado);
                         }
                     }
-                    esDetalle = true;
 
-                    selector();
                 }
+
+                selector();
             }
         });
+
     }
 
     @Override

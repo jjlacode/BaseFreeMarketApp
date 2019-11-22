@@ -27,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         implements Interactor.ConstantesPry, ContratoPry.Tablas {
 
+    protected boolean iniciado;
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
@@ -45,14 +46,7 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
 
     }
 
-    @Override
-    protected void selector() {
-        super.selector();
-        activityBase.fabInicio.hide();
-        activityBase.fabNuevo.show();
 
-
-    }
 
     @Override
     protected void setInicio() {
@@ -61,69 +55,72 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
         limitProd = (EditMaterial) ctrl(R.id.etlimitprod);
         prodActUsados = (EditMaterial) ctrl(R.id.etprodact);
         prodUsados = (EditMaterial) ctrl(R.id.etprod);
+        contadorProdActivo = 0;
+        contadorProdTotal = 0;
 
+        if (getDatos() || !modulo) {
 
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-        db.child(INDICE + PRODUCTOPRO).child(idUser).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    contadorProdTotal++;
-                    if (child.getValue(Boolean.class)) {
-                        contadorProdActivo++;
-                    }
-                }
-                DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                db.child(INDICE + PRODUCTOCLI).child(idUser).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot child : dataSnapshot.getChildren()) {
-                            contadorProdTotal++;
-                            if (child.getValue(Boolean.class)) {
-                                contadorProdActivo++;
-                            }
+            DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+            db.child(INDICE + PRODUCTOPRO).child(idUser).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        contadorProdTotal++;
+                        if (child.getValue(Boolean.class)) {
+                            contadorProdActivo++;
                         }
-
-                        prodActUsados.setText(String.valueOf(contadorProdActivo));
-                        prodUsados.setText(String.valueOf(contadorProdTotal));
-                        //if (contadorProdTotal < limiteProdTotal) {
-
-                        //} else {
-                        //    activityBase.fabNuevo.hide();
-                        //}
-
-                        chActivo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                            @Override
-                            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
-                                if (b && contadorProdActivo >= limiteProdActivos) {
-                                    chActivo.setChecked(false);
-                                } else if (!b) {
-                                    contadorProdActivo--;
-                                    prodActUsados.setText(String.valueOf(contadorProdActivo));
-                                } else {
+                    }
+                    DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                    db.child(INDICE + PRODUCTOCLI).child(idUser).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot child : dataSnapshot.getChildren()) {
+                                contadorProdTotal++;
+                                if (child.getValue(Boolean.class)) {
                                     contadorProdActivo++;
-                                    prodActUsados.setText(String.valueOf(contadorProdActivo));
-
                                 }
                             }
-                        });
 
-                    }
+                            prodActUsados.setText(String.valueOf(contadorProdActivo));
+                            prodUsados.setText(String.valueOf(contadorProdTotal));
+                            //if (contadorProdTotal < limiteProdTotal) {
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                            //} else {
+                            //    activityBase.fabNuevo.hide();
+                            //}
 
-                    }
-                });
-            }
+                            chActivo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                @Override
+                                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    if (b && contadorProdActivo >= limiteProdActivos) {
+                                        chActivo.setChecked(false);
+                                    } else if (!b) {
+                                        contadorProdActivo--;
+                                        prodActUsados.setText(String.valueOf(contadorProdActivo));
+                                    } else {
+                                        contadorProdActivo++;
+                                        prodActUsados.setText(String.valueOf(contadorProdActivo));
 
-            }
-        });
+                                    }
+                                }
+                            });
 
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
 
     }
 
@@ -146,8 +143,10 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
     @Override
     protected void setDatos() {
         super.setDatos();
+        if (!modulo) {
+            gone(imagen);
+        }
 
-        gone(imagen);
     }
 
     @Override
@@ -160,9 +159,9 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
     protected void cargarBundle() {
         super.cargarBundle();
 
-        if (nn(bundle)) {
+        if (nn(bundle) && !modulo) {
 
-            prodCrud = (ModeloSQL) getBundleSerial(CRUD);
+            prodCrud = (ModeloSQL) bundle.getSerializable(CRUD);
             if (prodCrud != null) {
                 prodProv = convertirProdCrud(prodCrud);
                 if (prodProv != null) {
@@ -172,10 +171,18 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
             }
 
         }
+        if (modulo) {
+            cargarDatos();
+
+        }
+    }
+
+    protected void cargarDatos() {
+
     }
 
     @Override
-    protected void setModulo() {
+    protected void setModuloInicio() {
         gone(btnback);
         gone(btndelete);
         gone(btnsave);

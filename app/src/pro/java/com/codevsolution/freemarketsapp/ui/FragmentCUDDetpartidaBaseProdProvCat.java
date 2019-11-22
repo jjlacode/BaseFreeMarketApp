@@ -7,7 +7,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCUD;
 import com.codevsolution.base.javautil.JavaUtil;
@@ -162,11 +162,14 @@ public class FragmentCUDDetpartidaBaseProdProvCat extends FragmentCUD implements
     @Override
     protected void setInicio() {
 
+        ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
+
+        imagen = vistaForm.addViewImagenLayout();
+
         descripcion = (EditMaterial) ctrl(R.id.etdesccdetpartidabase);
         precio = (EditMaterial) ctrl(R.id.etpreciocdetpartidabase);
         nombre = (EditMaterial) ctrl(R.id.etnomcdetpartidabase);
         precio = (EditMaterial) ctrl(R.id.etpreciocdetpartidabase);
-        imagen = (ImagenLayout) ctrl(R.id.imgcdetpartidabase);
         tipoDetPartida = (TextView) ctrl(R.id.tvtipocdetpartidabase);
         nomProv = (EditMaterial) ctrl(R.id.tvnomprovcdetpartidabase);
         refProv = (EditMaterial) ctrl(R.id.tvrefprovcdetpartidabase);

@@ -18,7 +18,6 @@ import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoPry;
-import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
@@ -131,18 +130,20 @@ public class DiaCalCalendario extends DiaCalHorario implements ContratoPry.Tabla
         public void bind(final ModeloSQL modeloSQL) {
 
             gone(card);
+            long horaIniEvento = modeloSQL.getLong(EVENTO_HORAINIEVENTO);
+            long horaFinEvento = modeloSQL.getLong(EVENTO_HORAFINEVENTO);
+            long fechaIniEvento = modeloSQL.getLong(EVENTO_FECHAINIEVENTO);
+            long fechaFinEvento = modeloSQL.getLong(EVENTO_FECHAFINEVENTO);
             //Si la fecha coincide con la fecha del dia
-            if (modeloSQL.getString(EVENTO_FECHAINIEVENTOF).equals(TimeDateUtil.getDateString(fecha)) ||
-                    (modeloSQL.getString(EVENTO_TIPO).equals(TIPOEVENTOTAREA) &&
-                            modeloSQL.getString(EVENTO_FECHAFINEVENTOF).equals(TimeDateUtil.getDateString(fecha)))) {
+            if (!getDescanso() && fechaIniEvento > 0 && fechaFinEvento > 0 && fechaIniEvento <= fecha && fechaFinEvento >= fecha) {
                 //Si la hora coincide con el intervalo de la celda
-                if ((modeloSQL.getLong(EVENTO_HORAFINEVENTO) > 0 && modeloSQL.getLong(EVENTO_HORAFINEVENTO) >= horaCal
-                        && modeloSQL.getLong(EVENTO_HORAFINEVENTO) < horaCal + (30 * MINUTOSLONG)) ||
-                        (modeloSQL.getLong(EVENTO_HORAINIEVENTO) > 0 && modeloSQL.getLong(EVENTO_HORAINIEVENTO) >= horaCal
-                                && modeloSQL.getLong(EVENTO_HORAINIEVENTO) < horaCal + (30 * MINUTOSLONG)) ||
-                        (modeloSQL.getLong(EVENTO_HORAINIEVENTO) > 0 && modeloSQL.getLong(EVENTO_HORAFINEVENTO) >= horaCal
-                                && modeloSQL.getLong(EVENTO_HORAINIEVENTO) < horaCal + (30 * MINUTOSLONG) &&
-                                modeloSQL.getLong(EVENTO_HORAFINEVENTO) > 0)) {
+                if ((fechaIniEvento < fecha && fechaFinEvento > fecha) ||
+                        (fechaIniEvento < fecha && fechaFinEvento == fecha && (horaFinEvento > 0
+                                && horaFinEvento >= horaCal + (30 * MINUTOSLONG)) ||
+                                (fechaIniEvento == fecha && fechaFinEvento > fecha && horaIniEvento > 0 && horaIniEvento <= horaCal) ||
+                                (fechaIniEvento == fecha && fechaFinEvento == fecha && horaIniEvento > 0 &&
+                                        horaFinEvento > 0 && horaFinEvento >= horaCal + (30 * MINUTOSLONG)
+                                        && horaIniEvento <= horaCal))) {
 
                     visible(card);
                     final String tipoevento = modeloSQL.getString(EVENTO_TIPO);
@@ -152,8 +153,6 @@ public class DiaCalCalendario extends DiaCalHorario implements ContratoPry.Tabla
                     fechafin.setVisibility(View.GONE);
                     fechaini.setVisibility(View.GONE);
                     horafin.setVisibility(View.GONE);
-
-                    System.out.println("hora = " + JavaUtil.getTime(modeloSQL.getLong(EVENTO_HORAFINEVENTO)));
 
                     if (tipoevento.equals(TIPOEVENTOCITA)) {
                         imagen.setImageResource(R.drawable.ic_place_black_24dp);

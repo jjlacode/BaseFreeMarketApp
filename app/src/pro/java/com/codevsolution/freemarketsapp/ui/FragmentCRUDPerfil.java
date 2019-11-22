@@ -296,7 +296,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
         ViewGroupLayout vistaGridIM = new ViewGroupLayout(contexto,lyGridBtn);
         vistaGridIM.setOrientacion(LinearLayoutCompat.HORIZONTAL);
 
-        listaBtn [0][0] = vistaGridIM.addButtonPrimary("IM");
+        listaBtn[0][0] = vistaGridIM.addButtonPrimary("IM", 1);
         listaBtn [0][0].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -306,7 +306,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
 
         for (int i = 1; i<=7; i++) {
 
-            listaBtn [0][i] = vistaGridIM.addButtonTrans(TimeDateUtil.getTimeString(9*HORASLONG));
+            listaBtn[0][i] = vistaGridIM.addButtonTrans(TimeDateUtil.getTimeString(9 * HORASLONG), 1);
             final int finalI = i;
             listaBtn [0][i].setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -331,7 +331,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
         ViewGroupLayout vistaGridFM = new ViewGroupLayout(contexto,lyGridBtn);
         vistaGridFM.setOrientacion(LinearLayoutCompat.HORIZONTAL);
 
-        listaBtn [1][0] = vistaGridFM.addButtonPrimary("FM");
+        listaBtn[1][0] = vistaGridFM.addButtonPrimary("FM", 1);
         listaBtn [1][0].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -342,7 +342,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
 
         for (int i = 1; i<=7; i++) {
 
-            listaBtn [1][i] = vistaGridFM.addButtonTrans(TimeDateUtil.getTimeString(14*HORASLONG));
+            listaBtn[1][i] = vistaGridFM.addButtonTrans(TimeDateUtil.getTimeString(14 * HORASLONG), 1);
             final int finalI = i;
             listaBtn [1][i].setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -367,7 +367,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
         ViewGroupLayout vistaGridIT = new ViewGroupLayout(contexto,lyGridBtn);
         vistaGridIT.setOrientacion(LinearLayoutCompat.HORIZONTAL);
 
-        listaBtn [2][0] = vistaGridIT.addButtonPrimary("IT");
+        listaBtn[2][0] = vistaGridIT.addButtonPrimary("IT", 1);
         listaBtn [2][0].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -378,7 +378,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
 
         for (int i = 1; i<=7; i++) {
 
-            listaBtn [2][i] = vistaGridIT.addButtonTrans(TimeDateUtil.getTimeString(16*HORASLONG));
+            listaBtn[2][i] = vistaGridIT.addButtonTrans(TimeDateUtil.getTimeString(16 * HORASLONG), 1);
             final int finalI = i;
             listaBtn [2][i].setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -403,7 +403,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
         ViewGroupLayout vistaGridFT = new ViewGroupLayout(contexto,lyGridBtn);
         vistaGridFT.setOrientacion(LinearLayoutCompat.HORIZONTAL);
 
-        listaBtn [3][0] = vistaGridFT.addButtonPrimary("FT");
+        listaBtn[3][0] = vistaGridFT.addButtonPrimary("FT", 1);
         listaBtn [3][0].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -414,7 +414,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
 
         for (int i = 1; i<=7; i++) {
 
-            listaBtn [3][i] = vistaGridFT.addButtonTrans(TimeDateUtil.getTimeString(19*HORASLONG));
+            listaBtn[3][i] = vistaGridFT.addButtonTrans(TimeDateUtil.getTimeString(19 * HORASLONG), 1);
             final int finalI = i;
             listaBtn [3][i].setOnClickListener(new View.OnClickListener() {
                 @Override

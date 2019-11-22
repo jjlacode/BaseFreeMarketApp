@@ -542,7 +542,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             ViewGroupLayout vistaImagen = new ViewGroupLayout(contexto, vistaDatos.getViewGroup());
             vistaImagen.setOrientacion(ViewGroupLayout.ORI_LLC_VERTICAL, 2.5f);
             Estilos.setLayoutParams(vistaDatos.getViewGroup(), vistaImagen.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.MATCH_PARENT, 2.5f, 0);
-            imagen = vistaImagen.addImagenLayout();
+            imagen = vistaImagen.addViewImagenLayout();
             Estilos.setLayoutParams(vistaImagen.getViewGroup(), imagen.getLinearLayoutCompat(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.MATCH_PARENT);
             ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, vistaDatos.getViewGroup());
             vistaForm.setOrientacion(ViewGroupLayout.ORI_LLC_VERTICAL, 1f);

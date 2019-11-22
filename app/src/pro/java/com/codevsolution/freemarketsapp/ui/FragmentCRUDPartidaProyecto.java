@@ -30,7 +30,6 @@ import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
@@ -150,8 +149,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
         ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
 
-        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
-        imagen.setFocusable(false);
+        imagen = vistaForm.addViewImagenLayout();
+        imagen.getLinearLayoutCompat().setFocusable(false);
         imagen.getImagen().setClickable(false);
         imagen.setTextTitulo(tituloSingular);
         btnPartidaBase = vistaForm.addButtonPrimary(R.string.modificar_partidabase);

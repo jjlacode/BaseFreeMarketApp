@@ -19,8 +19,6 @@ import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.time.Day;
 import com.codevsolution.base.time.ListaDays;
-import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.base.time.calendar.FragmentMes;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
@@ -33,7 +31,7 @@ import static com.codevsolution.freemarketsapp.logica.Interactor.TiposEvento.TIP
 import static com.codevsolution.freemarketsapp.logica.Interactor.TiposEvento.TIPOEVENTOLLAMADA;
 import static com.codevsolution.freemarketsapp.logica.Interactor.TiposEvento.TIPOEVENTOTAREA;
 
-public class CalendarioEventos extends FragmentMes {
+public class CalendarioEventos extends FragmentMesHorario {
 
 
     @Override
@@ -44,19 +42,12 @@ public class CalendarioEventos extends FragmentMes {
     public static ListaModeloSQL listaEventosFecha(long fecha) {
 
         ListaModeloSQL listaDia = new ListaModeloSQL();
-        ListaModeloSQL listatemp = new ListaModeloSQL();
         ListaModeloSQL listaCompleta = new ListaModeloSQL(CAMPOS_EVENTO);
 
         for (ModeloSQL modeloSQL : listaCompleta.getLista()) {
-            if (!modeloSQL.getString(EVENTO_TIPO).equals(TIPOEVENTOTAREA)) {
-                listatemp.addModelo(modeloSQL);
-            }
-        }
 
-        for (ModeloSQL modeloSQL : listatemp.getLista()) {
-
-            if (TimeDateUtil.getDateString(modeloSQL.getLong(EVENTO_FECHAINIEVENTO))
-                    .equals(TimeDateUtil.getDateString(fecha))) {
+            if (modeloSQL.getLong(EVENTO_FECHAINIEVENTO) <= fecha &&
+                    modeloSQL.getLong(EVENTO_FECHAFINEVENTO) >= fecha) {
 
                 listaDia.addModelo(modeloSQL);
             }
@@ -173,6 +164,14 @@ public class CalendarioEventos extends FragmentMes {
     protected void setOnInicio() {
 
 
+    }
+
+    @Override
+    protected void abrirSemana(long fecha) {
+        super.abrirSemana(fecha);
+        bundle = new Bundle();
+        bundle.putLong(FECHA, fecha);
+        icFragmentos.enviarBundleAFragment(bundle, new EventosSem());
     }
 
     @Override
@@ -321,8 +320,6 @@ public class CalendarioEventos extends FragmentMes {
             telefono.setVisibility(View.GONE);
             lugar.setVisibility(View.GONE);
             email.setVisibility(View.GONE);
-            fechafin.setVisibility(View.GONE);
-            horafin.setVisibility(View.GONE);
 
             double completada = modeloSQL.getDouble(EVENTO_COMPLETADA);
             descripcion.setText(modeloSQL.getString(EVENTO_DESCRIPCION));
@@ -335,10 +332,14 @@ public class CalendarioEventos extends FragmentMes {
             fechafin.setText(modeloSQL.getString(EVENTO_FECHAFINEVENTOF));
             fechaini.setText(modeloSQL.getString(EVENTO_FECHAINIEVENTOF));
 
+            if (modeloSQL.getString(EVENTO_FECHAFINEVENTOF).equals(modeloSQL.getString(EVENTO_FECHAINIEVENTOF)) &&
+                    modeloSQL.getString(EVENTO_HORAFINEVENTOF).equals(modeloSQL.getString(EVENTO_HORAINIEVENTOF))) {
+                gone(fechafin);
+                gone(horafin);
+            }
+
             if (tipoevento.equals(TIPOEVENTOTAREA)) {
                 imagen.setImageResource(R.drawable.ic_tareas_indigo);
-                fechafin.setVisibility(View.VISIBLE);
-                horafin.setVisibility(View.VISIBLE);
                 fechaini.setVisibility(View.GONE);
             } else if (tipoevento.equals(TIPOEVENTOCITA)) {
                 imagen.setImageResource(R.drawable.ic_place_black_24dp);
@@ -355,8 +356,6 @@ public class CalendarioEventos extends FragmentMes {
             else if (tipoevento.equals(TIPOEVENTOEVENTO)){
                 imagen.setImageResource(R.drawable.ic_event_note_black_24dp);
                 fechafin.setVisibility(View.VISIBLE);
-                horafin.setVisibility(View.VISIBLE);
-                fechaini.setVisibility(View.VISIBLE);
             }
 
             if (completada>0){

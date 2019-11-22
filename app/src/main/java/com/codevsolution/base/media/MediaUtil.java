@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -24,9 +25,9 @@ import androidx.loader.content.CursorLoader;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.codevsolution.freemarketsapp.R;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.codevsolution.freemarketsapp.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -133,7 +134,8 @@ public class MediaUtil {
 
             File videoFile = null;
             try {
-                videoFile = createVideoFile();
+                videoFile = createVideoFile(context);
+                videoPath = videoFile.getAbsolutePath();
             } catch (IOException ex) {
                 // Error occurred while creating the File
             }
@@ -160,7 +162,8 @@ public class MediaUtil {
 
             File audioFile = null;
             try {
-                audioFile = createAudioFile();
+                audioFile = createAudioFile(context);
+                audioPath = audioFile.getAbsolutePath();
             } catch (IOException ex) {
                 // Error occurred while creating the File
             }
@@ -352,22 +355,37 @@ public class MediaUtil {
         return image;
     }
 
-    private File createVideoFile() throws IOException {
+    public static Bitmap getMini(String videoUrl) {
+
+        return ThumbnailUtils.createVideoThumbnail(videoUrl, MediaStore.Video.Thumbnails.MINI_KIND);
+    }
+
+    public static File createVideoFile(Context context) throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String videoFileName = "VID_" + timeStamp + "_";
         File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_MOVIES);
-        File video = File.createTempFile(
+
+        return File.createTempFile(
+                videoFileName,  /* prefix */
+                ".mp4",         /* suffix */
+                storageDir      /* directory */
+        );
+    }
+
+    public static File createPublicVideoFile(Context context) throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String videoFileName = "VID_" + timeStamp + "_";
+        String pathDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).getAbsolutePath();
+        File storageDir = new File(pathDir);
+        return File.createTempFile(
                 videoFileName,  /* prefix */
                 ".mp4",         /* suffix */
                 storageDir      /* directory */
         );
 
-        // Save a file: path for use with ACTION_VIEW intents
-        videoPath = video.getAbsolutePath();
-        return video;
     }
 
-    private File createAudioFile() throws IOException {
+    public static File createAudioFile(Context context) throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String audioFileName = "AUD_" + timeStamp + "_";
         File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_MUSIC);
@@ -376,9 +394,19 @@ public class MediaUtil {
                 ".mp3",         /* suffix */
                 storageDir      /* directory */
         );
+        return audio;
+    }
 
-        // Save a file: path for use with ACTION_VIEW intents
-        audioPath = audio.getAbsolutePath();
+    public static File createPublicAudioFile(Context context) throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String audioFileName = "AUD_" + timeStamp + "_";
+        String pathDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath();
+        File storageDir = new File(pathDir);
+        File audio = File.createTempFile(
+                audioFileName,  /* prefix */
+                ".mp3",         /* suffix */
+                storageDir      /* directory */
+        );
         return audio;
     }
 

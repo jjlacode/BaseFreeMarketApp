@@ -420,6 +420,7 @@ public class ContratoPry implements JavaUtil.Constantes {
         String EVENTO_TIPO = CAMPO_TIPO + TABLA_EVENTO;
         String EVENTO_RUTAFOTO = CAMPO_RUTAFOTO;
         String EVENTO_COMPLETADA = "completada_" + TABLA_EVENTO;
+        String EVENTO_COLOR = "color_" + TABLA_EVENTO;
         String EVENTO_CREATE = CAMPO_CREATEREG;
         String EVENTO_TIMESTAMP = CAMPO_TIMESTAMP;
 
@@ -884,7 +885,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 AMORTIZACION_TIMESTAMP, "INTEGER NON NULL DEFAULT 0", LONG
         };
 
-        String[] CAMPOS_EVENTO = {"86", TABLA_EVENTO,
+        String[] CAMPOS_EVENTO = {"89", TABLA_EVENTO,
                 EVENTO_ID_EVENTO, "TEXT NON NULL UNIQUE", STRING,
                 EVENTO_IDMULTI, "TEXT NON NULL", STRING,
                 EVENTO_DESCRIPCION, "TEXT NON NULL", STRING,
@@ -911,6 +912,7 @@ public class ContratoPry implements JavaUtil.Constantes {
                 EVENTO_TIPO, "TEXT NON NULL", STRING,
                 EVENTO_RUTAFOTO, "TEXT", STRING,
                 EVENTO_COMPLETADA, "REAL NON NULL DEFAULT 0", DOUBLE,
+                EVENTO_COLOR, "TEXT", STRING,
                 EVENTO_CREATE, "INTEGER NON NULL DEFAULT 0", LONG,
                 EVENTO_TIMESTAMP, "INTEGER NON NULL DEFAULT 0", LONG
         };
