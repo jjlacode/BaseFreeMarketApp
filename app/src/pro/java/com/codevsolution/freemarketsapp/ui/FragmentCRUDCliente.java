@@ -22,7 +22,6 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
@@ -37,7 +36,6 @@ import com.codevsolution.freemarketsapp.logica.Interactor;
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
-import static com.codevsolution.base.sqlite.ConsultaBD.checkQueryList;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
 
 public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.ConstantesPry,
@@ -52,13 +50,8 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     private EditMaterialLayout contactoCliente;
     private EditMaterialLayout tipoCliente;
     private ImageButton btnevento;
-    private ImageButton mapa;
-    private ImageButton llamada;
-    private ImageButton mail;
     private Button btnclientes;
     private Button btnprospectos;
-    private Button btnClienteWeb;
-    private Button btnClienteWebPro;
     private Button crearPresup;
     private CheckBox activo;
     private String idTipoCliente = null;
@@ -72,6 +65,8 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     private ImageButton btnVerNotas;
     private Button crearProyecto;
     private TextView clienteWeb;
+    private Button btnAsignarAEvento;
+    private ModeloSQL evento;
 
 
     public FragmentCRUDCliente() {
@@ -87,6 +82,171 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     @Override
     protected ListaAdaptadorFiltroModelo setAdaptadorAuto(Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos) {
         return new AdaptadorFiltroModelo(context, layoutItem, lista, campos);
+    }
+
+    @Override
+    protected void setInicio() {
+
+        ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
+
+        btnAsignarAEvento = vistaForm.addButtonPrimary(R.string.asignar_evento);
+        btnAsignarAEvento.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                bundle = new Bundle();
+                putBundle(CLIENTE, modeloSQL);
+                putBundle(MODELO, evento);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
+            }
+        });
+        gone(btnAsignarAEvento);
+        imagen = vistaForm.addViewImagenLayout();
+
+        clienteWeb = vistaForm.addTextView(getString(R.string.clienteweb));
+        gone(clienteWeb);
+        tipoCliente = vistaForm.addEditMaterialLayout(getString(R.string.tipo_cliente));
+        tipoCliente.setActivo(false);
+        tipoCliente.btnAccion2Enable(true);
+
+        nombreCliente = vistaForm.addEditMaterialLayout(getString(R.string.nombre), CLIENTE_NOMBRE, null, null);
+        nombreCliente.setObligatorio(true);
+        direccionCliente = vistaForm.addEditMaterialLayout(getString(R.string.direccion), CLIENTE_DIRECCION, ViewGroupLayout.MAPA, activityBase);
+        telefonoCliente = vistaForm.addEditMaterialLayout(getString(R.string.telefono), CLIENTE_TELEFONO, ViewGroupLayout.LLAMADA, activityBase);
+        emailCliente = vistaForm.addEditMaterialLayout(getString(R.string.email), CLIENTE_EMAIL, ViewGroupLayout.MAIL, activityBase);
+        webCliente = vistaForm.addEditMaterialLayout(getString(R.string.web), CLIENTE_WEB, ViewGroupLayout.WEB, activityBase);
+        contactoCliente = vistaForm.addEditMaterialLayout(getString(R.string.contacto), CLIENTE_CONTACTO, null, null);
+        activo = (CheckBox) vistaForm.addVista(new CheckBox(contexto));
+        activo.setText(R.string.inactivo);
+        activo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    fechaInactivo = JavaUtil.hoy();
+                } else {
+                    fechaInactivo = 0;
+                }
+            }
+        });
+
+        ViewGroupLayout vistabtn = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistabtn.setOrientacion(LinearLayoutCompat.HORIZONTAL);
+
+        btnevento = vistabtn.addImageButtonSecundary(R.drawable.ic_evento_indigo, 1);
+        btnevento.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bundle = new Bundle();
+                bundle.putSerializable(CLIENTE, modeloSQL);
+                bundle.putString(SUBTITULO, modeloSQL.getString(CLIENTE_NOMBRE));
+                bundle.putBoolean(NUEVOREGISTRO, true);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevoEvento());
+            }
+
+        });
+        btnVerEventos = vistabtn.addImageButtonSecundary(R.drawable.ic_lista_eventos_indigo, 1);
+        btnVerEventos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bundle = new Bundle();
+                bundle.putString(SUBTITULO, modeloSQL.getString(CLIENTE_NOMBRE));
+                bundle.putSerializable(LISTA, new ListaModeloSQL(CAMPOS_EVENTO, EVENTO_CLIENTEREL, id, null, IGUAL, null));
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
+            }
+        });
+        btnNota = vistabtn.addImageButtonSecundary(R.drawable.ic_nueva_nota_indigo, 1);
+        btnNota.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bundle = new Bundle();
+                bundle.putString(IDREL, modeloSQL.getString(CLIENTE_ID_CLIENTE));
+                bundle.putString(SUBTITULO, modeloSQL.getString(CLIENTE_NOMBRE));
+                bundle.putString(ORIGEN, CLIENTE);
+                bundle.putSerializable(MODELO, null);
+                bundle.putSerializable(LISTA, null);
+                bundle.putString(CAMPO_ID, null);
+                bundle.putBoolean(NUEVOREGISTRO, true);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevaNota());
+            }
+        });
+        btnVerNotas = vistabtn.addImageButtonSecundary(R.drawable.ic_lista_notas_indigo, 1);
+        btnVerNotas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                enviarBundle();
+                bundle.putString(IDREL, modeloSQL.getString(CLIENTE_ID_CLIENTE));
+                bundle.putString(SUBTITULO, modeloSQL.getString(CLIENTE_NOMBRE));
+                bundle.putString(ORIGEN, CLIENTE);
+                bundle.putString(ACTUAL, NOTA);
+                bundle.putSerializable(LISTA, null);
+                bundle.putSerializable(MODELO, null);
+                bundle.putString(CAMPO_ID, null);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());
+            }
+        });
+        actualizarArrays(vistabtn);
+
+        ViewGroupLayout vistabtnProy = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+
+        crearPresup = vistabtnProy.addButtonSecondary(R.string.crear_presup);
+        crearPresup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bundle = new Bundle();
+                putBundle(NUEVOREGISTRO, true);
+                putBundle(ACTUAL, PRESUPUESTO);
+                putBundle(CLIENTE, modeloSQL);
+                putBundle(CAMPO_ID, null);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
+
+            }
+        });
+        crearProyecto = vistabtnProy.addButtonSecondary(R.string.crear_proyecto);
+        crearProyecto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bundle = new Bundle();
+                putBundle(NUEVOREGISTRO, true);
+                putBundle(ACTUAL, PROYECTO);
+                putBundle(CLIENTE, modeloSQL);
+                putBundle(CAMPO_ID, null);
+                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
+
+            }
+        });
+        actualizarArrays(vistabtnProy);
+        actualizarArrays(vistaForm);
+
+        ViewGroupLayout vistaCab = new ViewGroupLayout(contexto, frCabecera);
+        vistaCab.setOrientacion(LinearLayoutCompat.HORIZONTAL);
+
+        btnclientes = vistaCab.addButtonSecondary(R.string.clientes, 1);
+        btnclientes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                actual = CLIENTE;
+                activityBase.toolbar.setSubtitle(R.string.clientes);
+                enviarAct();
+                listaRV();
+            }
+        });
+
+        btnprospectos = vistaCab.addButtonSecondary(R.string.prospectos, 1);
+        btnprospectos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                actual = PROSPECTO;
+                activityBase.toolbar.setSubtitle(R.string.prospectos);
+                enviarAct();
+                listaRV();
+            }
+        });
+
+        actualizarArrays(vistaCab);
+
+
     }
 
     @Override
@@ -175,11 +335,19 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String seleccion = EVENTO_CLIENTEREL + " = '" + id + "'";
-        if (checkQueryList(CAMPOS_EVENTO, seleccion, null)) {
+        ListaModeloSQL listaEventos = CRUDutil.setListaModelo(CAMPOS_EVENTO, EVENTO_CLIENTEREL, id, IGUAL);
+        if (listaEventos.sizeLista() > 0) {
             btnVerEventos.setVisibility(View.VISIBLE);
         } else {
             btnVerEventos.setVisibility(View.GONE);
+        }
+
+        ListaModeloSQL listaNotas = CRUDutil.setListaModelo(CAMPOS_NOTA, NOTA_ID_RELACIONADO, id, IGUAL);
+
+        if (listaNotas.sizeLista() > 0) {
+            btnVerNotas.setVisibility(View.VISIBLE);
+        } else {
+            btnVerNotas.setVisibility(View.GONE);
         }
 
         if (peso > 6) {
@@ -230,6 +398,10 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             tituloNuevo = R.string.nuevo_prospecto;
         }else {
             tituloNuevo = R.string.nuevo_cliente;
+        }
+        evento = (ModeloSQL) bundle.getSerializable(EVENTO);
+        if (evento != null) {
+            visible(btnAsignarAEvento);
         }
     }
 
@@ -291,15 +463,16 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
 
         }
 
-        String seleccion = EVENTO_CLIENTEREL + " = '" + id + "'";
-        if (checkQueryList(CAMPOS_EVENTO, seleccion, null)) {
+        ListaModeloSQL listaEventos = CRUDutil.setListaModelo(CAMPOS_EVENTO, EVENTO_CLIENTEREL, id, IGUAL);
+        if (listaEventos.sizeLista() > 0) {
             btnVerEventos.setVisibility(View.VISIBLE);
         } else {
             btnVerEventos.setVisibility(View.GONE);
         }
 
-        seleccion = NOTA_ID_RELACIONADO+" = '"+id+"'";
-        if (checkQueryList(CAMPOS_NOTA,seleccion,null)){
+        ListaModeloSQL listaNotas = CRUDutil.setListaModelo(CAMPOS_NOTA, NOTA_ID_RELACIONADO, id, IGUAL);
+
+        if (listaNotas.sizeLista() > 0) {
             btnVerNotas.setVisibility(View.VISIBLE);
         }else {
             btnVerNotas.setVisibility(View.GONE);
@@ -325,154 +498,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     }
 
 
-    @Override
-    protected void setInicio() {
 
-        ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
-
-        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
-
-        clienteWeb = vistaForm.addTextView(getString(R.string.clienteweb));
-        gone(clienteWeb);
-        tipoCliente = vistaForm.addEditMaterialLayout(getString(R.string.tipo_cliente));
-        tipoCliente.setActivo(false);
-        tipoCliente.btnAccion2Enable(true);
-
-        nombreCliente = vistaForm.addEditMaterialLayout(getString(R.string.nombre), CLIENTE_NOMBRE, null, null);
-        direccionCliente = vistaForm.addEditMaterialLayout(getString(R.string.direccion), CLIENTE_DIRECCION, ViewGroupLayout.MAPA, activityBase);
-        telefonoCliente = vistaForm.addEditMaterialLayout(getString(R.string.telefono), CLIENTE_TELEFONO, ViewGroupLayout.LLAMADA, activityBase);
-        emailCliente = vistaForm.addEditMaterialLayout(getString(R.string.email), CLIENTE_EMAIL, ViewGroupLayout.MAIL, activityBase);
-        webCliente = vistaForm.addEditMaterialLayout(getString(R.string.web), CLIENTE_WEB, ViewGroupLayout.WEB, activityBase);
-        contactoCliente = vistaForm.addEditMaterialLayout(getString(R.string.contacto), CLIENTE_CONTACTO, null, null);
-        activo = (CheckBox) vistaForm.addVista(new CheckBox(contexto));
-        activo.setText(R.string.inactivo);
-        activo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    fechaInactivo = JavaUtil.hoy();
-                } else {
-                    fechaInactivo = 0;
-                }
-            }
-        });
-
-        ViewGroupLayout vistabtn = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
-        vistabtn.setOrientacion(LinearLayoutCompat.HORIZONTAL);
-
-        btnevento = vistabtn.addImageButtonSecundary(R.drawable.ic_evento_indigo);
-        btnevento.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bundle = new Bundle();
-                bundle.putSerializable(CLIENTE, modeloSQL);
-                bundle.putBoolean(NUEVOREGISTRO, true);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevoEvento());
-            }
-
-        });
-        btnVerEventos = vistabtn.addImageButtonSecundary(R.drawable.ic_lista_eventos_indigo);
-        btnVerEventos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bundle = new Bundle();
-                bundle.putSerializable(LISTA, new ListaModeloSQL(CAMPOS_EVENTO, EVENTO_CLIENTEREL, id, null, IGUAL, null));
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
-            }
-        });
-        btnNota = vistabtn.addImageButtonSecundary(R.drawable.ic_nueva_nota_indigo);
-        btnNota.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bundle = new Bundle();
-                bundle.putString(IDREL, modeloSQL.getString(CLIENTE_ID_CLIENTE));
-                bundle.putString(SUBTITULO, modeloSQL.getString(CLIENTE_NOMBRE));
-                bundle.putString(ORIGEN, CLIENTE);
-                bundle.putSerializable(MODELO, null);
-                bundle.putSerializable(LISTA, null);
-                bundle.putString(CAMPO_ID, null);
-                bundle.putBoolean(NUEVOREGISTRO, true);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentNuevaNota());            }
-        });
-        btnVerNotas = vistabtn.addImageButtonSecundary(R.drawable.ic_lista_notas_indigo);
-        btnVerNotas.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                enviarBundle();
-                bundle.putString(IDREL, modeloSQL.getString(CLIENTE_ID_CLIENTE));
-                bundle.putString(SUBTITULO, modeloSQL.getString(CLIENTE_NOMBRE));
-                bundle.putString(ORIGEN, CLIENTE);
-                bundle.putString(ACTUAL,NOTA);
-                bundle.putSerializable(LISTA,null);
-                bundle.putSerializable(MODELO,null);
-                bundle.putString(CAMPO_ID,null);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDNota());            }
-        });
-        actualizarArrays(vistabtn);
-
-        ViewGroupLayout vistabtnProy = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
-
-        crearPresup = vistabtnProy.addButtonSecondary(R.string.crear_presup);
-        crearPresup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bundle = new Bundle();
-                putBundle(NUEVOREGISTRO, true);
-                putBundle(ACTUAL, PRESUPUESTO);
-                putBundle(CLIENTE, modeloSQL);
-                putBundle(CAMPO_ID, null);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
-
-            }
-        });
-        crearProyecto = vistabtnProy.addButtonSecondary(R.string.crear_proyecto);
-        crearProyecto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bundle = new Bundle();
-                putBundle(NUEVOREGISTRO, true);
-                putBundle(ACTUAL, PROYECTO);
-                putBundle(CLIENTE, modeloSQL);
-                putBundle(CAMPO_ID, null);
-                icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
-
-            }
-        });
-        actualizarArrays(vistabtnProy);
-        actualizarArrays(vistaForm);
-
-        ViewGroupLayout vistaCab = new ViewGroupLayout(contexto, frCabecera);
-        vistaCab.setOrientacion(LinearLayoutCompat.HORIZONTAL);
-
-        btnclientes = vistaCab.addButtonSecondary(R.string.clientes, 1);
-        btnclientes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                actual = CLIENTE;
-                activityBase.toolbar.setSubtitle(R.string.clientes);
-                enviarAct();
-                listaRV();
-            }
-        });
-
-        btnprospectos = vistaCab.addButtonSecondary(R.string.prospectos, 1);
-        btnprospectos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                actual = PROSPECTO;
-                activityBase.toolbar.setSubtitle(R.string.prospectos);
-                enviarAct();
-                listaRV();
-            }
-        });
-
-        actualizarArrays(vistaCab);
-
-
-
-    }
 
     @Override
     protected void setLayout() {
@@ -596,8 +622,8 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             mainLinear.setOrientation(ViewGroupLayout.ORI_LLC_HORIZONTAL);
             ViewGroupLayout vistaImagen = new ViewGroupLayout(contexto,mainLinear);
             vistaImagen.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL,1.5f);
-            imagen = vistaImagen.addImagenLayout();
-            imagenPeso = vistaImagen.addImagenLayout();
+            imagen = vistaImagen.addViewImagenLayout();
+            imagenPeso = vistaImagen.addViewImagenLayout();
             ViewGroupLayout vistaForm = new ViewGroupLayout(contexto,mainLinear);
             vistaForm.setOrientacion(ViewGroupLayout.ORI_LL_VERTICAL,1);
             nombre = vistaForm.addTextView(modeloSQL.getString(CLIENTE_NOMBRE));

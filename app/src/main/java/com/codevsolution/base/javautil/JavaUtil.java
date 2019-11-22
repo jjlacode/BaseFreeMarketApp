@@ -89,6 +89,7 @@ public class JavaUtil {
         String ESDETALLE = "esdetalle";
         String NOTIFICACIONES = "notificaciones";
         String PERSISTENCIA = "persistencia";
+        String TAGPERS = "tagpersistencia";
         String PATH = "path";
         String TSIMG = "tsimg";
         String CONTNOT = "Contador notificacion";

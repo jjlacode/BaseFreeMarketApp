@@ -13,6 +13,8 @@ import com.codevsolution.base.android.CheckPermisos;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
+import com.codevsolution.base.style.Dialogos;
+import com.codevsolution.base.style.Estilos;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
@@ -91,7 +93,6 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
                 } else {
                     modeloSQL = CRUDutil.updateModelo(campos, id);
                 }
-                System.out.println("swipe derecha");
                 selector();
                 break;
             }
@@ -121,7 +122,6 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
                     }
                 }
                 selector();
-                System.out.println("swipe izquierda");
                 break;
             }
             if (modeloSQLSW != null) {
@@ -136,6 +136,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
         Log.d(TAG, getMetodo());
 
         if (comprobarDatos() && update()) {
+
             datos();
             return true;
         }
@@ -167,6 +168,27 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
         return true;
     }
 
+    protected void dialogoBack() {
+
+        String titulo = Estilos.getString(contexto, "datos_no_guardados");
+        String mensaje = Estilos.getString(contexto, "pregunta_salir_sin_guardar");
+
+        Dialogos.DialogoTexto dialogoTexto = new Dialogos.DialogoTexto(titulo, mensaje, contexto, new Dialogos.DialogoTexto.OnClick() {
+            @Override
+            public void onConfirm() {
+
+                onBack();
+
+            }
+
+            @Override
+            public void onCancel() {
+                System.out.println("cancelado");
+            }
+        });
+        dialogoTexto.show(getActivity().getSupportFragmentManager(), "dialogoback");
+    }
+
     protected void acciones() {
         super.acciones();
         Log.d(TAG, getMetodo());
@@ -177,7 +199,13 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
             public void onClick(View v) {
                 Log.d(TAG, getMetodo());
 
-                onBack();
+                if (nn(modeloSQL) && modeloSQL.noModificado()) {
+                    onBack();
+                } else {
+                    dialogoBack();
+                    visible(btnsave);
+                }
+
 
             }
         });
@@ -197,6 +225,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
                 Log.d(TAG, getMetodo());
 
                 onUpdate();
+                modeloSQL = CRUDutil.updateModelo(modeloSQL);
 
             }
         });
@@ -305,7 +334,6 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
     protected void cambiarFragment() {
         Log.d(TAG, getMetodo());
 
-        icFragmentos.fabVisible();
         activityBase.toolbar.setSubtitle(tituloPlural);
         setcambioFragment();
         if (bundle != null) {
@@ -355,10 +383,6 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
                 } else if (ConsultaBD.updateRegistro(tabla, id, valores) > 0) {
 
                     modeloSQL = ConsultaBD.queryObject(campos, id);
-                    //idUser = AndroidUtil.getSharePreference(contexto,USERID,USERID,NULL);
-                    //System.out.println("idUser = " + idUser);
-                    //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                    //db.child(idUser).child(tabla).child(id).setValue(convertirModelo(modeloSQL));
 
                     Toast.makeText(getContext(), "Registro guardado", Toast.LENGTH_SHORT).show();
                     nuevo = false;

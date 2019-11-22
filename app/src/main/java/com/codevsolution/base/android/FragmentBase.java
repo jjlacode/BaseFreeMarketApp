@@ -27,12 +27,15 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
@@ -143,13 +146,16 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected boolean swipeOn;
     protected boolean modulo;
     protected FragmentBase fragment;
+    protected RelativeLayout frContenedor;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, getMetodo());
 
-        contexto = activityBase;
+        if (contexto == null) {
+            setContext();
+        }
         setLayout();
         setLayoutExtra();
 
@@ -210,8 +216,9 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         if (modulo) {
 
-            view = inflater.inflate(R.layout.modulo, container, false);
+            view = inflater.inflate(R.layout.modulo, containerMain, false);
 
+            frContenedor = view.findViewById(R.id.contenedor);
             frdetalle = view.findViewById(R.id.layout_detalle_mod);
             frdetalleExtraspost = view.findViewById(R.id.layout_extras_post_detalle_mod);
             frdetalleExtrasante = view.findViewById(R.id.layout_extras_antes_detalle_mod);
@@ -229,6 +236,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
             view = inflater.inflate(R.layout.contenido, container, false);
 
+            frContenedor = view.findViewById(R.id.contenedor);
             frdetalle = view.findViewById(R.id.layout_detalle);
             frdetalleExtraspost = view.findViewById(R.id.layout_extras_post_detalle);
             frdetalleExtrasante = view.findViewById(R.id.layout_extras_antes_detalle);
@@ -295,10 +303,6 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         }
 
-        contexto = activityBase;
-
-        System.out.println("frameAnimationCuerpo = " + frameAnimationCuerpo);
-
         frameAnimationCuerpo.setAncho((int) (ancho * densidad));
 
         gone(frLista);
@@ -326,10 +330,11 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         });
 
         if (modulo) {
-            setModulo();
+            setModuloInicio();
         }
-
-        System.out.println("Es modulo = " + modulo);
+        activityBase.fabNuevo.hide();
+        activityBase.fabInicio.hide();
+        activityBase.fabVoz.hide();
 
         return view;
     }
@@ -345,7 +350,6 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
             }
         });
 
-        System.out.println("multipanel = " + esMultiPanel(metrics));
     }
 
     public void setActivoFrameAnimationCuerpo(boolean activo) {
@@ -426,6 +430,31 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         bundle = getArguments();
         cargarBundle();
 
+        SharedPreferences persistencia = getActivity().getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
+        TAG = setTAG();
+        System.out.println("TAG = " + TAG);
+        System.out.println("persistencia.getString(TAGPERS) = " + persistencia.getString(TAGPERS, null));
+
+        if (persistencia.getString(TAGPERS, null) != null && TAG != null && persistencia.getString(TAGPERS, null).equals(TAG)) {
+            System.out.println("Recuperando datos persistencia");
+            origen = persistencia.getString(ORIGEN, null);
+            actual = persistencia.getString(ACTUAL, null);
+            actualtemp = persistencia.getString(ACTUALTEMP, null);
+            subTitulo = persistencia.getString(SUBTITULO, null);
+            setRecuperarPersistencia(persistencia);
+
+        }
+
+        SharedPreferences.Editor editor = persistencia.edit();
+
+        editor.putString(TAGPERS, null);
+        editor.apply();
+
+
+    }
+
+    protected void setRecuperarPersistencia(SharedPreferences persistencia) {
+
     }
 
     @Override
@@ -434,8 +463,9 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         Log.d(TAG, getMetodo());
 
         if (context instanceof MainActivityBase) {
-            this.activityBase = (MainActivityBase) context;
-            icFragmentos = this.activityBase;
+            activityBase = (MainActivityBase) context;
+            icFragmentos = activityBase;
+            contexto = activityBase;
 
         }
 
@@ -455,7 +485,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
     }
 
-    protected void setModulo() {
+    protected void setModuloInicio() {
 
     }
 
@@ -471,7 +501,25 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
             sensorManagerLuz.unregisterListener(sensorLuzListener);
         }
 
+        SharedPreferences persistencia = getActivity().getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = persistencia.edit();
+
+        editor.putString(TAGPERS, setTAG());
+        editor.putString(ORIGEN, origen);
+        editor.putString(ACTUAL, actual);
+        editor.putString(ACTUALTEMP, actualtemp);
+        editor.putString(SUBTITULO, subTitulo);
+        setPersistencia(editor);
+
+        editor.apply();
+
+
     }
+
+    protected void setPersistencia(SharedPreferences.Editor editor) {
+
+    }
+
 
     protected void acciones() {
         Log.d(TAG, getMetodo());
@@ -504,6 +552,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
             if (materialEdit.getActivo()) {
                 materialEdit.grabarEnable(true);
+                materialEdit.setTTS(true);
                 materialEdit.setPosicion(contCode);
                 materialEdit.setGrabarListener(new EditMaterialLayout.AudioATexto() {
                     @Override
@@ -562,17 +611,21 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         SharedPreferences persistencia = getActivity().getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = persistencia.edit();
 
+        editor.putString(TAGPERS, setTAG());
+        editor.putString(ORIGEN, origen);
+        editor.putString(ACTUAL, actual);
+        editor.putString(ACTUALTEMP, actualtemp);
+        editor.putString(SUBTITULO, subTitulo);
+        editor.apply();
+
+
         switch (orientation) {
             case Configuration.ORIENTATION_LANDSCAPE:
                 // Con la orientación en horizontal actualizamos el adaptador
+                break;
 
             case Configuration.ORIENTATION_PORTRAIT:
                 // Con la orientación en vertical actualizamos el adaptador
-                editor.putString(ORIGEN, origen);
-                editor.putString(ACTUAL, actual);
-                editor.putString(ACTUALTEMP, actualtemp);
-                editor.putString(SUBTITULO, subTitulo);
-                editor.apply();
                 break;
         }
     }
@@ -679,19 +732,16 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
     protected void setOnCronometro(Chronometer arg0) {
 
-        System.out.println("onTick base");
     }
 
     protected void setTimerEdit(Chronometer timerEdit) {
 
         timerg = timerEdit;
-        System.out.println("Set Timer base");
     }
 
     protected void startTimer() {
 
         timerg.start();
-        System.out.println("Start timerEdit");
         onTimer = true;
         isOnTimer();
     }
@@ -700,14 +750,12 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         if (onTimer) {
             timerg.stop();
-            System.out.println("Stop timerEdit");
             onTimer = false;
             isOnTimer();
         }
     }
 
     protected boolean isOnTimer() {
-        System.out.println("onTimer = " + onTimer);
 
         return onTimer;
     }
@@ -723,7 +771,6 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
     protected void vaciarControles() {
 
-        System.out.println("Vaciando controles");
 
         for (View vista : vistas) {
             if (vista instanceof EditText) {
@@ -990,10 +1037,6 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         int altotemp = (int) (alto * densidad);
         int anchotemp = (int) (ancho * densidad);
 
-        System.out.println("ancho = " + anchotemp);
-        System.out.println("alto = " + altotemp);
-        System.out.println("densidad = " + densidad);
-
         if (!land) {
             imagen.setMinimumHeight((int) ((double) altotemp / (falto + 2)));
             imagen.setMinimumWidth((int) ((double) anchotemp / (fancho + 2)));
@@ -1017,8 +1060,6 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, getMetodo());
-
-        System.out.println("requestCode = " + requestCode);
 
         if (resultCode == RESULT_OK) {
 
@@ -1131,8 +1172,6 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         for (Contactos contactos : listaContactos) {
 
-            System.out.println("contacto = " + contacto);
-            System.out.println("contactos = " + contactos.getDatos());
             if (contactos.getDatos().toLowerCase().equals(contacto)) {
                 AppActivity.hacerLlamada(contexto, contactos.getNumero(), activityBase);
             }
@@ -1154,7 +1193,11 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
     protected void addFragment(Bundle bundle, Fragment fragment, int layout) {
 
-        activityBase.addFragment(bundle, fragment, layout);
+        fragment.setArguments(bundle);
+        FragmentManager fr = activityBase.getSupportFragmentManager();
+        FragmentTransaction ft = fr.beginTransaction();
+        ft.add(layout, fragment);
+        ft.commit();
     }
 
     protected void removeFragment(Fragment fragment) {

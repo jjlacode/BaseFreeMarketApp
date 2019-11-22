@@ -3,11 +3,13 @@ package com.codevsolution.base.models;
 import android.content.ContentValues;
 import android.net.Uri;
 
+import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.CAMPO_SECUENCIA;
 
@@ -208,6 +210,34 @@ public class ModeloSQL implements Serializable {
 
         return values;
 
+    }
+
+    public boolean noModificado() {
+
+        ModeloSQL modeloSQL = CRUDutil.updateModelo(this);
+        System.out.println("valores = " + Arrays.toString(valores));
+        System.out.println("modeloSQL = " + Arrays.toString(modeloSQL.getValores()));
+
+        for (int i = 0; i < valores.length; i++) {
+            //if (!campos[i].equals(TIMESTAMP)) {
+            if (valores[i] != null && modeloSQL.getValores()[i] != null) {
+                if (!valores[i].equals(modeloSQL.getValores()[i])) {
+                    System.out.println("valores = " + valores[i]);
+                    System.out.println("modeloSQL = " + modeloSQL.getValores()[i]);
+                    return false;
+                }
+
+            } else if (valores[i] == null && modeloSQL.getValores()[i] == null) {
+                continue;
+            } else {
+                System.out.println("valores = " + valores[i]);
+                System.out.println("modeloSQL = " + modeloSQL.getValores()[i]);
+
+                return false;
+            }
+            //}
+        }
+        return true;
     }
 
     public String getCampoID() {

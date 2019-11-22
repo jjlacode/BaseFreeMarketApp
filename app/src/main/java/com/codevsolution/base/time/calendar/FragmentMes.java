@@ -105,6 +105,7 @@ public abstract class FragmentMes extends FragmentBase implements
     protected ImageButton nuevo;
     protected ImageButton verLista;
     protected ImageButton verDia;
+    protected ImageButton verSemana;
     private ImageView lupa;
     private ImageView renovar;
     private ListaDays listadias;

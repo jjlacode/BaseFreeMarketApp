@@ -1,6 +1,5 @@
 package com.codevsolution.freemarketsapp.ui;
 
-import android.os.Bundle;
 import android.view.View;
 
 import com.codevsolution.base.android.FragmentGridImagen;
@@ -9,7 +8,6 @@ import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
 
-import static com.codevsolution.base.time.calendar.DiaCalBase.HORACAL;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.NOTA;
 
 public class FragmentNuevaNota extends FragmentGridImagen implements Interactor.TiposNota {
@@ -27,14 +25,8 @@ public class FragmentNuevaNota extends FragmentGridImagen implements Interactor.
     }
 
     @Override
-    protected void cargarBundle() {
-        super.cargarBundle();
-
-        if (bundle!=null) {
-            fecha = bundle.getLong(FECHA);
-            hora = bundle.getLong(HORACAL);
-            origen = bundle.getString(ORIGEN);
-        }
+    protected String setTAG() {
+        return getClass().getSimpleName();
     }
 
     @Override
@@ -79,7 +71,7 @@ public class FragmentNuevaNota extends FragmentGridImagen implements Interactor.
 
         }
         if (tipoNota!=null) {
-            bundle = new Bundle();
+            //bundle = new Bundle();
             bundle.putString(TIPO, tipoNota);
             bundle.putString(ACTUAL, NOTA);
 

@@ -103,17 +103,18 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         super.setOnCreateView(view, inflater, container);
 
         ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalleExtrasante);
-
-        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
-        imagen.setFocusable(false);
-        nombre = vistaForm.addEditMaterialLayout(getString(R.string.nombre));
-        descripcion = vistaForm.addEditMaterialLayout(getString(R.string.descripcion));
-        referencia = vistaForm.addEditMaterialLayout(getString(R.string.descripcion));
-        proveedor = vistaForm.addEditMaterialLayout(getString(R.string.proveedor));
-        precio = vistaForm.addEditMaterialLayout(getString(R.string.importe));
-        descuento = vistaForm.addEditMaterialLayout(getString(R.string.descuento_proveedor));
-        claves = vistaForm.addEditMaterialLayout(getString(R.string.palabras_clave));
-        etWeb = vistaForm.addEditMaterialLayout(getString(R.string.web));
+        if (!modulo) {
+            imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
+            imagen.setFocusable(false);
+            nombre = vistaForm.addEditMaterialLayout(getString(R.string.nombre));
+            descripcion = vistaForm.addEditMaterialLayout(getString(R.string.descripcion));
+            referencia = vistaForm.addEditMaterialLayout(getString(R.string.descripcion));
+            proveedor = vistaForm.addEditMaterialLayout(getString(R.string.proveedor));
+            precio = vistaForm.addEditMaterialLayout(getString(R.string.importe));
+            descuento = vistaForm.addEditMaterialLayout(getString(R.string.descuento_proveedor));
+            claves = vistaForm.addEditMaterialLayout(getString(R.string.palabras_clave));
+            etWeb = vistaForm.addEditMaterialLayout(getString(R.string.web));
+        }
         radioGroupProd = (RadioGroup) vistaForm.addVista(new RadioGroup(contexto));
         radioButtonProd1 = (RadioButton) vistaForm.addVista(new RadioButton(contexto));
         radioButtonProd1.setText(R.string.producto);
@@ -125,45 +126,50 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
 
         if (tipoForm.equals(NUEVO)) {
+            limiteProdActivos = 0;
+            limiteProdTotal = 0;
             visible(frCabecera);
-            nombre.setActivo(false);
-            descripcion.setActivo(false);
-            referencia.setActivo(false);
-            proveedor.setActivo(false);
-            precio.setActivo(false);
-            etWeb.setActivo(false);
-            InteractorSuscriptions interactorSuscriptions = new InteractorSuscriptions(contexto);
-            interactorSuscriptions.comprobarSuscripciones(new InteractorSuscriptions.CheckSubscriptions() {
-                @Override
-                public void onNotSubscriptions() {
+            if (!modulo) {
+                nombre.setActivo(false);
+                descripcion.setActivo(false);
+                referencia.setActivo(false);
+                proveedor.setActivo(false);
+                precio.setActivo(false);
+                etWeb.setActivo(false);
 
-                    System.out.println("No hay suscripciones activas");
-                }
+                InteractorSuscriptions interactorSuscriptions = new InteractorSuscriptions(contexto);
+                interactorSuscriptions.comprobarSuscripciones(new InteractorSuscriptions.CheckSubscriptions() {
+                    @Override
+                    public void onNotSubscriptions() {
 
-                @Override
-                public void onProductLimit() {
-
-                    System.out.println("se ha alcanzado el limite de productos publicados");
-                }
-
-                @Override
-                public void onError(String msgError) {
-
-                    System.out.println(msgError);
-                }
-
-                @Override
-                public void onCheckSuscriptionsOk(ArrayList<Subscription> listaSuscripciones) {
-
-                    System.out.println("---------------------------------Check suscripción OK");
-                    System.out.println("listaSuscripciones.size() = " + listaSuscripciones.size());
-                    for (Subscription subscription : listaSuscripciones) {
-                        limiteProdActivos += subscription.planQuantity();
-                        limiteProdTotal = Math.round(limiteProdActivos * 1.5);
+                        System.out.println("No hay suscripciones activas");
                     }
-                    alComprobarSuscripciones();
-                }
-            });
+
+                    @Override
+                    public void onProductLimit() {
+
+                        System.out.println("se ha alcanzado el limite de productos publicados");
+                    }
+
+                    @Override
+                    public void onError(String msgError) {
+
+                        System.out.println(msgError);
+                    }
+
+                    @Override
+                    public void onCheckSuscriptionsOk(ArrayList<Subscription> listaSuscripciones) {
+
+                        System.out.println("---------------------------------Check suscripción OK");
+                        System.out.println("listaSuscripciones.size() = " + listaSuscripciones.size());
+                        for (Subscription subscription : listaSuscripciones) {
+                            limiteProdActivos += subscription.planQuantity();
+                            limiteProdTotal = Math.round(limiteProdActivos * 1.5);
+                        }
+                        alComprobarSuscripciones();
+                    }
+                });
+            }
 
         } else {
             gone(frCabecera);
@@ -297,7 +303,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                 });
             }
 
-        } else if (tipoForm.equals(NUEVO)) {
+        } else if (tipoForm.equals(NUEVO) && !modulo) {
 
             gone(btnEnviarNoticias);
             gone(chActivo);
@@ -359,40 +365,46 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         super.cargarBundle();
 
 
+        if (!modulo) {
+
+
             activityBase.fabNuevo.hide();
             activityBase.fabInicio.show();
 
-        if (nn(bundle) && bundle.getBoolean(AVISO)) {
+            if (nn(bundle) && bundle.getBoolean(AVISO)) {
 
-            if (nn(id) && prodProv == null) {
+                if (nn(id) && prodProv == null) {
 
-                DatabaseReference dbproductosprov = FirebaseDatabase.getInstance().getReference().
-                        child(PRODUCTOS).child(id);
+                    DatabaseReference dbproductosprov = FirebaseDatabase.getInstance().getReference().
+                            child(PRODUCTOS).child(id);
 
-                dbproductosprov.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    dbproductosprov.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        prodProv = dataSnapshot.getValue(Productos.class);
-                        selector();
+                            prodProv = dataSnapshot.getValue(Productos.class);
+                            selector();
 
-                    }
+                        }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
+                        }
+                    });
 
+                }
             }
         }
 
-
     }
 
+    @Override
     protected void setDatos() {
 
-        imagen.setTextTitulo(tipo.toUpperCase());
+        if (!modulo) {
+            imagen.setTextTitulo(tipo.toUpperCase());
+        }
 
         if (tipoForm.equals(NUEVO)) {
 
@@ -401,7 +413,9 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             visible(btndelete);
             visible(btnsave);
             visible(chActivo);
-            descuento.setActivo(false);
+            if (!modulo) {
+                descuento.setActivo(false);
+            }
             visible(radioGroupProd);
             gone(suscripcion);
             visible(suscritos);
@@ -412,14 +426,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             } else {
                 chActivo.setEnabled(false);
             }
-            gone(nombre.getLinearLayout());
-            gone(descripcion.getLinearLayout());
-            gone(precio.getLinearLayout());
-            gone(proveedor.getLinearLayout());
-            gone(referencia.getLinearLayout());
-            gone(descuento.getLinearLayout());
-            gone(claves.getLinearLayout());
-            gone(etWeb.getLinearLayout());
+
 
         } else {
 
@@ -458,15 +465,17 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                 radioButtonProd2.setChecked(true);
             }
 
-            nombre.setText(prodProv.getNombre());
-            referencia.setText(prodProv.getRefprov());
-            proveedor.setText(prodProv.getProveedor());
-            precio.setText(JavaUtil.formatoMonedaLocal(prodProv.getPrecio()));
-            descuento.setText(prodProv.getDescProv() + " %");
-            descripcion.setText(prodProv.getDescripcion());
-            claves.setText(prodProv.getAlcance());
-            web = prodProv.getWeb();
-            etWeb.setText(prodProv.getWeb());
+            if (!modulo) {
+                nombre.setText(prodProv.getNombre());
+                referencia.setText(prodProv.getRefprov());
+                proveedor.setText(prodProv.getProveedor());
+                precio.setText(JavaUtil.formatoMonedaLocal(prodProv.getPrecio()));
+                descuento.setText(prodProv.getDescProv() + " %");
+                descripcion.setText(prodProv.getDescripcion());
+                claves.setText(prodProv.getAlcance());
+                web = prodProv.getWeb();
+                etWeb.setText(prodProv.getWeb());
+            }
             idProv = prodProv.getIdprov();
 
             id = prodProv.getId();
@@ -492,26 +501,41 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
         if (tipoForm.equals(NUEVO)) {
 
-            btndelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+            if (!modulo) {
+                btndelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
-                    if (id != null) {
+                        if (id != null) {
 
-                        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                        db.child(PRODUCTOS).child(id).removeValue();
-                        db.child(INDICE + tipo).child(idUser).child(id).removeValue();
-                        db.child(RATING).child(tipo).child(id).removeValue();
-                        ImagenUtil.deleteImagefirestore(id);
+                            DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                            db.child(PRODUCTOS).child(id).removeValue();
+                            db.child(INDICE + tipo).child(idUser).child(id).removeValue();
+                            db.child(RATING).child(tipo).child(id).removeValue();
+                            ImagenUtil.deleteImagefirestore(id);
 
-                        esDetalle = false;
-                        nuevo = false;
-                        selector();
+                            esDetalle = false;
+                            nuevo = false;
+                            selector();
 
+                        }
                     }
-                }
 
-            });
+                });
+
+
+                radioGroupProd.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(RadioGroup radioGroup, int i) {
+
+                        if (radioButtonProd1.isChecked()) {
+                            nombre.setHint(getString(R.string.producto));
+                        } else if (radioButtonProd2.isChecked()) {
+                            nombre.setHint(getString(R.string.servicio));
+                        }
+                    }
+                });
+            }
 
             btnSortear.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -522,17 +546,6 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                 }
             });
 
-            radioGroupProd.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(RadioGroup radioGroup, int i) {
-
-                    if (radioButtonProd1.isChecked()) {
-                        nombre.setHint(getString(R.string.producto));
-                    } else if (radioButtonProd2.isChecked()) {
-                        nombre.setHint(getString(R.string.servicio));
-                    }
-                }
-            });
             chActivo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -555,6 +568,10 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
     protected String setTipoSorteo() {
         return null;
+    }
+
+    protected boolean getDatos() {
+        return false;
     }
 
     protected void crearSorteo() {
@@ -609,6 +626,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         prodProv.setActivo(chActivo.isChecked());
 
         id = prodProv.getId();
+        System.out.println("idProdProv = " + id);
         if (tipo == null) {
             setTipo();
         }

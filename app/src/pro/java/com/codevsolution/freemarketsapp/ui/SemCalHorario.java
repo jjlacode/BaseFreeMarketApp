@@ -8,6 +8,47 @@ import com.codevsolution.freemarketsapp.logica.Interactor;
 
 public class SemCalHorario extends SemCalBase implements ContratoPry.Tablas {
 
+    protected long fechaIni;
+    protected long fechaFin;
+    protected long fechaIniBoton;
+    protected long fechaFinBoton;
+    protected boolean condicionHorario;
+
+    protected void setFechaIni(long fechaIni) {
+
+        this.fechaIni = fechaIni;
+    }
+
+    protected void setFechaFin(long fechaFin) {
+
+        this.fechaFin = fechaFin;
+    }
+
+    protected void setFechaIniBoton(long fechaIniBoton) {
+
+        this.fechaIniBoton = fechaIniBoton;
+        fechaFinBoton = fechaIniBoton + HORASLONG;
+    }
+
+    protected boolean isFechasValidas() {
+
+        return fechaIni + fechaFin > 0;
+    }
+
+    protected void setCondicionHorario(boolean condicionHorario) {
+        this.condicionHorario = condicionHorario;
+    }
+
+    protected boolean getCondicionCelda() {
+
+        return isFechasValidas() &&
+                ((fechaIniBoton <= fechaIni && fechaFinBoton > fechaIni) ||
+                        (fechaIniBoton <= fechaFin && fechaFinBoton > fechaFin) ||
+                        (fechaIni > 0 && fechaIniBoton > fechaIni && fechaFinBoton < fechaFin)) &&
+                condicionHorario;
+    }
+
+
     @Override
     protected void setHorarios() {
         super.setHorarios();

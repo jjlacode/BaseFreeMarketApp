@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCUD;
@@ -263,8 +262,8 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
         ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
 
         tipoDetPartida = vistaForm.addTextView(null);
-        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
-        imagen.setFocusable(false);
+        imagen = vistaForm.addViewImagenLayout();
+        imagen.getLinearLayoutCompat().setFocusable(false);
         imagen.getImagen().setClickable(false);
         imagen.setTextTitulo(tituloSingular);
         nombre = vistaForm.addEditMaterialLayout(getString(R.string.nombre));

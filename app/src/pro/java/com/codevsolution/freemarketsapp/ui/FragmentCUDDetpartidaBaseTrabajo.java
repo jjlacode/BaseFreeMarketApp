@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCUD;
 import com.codevsolution.base.javautil.JavaUtil;
@@ -109,12 +109,15 @@ public class FragmentCUDDetpartidaBaseTrabajo extends FragmentCUD implements Int
     @Override
     protected void setInicio() {
 
+        ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
+
+        imagen = vistaForm.addViewImagenLayout();
+
         descripcion = (EditMaterial) ctrl(R.id.etdesccdetpartidabase);
         precio = (EditMaterial) ctrl(R.id.etpreciocdetpartidabase);
         cantidad = (EditMaterial) ctrl(R.id.etcantcdetpartidabase,DETPARTIDABASE_CANTIDAD);
         nombre = (EditMaterial) ctrl(R.id.etnomcdetpartidabase);
         tiempoDet = (EditMaterial) ctrl(R.id.ettiempocdetpartidabase);
-        imagen = (ImagenLayout) ctrl(R.id.imgcdetpartidabase);
         tipoDetPartida = (TextView) ctrl(R.id.tvtipocdetpartidabase);
         imagen.getImagen().setClickable(false);
 

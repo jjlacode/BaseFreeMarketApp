@@ -31,12 +31,17 @@
 
         <receiver android:name="com.codevsolution.freemarketsapp.services.EventosReceiver">
             <intent-filter>
-                <action android:name="jjlacode.com.freelanceproject.action.AVISOEVENTO" />
-                <action android:name="jjlacode.com.freelanceproject.action.POSPONER" />
-                <action android:name="jjlacode.com.freelanceproject.action.CANCELAR" />
+                <action android:name="com.jjlacode.freelanceproject.action.AVISOEVENTO" />
+                <action android:name="com.jjlacode.freelanceproject.action.POSPONER" />
+                <action android:name="com.jjlacode.freelanceproject.action.CANCELAR" />
             </intent-filter>
         </receiver>
 
+        <receiver android:name="com.codevsolution.freemarketsapp.services.SorteosReceiver">
+            <intent-filter>
+                <action android:name="com.jjlacode.freelanceproject.action.AVISOSORTEO" />
+            </intent-filter>
+        </receiver>
 
         <service
             android:name="com.codevsolution.freemarketsapp.services.Jobs"

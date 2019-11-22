@@ -22,11 +22,12 @@
     </style>
 
     <style name="AppTheme.TextFloatLabelAppearance" parent="TextAppearance.Design.Hint">
-        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textColor">@color/Color_edit_ok</item>
     </style>
 
     <style name="AppTheme.TextErrorAppearance" parent="TextAppearance.Design.Error">
-        <item name="android:textColor">#d32f2f</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:colorControlHighlight">@color/Color_edit_vacio</item>
     </style>
 
     <style name="EditTextDefault" parent="android:Widget.EditText">

@@ -22,7 +22,6 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCUD;
@@ -708,8 +707,8 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
         chronometer = (Chronometer) vistaForm.addVista(new Chronometer(contexto));
         chronometer.setVisibility(View.GONE);
         tipoDetPartida = vistaForm.addTextView(null);
-        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
-        imagen.setFocusable(false);
+        imagen = vistaForm.addViewImagenLayout();
+        imagen.getLinearLayoutCompat().setFocusable(false);
         imagen.getImagen().setClickable(false);
         imagen.setTextTitulo(tituloSingular);
         nombre = vistaForm.addEditMaterialLayout(getString(R.string.nombre));
@@ -846,9 +845,8 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
                     @Override
                     public void onClick(String color) {
                         colorTrabajo.setBackgroundColor(Color.parseColor(color));
-                        valores = new ContentValues();
-                        putDato(valores, campos, DETPARTIDA_COLOR, color);
-                        CRUDutil.actualizarRegistro(modeloSQL, valores);
+                        CRUDutil.actualizarCampo(modeloSQL, DETPARTIDA_COLOR, color);
+                        modeloSQL = CRUDutil.updateModelo(modeloSQL);
                     }
                 }, contexto).show(getFragmentManager(), "paletacolores");
             }

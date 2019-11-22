@@ -135,18 +135,30 @@ public class CRUDutil {
     public static int actualizarRegistro(ModeloSQL modeloSQL, ContentValues valores) {
 
         String tabla = modeloSQL.getNombreTabla();
-        System.out.println("tabla = " + tabla);
         String id = modeloSQL.getString(modeloSQL.getCampoID());
 
         if (ContratoPry.getTabCab(tabla) != null) {
 
-            System.out.println("id = " + id);
             int secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
-            System.out.println("secuencia = " + secuencia);
             return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
 
         }
-        System.out.println("id = " + id);
+        return ConsultaBD.updateRegistro(tabla, id, valores);
+    }
+
+    public static int actualizarCampoNull(ModeloSQL modeloSQL, String campo) {
+
+        ContentValues valores = new ContentValues();
+        String tabla = modeloSQL.getNombreTabla();
+        String id = modeloSQL.getString(modeloSQL.getCampoID());
+        valores.putNull(campo);
+
+        if (ContratoPry.getTabCab(tabla) != null) {
+
+            int secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
+            return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+
+        }
         return ConsultaBD.updateRegistro(tabla, id, valores);
     }
 
@@ -154,19 +166,15 @@ public class CRUDutil {
 
         ContentValues valores = new ContentValues();
         String tabla = modeloSQL.getNombreTabla();
-        System.out.println("tabla = " + tabla);
         String id = modeloSQL.getString(modeloSQL.getCampoID());
         valores.put(campo, valor);
 
         if (ContratoPry.getTabCab(tabla) != null) {
 
-            System.out.println("id = " + id);
             int secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
-            System.out.println("secuencia = " + secuencia);
             return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
 
         }
-        System.out.println("id = " + id);
         return ConsultaBD.updateRegistro(tabla, id, valores);
     }
 
@@ -174,19 +182,15 @@ public class CRUDutil {
 
         ContentValues valores = new ContentValues();
         String tabla = modeloSQL.getNombreTabla();
-        System.out.println("tabla = " + tabla);
         String id = modeloSQL.getString(modeloSQL.getCampoID());
         valores.put(campo, valor);
 
         if (ContratoPry.getTabCab(tabla) != null) {
 
-            System.out.println("id = " + id);
             int secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
-            System.out.println("secuencia = " + secuencia);
             return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
 
         }
-        System.out.println("id = " + id);
         return ConsultaBD.updateRegistro(tabla, id, valores);
     }
 
@@ -194,19 +198,15 @@ public class CRUDutil {
 
         ContentValues valores = new ContentValues();
         String tabla = modeloSQL.getNombreTabla();
-        System.out.println("tabla = " + tabla);
         String id = modeloSQL.getString(modeloSQL.getCampoID());
         valores.put(campo, valor);
 
         if (ContratoPry.getTabCab(tabla) != null) {
 
-            System.out.println("id = " + id);
             int secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
-            System.out.println("secuencia = " + secuencia);
             return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
 
         }
-        System.out.println("id = " + id);
         return ConsultaBD.updateRegistro(tabla, id, valores);
     }
 
@@ -214,19 +214,15 @@ public class CRUDutil {
 
         ContentValues valores = new ContentValues();
         String tabla = modeloSQL.getNombreTabla();
-        System.out.println("tabla = " + tabla);
         String id = modeloSQL.getString(modeloSQL.getCampoID());
         valores.put(campo, valor);
 
         if (ContratoPry.getTabCab(tabla) != null) {
 
-            System.out.println("id = " + id);
             int secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
-            System.out.println("secuencia = " + secuencia);
             return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
 
         }
-        System.out.println("id = " + id);
         return ConsultaBD.updateRegistro(tabla, id, valores);
     }
 
@@ -234,19 +230,15 @@ public class CRUDutil {
 
         ContentValues valores = new ContentValues();
         String tabla = modeloSQL.getNombreTabla();
-        System.out.println("tabla = " + tabla);
         String id = modeloSQL.getString(modeloSQL.getCampoID());
         valores.put(campo, valor);
 
         if (ContratoPry.getTabCab(tabla) != null) {
 
-            System.out.println("id = " + id);
             int secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
-            System.out.println("secuencia = " + secuencia);
             return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
 
         }
-        System.out.println("id = " + id);
         return ConsultaBD.updateRegistro(tabla, id, valores);
     }
 
@@ -254,19 +246,15 @@ public class CRUDutil {
 
         ContentValues valores = new ContentValues();
         String tabla = modeloSQL.getNombreTabla();
-        System.out.println("tabla = " + tabla);
         String id = modeloSQL.getString(modeloSQL.getCampoID());
         valores.put(campo, valor);
 
         if (ContratoPry.getTabCab(tabla) != null) {
 
-            System.out.println("id = " + id);
             int secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
-            System.out.println("secuencia = " + secuencia);
             return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
 
         }
-        System.out.println("id = " + id);
         return ConsultaBD.updateRegistro(tabla, id, valores);
     }
 

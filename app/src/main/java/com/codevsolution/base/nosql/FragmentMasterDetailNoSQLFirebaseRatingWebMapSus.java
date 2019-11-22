@@ -923,9 +923,11 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
         System.out.println("Acciones imagen");
         System.out.println("tipoForm = " + tipoForm);
-        imagen.setVisibleBtn();
+        if (!modulo) {
+            imagen.setVisibleBtn();
+        }
 
-        if (tipoForm.equals(NUEVO)) {
+        if (tipoForm.equals(NUEVO) && !modulo) {
             if (nnn(id) && nnn(tipo)) {
                 visible(imagen);
                 imagen.setImageFirestorePerfil(activityBase, id + tipo);
@@ -942,7 +944,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
             });
 
 
-        } else {
+        } else if (tipoForm.equals(LISTA)) {
 
             if (nnn(id) && nnn(tipo)) {
                 System.out.println("id+tipo = " + (id + tipo));

@@ -426,6 +426,7 @@ public class AppActivity extends Application {
             intent.setType(tipo);
             intent.putExtra(Intent.EXTRA_STREAM, uri);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
             try {
                 context.startActivity(Intent.createChooser(intent, "Compartiendo..."));
@@ -580,6 +581,7 @@ public class AppActivity extends Application {
         return arrayContactos;
     }
 
+    @SuppressLint("MissingPermission")
     public static ArrayList<Llamadas> registroLlamadas(ContentResolver cr) {
         ArrayList<Llamadas> lista = new ArrayList<Llamadas>();
         String[] columnas = new String[]{CallLog.Calls.TYPE, CallLog.Calls.NUMBER, CallLog.Calls.DATE};

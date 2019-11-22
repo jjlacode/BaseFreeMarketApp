@@ -108,8 +108,9 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
         ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
 
-        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
-        imagen.setFocusable(false);
+        imagen = vistaForm.addViewImagenLayout();
+
+        imagen.getLinearLayoutCompat().setFocusable(false);
         imagen.setTextTitulo(tituloSingular);
         btnpart = vistaForm.addButtonPrimary(R.string.add_detpartida);
         btnpart.setOnClickListener(new View.OnClickListener() {

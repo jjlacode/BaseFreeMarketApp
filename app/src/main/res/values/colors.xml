@@ -30,6 +30,8 @@
     <color name="Color_contador_notok">#FCFC0000</color>
     <color name="Color_busqueda">#FCCC12DA</color>
     <color name="Color_edit_vacio">#28FC0000</color>
+    <color name="Color_edit_ok">#FA00FF00</color>
+    <color name="Color_cal_notok">#6CFC0000</color>
     <color name="s1">#A7FFEB</color>
     <color name="s2">#64FFDA</color>
     <color name="s3">#1DE9B6</color>

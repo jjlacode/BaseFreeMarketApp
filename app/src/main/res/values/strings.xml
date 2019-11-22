@@ -515,6 +515,23 @@
     <string name="referencia_proveedorpro">Referencia proveedor pro</string>
     <string name="descripcionpro">Descripcion pro</string>
     <string name="nombrepro">Nombre pro</string>
+    <string name="datos_no_guardados">Datos no guardados</string>
+    <string name="pregunta_salir_sin_guardar">Realmente quiere salir sin guardar los datos, es posible que no pueda recuperarlos.</string>
+    <string name="generar_aviso">Generar Aviso</string>
+    <string name="generar_repeticiones">Generar repeticiones</string>
+    <string name="repeticiones_actualizadas">Repeticiones actualizadas</string>
+    <string name="repeticiones_creadas">Repeticiones creadas</string>
+    <string name="no_actualizado">No hay nada que actualizar</string>
+    <string name="modificar_aviso">Modificar Aviso</string>
+    <string name="avisar">Avisar</string>
+    <string name="y">y</string>
+    <string name="antes">antes</string>
+    <string name="fecha_aviso_pasada">La fecha del aviso no puede estar en el pasado</string>
+    <string name="evento_pasado">El evento está en el pasado</string>
+    <string name="aviso_notificado">Aviso notificado</string>
+    <string name="asignar_evento">Asignar a Evento</string>
+    <string name="play">Reproduciendo</string>
+    <string name="sinhora">Hora no establecida</string>
 
 
 </resources>

@@ -2,23 +2,26 @@ package com.codevsolution.freemarketsapp.ui;
 
 import android.view.View;
 
+import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.FragmentGridImagen;
 import com.codevsolution.base.chat.FragmentChatBase;
+import com.codevsolution.base.pay.chargebee.SuscripcionesChargebee;
 import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.freemarketsapp.templates.CatalogoPDF;
 
 import java.util.ArrayList;
 
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.HTTPAYUDA;
+import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODUCTO;
 
 public class MenuMarketing extends FragmentGridImagen {
 
     private String campanias;
-    private String clientes;
     private String chat;
-    private String notas;
-    private String calendarioNotas;
     private String sorteos;
     private String sorteosPro;
+    private String suscripcion;
+    private String catalogoProductos;
 
     @Override
     protected void setContext() {
@@ -27,29 +30,27 @@ public class MenuMarketing extends FragmentGridImagen {
 
     @Override
     protected String setAyudaWeb() {
-        return HTTPAYUDA + "crm";
+        return HTTPAYUDA + "marketing";
     }
 
     @Override
     protected void setLista() {
 
         campanias = getString(R.string.proximos_eventos);
-        clientes = getString(R.string.clientes);
         chat = getString(R.string.chat);
-        notas = getString(R.string.notas);
-        calendarioNotas = getString(R.string.calendario_notas);
         sorteos = getString(R.string.sorteos);
         sorteosPro = getString(R.string.sorteos_pro);
+        suscripcion = getString(R.string.suscripcion);
+        catalogoProductos = getString(R.string.catalogo);
 
         lista = new ArrayList<GridModel>();
 
-        lista.add(new GridModel(R.drawable.ic_evento_indigo, campanias));
-        lista.add(new GridModel(R.drawable.ic_clientes_indigo, clientes));
+        lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, suscripcion));
+        //lista.add(new GridModel(R.drawable.ic_evento_indigo, campanias));
         lista.add(new GridModel(R.drawable.ic_chat_indigo, chat));
-        lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, notas));
-        lista.add(new GridModel(R.drawable.ic_lista_eventos_indigo, calendarioNotas));
         lista.add(new GridModel(R.drawable.ic_sorteo, sorteos));
         lista.add(new GridModel(R.drawable.ic_sorteo, sorteosPro));
+        lista.add(new GridModel(R.drawable.ic_pdf_indigo, catalogoProductos));
 
 
     }
@@ -66,19 +67,10 @@ public class MenuMarketing extends FragmentGridImagen {
 
             activityBase.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_main, new CalendarioEventos()).addToBackStack(null).commit();
-        } else if (nombre.equals(clientes)) {
+        } else if (nombre.equals(suscripcion)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentCRUDCliente()).addToBackStack(null).commit();
-        } else if (nombre.equals(notas)) {
-
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new FragmentCRUDNota()).addToBackStack(null).commit();
-
-        } else if (nombre.equals(calendarioNotas)) {
-
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new Notas()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new SuscripcionesChargebee()).addToBackStack(null).commit();
 
         } else if (nombre.equals(sorteos)) {
 
@@ -93,6 +85,11 @@ public class MenuMarketing extends FragmentGridImagen {
             activityBase.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_main, new FragmentChatBase()).addToBackStack(null).commit();
 
+        } else if (nombre.equals(catalogoProductos)) {
+
+            CatalogoPDF catalogoPDF = new CatalogoPDF();
+            catalogoPDF.crearPdf(PRODUCTO);
+            AppActivity.mostrarPDF(catalogoPDF.getRutaArchivo());
         }
 
 

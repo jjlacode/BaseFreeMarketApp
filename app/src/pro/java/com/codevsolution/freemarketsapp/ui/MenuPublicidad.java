@@ -11,10 +11,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.FREELANCE;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.HTTPAYUDA;
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODFREELANCE;
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODPROVCAT;
 
 public class MenuPublicidad extends FragmentGridImagen {
 
@@ -75,21 +72,11 @@ public class MenuPublicidad extends FragmentGridImagen {
 
         if (nombre.equals(altaProdProvWeb)) {
 
-            bundle = new Bundle();
-            bundle.putString(TIPO, PRODPROVCAT);
-            bundle.putString(PERFIL, PRODPROVCAT);
-            bundle.putString(TITULO, getString(R.string.productos_proveedor));
 
-            icFragmentos.enviarBundleAFragment(bundle, new AltaProductosCli());
 
         } else if (nombre.equals(clientes)) {
 
-            bundle = new Bundle();
-            bundle.putString(TIPO, PRODFREELANCE);
-            bundle.putString(PERFIL, FREELANCE);
-            bundle.putString(TITULO, getString(R.string.servicios_freelance));
 
-            icFragmentos.enviarBundleAFragment(bundle, new AltaProductosCli());
 
         } else if (nombre.equals(notas)) {
 

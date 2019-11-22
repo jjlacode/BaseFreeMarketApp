@@ -1,9 +1,12 @@
 package com.codevsolution.base.time.calendar;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.codevsolution.base.android.FragmentGrid;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
@@ -352,5 +355,33 @@ public class SemCalBase extends FragmentGrid implements ContratoPry.Tablas {
                 selector();
             }
         });
+    }
+
+    protected void mostrarDialogNuevo(final long fecha, long hora) {
+
+        final CharSequence[] opciones = {Estilos.getString(contexto, "crear_nuevo"),
+                Estilos.getString(contexto, "cancelar")};
+        final AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
+        builder.setTitle(Estilos.getString(contexto, "nuevo"));
+        builder.setItems(opciones, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                if (opciones[which].equals(Estilos.getString(contexto, "crear_nuevo"))) {
+
+                    onNew(fecha, hora);
+
+                } else {
+
+                    dialog.dismiss();
+                }
+
+            }
+        });
+        builder.show();
+    }
+
+    protected void onNew(long fecha, long hora) {
+
     }
 }

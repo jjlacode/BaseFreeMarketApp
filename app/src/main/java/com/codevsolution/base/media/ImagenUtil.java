@@ -3,6 +3,7 @@ package com.codevsolution.base.media;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.widget.ImageView;
@@ -47,6 +48,13 @@ public class ImagenUtil {
     static Context context = AppActivity.getAppContext();
     static int logo = R.drawable.logo;
     static int error = R.drawable.logo;
+
+
+    public static byte[] bitmapToByte(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        return stream.toByteArray();
+    }
 
     public static Bitmap getBitmap(ImageView imagen) {
 
@@ -587,6 +595,15 @@ public class ImagenUtil {
         Glide.with(context).load(uri).apply(options).into(imagen);
     }
 
+    public static void setImageDrawableCircle(Drawable bitmap, ImageView imagen) {
+
+        RequestOptions options = new RequestOptions()
+                .placeholder(logo)
+                .circleCrop()
+                .error(error);
+
+        Glide.with(context).load(bitmap).apply(options).into(imagen);
+    }
     public static void setImageUriCircle(String uri, ImageView imagen, float multiplicador) {
 
         RequestOptions options = new RequestOptions()

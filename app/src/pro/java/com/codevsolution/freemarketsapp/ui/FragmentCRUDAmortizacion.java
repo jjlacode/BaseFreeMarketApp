@@ -16,7 +16,7 @@ import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ModeloSQL;
@@ -137,6 +137,10 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
     @Override
     protected void setInicio() {
 
+        ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
+
+        imagen = vistaForm.addViewImagenLayout();
+
         nombre = (EditMaterial) ctrl(R.id.etnomcudamort, AMORTIZACION_NOMBRE);
         descripcion = (EditMaterial) ctrl(R.id.etdesccudamort, AMORTIZACION_DESCRIPCION);
         cantidad = (EditMaterial) ctrl(R.id.etcantcudamort, AMORTIZACION_CANTIDAD);
@@ -145,7 +149,6 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
         anios = (EditMaterial) ctrl(R.id.etanioscudamort, AMORTIZACION_ANYOS);
         meses = (EditMaterial) ctrl(R.id.etmesescudamort, AMORTIZACION_MESES);
         dias = (EditMaterial) ctrl(R.id.etdiascudamort, AMORTIZACION_DIAS);
-        imagen = (ImagenLayout) ctrl(R.id.imgcudamort);
         btnimgfecha = (ImageView) ctrl(R.id.btnimgfechacudamort);
         bar = (ProgressBar) ctrl(R.id.progressBarcudamort);
 

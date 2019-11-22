@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +52,11 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     private OnSetDatosCli onSetDatosCliListener;
     private OnSetDatosPro onSetDatosProListener;
     private ImagenLayout imagenPro;
+    private int idViewGroupCli;
+    private int idViewGroupPro;
+    private boolean iniciado;
+    private FrameLayout flCli;
+    private FrameLayout flPro;
 
 
     public FragmentCRUDProducto() {
@@ -97,6 +103,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
     @Override
     protected void setDatos() {
+
         if (proveedor != null) {
             update();
             nombreProv.setText(proveedor.getString(PROVEEDOR_NOMBRE));
@@ -111,23 +118,31 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             gone(addPartida);
 
         }
+        /* Comprobar que el cliente está suscrito y tiene disponibles productos web para configurar*/
+        comprobarSuscripciones();
+
 
         if (modeloSQL.getInt(PRODUCTO_FIRE) == 1) {
             fire.setChecked(true);
             actualizarProdCli();
         } else {
-            fire.setChecked(false);
-            gone(lyCli.getViewGroup());
+            if (fire.isChecked()) {
+                fire.setChecked(false);
+                gone(lyCli.getViewGroup());
+            }
         }
 
         if (modeloSQL.getInt(PRODUCTO_FIREPRO) == 1) {
             firePro.setChecked(true);
             actualizarProdPro();
         } else {
-            firePro.setChecked(false);
-            gone(lyPro.getViewGroup());
+            if (firePro.isChecked()) {
+                firePro.setChecked(false);
+                gone(lyPro.getViewGroup());
+            }
         }
 
+        iniciado = true;
 
         //imagen.setTextTitulo(modeloSQL.getString(PRODUCTO_CATEGORIA).toUpperCase());
 
@@ -148,6 +163,11 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         if (proveedor != null) {
             nombreProv.setText(proveedor.getString(PROVEEDOR_NOMBRE));
         }
+        iniciado = false;
+        fire.setChecked(false);
+        firePro.setChecked(false);
+        gone(lyCli.getViewGroup());
+        gone(lyPro.addImageView());
         onUpdate();
 
     }
@@ -178,15 +198,16 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
     }
 
+
     @Override
     protected void setInicio() {
 
+        iniciado = false;
         vistaForm = new ViewGroupLayout(contexto, frdetalleExtrasante);
 
-        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
-        imagen.setFocusable(false);
-        /* Comprobar que el cliente está suscrito y tiene disponibles productos web para configurar*/
-        comprobarSuscripciones();
+        imagen = vistaForm.addViewImagenLayout();
+        imagen.getLinearLayoutCompat().setFocusable(false);
+
         /* Checkbox de productos web a clientes finales, si esta chekeado muestra el
            boton de opciones de configuracion de productos web CLI */
         fire = (CheckBox) vistaForm.addVista(new CheckBox(contexto));
@@ -195,13 +216,16 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                if (isChecked) {
+                if (iniciado) {
 
-                    actualizarProdCli();
+                    if (isChecked) {
 
-                } else {
+                        actualizarProdCli();
 
-                    abriDialogoBorrarProdCli();
+                    } else {
+
+                        abriDialogoBorrarProdCli();
+                    }
                 }
             }
         });
@@ -214,13 +238,16 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                if (isChecked) {
+                if (iniciado) {
 
-                    actualizarProdPro();
+                    if (isChecked) {
 
-                } else {
+                        actualizarProdPro();
 
-                    abriDialogoBorrarProdPro();
+                    } else {
+
+                        abriDialogoBorrarProdPro();
+                    }
                 }
             }
         });
@@ -265,23 +292,33 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
         lyCli = new ViewGroupLayout(contexto, vistaForm.getViewGroup());//(LinearLayoutCompat) vistaForm.addVista(new LinearLayoutCompat(contexto));
         Estilos.setLayoutParams(vistaForm.getViewGroup(), lyCli.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
-
         lyCli.addEditMaterialLayout(getString(R.string.descuento_cli), PRODUCTO_DESCUENTO);
 
-        int idViewGroup = lyCli.getViewGroup().getId();
-        if (idViewGroup < 0) {
-            idViewGroup = View.generateViewId();
+        flCli = new FrameLayout(contexto);
+        lyCli.getViewGroup().addView(flCli);
+        Estilos.setLayoutParams(lyCli.getViewGroup(), flCli, ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
+
+        idViewGroupCli = flCli.getId();
+        if (idViewGroupCli < 0) {
+            idViewGroupCli = View.generateViewId();
         }
 
-        lyCli.getViewGroup().setId(idViewGroup);
+        flCli.setId(idViewGroupCli);
+
         bundle = new Bundle();
         putBundle(MODULO, true);
-        addFragment(bundle, new AltaProductosCli(this), idViewGroup);
-
+        addFragment(bundle, new AltaProductosCli(this), idViewGroupCli);
+        actualizarArrays(lyCli);
         gone(lyCli.getViewGroup());
 
         lyPro = new ViewGroupLayout(contexto, vistaForm.getViewGroup());//(LinearLayoutCompat) vistaForm.addVista(new LinearLayoutCompat(contexto));
         Estilos.setLayoutParams(vistaForm.getViewGroup(), lyPro.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
+        flPro = new FrameLayout(contexto);
+        idViewGroupPro = flPro.getId();
+        if (idViewGroupPro < 0) {
+            idViewGroupPro = View.generateViewId();
+        }
+        flPro.setId(idViewGroupPro);
 
         imagenPro = (ImagenLayout) lyPro.addVista(new ImagenLayout(contexto));
         imagenPro.setFocusable(false);
@@ -294,25 +331,23 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
                 mostrarDialogoOpcionesImagen(contexto, PRODUCTO_RUTAFOTOPRO);
             }
         });
+        setImagen(imagenPro, PRODUCTO_RUTAFOTOPRO);
+
         lyPro.addEditMaterialLayout(getString(R.string.nombrepro), PRODUCTO_NOMBREPRO);
         lyPro.addEditMaterialLayout(getString(R.string.descripcionpro), PRODUCTO_DESCRIPCIONPRO);
         lyPro.addEditMaterialLayout(getString(R.string.referencia_proveedorpro), PRODUCTO_REFERENCIAPRO);
         lyPro.addEditMaterialLayout(getString(R.string.descuento_pro), PRODUCTO_DESCUENTOPRO);
         lyPro.addEditMaterialLayout(getString(R.string.palabras_clavepro), PRODUCTO_ALCANCEPRO);
         lyPro.addEditMaterialLayout(getString(R.string.webpro), PRODUCTO_WEBPRO);
+        lyPro.getViewGroup().addView(flPro);
+        Estilos.setLayoutParams(lyPro.getViewGroup(), flPro, ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
 
-        idViewGroup = lyPro.getViewGroup().getId();
-        if (idViewGroup < 0) {
-            idViewGroup = View.generateViewId();
-        }
-
-        lyPro.getViewGroup().setId(idViewGroup);
         bundle = new Bundle();
         putBundle(MODULO, true);
-        addFragment(bundle, new AltaProductosPro(this), idViewGroup);
+        addFragment(bundle, new AltaProductosPro(this), idViewGroupPro);
 
+        actualizarArrays(lyPro);
         gone(lyPro.getViewGroup());
-
         actualizarArrays(vistaForm);
 
     }
@@ -320,32 +355,39 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     private void actualizarProdCli() {
 
         System.out.println("Actualiza prodCli");
+
         visible(lyCli.getViewGroup());
+
         bundle = new Bundle();
         putBundle(CRUD, modeloSQL);
         if (onSetDatosCliListener != null) {
             onSetDatosCliListener.onSetDatos(bundle);
+            System.out.println("onSetDatosCliListener = " + onSetDatosCliListener);
         }
-
         // Guarda el valor de producto cli a true y actualiza el modelo
-        CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIRE, 1);
-        modeloSQL = CRUDutil.updateModelo(modeloSQL);
+        if (nn(modeloSQL)) {
+            CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIRE, 1);
+            modeloSQL = CRUDutil.updateModelo(modeloSQL);
+        }
     }
 
     private void actualizarProdPro() {
 
         System.out.println("Actualiza prodPro");
+
         visible(lyPro.getViewGroup());
-        setImagen(imagenPro, PRODUCTO_RUTAFOTOPRO);
         bundle = new Bundle();
         putBundle(CRUD, modeloSQL);
         if (onSetDatosProListener != null) {
             onSetDatosProListener.onSetDatos(bundle);
+            System.out.println("onSetDatosProListener = " + onSetDatosProListener);
         }
 
         // Guarda el valor de producto cli a true y actualiza el modelo
-        CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIREPRO, 1);
-        modeloSQL = CRUDutil.updateModelo(modeloSQL);
+        if (nn(modeloSQL)) {
+            CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIREPRO, 1);
+            modeloSQL = CRUDutil.updateModelo(modeloSQL);
+        }
 
     }
 
@@ -469,6 +511,18 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
                 firePro.setChecked(true);
             }
         }).show(getFragmentManager(), "productpro");
+    }
+
+    @Override
+    protected boolean onDelete() {
+
+        if (super.onDelete()) {
+            borrarProdFire(modeloSQL, PRODUCTOCLI);
+            borrarProdFire(modeloSQL, PRODUCTOPRO);
+            return true;
+        }
+
+        return false;
     }
 
     private int crearProductoBase(String idPartidabase) {

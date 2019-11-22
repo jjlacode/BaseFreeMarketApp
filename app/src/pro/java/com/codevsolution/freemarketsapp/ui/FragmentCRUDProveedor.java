@@ -16,7 +16,6 @@ import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
@@ -126,8 +125,8 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProducto());
             }
         });
-        imagen = (ImagenLayout) vistaForm.addVista(new ImagenLayout(contexto));
-        imagen.setFocusable(false);
+        imagen = vistaForm.addViewImagenLayout();
+        imagen.getLinearLayoutCompat().setFocusable(false);
         nombre = vistaForm.addEditMaterialLayout(getString(R.string.nombre), PROVEEDOR_NOMBRE, null, null);
         vistaForm.addEditMaterialLayout(getString(R.string.direccion), PROVEEDOR_DIRECCION, ViewGroupLayout.MAPA, null);
         vistaForm.addEditMaterialLayout(getString(R.string.email), PROVEEDOR_EMAIL, ViewGroupLayout.MAIL, null);

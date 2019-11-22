@@ -39,7 +39,6 @@ public abstract class FragmentCRUD extends FragmentCUD {
     protected AutoCompleteTextView auto;
     protected ListaModeloSQL lista;
     protected boolean maestroDetalleSeparados;
-    protected ArrayList<ModeloSQL> listafiltrada;
     protected ImageView buscar;
     protected ImageView renovar;
     protected ImageView inicio;
@@ -51,6 +50,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
     private OneFrameLayout frameAnimation;
     private String stemp = "";
     private int posicion;
+    private boolean autoborrado;
 
     public FragmentCRUD() {
     }
@@ -106,7 +106,9 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
         Log.d(TAG, getMetodo());
 
-        subTitulo = getString(tituloPlural);
+        if (subTitulo == null) {
+            subTitulo = getString(tituloPlural);
+        }
         activityBase.toolbar.setSubtitle(subTitulo);
 
         maestroDetalle();
@@ -244,8 +246,6 @@ public abstract class FragmentCRUD extends FragmentCUD {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                System.out.println("Auto before textChange");
-
 
             }
 
@@ -253,8 +253,6 @@ public abstract class FragmentCRUD extends FragmentCUD {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
                 if (grabarVoz == null) {
-                    System.out.println("Auto textChange");
-                    System.out.println("s = " + s.toString());
 
                     if (id == null || secuencia == 0) {
                         auto.setDropDownWidth(0);
@@ -279,8 +277,6 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
             @Override
             public void afterTextChanged(Editable s) {
-
-                System.out.println("Auto after textChange");
 
 
             }
@@ -735,10 +731,8 @@ public abstract class FragmentCRUD extends FragmentCUD {
     protected boolean onBack() {
 
         back = true;
-
-        System.out.println("modeloSQL.getLong(campoTimeStamp) = " + modeloSQL.getLong(CAMPO_TIMESTAMP));
-        System.out.println("modeloSQL.getLong(campoCreate) = " + modeloSQL.getLong(CAMPO_CREATEREG));
-        if (modeloSQL.getLong(CAMPO_CREATEREG) == modeloSQL.getLong(CAMPO_TIMESTAMP)) {
+        nuevo = false;
+        if (autoborrado && nn(modeloSQL) && modeloSQL.getLong(CAMPO_CREATEREG) == modeloSQL.getLong(CAMPO_TIMESTAMP)) {
             delete();
         }
         cambiarFragment();
@@ -774,8 +768,6 @@ public abstract class FragmentCRUD extends FragmentCUD {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, getMetodo());
-
-        System.out.println("requestCode = " + requestCode);
 
         if (resultCode == RESULT_OK) {
 
@@ -829,13 +821,9 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
                         }
 
-                        System.out.println("suggestion = " + suggestion.sizeLista());
                         listab = new ListaModeloSQL(suggestion);
-                        System.out.println("listab = " + listab.sizeLista());
                         actualizarConsultasRV();
-                        System.out.println("lista = " + lista.sizeLista());
                         setRv();
-                        System.out.println("lista = " + lista.sizeLista());
                         auto.setText(grabarVoz);
                         auto.setSelection(grabarVoz.length());
                         auto.setDropDownWidth(0);
