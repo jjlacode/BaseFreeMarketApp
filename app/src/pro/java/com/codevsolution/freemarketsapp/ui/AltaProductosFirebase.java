@@ -32,11 +32,13 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
 
-        View viewFB = inflater.inflate(R.layout.cabecera_alta_productos_firebase, container, false);
-        if (viewFB.getParent() != null) {
-            ((ViewGroup) viewFB.getParent()).removeView(viewFB); // <- fix
+        if (!modulo) {
+            View viewFB = inflater.inflate(R.layout.cabecera_alta_productos_firebase, container, false);
+            if (viewFB.getParent() != null) {
+                ((ViewGroup) viewFB.getParent()).removeView(viewFB); // <- fix
+            }
+            frdetalleExtrasante.addView(viewFB);
         }
-        frdetalleExtrasante.addView(viewFB);
 
         super.setOnCreateView(view, inflater, container);
     }
@@ -51,19 +53,23 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
     @Override
     protected void setInicio() {
 
-        limitProdAct = (EditMaterial) ctrl(R.id.etlimitprodact);
-        limitProd = (EditMaterial) ctrl(R.id.etlimitprod);
-        prodActUsados = (EditMaterial) ctrl(R.id.etprodact);
-        prodUsados = (EditMaterial) ctrl(R.id.etprod);
-        contadorProdActivo = 0;
-        contadorProdTotal = 0;
 
-        if (getDatos() || !modulo) {
+        if (!modulo) {
+
+            limitProdAct = (EditMaterial) ctrl(R.id.etlimitprodact);
+            limitProd = (EditMaterial) ctrl(R.id.etlimitprod);
+            prodActUsados = (EditMaterial) ctrl(R.id.etprodact);
+            prodUsados = (EditMaterial) ctrl(R.id.etprod);
+
 
             DatabaseReference db = FirebaseDatabase.getInstance().getReference();
             db.child(INDICE + PRODUCTOPRO).child(idUser).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    contadorProdActivo = 0;
+                    contadorProdTotal = 0;
+
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         contadorProdTotal++;
                         if (child.getValue(Boolean.class)) {
@@ -144,7 +150,7 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
     protected void setDatos() {
         super.setDatos();
         if (!modulo) {
-            gone(imagen);
+            gone(imagen.getLinearLayoutCompat());
         }
 
     }
@@ -183,12 +189,12 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
 
     @Override
     protected void setModuloInicio() {
-        gone(btnback);
-        gone(btndelete);
-        gone(btnsave);
         gone(lupa);
         gone(auto);
         gone(renovar);
+        gone(radioGroupProd);
+        gone(radioButtonProd1);
+        gone(radioButtonProd2);
         activityBase.fabNuevo.show();
         activityBase.fabInicio.hide();
 

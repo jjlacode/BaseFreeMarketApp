@@ -79,7 +79,7 @@ public class MenuInicio extends FragmentGridImagen {
         } else if (nombre.equals(um)) {
 
             activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new AltaProductosPro()).addToBackStack(null).commit();
+                    .replace(R.id.content_main, new UnionMarket()).addToBackStack(null).commit();
 
         } else if (nombre.equals(productos)) {
 

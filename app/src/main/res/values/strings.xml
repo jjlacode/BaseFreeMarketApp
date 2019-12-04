@@ -532,6 +532,14 @@
     <string name="asignar_evento">Asignar a Evento</string>
     <string name="play">Reproduciendo</string>
     <string name="sinhora">Hora no establecida</string>
+    <string name="producto_web_cli">Producto web cliente</string>
+    <string name="visible_web">Visible en web</string>
+    <string name="reserva">En reserva</string>
+    <string name="gestionar_sus">Gestionar Suscripción</string>
+    <string name="limitres">Prod. res. disponibles</string>
+    <string name="limitresusados">Prod. res. usados</string>
+    <string name="sinzona">No existe un nombre para la zona elegida</string>
+    <string name="unidad">Unidad</string>
 
 
 </resources>

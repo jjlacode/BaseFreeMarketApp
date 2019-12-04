@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +27,7 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltro;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
-import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.ImagenLayout;
-import com.codevsolution.base.android.controls.RatingBarLayout;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.chat.FragmentChatBase;
@@ -42,6 +41,8 @@ import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.Productos;
 import com.codevsolution.base.models.Rating;
+import com.codevsolution.base.module.FormProfileModule;
+import com.codevsolution.base.module.RatingBarModule;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.TimeDateUtil;
@@ -60,48 +61,48 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
         extends FragmentMasterDetailNoSQLFirebaseRatingWebMapSus implements ContratoSystem.Tablas,
         InteractorBase.Constantes {
 
-    protected EditMaterial nombre;
-    protected EditMaterial descripcion;
-    protected EditMaterial direccion;
-    protected EditMaterial email;
-    protected EditMaterial telefono;
-    protected EditMaterial claves;
-    protected EditMaterial etWeb;
+    protected EditMaterialLayout nombre;
+    protected EditMaterialLayout descripcion;
+    protected EditMaterialLayout direccion;
+    protected EditMaterialLayout email;
+    protected EditMaterialLayout telefono;
+    protected EditMaterialLayout claves;
+    protected EditMaterialLayout etWeb;
+
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
         super.setOnCreateView(view, inflater, container);
+        Log.d(TAG, getMetodo());
 
-        View viewFB = inflater.inflate(R.layout.fragment_formulario_basico, container, false);
-        if (viewFB.getParent() != null) {
-            ((ViewGroup) viewFB.getParent()).removeView(viewFB); // <- fix
-        }
-        frdetalleExtrasante.addView(viewFB);
+        FormProfileModule form = new FormProfileModule(frdetalleExtrasante, contexto, this);
+        nombre = form.getNombre();
+        descripcion = form.getDescripcion();
+        direccion = form.getDireccion();
+        email = form.getEmail();
+        telefono = form.getTelefono();
+        claves = form.getClaves();
+        etWeb = form.getWeb();
+        imagen = form.getImagen();
 
-
-        nombre = (EditMaterial) ctrl(R.id.etnombreformbase);
-        descripcion = (EditMaterial) ctrl(R.id.etdescformbase);
-        direccion = (EditMaterial) ctrl(R.id.etdireccionformbase);
-        email = (EditMaterial) ctrl(R.id.etemailformbase);
-        telefono = (EditMaterial) ctrl(R.id.ettelefonoformbase);
-        claves = (EditMaterial) ctrl(R.id.etclavesformpbase);
-        etWeb = (EditMaterial) ctrl(R.id.etwebformbase);
-        imagen = (ImagenLayout) ctrl(R.id.imgformbase);
-        imagen.setIcfragmentos(icFragmentos);
-        imagen.setVisibleBtn();
-
+        form.setVisibility(true, true, true, true,
+                true, true, true, true);
 
         if (tipoForm.equals(NUEVO)) {
             gone(frCabecera);
+            /*
             nombre.setActivo(true);
             descripcion.setActivo(true);
             direccion.setActivo(true);
             telefono.setActivo(true);
             email.setActivo(true);
-            etWeb.setActivo(true);
+            web.setActivo(true);
+
+             */
         } else {
             gone(btnEnviarNoticias);
             gone(chActivo);
+            visible(frCabecera);
         }
 
     }
@@ -109,6 +110,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
     @Override
     protected void setLayoutItem() {
+        Log.d(TAG, getMetodo());
 
         layoutItemRv = 0;
         layoutItemAuto = R.layout.item_list_firebase_formbase_rating_web;
@@ -118,7 +120,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
     @Override
     protected void setLayout() {
-
+        Log.d(TAG, getMetodo());
 
     }
 
@@ -134,6 +136,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
     @Override
     protected void setLista() {
+        Log.d(TAG, getMetodo());
 
         gone(lyChat);
 
@@ -148,22 +151,22 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
                 switch (i) {
 
                     case 5:
-                        lugar = paisUser.get(4);
+                        lugar = Estilos.getString(contexto, "codigo_postal") + paisUser.get(4);
                         break;
                     case 4:
-                        lugar = paisUser.get(3);
+                        lugar = Estilos.getString(contexto, "local") + paisUser.get(3);
                         break;
                     case 3:
-                        lugar = paisUser.get(2);
+                        lugar = Estilos.getString(contexto, "provincial") + paisUser.get(2);
                         break;
                     case 2:
-                        lugar = paisUser.get(1);
+                        lugar = Estilos.getString(contexto, "regional") + paisUser.get(1);
                         break;
                     case 1:
-                        lugar = paisUser.get(0);
+                        lugar = Estilos.getString(contexto, "nacional") + paisUser.get(0);
                         break;
                     case 0:
-                        lugar = MUNDIAL;
+                        lugar = Estilos.getString(contexto, "mundial") + MUNDIAL;
                         break;
 
                 }
@@ -177,7 +180,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
                         for (DataSnapshot prod : dataSnapshot.getChildren()) {
 
-                            if (prod.getValue(Boolean.class)) {
+                            if (prod.getValue(Long.class) > 0) {
 
                                 DatabaseReference dbproductosprov = FirebaseDatabase.getInstance().getReference().
                                         child(tipo).child(prod.getKey());
@@ -257,6 +260,8 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
     @Override
     protected void cargarBundle() {
         super.cargarBundle();
+        Log.d(TAG, getMetodo());
+
         if (!modulo) {
             activityBase.fabNuevo.hide();
             activityBase.fabInicio.show();
@@ -265,6 +270,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
 
     protected void setDatos() {
+        Log.d(TAG, getMetodo());
 
         if (tipoForm.equals(NUEVO)) {
 
@@ -276,8 +282,8 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             gone(btndelete);
             visible(btnsave);
             visible(chActivo);
-            visible(claves);
-            visible(etWeb);
+            visible(claves.getLinearLayout());
+            visible(etWeb.getLinearLayout());
 
             ratingBase.setVisibilidadBtnVerVotoUser(false);
             gone(suscripcion);
@@ -344,6 +350,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
     @Override
     protected void onGuardarImagen(String path) {
         super.onGuardarImagen(path);
+        Log.d(TAG, getMetodo());
 
         ImagenUtil.setImageFireStoreCircle(idUser + tipo, activityBase.imagenPerfil);
     }
@@ -351,6 +358,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
     @Override
     protected void acciones() {
         super.acciones();
+        Log.d(TAG, getMetodo());
 
         if (tipoForm.equals(NUEVO)) {
 
@@ -377,8 +385,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
     }
 
     protected void guardar() {
-
-        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+        Log.d(TAG, getMetodo());
 
         firebaseFormBase = new FirebaseFormBase();
         firebaseFormBase.setTipoBase(tipo);
@@ -396,28 +403,24 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
         firebaseFormBase.setWebBase(etWeb.getTexto());
         firebaseFormBase.setIdchatBase(idUser);
 
-        /*
-        db.child(tipo).child(idUser).setValue(firebaseFormBase, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-
-                nuevo = false;
-            }
-        });
-        db.child(PERFIL).child(tipo).child(idUser).setValue(true);
-        */
-
         String[] rutaTipo = {tipo};
         firebaseUtil.setValue(rutaTipo, idUser, firebaseFormBase, new FirebaseUtil.OnSetValue() {
             @Override
-            public void onSetValueOk(String key) {
+            public void onCreateOk(String key) {
+
                 nuevo = false;
-                System.out.println("Guardado ok");
+                System.out.println("Creado perfil ok");
+
+            }
+
+            @Override
+            public void onSetValueOk(String key) {
+                System.out.println("Guardado perfil ok");
             }
 
             @Override
             public void onSetValueFail(String key) {
-
+                System.out.println("Fallo al crear o guardar perfil");
             }
         });
         String[] ruta = {PERFIL, tipo};
@@ -426,12 +429,15 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
     @Override
     protected String setIdRating() {
+        Log.d(TAG, getMetodo());
+
         return firebaseFormBase.getIdchatBase();
     }
 
 
     @Override
     public void setOnClickRV(Object object) {
+        Log.d(TAG, getMetodo());
 
         firebaseFormBase = (FirebaseFormBase) object;
         id = firebaseFormBase.getIdchatBase();
@@ -441,6 +447,8 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
     }
 
     protected void setMaestroDetalleTabletPort() {
+        Log.d(TAG, getMetodo());
+
         maestroDetalleSeparados = true;
     }
 
@@ -450,11 +458,14 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
         public AdapterFiltroFormBaseRatingWeb(Context contexto, int R_layout_IdView, ArrayList entradas) {
             super(contexto, R_layout_IdView, entradas);
+            Log.d(TAG, getMetodo());
+
 
         }
 
         @Override
         public void onEntrada(Object entrada, View view) {
+            Log.d(TAG, getMetodo());
 
             ImageView imagen = view.findViewById(R.id.imglformbaseratingweb);
             TextView nombre = view.findViewById(R.id.tvnomlformbaseratingweb);
@@ -478,6 +489,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
         @Override
         public List onFilter(ArrayList entradas, CharSequence constraint) {
+            Log.d(TAG, getMetodo());
 
             List suggestion = new ArrayList();
 
@@ -513,8 +525,8 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
         TextView email;
         ImageButton btnchat;
         WebView webView;
-        RatingBarLayout ratingBarCard;
-        RatingBarLayout ratingBarUserCard;
+        RatingBarModule ratingBarCard;
+        RatingBarModule ratingBarUserCard;
         NestedScrollView lylweb;
         String web;
         CardView card;
@@ -522,6 +534,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
         public ViewHolderRVFormBaseRatingWeb(View view) {
             super(view);
+            Log.d(TAG, getMetodo());
 
             relativeLayout = view.findViewById(Estilos.getIdResource(contexto, "ry_item_list"));
 
@@ -529,6 +542,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
 
         @Override
         public void bind(ArrayList<?> lista, int position) {
+            Log.d(TAG, getMetodo());
 
             final FirebaseFormBase firebaseFormBase = (FirebaseFormBase) lista.get(position);
 
@@ -561,9 +575,11 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             Estilos.setLayoutParams(vistaDatos.getViewGroup(), vistaChat.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT, 2.5f, 0);
             btnchat = vistaChat.addImageButtonSecundary(Estilos.getIdDrawable(contexto, "ic_chat_indigo"));
 
-            ratingBarCard = new RatingBarLayout(contexto, mainLinear, true, false);
+            ratingBarCard = new RatingBarModule(mainLinear, contexto, null, true, false);
+            ratingBarCard.init();
             Estilos.setLayoutParams(mainLinear, ratingBarCard.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
-            ratingBarUserCard = new RatingBarLayout(contexto, mainLinear, true, true);
+            ratingBarUserCard = new RatingBarModule(mainLinear, contexto, null, true, true);
+            ratingBarUserCard.init();
             Estilos.setLayoutParams(mainLinear, ratingBarUserCard.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
 
             lylweb = new NestedScrollView(contexto);
@@ -646,6 +662,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
         }
 
         protected void recuperarVotos(final String id) {
+            Log.d(TAG, getMetodo());
 
             DatabaseReference db;
 
@@ -719,6 +736,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
         }
 
         public void recuperarVotoUsuario(final Context contexto, final String id) {
+            Log.d(TAG, getMetodo());
 
             idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
             perfilUser = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, PERFILUSER, NULL);

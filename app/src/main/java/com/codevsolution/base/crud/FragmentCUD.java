@@ -425,20 +425,13 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
         SharedPreferences persistencia = getActivity().getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = persistencia.edit();
 
-        update();
         switch (orientation) {
             case Configuration.ORIENTATION_LANDSCAPE:
                 // Con la orientación en horizontal actualizamos el adaptador
 
             case Configuration.ORIENTATION_PORTRAIT:
                 // Con la orientación en vertical actualizamos el adaptador
-                editor.putString(ORIGEN, origen);
-                editor.putString(ACTUAL, actual);
-                editor.putString(ACTUALTEMP, actualtemp);
-                editor.putString(SUBTITULO, subTitulo);
-                editor.putString(CAMPO_ID, id);
-                editor.putInt(CAMPO_SECUENCIA, secuencia);
-                editor.apply();
+
                 break;
         }
     }

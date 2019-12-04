@@ -25,6 +25,7 @@ public class JavaUtil {
 
         String ORIGEN = "origen";
         String ACTUAL = "actual";
+        String CAMBIO = "cambio";
         String ACTUALTEMP = "actualtemp";
         String SUBTITULO = "subTitulo";
         String ORIGENTEMP = "origenTemp";
@@ -72,6 +73,8 @@ public class JavaUtil {
         String CAMPO_VALOR = "valor_";
         String CAMPO_DESCRIPCION = "descripcion_";
         String CAMPO_CANTIDAD = "cantidad_";
+        String CAMPO_UNIDAD = "unidad_";
+        String CAMPO_CATEGORIA = "categoria_";
         String CAMPO_PRECIO = "precio_";
         String CAMPO_COSTE = "coste_";
         String CAMPO_BENEFICIO = "beneficio_";

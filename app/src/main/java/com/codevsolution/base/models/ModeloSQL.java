@@ -36,6 +36,16 @@ public class ModeloSQL implements Serializable {
     public ModeloSQL() {
     }
 
+    public ModeloSQL(ModeloSQL modeloSQL) {
+
+        campos = modeloSQL.getCampos();
+        numcampos = modeloSQL.getNumcampos();
+        nombreTabla = modeloSQL.getNombreTabla();
+        estructura = modeloSQL.getEstructura();
+        valores = modeloSQL.getValores();
+
+    }
+
     public ModeloSQL(String tabla) {
 
         campos = ContratoPry.obtenerCampos(tabla);

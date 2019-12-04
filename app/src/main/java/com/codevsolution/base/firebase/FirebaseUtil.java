@@ -215,67 +215,7 @@ public class FirebaseUtil {
 
     }
 
-    public void setValue(String[] ruta, String id, boolean valor, final OnSetValue onSetValueListener) {
-
-        Task<Void> query = null;
-
-        switch (ruta.length) {
-            case 0:
-                if (id == null) {
-                    id = db.push().getKey();
-                }
-                query = db.child(id).setValue(valor);
-                break;
-            case 1:
-                if (id == null) {
-                    id = db.child(ruta[0]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(id).setValue(valor);
-                break;
-            case 2:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(id).setValue(valor);
-                break;
-            case 3:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(id).setValue(valor);
-                break;
-            case 4:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(id).setValue(valor);
-                break;
-            case 5:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).child(id).setValue(valor);
-                break;
-
-        }
-
-        final String finalId = id;
-        query.addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-
-                if (onSetValueListener != null) {
-                    if (task.isSuccessful()) {
-                        onSetValueListener.onSetValueOk(finalId);
-                    } else {
-                        onSetValueListener.onSetValueFail(finalId);
-                    }
-                }
-            }
-        });
-    }
-
-    public void setValue(String[] ruta, String id, Object valor, final OnSetValue onSetValueListener) {
+    public String setValue(String[] ruta, String id, boolean valor, final OnSetValue onSetValueListener) {
 
         Task<Void> query = null;
         boolean nuevo = false;
@@ -323,257 +263,301 @@ public class FirebaseUtil {
 
         }
 
+        onCompleteSetValue(query, id, nuevo, onSetValueListener);
+
+        return id;
+
+    }
+
+    public String setValue(String[] ruta, String id, Object valor, final OnSetValue onSetValueListener) {
+
+        Task<Void> query = null;
+        boolean nuevo = false;
+        if (id == null) {
+            nuevo = true;
+        }
+
+        switch (ruta.length) {
+            case 0:
+                if (id == null) {
+                    id = db.push().getKey();
+                }
+                query = db.child(id).setValue(valor);
+                break;
+            case 1:
+                if (id == null) {
+                    id = db.child(ruta[0]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(id).setValue(valor);
+                break;
+            case 2:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(id).setValue(valor);
+                break;
+            case 3:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(id).setValue(valor);
+                break;
+            case 4:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(id).setValue(valor);
+                break;
+            case 5:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).child(id).setValue(valor);
+                break;
+
+        }
+
+        onCompleteSetValue(query, id, nuevo, onSetValueListener);
+
+        return id;
+
+    }
+
+    public String setValue(String[] ruta, String id, String valor, final OnSetValue onSetValueListener) {
+
+        Task<Void> query = null;
+        boolean nuevo = false;
+        if (id == null) {
+            nuevo = true;
+        }
+
+        switch (ruta.length) {
+            case 0:
+                if (id == null) {
+                    id = db.push().getKey();
+                }
+                query = db.child(id).setValue(valor);
+                break;
+            case 1:
+                if (id == null) {
+                    id = db.child(ruta[0]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(id).setValue(valor);
+                break;
+            case 2:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(id).setValue(valor);
+                break;
+            case 3:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(id).setValue(valor);
+                break;
+            case 4:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(id).setValue(valor);
+                break;
+            case 5:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).child(id).setValue(valor);
+                break;
+
+        }
+
+        onCompleteSetValue(query, id, nuevo, onSetValueListener);
+
+        return id;
+
+    }
+
+    public String setValue(String[] ruta, String id, double valor, final OnSetValue onSetValueListener) {
+
+        Task<Void> query = null;
+        boolean nuevo = false;
+        if (id == null) {
+            nuevo = true;
+        }
+
+        switch (ruta.length) {
+            case 0:
+                if (id == null) {
+                    id = db.push().getKey();
+                }
+                query = db.child(id).setValue(valor);
+                break;
+            case 1:
+                if (id == null) {
+                    id = db.child(ruta[0]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(id).setValue(valor);
+                break;
+            case 2:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(id).setValue(valor);
+                break;
+            case 3:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(id).setValue(valor);
+                break;
+            case 4:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(id).setValue(valor);
+                break;
+            case 5:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).child(id).setValue(valor);
+                break;
+
+        }
+
+        onCompleteSetValue(query, id, nuevo, onSetValueListener);
+
+        return id;
+
+    }
+
+    public String setValue(String[] ruta, String id, int valor, final OnSetValue onSetValueListener) {
+
+        Task<Void> query = null;
+        boolean nuevo = false;
+        if (id == null) {
+            nuevo = true;
+        }
+
+        switch (ruta.length) {
+            case 0:
+                if (id == null) {
+                    id = db.push().getKey();
+                }
+                query = db.child(id).setValue(valor);
+                break;
+            case 1:
+                if (id == null) {
+                    id = db.child(ruta[0]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(id).setValue(valor);
+                break;
+            case 2:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(id).setValue(valor);
+                break;
+            case 3:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(id).setValue(valor);
+                break;
+            case 4:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(id).setValue(valor);
+                break;
+            case 5:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).child(id).setValue(valor);
+                break;
+
+        }
+
+        onCompleteSetValue(query, id, nuevo, onSetValueListener);
+
+        return id;
+
+    }
+
+    public String setValue(String[] ruta, String id, long valor, final OnSetValue onSetValueListener) {
+
+        Task<Void> query = null;
+        boolean nuevo = false;
+        if (id == null) {
+            nuevo = true;
+        }
+
+        switch (ruta.length) {
+            case 0:
+                if (id == null) {
+                    id = db.push().getKey();
+                }
+                query = db.child(id).setValue(valor);
+                break;
+            case 1:
+                if (id == null) {
+                    id = db.child(ruta[0]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(id).setValue(valor);
+                break;
+            case 2:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(id).setValue(valor);
+                break;
+            case 3:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(id).setValue(valor);
+                break;
+            case 4:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(id).setValue(valor);
+                break;
+            case 5:
+                if (id == null) {
+                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).push().getKey();
+                }
+                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).child(id).setValue(valor);
+                break;
+
+        }
+
+        onCompleteSetValue(query, id, nuevo, onSetValueListener);
+
+        return id;
+
+    }
+
+    private void onCompleteSetValue(Task<Void> query, String id, boolean nuevo, final OnSetValue onSetValueListener) {
+
         final String finalId = id;
+        boolean finalNuevo = nuevo;
         query.addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
 
                 if (onSetValueListener != null) {
                     if (task.isSuccessful()) {
-                        System.out.println("Prod Fire creado con exito");
-                        onSetValueListener.onSetValueOk(finalId);
+                        if (finalNuevo) {
+                            onSetValueListener.onCreateOk(finalId);
+                            System.out.println("Prod Fire creado con exito");
+                        } else {
+                            System.out.println("Prod Fire actualizado con exito");
+                            onSetValueListener.onSetValueOk(finalId);
+                        }
                     } else {
                         System.out.println("error creando Prod Fire");
-                        onSetValueListener.onSetValueFail(finalId);
-                    }
-                }
-            }
-        });
-    }
-
-    public void setValue(String[] ruta, String id, String valor, final OnSetValue onSetValueListener) {
-
-        Task<Void> query = null;
-
-        switch (ruta.length) {
-            case 0:
-                if (id == null) {
-                    id = db.push().getKey();
-                }
-                query = db.child(id).setValue(valor);
-                break;
-            case 1:
-                if (id == null) {
-                    id = db.child(ruta[0]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(id).setValue(valor);
-                break;
-            case 2:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(id).setValue(valor);
-                break;
-            case 3:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(id).setValue(valor);
-                break;
-            case 4:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(id).setValue(valor);
-                break;
-            case 5:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).child(id).setValue(valor);
-                break;
-
-        }
-
-        final String finalId = id;
-        query.addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-
-                if (onSetValueListener != null) {
-                    if (task.isSuccessful()) {
-                        onSetValueListener.onSetValueOk(finalId);
-                    } else {
-                        onSetValueListener.onSetValueFail(finalId);
-                    }
-                }
-            }
-        });
-    }
-
-    public void setValue(String[] ruta, String id, double valor, final OnSetValue onSetValueListener) {
-
-        Task<Void> query = null;
-
-        switch (ruta.length) {
-            case 0:
-                if (id == null) {
-                    id = db.push().getKey();
-                }
-                query = db.child(id).setValue(valor);
-                break;
-            case 1:
-                if (id == null) {
-                    id = db.child(ruta[0]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(id).setValue(valor);
-                break;
-            case 2:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(id).setValue(valor);
-                break;
-            case 3:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(id).setValue(valor);
-                break;
-            case 4:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(id).setValue(valor);
-                break;
-            case 5:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).child(id).setValue(valor);
-                break;
-
-        }
-
-        final String finalId = id;
-        query.addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-
-                if (onSetValueListener != null) {
-                    if (task.isSuccessful()) {
-                        onSetValueListener.onSetValueOk(finalId);
-                    } else {
-                        onSetValueListener.onSetValueFail(finalId);
-                    }
-                }
-            }
-        });
-    }
-
-    public void setValue(String[] ruta, String id, int valor, final OnSetValue onSetValueListener) {
-
-        Task<Void> query = null;
-
-        switch (ruta.length) {
-            case 0:
-                if (id == null) {
-                    id = db.push().getKey();
-                }
-                query = db.child(id).setValue(valor);
-                break;
-            case 1:
-                if (id == null) {
-                    id = db.child(ruta[0]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(id).setValue(valor);
-                break;
-            case 2:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(id).setValue(valor);
-                break;
-            case 3:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(id).setValue(valor);
-                break;
-            case 4:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(id).setValue(valor);
-                break;
-            case 5:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).child(id).setValue(valor);
-                break;
-
-        }
-
-        final String finalId = id;
-        query.addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-
-                if (onSetValueListener != null) {
-                    if (task.isSuccessful()) {
-                        onSetValueListener.onSetValueOk(finalId);
-                    } else {
-                        onSetValueListener.onSetValueFail(finalId);
-                    }
-                }
-            }
-        });
-    }
-
-    public void setValue(String[] ruta, String id, long valor, final OnSetValue onSetValueListener) {
-
-        Task<Void> query = null;
-
-        switch (ruta.length) {
-            case 0:
-                if (id == null) {
-                    id = db.push().getKey();
-                }
-                query = db.child(id).setValue(valor);
-                break;
-            case 1:
-                if (id == null) {
-                    id = db.child(ruta[0]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(id).setValue(valor);
-                break;
-            case 2:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(id).setValue(valor);
-                break;
-            case 3:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(id).setValue(valor);
-                break;
-            case 4:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(id).setValue(valor);
-                break;
-            case 5:
-                if (id == null) {
-                    id = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).push().getKey();
-                }
-                query = db.child(ruta[0]).child(ruta[1]).child(ruta[2]).child(ruta[3]).child(ruta[4]).child(id).setValue(valor);
-                break;
-
-        }
-
-        final String finalId = id;
-        query.addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-
-                if (onSetValueListener != null) {
-                    if (task.isSuccessful()) {
-                        onSetValueListener.onSetValueOk(finalId);
-                    } else {
                         onSetValueListener.onSetValueFail(finalId);
                     }
                 }
@@ -667,6 +651,8 @@ public class FirebaseUtil {
     }
 
     public interface OnSetValue {
+
+        void onCreateOk(String key);
 
         void onSetValueOk(String key);
 

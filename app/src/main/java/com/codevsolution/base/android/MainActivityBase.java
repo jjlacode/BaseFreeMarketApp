@@ -3,7 +3,6 @@ package com.codevsolution.base.android;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -27,20 +26,17 @@ import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.services.AutoArranque;
-import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.web.FragmentWebView;
-import com.codevsolution.freemarketsapp.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import static android.Manifest.permission.RECEIVE_BOOT_COMPLETED;
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.HTTPAYUDA;
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.MIPERFIL;
 
 public class MainActivityBase extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ICFragmentos,
-        InteractorBase.Constantes, ContratoPry.Tablas, JavaUtil.Constantes {
+        InteractorBase.Constantes, JavaUtil.Constantes {
 
     private static final int LOCATION_REQUEST_CODE = 333;
     protected Bundle bundle;
@@ -54,38 +50,32 @@ public class MainActivityBase extends AppCompatActivity
     protected boolean tablet;
     protected float sizeF;
     protected String ayudaWeb;
-    private String TAG = getClass().getSimpleName();
+    protected String TAG = getClass().getSimpleName();
 
     public boolean permisoInternet;
     protected Intent intent;
     protected String accion;
     public ImageView imagenPerfil;
     public DrawerLayout drawer;
+    protected String pathAyuda;
 
-    protected void persitencia() {
-
-        bundle = new Bundle();
-
-        SharedPreferences persistencia = getSharedPreferences(PERSISTENCIA, MODE_PRIVATE);
-        bundle.putString(ORIGEN, persistencia.getString(ORIGEN, ""));
-        bundle.putString(ACTUAL, persistencia.getString(ACTUAL, ""));
-        bundle.putString(ACTUALTEMP, persistencia.getString(ACTUALTEMP, ""));
-        bundle.putString(CAMPO_ID, persistencia.getString(CAMPO_ID, ""));
-        bundle.putString(IDREL, persistencia.getString(IDREL, ""));
-        bundle.putInt(CAMPO_SECUENCIA, persistencia.getInt(CAMPO_SECUENCIA, 0));
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(null);
 
         Log.d(TAG, "on Create");
+        context = this;
+        bundle = new Bundle();
+        if (AndroidUtil.getSharePreference(context, PERSISTENCIA, CAMBIO, false)) {
+            recuperarPersistencia();
+        }
 
         checkPermisos();
 
-        land = getResources().getBoolean(R.bool.esLand);
-        tablet = getResources().getBoolean(R.bool.esTablet);
+        land = Estilos.getBool(this, "esLand");
+        tablet = Estilos.getBool(this, "esTablet");
+
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
@@ -96,60 +86,59 @@ public class MainActivityBase extends AppCompatActivity
         } else {
             sizeF = ((float) ancho * (float) alto) / (metrics.densityDpi * 300);
         }
-        PreferenceManager.setDefaultValues(this, R.xml.settings, false);
-        if (savedInstanceState != null) {
 
-            //persitencia();
+        PreferenceManager.setDefaultValues(this, Estilos.getIdXml(this, "settings"), false);
 
-        } else {
+        setContentView(Estilos.getIdLayout(this, "activity_main"));
 
-            bundle = new Bundle();
-            bundle.putString(ACTUAL, INICIO);
-
-        }
-        setContentView(R.layout.activity_main);
-        toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(Estilos.getIdResource(this, "toolbar"));
         setSupportActionBar(toolbar);
 
-        fabNuevo = findViewById(R.id.fab);
-        fabVoz = findViewById(R.id.fab2);
-        fabInicio = findViewById(R.id.fab3);
+        fabNuevo = findViewById(Estilos.getIdResource(this, "fab"));
+        fabVoz = findViewById(Estilos.getIdResource(this, "fab2"));
+        fabInicio = findViewById(Estilos.getIdResource(this, "fab3"));
 
         acciones();
 
-        drawer = findViewById(R.id.drawer_layout);
+        drawer = findViewById(Estilos.getIdResource(this, "drawer_layout"));
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, Estilos.getIdString(this, "navigation_drawer_open"), Estilos.getIdString(this, "navigation_drawer_close"));
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         recargarFragment();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        imagenPerfil = navigationView.getHeaderView(0).findViewById(R.id.imgnav);
+        NavigationView navigationView = findViewById(Estilos.getIdResource(this, "nav_view"));
+        imagenPerfil = navigationView.getHeaderView(0).findViewById(Estilos.getIdResource(this, "imgnav"));
 
         String idUser = AndroidUtil.getSharePreference(this, USERID, USERID, NULL);
         if (idUser != null && !idUser.equals(NULL) && !idUser.isEmpty()) {
             ImagenUtil.setImageFireStoreCircle(idUser, imagenPerfil);
-            imagenPerfil.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    DrawerLayout drawer = findViewById(R.id.drawer_layout);
-                    drawer.closeDrawers();
-                    bundle = new Bundle();
-                    bundle.putString(ACTUAL, MIPERFIL);
-                    recargarFragment();
-                }
-            });
+            setPathImagenPerfil();
         }
 
         navigationView.setNavigationItemSelectedListener(this);
-        navigationView.setItemTextAppearance(R.style.TextAppearance_AppCompat_Menu);
+        navigationView.setItemTextAppearance(Estilos.getIdStyle(this, "TextAppearance_AppCompat_Menu"));
 
     }
 
     protected void inicio(int inicio) {
+    }
 
+    protected void recuperarPersistencia() {
+    }
+
+    protected void setPathImagenPerfil() {
+    }
+
+    protected void setPathAyuda() {
+    }
+
+    public void seleccionarDestino(String destino) {
+
+    }
+
+    public void seleccionarNuevoDestino(String destino) {
 
     }
 
@@ -173,7 +162,8 @@ public class MainActivityBase extends AppCompatActivity
         } else if (intent.getIntExtra(INICIO, 0) == 2) {
 
             inicio(2);
-            ayudaWeb = HTTPAYUDA + "Bienvenida";
+            setPathAyuda();
+            ayudaWeb = pathAyuda + "Bienvenida";
             bundle.putString(WEB, ayudaWeb);
             enviarBundleAFragment(bundle, new FragmentWebView());
         }
@@ -204,40 +194,35 @@ public class MainActivityBase extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        //recargarFragment();
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+
+        DrawerLayout drawer = findViewById(Estilos.getIdResource(this, "drawer_layout"));
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action barOk if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+
+        getMenuInflater().inflate(Estilos.getIdMenu(this, "main"), menu);
 
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action barOk item clicks here. The action barOk will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activityBase in AndroidManifest.xml.
 
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+
         bundle = new Bundle();
 
         setOnNavigation(item);
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(Estilos.getIdResource(this, "drawer_layout"));
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -253,7 +238,7 @@ public class MainActivityBase extends AppCompatActivity
 
         this.bundle = bundle;
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.content_main, myFragment).addToBackStack(null).commit();
+        getSupportFragmentManager().beginTransaction().replace(Estilos.getIdResource(this, "content_main"), myFragment).addToBackStack(null).commit();
 
     }
 
@@ -285,7 +270,7 @@ public class MainActivityBase extends AppCompatActivity
         this.bundle = bundle;
 
         if (layout <= 0) {
-            getSupportFragmentManager().beginTransaction().add(R.id.content_main, myFragment).addToBackStack(null).commit();
+            getSupportFragmentManager().beginTransaction().add(Estilos.getIdResource(this, "content_main"), myFragment).addToBackStack(null).commit();
         } else {
 
             getSupportFragmentManager().beginTransaction().add(layout, myFragment).addToBackStack(null).commit();
@@ -301,7 +286,7 @@ public class MainActivityBase extends AppCompatActivity
         this.bundle = bundle;
 
         if (layout <= 0) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.content_main, myFragment).addToBackStack(null).commit();
+            getSupportFragmentManager().beginTransaction().replace(Estilos.getIdResource(this, "content_main"), myFragment).addToBackStack(null).commit();
         } else {
             getSupportFragmentManager().beginTransaction().replace(layout, myFragment).addToBackStack(null).commit();
         }
@@ -371,7 +356,8 @@ public class MainActivityBase extends AppCompatActivity
     @Override
     public void enviarAyudaWeb(String ayudaWeb) {
 
-        this.ayudaWeb = HTTPAYUDA + ayudaWeb;
+        setPathAyuda();
+        this.ayudaWeb = pathAyuda + ayudaWeb;
     }
 
     protected void recargarFragment() {

@@ -54,6 +54,8 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
     private AutoCompleteTextView autoNombrePartida;
     private EditMaterialLayout nombrePartida;
     private EditMaterialLayout descripcionPartida;
+    private EditMaterialLayout unidadPartida;
+    private EditMaterialLayout categoriaPartida;
     private EditMaterialLayout tiempoPartida;
     private EditMaterialLayout importePartida;
     private ImageButton btnNuevaTarea;
@@ -125,16 +127,20 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
         });
         autoNombrePartida = (AutoCompleteTextView) vistaForm.addVista(new AutoCompleteTextView(contexto));
         autoNombrePartida.setText(R.string.partida_clon);
-        nombrePartida = vistaForm.addEditMaterialLayout(getString(R.string.nombre), PARTIDABASE_NOMBRE, null, null);
-        descripcionPartida = vistaForm.addEditMaterialLayout(getString(R.string.descripcion), PARTIDABASE_DESCRIPCION, null, null);
+        nombrePartida = vistaForm.addEditMaterialLayout(getString(R.string.nombre), PARTIDABASE_NOMBRE);
+        descripcionPartida = vistaForm.addEditMaterialLayout(getString(R.string.descripcion), PARTIDABASE_DESCRIPCION);
         descripcionPartida.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.MULTI);
+        categoriaPartida = vistaForm.addEditMaterialLayout(getString(R.string.categoria), PARTIDABASE_CATEGORIA);
+        categoriaPartida.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.MULTI);
 
         ViewGroupLayout vistaDatos = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
         vistaDatos.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
 
-        tiempoPartida = vistaDatos.addEditMaterialLayout(getString(R.string.tiempo));
+        unidadPartida = vistaDatos.addEditMaterialLayout(R.string.unidad, PARTIDABASE_UNIDAD, 1);
+        unidadPartida.setActivo(false);
+        tiempoPartida = vistaDatos.addEditMaterialLayout(getString(R.string.tiempo), 1);
         tiempoPartida.setActivo(false);
-        importePartida = vistaDatos.addEditMaterialLayout(R.string.importe);
+        importePartida = vistaDatos.addEditMaterialLayout(R.string.importe, 1);
         importePartida.setActivo(false);
 
         ViewGroupLayout vistaBtn = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
@@ -384,6 +390,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                     putDato(valores, CAMPOS_PARTIDA, PARTIDA_NOMBRE, modeloSQL.getString(PARTIDABASE_NOMBRE));
                     putDato(valores, CAMPOS_PARTIDA, PARTIDA_DESCRIPCION, modeloSQL.getString(PARTIDABASE_DESCRIPCION));
                     putDato(valores, CAMPOS_PARTIDA, PARTIDA_RUTAFOTO, modeloSQL.getString(PARTIDABASE_RUTAFOTO));
+                    putDato(valores, CAMPOS_PARTIDA, PARTIDA_UNIDAD, modeloSQL.getString(PARTIDABASE_UNIDAD));
 
                     if (nn(secPartida) && secPartida > 0) {
                         CRUDutil.actualizarRegistro(TABLA_PARTIDA, idPartida, secPartida, valores);
@@ -408,6 +415,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                         putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_ID_PARTIDA, iddetpartida);
                         putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_ID_DETPARTIDA, detPartidaBase.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
                         putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_TIPO, detPartidaBase.getString(DETPARTIDABASE_TIPO));
+                        putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_UNIDAD, detPartidaBase.getString(DETPARTIDABASE_UNIDAD));
                         putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_CANTIDAD, detPartidaBase.getString(DETPARTIDABASE_CANTIDAD));
                         boolean detnuevo = true;
                         ListaModeloSQL listaDetPartida = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida, TABLA_PARTIDA);

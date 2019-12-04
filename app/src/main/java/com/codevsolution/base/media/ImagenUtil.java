@@ -16,7 +16,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
-import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.time.TimeDateUtil;
@@ -759,7 +759,7 @@ public class ImagenUtil {
 
     }
 
-    public static void guardarImageFirestore(final String pathFirestore, final ImagenLayout imagen, String path) {
+    public static void guardarImageFirestore(final String pathFirestore, final ViewImagenLayout imagen, String path) {
 
         if (path != null && !path.equals(NULL) && !path.isEmpty()) {
 

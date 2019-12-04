@@ -79,6 +79,15 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
     public static Fragment fragmentMenuInicio = new MenuInicio();
 
+    public Interactor() {
+        super();
+    }
+
+    @Override
+    protected void setFragmentInicio() {
+        super.setFragmentInicio();
+        fragmentInicio = fragmentMenuInicio;
+    }
 
     //private static ConsultaBD consulta = new ConsultaBD();
 

@@ -2,11 +2,8 @@ package com.codevsolution.base.android.controls;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.widget.ScrollView;
-
-import com.codevsolution.freemarketsapp.R;
 
 public class LockableScrollView extends ScrollView {
 
@@ -17,25 +14,10 @@ public class LockableScrollView extends ScrollView {
     public LockableScrollView(Context context) {
         super(context);
 
-        //inicializar();
     }
 
     public LockableScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        //inicializar();
-        //setAtributos(attrs);
-    }
-
-    public void inicializar() {
-
-        String infService = Context.LAYOUT_INFLATER_SERVICE;
-        LayoutInflater li =
-                (LayoutInflater) getContext().getSystemService(infService);
-        li.inflate(R.layout.lockable_scrollview, this, true);
-    }
-
-    public void setAtributos(AttributeSet attrs) {
 
     }
 

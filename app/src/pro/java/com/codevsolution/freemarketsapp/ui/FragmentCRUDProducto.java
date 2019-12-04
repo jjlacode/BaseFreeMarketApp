@@ -10,8 +10,13 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.chargebee.models.Subscription;
 import com.codevsolution.base.adapter.BaseViewHolder;
@@ -21,6 +26,7 @@ import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
+import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.media.ImagenUtil;
@@ -31,8 +37,12 @@ import com.codevsolution.base.style.Estilos;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.codevsolution.freemarketsapp.logica.InteractorSuscriptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -51,13 +61,39 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     private ViewGroupLayout lyCli;
     private OnSetDatosCli onSetDatosCliListener;
     private OnSetDatosPro onSetDatosProListener;
-    private ImagenLayout imagenPro;
+    private ViewImagenLayout imagenPro;
+    private ViewImagenLayout imagenCli;
     private int idViewGroupCli;
     private int idViewGroupPro;
     private boolean iniciado;
     private FrameLayout flCli;
     private FrameLayout flPro;
-
+    private RadioGroup rg;
+    private RadioButton rb1;
+    private RadioButton rb2;
+    private RadioGroup rgPro;
+    private RadioButton rb1Pro;
+    private RadioButton rb2Pro;
+    private RadioGroup rgAct;
+    private RadioButton rb1Act;
+    private RadioButton rb2Act;
+    private RadioGroup rgProAct;
+    private RadioButton rb1ProAct;
+    private RadioButton rb2ProAct;
+    private boolean suscripcionOk;
+    private ViewGroupLayout lySus;
+    private EditMaterialLayout prodActDis;
+    private EditMaterialLayout prodActUsados;
+    private EditMaterialLayout prodResDis;
+    private EditMaterialLayout prodResUsados;
+    private EditMaterialLayout prodTotDis;
+    private EditMaterialLayout prodTotUsados;
+    private Button btnSus;
+    private int contadorProdTotal;
+    private int contadorProdActivo;
+    private int limiteProdActivos;
+    private long limiteProdTotal;
+    private String tipo;
 
     public FragmentCRUDProducto() {
         // Required empty public constructor
@@ -99,6 +135,12 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         tituloSingular = R.string.producto;
         tituloPlural = R.string.productos;
         tituloNuevo = R.string.nuevo_producto;
+
+    }
+
+    @Override
+    protected void setActual() {
+        actual = PRODUCTO;
     }
 
     @Override
@@ -118,43 +160,87 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             gone(addPartida);
 
         }
-        /* Comprobar que el cliente está suscrito y tiene disponibles productos web para configurar*/
-        comprobarSuscripciones();
 
+        if (modeloSQL.getInt(PRODUCTO_FIRE) == 1 || modeloSQL.getInt(PRODUCTO_FIREPRO) == 1) {
+            /* Comprobar que el cliente está suscrito y tiene disponibles productos web para configurar*/
+            if (!suscripcionOk) {
+                comprobarSuscripciones();
+                actualizarProdWeb();
+            } else {
+                actualizarProdWeb();
+            }
+        }
+
+        iniciado = true;
+
+    }
+
+    private void actualizarProdWeb() {
 
         if (modeloSQL.getInt(PRODUCTO_FIRE) == 1) {
             fire.setChecked(true);
+            setImagen(imagenCli, PRODUCTO_RUTAFOTOCLI);
+            String prodCat = modeloSQL.getString(PRODUCTO_CATEGORIA);
+
+            if (nn(prodCat) && prodCat.equals(getString(R.string.producto))) {
+                rb1.setChecked(true);
+                rb2.setChecked(false);
+            } else if (nn(prodCat) && prodCat.equals(getString(R.string.servicio))) {
+                rb2.setChecked(true);
+                rb1.setChecked(false);
+            }
+
+            int activo = modeloSQL.getInt(PRODUCTO_ACTIVO);
+            if (activo == 1) {
+                rb1Act.setChecked(true);
+                rb2Act.setChecked(false);
+            } else {
+                rb2Act.setChecked(true);
+                rb1Act.setChecked(false);
+            }
+
             actualizarProdCli();
         } else {
             if (fire.isChecked()) {
                 fire.setChecked(false);
                 gone(lyCli.getViewGroup());
             }
+            if (!suscripcionOk) {
+                fire.setEnabled(false);
+            }
         }
 
         if (modeloSQL.getInt(PRODUCTO_FIREPRO) == 1) {
             firePro.setChecked(true);
+            setImagen(imagenPro, PRODUCTO_RUTAFOTOPRO);
+            String prodCatPro = modeloSQL.getString(PRODUCTO_CATEGORIAPRO);
+            if (nn(prodCatPro) && prodCatPro.equals(getString(R.string.producto))) {
+                rb1Pro.setChecked(true);
+                rb2Pro.setChecked(false);
+            } else if (nn(prodCatPro) && prodCatPro.equals(getString(R.string.servicio))) {
+                rb2Pro.setChecked(true);
+                rb1Pro.setChecked(false);
+            }
+
+            int activoPro = modeloSQL.getInt(PRODUCTO_ACTIVOPRO);
+            if (activoPro == 1) {
+                rb1ProAct.setChecked(true);
+                rb2ProAct.setChecked(false);
+            } else {
+                rb2ProAct.setChecked(true);
+                rb1ProAct.setChecked(false);
+            }
             actualizarProdPro();
+
         } else {
             if (firePro.isChecked()) {
                 firePro.setChecked(false);
                 gone(lyPro.getViewGroup());
+                if (!suscripcionOk) {
+                    firePro.setEnabled(false);
+                }
             }
         }
-
-        iniciado = true;
-
-        //imagen.setTextTitulo(modeloSQL.getString(PRODUCTO_CATEGORIA).toUpperCase());
-
-        /*
-        if (!modeloSQL.getString(PRODUCTO_CATEGORIA).equals(PRODUCTOLOCAL)) {
-
-            imagen.getImagen().setClickable(false);
-            imagen.setImageFirestore(modeloSQL.getString(PRODUCTO_ID_PRODFIRE));
-        }
-
-         */
-
     }
 
     @Override
@@ -167,7 +253,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         fire.setChecked(false);
         firePro.setChecked(false);
         gone(lyCli.getViewGroup());
-        gone(lyPro.addImageView());
+        gone(lyPro.getViewGroup());
         onUpdate();
 
     }
@@ -198,64 +284,45 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
     }
 
+    @Override
+    protected void onSetImagen(String path) {
+
+        if (nnn(id) && nnn(tipo)) {
+            if (tipo.equals(PRODUCTOCLI)) {
+
+                ImagenUtil.guardarImageFirestore(modeloSQL.getString(PRODUCTO_ID_PRODFIRE) + tipo, imagenCli, path);
+                tipo = null;
+
+            } else if (tipo.equals(PRODUCTOPRO)) {
+
+                ImagenUtil.guardarImageFirestore(modeloSQL.getString(PRODUCTO_ID_PRODFIREPRO) + tipo, imagenPro, path);
+                tipo = null;
+
+            }
+        }
+    }
+
 
     @Override
     protected void setInicio() {
 
         iniciado = false;
+        frdetalleExtrasante.setOrientation(LinearLayoutCompat.VERTICAL);
         vistaForm = new ViewGroupLayout(contexto, frdetalleExtrasante);
 
         imagen = vistaForm.addViewImagenLayout();
         imagen.getLinearLayoutCompat().setFocusable(false);
 
-        /* Checkbox de productos web a clientes finales, si esta chekeado muestra el
-           boton de opciones de configuracion de productos web CLI */
-        fire = (CheckBox) vistaForm.addVista(new CheckBox(contexto));
-        fire.setText(R.string.producto_web);
-        fire.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                if (iniciado) {
-
-                    if (isChecked) {
-
-                        actualizarProdCli();
-
-                    } else {
-
-                        abriDialogoBorrarProdCli();
-                    }
-                }
-            }
-        });
-        gone(fire);
-        /* Checkbox de productos web a clientes profesionales, si esta chekeado muestra el
-           boton de opciones de configuracion de productos web PRO */
-        firePro = (CheckBox) vistaForm.addVista(new CheckBox(contexto));
-        firePro.setText(R.string.producto_web_pro);
-        firePro.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (iniciado) {
-
-                    if (isChecked) {
-
-                        actualizarProdPro();
-
-                    } else {
-
-                        abriDialogoBorrarProdPro();
-                    }
-                }
-            }
-        });
-        gone(firePro);
         vistaForm.addEditMaterialLayout(getString(R.string.nombre), PRODUCTO_NOMBRE);
         vistaForm.addEditMaterialLayout(getString(R.string.descripcion), PRODUCTO_DESCRIPCION);
-        EditMaterialLayout precio = vistaForm.addEditMaterialLayout(getString(R.string.importe), PRODUCTO_PRECIO);
+        ViewGroupLayout vistaPrecio = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+        vistaPrecio.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+        EditMaterialLayout precio = vistaPrecio.addEditMaterialLayout(getString(R.string.importe), PRODUCTO_PRECIO, 1);
         precio.setTipo(EditMaterialLayout.NUMERO | EditMaterialLayout.DECIMAL);
+        vistaPrecio.addEditMaterialLayout(R.string.unidad, PRODUCTO_UNIDAD, 1);
+        actualizarArrays(vistaPrecio);
+
         nombreProv = vistaForm.addEditMaterialLayout(getString(R.string.proveedor), PRODUCTO_NOMBREPROV);
         nombreProv.setImgBtnAccion(R.drawable.ic_clientes_indigo);
         nombreProv.setActivo(false);
@@ -271,8 +338,6 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         });
         vistaForm.addEditMaterialLayout(getString(R.string.referencia_proveedor), PRODUCTO_REFERENCIA);
         vistaForm.addEditMaterialLayout(getString(R.string.descuento_proveedor), PRODUCTO_DESCPROV);
-        vistaForm.addEditMaterialLayout(getString(R.string.palabras_clave), PRODUCTO_ALCANCE);
-        vistaForm.addEditMaterialLayout(getString(R.string.web), PRODUCTO_WEB);
 
         addPartida = vistaForm.addButtonPrimary(R.string.add_detpartida);
         addPartida.setOnClickListener(new View.OnClickListener() {
@@ -290,20 +355,168 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             }
         });
 
+        /* Checkbox de productos web a clientes finales, si esta chekeado muestra el
+           boton de opciones de configuracion de productos web CLI */
+        fire = (CheckBox) vistaForm.addVista(new CheckBox(contexto));
+        fire.setText(R.string.producto_web);
+        fire.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (iniciado) {
+
+                    if (buttonView.isChecked()) {
+
+                        if (!suscripcionOk) {
+                            comprobarSuscripciones();
+                        } else {
+
+                            actualizarProdCli();
+                        }
+
+                    } else {
+
+                        abriDialogoBorrarProdCli();
+                    }
+                }
+            }
+        });
+        //gone(fire);
+        /* Checkbox de productos web a clientes profesionales, si esta chekeado muestra el
+           boton de opciones de configuracion de productos web PRO */
+        firePro = (CheckBox) vistaForm.addVista(new CheckBox(contexto));
+        firePro.setText(R.string.producto_web_pro);
+        firePro.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (iniciado) {
+
+                    if (buttonView.isChecked()) {
+
+                        if (!suscripcionOk) {
+                            comprobarSuscripciones();
+                        } else {
+
+                            actualizarProdPro();
+                        }
+
+                    } else {
+
+                        abriDialogoBorrarProdPro();
+                    }
+                }
+            }
+        });
+        //gone(firePro);
+
+        lySus = new ViewGroupLayout(contexto, vistaForm.getViewGroup());//(LinearLayoutCompat) vistaForm.addVista(new LinearLayoutCompat(contexto));
+        Estilos.setLayoutParams(vistaForm.getViewGroup(), lySus.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
+
+        btnSus = lySus.addButtonSecondary(activityBase, R.string.crear_suscripcion);
+        btnSus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                icFragmentos.enviarBundleAFragment(null, new MisSuscripcionesProductosPro());
+            }
+        });
+
+        ViewGroupLayout lySusAct = new ViewGroupLayout(contexto, lySus.getViewGroup());//(LinearLayoutCompat) vistaForm.addVista(new LinearLayoutCompat(contexto));
+        lySusAct.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+        Estilos.setLayoutParams(lySus.getViewGroup(), lySusAct.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
+        prodActDis = lySusAct.addEditMaterialLayout(R.string.limitact, 1);
+        prodActUsados = lySusAct.addEditMaterialLayout(R.string.limitactusados, 1);
+        prodActDis.setActivo(false);
+        prodActUsados.setActivo(false);
+        actualizarArrays(lySusAct);
+
+        ViewGroupLayout lyResAct = new ViewGroupLayout(contexto, lySus.getViewGroup());//(LinearLayoutCompat) vistaForm.addVista(new LinearLayoutCompat(contexto));
+        lyResAct.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+        Estilos.setLayoutParams(lySus.getViewGroup(), lyResAct.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
+        prodResDis = lyResAct.addEditMaterialLayout(R.string.limitres, 1);
+        prodResUsados = lyResAct.addEditMaterialLayout(R.string.limitresusados, 1);
+        prodResDis.setActivo(false);
+        prodResUsados.setActivo(false);
+        actualizarArrays(lyResAct);
+
+        ViewGroupLayout lySusTot = new ViewGroupLayout(contexto, lySus.getViewGroup());//(LinearLayoutCompat) vistaForm.addVista(new LinearLayoutCompat(contexto));
+        lySusTot.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+        Estilos.setLayoutParams(lySus.getViewGroup(), lySusTot.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
+        prodTotDis = lySusTot.addEditMaterialLayout(R.string.limitprod, 1);
+        prodTotUsados = lySusTot.addEditMaterialLayout(R.string.limitprodusados, 1);
+        prodTotDis.setActivo(false);
+        prodTotUsados.setActivo(false);
+        actualizarArrays(lySusTot);
+        gone(lySus.getViewGroup());
+        actualizarArrays(lySus);
+
         lyCli = new ViewGroupLayout(contexto, vistaForm.getViewGroup());//(LinearLayoutCompat) vistaForm.addVista(new LinearLayoutCompat(contexto));
         Estilos.setLayoutParams(vistaForm.getViewGroup(), lyCli.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
+        imagenCli = lyCli.addViewImagenLayout();
+        imagenCli.getLinearLayoutCompat().setFocusable(false);
+        imagenCli.setTextTitulo(R.string.producto_web_cli);
+        imagenCli.setFondoTitulo(Estilos.colorSecondary);
+        imagenCli.setSizeTextTitulo(sizeText * 1.5f);
+        imagenCli.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tipo = PRODUCTOCLI;
+                mostrarDialogoOpcionesImagen(contexto, PRODUCTO_RUTAFOTOCLI);
+            }
+        });
+        rgAct = new RadioGroup(contexto);
+        rb1Act = new RadioButton(contexto);
+        rb1Act.setText(R.string.visible_web);
+        rb2Act = new RadioButton(contexto);
+        rb2Act.setText(R.string.reserva);
+        rgAct.addView(rb1Act);
+        rgAct.addView(rb2Act);
+        lyCli.addVista(rgAct);
+        rgAct.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                if (rb1Act.isChecked()) {
+                    CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_ACTIVO, 1);
+                } else if (rb2Act.isChecked()) {
+                    CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_ACTIVO, 0);
+                }
+                modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                actualizarProdCli();
+            }
+        });
         lyCli.addEditMaterialLayout(getString(R.string.descuento_cli), PRODUCTO_DESCUENTO);
+        lyCli.addEditMaterialLayout(getString(R.string.palabras_clave), PRODUCTO_ALCANCE);
+        lyCli.addEditMaterialLayout(getString(R.string.web), PRODUCTO_WEB);
 
-        flCli = new FrameLayout(contexto);
-        lyCli.getViewGroup().addView(flCli);
-        Estilos.setLayoutParams(lyCli.getViewGroup(), flCli, ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
+        rg = new RadioGroup(contexto);
+        rb1 = new RadioButton(contexto);
+        rb1.setText(R.string.producto);
+        rb2 = new RadioButton(contexto);
+        rb2.setText(R.string.servicio);
+        rg.addView(rb1);
+        rg.addView(rb2);
+        lyCli.addVista(rg);
+        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
 
-        idViewGroupCli = flCli.getId();
+                if (rb1.isChecked()) {
+                    CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_CATEGORIA, getString(R.string.producto));
+                } else if (rb2.isChecked()) {
+                    CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_CATEGORIA, getString(R.string.servicio));
+                }
+                modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                actualizarProdCli();
+            }
+        });
+
+        idViewGroupCli = lyCli.getViewGroup().getId();
         if (idViewGroupCli < 0) {
             idViewGroupCli = View.generateViewId();
         }
 
-        flCli.setId(idViewGroupCli);
+        lyCli.getViewGroup().setId(idViewGroupCli);
 
         bundle = new Bundle();
         putBundle(MODULO, true);
@@ -320,26 +533,68 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         }
         flPro.setId(idViewGroupPro);
 
-        imagenPro = (ImagenLayout) lyPro.addVista(new ImagenLayout(contexto));
-        imagenPro.setFocusable(false);
+        imagenPro = lyPro.addViewImagenLayout();
+        imagenPro.getLinearLayoutCompat().setFocusable(false);
         imagenPro.setTextTitulo(R.string.producto_web_pro);
         imagenPro.setFondoTitulo(Estilos.colorSecondary);
         imagenPro.setSizeTextTitulo(sizeText * 1.5f);
         imagenPro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                tipo = PRODUCTOPRO;
                 mostrarDialogoOpcionesImagen(contexto, PRODUCTO_RUTAFOTOPRO);
             }
         });
-        setImagen(imagenPro, PRODUCTO_RUTAFOTOPRO);
 
+        rgProAct = new RadioGroup(contexto);
+        rb1ProAct = new RadioButton(contexto);
+        rb1ProAct.setText(R.string.visible_web);
+        rb2ProAct = new RadioButton(contexto);
+        rb2ProAct.setText(R.string.reserva);
+        rgProAct.addView(rb1ProAct);
+        rgProAct.addView(rb2ProAct);
+        lyPro.addVista(rgProAct);
+        rgProAct.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                if (rb1ProAct.isChecked()) {
+                    CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_ACTIVOPRO, 1);
+                } else if (rb2ProAct.isChecked()) {
+                    CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_ACTIVOPRO, 0);
+                }
+                modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                actualizarProdPro();
+            }
+        });
         lyPro.addEditMaterialLayout(getString(R.string.nombrepro), PRODUCTO_NOMBREPRO);
         lyPro.addEditMaterialLayout(getString(R.string.descripcionpro), PRODUCTO_DESCRIPCIONPRO);
         lyPro.addEditMaterialLayout(getString(R.string.referencia_proveedorpro), PRODUCTO_REFERENCIAPRO);
         lyPro.addEditMaterialLayout(getString(R.string.descuento_pro), PRODUCTO_DESCUENTOPRO);
         lyPro.addEditMaterialLayout(getString(R.string.palabras_clavepro), PRODUCTO_ALCANCEPRO);
         lyPro.addEditMaterialLayout(getString(R.string.webpro), PRODUCTO_WEBPRO);
-        lyPro.getViewGroup().addView(flPro);
+        rgPro = new RadioGroup(contexto);
+        rb1Pro = new RadioButton(contexto);
+        rb1Pro.setText(R.string.producto);
+        rb2Pro = new RadioButton(contexto);
+        rb2Pro.setText(R.string.servicio);
+        rgPro.addView(rb1Pro);
+        rgPro.addView(rb2Pro);
+        lyPro.addVista(rgPro);
+        rgPro.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                if (rb1Pro.isChecked()) {
+                    CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_CATEGORIAPRO, getString(R.string.producto));
+                } else if (rb2Pro.isChecked()) {
+                    CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_CATEGORIAPRO, getString(R.string.servicio));
+                }
+                modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                actualizarProdPro();
+            }
+        });
+        lyPro.addVista(flPro);
         Estilos.setLayoutParams(lyPro.getViewGroup(), flPro, ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
 
         bundle = new Bundle();
@@ -402,16 +657,36 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
                     @Override
                     public void run() {
                         Toast.makeText(contexto, "Necesita una suscripcion para poder usar los productos en web", Toast.LENGTH_SHORT).show();
+                        suscripcionOk = false;
+                        btnSus.setText(R.string.crear_suscripcion);
                     }
                 });
             }
 
             @Override
-            public void onProductLimit() {
+            public void onProductLimit(ArrayList<Subscription> listaSuscripciones, int prodTotCli, int proActCli) {
                 activityBase.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Toast.makeText(contexto, "Ha llegado al limite de productos suscritos", Toast.LENGTH_SHORT).show();
+                        suscripcionOk = false;
+                        limiteProdActivos = 0;
+                        limiteProdTotal = 0;
+                        contadorProdActivo = proActCli;
+                        contadorProdTotal = prodTotCli;
+                        visible(lySus.getViewGroup());
+                        for (Subscription subscription : listaSuscripciones) {
+                            limiteProdActivos += subscription.planQuantity();
+                            limiteProdTotal = Math.round(limiteProdActivos * 1.5);
+                        }
+                        prodActDis.setText(String.valueOf(limiteProdActivos));
+                        prodResDis.setText(String.valueOf(limiteProdTotal - limiteProdActivos));
+                        prodTotDis.setText(String.valueOf(limiteProdTotal));
+                        prodActUsados.setText(String.valueOf(contadorProdActivo));
+                        prodResUsados.setText(String.valueOf(contadorProdTotal - contadorProdActivo));
+                        prodTotUsados.setText(String.valueOf(contadorProdTotal));
+                        btnSus.setText(R.string.gestionar_sus);
+                        actualizarProdWeb();
                     }
                 });
             }
@@ -421,20 +696,38 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
                 activityBase.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        suscripcionOk = false;
                         Toast.makeText(contexto, msgError, Toast.LENGTH_SHORT).show();
                     }
                 });
             }
 
             @Override
-            public void onCheckSuscriptionsOk(ArrayList<Subscription> listaSuscripciones) {
+            public void onCheckSuscriptionsOk(ArrayList<Subscription> listaSuscripciones, int prodTotCli, int proActCli) {
 
                 activityBase.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
 
-                        visible(fire);
-                        visible(firePro);
+                        suscripcionOk = true;
+                        limiteProdActivos = 0;
+                        limiteProdTotal = 0;
+                        contadorProdActivo = proActCli;
+                        contadorProdTotal = prodTotCli;
+
+                        visible(lySus.getViewGroup());
+                        for (Subscription subscription : listaSuscripciones) {
+                            limiteProdActivos += subscription.planQuantity();
+                            limiteProdTotal = Math.round(limiteProdActivos * 1.5);
+                        }
+                        prodActDis.setText(String.valueOf(limiteProdActivos));
+                        prodResDis.setText(String.valueOf(limiteProdTotal - limiteProdActivos));
+                        prodTotDis.setText(String.valueOf(limiteProdTotal));
+                        prodActUsados.setText(String.valueOf(contadorProdActivo));
+                        prodResUsados.setText(String.valueOf(contadorProdTotal - contadorProdActivo));
+                        prodTotUsados.setText(String.valueOf(contadorProdTotal));
+                        btnSus.setText(R.string.gestionar_sus);
+                        actualizarProdWeb();
 
                     }
                 });
@@ -455,6 +748,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             public void onConfirm() {
                 gone(lyCli.getViewGroup());
                 CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIRE, 0);
+                CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_ID_PRODFIRE, null);
                 modeloSQL = CRUDutil.updateModelo(modeloSQL);
                 borrarProdFire(modeloSQL, PRODUCTOCLI);
             }
@@ -488,6 +782,25 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
                 db.child(INDICE + tipo).child(idUser).child(id).removeValue();
                 db.child(RATING).child(tipo).child(id).removeValue();
                 ImagenUtil.deleteImagefirestore(id);
+                Query query = db.child(id).child(ZONAS);
+                String finalId = id;
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot zona : dataSnapshot.getChildren()) {
+                            DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                            db.child(LUGARES).child(tipo).child(zona.getKey()).child(finalId).removeValue();
+                        }
+                        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                        db.child(finalId).child(ZONAS).removeValue();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
         }
     }
@@ -502,6 +815,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             public void onConfirm() {
                 gone(lyPro.getViewGroup());
                 CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_FIREPRO, 0);
+                CRUDutil.actualizarCampo(modeloSQL, PRODUCTO_ID_PRODFIREPRO, null);
                 modeloSQL = CRUDutil.updateModelo(modeloSQL);
                 borrarProdFire(modeloSQL, PRODUCTOPRO);
             }
@@ -516,13 +830,9 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     @Override
     protected boolean onDelete() {
 
-        if (super.onDelete()) {
-            borrarProdFire(modeloSQL, PRODUCTOCLI);
-            borrarProdFire(modeloSQL, PRODUCTOPRO);
-            return true;
-        }
-
-        return false;
+        borrarProdFire(modeloSQL, PRODUCTOCLI);
+        borrarProdFire(modeloSQL, PRODUCTOPRO);
+        return super.onDelete();
     }
 
     private int crearProductoBase(String idPartidabase) {
@@ -540,7 +850,6 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         if (proveedor != null) {
             setDato(PRODUCTO_ID_PROVEEDOR, proveedor.getString(PROVEEDOR_ID_PROVEEDOR));
             setDato(PRODUCTO_NOMBREPROV, proveedor.getString(PROVEEDOR_NOMBRE));
-            setDato(PRODUCTO_CATEGORIA, PRODUCTOLOCAL);
         }
 
     }

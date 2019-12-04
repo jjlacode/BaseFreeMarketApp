@@ -19,6 +19,7 @@ public class FragmentCUDDetpartidaBaseProducto extends FragmentCUD implements In
     private EditMaterial nombre;
     private EditMaterial descripcion;
     private EditMaterial precio;
+    private EditMaterial unidad;
     private EditMaterial descProv;
     private EditMaterial refProv;
     private EditMaterial cantidad;

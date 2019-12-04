@@ -363,7 +363,7 @@ public class Dialogos {
                 Button button = vistaGrid.addButtonTrans(gridModel.nombre);
 
 
-                vistaGrid.getViewGroup().setBackgroundColor(Estilos.colorPrymary);
+                vistaGrid.getViewGroup().setBackgroundColor(Estilos.colorPrimary);
 
                 button.setBackgroundColor(Color.parseColor(gridModel.getColorHex()));
                 button.setTextColor(gridModel.getColorTexto());

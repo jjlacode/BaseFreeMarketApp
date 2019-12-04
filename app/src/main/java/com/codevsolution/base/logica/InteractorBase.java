@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.widget.RemoteViews;
 
+import androidx.fragment.app.Fragment;
+
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.SplashActivity;
 import com.codevsolution.base.crud.CRUDutil;
@@ -15,7 +17,7 @@ import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ModeloFire;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ContratoSystem;
-import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.base.style.Estilos;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
@@ -34,6 +36,12 @@ import static com.codevsolution.base.logica.InteractorBase.Constantes.EXTRA_SECC
 public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constantes {
 
     public static String colorTmp = null;
+    public static Fragment fragmentInicio;
+
+    public InteractorBase() {
+
+        setFragmentInicio();
+    }
 
     public interface Constantes {
 
@@ -69,6 +77,7 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
         String DETCHAT = "detchat";
         String MARCADOR = "marcador";
         String ZONA = "zona";
+        String ZONAS = "zonas";
         String IDCHATF = "idchatBase";
         String NOMBRECHAT = "nombre_chat";
         String LOG = "log";
@@ -78,7 +87,7 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
         String INICIO = "inicio";
         String SALIR = "salir";
         String TABLAS = "tablas";
-        String NUEVO = getAppContext().getString(R.string.nuevo);
+        String NUEVO = Estilos.getString(getAppContext(), "nuevo");
         String CRUD = "crud";
         String MODULO = "modulo";
         String SORTEO = "sorteo";
@@ -98,6 +107,13 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
 
     }
 
+    protected void setFragmentInicio() {
+
+    }
+
+    public Fragment getFragmentInicio() {
+        return fragmentInicio;
+    }
     public static String setNamefdef() {
 
         return AndroidUtil.getSharePreference(getAppContext(), PREFERENCIAS, PERFILUSER, NULL);
@@ -106,8 +122,8 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
     public static void notificationChat(Context contexto, Class<?> clase, ModeloSQL detchat, String actual,
                                         int id, int iconId, String titulo, String contenido) {
 
-        RemoteViews remoteView = new RemoteViews(contexto.getPackageName(), R.layout.notificacion_chat);
-        remoteView.setTextViewText(R.id.tvdescnotchat, contenido);
+        RemoteViews remoteView = new RemoteViews(contexto.getPackageName(), Estilos.getIdLayout(contexto, "notificacion_chat"));
+        remoteView.setTextViewText(Estilos.getIdResource(contexto, "tvdescnotchat"), contenido);
 
         ModeloSQL chat = CRUDutil.updateModelo(CAMPOS_CHAT, detchat.getString(DETCHAT_ID_CHAT));
         Intent intentVerChat = new Intent(contexto, clase);
@@ -124,7 +140,7 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
                 id,
                 intentVerChat,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-        remoteView.setOnClickPendingIntent(R.id.btnvernotchat, verChat);
+        remoteView.setOnClickPendingIntent(Estilos.getIdResource(contexto, "btnvernotchat"), verChat);
 
         // Estructurar la notificación
         Notification.Builder builder =
@@ -134,12 +150,12 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
                         .setContentTitle(titulo)
                         .setContentText(contenido)
                         .setWhen(detchat.getLong(DETCHAT_FECHA))
-                        .setColor(contexto.getResources().getColor(R.color.colorPrimary))
+                        .setColor(Estilos.colorPrimary)
                         .setTicker(titulo)
                         .setVibrate(new long[]{100, 250, 100, 500})
                         .setVisibility(Notification.VISIBILITY_PUBLIC)
                         .setPriority(Notification.PRIORITY_HIGH)
-                        .setSound(Uri.parse("android.resource://" + contexto.getPackageName() + "/" + R.raw.popcorn))
+                        .setSound(Uri.parse("android.resource://" + contexto.getPackageName() + "/" + Estilos.getIdRaw(contexto, "popcorn")))
                         .setContent(remoteView)
                         .setAutoCancel(true);
 

@@ -13,8 +13,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -25,6 +25,7 @@ import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.style.Estilos;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -60,24 +61,16 @@ public abstract class FragmentCRUD extends FragmentCUD {
         super.setOnCreateView(view, inflater, container);
         Log.d(TAG, getMetodo());
 
-        //frLista = view.findViewById(R.id.layout_rv);
-        frLista = view.findViewById(getId("layout_rv"));
+        viewRV = addVista(Estilos.getIdLayout(contexto, "rvlayout"), frLista);
 
-        //viewRV = inflater.inflate(R.layout.rvlayout, container, false);
-        viewRV = inflater.inflate(getLayout("rvlayout"), container, false);
-        if (viewRV.getParent() != null) {
-            ((ViewGroup) viewRV.getParent()).removeView(viewRV); // <- fix
-        }
-        frLista.addView(viewRV);
-
-        rv = view.findViewById(getId("rv"));
-        refreshLayout = view.findViewById(getId("swipeRefresh"));
-        auto = view.findViewById(getId("auto"));
-        buscar = view.findViewById(getId("imgbuscar"));
-        renovar = view.findViewById(getId("imgrenovar"));
-        inicio = view.findViewById(getId("imginicio"));
-        lupa = view.findViewById(getId("imgsearch"));
-        voz = view.findViewById(getId("imgvoz"));
+        rv = viewRV.findViewById(getId("rv"));
+        refreshLayout = viewRV.findViewById(getId("swipeRefresh"));
+        auto = viewRV.findViewById(getId("auto"));
+        buscar = viewRV.findViewById(getId("imgbuscar"));
+        renovar = viewRV.findViewById(getId("imgrenovar"));
+        inicio = viewRV.findViewById(getId("imginicio"));
+        lupa = viewRV.findViewById(getId("imgsearch"));
+        voz = viewRV.findViewById(getId("imgvoz"));
         frameAnimation = view.findViewById(getId("frameanimation"));
 
         frameAnimation.setAncho((int) (ancho * densidad));
@@ -90,9 +83,11 @@ public abstract class FragmentCRUD extends FragmentCUD {
         );
 
         if (land) {
-            frCuerpo.setOrientation(LinearLayout.HORIZONTAL);
+            frCuerpo.setOrientation(LinearLayoutCompat.HORIZONTAL);
+            Estilos.setLayoutParams(frLista, 1);
+            Estilos.setLayoutParams(frameAnimationCuerpo, 1);
         } else {
-            frCuerpo.setOrientation(LinearLayout.VERTICAL);
+            frCuerpo.setOrientation(LinearLayoutCompat.VERTICAL);
         }
 
     }
@@ -408,25 +403,28 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
         Log.d(TAG, getMetodo());
 
-        if (!land && !tablet) {
+        if (modulo || (!land && !tablet)) {
 
             maestroDetallePort();
 
-        } else if (land && !tablet) {
+        } else if (land && !tablet && !modulo) {
 
             maestroDetalleLand();
 
-        } else if (!land) {
+        } else if (!land && !modulo) {
 
             maestroDetalleTabletPort();
 
-        } else {
+        } else if (!modulo) {
 
             maestroDetalleTabletLand();
 
+        } else {
+            maestroDetallePort();
         }
 
     }
+
 
     protected void maestroDetallePort() {
 

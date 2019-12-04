@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.LinearLayoutCompat;
+
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.nosql.FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb;
@@ -21,11 +23,13 @@ public abstract class AltaPerfilesFirebase extends FragmentMasterDetailNoSQLForm
 
     protected Button prospectos;
     protected Button clientes;
+    protected Button proveedores;
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
         location = true;
         super.setOnCreateView(view, inflater, container);
+        frdetalleExtrasante.setOrientation(LinearLayoutCompat.VERTICAL);
         ViewGroupLayout vistaBtns = new ViewGroupLayout(contexto, frdetalleExtrasante);
         vistaBtns.setOrientacion(ViewGroupLayout.ORI_LL_HORIZONTAL);
         prospectos = vistaBtns.addButtonSecondary(R.string.importar_a_prospectos, 1);
@@ -38,6 +42,14 @@ public abstract class AltaPerfilesFirebase extends FragmentMasterDetailNoSQLForm
         });
         clientes = vistaBtns.addButtonSecondary(R.string.importar_a_clientes, 1);
         clientes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                importarCliente(CLIENTE);
+            }
+        });
+        proveedores = vistaBtns.addButtonSecondary(R.string.importar_a_clientes, 1);
+        proveedores.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -71,6 +83,25 @@ public abstract class AltaPerfilesFirebase extends FragmentMasterDetailNoSQLForm
             Toast.makeText(contexto, tipoCliente + " importado con exito", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(contexto, "Error al importar el " + tipoCliente, Toast.LENGTH_SHORT).show();
+
+        }
+    }
+
+    protected void importarProveedor() {
+
+        ContentValues valores = new ContentValues();
+        valores.put(PROVEEDOR_ID_FIRE, id);
+        valores.put(PROVEEDOR_NOMBRE, nombre.getTexto());
+        valores.put(PROVEEDOR_DIRECCION, direccion.getTexto());
+        valores.put(PROVEEDOR_EMAIL, email.getTexto());
+        valores.put(PROVEEDOR_TELEFONO, telefono.getTexto());
+        valores.put(PROVEEDOR_WEB, etWeb.getTexto());
+        valores.put(PROVEEDOR_CONTACTO, nombre.getTexto());
+
+        if (CRUDutil.crearRegistro(TABLA_PROVEEDOR, valores) != null) {
+            Toast.makeText(contexto, "Proveedor importado con exito", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(contexto, "Error al importar el proveedor", Toast.LENGTH_SHORT).show();
 
         }
     }
