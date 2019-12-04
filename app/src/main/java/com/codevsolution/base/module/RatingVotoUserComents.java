@@ -1,6 +1,5 @@
-package com.codevsolution.base.rating;
+package com.codevsolution.base.module;
 
-import android.content.Context;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,7 +18,6 @@ import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
-import com.codevsolution.base.android.controls.RatingBarLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.Rating;
@@ -29,33 +26,20 @@ import com.codevsolution.base.time.TimeDateUtil;
 
 import java.util.ArrayList;
 
-public class RatingVotoUserComents extends Fragment {
+public class RatingVotoUserComents extends BaseModule {
 
-    ViewGroupLayout vistaMain;
-    FragmentBase frParent;
     AppCompatActivity activityBase;
-    ViewGroup viewGroup;
-    Context contexto;
-    EditMaterialLayout etVoto;
     EditMaterialLayout etComentario;
-    ImageButton btnEnviarVoto;
-    ImageButton btnVerVotos;
     ImageButton btnVerComentarios;
-    RatingBarLayout ratingBarMain;
-    RatingBarLayout ratingBarUser;
-    RatingBarLayout ratingBarStar1;
-    RatingBarLayout ratingBarStar2;
-    RatingBarLayout ratingBarStar3;
-    RatingBarLayout ratingBarStar4;
-    RatingBarLayout ratingBarStar5;
-    TextView star1;
-    TextView star2;
-    TextView star3;
-    TextView star4;
-    TextView star5;
+    RatingBarModule ratingBarMain;
+    RatingBarModule ratingBarUser;
+    RatingBarModule ratingBarStar1;
+    RatingBarModule ratingBarStar2;
+    RatingBarModule ratingBarStar3;
+    RatingBarModule ratingBarStar4;
+    RatingBarModule ratingBarStar5;
     TextView totalVotos;
     TextView ultimoVoto;
-    TextView tvComentario;
     RecyclerView rvComentarios;
     ViewGroupLayout vistaBarMain;
     ViewGroupLayout vistaBarUser;
@@ -69,11 +53,9 @@ public class RatingVotoUserComents extends Fragment {
 
 
     public RatingVotoUserComents(FragmentBase frParent, ViewGroup viewGroup, AppCompatActivity activityBase) {
-        this.frParent = frParent;
-        this.viewGroup = viewGroup;
+        super(viewGroup, activityBase, frParent);
         this.activityBase = activityBase;
-        contexto = frParent.getContext();
-        setInicio();
+        init();
         acciones();
     }
 
@@ -81,11 +63,10 @@ public class RatingVotoUserComents extends Fragment {
 
     }
 
-    private void setInicio() {
+    public void init() {
 
-        vistaMain = new ViewGroupLayout(contexto, viewGroup);
-        vistaBarMain = new ViewGroupLayout(contexto, vistaMain.getViewGroup());
-        ratingBarMain = new RatingBarLayout(contexto, vistaBarMain.getViewGroup(), true, false);
+        vistaBarMain = new ViewGroupLayout(context, vistaMain.getViewGroup());
+        ratingBarMain = new RatingBarModule(vistaBarMain.getViewGroup(), context, fragmentParent, true, false);
         ratingBarMain.setVisibilidadImageButton(true);
         ratingBarMain.setImageButtonOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,11 +83,11 @@ public class RatingVotoUserComents extends Fragment {
             }
         });
 
-        vistaBarUser = new ViewGroupLayout(contexto, vistaMain.getViewGroup());
-        ratingBarUser = new RatingBarLayout(contexto, vistaBarUser.getViewGroup(), false, false);
+        vistaBarUser = new ViewGroupLayout(context, vistaMain.getViewGroup());
+        ratingBarUser = new RatingBarModule(vistaBarUser.getViewGroup(), context, fragmentParent, false, false);
         ratingBarUser.setVisibilidadVoto(true);
         ratingBarUser.setVisibilidadImageButton(true);
-        ratingBarUser.setRecursoImageButton(Estilos.getIdDrawable(contexto, "ic_enviar_indigo"));
+        ratingBarUser.setRecursoImageButton(Estilos.getIdDrawable(context, "ic_enviar_indigo"));
         ratingBarUser.setImageButtonOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,66 +99,66 @@ public class RatingVotoUserComents extends Fragment {
         });
 
         vistaBarUser.getViewGroup().setVisibility(View.GONE);
-        etComentario = vistaBarUser.addEditMaterialLayout(Estilos.getString(contexto, "comentario"));
-        vistaStars = new ViewGroupLayout(contexto, vistaMain.getViewGroup());
+        etComentario = vistaBarUser.addEditMaterialLayout(Estilos.getString(context, "comentario"));
+        vistaStars = new ViewGroupLayout(context, vistaMain.getViewGroup());
         vistaStars.getViewGroup().setVisibility(View.GONE);
-        ratingBarStar5 = new RatingBarLayout(contexto, vistaStars.getViewGroup(), true, true);
+        ratingBarStar5 = new RatingBarModule(vistaStars.getViewGroup(), context, fragmentParent, true, true);
         ratingBarStar5.setBarRating(5);
         ratingBarStar5.setProgressTintList("color_star_ok");
         ratingBarStar5.setProgressBackgoundTintList("color_star_defecto");
         ratingBarStar5.setSecondaryProgressTintList("Color_star_small_ok");
         ratingBarStar5.setTextViewBackground("Color_star_small_ok");
         ratingBarStar5.setTextViewTextColor("Color_texto");
-        ratingBarStar5.setTextViewText(Estilos.getString(contexto, "clasificacion"));
+        ratingBarStar5.setTextViewText(Estilos.getString(context, "clasificacion"));
         ratingBarStar5.setTextViewGravity(Gravity.CENTER);
         ratingBarStar5.setVisibilidadTexto(true);
 
-        ratingBarStar4 = new RatingBarLayout(contexto, vistaStars.getViewGroup(), true, true);
+        ratingBarStar4 = new RatingBarModule(vistaStars.getViewGroup(), context, fragmentParent, true, true);
         ratingBarStar4.setBarRating(4);
         ratingBarStar4.setProgressTintList("color_star_ok");
         ratingBarStar4.setProgressBackgoundTintList("color_star_defecto");
         ratingBarStar4.setSecondaryProgressTintList("Color_star_small_ok");
         ratingBarStar4.setTextViewBackground("Color_star_small_ok");
         ratingBarStar4.setTextViewTextColor("Color_texto");
-        ratingBarStar4.setTextViewText(Estilos.getString(contexto, "clasificacion"));
+        ratingBarStar4.setTextViewText(Estilos.getString(context, "clasificacion"));
         ratingBarStar4.setTextViewGravity(Gravity.CENTER);
         ratingBarStar4.setVisibilidadTexto(true);
 
-        ratingBarStar3 = new RatingBarLayout(contexto, vistaStars.getViewGroup(), true, true);
+        ratingBarStar3 = new RatingBarModule(vistaStars.getViewGroup(), context, fragmentParent, true, true);
         ratingBarStar3.setBarRating(3);
         ratingBarStar3.setProgressTintList("color_star_acept");
         ratingBarStar3.setProgressBackgoundTintList("color_star_defecto");
         ratingBarStar3.setSecondaryProgressTintList("Color_star_small_acept");
         ratingBarStar3.setTextViewBackground("Color_star_small_acept");
         ratingBarStar3.setTextViewTextColor("Color_texto");
-        ratingBarStar3.setTextViewText(Estilos.getString(contexto, "clasificacion"));
+        ratingBarStar3.setTextViewText(Estilos.getString(context, "clasificacion"));
         ratingBarStar3.setTextViewGravity(Gravity.CENTER);
         ratingBarStar3.setVisibilidadTexto(true);
 
-        ratingBarStar2 = new RatingBarLayout(contexto, vistaStars.getViewGroup(), true, true);
+        ratingBarStar2 = new RatingBarModule(vistaStars.getViewGroup(), context, fragmentParent, true, true);
         ratingBarStar2.setBarRating(2);
         ratingBarStar2.setProgressTintList("color_star_acept");
         ratingBarStar2.setProgressBackgoundTintList("color_star_defecto");
         ratingBarStar2.setSecondaryProgressTintList("Color_star_small_acept");
         ratingBarStar2.setTextViewBackground("Color_star_small_acept");
         ratingBarStar2.setTextViewTextColor("Color_texto");
-        ratingBarStar2.setTextViewText(Estilos.getString(contexto, "clasificacion"));
+        ratingBarStar2.setTextViewText(Estilos.getString(context, "clasificacion"));
         ratingBarStar2.setTextViewGravity(Gravity.CENTER);
         ratingBarStar2.setVisibilidadTexto(true);
 
-        ratingBarStar1 = new RatingBarLayout(contexto, vistaStars.getViewGroup(), true, true);
+        ratingBarStar1 = new RatingBarModule(vistaStars.getViewGroup(), context, fragmentParent, true, true);
         ratingBarStar1.setBarRating(1);
         ratingBarStar1.setProgressTintList("color_star_notok");
         ratingBarStar1.setProgressBackgoundTintList("color_star_defecto");
         ratingBarStar1.setSecondaryProgressTintList("Color_star_small_notok");
         ratingBarStar1.setTextViewBackground("Color_star_small_notok");
         ratingBarStar1.setTextViewTextColor("Color_texto");
-        ratingBarStar1.setTextViewText(Estilos.getString(contexto, "clasificacion"));
+        ratingBarStar1.setTextViewText(Estilos.getString(context, "clasificacion"));
         ratingBarStar1.setTextViewGravity(Gravity.CENTER);
         ratingBarStar1.setVisibilidadTexto(true);
 
 
-        btnVerComentarios = vistaMain.addImageButtonSecundary(Estilos.getIdDrawable(contexto, "ic_lista_notas_indigo"));
+        btnVerComentarios = vistaMain.addImageButtonSecundary(Estilos.getIdDrawable(context, "ic_lista_notas_indigo"));
         btnVerComentarios.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -205,15 +186,15 @@ public class RatingVotoUserComents extends Fragment {
             }
         });
 
-        vistaStats = new ViewGroupLayout(contexto, vistaStars.getViewGroup());
+        vistaStats = new ViewGroupLayout(context, vistaStars.getViewGroup());
         vistaStats.getViewGroup().setVisibility(View.GONE);
 
-        totalVotos = vistaStats.addTextView(Estilos.getString(contexto, "clasificacion"));
-        ultimoVoto = vistaStats.addTextView(Estilos.getString(contexto, "clasificacion"));
+        totalVotos = vistaStats.addTextView(Estilos.getString(context, "clasificacion"));
+        ultimoVoto = vistaStats.addTextView(Estilos.getString(context, "clasificacion"));
 
-        vistaComents = new ViewGroupLayout(contexto, vistaMain.getViewGroup(), new RelativeLayout(contexto));
-        rvComentarios = (RecyclerView) vistaComents.addVista(new RecyclerView(contexto));
-        RecyclerView.LayoutManager manager = new LinearLayoutManager(contexto);
+        vistaComents = new ViewGroupLayout(context, vistaMain.getViewGroup(), new RelativeLayout(context));
+        rvComentarios = (RecyclerView) vistaComents.addVista(new RecyclerView(context));
+        RecyclerView.LayoutManager manager = new LinearLayoutManager(context);
         RVAdapter adapter = new RVAdapter(new ViewHolderRVComents(rvComentarios), listaComents, 0);
         rvComentarios.setLayoutManager(manager);
         rvComentarios.setAdapter(adapter);
@@ -253,7 +234,7 @@ public class RatingVotoUserComents extends Fragment {
 
     public void recuperarComentarios(ArrayList<Rating> listaComents) {
         this.listaComents = listaComents;
-        RecyclerView.LayoutManager manager = new LinearLayoutManager(contexto);
+        RecyclerView.LayoutManager manager = new LinearLayoutManager(context);
         RVAdapter adapter = new RVAdapter(new ViewHolderRVComents(rvComentarios), listaComents, 0);
         rvComentarios.setLayoutManager(manager);
         rvComentarios.setAdapter(adapter);
@@ -369,7 +350,7 @@ public class RatingVotoUserComents extends Fragment {
         TextView nombreComent;
         TextView fechaComent;
         TextView tipoComment;
-        RatingBarLayout ratingBarComent;
+        RatingBarModule ratingBarComent;
         CardView card;
         RelativeLayout relativeLayout;
 
@@ -377,7 +358,7 @@ public class RatingVotoUserComents extends Fragment {
             super(itemView);
 
 
-            relativeLayout = itemView.findViewById(Estilos.getIdResource(contexto, "ry_item_list"));
+            relativeLayout = itemView.findViewById(Estilos.getIdResource(context, "ry_item_list"));
 
         }
 
@@ -386,20 +367,20 @@ public class RatingVotoUserComents extends Fragment {
 
             Rating rating = (Rating) lista.get(position);
 
-            ViewGroupLayout vistaCard = new ViewGroupLayout(contexto, relativeLayout, new CardView(contexto));
+            ViewGroupLayout vistaCard = new ViewGroupLayout(context, relativeLayout, new CardView(context));
             card = (CardView) vistaCard.getViewGroup();
-            LinearLayoutCompat mainLinear = (LinearLayoutCompat) vistaCard.addVista(new LinearLayoutCompat(contexto));
+            LinearLayoutCompat mainLinear = (LinearLayoutCompat) vistaCard.addVista(new LinearLayoutCompat(context));
             mainLinear.setOrientation(LinearLayoutCompat.VERTICAL);
-            ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, mainLinear);
-            ViewGroupLayout vistaNombreTipo = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
+            ViewGroupLayout vistaForm = new ViewGroupLayout(context, mainLinear);
+            ViewGroupLayout vistaNombreTipo = new ViewGroupLayout(context, vistaForm.getViewGroup());
             vistaNombreTipo.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
             nombreComent = vistaNombreTipo.addTextView(rating.getNombreUser(), 1);
             tipoComment = vistaNombreTipo.addTextView(rating.getTipo(), 1);
             comentario = vistaForm.addTextView(rating.getComentario());
             fechaComent = vistaForm.addTextView(TimeDateUtil.getDateString(rating.getFecha()));
-            ViewGroupLayout vistaBar = new ViewGroupLayout(contexto, mainLinear);
+            ViewGroupLayout vistaBar = new ViewGroupLayout(context, mainLinear);
             vistaBar.setOrientacion(ViewGroupLayout.ORI_LLC_VERTICAL);
-            ratingBarComent = new RatingBarLayout(contexto, vistaBar.getViewGroup(), true, true);
+            ratingBarComent = new RatingBarModule(vistaBar.getViewGroup(), context, fragmentParent, true, true);
             float ratUser = rating.getValor();
             ratingBarComent.setBarRating(ratUser);
 

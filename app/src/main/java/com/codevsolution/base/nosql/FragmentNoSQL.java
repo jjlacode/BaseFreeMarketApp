@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.firebase.FirebaseUtil;
 import com.codevsolution.base.media.MediaUtil;
 import com.google.firebase.database.GenericTypeIndicator;
@@ -130,8 +131,18 @@ public abstract class FragmentNoSQL extends FragmentBase {
 
     }
 
+    protected void guardarImagen(ViewImagenLayout imagen, String path) {
+
+    }
+
     protected void onGuardarImagen(String path) {
 
     }
+
+    protected void onGuardarImagen(ViewImagenLayout imagen, String path) {
+
+    }
+
+
 
 }

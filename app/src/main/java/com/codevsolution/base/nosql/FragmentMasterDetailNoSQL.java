@@ -10,8 +10,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -21,9 +21,10 @@ import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.media.MediaUtil;
+import com.codevsolution.base.style.Estilos;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -34,14 +35,14 @@ import java.util.TimerTask;
 
 public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
 
-    protected LinearLayout frLista;
+    //protected LinearLayout frLista;
     protected View viewRV;
     protected int layoutItemRv;
     protected int layoutItemAuto;
     protected RecyclerView rv;
     protected AutoCompleteTextView auto;
     protected ArrayList listafiltrada;
-    protected ImagenLayout imagen;
+    protected ViewImagenLayout imagen;
     protected ImageView buscar;
     protected ImageView renovar;
     protected ImageView inicio;
@@ -70,35 +71,29 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
         super.setOnCreateView(view, inflater, container);
+        Log.d(TAG, getMetodo());
 
         setLayoutItem();
-        if (modulo) {
-            frLista = view.findViewById(R.id.layout_rv_mod);
-        } else {
-            frLista = view.findViewById(R.id.layout_rv);
-        }
 
-        viewRV = inflater.inflate(R.layout.rvlayout, container, false);
-        if (viewRV.getParent() != null) {
-            ((ViewGroup) viewRV.getParent()).removeView(viewRV); // <- fix
-        }
-        frLista.addView(viewRV);
+        viewRV = addVista(Estilos.getIdLayout(contexto, "rvlayout"), frLista);
 
-        rv = view.findViewById(R.id.rv);
-        refreshLayout = view.findViewById(R.id.swipeRefresh);
-        auto = view.findViewById(R.id.auto);
-        buscar = view.findViewById(R.id.imgbuscar);
-        renovar = view.findViewById(R.id.imgrenovar);
-        inicio = view.findViewById(R.id.imginicio);
-        lupa = view.findViewById(R.id.imgsearch);
-        voz = view.findViewById(R.id.imgvoz);
+        rv = viewRV.findViewById(R.id.rv);
+        refreshLayout = viewRV.findViewById(R.id.swipeRefresh);
+        auto = viewRV.findViewById(R.id.auto);
+        buscar = viewRV.findViewById(R.id.imgbuscar);
+        renovar = viewRV.findViewById(R.id.imgrenovar);
+        inicio = viewRV.findViewById(R.id.imginicio);
+        lupa = viewRV.findViewById(R.id.imgsearch);
+        voz = viewRV.findViewById(R.id.imgvoz);
         frameAnimation = view.findViewById(R.id.frameanimation);
-        btnback = view.findViewById(R.id.btn_back);
-        btndelete = view.findViewById(R.id.btn_del);
-        btnsave = view.findViewById(R.id.btn_save);
+        btnback = viewBotones.findViewById(R.id.btn_back);
+        btndelete = viewBotones.findViewById(R.id.btn_del);
+        btnsave = viewBotones.findViewById(R.id.btn_save);
 
-        gone(btndelete);
-        gone(btnsave);
+        if (!modulo) {
+            gone(btndelete);
+            gone(btnsave);
+        }
 
         refreshLayout.setColorSchemeResources(
                 R.color.s1,
@@ -107,10 +102,10 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
                 R.color.s4
         );
 
-        if (land) {
-            frCuerpo.setOrientation(LinearLayout.HORIZONTAL);
+        if (!modulo && land) {
+            frCuerpo.setOrientation(LinearLayoutCompat.HORIZONTAL);
         } else {
-            frCuerpo.setOrientation(LinearLayout.VERTICAL);
+            frCuerpo.setOrientation(LinearLayoutCompat.VERTICAL);
         }
 
     }
@@ -118,21 +113,26 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     @Override
     protected void setLayoutExtra() {
         super.setLayoutExtra();
+        Log.d(TAG, getMetodo());
+
         layoutPie = R.layout.btn_sdb;
     }
 
     protected void setLayoutItem() {
+        Log.d(TAG, getMetodo());
 
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(TAG, getMetodo());
 
         selector();
     }
 
     protected void selector() {
+        Log.d(TAG, getMetodo());
 
         maestroDetalle();
         if (esDetalle) {
@@ -147,6 +147,7 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     protected void acciones() {
 
         super.acciones();
+        Log.d(TAG, getMetodo());
 
         if (autoGuardado) {
             for (final EditMaterial editMaterial : materialEdits) {
@@ -278,7 +279,6 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-
                 if (!s.toString().contains(" ")) {
                     auto.setDropDownWidth(0);
                     if (adaptadorFiltro.getLista() != null) {
@@ -304,26 +304,32 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     }
 
     protected void setOnBack() {
+        Log.d(TAG, getMetodo());
 
     }
 
     protected void guardar() {
+        Log.d(TAG, getMetodo());
 
     }
 
     protected void setControls(View view) {
+        Log.d(TAG, getMetodo());
     }
 
     protected void setAcciones() {
+        Log.d(TAG, getMetodo());
     }
 
     protected abstract TipoViewHolder setViewHolder(View view);
 
     protected void setDatos() {
+        Log.d(TAG, getMetodo());
 
     }
 
     protected void listaRV() {
+        Log.d(TAG, getMetodo());
 
         if (listab == null) {
             setLista();
@@ -337,6 +343,7 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     }
 
     protected void setRv() {
+        Log.d(TAG, getMetodo());
 
         int columnas = (int) (rv.getWidth() / (metrics.density * 300));
         if (columnas < 1) {
@@ -382,10 +389,12 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     }
 
     protected void onSetRV() {
+        Log.d(TAG, getMetodo());
 
     }
 
     protected void setManagerRV() {
+        Log.d(TAG, getMetodo());
 
     }
 
@@ -396,6 +405,7 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
 
 
     protected void actualizarConsultasRV() {
+        Log.d(TAG, getMetodo());
 
         if (listab == null) {
 
@@ -409,6 +419,7 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     public abstract void setOnClickRV(Object object);
 
     protected void onClickRV(View v) {
+        Log.d(TAG, getMetodo());
 
         setOnClickRV(lista.get(rv.getChildAdapterPosition(v)));
         posicion = rv.getChildAdapterPosition(v);
@@ -417,6 +428,7 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     @Override
     protected void setOnLeftSwipeCuerpo() {
         super.setOnLeftSwipeCuerpo();
+        Log.d(TAG, getMetodo());
 
         if (posicion < lista.size() - 1) {
             posicion++;
@@ -428,6 +440,8 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     @Override
     protected void setOnRigthSwipeCuerpo() {
         super.setOnRigthSwipeCuerpo();
+        Log.d(TAG, getMetodo());
+
         if (posicion > 0) {
             posicion--;
             setOnClickRV(lista.get(posicion));
@@ -436,6 +450,7 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     }
 
     protected void setOnItemClickAuto() {
+        Log.d(TAG, getMetodo());
 
         auto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -456,19 +471,19 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
 
         Log.d(TAG, getMetodo());
 
-        if (!land && !tablet) {
+        if (modulo || (!land && !tablet)) {
 
             maestroDetallePort();
 
-        } else if (land && !tablet) {
+        } else if (land && !tablet && !modulo) {
 
             maestroDetalleLand();
 
-        } else if (!land) {
+        } else if (!land && !modulo) {
 
             maestroDetalleTabletPort();
 
-        } else {
+        } else if (!modulo) {
 
             maestroDetalleTabletLand();
 
@@ -608,18 +623,22 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
     }
 
     protected void setMaestroDetallePort() {
+        Log.d(TAG, getMetodo());
         maestroDetalleSeparados = true;
     }
 
     protected void setMaestroDetalleLand() {
+        Log.d(TAG, getMetodo());
         maestroDetalleSeparados = false;
     }
 
     protected void setMaestroDetalleTabletLand() {
+        Log.d(TAG, getMetodo());
         maestroDetalleSeparados = false;
     }
 
     protected void setMaestroDetalleTabletPort() {
+        Log.d(TAG, getMetodo());
         maestroDetalleSeparados = false;
     }
 

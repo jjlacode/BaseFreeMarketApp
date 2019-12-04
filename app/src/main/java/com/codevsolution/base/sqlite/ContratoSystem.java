@@ -77,6 +77,7 @@ public class ContratoSystem implements JavaUtil.Constantes {
         String ZONA_ID_ZONA = CAMPO_ID + TABLA_ZONA;
         String ZONA_ID_REL = CAMPO_IDREL + TABLA_ZONA;
         String ZONA_NOMBRE = CAMPO_NOMBRE + TABLA_ZONA;
+        String ZONA_ALCANCE = "alcance_" + TABLA_ZONA;
         String ZONA_CREATE = CAMPO_CREATEREG;
         String ZONA_TIMESTAMP = CAMPO_TIMESTAMP;
 
@@ -129,10 +130,11 @@ public class ContratoSystem implements JavaUtil.Constantes {
 
         };
 
-        String[] CAMPOS_ZONA = {"17", TABLA_ZONA,
+        String[] CAMPOS_ZONA = {"20", TABLA_ZONA,
                 ZONA_ID_ZONA, "TEXT NON NULL UNIQUE", STRING,
                 ZONA_ID_REL, "TEXT NON NULL", STRING,
                 ZONA_NOMBRE, "TEXT NON NULL", STRING,
+                ZONA_ALCANCE, "TEXT NON NULL", STRING,
                 ZONA_CREATE, "INTEGER NON NULL DEFAULT 0", LONG,
                 ZONA_TIMESTAMP, "INTEGER NON NULL DEFAULT 0", LONG
 

@@ -79,7 +79,7 @@ public class EventosSem extends SemCalHorario implements ContratoPry.Tablas {
                     listaId.add(evento[i].getString(EVENTO_ID_EVENTO));
                     Button btnEvent = vistaDatos.addButtonTrans(evento[i].getString(EVENTO_DESCRIPCION));
                     btnEvent.setBackgroundColor(Color.parseColor(evento[i].getString(EVENTO_COLOR)));
-                    btnEvent.setTextColor(Estilos.colorPrymary);
+                    btnEvent.setTextColor(Estilos.colorPrimary);
                     Estilos.setLayoutParams(vistaDatos.getViewGroup(), btnEvent, Estilos.Constantes.MATCH_PARENT, sizeTextD * 2, 1, 5);
                     listaModeloSQL.addModelo(evento[i]);
                     btnEvent.setOnClickListener(new View.OnClickListener() {

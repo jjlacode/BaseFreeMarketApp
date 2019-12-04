@@ -163,7 +163,7 @@ public class InteractorSuscriptions extends Interactor {
                 }
 
                 @Override
-                public void onProductLimit() {
+                public void onProductLimit(ArrayList<Subscription> listaSuscripciones, int prodTotCli, int ProActCli) {
 
                 }
 
@@ -173,7 +173,7 @@ public class InteractorSuscriptions extends Interactor {
                 }
 
                 @Override
-                public void onCheckSuscriptionsOk(ArrayList<Subscription> listaSuscripciones) {
+                public void onCheckSuscriptionsOk(ArrayList<Subscription> listaSuscripciones, int prodTotCli, int ProActCli) {
 
                     crearSesionPortal(new CheckSesionPortal() {
                         @Override
@@ -253,6 +253,7 @@ public class InteractorSuscriptions extends Interactor {
 
                                     int totProd = 0;
                                     int totProdCliente = 0;
+                                    int totProdClienteAct = 0;
                                     if (listaSus != null && listaSus.size() > 0) {
                                         for (Subscription subscription : listaSus) {
                                             if (!subscription.status().equals(Subscription.Status.CANCELLED)) {
@@ -269,20 +270,26 @@ public class InteractorSuscriptions extends Interactor {
                                     for (ModeloSQL prod : listaProd.getLista()) {
                                         if (prod.getInt(PRODUCTO_FIRE) == 1) {
                                             totProdCliente++;
+                                            if (prod.getInt(PRODUCTO_ACTIVO) == 1) {
+                                                totProdClienteAct++;
+                                            }
                                         }
                                         if (prod.getInt(PRODUCTO_FIREPRO) == 1) {
                                             totProdCliente++;
+                                            if (prod.getInt(PRODUCTO_ACTIVOPRO) == 1) {
+                                                totProdClienteAct++;
+                                            }
                                         }
                                     }
                                     if (totProd > totProdCliente) {
 
                                         if (checkSubscriptionsListener != null) {
-                                            checkSubscriptionsListener.onCheckSuscriptionsOk(listaSus);
+                                            checkSubscriptionsListener.onCheckSuscriptionsOk(listaSus, totProdCliente, totProdClienteAct);
                                         }
 
                                     } else {
                                         if (checkSubscriptionsListener != null) {
-                                            checkSubscriptionsListener.onProductLimit();
+                                            checkSubscriptionsListener.onProductLimit(listaSus, totProdCliente, totProdClienteAct);
                                         }
                                     }
 
@@ -323,11 +330,11 @@ public class InteractorSuscriptions extends Interactor {
 
         void onNotSubscriptions();
 
-        void onProductLimit();
+        void onProductLimit(ArrayList<Subscription> listaSuscripciones, int prodTotCli, int ProActCli);
 
         void onError(String msgError);
 
-        void onCheckSuscriptionsOk(ArrayList<Subscription> listaSuscripciones);
+        void onCheckSuscriptionsOk(ArrayList<Subscription> listaSuscripciones, int prodTotCli, int ProActCli);
     }
 
     private void crearCustomer() {

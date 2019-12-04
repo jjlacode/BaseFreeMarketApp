@@ -1,4 +1,4 @@
-package com.codevsolution.base.localizacion;
+package com.codevsolution.base.localization;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -134,16 +134,12 @@ public class MapBase {
     }
 
 
-    public Marker crearMarcadorMap(double latitud, double longitud, int zoom, String titulo, String texto, boolean dragable) {
+    public Marker crearMarcadorMap(double latitud, double longitud, int zoom, String titulo, String texto, boolean dragable, String tag) {
 
         Marker marker;
         System.out.println("Creando marcador");
         if (gMap != null) {
-            System.out.println("Gmap no null");
-            System.out.println("longitud = " + longitud);
-            System.out.println("latitud = " + latitud);
             LatLng latLng = new LatLng(latitud, longitud);
-            System.out.println("latLng = " + latLng);
             MarkerOptions markerOptions =
                     new MarkerOptions()
                             .position(latLng)
@@ -152,6 +148,7 @@ public class MapBase {
                             .draggable(dragable);
 
             marker = gMap.addMarker(markerOptions);
+            marker.setTag(tag);
 
             listaMarkers.add(marker);
 
@@ -172,6 +169,17 @@ public class MapBase {
 
         return null;
 
+    }
+
+    public void actualizaMark(Marker marker) {
+
+        for (Marker mark : listaMarkers) {
+
+            if (mark.getId().equals(marker.getId())) {
+                listaMarkers.set(listaMarkers.indexOf(mark), marker);
+                break;
+            }
+        }
     }
 
     public void moverMarcador(Marker marker, double latitud, double longitud) {

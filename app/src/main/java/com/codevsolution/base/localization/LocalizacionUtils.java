@@ -1,4 +1,4 @@
-package com.codevsolution.base.localizacion;
+package com.codevsolution.base.localization;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

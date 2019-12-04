@@ -20,7 +20,6 @@ import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
-import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
@@ -297,7 +296,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         }
     }
 
-    protected void setImagen(ImagenLayout imagen, String campoImagen) {
+    protected void setImagen(ViewImagenLayout imagen, String campoImagen) {
         Log.d(TAG, getMetodo());
 
         try {
@@ -316,12 +315,12 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
             if (nnn(path)) {
 
-                System.out.println("path = " + path);
+                System.out.println("path campoImagen= " + path);
                 //imagen.setImageUri(path, (int)(anchoReal*0.25f),(int)(altoReal*0.15f));
                 imagen.setImageUriPerfil(activityBase, path);
                 imagen.setIcfragmentos(icFragmentos);
                 imagen.setVisibleBtn();
-                imagen.setFocusable(false);
+                imagen.getLinearLayoutCompat().setFocusable(false);
 
             } else {
 
@@ -329,7 +328,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
                     imagen.setImageResource(getIdDrawable("logo"), (int) (anchoReal * 0.25f), (int) (altoReal * 0.15f));
                     imagen.setGoneBtn();
-                    imagen.setFocusable(false);
+                    imagen.getLinearLayoutCompat().setFocusable(false);
 
                 } catch (Exception er) {
                     er.printStackTrace();
@@ -346,7 +345,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                 imagen.setImageUriPerfil(activityBase, path);
                 imagen.setIcfragmentos(icFragmentos);
                 imagen.setVisibleBtn();
-                imagen.setFocusable(false);
+                imagen.getLinearLayoutCompat().setFocusable(false);
 
 
             } else {
@@ -355,7 +354,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
                     imagen.setImageResource(getIdDrawable("logo"), (int) (anchoReal * 0.25f), (int) (altoReal * 0.15f));
                     imagen.setGoneBtn();
-                    imagen.setFocusable(false);
+                    imagen.getLinearLayoutCompat().setFocusable(false);
 
 
                 } catch (Exception er) {
@@ -688,7 +687,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         bundle.putInt(CAMPO_SECUENCIA, secuencia);
 
     }
-
     @Override
     public void onConfigurationChanged(Configuration myConfig) {
         super.onConfigurationChanged(myConfig);
@@ -699,17 +697,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
         SharedPreferences.Editor editor = persistencia.edit();
 
-        editor.putString(TAGPERS, setTAG());
-        editor.putString(ORIGEN, origen);
-        editor.putString(ACTUAL, actual);
-        editor.putString(ACTUALTEMP, actualtemp);
-        editor.putString(SUBTITULO, subTitulo);
-        editor.putString(CAMPO_ID, id);
-        editor.putString(IDREL, idrelacionado);
-        editor.putInt(CAMPO_SECUENCIA, secuencia);
-        editor.putBoolean(NUEVOREGISTRO, nuevo);
-        editor.apply();
-
         switch (orientation) {
             case Configuration.ORIENTATION_LANDSCAPE:
                 // Con la orientación en horizontal actualizamos el adaptador
@@ -718,6 +705,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
         }
     }
+
 
     @Override
     public void onResume() {
@@ -741,7 +729,8 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         editor.putInt(CAMPO_SECUENCIA, secuencia);
         editor.putString(IDREL, idrelacionado);
         editor.putBoolean(NUEVOREGISTRO, nuevo);
-
+        editor.putString(CAMPO_RUTAFOTO, campoImagen);
+        editor.putString(PATH, path);
     }
 
     @Override
@@ -751,6 +740,8 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         secuencia = persistencia.getInt(CAMPO_SECUENCIA, 0);
         idrelacionado = persistencia.getString(IDREL, null);
         nuevo = persistencia.getBoolean(NUEVOREGISTRO, false);
+        campoImagen = persistencia.getString(CAMPO_RUTAFOTO, null);
+        path = persistencia.getString(PATH, null);
 
     }
 
@@ -775,8 +766,8 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                             startActivityForResult(mediaUtil.takePhotoIntent(), COD_FOTO);
                             mediaUtil.addPhotoToGallery();
                             path = mediaUtil.getPath(mediaUtil.getPhotoUri());
-                            AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PATH, path);
-                            onUpdate();
+                            //AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PATH, path);
+                            //onUpdate();
                         }
 
                     } catch (IOException e) {
@@ -802,10 +793,10 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         builder.show();
     }
 
-    protected void mostrarDialogoOpcionesImagen(final Context contexto, String campoImagen) {
+    protected void mostrarDialogoOpcionesImagen(final Context contexto, String campoImagenTemp) {
         Log.d(TAG, getMetodo());
 
-        this.campoImagen = campoImagen;
+        campoImagen = campoImagenTemp;
         final CharSequence[] opciones = {"Hacer foto desde cámara",
                 "Elegir de la galería", "Quitar foto", "Cancelar"};
         final AlertDialog.Builder builder = new AlertDialog.Builder(contexto);
@@ -824,8 +815,8 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                             startActivityForResult(mediaUtil.takePhotoIntent(), COD_FOTO);
                             mediaUtil.addPhotoToGallery();
                             path = mediaUtil.getPath(mediaUtil.getPhotoUri());
-                            AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PATH, path);
-                            onUpdate();
+                            //AndroidUtil.setSharePreference(contexto, PERSISTENCIA, PATH, path);
+                            //onUpdate();
                         }
 
                     } catch (IOException e) {
@@ -841,9 +832,12 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                 } else if (opciones[which].equals("Quitar foto")) {
 
                     path = null;
+                    campoImagen = CAMPO_RUTAFOTO;
+
                     onUpdate();
 
                 } else {
+                    campoImagen = CAMPO_RUTAFOTO;
                     dialog.dismiss();
                 }
             }
@@ -858,7 +852,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         Log.d(TAG, getMetodo());
 
         mediaUtil = new MediaUtil(contexto);
-        System.out.println("requestCode = " + requestCode);
 
         if (resultCode == RESULT_OK) {
 
@@ -866,9 +859,10 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
                 case COD_FOTO:
 
-                    path = AndroidUtil.getSharePreference(contexto, PERSISTENCIA, PATH, path);
+                    //path = AndroidUtil.getSharePreference(contexto, PERSISTENCIA, PATH, path);
                     if (nn(modeloSQL) && nnn(path) && nnn(campoImagen)) {
                         CRUDutil.actualizarCampo(modeloSQL, campoImagen, path);
+                        onSetImagen(path);
                     }
 
                 case COD_SELECCIONA:
@@ -876,11 +870,13 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                     if (data != null && data.getData() != null) {
                         path = mediaUtil.getPath(data.getData());
                         if (nn(modeloSQL) && nnn(path) && nnn(campoImagen)) {
+                            System.out.println("campoImagen = " + campoImagen);
                             CRUDutil.actualizarCampo(modeloSQL, campoImagen, path);
+                            onSetImagen(path);
                         }
 
                     }
-                    onUpdate();
+                    //onUpdate();
                     break;
 
                 case AUDIORECORD:
@@ -896,6 +892,10 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         }
 
         campoImagen = CAMPO_RUTAFOTO;
+    }
+
+    protected void onSetImagen(String path) {
+
     }
 
     protected void visibleSoloBtnBack() {

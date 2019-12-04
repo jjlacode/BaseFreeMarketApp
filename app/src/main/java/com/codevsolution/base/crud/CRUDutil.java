@@ -167,7 +167,11 @@ public class CRUDutil {
         ContentValues valores = new ContentValues();
         String tabla = modeloSQL.getNombreTabla();
         String id = modeloSQL.getString(modeloSQL.getCampoID());
-        valores.put(campo, valor);
+        if (valor == null) {
+            valores.putNull(campo);
+        } else {
+            valores.put(campo, valor);
+        }
 
         if (ContratoPry.getTabCab(tabla) != null) {
 

@@ -1,7 +1,6 @@
-package com.codevsolution.base.localizacion;
+package com.codevsolution.base.localization;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.location.Address;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +24,7 @@ import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.module.BaseModule;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.style.Estilos;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -43,7 +43,7 @@ import static com.codevsolution.base.javautil.JavaUtil.Constantes.PREFERENCIAS;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.MIUBICACION;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.MUNDIAL;
 
-public class MapZona extends Fragment implements ContratoSystem.Tablas {
+public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
     private RadioGroup radioGroupMap;
     private RadioButton radioButtonMap;
@@ -70,35 +70,30 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
     private String id;
     private String tipo;
     public final int LOCATION_REQUEST_CODE = 333;
-    private ViewGroupLayout vistaMain;
-    private FragmentBase frParent;
-    private ViewGroup viewGroup;
-    private Context contexto;
     private OnMarcadorEvent onMarcadorEventListener;
-    private ListaModeloSQL listaZonasIdOld;
+    private ListaModeloSQL listaZonasIdOldDel;
+    private ListaModeloSQL listaZonasIdOldAdd;
     private ListaModeloSQL listaZonasId;
     private Switch miUbicacionDef;
     private OnLocalizacionDef onLocalizacionDefListener;
     private AppCompatActivity activityBase;
     private ToggleButton verMapaCab;
+    private boolean radioManual;
 
-    public MapZona(FragmentBase frParent, ViewGroup viewGroup, AppCompatActivity activityBase) {
-        this.frParent = frParent;
-        this.viewGroup = viewGroup;
+    public MapZona(Fragment frParent, ViewGroup viewGroup, AppCompatActivity activityBase) {
+        super(viewGroup, frParent.getContext(), frParent);
         this.activityBase = activityBase;
-        contexto = frParent.getContext();
-        setInicio();
+        init();
         acciones();
     }
 
-    protected void setInicio() {
+    public void init() {
 
-        vistaMain = new ViewGroupLayout(contexto, viewGroup);
-        verMapaCab = (ToggleButton) vistaMain.addVista(new ToggleButton(contexto));
-        verMapaCab.setText(Estilos.getString(contexto, "select_ubicacion"));
-        verMapaCab.setTextOff(Estilos.getString(contexto, "select_ubicacion"));
-        verMapaCab.setTextOn(Estilos.getString(contexto, "ocultar_mapa"));
-        verMapaCab.setBackground(Estilos.btnSecondary(contexto));
+        verMapaCab = (ToggleButton) vistaMain.addVista(new ToggleButton(context));
+        verMapaCab.setText(Estilos.getString(context, "select_ubicacion"));
+        verMapaCab.setTextOff(Estilos.getString(context, "select_ubicacion"));
+        verMapaCab.setTextOn(Estilos.getString(context, "ocultar_mapa"));
+        verMapaCab.setBackground(Estilos.btnSecondary(context));
         verMapaCab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,14 +117,14 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
                 }
             }
         });
-        miUbicacionDef = (Switch) vistaMain.addVista(new Switch(contexto));
-        miUbicacionDef.setText(Estilos.getString(contexto, "mi_ubicacion_por_defecto"));
+        miUbicacionDef = (Switch) vistaMain.addVista(new Switch(context));
+        miUbicacionDef.setText(Estilos.getString(context, "mi_ubicacion_por_defecto"));
         miUbicacionDef.setVisibility(View.GONE);
         miUbicacionDef.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
 
-                AndroidUtil.setSharePreference(contexto, PREFERENCIAS, MIUBICACION, b);
+                AndroidUtil.setSharePreference(context, PREFERENCIAS, MIUBICACION, b);
 
                 if (b) {
                     localizacionUtils = new LocalizacionUtils();
@@ -137,7 +132,7 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
                     localizacionUtils.setOnLocalizationChange(new LocalizacionUtils.OnBestLocalizationChange() {
                         @Override
                         public void onBestLocalizationChange(double lat, double lon) {
-                            Address paisUser = LocalizacionUtils.getAddressGeoCoord(contexto, lat, lon);
+                            Address paisUser = LocalizacionUtils.getAddressGeoCoord(context, lat, lon);
                             ArrayList<String> listaUbicaciones = addressToList(paisUser);
                             if (onLocalizacionDefListener != null) {
                                 onLocalizacionDefListener.onEnable(listaUbicaciones);
@@ -152,14 +147,14 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
                 }
             }
         });
-        lyMap = (LinearLayout) vistaMain.addVista(new LinearLayout(contexto));
+        lyMap = (LinearLayout) vistaMain.addVista(new LinearLayout(context));
         setMap();
         lyMap.setVisibility(View.GONE);
-        opcionesZona = (ToggleButton) vistaMain.addVista(new ToggleButton(contexto));
-        opcionesZona.setText(Estilos.getString(contexto, "opciones_zona"));
-        opcionesZona.setTextOff(Estilos.getString(contexto, "opciones_zona"));
-        opcionesZona.setTextOn(Estilos.getString(contexto, "ocultar_opciones"));
-        opcionesZona.setBackground(Estilos.btnSecondary(contexto));
+        opcionesZona = (ToggleButton) vistaMain.addVista(new ToggleButton(context));
+        opcionesZona.setText(Estilos.getString(context, "opciones_zona"));
+        opcionesZona.setTextOff(Estilos.getString(context, "opciones_zona"));
+        opcionesZona.setTextOn(Estilos.getString(context, "ocultar_opciones"));
+        opcionesZona.setBackground(Estilos.btnSecondary(context));
         opcionesZona.setVisibility(View.GONE);
         opcionesZona.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,47 +178,44 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
         });
 
 
-        zona = vistaMain.addEditMaterialLayout(Estilos.getString(contexto, "zona"));
+        zona = vistaMain.addEditMaterialLayout(Estilos.getString(context, "zona"));
         zona.setActivo(false);
         zona.getLinearLayout().setVisibility(View.GONE);
 
-        ViewGroupLayout vistaBtnZona = new ViewGroupLayout(contexto, vistaMain.getViewGroup());
+        ViewGroupLayout vistaBtnZona = new ViewGroupLayout(context, vistaMain.getViewGroup());
         vistaBtnZona.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
 
-        crearMarc = vistaBtnZona.addButtonSecondary(Estilos.getString(contexto, "crear_marcador"), 1);
+        crearMarc = vistaBtnZona.addButtonSecondary(Estilos.getString(context, "crear_marcador"), 1);
         crearMarc.setVisibility(View.GONE);
 
-        borraMarc = vistaBtnZona.addButtonSecondary(Estilos.getString(contexto, "borrar_marcador"), 1);
+        borraMarc = vistaBtnZona.addButtonSecondary(Estilos.getString(context, "borrar_marcador"), 1);
         borraMarc.setVisibility(View.GONE);
 
-        frParent.actualizarArrays(vistaBtnZona);
+        ((FragmentBase) fragmentParent).actualizarArrays(vistaBtnZona);
 
-        radioGroupMap = (RadioGroup) vistaMain.addVista(new RadioGroup(contexto));
+        radioGroupMap = (RadioGroup) vistaMain.addVista(new RadioGroup(context));
         radioGroupMap.setVisibility(View.GONE);
-        radioButtonMap = new RadioButton(contexto);
-        radioButtonMap.setText(Estilos.getString(contexto, "mundial"));
+        radioButtonMap = new RadioButton(context);
+        radioButtonMap.setText(Estilos.getString(context, "mundial"));
         radioGroupMap.addView(radioButtonMap);
-        radioButtonMap1 = new RadioButton(contexto);
-        radioButtonMap1.setText(Estilos.getString(contexto, "nacional"));
+        radioButtonMap1 = new RadioButton(context);
+        radioButtonMap1.setText(Estilos.getString(context, "nacional"));
         radioGroupMap.addView(radioButtonMap1);
         radioButtonMap1.setChecked(true);
-        radioButtonMap2 = new RadioButton(contexto);
-        radioButtonMap2.setText(Estilos.getString(contexto, "regional"));
+        radioButtonMap2 = new RadioButton(context);
+        radioButtonMap2.setText(Estilos.getString(context, "regional"));
         radioGroupMap.addView(radioButtonMap2);
-        radioButtonMap3 = new RadioButton(contexto);
-        radioButtonMap3.setText(Estilos.getString(contexto, "provincial"));
+        radioButtonMap3 = new RadioButton(context);
+        radioButtonMap3.setText(Estilos.getString(context, "provincial"));
         radioGroupMap.addView(radioButtonMap3);
-        radioButtonMap4 = new RadioButton(contexto);
-        radioButtonMap4.setText(Estilos.getString(contexto, "local"));
+        radioButtonMap4 = new RadioButton(context);
+        radioButtonMap4.setText(Estilos.getString(context, "local"));
         radioGroupMap.addView(radioButtonMap4);
-        radioButtonMap5 = new RadioButton(contexto);
-        radioButtonMap5.setText(Estilos.getString(contexto, "codigo_postal"));
+        radioButtonMap5 = new RadioButton(context);
+        radioButtonMap5.setText(Estilos.getString(context, "codigo_postal"));
         radioGroupMap.addView(radioButtonMap5);
 
-        frParent.actualizarArrays(vistaMain);
-        listaMarcadores = new ListaModeloSQL();
-        listaZonasIdOld = new ListaModeloSQL();
-
+        ((FragmentBase) fragmentParent).actualizarArrays(vistaMain);
 
     }
 
@@ -236,24 +228,45 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
     }
 
     public void reiniciarObjetos() {
+
         mapa.borrarObjetos();
 
     }
 
     public void setId(String id) {
+
         this.id = id;
 
-        listaMarcadores = new ListaModeloSQL();
-        listaZonasIdOld = new ListaModeloSQL();
         marcador = null;
         zona.setText("");
         zonaList = new ArrayList<>();
 
-        listaMarcadores = CRUDutil.setListaModelo(CAMPOS_MARCADOR, MARCADOR_ID_REL, id, IGUAL);
-        for (ModeloSQL marcador : listaMarcadores.getLista()) {
-            listaZonasIdOld.addAllLista(CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR), IGUAL));
-        }
         setMarcadores();
+
+    }
+
+    private void setListaOldDel() {
+
+        listaZonasIdOldDel = new ListaModeloSQL();
+
+        if (listaMarcadores != null) {
+            for (ModeloSQL marcador : listaMarcadores.getLista()) {
+                listaZonasIdOldDel.add(CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR), IGUAL).getLista());
+            }
+        }
+    }
+
+    private void setListaOldAdd() {
+
+        listaZonasIdOldAdd = new ListaModeloSQL();
+
+        if (listaMarcadores != null) {
+
+            for (ModeloSQL marcador : listaMarcadores.getLista()) {
+                listaZonasIdOldAdd.add(CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR), IGUAL).getLista());
+            }
+        }
+
     }
 
     public void setTipo(String tipo) {
@@ -263,15 +276,15 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
     private void setMap() {
 
         MapBase.FragmentMap mMap = new MapBase.FragmentMap();
-        boolean permiso = CheckPermisos.validarPermisos(frParent.getActivity(), ACCESS_FINE_LOCATION, LOCATION_REQUEST_CODE) ||
-                CheckPermisos.validarPermisos(frParent.getActivity(), ACCESS_COARSE_LOCATION, LOCATION_REQUEST_CODE);
+        boolean permiso = CheckPermisos.validarPermisos(fragmentParent.getActivity(), ACCESS_FINE_LOCATION, LOCATION_REQUEST_CODE) ||
+                CheckPermisos.validarPermisos(fragmentParent.getActivity(), ACCESS_COARSE_LOCATION, LOCATION_REQUEST_CODE);
 
         if (permiso) {
             mapa = new MapBase(mMap);
             int idLayout = View.generateViewId();
             lyMap.setId(idLayout);
-            frParent.getIcFragmentos().addFragment(mMap, idLayout);
-            Estilos.setLayoutParams(vistaMain.getViewGroup(), lyMap, ViewGroupLayout.MATCH_PARENT, (int) ((double) frParent.getAltoReal() / 2));
+            ((FragmentBase) fragmentParent).getIcFragmentos().addFragment(mMap, idLayout);
+            Estilos.setLayoutParams(vistaMain.getViewGroup(), lyMap, ViewGroupLayout.MATCH_PARENT, (int) ((double) ((FragmentBase) fragmentParent).getAltoReal() / 2));
         }
 
     }
@@ -288,8 +301,8 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
                     @Override
                     public void onMapClick(LatLng latLng) {
 
-                        frParent.setActivoFrameAnimationCuerpo(true);
-                        frParent.setScrollingDetalleEnable(true);
+                        ((FragmentBase) fragmentParent).setActivoFrameAnimationCuerpo(true);
+                        ((FragmentBase) fragmentParent).setScrollingDetalleEnable(true);
 
                         ArrayList<Marker> listaMarker = mapa.getListaMarkers();
                         if (onReadyMapListener != null) {
@@ -307,8 +320,8 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
                     @Override
                     public void onMapLongClick(LatLng latLng) {
 
-                        frParent.setActivoFrameAnimationCuerpo(false);
-                        frParent.setScrollingDetalleEnable(false);
+                        ((FragmentBase) fragmentParent).setActivoFrameAnimationCuerpo(false);
+                        ((FragmentBase) fragmentParent).setScrollingDetalleEnable(false);
                         ArrayList<Marker> listaMarker = mapa.getListaMarkers();
                         if (onReadyMapListener != null) {
                             onReadyMapListener.onMapLongClickListener(listaMarker);
@@ -332,7 +345,7 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
                                 if (clickLocation) {
                                     latUser = (long) (gMap.getCameraPosition().target.latitude * 100000);
                                     lonUser = (long) (gMap.getCameraPosition().target.longitude * 100000);
-                                    Address paisUser = (LocalizacionUtils.getAddressGeoCoord(contexto, latUser / 100000,
+                                    Address paisUser = (LocalizacionUtils.getAddressGeoCoord(context, latUser / 100000,
                                             lonUser / 100000));
                                     if (onReadyMapListener != null) {
                                         onReadyMapListener.onMyLocationClickListener(latUser, lonUser, addressToList(paisUser));
@@ -354,9 +367,12 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
                     @Override
                     public void onMarkerDragStart(Marker marker) {
 
-                        frParent.setActivoFrameAnimationCuerpo(false);
-                        frParent.setScrollingDetalleEnable(false);
+                        ((FragmentBase) fragmentParent).setActivoFrameAnimationCuerpo(false);
+                        ((FragmentBase) fragmentParent).setScrollingDetalleEnable(false);
                         marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                        if (onReadyMapListener != null) {
+                            onReadyMapListener.onMarkerDragStart();
+                        }
                     }
 
                     @Override
@@ -377,14 +393,14 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
                         setLugarZona(marcador);
                         ListaModeloSQL listaZonasDel = zonasDel();
                         ListaModeloSQL listaZonasAdd = zonasAdd();
-                        Address paisUser = (LocalizacionUtils.getAddressGeoCoord(contexto, latitud / 100000,
+                        Address paisUser = (LocalizacionUtils.getAddressGeoCoord(context, latitud / 100000,
                                 longitud / 100000));
                         if (onReadyMapListener != null) {
                             onReadyMapListener.onMarkerDragEnd(listaZonasDel, listaZonasAdd, addressToList(paisUser));
                         }
 
-                        frParent.setActivoFrameAnimationCuerpo(true);
-                        frParent.setScrollingDetalleEnable(true);
+                        ((FragmentBase) fragmentParent).setActivoFrameAnimationCuerpo(true);
+                        ((FragmentBase) fragmentParent).setScrollingDetalleEnable(true);
                         marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
                     }
                 });
@@ -397,7 +413,7 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
 
                             marcador = setMarcador(marker);
                             setAlcanceRadioGroup(marcador);
-                            setLugarZona(marcador);
+                            //setZonasMarcador(marcador);
                             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
 
                             return false;
@@ -414,7 +430,7 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
                                 }
                                 marcador = setMarcador(marker);
                                 setAlcanceRadioGroup(marcador);
-                                setLugarZona(marcador);
+                                //setZonasMarcador(marcador);
 
                                 return false;
 
@@ -445,20 +461,32 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
 
         for (ModeloSQL zonaId : listaZonasId.getLista()) {
             boolean nuevo = true;
-            for (ModeloSQL zonaIdOld : listaZonasIdOld.getLista()) {
-                if (zonaIdOld.getString(ZONA_NOMBRE).equals(zonaId.getString(ZONA_NOMBRE))) {
-                    nuevo = false;
+            for (ArrayList<ModeloSQL> listaZonasMarcador : listaZonasIdOldAdd) {
+                for (ModeloSQL zonaIdOld : listaZonasMarcador) {
+                    if (zonaId.getString(ZONA_ID_REL).equals(zonaIdOld.getString(ZONA_ID_REL))) {
+                        if (zonaIdOld.getString(ZONA_NOMBRE).equals(zonaId.getString(ZONA_NOMBRE)) &&
+                                zonaIdOld.getString(ZONA_ALCANCE).equals(zonaId.getString(ZONA_ALCANCE))) {
+                            nuevo = false;
+                            break;
+                        }
+                    }
+                }
+                if (!nuevo) {
+                    break;
                 }
             }
+
             if (nuevo) {
                 listaZonasAdd.addModelo(zonaId);
             }
         }
 
+        setListaOldAdd();
         return listaZonasAdd;
     }
 
     private ListaModeloSQL zonasDel() {
+
 
         ListaModeloSQL listaZonasDel = new ListaModeloSQL();
         listaZonasId = new ListaModeloSQL();
@@ -471,19 +499,31 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
             }
         }
 
-        for (ModeloSQL zonaIdOld : listaZonasIdOld.getLista()) {
-            boolean nuevo = true;
-            for (ModeloSQL zonaId : listaZonasId.getLista()) {
-                if (zonaIdOld.getString(ZONA_NOMBRE).equals(zonaId.getString(ZONA_NOMBRE))) {
-                    nuevo = false;
+        for (ArrayList<ModeloSQL> listaZonasMarcador : listaZonasIdOldDel) {
+            for (ModeloSQL zonaIdOld : listaZonasMarcador) {
+                boolean old = true;
+                for (ModeloSQL zonaId : listaZonasId.getLista()) {
+                    if (zonaId.getString(ZONA_ID_REL).equals(zonaIdOld.getString(ZONA_ID_REL))) {
+                        if (zonaIdOld.getString(ZONA_NOMBRE).equals(zonaId.getString(ZONA_NOMBRE)) &&
+                                zonaIdOld.getString(ZONA_ALCANCE).equals(zonaId.getString(ZONA_ALCANCE))) {
+                            old = false;
+                            break;
+                        }
+                    }
+
                 }
 
+                if (old) {
+                    listaZonasDel.addModelo(zonaIdOld);
+                } else {
+                    break;
+                }
             }
-            if (nuevo) {
-                listaZonasDel.addModelo(zonaIdOld);
-            }
+
+
         }
 
+        setListaOldDel();
         return listaZonasDel;
     }
 
@@ -501,7 +541,7 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
                     setLugarZona(marcador);
 
                 } else {
-                    Toast.makeText(contexto, "Debe introducir un nombre o seudonimo y guardar el registro, antes de crear la primera zona", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Debe introducir un nombre o seudonimo y guardar el registro, antes de crear la primera zona", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -519,10 +559,16 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
 
-                if (marcador != null && zonaList != null &&
-                        marcador.getString(MARCADOR_TIPO) != null && marcador.getString(MARCADOR_ID_REL) != null) {
+                System.out.println("radioManual = " + radioManual);
+                if (!radioManual && marcador != null && zonaList != null &&
+                        marcador.getString(MARCADOR_TIPO) != null &&
+                        marcador.getString(MARCADOR_ID_REL) != null &&
+                        listaZonasIdOldDel != null && listaZonasIdOldAdd != null) {
 
                     setLugarZona(marcador);
+
+                } else if (radioManual) {
+                    radioManual = false;
                 }
             }
         });
@@ -561,45 +607,57 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
         return null;
     }
 
+    protected Marker getMarkerTag(ModeloSQL marcador) {
+
+        for (Marker marker : mapa.getListaMarkers()) {
+            if (marcador != null && marker.getTag() != null && marker.getTag().equals(marcador.getString(MARCADOR_ID_MARCADOR))) {
+                System.out.println("marker.getTag() = " + marker.getTag());
+                return marker;
+            }
+        }
+
+        return null;
+    }
+
+
     public void setAlcanceRadioGroup(ModeloSQL marcador) {
 
         String alcanceTxt = "";
-        switch (marcador.getInt(MARCADOR_ALCANCE)) {
+        radioManual = true;
+        alcance = marcador.getInt(MARCADOR_ALCANCE);
+        System.out.println("alcance = " + alcance);
+        switch (alcance) {
 
             case 0:
                 radioButtonMap.setChecked(true);
-                alcanceTxt = Estilos.getString(contexto, "mundial");
+                alcanceTxt = Estilos.getString(context, "mundial");
                 break;
             case 1:
                 radioButtonMap1.setChecked(true);
-                alcanceTxt = Estilos.getString(contexto, "nacional");
+                alcanceTxt = Estilos.getString(context, "nacional");
                 break;
             case 2:
                 radioButtonMap2.setChecked(true);
-                alcanceTxt = Estilos.getString(contexto, "regional");
+                alcanceTxt = Estilos.getString(context, "regional");
                 break;
             case 3:
                 radioButtonMap3.setChecked(true);
-                alcanceTxt = Estilos.getString(contexto, "provincial");
+                alcanceTxt = Estilos.getString(context, "provincial");
                 break;
             case 4:
                 radioButtonMap4.setChecked(true);
-                alcanceTxt = Estilos.getString(contexto, "local");
+                alcanceTxt = Estilos.getString(context, "local");
                 break;
             case 5:
                 radioButtonMap5.setChecked(true);
-                alcanceTxt = Estilos.getString(contexto, "codigo_postal");
+                alcanceTxt = Estilos.getString(context, "codigo_postal");
                 break;
         }
 
-        if (zonaList != null) {
-            StringBuilder textoZona = new StringBuilder();
-            for (String s : zonaList) {
-                textoZona.append(s).append(" ");
-            }
-            zona.setText(textoZona.toString());
-            setInfoMarker(marcador, alcanceTxt, textoZona.toString());
-        }
+        String textoZona = setZonasMarcador(marcador);
+        zona.setText(textoZona);
+        setInfoMarker(marcador, alcanceTxt, textoZona);
+        radioManual = false;
     }
 
 
@@ -635,9 +693,29 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
         return true;
     }
 
+    protected String setZonasMarcador(ModeloSQL marcador) {
+
+        String id = marcador.getString(MARCADOR_ID_MARCADOR);
+        ListaModeloSQL listaZonas = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, id, IGUAL);
+        StringBuilder textoZona = new StringBuilder();
+        for (ModeloSQL zona : listaZonas.getLista()) {
+            textoZona.append(zona.getString(ZONA_NOMBRE)).append(", ");
+        }
+
+        return textoZona.toString();
+    }
+
+    protected void borrarZonasMarcador(ModeloSQL marcador) {
+
+        ListaModeloSQL listaZonasMarcador = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR), IGUAL);
+        for (ModeloSQL zona : listaZonasMarcador.getLista()) {
+            CRUDutil.borrarRegistro(TABLA_ZONA, zona.getString(ZONA_ID_ZONA));
+        }
+    }
+
     protected void setLugarZona(ModeloSQL marcador) {
 
-        CRUDutil.borrarRegistro(TABLA_ZONA, marcador.getString(MARCADOR_ID_MARCADOR));
+
         long latitud = marcador.getLong(MARCADOR_LATITUD);
         long longitud = marcador.getLong(MARCADOR_LONGITUD);
         String country;
@@ -651,7 +729,7 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
         System.out.println("latitud = " + latitud);
         System.out.println("longitud = " + longitud);
 
-        direcciones = LocalizacionUtils.getAddressListGeoCoord(contexto,
+        direcciones = LocalizacionUtils.getAddressListGeoCoord(context,
                 (double) (latitud) / 100000, (double) (longitud) / 100000);
         System.out.println("direcciones = " + direcciones.toString());
         if (direcciones != null && direcciones.size() > 0) {
@@ -667,56 +745,64 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
 
                 if (radioButtonMap.isChecked()) {
                     alcance = 0;
-                    alcanceTxt = Estilos.getString(contexto, "mundial");
-                    zonaList.add(MUNDIAL);
-                    zona.setText(MUNDIAL);
-                    CRUDutil.actualizarCampo(marcador, MARCADOR_ALCANCE, alcance);
-                    updateListaMarcadores(marcador);
-                    return;
+                    alcanceTxt = Estilos.getString(context, "mundial");
+                    if (comprobarZona(MUNDIAL)) {
+                        zonaList.add(MUNDIAL);
+                    }
+                    //zona.setText(MUNDIAL);
+                    //CRUDutil.actualizarCampo(marcador, MARCADOR_ALCANCE, alcance);
+                    //updateListaMarcadores(marcador);
+                    //return;
 
                 } else if (radioButtonMap1.isChecked()) {
                     alcance = 1;
-                    alcanceTxt = Estilos.getString(contexto, "nacional");
-                    if (comprobarZona(country.toLowerCase())) {
+                    alcanceTxt = Estilos.getString(context, "nacional");
+                    if (country != null && comprobarZona(country.toLowerCase())) {
                         zonaList.add(country.toLowerCase());
                     }
                 } else if (radioButtonMap2.isChecked()) {
                     alcance = 2;
-                    alcanceTxt = Estilos.getString(contexto, "regional");
-                    if (comprobarZona(region.toLowerCase())) {
+                    alcanceTxt = Estilos.getString(context, "regional");
+                    if (region != null && comprobarZona(region.toLowerCase())) {
                         zonaList.add(region.toLowerCase());
                     }
                 } else if (radioButtonMap3.isChecked()) {
                     alcance = 3;
-                    alcanceTxt = Estilos.getString(contexto, "provincial");
-                    if (comprobarZona(provincia.toLowerCase())) {
+                    alcanceTxt = Estilos.getString(context, "provincial");
+                    if (provincia != null && comprobarZona(provincia.toLowerCase())) {
                         zonaList.add(provincia.toLowerCase());
                     }
                 } else if (radioButtonMap4.isChecked()) {
                     alcance = 4;
-                    alcanceTxt = Estilos.getString(contexto, "local");
-                    if (comprobarZona(ciudad.toLowerCase())) {
+                    alcanceTxt = Estilos.getString(context, "local");
+                    if (ciudad != null && comprobarZona(ciudad.toLowerCase())) {
                         zonaList.add(ciudad.toLowerCase());
                     }
                 } else if (radioButtonMap5.isChecked()) {
                     alcance = 5;
-                    alcanceTxt = Estilos.getString(contexto, "codigo_postal");
-                    if (comprobarZona(postalCode.toLowerCase())) {
+                    alcanceTxt = Estilos.getString(context, "codigo_postal");
+                    if (postalCode != null && comprobarZona(postalCode.toLowerCase())) {
                         zonaList.add(postalCode.toLowerCase());
                     }
                 }
 
             }
+            if (zonaList.size() == 0) {
+                Toast.makeText(context, Estilos.getString(context, "sinzona"), Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             StringBuilder textoZona = new StringBuilder();
+            borrarZonasMarcador(marcador);
 
             System.out.println("zonaList.size() = " + zonaList.size());
             for (String s : zonaList) {
-                textoZona.append(s).append(" ");
+                textoZona.append(s).append(", ");
                 if (comprobarZonaLista(s)) {
                     ContentValues values = new ContentValues();
                     values.put(ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR));
                     values.put(ZONA_NOMBRE, s);
+                    values.put(ZONA_ALCANCE, alcanceTxt);
                     CRUDutil.crearRegistro(TABLA_ZONA, values);
 
                 }
@@ -724,12 +810,15 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
             }
             zona.setText(textoZona.toString());
             CRUDutil.actualizarCampo(marcador, MARCADOR_ALCANCE, alcance);
+            marcador = CRUDutil.updateModelo(marcador);
+            updateListaMarcadores(marcador);
+            System.out.println("alcance = " + alcance);
+            System.out.println("marcador.getInt(MARCADOR_ALCANCE) = " + marcador.getInt(MARCADOR_ALCANCE));
             setInfoMarker(marcador, alcanceTxt, textoZona.toString());
 
             if (onMarcadorEventListener != null) {
                 onMarcadorEventListener.onUpdateMarcador(zonasDel(), zonasAdd());
             }
-            updateListaMarcadores(marcador);
 
         }
 
@@ -740,8 +829,10 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
         System.out.println("titulo marcador= " + titulo);
         System.out.println("texto marcador= " + texto);
         Marker marker = getMarker(marcador);
-        marker.setTitle(titulo);
-        marker.setSnippet(texto);
+        if (marker != null) {
+            marker.setTitle(titulo);
+            marker.setSnippet(texto);
+        }
     }
 
     public int getAlcance() {
@@ -806,7 +897,7 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
     protected ModeloSQL setMarcador(Marker marker) {
 
         for (ModeloSQL marcador : listaMarcadores.getLista()) {
-            if (marcador.getString(MARCADOR_ID_MARK).equals(marker.getId())) {
+            if (marcador.getString(MARCADOR_ID_MARCADOR).equals(marker.getTag())) {
                 return marcador;
             }
         }
@@ -820,10 +911,15 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
         values.put(MARCADOR_ID_REL, id);
         values.put(MARCADOR_LATITUD, latitud);
         values.put(MARCADOR_LONGITUD, longitud);
-        Marker mark = mapa.crearMarcadorMap(((double) (latitud) / 100000), ((double) (longitud) / 100000), 5, "", "", true);
-        values.put(MARCADOR_ID_MARK, mark.getId());
         String idMarc = CRUDutil.crearRegistroId(TABLA_MARCADOR, values);
+        Marker mark = mapa.crearMarcadorMap(((double) (latitud) / 100000), ((double) (longitud) / 100000), 5, "", "", true, idMarc);
+        mark.setTag(idMarc);
         marcador = CRUDutil.updateModelo(CAMPOS_MARCADOR, idMarc);
+        CRUDutil.actualizarCampo(marcador, MARCADOR_ID_MARK, mark.getId());
+        marcador = CRUDutil.updateModelo(CAMPOS_MARCADOR, idMarc);
+        if (listaMarcadores == null) {
+            listaMarcadores = new ListaModeloSQL();
+        }
         listaMarcadores.addModelo(marcador);
         setLugarZona(marcador);
         if (onMarcadorEventListener != null) {
@@ -844,7 +940,7 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
     public void updateListaMarcadores(ModeloSQL marcador) {
 
         for (ModeloSQL marcadore : listaMarcadores.getLista()) {
-            if (marcadore.getString(MARCADOR_ID_MARK).equals(marcador.getString(MARCADOR_ID_MARK))) {
+            if (marcadore.getString(MARCADOR_ID_MARCADOR).equals(marcador.getString(MARCADOR_ID_MARCADOR))) {
                 listaMarcadores.getLista().set(listaMarcadores.getLista().indexOf(marcadore), marcador);
                 break;
             }
@@ -861,7 +957,7 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
         mapa.borrarMarcador(marker);
 
         for (ModeloSQL marcadore : listaMarcadores.getLista()) {
-            if (marcadore.getString(MARCADOR_ID_MARK).equals(marcador.getString(MARCADOR_ID_MARK))) {
+            if (marcadore.getString(MARCADOR_ID_MARCADOR).equals(marcador.getString(MARCADOR_ID_MARCADOR))) {
                 listaMarcadores.getLista().remove(marcadore);
                 ListaModeloSQL listaZonasMarcador = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR), IGUAL);
                 for (ModeloSQL zonaMarcador : listaZonasMarcador.getLista()) {
@@ -880,36 +976,67 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
 
     }
 
+    private boolean setListaMarcadores() {
+
+        if (id != null) {
+            listaMarcadores = CRUDutil.setListaModelo(CAMPOS_MARCADOR, MARCADOR_ID_REL, id, IGUAL);
+            return listaMarcadores != null;
+        }
+
+        return false;
+    }
+
     public void setMarcadores() {
 
 
-        listaMarcadores = new ListaModeloSQL(CAMPOS_MARCADOR, MARCADOR_ID_REL, id, null);
+        if (setListaMarcadores()) {
 
-        for (ModeloSQL marc : listaMarcadores.getLista()) {
-            Marker marker = mapa.crearMarcadorMap(((double) (marc.getLong(MARCADOR_LATITUD)) / 100000), ((double) (marc.getLong(MARCADOR_LONGITUD)) / 100000), 5, "", "", true);
-            if (marker != null) {
-                CRUDutil.actualizarCampo(marc, MARCADOR_ID_MARK, marker.getId());
-                marc = CRUDutil.updateModelo(marc);
-                updateListaMarcadores(marc);
-                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            setListaOldDel();
+            setListaOldAdd();
+            boolean listaMod = false;
+
+            for (ModeloSQL marc : listaMarcadores.getLista()) {
+
+                if (getMarkerTag(marc) == null) {
+
+                    Marker marker = mapa.crearMarcadorMap(((double) (marc.getLong(MARCADOR_LATITUD)) / 100000),
+                            ((double) (marc.getLong(MARCADOR_LONGITUD)) / 100000),
+                            5, "", "", true, marc.getString(MARCADOR_ID_MARCADOR));
+
+                    if (marker != null) {
+
+                        CRUDutil.actualizarCampo(marc, MARCADOR_ID_MARK, marker.getId());
+                        marc = CRUDutil.updateModelo(marc);
+                        updateListaMarcadores(marc);
+                        setAlcanceRadioGroup(marc);
+                        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        listaMod = true;
+                        System.out.println("marker.getTag() = " + marker.getTag());
+
+                    }
+                }
+
+                if (listaMarcadores.getLista().indexOf(marc) == listaMarcadores.getLista().size() - 1) {
+
+                    marcador = listaMarcadores.getLista().get(0);
+                    System.out.println("marcador.getString(MARCADOR_ID_MARK) = " + marcador.getString(MARCADOR_ID_MARK));
+
+                    Marker marker = getMarker(marcador);
+                    if (marker != null) {
+                        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                        mapa.moverCamara(marker.getPosition().latitude, marker.getPosition().longitude, 5, true, true);
+                        setAlcanceRadioGroup(marcador);
+                        //setZonasMarcador(marcador);
+                    }
+                }
+
             }
 
-        }
-
-        listaMarcadores = new ListaModeloSQL(CAMPOS_MARCADOR, MARCADOR_ID_REL, id, null);
-
-        if (listaMarcadores.sizeLista() > 0) {
-            marcador = listaMarcadores.getLista().get(0);
-            System.out.println("marcador.getString(MARCADOR_ID_MARK) = " + marcador.getString(MARCADOR_ID_MARK));
-
-            Marker marker = getMarker(marcador);
-            if (marker != null) {
-                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-                mapa.moverCamara(marker.getPosition().latitude, marker.getPosition().longitude, 5, true, true);
-                setAlcanceRadioGroup(marcador);
-                setLugarZona(marcador);
+            if (listaMod) {
+                setListaMarcadores();
             }
-
+            setListaOldDel();
+            setListaOldAdd();
         }
 
     }
@@ -923,6 +1050,8 @@ public class MapZona extends Fragment implements ContratoSystem.Tablas {
         void onMyLocationClickListener(long latUser, long lonUser, ArrayList<String> paisUser);
 
         void onMarkerDragEnd(ListaModeloSQL listaZonasDel, ListaModeloSQL listaZonasAdd, ArrayList<String> paisUser);
+
+        void onMarkerDragStart();
 
     }
 

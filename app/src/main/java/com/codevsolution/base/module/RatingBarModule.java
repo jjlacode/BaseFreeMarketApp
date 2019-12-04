@@ -1,4 +1,4 @@
-package com.codevsolution.base.android.controls;
+package com.codevsolution.base.module;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -9,14 +9,14 @@ import android.widget.ImageButton;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
+
+import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.style.Estilos;
 
-public class RatingBarLayout implements Estilos.Constantes {
+public class RatingBarModule extends BaseModule implements Estilos.Constantes {
 
-    ViewGroup parent;
-    Context context;
     RatingBar ratingBarMain;
-    ViewGroupLayout vistaMain;
     TextView textView;
     ImageButton imageButton;
     boolean small;
@@ -24,19 +24,29 @@ public class RatingBarLayout implements Estilos.Constantes {
     private float votoUser;
     private ViewGroupLayout vistaRatingBarMain;
 
-
-    public RatingBarLayout(Context context, ViewGroup parent, boolean indicador, boolean small) {
-
-        this.context = context;
-        this.parent = parent;
-        this.indicador = indicador;
-        this.small = small;
-        inicio();
+    public RatingBarModule(ViewGroup parent, Context context, Fragment fragment) {
+        super(parent, context, fragment);
+        init();
     }
 
-    protected void inicio() {
+    public RatingBarModule(ViewGroup parent, Context context, Fragment fragment, boolean indicador, boolean small) {
+        super(parent, context, fragment);
+        this.indicador = indicador;
+        this.small = small;
+        init();
+    }
 
-        vistaMain = new ViewGroupLayout(context, parent);
+    public void setIndicador(boolean enable) {
+        indicador = enable;
+    }
+
+    public void setSmall(boolean enable) {
+        small = enable;
+    }
+
+    @Override
+    public void init() {
+
         vistaMain.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
         vistaRatingBarMain = new ViewGroupLayout(context, vistaMain.getViewGroup());
         Estilos.setLayoutParams(vistaMain.getViewGroup(), vistaRatingBarMain.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT, 1, 0);

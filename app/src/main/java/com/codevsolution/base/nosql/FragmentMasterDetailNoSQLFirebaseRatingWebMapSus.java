@@ -30,18 +30,20 @@ import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.firebase.ContratoFirebase;
 import com.codevsolution.base.firebase.FirebaseUtil;
 import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.localizacion.LocalizacionUtils;
-import com.codevsolution.base.localizacion.MapZona;
+import com.codevsolution.base.localization.LocalizacionUtils;
+import com.codevsolution.base.localization.MapZona;
 import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.models.FirebaseFormBase;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.Rating;
-import com.codevsolution.base.rating.RatingVotoUserComents;
+import com.codevsolution.base.module.RatingVotoUserComents;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -54,6 +56,7 @@ import java.util.ArrayList;
 import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.CAMPOS_CHAT;
 import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.CHAT_ID_CHAT;
 import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.CHAT_TIPO;
+import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.ZONA_ALCANCE;
 import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.ZONA_NOMBRE;
 
 public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends FragmentMasterDetailNoSQL {
@@ -96,6 +99,8 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
     protected Button btnPublicar;
     protected RatingVotoUserComents ratingBase;
     protected Button btnWeb;
+    private View viewSC;
+    private View viewChatRec;
 
 
     @Override
@@ -108,6 +113,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         btnPublicar = new Button(contexto);
         btnPublicar.setBackground(Estilos.getBotonSecondary());
         btnPublicar.setText(Estilos.getString(contexto, "publicar"));
+
         frdetalleExtraspost.addView(btnPublicar);
         btnPublicar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,117 +122,18 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
             }
         });
 
-
-        View viewSC = inflater.inflate(R.layout.layout_suscripcion, container, false);
-        if (viewSC.getParent() != null) {
-            ((ViewGroup) viewSC.getParent()).removeView(viewSC); // <- fix
-        }
-        frdetalleExtraspost.addView(viewSC);
+        viewSC = addVista(Estilos.getIdLayout(contexto, "layout_suscripcion"), frdetalleExtraspost);
 
         if (tipoForm.equals(NUEVO)) {
 
             mapaZona = new MapZona(this, frdetalleExtraspost, activityBase);
-            mapaZona.setOnReadyMap(new MapZona.OnReadyMap() {
-                @Override
-                public void onMapClickListener(ArrayList<Marker> listaMarkers) {
-
-                }
-
-                @Override
-                public void onMapLongClickListener(ArrayList<Marker> listaMarkers) {
-
-                }
-
-                @Override
-                public void onMyLocationClickListener(long latUserMap, long lonUserMap, ArrayList<String> paisUser) {
-
-                    latUser = latUserMap;
-                    lonUser = lonUserMap;
-                }
-
-                @Override
-                public void onMarkerDragEnd(ListaModeloSQL listaZonasDel, ListaModeloSQL listaZonasAdd, ArrayList<String> paisUser) {
-
-                    //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                    for (ModeloSQL zona : listaZonasDel.getLista()) {
-                        //db.child(LUGARES).child(tipo).child(zona.getString(ZONA_NOMBRE)).child(id).removeValue();
-                        firebaseUtil.removeValue(new String[]{LUGARES, tipo, zona.getString(ZONA_NOMBRE)}, id, null);
-                    }
-
-                    for (ModeloSQL zona : listaZonasAdd.getLista()) {
-                        //db.child(LUGARES).child(tipo).child(zona.getString(ZONA_NOMBRE)).child(id).setValue(true);
-                        firebaseUtil.setValue(new String[]{LUGARES, tipo, zona.getString(ZONA_NOMBRE)}, id, true, null);
-                    }
-
-                }
-
-            });
-
+            setEventsMapNuevo(mapaZona);
             mapaZona.setTipo(tipo);
-            mapaZona.setOnMarcadorEventListener(new MapZona.OnMarcadorEvent() {
-                @Override
-                public void onCreateMarcador(ListaModeloSQL listaZonasDel, ListaModeloSQL listaZonasAdd) {
-
-                    actualizarZonas(listaZonasDel, listaZonasAdd);
-
-                }
-
-                @Override
-                public void onDeleteMarcador(ListaModeloSQL listaZonasDel, ListaModeloSQL listaZonasAdd) {
-                    actualizarZonas(listaZonasDel, listaZonasAdd);
-                }
-
-                @Override
-                public void onUpdateMarcador(ListaModeloSQL listaZonasDel, ListaModeloSQL listaZonasAdd) {
-                    actualizarZonas(listaZonasDel, listaZonasAdd);
-                }
-            });
 
         } else if (tipoForm.equals(LISTA)) {
 
             mapaZona = new MapZona(this, frCabecera, activityBase);
-            mapaZona.setOnReadyMap(new MapZona.OnReadyMap() {
-                @Override
-                public void onMapClickListener(ArrayList<Marker> listaMarkers) {
-
-                }
-
-                @Override
-                public void onMapLongClickListener(ArrayList<Marker> listaMarkers) {
-
-                }
-
-                @Override
-                public void onMyLocationClickListener(long latUser, long lonUser, ArrayList<String> paisUser) {
-
-                    //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                    //db.child(idUser).child(LOCALIZACION).setValue(paisUser);
-                    firebaseUtil.setValue(ContratoFirebase.getRutaUser(), LOCALIZACION, paisUser, null);
-                }
-
-                @Override
-                public void onMarkerDragEnd(ListaModeloSQL listaZonasDel, ListaModeloSQL listaZonasAdd, ArrayList<String> paisUser) {
-
-                    //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                    //db.child(idUser).child(LOCALIZACION).setValue(paisUser);
-                    firebaseUtil.setValue(ContratoFirebase.getRutaUser(), LOCALIZACION, paisUser, null);
-                }
-            });
-
-            mapaZona.setOnLocalizacionDefListener(new MapZona.OnLocalizacionDef() {
-                @Override
-                public void onEnable(ArrayList<String> listaUbicaciones) {
-
-                    //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                    //db.child(idUser).child(LOCALIZACION).setValue(listaUbicaciones);
-                    firebaseUtil.setValue(ContratoFirebase.getRutaUser(), LOCALIZACION, listaUbicaciones, null);
-                }
-
-                @Override
-                public void onDisable() {
-
-                }
-            });
+            setEventsMapLista(mapaZona);
             idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
             mapaZona.setId(idUser);
             mapaZona.setTipo(tipo);
@@ -243,11 +150,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
             }
         });
 
-        View viewChatRec = inflater.inflate(R.layout.fragment_chat_base, container, false);
-        if (viewChatRec.getParent() != null) {
-            ((ViewGroup) viewChatRec.getParent()).removeView(viewChatRec); // <- fix
-        }
-        frdetalleExtraspost.addView(viewChatRec);
+        viewChatRec = addVista(Estilos.getIdLayout(contexto, "fragment_chat_base"), frdetalleExtraspost);
 
         btnWeb = new Button(contexto);
         btnWeb.setBackground(Estilos.getBotonSecondary());
@@ -294,28 +197,27 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         });
 
 
-        chActivo = (Switch) ctrl(R.id.chactivo);
-        btnEnviarNoticias = (Button) ctrl(R.id.btn_enviar_noticias);
-        suscripcion = (Switch) ctrl(R.id.swsuscripcion);
-        suscritos = (EditMaterial) ctrl(R.id.etsuscritos);
-        rvMsgChat = (RecyclerView) ctrl(R.id.rvdetmsgchat_base);
-        noticias = (ToggleButton) ctrl(R.id.btn_vernoticias);
-        chatProv = (Button) ctrl(R.id.btn_chat_prov);
-        lyChat = (LinearLayout) ctrl(R.id.ly_chat);
+        chActivo = (Switch) ctrl(viewSC, Estilos.getIdResource(contexto, "chactivo"));
+        btnEnviarNoticias = (Button) ctrl(viewSC, Estilos.getIdResource(contexto, "btn_enviar_noticias"));
+        suscripcion = (Switch) ctrl(viewSC, Estilos.getIdResource(contexto, "swsuscripcion"));//R.id.swsuscripcion);
+        suscritos = (EditMaterial) ctrl(viewSC, Estilos.getIdResource(contexto, "etsuscritos"));
+        rvMsgChat = (RecyclerView) ctrl(viewChatRec, Estilos.getIdResource(contexto, "rvdetmsgchat_base"));
+        noticias = (ToggleButton) ctrl(viewChatRec, Estilos.getIdResource(contexto, "btn_vernoticias"));
+        chatProv = (Button) ctrl(viewChatRec, Estilos.getIdResource(contexto, "btn_chat_prov"));
+        lyChat = (LinearLayout) ctrl(viewChatRec, Estilos.getIdResource(contexto, "ly_chat"));
         gone(rvMsgChat);
+        if (modulo) {
+            gone(chActivo);
+        }
 
         //gone(lyvoto);
         //ratingBar.setIsIndicator(true);
 
-        viewWeb = inflater.inflate(R.layout.layout_webview, container, false);
-        if (viewWeb.getParent() != null) {
-            ((ViewGroup) viewWeb.getParent()).removeView(viewWeb); // <- fix
-        }
-        frWeb.addView(viewWeb);
+        viewWeb = addVista(Estilos.getIdLayout(contexto, "layout_webview"), frWeb);
 
-        browser = view.findViewById(R.id.webBrowser);
-        progressBarWeb = view.findViewById(R.id.progressBarWeb);
-        lyweb = view.findViewById(R.id.lywebBrowser);
+        browser = viewWeb.findViewById(R.id.webBrowser);
+        progressBarWeb = viewWeb.findViewById(R.id.progressBarWeb);
+        lyweb = viewWeb.findViewById(R.id.lywebBrowser);
         gone(lyweb);
 
         idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
@@ -376,17 +278,146 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
     }
 
-    private void actualizarZonas(ListaModeloSQL listaZonasDel, ListaModeloSQL listaZonasAdd) {
+    protected void setEventsMapLista(MapZona mapaZona) {
+
+        mapaZona.setOnReadyMap(new MapZona.OnReadyMap() {
+            @Override
+            public void onMapClickListener(ArrayList<Marker> listaMarkers) {
+
+            }
+
+            @Override
+            public void onMapLongClickListener(ArrayList<Marker> listaMarkers) {
+
+            }
+
+            @Override
+            public void onMyLocationClickListener(long latUser, long lonUser, ArrayList<String> paisUser) {
+
+                //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                //db.child(idUser).child(LOCALIZACION).setValue(paisUser);
+                firebaseUtil.setValue(ContratoFirebase.getRutaUser(), LOCALIZACION, paisUser, null);
+            }
+
+            @Override
+            public void onMarkerDragEnd(ListaModeloSQL listaZonasDel, ListaModeloSQL listaZonasAdd, ArrayList<String> paisUser) {
+
+                //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                //db.child(idUser).child(LOCALIZACION).setValue(paisUser);
+                firebaseUtil.setValue(ContratoFirebase.getRutaUser(), LOCALIZACION, paisUser, null);
+            }
+
+            @Override
+            public void onMarkerDragStart() {
+
+            }
+        });
+
+        mapaZona.setOnLocalizacionDefListener(new MapZona.OnLocalizacionDef() {
+            @Override
+            public void onEnable(ArrayList<String> listaUbicaciones) {
+
+                //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                //db.child(idUser).child(LOCALIZACION).setValue(listaUbicaciones);
+                firebaseUtil.setValue(ContratoFirebase.getRutaUser(), LOCALIZACION, listaUbicaciones, null);
+            }
+
+            @Override
+            public void onDisable() {
+
+            }
+        });
+    }
+
+    protected void setEventsMapNuevo(MapZona mapaZona) {
+
+        mapaZona.setOnReadyMap(new MapZona.OnReadyMap() {
+            @Override
+            public void onMapClickListener(ArrayList<Marker> listaMarkers) {
+
+            }
+
+            @Override
+            public void onMapLongClickListener(ArrayList<Marker> listaMarkers) {
+
+            }
+
+            @Override
+            public void onMyLocationClickListener(long latUserMap, long lonUserMap, ArrayList<String> paisUser) {
+
+                latUser = latUserMap;
+                lonUser = lonUserMap;
+            }
+
+            @Override
+            public void onMarkerDragEnd(ListaModeloSQL listaZonasDel, ListaModeloSQL listaZonasAdd, ArrayList<String> paisUser) {
+
+                //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                for (ModeloSQL zona : listaZonasDel.getLista()) {
+                    //db.child(LUGARES).child(tipo).child(zona.getString(ZONA_NOMBRE)).child(id).removeValue();
+                    firebaseUtil.removeValue(new String[]{LUGARES, tipo, (zona.getString(ZONA_ALCANCE) + zona.getString(ZONA_NOMBRE)).toLowerCase()}, id, null);
+                    firebaseUtil.removeValue(new String[]{id, ZONAS}, (zona.getString(ZONA_ALCANCE) + zona.getString(ZONA_NOMBRE)).toLowerCase(), null);
+                }
+
+                for (ModeloSQL zona : listaZonasAdd.getLista()) {
+                    //db.child(LUGARES).child(tipo).child(zona.getString(ZONA_NOMBRE)).child(id).setValue(true);
+                    firebaseUtil.setValue(new String[]{LUGARES, tipo, (zona.getString(ZONA_ALCANCE) + zona.getString(ZONA_NOMBRE)).toLowerCase()}, id, TimeDateUtil.ahora(), null);
+                    firebaseUtil.setValue(new String[]{id, ZONAS}, (zona.getString(ZONA_ALCANCE) + zona.getString(ZONA_NOMBRE)).toLowerCase(), TimeDateUtil.ahora(), null);
+                }
+
+            }
+
+            @Override
+            public void onMarkerDragStart() {
+
+            }
+
+        });
+        mapaZona.setOnMarcadorEventListener(new MapZona.OnMarcadorEvent() {
+            @Override
+            public void onCreateMarcador(ListaModeloSQL listaZonasDel, ListaModeloSQL listaZonasAdd) {
+
+                actualizarZonas(listaZonasDel, listaZonasAdd);
+
+            }
+
+            @Override
+            public void onDeleteMarcador(ListaModeloSQL listaZonasDel, ListaModeloSQL listaZonasAdd) {
+                actualizarZonas(listaZonasDel, listaZonasAdd);
+            }
+
+            @Override
+            public void onUpdateMarcador(ListaModeloSQL listaZonasDel, ListaModeloSQL listaZonasAdd) {
+                actualizarZonas(listaZonasDel, listaZonasAdd);
+            }
+        });
+    }
+
+    protected void actualizarZonas(ListaModeloSQL listaZonasDel, ListaModeloSQL listaZonasAdd) {
 
         if (nnn(id) && nnn(tipo)) {
 
             DatabaseReference db = FirebaseDatabase.getInstance().getReference();
             for (ModeloSQL zona : listaZonasDel.getLista()) {
-                db.child(LUGARES).child(tipo).child(zona.getString(ZONA_NOMBRE)).child(id).removeValue();
+                db.child(LUGARES).child(tipo).child((zona.getString(ZONA_ALCANCE) + zona.getString(ZONA_NOMBRE)).toLowerCase()).child(id).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        System.out.println("zona borrada = " + (zona.getString(ZONA_ALCANCE) + zona.getString(ZONA_NOMBRE)).toLowerCase());
+                    }
+                });
+                firebaseUtil.removeValue(new String[]{id, ZONAS}, (zona.getString(ZONA_ALCANCE) + zona.getString(ZONA_NOMBRE)).toLowerCase(), null);
             }
 
             for (ModeloSQL zona : listaZonasAdd.getLista()) {
-                db.child(LUGARES).child(tipo).child(zona.getString(ZONA_NOMBRE)).child(id).setValue(true);
+                db.child(LUGARES).child(tipo).child((zona.getString(ZONA_ALCANCE) + zona.getString(ZONA_NOMBRE)).toLowerCase()).child(id).setValue(TimeDateUtil.ahora()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        System.out.println("zona añadida = " + (zona.getString(ZONA_ALCANCE) + zona.getString(ZONA_NOMBRE)).toLowerCase());
+                    }
+                });
+                firebaseUtil.setValue(new String[]{id, ZONAS}, (zona.getString(ZONA_ALCANCE) + zona.getString(ZONA_NOMBRE)).toLowerCase(), TimeDateUtil.ahora(), null);
             }
         }
     }
@@ -473,12 +504,6 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         if (web != null && !web.equals("") && JavaUtil.isValidURL(web)) {
 
             visible(btnWeb);
-
-            // Cargamos la web
-
-
-
-
 
         } else {
             gone(btnWeb);
@@ -653,8 +678,8 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
                     if (nn(firebaseFormBase)) {
                         if (b && id != null) {
 
-                            db.child(SUSCRIPCIONES).child(id).child(idUser).setValue(true);
-                            db.child(idUser).child(SUSCRIPCIONES + tipo).child(id).setValue(true);
+                            db.child(SUSCRIPCIONES).child(id).child(idUser).setValue(TimeDateUtil.ahora());
+                            db.child(idUser).child(SUSCRIPCIONES + tipo).child(id).setValue(TimeDateUtil.ahora());
 
                         } else if (!b && id != null) {
 
@@ -929,11 +954,11 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
         if (tipoForm.equals(NUEVO) && !modulo) {
             if (nnn(id) && nnn(tipo)) {
-                visible(imagen);
+                visible(imagen.getLinearLayoutCompat());
                 imagen.setImageFirestorePerfil(activityBase, id + tipo);
 
             } else {
-                gone(imagen);
+                gone(imagen.getLinearLayoutCompat());
             }
 
             imagen.setOnClickListener(new View.OnClickListener() {

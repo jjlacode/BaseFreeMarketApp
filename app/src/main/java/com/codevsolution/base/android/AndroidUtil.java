@@ -28,7 +28,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.base.style.Estilos;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -36,7 +36,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.Set;
 
 public class AndroidUtil extends AppCompatActivity {
 
@@ -136,25 +135,25 @@ public class AndroidUtil extends AppCompatActivity {
 
         if (inversa) {
             if (completada > valorAcept) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_ok"));
                 if (trek != null) {
 
                     trek.setTextColor(contexto.getResources().getColor(color_ok));
 
                 }
             } else if (completada < valorAcept && completada > valorNotOk) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept"));
                 }
                 if (trek != null) {
 
                     trek.setTextColor(contexto.getResources().getColor(color_acept));
                 }
             } else {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok"));
                 }
                 if (trek != null) {
 
@@ -163,25 +162,25 @@ public class AndroidUtil extends AppCompatActivity {
             }
         } else {
             if (completada < valorAcept) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_ok"));
                 if (trek != null) {
 
                     trek.setTextColor(contexto.getResources().getColor(color_ok));
 
                 }
             } else if (completada > valorAcept && completada < valorNotOk) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept"));
                 }
                 if (trek != null) {
 
                     trek.setTextColor(contexto.getResources().getColor(color_acept));
                 }
             } else {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok"));
                 }
                 if (trek != null) {
 
@@ -220,25 +219,25 @@ public class AndroidUtil extends AppCompatActivity {
 
         if (inversa) {
             if (completada > valorAcept) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_ok"));
                 if (trek != null) {
 
                     trek.setTextColor(contexto.getResources().getColor(color_ok));
 
                 }
             } else if (completada < valorAcept && completada > valorNotOk) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept"));
                 }
                 if (trek != null) {
 
                     trek.setTextColor(contexto.getResources().getColor(color_acept));
                 }
             } else {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok"));
                 }
                 if (trek != null) {
 
@@ -247,25 +246,25 @@ public class AndroidUtil extends AppCompatActivity {
             }
         } else {
             if (completada < valorAcept) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_ok"));
                 if (trek != null) {
 
                     trek.setTextColor(contexto.getResources().getColor(color_ok));
 
                 }
             } else if (completada > valorAcept && completada < valorNotOk) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept"));
                 }
                 if (trek != null) {
 
                     trek.setTextColor(contexto.getResources().getColor(color_acept));
                 }
             } else {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok"));
                 }
                 if (trek != null) {
 
@@ -306,7 +305,7 @@ public class AndroidUtil extends AppCompatActivity {
 
         if (inversa) {
             if (completada > valorAcept) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok_circ, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_ok_circ"));
                 if (trek != null) {
 
                     trek.setTextColor(contexto.getResources().getColor(color_ok));
@@ -314,9 +313,9 @@ public class AndroidUtil extends AppCompatActivity {
                 card.setCardBackgroundColor(contexto.getResources().getColor(color_ok_card));
 
             } else if (completada < valorAcept && completada > valorNotOk) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept_circ, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept_circ"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept_circ, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept_circ"));
                 }
                 if (trek != null) {
 
@@ -325,9 +324,9 @@ public class AndroidUtil extends AppCompatActivity {
                 card.setCardBackgroundColor(contexto.getResources().getColor(color_acept_card));
 
             } else {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok_circ, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok_circ"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok_circ, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok_circ"));
                 }
                 if (trek != null) {
 
@@ -338,7 +337,7 @@ public class AndroidUtil extends AppCompatActivity {
             }
         } else {
             if (completada < valorAcept) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok_circ, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_ok_circ"));
                 if (trek != null) {
 
                     trek.setTextColor(contexto.getResources().getColor(color_ok));
@@ -346,9 +345,9 @@ public class AndroidUtil extends AppCompatActivity {
                 card.setCardBackgroundColor(contexto.getResources().getColor(color_ok_card));
 
             } else if (completada > valorAcept && completada < valorNotOk) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept_circ, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept_circ"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept_circ, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept_circ"));
                 }
                 if (trek != null) {
 
@@ -357,9 +356,9 @@ public class AndroidUtil extends AppCompatActivity {
                 card.setCardBackgroundColor(contexto.getResources().getColor(color_acept_card));
 
             } else {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok_circ, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok_circ"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok_circ, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok_circ"));
                 }
                 if (trek != null) {
 
@@ -400,24 +399,24 @@ public class AndroidUtil extends AppCompatActivity {
 
         if (inversa) {
             if (completada > valorAcept) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok_circ, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_ok_circ"));
                 if (trek != null) {
 
                     trek.setTextColor(contexto.getResources().getColor(color_ok));
                 }
             } else if (completada < valorAcept && completada > valorNotOk) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept_circ, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept_circ"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept_circ, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept_circ"));
                 }
                 if (trek != null) {
 
                     trek.setTextColor(contexto.getResources().getColor(color_acept));
                 }
             } else {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok_circ, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok_circ"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok_circ, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok_circ"));
                 }
                 if (trek != null) {
 
@@ -426,24 +425,24 @@ public class AndroidUtil extends AppCompatActivity {
             }
         } else {
             if (completada < valorAcept) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok_circ, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_ok_circ"));
                 if (trek != null) {
 
                     trek.setTextColor(contexto.getResources().getColor(color_ok));
                 }
             } else if (completada > valorAcept && completada < valorNotOk) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept_circ, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept_circ"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept_circ, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept_circ"));
                 }
                 if (trek != null) {
 
                     trek.setTextColor(contexto.getResources().getColor(color_acept));
                 }
             } else {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok_circ, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok_circ"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok_circ, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok_circ"));
                 }
                 if (trek != null) {
 
@@ -484,7 +483,7 @@ public class AndroidUtil extends AppCompatActivity {
 
         if (inversa) {
             if (completada > valorAcept) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_ok"));
                 if (trek != null) {
 
                     trek.setTextColor(contexto.getResources().getColor(color_ok));
@@ -492,9 +491,9 @@ public class AndroidUtil extends AppCompatActivity {
                 card.setCardBackgroundColor(contexto.getResources().getColor(color_ok_card));
 
             } else if (completada < valorAcept && completada > valorNotOk) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept"));
                 }
                 if (trek != null) {
 
@@ -503,9 +502,9 @@ public class AndroidUtil extends AppCompatActivity {
                 card.setCardBackgroundColor(contexto.getResources().getColor(color_acept_card));
 
             } else {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok"));
                 }
                 if (trek != null) {
 
@@ -516,7 +515,7 @@ public class AndroidUtil extends AppCompatActivity {
             }
         } else {
             if (completada < valorAcept) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_ok, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_ok"));
                 if (trek != null) {
 
                     trek.setTextColor(contexto.getResources().getColor(color_ok));
@@ -524,9 +523,9 @@ public class AndroidUtil extends AppCompatActivity {
                 card.setCardBackgroundColor(contexto.getResources().getColor(color_ok_card));
 
             } else if (completada > valorAcept && completada < valorNotOk) {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_acept, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_acept"));
                 }
                 if (trek != null) {
 
@@ -535,9 +534,9 @@ public class AndroidUtil extends AppCompatActivity {
                 card.setCardBackgroundColor(contexto.getResources().getColor(color_acept_card));
 
             } else {
-                bar.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                bar.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok"));
                 if (bar2 != null) {
-                    bar2.setProgressDrawable(contexto.getResources().getDrawable(R.drawable.bar_notok, null));
+                    bar2.setProgressDrawable(Estilos.getDrawable(contexto, "bar_notok"));
                 }
                 if (trek != null) {
 
@@ -625,10 +624,10 @@ public class AndroidUtil extends AppCompatActivity {
     public static ColorStateList setColorStateListRatingBar(int colorActive, int colorDeactive) {
 
         if (colorActive == 0) {
-            colorActive = R.color.colorPrimary;
+            colorActive = Estilos.colorPrimary;
         }
         if (colorDeactive == 0) {
-            colorDeactive = R.color.colorPrimary;
+            colorDeactive = Estilos.colorPrimary;
         }
 
         ColorStateList stateList = new ColorStateList(
@@ -698,15 +697,6 @@ public class AndroidUtil extends AppCompatActivity {
 
     }
 
-    public static void setSharePreference(Context contexto, String sharePreference, String key, Set<String> valor) {
-
-        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
-        SharedPreferences.Editor editor = persistencia.edit();
-        editor.putStringSet(key, valor);
-        editor.apply();
-
-    }
-
     public static String getSharePreference(Context contexto, String sharePreference, String key, String defecto) {
 
         try {
@@ -741,14 +731,6 @@ public class AndroidUtil extends AppCompatActivity {
         SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
 
         return persistencia.getBoolean(key, defecto);
-
-    }
-
-    public static Set<String> getSharePreference(Context contexto, String sharePreference, String key, Set<String> defecto) {
-
-        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
-
-        return persistencia.getStringSet(key, defecto);
 
     }
 }

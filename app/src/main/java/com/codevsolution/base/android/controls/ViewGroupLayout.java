@@ -535,7 +535,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         Button button = new Button(context);
         button.setText(recursoString);
         button.setPadding(5, 5, 5, 5);
-        button.setTextColor(Estilos.colorPrymary);
+        button.setTextColor(Estilos.colorPrimary);
         button.setBackground(Estilos.getBotonSecondaryDark());
         vistas.add(button);
         buttons.add(button);
@@ -550,7 +550,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         Button button = new Button(context);
         button.setText(string);
         button.setPadding(5, 5, 5, 5);
-        button.setTextColor(Estilos.colorPrymary);
+        button.setTextColor(Estilos.colorPrimary);
         button.setBackground(Estilos.getBotonSecondaryDark());
         vistas.add(button);
         buttons.add(button);
@@ -564,7 +564,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
 
         Button button = new Button(context);
         button.setPadding(5, 5, 5, 5);
-        button.setTextColor(Estilos.colorPrymary);
+        button.setTextColor(Estilos.colorPrimary);
         button.setBackground(Estilos.getBotonSecondaryDark());
         vistas.add(button);
         buttons.add(button);
@@ -579,7 +579,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         Button button = new Button(context);
         button.setText(recursoString);
         button.setPadding(5, 5, 5, 5);
-        button.setTextColor(Estilos.colorPrymary);
+        button.setTextColor(Estilos.colorPrimary);
         button.setBackground(Estilos.getBotonSecondaryDark(activityBase));
         vistas.add(button);
         buttons.add(button);
@@ -594,7 +594,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         Button button = new Button(context);
         button.setText(string);
         button.setPadding(5, 5, 5, 5);
-        button.setTextColor(Estilos.colorPrymary);
+        button.setTextColor(Estilos.colorPrimary);
         button.setBackground(Estilos.getBotonSecondaryDark(activityBase));
         vistas.add(button);
         buttons.add(button);

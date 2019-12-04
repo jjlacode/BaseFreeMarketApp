@@ -10,6 +10,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
@@ -19,9 +22,11 @@ import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.login.LoginActivity;
 import com.codevsolution.base.media.VisorPDFEmail;
+import com.codevsolution.base.models.DestinosVoz;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
+import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.sqlite.SQLiteUtil;
 import com.codevsolution.base.web.FragmentWebView;
 import com.codevsolution.freemarketsapp.logica.Interactor;
@@ -53,9 +58,11 @@ import com.codevsolution.freemarketsapp.ui.MisSuscripcionesProductosCli;
 import com.codevsolution.freemarketsapp.ui.MisSuscripcionesProductosPro;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.ArrayList;
+
 import static android.Manifest.permission.INTERNET;
 
-public class MainActivity extends MainActivityBase implements Interactor.ConstantesPry {
+public class MainActivity extends MainActivityBase implements Interactor.ConstantesPry, ContratoPry.Tablas {
 
 
     @Override
@@ -94,6 +101,13 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
         }
 
+        fabInicio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                enviarBundleAFragment(bundle, Interactor.fragmentMenuInicio);
+            }
+        });
+
     }
 
     @Override
@@ -126,6 +140,7 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
         } else {
             iniciarDB();
         }
+
     }
 
     private Boolean comprobarInicio() {
@@ -313,6 +328,73 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
     }
 
+    @Override
+    protected void setPathImagenPerfil() {
+        super.setPathImagenPerfil();
+        imagenPerfil.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DrawerLayout drawer = findViewById(R.id.drawer_layout);
+                drawer.closeDrawers();
+                bundle = new Bundle();
+                bundle.putString(ACTUAL, MIPERFIL);
+                recargarFragment();
+            }
+        });
+    }
+
+    @Override
+    protected void setPathAyuda() {
+        super.setPathAyuda();
+
+        pathAyuda = HTTPAYUDA;
+    }
+
+    public void seleccionarDestino(String destino) {
+
+        ArrayList<DestinosVoz> listaDestinos = Interactor.getListaDestinosVoz();
+
+        for (DestinosVoz destinosVoz : listaDestinos) {
+
+            if (destino.equals(destinosVoz.getDestino())) {
+                enviarBundleAFragment(null, destinosVoz.getFragment());
+            }
+        }
+
+
+    }
+
+    public void seleccionarNuevoDestino(String destino) {
+
+        ArrayList<DestinosVoz> listaDestinos = Interactor.getListaNuevosDestinosVoz();
+
+        for (DestinosVoz destinosVoz : listaDestinos) {
+
+            if (destino.equals(destinosVoz.getDestino())) {
+                enviarBundleAFragment(null, destinosVoz.getFragment());
+            }
+        }
+
+
+    }
+
+    @Override
+    protected void recuperarPersistencia() {
+
+        SharedPreferences persistencia = getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
+        bundle.putString(CAMPO_ID, persistencia.getString(CAMPO_ID, null));
+        bundle.putString(ACTUAL, persistencia.getString(ACTUAL, INICIO));
+        bundle.putInt(CAMPO_SECUENCIA, persistencia.getInt(CAMPO_SECUENCIA, 0));
+        bundle.putString(IDREL, persistencia.getString(IDREL, null));
+        bundle.putBoolean(NUEVOREGISTRO, persistencia.getBoolean(NUEVOREGISTRO, false));
+        bundle.putString(CAMPO_RUTAFOTO, persistencia.getString(CAMPO_RUTAFOTO, null));
+        bundle.putString(PATH, persistencia.getString(PATH, null));
+        bundle.putBoolean(CAMBIO, persistencia.getBoolean(CAMBIO, false));
+        AndroidUtil.setSharePreference(this, PERSISTENCIA, CAMBIO, false);
+
+        System.out.println("bundle = " + bundle);
+    }
+
     protected void recargarFragment() {
 
         super.recargarFragment();
@@ -382,7 +464,9 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
                 break;
 
             case PRODUCTO:
+
                 enviarBundleAFragment(bundle, new FragmentCRUDProducto());
+
                 break;
 
 
@@ -469,6 +553,7 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
         System.out.println("Recargado fragment " + bundle.getString(ACTUAL, INICIO));
         System.out.println("bundle = " + bundle);
+
     }
 
 

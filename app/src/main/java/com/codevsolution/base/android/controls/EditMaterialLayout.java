@@ -379,7 +379,7 @@ public class EditMaterialLayout implements Estilos.Constantes {
                         editText.setTextColor(Estilos.colorSecondaryDark);
                     }
                 } else {
-                    editText.setBackgroundColor(Estilos.colorPrymary);
+                    editText.setBackgroundColor(Estilos.colorPrimary);
                     editText.setTextColor(Estilos.colorSecondaryDark);
                     comprobarEdit();
                 }

@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -20,6 +20,7 @@ import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.style.Estilos;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 
 public abstract class FragmentRV extends FragmentBase {
 
-    protected LinearLayout frLista;
+    //protected LinearLayoutCompat frLista;
     protected View viewRV;
     protected int layoutItem;
     protected RecyclerView rv;
@@ -54,26 +55,30 @@ public abstract class FragmentRV extends FragmentBase {
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
         super.setOnCreateView(view, inflater, container);
 
-        frLista = view.findViewById(R.id.layout_rv);
-
+        //frLista = view.findViewById(R.id.layout_rv);
+/*
         viewRV = inflater.inflate(R.layout.rvlayout, container, false);
         if (viewRV.getParent() != null) {
             ((ViewGroup) viewRV.getParent()).removeView(viewRV); // <- fix
         }
         frLista.addView(viewRV);
 
-        rv = view.findViewById(R.id.rv);
-        refreshLayout = view.findViewById(R.id.swipeRefresh);
-        auto = view.findViewById(R.id.auto);
-        buscar = view.findViewById(R.id.imgbuscar);
-        renovar = view.findViewById(R.id.imgrenovar);
-        inicio = view.findViewById(R.id.imginicio);
-        lupa = view.findViewById(R.id.imgsearch);
-        voz = view.findViewById(R.id.imgvoz);
+ */
+        viewRV = addVista(Estilos.getIdLayout(contexto, "rvlayout"), frLista);
+
+        //rv = viewRV.findViewById(R.id.rv);
+        rv = viewRV.findViewById(Estilos.getIdResource(contexto, "rv"));
+        refreshLayout = viewRV.findViewById(R.id.swipeRefresh);
+        auto = viewRV.findViewById(R.id.auto);
+        buscar = viewRV.findViewById(R.id.imgbuscar);
+        renovar = viewRV.findViewById(R.id.imgrenovar);
+        inicio = viewRV.findViewById(R.id.imginicio);
+        lupa = viewRV.findViewById(R.id.imgsearch);
+        voz = viewRV.findViewById(R.id.imgvoz);
         fragment_container = view.findViewById(R.id.frameanimation);
-        btnback = view.findViewById(R.id.btn_back);
-        btndelete = view.findViewById(R.id.btn_del);
-        btnsave = view.findViewById(R.id.btn_save);
+        btnback = viewBotones.findViewById(R.id.btn_back);
+        btndelete = viewBotones.findViewById(R.id.btn_del);
+        btnsave = viewBotones.findViewById(R.id.btn_save);
 
         gone(btndelete);
         gone(btnsave);
@@ -85,10 +90,11 @@ public abstract class FragmentRV extends FragmentBase {
                 R.color.s4
         );
 
+
         if (land) {
-            frCuerpo.setOrientation(LinearLayout.HORIZONTAL);
+            frCuerpo.setOrientation(LinearLayoutCompat.HORIZONTAL);
         } else {
-            frCuerpo.setOrientation(LinearLayout.VERTICAL);
+            frCuerpo.setOrientation(LinearLayoutCompat.VERTICAL);
         }
         visible(frLista);
     }
@@ -104,7 +110,7 @@ public abstract class FragmentRV extends FragmentBase {
     protected void setLayoutExtra() {
         super.setLayoutExtra();
 
-        layoutPie = R.layout.btn_sdb;
+        layoutPie = Estilos.getIdLayout(contexto, "btn_sdb");
     }
 
     protected void selector() {

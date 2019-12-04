@@ -24,8 +24,6 @@ import android.widget.CheckBox;
 import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -33,6 +31,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -46,10 +45,7 @@ import com.codevsolution.base.interfaces.ICFragmentos;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.models.Contactos;
-import com.codevsolution.base.models.DestinosVoz;
 import com.codevsolution.base.style.Estilos;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -61,6 +57,8 @@ import static android.Manifest.permission.READ_CONTACTS;
 import static android.Manifest.permission.WRITE_CONTACTS;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.SENSOR_SERVICE;
+
+//import com.codevsolution.freemarketsapp.logica.Interactor;
 
 public abstract class FragmentBase extends Fragment implements JavaUtil.Constantes,
         InteractorBase.Constantes {
@@ -88,15 +86,16 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected ArrayList<EditMaterialLayout> materialEditLayouts;
     protected ArrayList<Integer> recursos;
 
-    protected LinearLayout frdetalle;
-    protected LinearLayout frdetalleExtraspost;
-    protected LinearLayout frdetalleExtrasante;
-    protected LinearLayout frPie;
-    protected LinearLayout frPubli;
-    protected LinearLayout frWeb;
-    protected LinearLayout frCabecera;
-    protected LinearLayout frLista;
-    protected LinearLayout frCuerpo;
+    protected LinearLayoutCompat lyDetalle;
+    protected LinearLayoutCompat frdetalle;
+    protected LinearLayoutCompat frdetalleExtraspost;
+    protected LinearLayoutCompat frdetalleExtrasante;
+    protected LinearLayoutCompat frPie;
+    protected LinearLayoutCompat frPubli;
+    protected LinearLayoutCompat frWeb;
+    protected LinearLayoutCompat frCabecera;
+    protected LinearLayoutCompat frLista;
+    protected LinearLayoutCompat frCuerpo;
 
     protected View viewRV;
     protected View viewCabecera;
@@ -146,13 +145,16 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected boolean swipeOn;
     protected boolean modulo;
     protected FragmentBase fragment;
+    protected FragmentBase parent;
     protected RelativeLayout frContenedor;
+    private LinearLayoutCompat frContenedorMod;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, getMetodo());
 
+        parent = getParent();
         if (contexto == null) {
             setContext();
         }
@@ -171,8 +173,6 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         multiPanel = esMultiPanel(metrics);
 
-        land = getResources().getBoolean(R.bool.esLand);
-        tablet = getResources().getBoolean(R.bool.esTablet);
         densidad = metrics.density;
         anchoReal = metrics.widthPixels;
         altoReal = metrics.heightPixels;
@@ -202,6 +202,11 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         return ((float) metrics.densityDpi / (float) metrics.widthPixels) < 0.30;
     }
 
+    protected FragmentBase getParent() {
+
+        return this;
+    }
+
     protected boolean esModulo() {
         return bundle.getBoolean(MODULO, false);
     }
@@ -214,94 +219,56 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         inflaterMain = inflater;
         containerMain = container;
 
-        if (modulo) {
-
-            view = inflater.inflate(R.layout.modulo, containerMain, false);
-
-            frContenedor = view.findViewById(R.id.contenedor);
-            frdetalle = view.findViewById(R.id.layout_detalle_mod);
-            frdetalleExtraspost = view.findViewById(R.id.layout_extras_post_detalle_mod);
-            frdetalleExtrasante = view.findViewById(R.id.layout_extras_antes_detalle_mod);
-            frCabecera = view.findViewById(R.id.layout_cabecera_mod);
-            frPie = view.findViewById(R.id.layout_pie_mod);
-            frWeb = view.findViewById(R.id.layout_web_detalle_mod);
-            frPubli = view.findViewById(R.id.layout_publi_mod);
-            frLista = view.findViewById(R.id.layout_rv_mod);
-            frCuerpo = view.findViewById(R.id.layout_cuerpo_mod);
-            scrollDetalle = view.findViewById(R.id.scrolldetalle_mod);
-            frameAnimationCuerpo = view.findViewById(R.id.frameanimationcuerpo_mod);
-            timerg = view.findViewById(R.id.chronocrud_mod);
-
-        } else {
-
-            view = inflater.inflate(R.layout.contenido, container, false);
-
-            frContenedor = view.findViewById(R.id.contenedor);
-            frdetalle = view.findViewById(R.id.layout_detalle);
-            frdetalleExtraspost = view.findViewById(R.id.layout_extras_post_detalle);
-            frdetalleExtrasante = view.findViewById(R.id.layout_extras_antes_detalle);
-            frCabecera = view.findViewById(R.id.layout_cabecera);
-            frPie = view.findViewById(R.id.layout_pie);
-            frWeb = view.findViewById(R.id.layout_web_detalle);
-            frPubli = view.findViewById(R.id.layout_publi);
-            frLista = view.findViewById(R.id.layout_rv);
-            frCuerpo = view.findViewById(R.id.layout_cuerpo);
-            scrollDetalle = view.findViewById(R.id.scrolldetalle);
-            frameAnimationCuerpo = view.findViewById(R.id.frameanimationcuerpo);
-            timerg = view.findViewById(R.id.chronocrud);
-        }
+        view = inflater.inflate(Estilos.getIdLayout(contexto, "module"), container, false);
+        frContenedorMod = view.findViewById(Estilos.getIdResource(contexto, "fr_content_mod"));
+        Estilos.setLayoutParams(frContenedorMod);
+        frContenedorMod.setOrientation(LinearLayoutCompat.VERTICAL);
+        timerg = (Chronometer) addVista(new Chronometer(contexto), frContenedorMod);
+        timerg.setVisibility(View.GONE);
+        frCabecera = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), frContenedorMod);
+        Estilos.setLayoutParams(frCabecera);
+        frCabecera.setOrientation(LinearLayoutCompat.VERTICAL);
+        frCuerpo = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), frContenedorMod);
+        Estilos.setLayoutParams(frCuerpo);
+        frCuerpo.setOrientation(LinearLayoutCompat.VERTICAL);
+        frPie = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), frContenedorMod);
+        Estilos.setLayoutParams(frPie);
+        frPie.setOrientation(LinearLayoutCompat.VERTICAL);
+        frPubli = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), frContenedorMod);
+        Estilos.setLayoutParams(frPubli);
+        frPubli.setOrientation(LinearLayoutCompat.VERTICAL);
+        frLista = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), frCuerpo);
+        Estilos.setLayoutParams(frLista);
+        frLista.setOrientation(LinearLayoutCompat.VERTICAL);
+        frameAnimationCuerpo = (OneFrameLayout) addVista(new OneFrameLayout(contexto), frCuerpo);
+        Estilos.setLayoutParams(frameAnimationCuerpo);
+        scrollDetalle = (LockableScrollView) addVista(new LockableScrollView(contexto), frameAnimationCuerpo);
+        Estilos.setLayoutParams(scrollDetalle);
+        lyDetalle = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), scrollDetalle);
+        Estilos.setLayoutParams(lyDetalle);
+        lyDetalle.setOrientation(LinearLayoutCompat.VERTICAL);
+        frdetalleExtrasante = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), lyDetalle);
+        Estilos.setLayoutParams(frdetalleExtrasante);
+        frdetalleExtrasante.setOrientation(LinearLayoutCompat.VERTICAL);
+        frdetalle = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), lyDetalle);
+        Estilos.setLayoutParams(frdetalle);
+        frdetalle.setOrientation(LinearLayoutCompat.VERTICAL);
+        frdetalleExtraspost = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), lyDetalle);
+        Estilos.setLayoutParams(frdetalleExtraspost);
+        frdetalleExtraspost.setOrientation(LinearLayoutCompat.VERTICAL);
+        frWeb = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), lyDetalle);
 
         if (layoutCuerpo == 0) {
             layoutCuerpo = layout;
         }
 
-        land = getResources().getBoolean(R.bool.esLand);
-        tablet = getResources().getBoolean(R.bool.esTablet);
-        System.out.println("land = " + land);
-        System.out.println("tablet = " + tablet);
+        land = Estilos.getBool(contexto, "esLand");//getResources().getBoolean(R.bool.esLand);
+        tablet = Estilos.getBool(contexto, "esTablet");//getResources().getBoolean(R.bool.esTablet);
 
+        viewCabecera = addVista(layoutCabecera, frCabecera);
+        viewCuerpo = addVista(layoutCuerpo, frdetalle);
+        viewBotones = addVista(layoutPie, frPie);
 
-        if (layoutCuerpo > 0) {
-            viewCuerpo = inflater.inflate(layoutCuerpo, container, false);
-            if (viewCuerpo.getParent() != null) {
-                ((ViewGroup) viewCuerpo.getParent()).removeView(viewCuerpo); // <- fix
-            }
-            if (viewCuerpo != null) {
-                frdetalle.addView(viewCuerpo);
-                visible(frdetalle);
-            }
-
-        } else {
-            gone(frdetalle);
-        }
-
-        if (layoutCabecera > 0) {
-            viewCabecera = inflater.inflate(layoutCabecera, container, false);
-            if (viewCabecera.getParent() != null) {
-                ((ViewGroup) viewCabecera.getParent()).removeView(viewCabecera); // <- fix
-            }
-            if (viewCabecera != null) {
-                frCabecera.addView(viewCabecera);
-                visible(frCabecera);
-            }
-        } else {
-            gone(frCabecera);
-        }
-
-        if (layoutPie > 0) {
-
-            viewBotones = inflater.inflate(layoutPie, container, false);
-            if (viewBotones.getParent() != null) {
-                ((ViewGroup) viewBotones.getParent()).removeView(viewBotones); // <- fix
-            }
-            if (viewBotones != null) {
-                frPie.addView(viewBotones);
-                visible(frPie);
-            } else {
-                gone(frPie);
-            }
-
-        }
 
         frameAnimationCuerpo.setAncho((int) (ancho * densidad));
 
@@ -329,12 +296,14 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
             }
         });
 
+        System.out.println("modulo = " + modulo);
         if (modulo) {
             setModuloInicio();
         }
         activityBase.fabNuevo.hide();
         activityBase.fabInicio.hide();
         activityBase.fabVoz.hide();
+
 
         return view;
     }
@@ -364,15 +333,15 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         return icFragmentos;
     }
 
-    public LinearLayout getFrdetalle() {
+    public LinearLayoutCompat getFrdetalle() {
         return frdetalle;
     }
 
-    public LinearLayout getFrdetalleExtraspost() {
+    public LinearLayoutCompat getFrdetalleExtraspost() {
         return frdetalleExtraspost;
     }
 
-    public LinearLayout getFrdetalleExtrasante() {
+    public LinearLayoutCompat getFrdetalleExtrasante() {
         return frdetalleExtrasante;
     }
 
@@ -435,7 +404,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         System.out.println("TAG = " + TAG);
         System.out.println("persistencia.getString(TAGPERS) = " + persistencia.getString(TAGPERS, null));
 
-        if (persistencia.getString(TAGPERS, null) != null && TAG != null && persistencia.getString(TAGPERS, null).equals(TAG)) {
+        if (!modulo && (persistencia.getBoolean(CAMBIO, false) || (persistencia.getString(TAGPERS, null) != null &&
+                TAG != null && persistencia.getString(TAGPERS, null).equals(TAG)))) {
             System.out.println("Recuperando datos persistencia");
             origen = persistencia.getString(ORIGEN, null);
             actual = persistencia.getString(ACTUAL, null);
@@ -501,18 +471,26 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
             sensorManagerLuz.unregisterListener(sensorLuzListener);
         }
 
-        SharedPreferences persistencia = getActivity().getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = persistencia.edit();
+        setActual();
 
-        editor.putString(TAGPERS, setTAG());
-        editor.putString(ORIGEN, origen);
-        editor.putString(ACTUAL, actual);
-        editor.putString(ACTUALTEMP, actualtemp);
-        editor.putString(SUBTITULO, subTitulo);
-        setPersistencia(editor);
+        if (!modulo) {
+            SharedPreferences persistencia = getActivity().getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = persistencia.edit();
 
-        editor.apply();
+            editor.putString(TAGPERS, setTAG());
+            editor.putString(ORIGEN, origen);
+            editor.putString(ACTUAL, actual);
+            editor.putString(ACTUALTEMP, actualtemp);
+            editor.putString(SUBTITULO, subTitulo);
+            setPersistencia(editor);
 
+            editor.apply();
+        }
+
+
+    }
+
+    protected void setActual() {
 
     }
 
@@ -569,14 +547,6 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
             }
         }
 
-        activityBase.fabInicio.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                icFragmentos.enviarBundleAFragment(bundle, Interactor.fragmentMenuInicio);
-            }
-        });
-
-
     }
 
     protected void enviarAct() {
@@ -611,13 +581,16 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         SharedPreferences persistencia = getActivity().getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = persistencia.edit();
 
-        editor.putString(TAGPERS, setTAG());
-        editor.putString(ORIGEN, origen);
-        editor.putString(ACTUAL, actual);
-        editor.putString(ACTUALTEMP, actualtemp);
-        editor.putString(SUBTITULO, subTitulo);
-        editor.apply();
-
+        if (!modulo) {
+            editor.putBoolean(CAMBIO, true);
+            editor.putString(TAGPERS, setTAG());
+            editor.putString(ORIGEN, origen);
+            editor.putString(ACTUAL, actual);
+            editor.putString(ACTUALTEMP, actualtemp);
+            editor.putString(SUBTITULO, subTitulo);
+            setPersistencia(editor);
+            editor.apply();
+        }
 
         switch (orientation) {
             case Configuration.ORIENTATION_LANDSCAPE:
@@ -629,6 +602,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
                 break;
         }
     }
+
 
     protected void setSwipeOn(boolean enable) {
         swipeOn = enable;
@@ -664,6 +638,19 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
      * @param recurso Recurso del la vista actual que se asigna al Control
      */
     protected View ctrl(int recurso) {
+
+        View vista = view.findViewById(recurso);
+        vista.setFocusable(false);
+        vistas.add(vista);
+        if (vista instanceof EditMaterial) {
+            materialEdits.add((EditMaterial) vista);
+        }
+        recursos.add(recurso);
+        return vista;
+
+    }
+
+    protected View ctrl(View view, int recurso) {
 
         View vista = view.findViewById(recurso);
         vista.setFocusable(false);
@@ -1013,49 +1000,6 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         return true;
     }
 
-    protected void imagenMediaPantalla(ImageView imagen) {
-        Log.d(TAG, getMetodo());
-
-        if (!land) {
-            imagen.setMinimumHeight((int) ((double) alto * densidad / 2));
-            imagen.setMinimumWidth((int) (ancho * densidad));
-            imagen.setMaxHeight((int) ((double) alto * densidad / 2));
-            imagen.setMaxWidth((int) (ancho * densidad));
-        } else {
-            imagen.setMinimumWidth((int) ((double) ancho * densidad / 2));
-            imagen.setMinimumHeight((int) ((double) alto * densidad / 2));
-            imagen.setMaxWidth((int) ((double) ancho * densidad / 2));
-            imagen.setMaxHeight((int) ((double) alto * densidad / 2));
-
-        }
-
-    }
-
-
-    protected void imagenPantalla(ImageView imagen, int falto, int fancho) {
-        Log.d(TAG, getMetodo());
-        int altotemp = (int) (alto * densidad);
-        int anchotemp = (int) (ancho * densidad);
-
-        if (!land) {
-            imagen.setMinimumHeight((int) ((double) altotemp / (falto + 2)));
-            imagen.setMinimumWidth((int) ((double) anchotemp / (fancho + 2)));
-            imagen.setMaxHeight((int) ((double) altotemp / (falto + 2)));
-            imagen.setMaxWidth((int) ((double) anchotemp / (fancho + 2)));
-            //imagen.measure((int) ((double) (ancho*densidad) / (fancho)),(int) ((double) (alto) / (falto)));
-
-
-        } else {
-            imagen.setMinimumWidth((int) ((double) anchotemp / ((fancho * 2) + 2)));
-            imagen.setMinimumHeight((int) ((double) (altotemp * 2) / (falto + 2)));
-            imagen.setMaxWidth((int) ((double) anchotemp / ((fancho * 2) + 2)));
-            imagen.setMaxHeight((int) ((double) (altotemp * 2) / (falto + 2)));
-            //imagen.measure((int) ((double) (ancho*densidad) / ((fancho*2))),(int) ((double) (alto*2) / (falto)));
-
-        }
-
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -1078,14 +1022,14 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
                     } else if (grabarVoz.substring(0, 5).equals("ir a ")) {
 
-                        seleccionarDestino(grabarVoz.substring(5));
+                        activityBase.seleccionarDestino(grabarVoz.substring(5));
 
                     } else if (grabarVoz.substring(0, 6).equals("crear ") ||
                             grabarVoz.substring(0, 6).equals("nuevo ")) {
 
-                        seleccionarNuevoDestino(grabarVoz.substring(6));
+                        activityBase.seleccionarNuevoDestino(grabarVoz.substring(6));
 
-                    } else if (grabarVoz.equals(getString(R.string.salir).toLowerCase())) {
+                    } else if (grabarVoz.equals(Estilos.getString(contexto, "salir").toLowerCase())) {
 
                         activityBase.finish();
 
@@ -1127,33 +1071,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         }
     }
 
-    public void seleccionarDestino(String destino) {
 
-        ArrayList<DestinosVoz> listaDestinos = Interactor.getListaDestinosVoz();
-
-        for (DestinosVoz destinosVoz : listaDestinos) {
-
-            if (destino.equals(destinosVoz.getDestino())) {
-                icFragmentos.enviarBundleAFragment(null, destinosVoz.getFragment());
-            }
-        }
-
-
-    }
-
-    public void seleccionarNuevoDestino(String destino) {
-
-        ArrayList<DestinosVoz> listaDestinos = Interactor.getListaNuevosDestinosVoz();
-
-        for (DestinosVoz destinosVoz : listaDestinos) {
-
-            if (destino.equals(destinosVoz.getDestino())) {
-                icFragmentos.enviarBundleAFragment(null, destinosVoz.getFragment());
-            }
-        }
-
-
-    }
 
     protected void alCambiarCampos(EditMaterial editMaterial) {
 
@@ -1194,7 +1112,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected void addFragment(Bundle bundle, Fragment fragment, int layout) {
 
         fragment.setArguments(bundle);
-        FragmentManager fr = activityBase.getSupportFragmentManager();
+        FragmentManager fr = getChildFragmentManager();//activityBase.getSupportFragmentManager();
         FragmentTransaction ft = fr.beginTransaction();
         ft.add(layout, fragment);
         ft.commit();
@@ -1226,6 +1144,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected View addVista(View view, ViewGroup viewGroup) {
 
         viewGroup.addView(view);
+        Estilos.setLayoutParams(view);
 
         return view;
     }
@@ -1258,7 +1177,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     }
 
     protected int getIdString(String string) {
-        return Estilos.getIdStrig(contexto, string);
+        return Estilos.getIdString(contexto, string);
     }
 
     protected int getIdDrawable(String drawable) {
