@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.controls.LockableScrollView;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.chat.EnviarNoticias;
 import com.codevsolution.base.crud.CRUDutil;
@@ -132,7 +133,9 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
         } else if (tipoForm.equals(LISTA)) {
 
-            mapaZona = new MapZona(this, frCabecera, activityBase);
+            LockableScrollView scrollCab = new LockableScrollView(contexto);
+            frCabecera.addView(scrollCab);
+            mapaZona = new MapZona(this, scrollCab, activityBase);
             setEventsMapLista(mapaZona);
             idUser = AndroidUtil.getSharePreference(contexto, USERID, USERID, NULL);
             mapaZona.setId(idUser);
@@ -939,8 +942,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         super.guardarImagen(path);
 
         if (nnn(id) && nnn(tipo)) {
-            ImagenUtil.guardarImageFirestore(id, imagen, path);
-            ImagenUtil.guardarImageFirestore(id + tipo, imagen, path);
+            ImagenUtil.guardarImageFirestore(SLASH + idUser + SLASH + id + tipo, imagen, path);
         }
     }
 
@@ -955,7 +957,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         if (tipoForm.equals(NUEVO) && !modulo) {
             if (nnn(id) && nnn(tipo)) {
                 visible(imagen.getLinearLayoutCompat());
-                imagen.setImageFirestorePerfil(activityBase, id + tipo);
+                imagen.setImageFirestorePerfil(activityBase, SLASH + idUser + SLASH + id + tipo);
 
             } else {
                 gone(imagen.getLinearLayoutCompat());
@@ -972,8 +974,8 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         } else if (tipoForm.equals(LISTA)) {
 
             if (nnn(id) && nnn(tipo)) {
-                System.out.println("id+tipo = " + (id + tipo));
-                imagen.setImageFirestorePerfil(activityBase, id + tipo);
+                System.out.println("id+tipo = " + (SLASH + idUser + SLASH + id + tipo));
+                imagen.setImageFirestorePerfil(activityBase, SLASH + idUser + SLASH + id + tipo);
             }
 
 

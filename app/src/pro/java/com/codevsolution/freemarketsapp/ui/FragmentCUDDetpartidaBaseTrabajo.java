@@ -3,7 +3,9 @@ package com.codevsolution.freemarketsapp.ui;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCUD;
@@ -16,18 +18,21 @@ import com.codevsolution.freemarketsapp.logica.Interactor;
 public class FragmentCUDDetpartidaBaseTrabajo extends FragmentCUD implements Interactor.ConstantesPry,
         ContratoPry.Tablas, Interactor.TiposDetPartida, Interactor.TiposEstados {
 
-    private EditMaterial descripcion;
-    private EditMaterial precio;
-    private EditMaterial cantidad;
-    private TextView tipoDetPartida;
-    private EditMaterial tiempoDet;
-    private String tipo;
+    private EditMaterialLayout descripcion;
+    private EditMaterialLayout precio;
+    private EditMaterialLayout cantidad;
+    private EditMaterialLayout tiempoDet;
     private ModeloSQL trabajo;
 
-    private EditMaterial nombre;
+    private EditMaterialLayout nombre;
 
     public FragmentCUDDetpartidaBaseTrabajo() {
         // Required empty public constructor
+    }
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
     }
 
     @Override
@@ -43,20 +48,6 @@ public class FragmentCUDDetpartidaBaseTrabajo extends FragmentCUD implements Int
     }
 
     @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
-
-    }
-
-
-    @Override
     protected void setBundle() {
 
     }
@@ -65,15 +56,13 @@ public class FragmentCUDDetpartidaBaseTrabajo extends FragmentCUD implements Int
     protected void setDatos() {
 
 
-        visible(tiempoDet);
-        visible(cantidad);
+        visible(tiempoDet.getLinearLayout());
+        visible(cantidad.getLinearLayout());
         gone(btnsave);
 
-        modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
+        modeloSQL = cruDutil.updateModelo();
         trabajo = CRUDutil.updateModelo(CAMPOS_TRABAJO, modeloSQL.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
 
-        tipo = TRABAJO;
-        tipoDetPartida.setText(tipo.toUpperCase());
         //cantidad.setText(JavaUtil.getDecimales(modeloSQL.getDouble(DETPARTIDABASE_CANTIDAD)));
         nombre.setText(trabajo.getString(TRABAJO_NOMBRE));
         descripcion.setText(trabajo.getString(TRABAJO_DESCRIPCION));
@@ -100,25 +89,26 @@ public class FragmentCUDDetpartidaBaseTrabajo extends FragmentCUD implements Int
     }
 
     @Override
-    protected void setLayout() {
-
-        layoutCuerpo = R.layout.fragment_cud_detpartidabase;
-
-    }
-
-    @Override
     protected void setInicio() {
 
         ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
+        visible(frdetalle);
 
         imagen = vistaForm.addViewImagenLayout();
-
-        descripcion = (EditMaterial) ctrl(R.id.etdesccdetpartidabase);
-        precio = (EditMaterial) ctrl(R.id.etpreciocdetpartidabase);
-        cantidad = (EditMaterial) ctrl(R.id.etcantcdetpartidabase,DETPARTIDABASE_CANTIDAD);
-        nombre = (EditMaterial) ctrl(R.id.etnomcdetpartidabase);
-        tiempoDet = (EditMaterial) ctrl(R.id.ettiempocdetpartidabase);
-        tipoDetPartida = (TextView) ctrl(R.id.tvtipocdetpartidabase);
+        imagen.setTextTitulo(getString(R.string.trabajo).toUpperCase());
+        nombre = vistaForm.addEditMaterialLayout(R.string.nombre);
+        nombre.setActivo(false);
+        descripcion = vistaForm.addEditMaterialLayout(R.string.descripcion);
+        descripcion.setActivo(false);
+        ViewGroupLayout vistaPrecio = new ViewGroupLayout(contexto,vistaForm.getViewGroup());
+        vistaPrecio.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
+        cantidad = vistaPrecio.addEditMaterialLayout(R.string.unidades, DETPARTIDABASE_CANTIDAD,1);
+        tiempoDet = vistaPrecio.addEditMaterialLayout(R.string.tiempo,1);
+        tiempoDet.setActivo(false);
+        precio = vistaPrecio.addEditMaterialLayout(R.string.importe,1);
+        precio.setActivo(false);
+        actualizarArrays(vistaPrecio);
+        actualizarArrays(vistaForm);
         imagen.getImagen().setClickable(false);
 
     }

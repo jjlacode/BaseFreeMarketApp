@@ -1,11 +1,17 @@
 package com.codevsolution.freemarketsapp.ui;
 
+import android.os.Bundle;
 import android.view.View;
 
 import com.codevsolution.base.android.FragmentGridImagen;
 import com.codevsolution.freemarketsapp.R;
 
 import java.util.ArrayList;
+
+import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.MENUCRM;
+import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.MENUMARKETING;
+import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.MENUUM;
+import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODUCTO;
 
 public class MenuInicio extends FragmentGridImagen {
 
@@ -24,6 +30,14 @@ public class MenuInicio extends FragmentGridImagen {
     @Override
     protected String setAyudaWeb() {
         return "inicio";
+    }
+
+    @Override
+    protected void setInicio() {
+        super.setInicio();
+
+        icFragmentos.showSubTitle(R.string.inicio);
+        reproducir(getString(R.string.inicio));
     }
 
     @Override
@@ -58,8 +72,11 @@ public class MenuInicio extends FragmentGridImagen {
 
         if (nombre.equals(crm)) {
 
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new MenuCRM()).addToBackStack(null).commit();
+            //activityBase.getSupportFragmentManager().beginTransaction()
+            //        .replace(R.id.content_main, new MenuCRM()).addToBackStack(null).commit();
+            bundle = new Bundle();
+            bundle.putString(ACTUAL, MENUCRM);
+            icFragmentos.enviarBundleAFragment(bundle, new MenuCRM());
 
         } else if (nombre.equals(proyectos)) {
 
@@ -73,17 +90,24 @@ public class MenuInicio extends FragmentGridImagen {
 
         } else if (nombre.equals(marketing)) {
 
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new MenuMarketing()).addToBackStack(null).commit();
+            //activityBase.getSupportFragmentManager().beginTransaction()
+            //        .replace(R.id.content_main, new MenuMarketing()).addToBackStack(null).commit();
+            bundle = new Bundle();
+            bundle.putString(ACTUAL, MENUMARKETING);
+            icFragmentos.enviarBundleAFragment(bundle, new MenuMarketing());
 
         } else if (nombre.equals(um)) {
 
-            activityBase.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.content_main, new UnionMarket()).addToBackStack(null).commit();
+            //activityBase.getSupportFragmentManager().beginTransaction()
+            //        .replace(R.id.content_main, new UnionMarket()).addToBackStack(null).commit();
+            bundle = new Bundle();
+            bundle.putString(ACTUAL, MENUUM);
+            icFragmentos.enviarBundleAFragment(bundle, new UnionMarket());
 
         } else if (nombre.equals(productos)) {
 
-
+            bundle = new Bundle();
+            bundle.putString(ACTUAL, PRODUCTO);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDProducto());
 
 

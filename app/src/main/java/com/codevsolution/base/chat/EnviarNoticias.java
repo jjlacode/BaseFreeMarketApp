@@ -81,7 +81,8 @@ public class EnviarNoticias extends FragmentChatBase implements
 
         activityBase.toolbar.setSubtitle(modeloSQL.getString(CHAT_NOMBRE) + " - " + getString(R.string.envio_noticias));
         gone(btnback);
-        listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, id, TABLA_CHAT, null, DETCHAT_FECHA + " DESC");
+        listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, id);
+        listaMsgChat = listaMsgChat.sort(DETCHAT_FECHA, DESCENDENTE);
         RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
         rvMsgChat.setAdapter(adaptadorDetChat);
 
@@ -129,7 +130,7 @@ public class EnviarNoticias extends FragmentChatBase implements
             valores.put(DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
             valores.put(DETCHAT_NOTIFICADO, 1);
             valores.put(DETCHAT_ID_CHAT, id);
-            secuencia = CRUDutil.crearRegistroSec(CAMPOS_DETCHAT, id, TABLA_CHAT, valores);
+            secuencia = CRUDutil.crearRegistroSec(CAMPOS_DETCHAT, id, valores);
 
             ModeloSQL chat = CRUDutil.updateModelo(campos, id);
 
@@ -157,7 +158,8 @@ public class EnviarNoticias extends FragmentChatBase implements
             valores.put(DETCHAT_MENSAJE, msg.toString());
             CRUDutil.actualizarRegistro(TABLA_DETCHAT, id, secuencia, valores);
             msgEnv.setText("");
-            listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, id, TABLA_CHAT, null, DETCHAT_FECHA + " DESC");
+            listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, id);
+            listaMsgChat = listaMsgChat.sort(DETCHAT_FECHA, DESCENDENTE);
             RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
             rvMsgChat.setAdapter(adaptadorDetChat);
 

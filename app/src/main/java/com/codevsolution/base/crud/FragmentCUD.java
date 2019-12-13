@@ -16,9 +16,12 @@ import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.style.Dialogos;
 import com.codevsolution.base.style.Estilos;
 
+import java.util.Arrays;
+
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 
 public abstract class FragmentCUD extends FragmentBaseCRUD {
 
@@ -46,13 +49,16 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
             }
             modeloSQL = null;
             secuencia = 0;
-            icFragmentos.showSubTitle(tituloNuevo);
+            if (tituloNuevo > 0) {
+                icFragmentos.showSubTitle(tituloNuevo);
+                reproducir(getString(tituloNuevo));
+            }
             vaciarControles();
             path = null;
             setNuevo();
-            setImagen();
+            cruDutil.setImagen(contexto);
         } else {
-            setImagen();
+            cruDutil.setImagen(contexto);
             datos();
         }
         back = false;
@@ -224,8 +230,9 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
             public void onClick(View v) {
                 Log.d(TAG, getMetodo());
 
-                onUpdate();
-                modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                if (onUpdate()) {
+                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                }
 
             }
         });
@@ -271,6 +278,11 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
         Log.d(TAG, getMetodo());
 
         path = null;
+        if (tituloNuevo > 0) {
+            subTitulo = getString(tituloNuevo);
+            icFragmentos.showSubTitle(subTitulo);
+            reproducir(subTitulo);
+        }
 
     }
 
@@ -302,25 +314,37 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
 
             if (tablaCab != null) {
 
-                secuencia = ConsultaBD.secInsertRegistroDetalle(campos, id, tablaCab, valores);
+                secuencia = ConsultaBD.secInsertRegistroDetalle(campos, id, valores);
 
                 modeloSQL = ConsultaBD.queryObjectDetalle(campos, id, secuencia);
 
-                Toast.makeText(getContext(), "Registro detalle creado", Toast.LENGTH_SHORT).show();
-                nuevo = false;
-                return true;
+                if (secuencia > 0) {
+
+                    Toast.makeText(getContext(), "Registro detalle creado", Toast.LENGTH_SHORT).show();
+                    System.out.println("Registro creado");
+                    System.out.println("modeloSQL = " + modeloSQL);
+                    nuevo = false;
+                    return true;
+                }
+                return false;
 
             } else {
 
                 id = ConsultaBD.idInsertRegistro(tabla, valores);
+                System.out.println("campos = " + Arrays.toString(campos));
+                System.out.println("id = " + id);
                 modeloSQL = ConsultaBD.queryObject(campos, id);
                 //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
                 //db.child(idUser).child(tabla).child(id).setValue(convertirModelo(modeloSQL));
+                if (id != null) {
+                    System.out.println("Registro creado");
+                    System.out.println("modeloSQL = " + modeloSQL);
 
-                Toast.makeText(getContext(), "Registro creado", Toast.LENGTH_SHORT).show();
-                nuevo = false;
-                return true;
-
+                    Toast.makeText(getContext(), "Registro creado", Toast.LENGTH_SHORT).show();
+                    nuevo = false;
+                    return true;
+                }
+                return false;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -410,7 +434,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
 
         for (String campo : campos) {
             if (campo.equals(CAMPO_RUTAFOTO)) {
-                setDato(CAMPO_RUTAFOTO, path);
+                putDato(valores, CAMPO_RUTAFOTO, path);
             }
         }
 

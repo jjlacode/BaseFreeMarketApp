@@ -6,10 +6,21 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.ASCENDENTE;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.CAMPO_SECUENCIA;
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.DESCENDENTE;
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.DOUBLE;
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.FLOAT;
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.IGUAL;
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.INT;
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.LONG;
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.SHORT;
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.STRING;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryListCampo;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryListDetalle;
+import static com.codevsolution.base.sqlite.ConsultaBD.queryListDetalleCampo;
+import static com.codevsolution.base.sqlite.ConsultaBD.queryListNoDecode;
 
 public class ListaModeloSQL extends ArrayList<ArrayList<ModeloSQL>> implements Serializable {
 
@@ -49,32 +60,122 @@ public class ListaModeloSQL extends ArrayList<ArrayList<ModeloSQL>> implements S
         add(queryList(campos));
     }
 
-    public ListaModeloSQL(String[] campos, String id, String tablaCab, String seleccion, String orden) {
+    public ListaModeloSQL(String tabla) {
 
         super();
 
-        add(queryListDetalle(campos, id, tablaCab, seleccion, orden));
+        add(queryList(tabla));
     }
 
-    public ListaModeloSQL(String[] campos, String seleccion, String orden) {
+    public ListaModeloSQL(String[] campos, boolean code) {
 
         super();
 
-        add(queryList(campos, seleccion, orden));
+        if (code) {
+            add(queryListNoDecode(campos));
+        } else {
+            add(queryList(campos));
+        }
     }
 
-    public ListaModeloSQL(String[] campos, String campo, String valor, String orden) {
+    public ListaModeloSQL(String[] campos, String id) {
 
         super();
-        add(queryListCampo(campos, campo, valor, orden));
 
+        add(queryListDetalle(campos, id));
     }
 
-    public ListaModeloSQL(String[] campos, String campo, String valor, String valor2, int flag, String orden) {
+    public ListaModeloSQL(String[] campos, String id, String campo, String valor) {
 
         super();
-        add(queryList(campos, campo, valor, valor2, flag, orden));
+
+        add(queryListDetalleCampo(campos, id, campo, valor));
     }
+
+    public ListaModeloSQL(String[] campos, String campo, String valor) {
+
+        super();
+        add(queryListCampo(campos, campo, valor));
+
+    }
+
+    public ListaModeloSQL(String[] campos, String campo, int valor) {
+
+        super();
+        add(queryListCampo(campos, campo, valor, IGUAL));
+
+    }
+
+    public ListaModeloSQL(String[] campos, String campo, long valor) {
+
+        super();
+        add(queryListCampo(campos, campo, valor, IGUAL));
+
+    }
+
+    public ListaModeloSQL(String[] campos, String campo, double valor) {
+
+        super();
+        add(queryListCampo(campos, campo, valor, IGUAL));
+
+    }
+
+    public ListaModeloSQL(String[] campos, String campo, float valor) {
+
+        super();
+        add(queryListCampo(campos, campo, valor, IGUAL));
+
+    }
+
+    public ListaModeloSQL(String[] campos, String campo, short valor) {
+
+        super();
+        add(queryListCampo(campos, campo, valor, IGUAL));
+
+    }
+
+    public ListaModeloSQL(String[] campos, String campo, String valor, int flag) {
+
+        super();
+        add(queryListCampo(campos, campo, valor, flag));
+
+    }
+
+    public ListaModeloSQL(String[] campos, String campo, int valor, int valor2, int flag) {
+
+        super();
+        add(queryList(campos, campo, valor, valor2, flag));
+
+    }
+
+    public ListaModeloSQL(String[] campos, String campo, long valor, long valor2, int flag) {
+
+        super();
+        add(queryList(campos, campo, valor, valor2, flag));
+
+    }
+
+    public ListaModeloSQL(String[] campos, String campo, double valor, double valor2, int flag) {
+
+        super();
+        add(queryList(campos, campo, valor, valor2, flag));
+
+    }
+
+    public ListaModeloSQL(String[] campos, String campo, float valor, float valor2, int flag) {
+
+        super();
+        add(queryList(campos, campo, valor, valor2, flag));
+
+    }
+
+    public ListaModeloSQL(String[] campos, String campo, short valor, short valor2, int flag) {
+
+        super();
+        add(queryList(campos, campo, valor, valor2, flag));
+
+    }
+
 
     public ArrayList<ModeloSQL> getLista() {
 
@@ -375,12 +476,8 @@ public class ListaModeloSQL extends ArrayList<ArrayList<ModeloSQL>> implements S
         set(0, queryList(campos));
     }
 
-    public void setLista(String[] campos, String seleccion, String orden) {
-        set(0, queryList(campos, seleccion, orden));
-    }
-
-    public void setLista(String[] campos, String id, String tablaCab, String seleccion, String orden) {
-        set(0, queryListDetalle(campos, id, tablaCab, seleccion, orden));
+    public void setLista(String[] campos, String id) {
+        set(0, queryListDetalle(campos, id));
     }
 
     public void setLista(int indice, ArrayList<ModeloSQL> lista) {
@@ -395,12 +492,8 @@ public class ListaModeloSQL extends ArrayList<ArrayList<ModeloSQL>> implements S
         set(indice, queryList(campos));
     }
 
-    public void setLista(int indice, String[] campos, String seleccion, String orden) {
-        set(indice, queryList(campos, seleccion, orden));
-    }
-
-    public void setLista(int indice, String[] campos, String id, String tablaCab, String seleccion, String orden) {
-        set(indice, queryListDetalle(campos, id, tablaCab, seleccion, orden));
+    public void setLista(int indice, String[] campos, String id) {
+        set(indice, queryListDetalle(campos, id));
     }
 
     public boolean chech() {
@@ -422,6 +515,141 @@ public class ListaModeloSQL extends ArrayList<ArrayList<ModeloSQL>> implements S
             return get(indice).size() > 0;
         }
         return false;
+    }
+
+    public ListaModeloSQL sort(String campo, int flagOrden) {
+
+        return sort(0, campo, flagOrden);
+    }
+
+    public ListaModeloSQL sort(int indice, String campo, int flagOrden) {
+
+        if (this.getLista(indice).size() == 0) {
+            return null;
+        }
+        ListaModeloSQL listaTmp = new ListaModeloSQL();
+        String tipo = this.get(indice).get(0).getTipoDato(campo);
+        int fin = this.getLista(indice).size();
+
+        for (int i = 0; i < fin; i++) {
+            ArrayList<ModeloSQL> listaMod = sublista(this, indice, i, fin);
+            ModeloSQL modeloSql = listaMod.get(i);
+
+            for (int i1 = i + 1; i1 < listaMod.size(); i1++) {
+
+                switch (tipo) {
+
+                    case STRING:
+                        switch (flagOrden) {
+
+                            case ASCENDENTE:
+                                if (listaMod.get(i1).getString(campo).compareTo(modeloSql.getString(campo)) < 0) {
+                                    modeloSql = listaMod.get(i1);
+                                }
+                                break;
+                            case DESCENDENTE:
+                                if (listaMod.get(i1).getString(campo).compareTo(modeloSql.getString(campo)) > 0) {
+                                    modeloSql = listaMod.get(i1);
+                                }
+                                break;
+                        }
+                        break;
+                    case INT:
+                        switch (flagOrden) {
+
+                            case ASCENDENTE:
+                                if (listaMod.get(i1).getInt(campo) < modeloSql.getInt(campo)) {
+                                    modeloSql = listaMod.get(i1);
+                                }
+                                break;
+                            case DESCENDENTE:
+                                if (listaMod.get(i1).getInt(campo) > modeloSql.getInt(campo)) {
+                                    modeloSql = listaMod.get(i1);
+                                }
+                                break;
+                        }
+                        break;
+                    case LONG:
+                        switch (flagOrden) {
+
+                            case ASCENDENTE:
+                                if (listaMod.get(i1).getLong(campo) < modeloSql.getLong(campo)) {
+                                    modeloSql = listaMod.get(i1);
+                                }
+                                break;
+                            case DESCENDENTE:
+                                if (listaMod.get(i1).getLong(campo) > modeloSql.getLong(campo)) {
+                                    modeloSql = listaMod.get(i1);
+                                }
+                                break;
+                        }
+                        break;
+                    case DOUBLE:
+                        switch (flagOrden) {
+
+                            case ASCENDENTE:
+                                if (listaMod.get(i1).getDouble(campo) < modeloSql.getDouble(campo)) {
+                                    modeloSql = listaMod.get(i1);
+                                }
+                                break;
+                            case DESCENDENTE:
+                                if (listaMod.get(i1).getDouble(campo) > modeloSql.getDouble(campo)) {
+                                    modeloSql = listaMod.get(i1);
+                                }
+                                break;
+                        }
+                        break;
+                    case FLOAT:
+                        switch (flagOrden) {
+
+                            case ASCENDENTE:
+                                if (listaMod.get(i1).getFloat(campo) < modeloSql.getFloat(campo)) {
+                                    modeloSql = listaMod.get(i1);
+                                }
+                                break;
+                            case DESCENDENTE:
+                                if (listaMod.get(i1).getFloat(campo) > modeloSql.getFloat(campo)) {
+                                    modeloSql = listaMod.get(i1);
+                                }
+                                break;
+                        }
+                        break;
+                    case SHORT:
+                        switch (flagOrden) {
+
+                            case ASCENDENTE:
+                                if (listaMod.get(i1).getShort(campo) < modeloSql.getShort(campo)) {
+                                    modeloSql = listaMod.get(i1);
+                                }
+                                break;
+                            case DESCENDENTE:
+                                if (listaMod.get(i1).getShort(campo) > modeloSql.getShort(campo)) {
+                                    modeloSql = listaMod.get(i1);
+                                }
+                                break;
+                        }
+                        break;
+                }
+            }
+            listaTmp.addModelo(modeloSql);
+
+        }
+        this.setLista(indice, listaTmp);
+
+        return this;
+
+    }
+
+    public ArrayList<ModeloSQL> sublista(ListaModeloSQL listaModeloSQL, int indice, int inicio, int fin) {
+
+        ArrayList<ModeloSQL> lista = new ArrayList<>();
+        for (int i = 0; i < listaModeloSQL.get(indice).size(); i++) {
+            if (i >= inicio && i <= fin) {
+                lista.add(listaModeloSQL.get(indice).get(i));
+            }
+        }
+
+        return lista;
     }
 
 }

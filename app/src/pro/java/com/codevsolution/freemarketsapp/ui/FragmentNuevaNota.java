@@ -1,5 +1,6 @@
 package com.codevsolution.freemarketsapp.ui;
 
+import android.os.Bundle;
 import android.view.View;
 
 import com.codevsolution.base.android.FragmentGridImagen;
@@ -27,6 +28,13 @@ public class FragmentNuevaNota extends FragmentGridImagen implements Interactor.
     @Override
     protected String setTAG() {
         return getClass().getSimpleName();
+    }
+
+    @Override
+    protected void setInicio() {
+        super.setInicio();
+        icFragmentos.showSubTitle(R.string.nueva_nota);
+        reproducir(getString(R.string.nueva_nota));
     }
 
     @Override
@@ -71,7 +79,9 @@ public class FragmentNuevaNota extends FragmentGridImagen implements Interactor.
 
         }
         if (tipoNota!=null) {
-            //bundle = new Bundle();
+            if (bundle==null) {
+                bundle = new Bundle();
+            }
             bundle.putString(TIPO, tipoNota);
             bundle.putString(ACTUAL, NOTA);
 

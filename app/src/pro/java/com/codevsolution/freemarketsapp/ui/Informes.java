@@ -8,6 +8,7 @@ import android.widget.CompoundButton;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
@@ -26,6 +27,11 @@ public class Informes extends FragmentMes implements Interactor.TiposEstados {
     private CheckBox chTodos;
     private CheckBox chClientes;
     private CheckBox chProyectos;
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
 
     @Override
     protected ListaModeloSQL setListaDia(long fecha) {

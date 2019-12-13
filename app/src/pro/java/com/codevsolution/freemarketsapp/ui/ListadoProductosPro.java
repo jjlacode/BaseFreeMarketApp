@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.media.ImagenUtil;
@@ -30,6 +31,11 @@ public class ListadoProductosPro extends FragmentMasterDetailNoSQLFormProductosF
         location = true;
         super.setOnCreateView(view, inflater, container);
 
+    }
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
     }
 
     @Override
@@ -63,11 +69,11 @@ public class ListadoProductosPro extends FragmentMasterDetailNoSQLFormProductosF
     private int crearProdProvBase(String idPartidabase) {
 
         ContentValues valores = new ContentValues();
-        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_DETPARTIDABASE, prodProv.getId());
-        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_PARTIDABASE, idPartidabase);
-        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_TIPO, TIPOPRODUCTOPROV);
+        putDato(valores, DETPARTIDABASE_ID_DETPARTIDABASE, prodProv.getId());
+        putDato(valores, DETPARTIDABASE_ID_PARTIDABASE, idPartidabase);
+        putDato(valores, DETPARTIDABASE_TIPO, TIPOPRODUCTOPROV);
 
-        return CRUDutil.crearRegistroSec(CAMPOS_DETPARTIDABASE, idPartidabase, TABLA_PARTIDABASE, valores);
+        return CRUDutil.crearRegistroSec(CAMPOS_DETPARTIDABASE, idPartidabase, valores);
 
     }
 

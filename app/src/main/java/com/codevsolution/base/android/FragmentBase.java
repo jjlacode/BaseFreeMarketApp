@@ -12,8 +12,10 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,10 +48,12 @@ import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.models.Contactos;
 import com.codevsolution.base.style.Estilos;
+import com.codevsolution.freemarketsapp.settings.Preferencias;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 
@@ -112,8 +116,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected ImageButton btnsave;
     protected ImageButton btnback;
     protected ImageButton btndelete;
-    protected OneFrameLayout frameAnimationCuerpo;
-    protected LockableScrollView scrollDetalle;
+    public OneFrameLayout frameAnimationCuerpo;
+    public LockableScrollView scrollDetalle;
     protected static float densidad;
     protected static final int RECOGNIZE_SPEECH_ACTIVITY = 30;
     protected String grabarVoz;
@@ -139,7 +143,9 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected Timer timer;
     protected String perfilUser;
     protected String idUser;
-    protected boolean autoGuardado = true;
+    protected boolean autoGuardado;
+    protected boolean letraProp;
+    protected boolean cifrado;
     protected int tiempoGuardado = 1;
     protected int sizeTextD;
     protected boolean swipeOn;
@@ -147,13 +153,16 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected FragmentBase fragment;
     protected FragmentBase parent;
     protected RelativeLayout frContenedor;
-    private LinearLayoutCompat frContenedorMod;
+    protected LinearLayoutCompat frContenedorMod;
+    protected ViewGroupLayout vistaMain;
+    protected TextToSpeech tts;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, getMetodo());
 
+        fragment = setFragment();
         parent = getParent();
         if (contexto == null) {
             setContext();
@@ -193,7 +202,19 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         perfilUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), PREFERENCIAS, PERFILUSER, NULL);
         idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
 
+        setPreferences();
         super.onCreate(savedInstanceState);
+    }
+
+    protected abstract FragmentBase setFragment();
+
+    protected void setPreferences() {
+
+        autoGuardado = getPref(Preferencias.AUTOGUARDADO, true);
+        letraProp = getPref(Preferencias.LETRAPROP, true);
+        cifrado = getPref(Preferencias.CIFRADO, false);
+        tiempoGuardado = getPref(Preferencias.TIEMPOAUTOGUARDADO, 1);
+
     }
 
     public boolean esMultiPanel(DisplayMetrics metrics) {
@@ -205,6 +226,10 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected FragmentBase getParent() {
 
         return this;
+    }
+
+    public String getTAG() {
+        return TAG;
     }
 
     protected boolean esModulo() {
@@ -220,23 +245,61 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         containerMain = container;
 
         view = inflater.inflate(Estilos.getIdLayout(contexto, "module"), container, false);
-        frContenedorMod = view.findViewById(Estilos.getIdResource(contexto, "fr_content_mod"));
-        Estilos.setLayoutParams(frContenedorMod);
-        frContenedorMod.setOrientation(LinearLayoutCompat.VERTICAL);
-        timerg = (Chronometer) addVista(new Chronometer(contexto), frContenedorMod);
+        //frContenedorMod = view.findViewById(Estilos.getIdResource(contexto, "fr_content_mod"));
+        //Estilos.setLayoutParams(frContenedorMod);
+        //frContenedorMod.setOrientation(LinearLayoutCompat.VERTICAL);
+        frContenedor = view.findViewById(Estilos.getIdResource(contexto, "fr_content_mod"));
+        Estilos.setLayoutParams(frContenedor);
+        timerg = (Chronometer) addVista(new Chronometer(contexto), frContenedor);
         timerg.setVisibility(View.GONE);
-        frCabecera = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), frContenedorMod);
-        Estilos.setLayoutParams(frCabecera);
+        frCabecera = new LinearLayoutCompat(contexto);
+        LinearLayoutCompat sepCab = new LinearLayoutCompat(contexto);
+        int idFrCab = frCabecera.getId();
+        if (idFrCab < 0) {
+            idFrCab = View.generateViewId();
+            frCabecera.setId(idFrCab);
+        }
+        int idSepCab = sepCab.getId();
+        if (idSepCab < 0) {
+            idSepCab = View.generateViewId();
+            sepCab.setId(idSepCab);
+        }
+        frCuerpo = new LinearLayoutCompat(contexto);
+        int idFrCuerpo = frCuerpo.getId();
+        if (idFrCuerpo < 0) {
+            idFrCuerpo = View.generateViewId();
+            frCuerpo.setId(idFrCuerpo);
+        }
+        frPubli = new LinearLayoutCompat(contexto);
+        int idFrPubli = frPubli.getId();
+        if (idFrPubli < 0) {
+            idFrPubli = View.generateViewId();
+            frPubli.setId(idFrPubli);
+        }
+        frPie = new LinearLayoutCompat(contexto);
+        int idFrPie = frPie.getId();
+        if (idFrPie < 0) {
+            idFrPie = View.generateViewId();
+            frPie.setId(idFrPie);
+        }
+
+        Estilos.setLayoutParamsRelative(frContenedor, frCabecera, RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT, new int[]{RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.ALIGN_PARENT_START});
         frCabecera.setOrientation(LinearLayoutCompat.VERTICAL);
-        frCuerpo = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), frContenedorMod);
-        Estilos.setLayoutParams(frCuerpo);
+        Estilos.setLayoutParamsRelative(frContenedor, sepCab, RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT, new int[]{RelativeLayout.BELOW, RelativeLayout.ALIGN_PARENT_START}, new int[]{idFrCab, 0});
+        Estilos.setLayoutParamsRelative(frContenedor, frCuerpo, RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT, new int[]{RelativeLayout.BELOW, RelativeLayout.ABOVE,
+                        RelativeLayout.ALIGN_PARENT_START}, new int[]{idSepCab, idFrPie, 0});
         frCuerpo.setOrientation(LinearLayoutCompat.VERTICAL);
-        frPie = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), frContenedorMod);
-        Estilos.setLayoutParams(frPie);
+        Estilos.setLayoutParamsRelative(frContenedor, frPie, RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT, new int[]{RelativeLayout.ABOVE, RelativeLayout.ALIGN_PARENT_START}, new int[]{idFrPubli, 0});
         frPie.setOrientation(LinearLayoutCompat.VERTICAL);
-        frPubli = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), frContenedorMod);
-        Estilos.setLayoutParams(frPubli);
+        Estilos.setLayoutParamsRelative(frContenedor, frPubli, RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT, new int[]{RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.ALIGN_PARENT_START});
         frPubli.setOrientation(LinearLayoutCompat.VERTICAL);
+        frPubli.setBackgroundColor(Estilos.colorSecondary);
+        frPubli.setMinimumHeight(activityBase.fabVoz.getHeight());
         frLista = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), frCuerpo);
         Estilos.setLayoutParams(frLista);
         frLista.setOrientation(LinearLayoutCompat.VERTICAL);
@@ -425,6 +488,38 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
     protected void setRecuperarPersistencia(SharedPreferences persistencia) {
 
+    }
+
+    protected void reproducir(String text) {
+
+        tts = new TextToSpeech(contexto, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    int result = tts.setLanguage(Locale.getDefault());
+
+                    if (result == TextToSpeech.LANG_MISSING_DATA
+                            || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Log.e("TTS", "This Language is not supported");
+                    } else {
+
+                        if (text == null || text.isEmpty())
+                            return;
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            String utteranceId = this.hashCode() + "";
+                            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId);
+                        } else {
+                            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+                        }
+
+                    }
+                } else {
+                    Log.e("TTS", "Initilization Failed!");
+                }
+
+            }
+        });
     }
 
     @Override
@@ -951,7 +1046,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
                 (SensorManager) activityBase.getSystemService(SENSOR_SERVICE);
 
         proximitySensor =
-                sensorManagerProx.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+                sensorManagerProx != null ? sensorManagerProx.getDefaultSensor(Sensor.TYPE_PROXIMITY) : null;
 
         if (proximitySensor == null) {
             Log.e(TAG, "Proximity sensor not available.");
@@ -979,7 +1074,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected boolean sensorLuz() {
 
         sensorManagerLuz = (SensorManager) activityBase.getSystemService(Context.SENSOR_SERVICE);
-        mALS = sensorManagerLuz.getDefaultSensor(Sensor.TYPE_LIGHT);
+        mALS = sensorManagerLuz != null ? sensorManagerLuz.getDefaultSensor(Sensor.TYPE_LIGHT) : null;
 
         if (mALS == null) {
             Log.e(TAG, "sensor de luz not available.");
@@ -1007,33 +1102,32 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         if (resultCode == RESULT_OK) {
 
-            switch (requestCode) {
+            if (requestCode == RECOGNIZE_SPEECH_ACTIVITY) {
+                ArrayList<String> speech = data
+                        .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 
-                case RECOGNIZE_SPEECH_ACTIVITY:
-
-                    ArrayList<String> speech = data
-                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-
+                if (speech != null) {
                     grabarVoz = speech.get(0).toLowerCase();
+                }
 
-                    if (grabarVoz.substring(0, 16).equals("llamar contacto ")) {
+                if (grabarVoz.substring(0, 16).equals("llamar contacto ")) {
 
-                        llamarContacto(grabarVoz.substring(16));
+                    llamarContacto(grabarVoz.substring(16));
 
-                    } else if (grabarVoz.substring(0, 5).equals("ir a ")) {
+                } else if (grabarVoz.substring(0, 5).equals("ir a ")) {
 
-                        activityBase.seleccionarDestino(grabarVoz.substring(5));
+                    activityBase.seleccionarDestino(grabarVoz.substring(5));
 
-                    } else if (grabarVoz.substring(0, 6).equals("crear ") ||
-                            grabarVoz.substring(0, 6).equals("nuevo ")) {
+                } else if (grabarVoz.substring(0, 6).equals("crear ") ||
+                        grabarVoz.substring(0, 6).equals("nuevo ")) {
 
-                        activityBase.seleccionarNuevoDestino(grabarVoz.substring(6));
+                    activityBase.seleccionarNuevoDestino(grabarVoz.substring(6));
 
-                    } else if (grabarVoz.equals(Estilos.getString(contexto, "salir").toLowerCase())) {
+                } else if (grabarVoz.equals(Estilos.getString(contexto, "salir").toLowerCase())) {
 
-                        activityBase.finish();
+                    activityBase.finish();
 
-                    }
+                }
             }
 
             code = 10000;
@@ -1042,8 +1136,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
                 if (requestCode == code) {
                     ArrayList<String> speech = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    String strSpeech2Text = speech.get(0);
-                    grabarVoz = strSpeech2Text;
+                    grabarVoz = speech.get(0);
 
                     materialEdit.setText(grabarVoz);
                     alCambiarCampos(materialEdit);
@@ -1058,8 +1151,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
                 if (requestCode == code) {
                     ArrayList<String> speech = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    String strSpeech2Text = speech.get(0);
-                    grabarVoz = strSpeech2Text;
+                    grabarVoz = speech.get(0);
 
                     materialEdit.setText(grabarVoz);
                     alCambiarCampos(materialEdit);
@@ -1184,4 +1276,70 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         return Estilos.getIdDrawable(contexto, drawable);
     }
 
+    protected void setPref(String key, String valor) {
+
+        AndroidUtil.setSharePreference(contexto, PREFERENCIAS + idUser, key, valor);
+    }
+
+    protected void setPref(String key, boolean valor) {
+
+        AndroidUtil.setSharePreference(contexto, PREFERENCIAS + idUser, key, valor);
+    }
+
+    protected void setPref(String key, int valor) {
+
+        AndroidUtil.setSharePreference(contexto, PREFERENCIAS + idUser, key, valor);
+    }
+
+    protected void setPref(String key, long valor) {
+
+        AndroidUtil.setSharePreference(contexto, PREFERENCIAS + idUser, key, valor);
+    }
+
+    protected void setPref(String key, float valor) {
+
+        AndroidUtil.setSharePreference(contexto, PREFERENCIAS + idUser, key, valor);
+    }
+
+    protected String getPref(String key, String defecto) {
+
+        return AndroidUtil.getSharePreference(contexto, PREFERENCIAS + idUser, key, defecto);
+    }
+
+    protected boolean getPref(String key, boolean defecto) {
+
+        return AndroidUtil.getSharePreference(contexto, PREFERENCIAS + idUser, key, defecto);
+    }
+
+    protected int getPref(String key, int defecto) {
+
+        return AndroidUtil.getSharePreference(contexto, PREFERENCIAS + idUser, key, defecto);
+    }
+
+    protected long getPref(String key, long defecto) {
+
+        return AndroidUtil.getSharePreference(contexto, PREFERENCIAS + idUser, key, defecto);
+    }
+
+    protected float getPref(String key, float defecto) {
+
+        return AndroidUtil.getSharePreference(contexto, PREFERENCIAS + idUser, key, defecto);
+    }
+
+    public MainActivityBase getActivityBase() {
+        return activityBase;
+    }
+
+    protected Callback callback;
+
+    public void setCallback(Callback callback) {
+        this.callback = callback;
+    }
+
+    public interface Callback {
+
+        void onAfterSetDatos();
+
+        void onBeforeSetdatos();
+    }
 }

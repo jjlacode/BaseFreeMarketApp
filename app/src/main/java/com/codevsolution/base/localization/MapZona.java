@@ -20,6 +20,7 @@ import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.CheckPermisos;
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
+import com.codevsolution.base.android.controls.LockableScrollView;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.models.ListaModeloSQL;
@@ -38,7 +39,6 @@ import java.util.List;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static com.codevsolution.base.javautil.JavaUtil.Constantes.IGUAL;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.PREFERENCIAS;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.MIUBICACION;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.MUNDIAL;
@@ -251,7 +251,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
         if (listaMarcadores != null) {
             for (ModeloSQL marcador : listaMarcadores.getLista()) {
-                listaZonasIdOldDel.add(CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR), IGUAL).getLista());
+                listaZonasIdOldDel.add(CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR)).getLista());
             }
         }
     }
@@ -263,7 +263,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
         if (listaMarcadores != null) {
 
             for (ModeloSQL marcador : listaMarcadores.getLista()) {
-                listaZonasIdOldAdd.add(CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR), IGUAL).getLista());
+                listaZonasIdOldAdd.add(CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR)).getLista());
             }
         }
 
@@ -303,6 +303,9 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
                         ((FragmentBase) fragmentParent).setActivoFrameAnimationCuerpo(true);
                         ((FragmentBase) fragmentParent).setScrollingDetalleEnable(true);
+                        if (viewGroupParent instanceof LockableScrollView) {
+                            ((LockableScrollView) viewGroupParent).setScrollingEnabled(true);
+                        }
 
                         ArrayList<Marker> listaMarker = mapa.getListaMarkers();
                         if (onReadyMapListener != null) {
@@ -322,6 +325,9 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
                         ((FragmentBase) fragmentParent).setActivoFrameAnimationCuerpo(false);
                         ((FragmentBase) fragmentParent).setScrollingDetalleEnable(false);
+                        if (viewGroupParent instanceof LockableScrollView) {
+                            ((LockableScrollView) viewGroupParent).setScrollingEnabled(false);
+                        }
                         ArrayList<Marker> listaMarker = mapa.getListaMarkers();
                         if (onReadyMapListener != null) {
                             onReadyMapListener.onMapLongClickListener(listaMarker);
@@ -369,6 +375,10 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
                         ((FragmentBase) fragmentParent).setActivoFrameAnimationCuerpo(false);
                         ((FragmentBase) fragmentParent).setScrollingDetalleEnable(false);
+                        if (viewGroupParent instanceof LockableScrollView) {
+                            ((LockableScrollView) viewGroupParent).setScrollingEnabled(false);
+                        }
+
                         marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                         if (onReadyMapListener != null) {
                             onReadyMapListener.onMarkerDragStart();
@@ -401,6 +411,10 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
                         ((FragmentBase) fragmentParent).setActivoFrameAnimationCuerpo(true);
                         ((FragmentBase) fragmentParent).setScrollingDetalleEnable(true);
+                        if (viewGroupParent instanceof LockableScrollView) {
+                            ((LockableScrollView) viewGroupParent).setScrollingEnabled(true);
+                        }
+
                         marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
                     }
                 });
@@ -453,7 +467,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
         for (ModeloSQL marcador : listaMarcadores.getLista()) {
 
-            ListaModeloSQL listaZonasMarcador = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR), IGUAL);
+            ListaModeloSQL listaZonasMarcador = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR));
             for (ModeloSQL zona : listaZonasMarcador.getLista()) {
                 listaZonasId.addModelo(zona);
             }
@@ -493,7 +507,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
         for (ModeloSQL marcador : listaMarcadores.getLista()) {
 
-            ListaModeloSQL listaZonasMarcador = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR), IGUAL);
+            ListaModeloSQL listaZonasMarcador = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR));
             for (ModeloSQL zona : listaZonasMarcador.getLista()) {
                 listaZonasId.addModelo(zona);
             }
@@ -683,7 +697,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
     protected boolean comprobarZonaLista(String s) {
 
-        ListaModeloSQL listaZonas = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, id, IGUAL);
+        ListaModeloSQL listaZonas = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, id);
         for (ModeloSQL zona : listaZonas.getLista()) {
             if (s.equals(zona.getString(ZONA_NOMBRE))) {
                 return false;
@@ -696,7 +710,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
     protected String setZonasMarcador(ModeloSQL marcador) {
 
         String id = marcador.getString(MARCADOR_ID_MARCADOR);
-        ListaModeloSQL listaZonas = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, id, IGUAL);
+        ListaModeloSQL listaZonas = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, id);
         StringBuilder textoZona = new StringBuilder();
         for (ModeloSQL zona : listaZonas.getLista()) {
             textoZona.append(zona.getString(ZONA_NOMBRE)).append(", ");
@@ -707,7 +721,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
     protected void borrarZonasMarcador(ModeloSQL marcador) {
 
-        ListaModeloSQL listaZonasMarcador = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR), IGUAL);
+        ListaModeloSQL listaZonasMarcador = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR));
         for (ModeloSQL zona : listaZonasMarcador.getLista()) {
             CRUDutil.borrarRegistro(TABLA_ZONA, zona.getString(ZONA_ID_ZONA));
         }
@@ -959,7 +973,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
         for (ModeloSQL marcadore : listaMarcadores.getLista()) {
             if (marcadore.getString(MARCADOR_ID_MARCADOR).equals(marcador.getString(MARCADOR_ID_MARCADOR))) {
                 listaMarcadores.getLista().remove(marcadore);
-                ListaModeloSQL listaZonasMarcador = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR), IGUAL);
+                ListaModeloSQL listaZonasMarcador = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR));
                 for (ModeloSQL zonaMarcador : listaZonasMarcador.getLista()) {
                     CRUDutil.borrarRegistro(TABLA_ZONA, zonaMarcador.getString(ZONA_ID_ZONA));
                 }
@@ -979,7 +993,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
     private boolean setListaMarcadores() {
 
         if (id != null) {
-            listaMarcadores = CRUDutil.setListaModelo(CAMPOS_MARCADOR, MARCADOR_ID_REL, id, IGUAL);
+            listaMarcadores = CRUDutil.setListaModelo(CAMPOS_MARCADOR, MARCADOR_ID_REL, id);
             return listaMarcadores != null;
         }
 

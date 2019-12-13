@@ -34,5 +34,13 @@ public class AutoArranque extends BroadcastReceiver {
         JobScheduler jobScheduler = (JobScheduler) AppActivity.getAppContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
         jobScheduler.schedule(info);
 
+        ComponentName serviceComponent1 = new ComponentName(AppActivity.getAppContext(), ServicioVoz.class);
+        JobInfo info1 = new JobInfo.Builder(1, serviceComponent1)
+                .setMinimumLatency(500)
+                .setOverrideDeadline(500)
+                .build();
+        JobScheduler jobScheduler1 = (JobScheduler) AppActivity.getAppContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler1.schedule(info1);
+
     }
 }

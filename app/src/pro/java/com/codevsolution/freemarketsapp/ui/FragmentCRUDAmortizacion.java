@@ -15,6 +15,7 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.FragmentCRUD;
@@ -28,6 +29,7 @@ import com.codevsolution.freemarketsapp.logica.Interactor;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 import static com.codevsolution.freemarketsapp.logica.Interactor.setNamefdef;
 
 public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPry.Tablas {
@@ -49,6 +51,12 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
     public FragmentCRUDAmortizacion() {
         // Required empty public constructor
     }
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
+
     @Override
     protected TipoViewHolder setViewHolder(View view){
 
@@ -64,19 +72,6 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
     protected void setTabla() {
 
         tabla = TABLA_AMORTIZACION;
-
-    }
-
-    @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
 
     }
 
@@ -202,15 +197,15 @@ public class FragmentCRUDAmortizacion extends FragmentCRUD implements ContratoPr
     @Override
     protected void setContenedor() {
 
-        setDato(AMORTIZACION_NOMBRE,nombre.getText().toString());
-        setDato(AMORTIZACION_DESCRIPCION,descripcion.getText().toString());
-        setDato(AMORTIZACION_CANTIDAD, JavaUtil.comprobarDouble(cantidad.getText().toString()));
-        setDato(AMORTIZACION_PRECIO, JavaUtil.comprobarDouble(importe.getText().toString()));
-        setDato(AMORTIZACION_ANYOS, JavaUtil.comprobarInteger(anios.getText().toString()));
-        setDato(AMORTIZACION_MESES, JavaUtil.comprobarInteger(meses.getText().toString()));
-        setDato(AMORTIZACION_DIAS, JavaUtil.comprobarInteger(dias.getText().toString()));
-        setDato(AMORTIZACION_FECHACOMPRA,fechaCompra);
-        setDato(AMORTIZACION_RUTAFOTO, path);
+        putDato(valores,AMORTIZACION_NOMBRE,nombre.getText().toString());
+        putDato(valores,AMORTIZACION_DESCRIPCION,descripcion.getText().toString());
+        putDato(valores,AMORTIZACION_CANTIDAD, JavaUtil.comprobarDouble(cantidad.getText().toString()));
+        putDato(valores,AMORTIZACION_PRECIO, JavaUtil.comprobarDouble(importe.getText().toString()));
+        putDato(valores,AMORTIZACION_ANYOS, JavaUtil.comprobarInteger(anios.getText().toString()));
+        putDato(valores,AMORTIZACION_MESES, JavaUtil.comprobarInteger(meses.getText().toString()));
+        putDato(valores,AMORTIZACION_DIAS, JavaUtil.comprobarInteger(dias.getText().toString()));
+        putDato(valores,AMORTIZACION_FECHACOMPRA,fechaCompra);
+        putDato(valores,AMORTIZACION_RUTAFOTO, path);
 
 
     }

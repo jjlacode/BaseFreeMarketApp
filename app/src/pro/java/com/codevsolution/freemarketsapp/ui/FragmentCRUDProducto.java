@@ -23,6 +23,7 @@ import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
@@ -53,6 +54,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
     private ModeloSQL proveedor;
     private EditMaterialLayout nombreProv;
+    private EditMaterialLayout nombre;
     private Button addPartida;
     private CheckBox fire;
     private CheckBox firePro;
@@ -101,6 +103,11 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     }
 
     @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
+
+    @Override
     protected TipoViewHolder setViewHolder(View view) {
         return new ViewHolderRV(view);
     }
@@ -114,19 +121,6 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     protected void setTabla() {
 
         tabla = TABLA_PRODUCTO;
-
-    }
-
-    @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
 
     }
 
@@ -150,6 +144,10 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
             update();
             nombreProv.setText(proveedor.getString(PROVEEDOR_NOMBRE));
         }
+        if (nnn(nombre.getTexto())){
+            nombre.reproducir();
+        }
+
         String idPartidabase = AndroidUtil.getSharePreference(contexto, PERSISTENCIA, PARTIDABASE_ID_PARTIDABASE, NULL);
         if (nnn(idPartidabase)) {
 
@@ -290,12 +288,12 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         if (nnn(id) && nnn(tipo)) {
             if (tipo.equals(PRODUCTOCLI)) {
 
-                ImagenUtil.guardarImageFirestore(modeloSQL.getString(PRODUCTO_ID_PRODFIRE) + tipo, imagenCli, path);
+                ImagenUtil.guardarImageFirestore(SLASH+idUser+SLASH+modeloSQL.getString(PRODUCTO_ID_PRODFIRE) + tipo, imagenCli, path);
                 tipo = null;
 
             } else if (tipo.equals(PRODUCTOPRO)) {
 
-                ImagenUtil.guardarImageFirestore(modeloSQL.getString(PRODUCTO_ID_PRODFIREPRO) + tipo, imagenPro, path);
+                ImagenUtil.guardarImageFirestore(SLASH+idUser+SLASH+modeloSQL.getString(PRODUCTO_ID_PRODFIREPRO) + tipo, imagenPro, path);
                 tipo = null;
 
             }
@@ -314,7 +312,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         imagen.getLinearLayoutCompat().setFocusable(false);
 
 
-        vistaForm.addEditMaterialLayout(getString(R.string.nombre), PRODUCTO_NOMBRE);
+        nombre = vistaForm.addEditMaterialLayout(getString(R.string.nombre), PRODUCTO_NOMBRE);
         vistaForm.addEditMaterialLayout(getString(R.string.descripcion), PRODUCTO_DESCRIPCION);
         ViewGroupLayout vistaPrecio = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
         vistaPrecio.setOrientacion(ViewGroupLayout.ORI_LLC_HORIZONTAL);
@@ -607,6 +605,21 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
     }
 
+    @Override
+    protected void onEliminarImagen() {
+        super.onEliminarImagen();
+
+        if (tipo.equals(PRODUCTOCLI)) {
+
+            ImagenUtil.deleteImagefirestore(SLASH + idUser + SLASH + modeloSQL.getString(PRODUCTO_ID_PRODFIRE) + tipo);
+
+        }else if (tipo.equals(PRODUCTOPRO)){
+
+            ImagenUtil.deleteImagefirestore(SLASH + idUser + SLASH + modeloSQL.getString(PRODUCTO_ID_PRODFIREPRO) + tipo);
+
+        }
+    }
+
     private void actualizarProdCli() {
 
         System.out.println("Actualiza prodCli");
@@ -837,10 +850,10 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
     private int crearProductoBase(String idPartidabase) {
         ContentValues valores = new ContentValues();
-        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_DETPARTIDABASE, modeloSQL.getString(PRODUCTO_ID_PRODUCTO));
-        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_TIPO, TIPOPRODUCTO);
-        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_PARTIDABASE, idPartidabase);
-        return CRUDutil.crearRegistroSec(CAMPOS_DETPARTIDABASE, idPartidabase, TABLA_PARTIDABASE, valores);
+        putDato(valores, DETPARTIDABASE_ID_DETPARTIDABASE, modeloSQL.getString(PRODUCTO_ID_PRODUCTO));
+        putDato(valores, DETPARTIDABASE_TIPO, TIPOPRODUCTO);
+        putDato(valores, DETPARTIDABASE_ID_PARTIDABASE, idPartidabase);
+        return CRUDutil.crearRegistroSec(CAMPOS_DETPARTIDABASE, idPartidabase, valores);
 
     }
 
@@ -848,8 +861,8 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
     protected void setContenedor() {
 
         if (proveedor != null) {
-            setDato(PRODUCTO_ID_PROVEEDOR, proveedor.getString(PROVEEDOR_ID_PROVEEDOR));
-            setDato(PRODUCTO_NOMBREPROV, proveedor.getString(PROVEEDOR_NOMBRE));
+            putDato(valores,PRODUCTO_ID_PROVEEDOR, proveedor.getString(PROVEEDOR_ID_PROVEEDOR));
+            putDato(valores,PRODUCTO_NOMBREPROV, proveedor.getString(PROVEEDOR_NOMBRE));
         }
 
     }

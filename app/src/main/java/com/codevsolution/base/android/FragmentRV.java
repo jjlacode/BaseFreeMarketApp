@@ -117,9 +117,7 @@ public abstract class FragmentRV extends FragmentBase {
 
         visible(inicio);
         listaRV();
-        if (subTitulo == null) {
-            activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
-        }
+
         acciones();
     }
 

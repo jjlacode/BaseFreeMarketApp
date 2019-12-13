@@ -477,4 +477,14 @@ public class ModeloSQL implements Serializable {
     public void setCampostabla(int campostabla) {
         this.campostabla = campostabla;
     }
+
+    public String getTipoDato(String campo) {
+
+        for (int i = 0; i < estructura.length; i++) {
+            if (estructura[i].equals(campo)) {
+                return estructura[i + 2];
+            }
+        }
+        return null;
+    }
 }

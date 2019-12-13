@@ -52,6 +52,9 @@ public class ProviderSystem extends ContentProvider
     public static final int ZONA = 208;
     public static final int ZONA_ID = 209;
 
+    public static final int LOG = 210;
+    public static final int LOG_ID = 211;
+
     public static final String AUTORIDAD = AUTORIDAD_CONTENIDO;//"jjlacode.com.freelanceproject2";
 
     static {
@@ -71,6 +74,9 @@ public class ProviderSystem extends ContentProvider
 
         uriMatcher.addURI(AUTORIDAD, TABLA_ZONA, ZONA);
         uriMatcher.addURI(AUTORIDAD, TABLA_ZONA + "/*", ZONA_ID);
+
+        uriMatcher.addURI(AUTORIDAD, TABLA_LOG, LOG);
+        uriMatcher.addURI(AUTORIDAD, TABLA_LOG + "/*", LOG_ID);
 
 
     }
@@ -110,6 +116,10 @@ public class ProviderSystem extends ContentProvider
                 return generarMime(TABLA_ZONA);
             case ZONA_ID:
                 return generarMimeItem(TABLA_ZONA);
+            case LOG:
+                return generarMime(TABLA_LOG);
+            case LOG_ID:
+                return generarMimeItem(TABLA_LOG);
 
             default:
                 throw new UnsupportedOperationException("Uri desconocida =>" + uri);
@@ -210,6 +220,25 @@ public class ProviderSystem extends ContentProvider
                 setTablas = tabla;
                 proyeccion = tabla + ".*";
                 idTabla = ZONA_ID_ZONA;
+                esDetalle = false;
+                esId = true;
+                break;
+
+            case LOG:
+                tabla = TABLA_LOG;
+                setTablas = tabla;
+                proyeccion = tabla + ".*";
+                idTabla = LOG_ID_LOG;
+                esDetalle = false;
+                esId = false;
+                break;
+
+            case LOG_ID:
+
+                tabla = TABLA_LOG;
+                setTablas = tabla;
+                proyeccion = tabla + ".*";
+                idTabla = LOG_ID_LOG;
                 esDetalle = false;
                 esId = true;
                 break;

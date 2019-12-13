@@ -490,7 +490,8 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                 }
             }
 
-            listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, idChat, TABLA_CHAT, null, DETCHAT_FECHA + " DESC");
+            listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, idChat);
+            listaMsgChat = listaMsgChat.sort(DETCHAT_FECHA, DESCENDENTE);
 
             RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
             rvMsgChat.setAdapter(adaptadorDetChat);
@@ -706,7 +707,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             @Override
             public void onCreateOk(String key) {
 
-                ListaModeloSQL listaMarcUser = new ListaModeloSQL(CAMPOS_MARCADOR, MARCADOR_ID_REL, idUser, null);
+                ListaModeloSQL listaMarcUser = new ListaModeloSQL(CAMPOS_MARCADOR, MARCADOR_ID_REL, idUser);
 
                 for (ModeloSQL marcUser : listaMarcUser.getLista()) {
 
@@ -766,9 +767,16 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
     protected void guardarImagen(ViewImagenLayout imagen, String path) {
 
         if (nnn(id) && nnn(tipo)) {
-            ImagenUtil.guardarImageFirestore(id, imagen, path);
-            ImagenUtil.guardarImageFirestore(id + tipo, imagen, path);
+            ImagenUtil.guardarImageFirestore(SLASH + idUser + SLASH + id + tipo, imagen, path);
         }
+    }
+
+    @Override
+    protected void eliminarImagen() {
+
+        ImagenUtil.deleteImagefirestore(SLASH + idUser + SLASH + id + tipo);
+
+        super.eliminarImagen();
     }
 
     protected void actualizarProdCrud(Productos prodProv, ModeloSQL prodCrud) {

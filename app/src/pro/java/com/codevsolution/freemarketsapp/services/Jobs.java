@@ -135,7 +135,6 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    System.out.println("paso 1");
                     for (final DataSnapshot sorteo : dataSnapshot.getChildren()) {
 
                         DatabaseReference dbfin = FirebaseDatabase.getInstance().getReference();

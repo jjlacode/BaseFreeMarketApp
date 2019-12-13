@@ -13,6 +13,7 @@ import androidx.cardview.widget.CardView;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
@@ -30,6 +31,11 @@ import static com.codevsolution.freemarketsapp.logica.Interactor.TiposEstados.TP
 
 
 public class Presupuestos extends FragmentMes {
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
 
     @Override
     protected ListaModeloSQL setListaDia(long fecha) {

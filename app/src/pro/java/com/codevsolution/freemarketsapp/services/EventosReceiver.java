@@ -37,11 +37,11 @@ public class EventosReceiver extends ReceiverBase implements JavaUtil.Constantes
                         contenido);
                 ContentValues valores = new ContentValues();
                 if (evento.getLong(EVENTO_AVISO) < MINUTOSLONG * 2) {
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, 0);
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_NOTIFICADO, 1);
+                    ConsultaBD.putDato(valores, EVENTO_AVISO, 0);
+                    ConsultaBD.putDato(valores, EVENTO_NOTIFICADO, 1);
 
                 } else {
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, Math.round((double) evento.getLong(EVENTO_AVISO) / 2));
+                    ConsultaBD.putDato(valores, EVENTO_AVISO, Math.round((double) evento.getLong(EVENTO_AVISO) / 2));
 
                 }
                 ConsultaBD.updateRegistro(TABLA_EVENTO, evento.getString(EVENTO_ID_EVENTO), valores);
@@ -57,8 +57,8 @@ public class EventosReceiver extends ReceiverBase implements JavaUtil.Constantes
             ContentValues valores = new ContentValues();
             long minhoy = JavaUtil.sumaHoraMin(JavaUtil.hoy());
             long minAviso = JavaUtil.sumaHoraMin(evento.getLong(EVENTO_HORAINIEVENTO));
-            ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_NOTIFICADO, 0);
-            ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, (minAviso - minhoy - HORASLONG) - (3 * MINUTOSLONG));
+            ConsultaBD.putDato(valores, EVENTO_NOTIFICADO, 0);
+            ConsultaBD.putDato(valores, EVENTO_AVISO, (minAviso - minhoy - HORASLONG) - (3 * MINUTOSLONG));
             ConsultaBD.updateRegistro(TABLA_EVENTO, idEvento, valores);
             NotificationManager notifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
             notifyMgr.cancel(intent.getExtras().getInt(EXTRA_ID));
@@ -70,7 +70,7 @@ public class EventosReceiver extends ReceiverBase implements JavaUtil.Constantes
 
             ConsultaBD consulta = new ConsultaBD();
             ContentValues valores = new ContentValues();
-            ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_COMPLETADA, 100);
+            ConsultaBD.putDato(valores, EVENTO_COMPLETADA, 100);
             //consulta.putDato(valores, CAMPOS_EVENTO, EVENTO_NOTIFICADO, 0);
             ConsultaBD.updateRegistro(TABLA_EVENTO, idEvento, valores);
             NotificationManager notifyMgr = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);

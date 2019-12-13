@@ -21,6 +21,7 @@ import android.widget.TimePicker;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
@@ -112,6 +113,11 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
     }
 
     @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
+
+    @Override
     protected void setNuevo() {
 
     }
@@ -122,20 +128,6 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
         tabla = TABLA_DETPARTIDA;
 
     }
-
-    @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
-
-    }
-
 
     @Override
     protected void setBundle() {
@@ -187,7 +179,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
                 if (contador == 0) {
                     contador = hoy();
                     valores = new ContentValues();
-                    putDato(valores, campos, DETPARTIDA_CONTADOR, contador);
+                    putDato(valores, DETPARTIDA_CONTADOR, contador);
                     updateRegistroDetalle(tabla, id, secuencia, valores);
                     modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
                 }
@@ -226,7 +218,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
         tipo = modeloSQL.getString(DETPARTIDA_TIPO);
 
         if (partida == null) {
-            partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, id, null, IGUAL, null);
+            partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, id);
         }
         if (proyecto == null) {
             proyecto = CRUDutil.updateModelo(CAMPOS_PROYECTO, partida.getString(PARTIDA_ID_PROYECTO));
@@ -312,7 +304,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
         if (cantidad==0){
             cantidad = 1;
             valores = new ContentValues();
-            setDato(DETPARTIDA_CANTIDAD, cantidad);
+            putDato(valores,DETPARTIDA_CANTIDAD, cantidad);
             CRUDutil.actualizarRegistro(modeloSQL, valores);
             modeloSQL = CRUDutil.updateModelo(modeloSQL);
             System.out.println("modeloSQL.getDouble(DETPARTIDA_CANTIDAD) = " + modeloSQL.getDouble(DETPARTIDA_CANTIDAD));
@@ -329,7 +321,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
                 }
             }
             valores = new ContentValues();
-            putDato(valores,campos,DETPARTIDA_ORDEN,orden+1);
+            putDato(valores,DETPARTIDA_ORDEN,orden+1);
             CRUDutil.actualizarRegistro(modeloSQL, valores);
             modeloSQL = CRUDutil.updateModelo(modeloSQL);
             etOrden.setText(String.valueOf(modeloSQL.getInt(DETPARTIDA_ORDEN)));
@@ -476,7 +468,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
                                     }
 
                                     valores = new ContentValues();
-                                    setDato(DETPARTIDA_BENEFICIO, JavaUtil.comprobarDouble(etBeneficio.getTexto()));
+                                    putDato(valores,DETPARTIDA_BENEFICIO, JavaUtil.comprobarDouble(etBeneficio.getTexto()));
                                     CRUDutil.actualizarRegistro(modeloSQL, valores);
                                     modeloSQL = CRUDutil.updateModelo(modeloSQL);
                                     Interactor.Calculos.actualizarPartidaProyecto(id);
@@ -503,21 +495,21 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
                     btntrekPausa.setVisibility(View.GONE);
 
                     valores = new ContentValues();
-                    putDato(valores, campos, DETPARTIDA_COMPLETADA, completada);
-                    putDato(valores, campos, DETPARTIDA_TIEMPOREAL, (((tiemporeal + countUp) / 3600)));
+                    putDato(valores, DETPARTIDA_COMPLETADA, completada);
+                    putDato(valores, DETPARTIDA_TIEMPOREAL, (((tiemporeal + countUp) / 3600)));
                     trek.setText(String.format(Locale.getDefault(), "%s %s",
                             JavaUtil.getDecimales(((tiemporeal + countUp) / 3600)), getString(R.string.horas)));
                     trekOn = false;
                     chronometer.stop();
-                    putDato(valores, campos, DETPARTIDA_CONTADOR, 0);
+                    putDato(valores, DETPARTIDA_CONTADOR, 0);
                     long pausa = modeloSQL.getLong(DETPARTIDA_PAUSA);
 
                     if (pausa > 0) {
                         contador = modeloSQL.getLong(DETPARTIDA_CONTADOR);
                         pausa = modeloSQL.getLong(DETPARTIDA_PAUSA);
                         long contadortemp = contador + (hoy() - (pausa));
-                        putDato(valores, campos, DETPARTIDA_PAUSA, 0);
-                        putDato(valores, campos, DETPARTIDA_CONTADOR, contadortemp);
+                        putDato(valores, DETPARTIDA_PAUSA, 0);
+                        putDato(valores, DETPARTIDA_CONTADOR, contadortemp);
                         trekOnpausa = false;
                     }
 
@@ -544,8 +536,8 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
                     btntrekPausa.setText(getString(R.string.reanudar_trek));
 
                     valores = new ContentValues();
-                    putDato(valores, campos, DETPARTIDA_PAUSA, hoy());
-                    putDato(valores, campos, DETPARTIDA_COMPLETADA, completada);
+                    putDato(valores, DETPARTIDA_PAUSA, hoy());
+                    putDato(valores, DETPARTIDA_COMPLETADA, completada);
                     trekOnpausa = true;
                     chronometer.stop();
 
@@ -561,8 +553,8 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
                     long pausa = modeloSQL.getLong(DETPARTIDA_PAUSA);
                     long contadortemp = contador + (hoy() - (pausa));
                     valores = new ContentValues();
-                    putDato(valores, campos, DETPARTIDA_PAUSA, 0);
-                    putDato(valores, campos, DETPARTIDA_CONTADOR, contadortemp);
+                    putDato(valores, DETPARTIDA_PAUSA, 0);
+                    putDato(valores, DETPARTIDA_CONTADOR, contadortemp);
                     int i = updateRegistroDetalle(tabla, id, secuencia, valores);
                     modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
                     System.out.println("registros actualizados on pausa = " + i);
@@ -585,14 +577,14 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
 
                 valores = new ContentValues();
                 countUp = 0;
-                putDato(valores, campos, DETPARTIDA_COMPLETADA, 0);
-                putDato(valores, campos, DETPARTIDA_TIEMPOREAL, 0);
+                putDato(valores, DETPARTIDA_COMPLETADA, 0);
+                putDato(valores, DETPARTIDA_TIEMPOREAL, 0);
                 trek.setText(String.format(Locale.getDefault(), "%s %s",
                         JavaUtil.getDecimales(0), getString(R.string.horas)));
                 trekOn = false;
 
-                putDato(valores, campos, DETPARTIDA_CONTADOR, 0);
-                putDato(valores, campos, DETPARTIDA_PAUSA, 0);
+                putDato(valores, DETPARTIDA_CONTADOR, 0);
+                putDato(valores, DETPARTIDA_PAUSA, 0);
                 int i = updateRegistroDetalle(tabla, id, secuencia, valores);
                 modeloSQL = queryObjectDetalle(campos, id, secuencia);
                 contador = modeloSQL.getLong(DETPARTIDA_CONTADOR);
@@ -623,11 +615,11 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
                 if (contador > 0 && isChecked) {
 
                     valores = new ContentValues();
-                    putDato(valores, campos, DETPARTIDA_COMPLETA, 1);
-                    putDato(valores, campos, DETPARTIDA_COMPLETADA, completada);
-                    putDato(valores, campos, DETPARTIDA_TIEMPOREAL, (((tiemporeal + countUp) / 3600)));
-                    putDato(valores, campos, DETPARTIDA_CONTADOR, 0);
-                    putDato(valores, campos, DETPARTIDA_PAUSA, 0);
+                    putDato(valores, DETPARTIDA_COMPLETA, 1);
+                    putDato(valores, DETPARTIDA_COMPLETADA, completada);
+                    putDato(valores, DETPARTIDA_TIEMPOREAL, (((tiemporeal + countUp) / 3600)));
+                    putDato(valores, DETPARTIDA_CONTADOR, 0);
+                    putDato(valores, DETPARTIDA_PAUSA, 0);
                     updateRegistroDetalle(tabla, id, secuencia, valores);
                     modeloSQL = queryObjectDetalle(campos, id, secuencia);
 
@@ -639,8 +631,8 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
                 } else {
 
                     valores = new ContentValues();
-                    putDato(valores, campos, DETPARTIDA_COMPLETA, 0);
-                    putDato(valores, campos, DETPARTIDA_COMPLETADA, completada);
+                    putDato(valores, DETPARTIDA_COMPLETA, 0);
+                    putDato(valores, DETPARTIDA_COMPLETADA, completada);
                     updateRegistroDetalle(tabla, id, secuencia, valores);
                     modeloSQL = queryObjectDetalle(campos, id, secuencia);
 
@@ -880,7 +872,7 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
 
         if (idEstado != null) {
 
-            ArrayList<ModeloSQL> listaEstados = queryList(CAMPOS_ESTADO, null, null);
+            ArrayList<ModeloSQL> listaEstados = queryList(CAMPOS_ESTADO);
 
             for (ModeloSQL estado : listaEstados) {
 
@@ -986,8 +978,8 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
                         String selectedHour = TimeDateUtil.getTimeString(horaInicioCalculada);
                         etHoraInicioCalculada.setText(selectedHour);
                         valores = new ContentValues();
-                        setDato(DETPARTIDA_HORAINICIOCALCULADA, horaInicioCalculada);
-                        setDato(DETPARTIDA_HORAINICIOCALCULADAF, selectedHour);
+                        putDato(valores,DETPARTIDA_HORAINICIOCALCULADA, horaInicioCalculada);
+                        putDato(valores,DETPARTIDA_HORAINICIOCALCULADAF, selectedHour);
                         updateRegistroDetalle(tabla, id, secuencia, valores);
                         modeloSQL = CRUDutil.updateModelo(modeloSQL);
                         if (fechatmp != horaInicioCalculada) {
@@ -1012,8 +1004,8 @@ public class FragmentCUDDetpartidaTrabajo extends FragmentCUD implements Interac
                         String selectedDate = TimeDateUtil.getDateString(fechaInicioCalculada);
                         etFechaInicioCalculada.setText(selectedDate);
                         valores = new ContentValues();
-                        setDato(DETPARTIDA_FECHAINICIOCALCULADA, fechaInicioCalculada);
-                        setDato(DETPARTIDA_FECHAINICIOCALCULADAF, selectedDate);
+                        putDato(valores,DETPARTIDA_FECHAINICIOCALCULADA, fechaInicioCalculada);
+                        putDato(valores,DETPARTIDA_FECHAINICIOCALCULADAF, selectedDate);
                         updateRegistroDetalle(tabla, id, secuencia, valores);
                         modeloSQL = CRUDutil.updateModelo(modeloSQL);
                         if (fechatmp != fechaInicioCalculada) {

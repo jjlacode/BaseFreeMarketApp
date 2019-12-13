@@ -1,6 +1,13 @@
 package com.codevsolution.freemarketsapp.ui;
 
+import com.codevsolution.base.android.FragmentBase;
+
 public class AltaPerfilesFirebasePro extends AltaPerfilesFirebase {
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
 
     @Override
     protected void setLayout() {

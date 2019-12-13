@@ -3,6 +3,7 @@ package com.codevsolution.freemarketsapp.ui;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
@@ -34,6 +35,10 @@ public class FragmentCUDDetpartidaBaseProducto extends FragmentCUD implements In
         // Required empty public constructor
     }
 
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
 
     @Override
     protected void setNuevo() {
@@ -46,20 +51,6 @@ public class FragmentCUDDetpartidaBaseProducto extends FragmentCUD implements In
         tabla = TABLA_DETPARTIDABASE;
 
     }
-
-    @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
-
-    }
-
 
     @Override
     protected void setBundle() {

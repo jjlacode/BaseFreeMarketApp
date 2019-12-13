@@ -21,6 +21,11 @@ public class VisorPDFEmail extends FragmentBase {
     private String textocli;
 
     @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
+
+    @Override
     protected void setLayout() {
 
         layout = R.layout.fragment_visor_pdf_email;

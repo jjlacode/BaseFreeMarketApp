@@ -29,6 +29,14 @@ public class MenuCRM extends FragmentGridImagen {
     }
 
     @Override
+    protected void setInicio() {
+        super.setInicio();
+
+        icFragmentos.showSubTitle(R.string.crm);
+        reproducir(getString(R.string.crm));
+    }
+
+    @Override
     protected void setLista() {
 
         proximosEventos = getString(R.string.proximos_eventos);

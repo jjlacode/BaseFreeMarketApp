@@ -15,6 +15,7 @@ import androidx.cardview.widget.CardView;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
@@ -30,6 +31,7 @@ import com.codevsolution.freemarketsapp.logica.Interactor;
 import java.util.ArrayList;
 
 import static com.codevsolution.base.sqlite.ConsultaBD.checkQueryList;
+import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 
 public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.ConstantesPry {
 
@@ -45,6 +47,10 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
     private ModeloSQL proyecto;
     private EditMaterialLayout nombre;
 
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
 
     @Override
     protected TipoViewHolder setViewHolder(View view) {
@@ -69,7 +75,7 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
     @Override
     protected void setContenedor() {
 
-        setDato(PROVEEDOR_ACTIVO, fechaInactivo);
+        putDato(valores,PROVEEDOR_ACTIVO, fechaInactivo);
     }
 
 
@@ -77,19 +83,6 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
     protected void setTabla() {
 
         tabla = TABLA_PROVEEDOR;
-    }
-
-    @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
-
     }
 
     @Override
@@ -168,7 +161,7 @@ public class FragmentCRUDProveedor extends FragmentCRUD implements Interactor.Co
             public void onClick(View v) {
 
                 bundle = new Bundle();
-                bundle.putSerializable(LISTA, new ListaModeloSQL(CAMPOS_EVENTO, EVENTO_CLIENTEREL, id, null, IGUAL, null));
+                bundle.putSerializable(LISTA, new ListaModeloSQL(CAMPOS_EVENTO, EVENTO_CLIENTEREL, id));
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
             }
         });

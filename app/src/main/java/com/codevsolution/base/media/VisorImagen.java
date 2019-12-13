@@ -14,6 +14,11 @@ public class VisorImagen extends FragmentBase {
     private boolean ampliada;
 
     @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
+
+    @Override
     protected void setLayout() {
 
         layoutCuerpo = R.layout.visor_imagen;

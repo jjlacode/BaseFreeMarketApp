@@ -30,6 +30,7 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.javautil.JavaUtil;
@@ -67,6 +68,11 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
     protected String tipo;
 
     @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
+
+    @Override
     protected TipoViewHolder setViewHolder(View view) {
         return new ViewHolderRV(view);
     }
@@ -92,19 +98,6 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
     protected void setTabla() {
 
         tabla = TABLA_CHAT;
-    }
-
-    @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoSystem.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoSystem.obtenerCampos(tabla);
-
     }
 
     @Override
@@ -254,7 +247,8 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
         }
 
         System.out.println("idChat = " + id);
-        listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, id, TABLA_CHAT, null, DETCHAT_FECHA + " DESC");
+        listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, id);
+        listaMsgChat = listaMsgChat.sort(DETCHAT_FECHA, DESCENDENTE);
 
         RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
         rvMsgChat.setAdapter(adaptadorDetChat);
@@ -311,8 +305,9 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
             valores.put(DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
             valores.put(DETCHAT_NOTIFICADO, 1);
             valores.put(DETCHAT_ID_CHAT, id);
-            CRUDutil.crearRegistro(TABLA_DETCHAT, CAMPOS_DETCHAT, TABLA_CHAT, id, valores);
-            listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, id, TABLA_CHAT, null, DETCHAT_FECHA + " DESC");
+            CRUDutil.crearRegistro(CAMPOS_DETCHAT, id, valores);
+            listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, id);
+            listaMsgChat = listaMsgChat.sort(DETCHAT_FECHA, DESCENDENTE);
             RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
             rvMsgChat.setAdapter(adaptadorDetChat);
 

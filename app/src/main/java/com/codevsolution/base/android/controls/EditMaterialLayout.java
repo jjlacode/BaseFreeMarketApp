@@ -37,6 +37,7 @@ public class EditMaterialLayout implements Estilos.Constantes {
     private ImageButton btnInicio;
     private ImageButton btnAccion;
     private ImageButton btnAccion2;
+    private ImageButton btnAccion3;
     private Button btnText;
     private AlCambiarListener listener;
     private AudioATexto grabarListener;
@@ -44,6 +45,7 @@ public class EditMaterialLayout implements Estilos.Constantes {
     private CambioFocoEdit listenerFoco;
     private ClickAccion listenerAccion;
     private ClickAccion2 listenerAccion2;
+    private ClickAccion3 listenerAccion3;
     private ClickAccionTxt listenerAccionTxt;
     private int posicion;
     DisplayMetrics metrics = new DisplayMetrics();
@@ -87,7 +89,6 @@ public class EditMaterialLayout implements Estilos.Constantes {
     private boolean activo;
     private boolean excedido;
     private Context context;
-    TextToSpeech.OnInitListener ttsListener;
 
 
     public EditMaterialLayout(ViewGroup viewGroup, Context context) {
@@ -100,34 +101,38 @@ public class EditMaterialLayout implements Estilos.Constantes {
         this.context = context;
         this.viewGroup = viewGroup;
 
-        setHint(context.getString(hint));
         inicializar();
+        setHint(context.getString(hint));
+
     }
 
     public EditMaterialLayout(ViewGroup viewGroup, Context context, String hint) {
         this.context = context;
         this.viewGroup = viewGroup;
 
-        setHint(hint);
         inicializar();
+        setHint(hint);
+
     }
 
     public EditMaterialLayout(ViewGroup viewGroup, Context context, int hint, boolean activo) {
         this.context = context;
         this.viewGroup = viewGroup;
 
+        inicializar();
         setHint(context.getString(hint));
         setActivo(activo);
-        inicializar();
+
     }
 
     public EditMaterialLayout(ViewGroup viewGroup, Context context, String hint, boolean activo) {
         this.context = context;
         this.viewGroup = viewGroup;
 
+        inicializar();
         setHint(hint);
         setActivo(activo);
-        inicializar();
+
     }
 
     private void inicializar() {
@@ -144,7 +149,7 @@ public class EditMaterialLayout implements Estilos.Constantes {
 
     }
 
-    private void speakOut() {
+    public void speakOut() {
         String text = getTexto();
         if (text == null || text.isEmpty())
             return;
@@ -181,9 +186,14 @@ public class EditMaterialLayout implements Estilos.Constantes {
         linearLayout.addView(btnAccion);
         btnAccion2 = new ImageButton(context);
         btnAccion2.setVisibility(View.GONE);
-        btnAccion2.setBackground(Estilos.getBotonPrimary());
+        btnAccion2.setBackground(Estilos.getBotonPrimaryStroke());
         btnAccion2.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         linearLayout.addView(btnAccion2);
+        btnAccion3 = new ImageButton(context);
+        btnAccion3.setVisibility(View.GONE);
+        btnAccion3.setBackground(Estilos.getBotonPrimary());
+        btnAccion3.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        linearLayout.addView(btnAccion3);
         btnText = new Button(context);
         btnText.setVisibility(View.GONE);
         btnText.setBackground(Estilos.getBotonSecondary());
@@ -222,11 +232,11 @@ public class EditMaterialLayout implements Estilos.Constantes {
 
         if (enable) {
 
-            btnAccionEnable(true);
-            setImgBtnAccion(Estilos.getIdDrawable(context, "ic_play_indigo"));
+            btnAccion2Enable(true);
+            setImgBtnAccion2(Estilos.getIdDrawable(context, "ic_play_indigo"));
 
 
-            btnAccion.setOnClickListener(new View.OnClickListener() {
+            btnAccion2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
@@ -251,12 +261,33 @@ public class EditMaterialLayout implements Estilos.Constantes {
             });
         } else {
 
-            btnAccionEnable(false);
+            btnAccion2Enable(false);
             if (tts != null) {
                 tts.stop();
                 tts.shutdown();
             }
         }
+    }
+
+    public void reproducir() {
+
+        tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    int result = tts.setLanguage(Locale.getDefault());
+
+                    if (result == TextToSpeech.LANG_MISSING_DATA
+                            || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Log.e("TTS", "This Language is not supported");
+                    } else {
+                        speakOut();
+                    }
+                } else {
+                    Log.e("TTS", "Initilization Failed!");
+                }
+            }
+        });
     }
 
     public void setAlCambiarListener(AlCambiarListener l) {
@@ -277,6 +308,10 @@ public class EditMaterialLayout implements Estilos.Constantes {
 
     public void setClickAccion2(ClickAccion2 listener) {
         listenerAccion2 = listener;
+    }
+
+    public void setClickAccion3(ClickAccion3 listener) {
+        listenerAccion3 = listener;
     }
 
     public void setClickAccionTxt(ClickAccionTxt listener) {
@@ -350,6 +385,17 @@ public class EditMaterialLayout implements Estilos.Constantes {
             }
         });
 
+        btnAccion3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (listenerAccion3 != null) {
+                    listenerAccion3.onClickAccion3(view);
+                }
+
+            }
+        });
+
         btnText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -391,12 +437,16 @@ public class EditMaterialLayout implements Estilos.Constantes {
 
     private void setWeigthLayout() {
 
-        int vis = btnInicio.getVisibility() + btnAccion.getVisibility() + btnAccion2.getVisibility() + btnText.getVisibility();
+        int vis = btnInicio.getVisibility() + btnAccion.getVisibility() + btnAccion2.getVisibility()
+                + btnAccion3.getVisibility() + btnText.getVisibility();
 
         switch (vis) {
 
+            case 32:
+                weight = 9;
+                break;
             case 24:
-                weight = 10;
+                weight = 8;
                 break;
             case 20:
                 weight = 5;
@@ -418,6 +468,8 @@ public class EditMaterialLayout implements Estilos.Constantes {
         btnAccion.setAdjustViewBounds(true);
         btnAccion2.setLayoutParams(params);
         btnAccion2.setAdjustViewBounds(true);
+        btnAccion3.setLayoutParams(params);
+        btnAccion3.setAdjustViewBounds(true);
         params = new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, weight - 2);
         params.gravity = Gravity.CENTER_VERTICAL;
@@ -521,12 +573,32 @@ public class EditMaterialLayout implements Estilos.Constantes {
         }
     }
 
+    public void btnAccion3Visible(boolean enable) {
+
+        if (enable) {
+            btnAccion3.setVisibility(View.VISIBLE);
+        } else {
+            btnAccion3.setVisibility(View.INVISIBLE);
+        }
+    }
+
     public void btnAccion2Enable(boolean enable) {
 
         if (enable) {
             btnAccion2.setVisibility(View.VISIBLE);
         } else {
             btnAccion2.setVisibility(View.GONE);
+        }
+        setWeigthLayout();
+
+    }
+
+    public void btnAccion3Enable(boolean enable) {
+
+        if (enable) {
+            btnAccion3.setVisibility(View.VISIBLE);
+        } else {
+            btnAccion3.setVisibility(View.GONE);
         }
         setWeigthLayout();
 
@@ -553,6 +625,12 @@ public class EditMaterialLayout implements Estilos.Constantes {
 
         btnAccion2Enable(true);
         btnAccion2.setImageResource(recurso);
+    }
+
+    public void setImgBtnAccion3(int recurso) {
+
+        btnAccion3Enable(true);
+        btnAccion3.setImageResource(recurso);
     }
 
     public void setTextBtnTxt(String textoBtn) {
@@ -700,6 +778,40 @@ public class EditMaterialLayout implements Estilos.Constantes {
         comprobarEdit();
     }
 
+    public void setText(int text) {
+        editText.setText(String.valueOf(text));
+        comprobarEdit();
+    }
+
+    public void setText(int text, boolean recurso) {
+        if (recurso) {
+            editText.setText(text);
+        } else {
+            editText.setText(String.valueOf(text));
+        }
+        comprobarEdit();
+    }
+
+    public void setText(double text) {
+        editText.setText(String.valueOf(text));
+        comprobarEdit();
+    }
+
+    public void setText(long text) {
+        editText.setText(String.valueOf(text));
+        comprobarEdit();
+    }
+
+    public void setText(float text) {
+        editText.setText(String.valueOf(text));
+        comprobarEdit();
+    }
+
+    public void setText(boolean text) {
+        editText.setText(String.valueOf(text));
+        comprobarEdit();
+    }
+
     public void setGravedad(int gravedad) {
         editText.setGravity(gravedad);
     }
@@ -838,6 +950,10 @@ public class EditMaterialLayout implements Estilos.Constantes {
         return btnAccion2;
     }
 
+    public ImageButton getBtnAccion3() {
+        return btnAccion3;
+    }
+
     public Button getBtnText() {
         return btnText;
     }
@@ -956,6 +1072,11 @@ public class EditMaterialLayout implements Estilos.Constantes {
     public interface ClickAccion2 {
 
         void onClickAccion2(View view);
+    }
+
+    public interface ClickAccion3 {
+
+        void onClickAccion3(View view);
     }
 
     public interface ClickAccionTxt {

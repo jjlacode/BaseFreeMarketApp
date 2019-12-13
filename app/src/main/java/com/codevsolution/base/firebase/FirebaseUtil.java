@@ -2,6 +2,7 @@ package com.codevsolution.base.firebase;
 
 import androidx.annotation.NonNull;
 
+import com.codevsolution.base.encrypt.EncryptUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -32,6 +33,7 @@ public class FirebaseUtil {
         if (id != null) {
 
             DatabaseReference query = null;
+
             switch (ruta.length) {
                 case 0:
                     query = db.child(id);
@@ -58,8 +60,12 @@ public class FirebaseUtil {
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
                     if (onGetValueListener != null) {
-                        onGetValueListener.onGetValue(dataSnapshot.getValue(clase));
+
+                        Object object = EncryptUtil.decodificaStrObj(clase, dataSnapshot.getValue(clase));
+                        onGetValueListener.onGetValue(object);
 
                     }
                 }
@@ -104,7 +110,9 @@ public class FirebaseUtil {
 
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
 
-                        listaValores.add(child.getValue(clase));
+                        Object object = EncryptUtil.decodificaStrObj(clase, child.getValue(clase));
+
+                        listaValores.add(object);
                     }
                     if (onGetValueListener != null) {
                         onGetValueListener.onGetValue(listaValores);
@@ -120,6 +128,7 @@ public class FirebaseUtil {
         }
 
     }
+
 
     public void getValue(String[] ruta, String id, final OnGetValue onGetValueListener) {
 
@@ -153,6 +162,7 @@ public class FirebaseUtil {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (onGetValueListener != null) {
+
                         onGetValueListener.onGetValue(dataSnapshot.getValue(tipoArrayListsString));
 
                     }
@@ -323,13 +333,15 @@ public class FirebaseUtil {
 
     }
 
-    public String setValue(String[] ruta, String id, String valor, final OnSetValue onSetValueListener) {
+    public String setValue(String[] ruta, String id, String dato, final OnSetValue onSetValueListener) {
 
         Task<Void> query = null;
         boolean nuevo = false;
         if (id == null) {
             nuevo = true;
         }
+
+        String valor = EncryptUtil.codificaStr(dato);
 
         switch (ruta.length) {
             case 0:

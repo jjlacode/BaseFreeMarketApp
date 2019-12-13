@@ -17,7 +17,9 @@ import androidx.cardview.widget.CardView;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
+import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
@@ -35,6 +37,8 @@ import java.util.ArrayList;
 
 import static com.codevsolution.base.javautil.JavaUtil.getTime;
 import static com.codevsolution.base.javautil.JavaUtil.hoy;
+import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
+import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.DEFECTO;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PERFILACTIVO;
 
 public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tablas {
@@ -55,12 +59,18 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     private TextView activo;
     private LinearLayoutCompat lyGridBtn;
     private Button [][] listaBtn = new Button[4][8];
+    private String perfilAct = AndroidUtil.getSharePreference(contexto,PREFERENCIAS,PERFILACTIVO,DEFECTO);
 
 
     private static ConsultaBD consulta = new ConsultaBD();
 
     public FragmentCRUDPerfil() {
         // Required empty public constructor
+    }
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
     }
 
     @Override
@@ -91,19 +101,6 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     }
 
     @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
-
-    }
-
-    @Override
     protected void setDatos() {
 
         obtenerDatosBtns();
@@ -121,7 +118,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
         btndelete.setVisibility(View.VISIBLE);
         btnperfilact.setVisibility(View.VISIBLE);
 
-        if (modeloSQL.getString(PERFIL_NOMBRE) != null && modeloSQL.getString(PERFIL_NOMBRE).equals(Interactor.perfila)) {
+        if (modeloSQL.getString(PERFIL_NOMBRE) != null && modeloSQL.getString(PERFIL_NOMBRE).equals(perfilAct)) {
 
             activo.setVisibility(View.VISIBLE);
             btnperfilact.setVisibility(View.GONE);
@@ -233,13 +230,13 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
             @Override
             public void onClick(View v) {
 
-                Interactor.perfila = nombre.getText().toString();
+                perfilAct = nombre.getText().toString();
                 activo.setVisibility(View.VISIBLE);
                 btnperfilact.setVisibility(View.GONE);
 
                 SharedPreferences preferences=getContext().getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor=preferences.edit();
-                editor.putString(PERFILACTIVO, Interactor.perfila);
+                editor.putString(PERFILACTIVO, perfilAct);
                 editor.apply();
 
                 new Interactor.Calculos.Tareafechas().execute();
@@ -480,100 +477,100 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
                             switch (columna){
 
                                 case 1:
-                                    setDato(PERFIL_HORAIMLUNES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAIMLUNES,hfinEvento);
                                     break;
                                 case 2:
-                                    setDato(PERFIL_HORAIMMARTES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAIMMARTES,hfinEvento);
                                     break;
                                 case 3:
-                                    setDato(PERFIL_HORAIMMIERCOLES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAIMMIERCOLES,hfinEvento);
                                     break;
                                 case 4:
-                                    setDato(PERFIL_HORAIMJUEVES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAIMJUEVES,hfinEvento);
                                     break;
                                 case 5:
-                                    setDato(PERFIL_HORAIMVIERNES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAIMVIERNES,hfinEvento);
                                     break;
                                 case 6:
-                                    setDato(PERFIL_HORAIMSABADO,hfinEvento);
+                                    putDato(valores,PERFIL_HORAIMSABADO,hfinEvento);
                                     break;
                                 case 7:
-                                    setDato(PERFIL_HORAIMDOMINGO,hfinEvento);
+                                    putDato(valores,PERFIL_HORAIMDOMINGO,hfinEvento);
                                     break;
                             }
                         }else if (fila == 1){
                             switch (columna){
 
                                 case 1:
-                                    setDato(PERFIL_HORAFMLUNES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAFMLUNES,hfinEvento);
                                     break;
                                 case 2:
-                                    setDato(PERFIL_HORAFMMARTES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAFMMARTES,hfinEvento);
                                     break;
                                 case 3:
-                                    setDato(PERFIL_HORAFMMIERCOLES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAFMMIERCOLES,hfinEvento);
                                     break;
                                 case 4:
-                                    setDato(PERFIL_HORAFMJUEVES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAFMJUEVES,hfinEvento);
                                     break;
                                 case 5:
-                                    setDato(PERFIL_HORAFMVIERNES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAFMVIERNES,hfinEvento);
                                     break;
                                 case 6:
-                                    setDato(PERFIL_HORAFMSABADO,hfinEvento);
+                                    putDato(valores,PERFIL_HORAFMSABADO,hfinEvento);
                                     break;
                                 case 7:
-                                    setDato(PERFIL_HORAFMDOMINGO,hfinEvento);
+                                    putDato(valores,PERFIL_HORAFMDOMINGO,hfinEvento);
                                     break;
                             }
                         }else if (fila == 2){
                             switch (columna){
 
                                 case 1:
-                                    setDato(PERFIL_HORAITLUNES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAITLUNES,hfinEvento);
                                     break;
                                 case 2:
-                                    setDato(PERFIL_HORAITMARTES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAITMARTES,hfinEvento);
                                     break;
                                 case 3:
-                                    setDato(PERFIL_HORAITMIERCOLES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAITMIERCOLES,hfinEvento);
                                     break;
                                 case 4:
-                                    setDato(PERFIL_HORAITJUEVES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAITJUEVES,hfinEvento);
                                     break;
                                 case 5:
-                                    setDato(PERFIL_HORAITVIERNES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAITVIERNES,hfinEvento);
                                     break;
                                 case 6:
-                                    setDato(PERFIL_HORAITSABADO,hfinEvento);
+                                    putDato(valores,PERFIL_HORAITSABADO,hfinEvento);
                                     break;
                                 case 7:
-                                    setDato(PERFIL_HORAITDOMINGO,hfinEvento);
+                                    putDato(valores,PERFIL_HORAITDOMINGO,hfinEvento);
                                     break;
                             }
                         }else if (fila == 3){
                             switch (columna){
 
                                 case 1:
-                                    setDato(PERFIL_HORAFTLUNES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAFTLUNES,hfinEvento);
                                     break;
                                 case 2:
-                                    setDato(PERFIL_HORAFTMARTES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAFTMARTES,hfinEvento);
                                     break;
                                 case 3:
-                                    setDato(PERFIL_HORAFTMIERCOLES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAFTMIERCOLES,hfinEvento);
                                     break;
                                 case 4:
-                                    setDato(PERFIL_HORAFTJUEVES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAFTJUEVES,hfinEvento);
                                     break;
                                 case 5:
-                                    setDato(PERFIL_HORAFTVIERNES,hfinEvento);
+                                    putDato(valores,PERFIL_HORAFTVIERNES,hfinEvento);
                                     break;
                                 case 6:
-                                    setDato(PERFIL_HORAFTSABADO,hfinEvento);
+                                    putDato(valores,PERFIL_HORAFTSABADO,hfinEvento);
                                     break;
                                 case 7:
-                                    setDato(PERFIL_HORAFTDOMINGO,hfinEvento);
+                                    putDato(valores,PERFIL_HORAFTDOMINGO,hfinEvento);
                                     break;
                             }
                         }
@@ -599,100 +596,100 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
             switch (columna){
 
                 case 1:
-                    setDato(PERFIL_HORAIMLUNES,hfinEvento);
+                    putDato(valores,PERFIL_HORAIMLUNES,hfinEvento);
                     break;
                 case 2:
-                    setDato(PERFIL_HORAIMMARTES,hfinEvento);
+                    putDato(valores,PERFIL_HORAIMMARTES,hfinEvento);
                     break;
                 case 3:
-                    setDato(PERFIL_HORAIMMIERCOLES,hfinEvento);
+                    putDato(valores,PERFIL_HORAIMMIERCOLES,hfinEvento);
                     break;
                 case 4:
-                    setDato(PERFIL_HORAIMJUEVES,hfinEvento);
+                    putDato(valores,PERFIL_HORAIMJUEVES,hfinEvento);
                     break;
                 case 5:
-                    setDato(PERFIL_HORAIMVIERNES,hfinEvento);
+                    putDato(valores,PERFIL_HORAIMVIERNES,hfinEvento);
                     break;
                 case 6:
-                    setDato(PERFIL_HORAIMSABADO,hfinEvento);
+                    putDato(valores,PERFIL_HORAIMSABADO,hfinEvento);
                     break;
                 case 7:
-                    setDato(PERFIL_HORAIMDOMINGO,hfinEvento);
+                    putDato(valores,PERFIL_HORAIMDOMINGO,hfinEvento);
                     break;
             }
         }else if (fila == 1){
             switch (columna){
 
                 case 1:
-                    setDato(PERFIL_HORAFMLUNES,hfinEvento);
+                    putDato(valores,PERFIL_HORAFMLUNES,hfinEvento);
                     break;
                 case 2:
-                    setDato(PERFIL_HORAFMMARTES,hfinEvento);
+                    putDato(valores,PERFIL_HORAFMMARTES,hfinEvento);
                     break;
                 case 3:
-                    setDato(PERFIL_HORAFMMIERCOLES,hfinEvento);
+                    putDato(valores,PERFIL_HORAFMMIERCOLES,hfinEvento);
                     break;
                 case 4:
-                    setDato(PERFIL_HORAFMJUEVES,hfinEvento);
+                    putDato(valores,PERFIL_HORAFMJUEVES,hfinEvento);
                     break;
                 case 5:
-                    setDato(PERFIL_HORAFMVIERNES,hfinEvento);
+                    putDato(valores,PERFIL_HORAFMVIERNES,hfinEvento);
                     break;
                 case 6:
-                    setDato(PERFIL_HORAFMSABADO,hfinEvento);
+                    putDato(valores,PERFIL_HORAFMSABADO,hfinEvento);
                     break;
                 case 7:
-                    setDato(PERFIL_HORAFMDOMINGO,hfinEvento);
+                    putDato(valores,PERFIL_HORAFMDOMINGO,hfinEvento);
                     break;
             }
         }else if (fila == 2){
             switch (columna){
 
                 case 1:
-                    setDato(PERFIL_HORAITLUNES,hfinEvento);
+                    putDato(valores,PERFIL_HORAITLUNES,hfinEvento);
                     break;
                 case 2:
-                    setDato(PERFIL_HORAITMARTES,hfinEvento);
+                    putDato(valores,PERFIL_HORAITMARTES,hfinEvento);
                     break;
                 case 3:
-                    setDato(PERFIL_HORAITMIERCOLES,hfinEvento);
+                    putDato(valores,PERFIL_HORAITMIERCOLES,hfinEvento);
                     break;
                 case 4:
-                    setDato(PERFIL_HORAITJUEVES,hfinEvento);
+                    putDato(valores,PERFIL_HORAITJUEVES,hfinEvento);
                     break;
                 case 5:
-                    setDato(PERFIL_HORAITVIERNES,hfinEvento);
+                    putDato(valores,PERFIL_HORAITVIERNES,hfinEvento);
                     break;
                 case 6:
-                    setDato(PERFIL_HORAITSABADO,hfinEvento);
+                    putDato(valores,PERFIL_HORAITSABADO,hfinEvento);
                     break;
                 case 7:
-                    setDato(PERFIL_HORAITDOMINGO,hfinEvento);
+                    putDato(valores,PERFIL_HORAITDOMINGO,hfinEvento);
                     break;
             }
         }else if (fila == 3){
             switch (columna){
 
                 case 1:
-                    setDato(PERFIL_HORAFTLUNES,hfinEvento);
+                    putDato(valores,PERFIL_HORAFTLUNES,hfinEvento);
                     break;
                 case 2:
-                    setDato(PERFIL_HORAFTMARTES,hfinEvento);
+                    putDato(valores,PERFIL_HORAFTMARTES,hfinEvento);
                     break;
                 case 3:
-                    setDato(PERFIL_HORAFTMIERCOLES,hfinEvento);
+                    putDato(valores,PERFIL_HORAFTMIERCOLES,hfinEvento);
                     break;
                 case 4:
-                    setDato(PERFIL_HORAFTJUEVES,hfinEvento);
+                    putDato(valores,PERFIL_HORAFTJUEVES,hfinEvento);
                     break;
                 case 5:
-                    setDato(PERFIL_HORAFTVIERNES,hfinEvento);
+                    putDato(valores,PERFIL_HORAFTVIERNES,hfinEvento);
                     break;
                 case 6:
-                    setDato(PERFIL_HORAFTSABADO,hfinEvento);
+                    putDato(valores,PERFIL_HORAFTSABADO,hfinEvento);
                     break;
                 case 7:
-                    setDato(PERFIL_HORAFTDOMINGO,hfinEvento);
+                    putDato(valores,PERFIL_HORAFTDOMINGO,hfinEvento);
                     break;
             }
         }
@@ -765,13 +762,13 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
 
         valores = new ContentValues();
 
-        setDato(PERFIL_HORASLUNES,horasLunes);
-        setDato(PERFIL_HORASMARTES,horasMartes);
-        setDato(PERFIL_HORASMIERCOLES,horasMiercoles);
-        setDato(PERFIL_HORASJUEVES,horasJueves);
-        setDato(PERFIL_HORASVIERNES,horasViernes);
-        setDato(PERFIL_HORASSABADO,horasSabado);
-        setDato(PERFIL_HORASDOMINGO,horasDomingo);
+        putDato(valores,PERFIL_HORASLUNES,horasLunes);
+        putDato(valores,PERFIL_HORASMARTES,horasMartes);
+        putDato(valores,PERFIL_HORASMIERCOLES,horasMiercoles);
+        putDato(valores,PERFIL_HORASJUEVES,horasJueves);
+        putDato(valores,PERFIL_HORASVIERNES,horasViernes);
+        putDato(valores,PERFIL_HORASSABADO,horasSabado);
+        putDato(valores,PERFIL_HORASDOMINGO,horasDomingo);
 
         lunes.setText(String.valueOf(horasLunes));
         martes.setText(String.valueOf(horasMartes));
@@ -814,7 +811,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     protected boolean delete() {
 
 
-        if (!modeloSQL.getString(PERFIL_NOMBRE).equals(Interactor.perfila)) {
+        if (!modeloSQL.getString(PERFIL_NOMBRE).equals(perfilAct)) {
             super.delete();
             ConsultaBD.deleteRegistro(tabla, id);
         }else{
@@ -829,17 +826,17 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
     @Override
     protected void setContenedor() {
 
-        ConsultaBD.putDato(valores,campos,PERFIL_NOMBRE,nombre.getText().toString());
-        ConsultaBD.putDato(valores,campos,PERFIL_DESCRIPCION,descripcion.getText().toString());
-        ConsultaBD.putDato(valores, campos, PERFIL_HORASLUNES, JavaUtil.comprobarInteger(lunes.getText().toString()));
-        ConsultaBD.putDato(valores, campos, PERFIL_HORASMARTES, JavaUtil.comprobarInteger(martes.getText().toString()));
-        ConsultaBD.putDato(valores, campos, PERFIL_HORASMIERCOLES, JavaUtil.comprobarInteger(miercoles.getText().toString()));
-        ConsultaBD.putDato(valores, campos, PERFIL_HORASJUEVES, JavaUtil.comprobarInteger(jueves.getText().toString()));
-        ConsultaBD.putDato(valores, campos, PERFIL_HORASVIERNES, JavaUtil.comprobarInteger(viernes.getText().toString()));
-        ConsultaBD.putDato(valores, campos, PERFIL_HORASSABADO, JavaUtil.comprobarInteger(sabado.getText().toString()));
-        ConsultaBD.putDato(valores, campos, PERFIL_HORASDOMINGO, JavaUtil.comprobarInteger(domingo.getText().toString()));
-        ConsultaBD.putDato(valores, campos, PERFIL_VACACIONES, JavaUtil.comprobarInteger(vacaciones.getText().toString()));
-        ConsultaBD.putDato(valores, campos, PERFIL_SUELDO, JavaUtil.comprobarDouble(sueldo.getText().toString()));
+        putDato(valores,PERFIL_NOMBRE,nombre.getText().toString());
+        putDato(valores,PERFIL_DESCRIPCION,descripcion.getText().toString());
+        putDato(valores, PERFIL_HORASLUNES, JavaUtil.comprobarInteger(lunes.getText().toString()));
+        putDato(valores, PERFIL_HORASMARTES, JavaUtil.comprobarInteger(martes.getText().toString()));
+        putDato(valores, PERFIL_HORASMIERCOLES, JavaUtil.comprobarInteger(miercoles.getText().toString()));
+        putDato(valores, PERFIL_HORASJUEVES, JavaUtil.comprobarInteger(jueves.getText().toString()));
+        putDato(valores, PERFIL_HORASVIERNES, JavaUtil.comprobarInteger(viernes.getText().toString()));
+        putDato(valores, PERFIL_HORASSABADO, JavaUtil.comprobarInteger(sabado.getText().toString()));
+        putDato(valores, PERFIL_HORASDOMINGO, JavaUtil.comprobarInteger(domingo.getText().toString()));
+        putDato(valores, PERFIL_VACACIONES, JavaUtil.comprobarInteger(vacaciones.getText().toString()));
+        putDato(valores, PERFIL_SUELDO, JavaUtil.comprobarDouble(sueldo.getText().toString()));
 
 
     }
@@ -875,7 +872,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
             nombre.setText(entrada.get(posicion).getString(PERFIL_NOMBRE));
             descripcion.setText(entrada.get(posicion).getString(PERFIL_DESCRIPCION));
 
-            if (entrada.get(posicion).getString(PERFIL_NOMBRE).equals(Interactor.perfila)) {
+            if (entrada.get(posicion).getString(PERFIL_NOMBRE).equals(perfilAct)) {
 
                 card.setCardBackgroundColor(
                         AppActivity.getAppContext().getResources().getColor(R.color.Color_card_ok));
@@ -903,8 +900,7 @@ public class FragmentCRUDPerfil extends FragmentCRUD implements ContratoPry.Tabl
 
             nombre.setText(modeloSQL.getString(PERFIL_NOMBRE));
             descripcion.setText(modeloSQL.getString(PERFIL_DESCRIPCION));
-
-            if (modeloSQL.getString(PERFIL_NOMBRE).equals(Interactor.perfila)) {
+            if (modeloSQL.getString(PERFIL_NOMBRE).equals(perfilAct)) {
 
                 card.setCardBackgroundColor(
                         AppActivity.getAppContext().getResources().getColor(R.color.Color_card_ok));

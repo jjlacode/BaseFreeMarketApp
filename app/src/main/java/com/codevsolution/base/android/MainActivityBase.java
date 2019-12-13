@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,14 +21,18 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.chat.FragmentChatBase;
+import com.codevsolution.base.encrypt.EncryptUtil;
 import com.codevsolution.base.interfaces.ICFragmentos;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.services.AutoArranque;
+import com.codevsolution.base.style.Dialogos;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.web.FragmentWebView;
+import com.codevsolution.freemarketsapp.settings.Preferencias;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -58,6 +63,7 @@ public class MainActivityBase extends AppCompatActivity
     public ImageView imagenPerfil;
     public DrawerLayout drawer;
     protected String pathAyuda;
+    protected String idUser;
 
 
     @Override
@@ -113,7 +119,7 @@ public class MainActivityBase extends AppCompatActivity
 
         String idUser = AndroidUtil.getSharePreference(this, USERID, USERID, NULL);
         if (idUser != null && !idUser.equals(NULL) && !idUser.isEmpty()) {
-            ImagenUtil.setImageFireStoreCircle(idUser, imagenPerfil);
+            ImagenUtil.setImageFireStoreCircle(SLASH + idUser + SLASH + idUser + CAMPO_ACTIVO, imagenPerfil);
             setPathImagenPerfil();
         }
 
@@ -144,6 +150,50 @@ public class MainActivityBase extends AppCompatActivity
 
     protected void acciones() {
 
+        idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
+
+        InteractorBase.key = AndroidUtil.getSharePreference(context, PREFERENCIAS + idUser, PASSOK, NULL);
+
+        if (InteractorBase.key.equals(NULL)) {
+            if (AndroidUtil.getSharePreference(context, PREFERENCIAS + idUser, Preferencias.CIFRADO, false)) {
+                InteractorBase.key = AndroidUtil.getSharePreference(context, USERID, USERID, NULL);
+                if (AndroidUtil.getSharePreference(context, PREFERENCIAS + idUser, Preferencias.CIFRADOPASS, false)) {
+                    String titulo = "CIFRADO";
+                    String mensaje = "Introduzca contraseña de cifrado";
+                    new Dialogos.DialogoEdit(titulo, mensaje, EditMaterialLayout.TEXTO | EditMaterialLayout.PASS, "Contraseña",
+                            context, new Dialogos.DialogoEdit.OnClick() {
+                        @Override
+                        public void onConfirm(String text) {
+
+                            InteractorBase.key = text;
+                            String pass = AndroidUtil.getSharePreference(context, PREFERENCIAS + idUser, ENCODEPASS, NULL);
+                            if (text != null && text != "" && pass == NULL) {
+                                EncryptUtil.codificaPass();
+                            }
+                            if (text != null && text != "" && EncryptUtil.verificarPass(text)) {
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        AndroidUtil.setSharePreference(context, PREFERENCIAS + idUser, PASSOK, text);
+                                        onOkPass();
+                                    }
+                                }).start();
+                            } else {
+                                Toast.makeText(context, "La contraseña de cifrado no es valida", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancel() {
+
+                            Toast.makeText(context, "Tendrá que introducir la contraseña en las preferencias para poder cifrar y descifrar los datos", Toast.LENGTH_SHORT).show();
+                        }
+                    }).show(getSupportFragmentManager(), "dialogEdit");
+                }
+            }
+        }
+
         intent = getIntent();
 
         System.out.println("inicio = " + intent.getIntExtra(INICIO, 0));
@@ -163,10 +213,11 @@ public class MainActivityBase extends AppCompatActivity
 
             inicio(2);
             setPathAyuda();
-            ayudaWeb = pathAyuda + "Bienvenida";
+            ayudaWeb = pathAyuda + "bienvenida";
             bundle.putString(WEB, ayudaWeb);
             enviarBundleAFragment(bundle, new FragmentWebView());
         }
+
 
         accion = intent.getAction();
 
@@ -175,11 +226,11 @@ public class MainActivityBase extends AppCompatActivity
             System.out.println("Accion ver chat");
 
             String idChat = intent.getStringExtra(EXTRA_IDCHAT);
-            String idUser = intent.getStringExtra(EXTRA_IDSPCHAT);
+            String idUserChat = intent.getStringExtra(EXTRA_IDSPCHAT);
             int secChat = intent.getIntExtra(EXTRA_SECCHAT, 0);
             bundle.putString(ACTUAL, CHAT + intent.getStringExtra(EXTRA_ACTUAL));
             bundle.putString(CAMPO_ID, idChat);
-            bundle.putString(USERID, idUser);
+            bundle.putString(USERID, idUserChat);
             bundle.putInt(CAMPO_SECUENCIA, secChat);
             NotificationManager notifyMgr = (NotificationManager)
                     AppActivity.getAppContext().getSystemService(NOTIFICATION_SERVICE);
@@ -189,12 +240,17 @@ public class MainActivityBase extends AppCompatActivity
 
     }
 
+    protected void onOkPass() {
+
+    }
+
     protected void checkPermisos() {
     }
 
     @Override
     public void onBackPressed() {
 
+        recargarFragment();
         DrawerLayout drawer = findViewById(Estilos.getIdResource(this, "drawer_layout"));
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -237,6 +293,7 @@ public class MainActivityBase extends AppCompatActivity
         myFragment.setArguments(bundle);
 
         this.bundle = bundle;
+        System.out.println("bundle.getString(ACTUAL,NULL) = " + bundle.getString(ACTUAL, NULL));
 
         getSupportFragmentManager().beginTransaction().replace(Estilos.getIdResource(this, "content_main"), myFragment).addToBackStack(null).commit();
 
@@ -356,8 +413,7 @@ public class MainActivityBase extends AppCompatActivity
     @Override
     public void enviarAyudaWeb(String ayudaWeb) {
 
-        setPathAyuda();
-        this.ayudaWeb = pathAyuda + ayudaWeb;
+        this.ayudaWeb = ayudaWeb;
     }
 
     protected void recargarFragment() {

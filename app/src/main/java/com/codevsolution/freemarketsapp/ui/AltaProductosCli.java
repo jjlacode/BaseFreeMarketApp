@@ -22,6 +22,11 @@ public class AltaProductosCli extends AltaProductosFirebase
     }
 
     @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
+
+    @Override
     protected FragmentBase getParent() {
         return parent;
     }

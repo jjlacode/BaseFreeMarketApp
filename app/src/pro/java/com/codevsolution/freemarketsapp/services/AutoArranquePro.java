@@ -27,7 +27,7 @@ public class AutoArranquePro extends BroadcastReceiver {
 
 
         ComponentName serviceComponent = new ComponentName(AppActivity.getAppContext(), Jobs.class);
-        JobInfo info = new JobInfo.Builder(1, serviceComponent)
+        JobInfo info = new JobInfo.Builder(2, serviceComponent)
                 .setMinimumLatency(500)
                 .setOverrideDeadline(500)
                 .build();

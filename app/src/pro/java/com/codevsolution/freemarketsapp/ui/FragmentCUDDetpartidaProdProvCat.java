@@ -6,6 +6,7 @@ import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
@@ -18,6 +19,7 @@ import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.codevsolution.freemarketsapp.model.ProdProv;
 
+import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryObjectDetalle;
 
 public class FragmentCUDDetpartidaProdProvCat extends FragmentCUD implements Interactor.ConstantesPry,
@@ -52,6 +54,11 @@ public class FragmentCUDDetpartidaProdProvCat extends FragmentCUD implements Int
     }
 
     @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
+
+    @Override
     protected void setNuevo() {
 
 
@@ -63,20 +70,6 @@ public class FragmentCUDDetpartidaProdProvCat extends FragmentCUD implements Int
         tabla = TABLA_DETPARTIDA;
 
     }
-
-    @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
-
-    }
-
 
     @Override
     protected void setBundle() {
@@ -180,27 +173,27 @@ public class FragmentCUDDetpartidaProdProvCat extends FragmentCUD implements Int
     @Override
     protected void setContenedor() {
 
-        setDato(DETPARTIDA_NOMBRE, nombre.getText().toString());
-        setDato(DETPARTIDA_DESCRIPCION, descripcion.getText().toString());
-        setDato(DETPARTIDA_CANTIDAD, cantidad.getText().toString());
+        putDato(valores,DETPARTIDA_NOMBRE, nombre.getText().toString());
+        putDato(valores,DETPARTIDA_DESCRIPCION, descripcion.getText().toString());
+        putDato(valores,DETPARTIDA_CANTIDAD, cantidad.getText().toString());
 
-        setDato(DETPARTIDA_RUTAFOTO, path);
-        setDato(DETPARTIDA_ID_DETPARTIDA, idDetPartida);
-        setDato(DETPARTIDA_ID_PARTIDA, id);
-        setDato(DETPARTIDA_REFPROVCAT, idProv);
-        setDato(DETPARTIDA_TIPO, tipo);
+        putDato(valores,DETPARTIDA_RUTAFOTO, path);
+        putDato(valores,DETPARTIDA_ID_DETPARTIDA, idDetPartida);
+        putDato(valores,DETPARTIDA_ID_PARTIDA, id);
+        putDato(valores,DETPARTIDA_REFPROVCAT, idProv);
+        putDato(valores,DETPARTIDA_TIPO, tipo);
 
 
         if (partida_completada.isChecked()) {
-            setDato(DETPARTIDA_COMPLETA, 1);
+            putDato(valores,DETPARTIDA_COMPLETA, 1);
         } else {
-            setDato(DETPARTIDA_COMPLETA, 0);
+            putDato(valores,DETPARTIDA_COMPLETA, 0);
 
         }
 
-        setDato(DETPARTIDA_PRECIO, precio.getText().toString());
-        setDato(DETPARTIDA_DESCUENTOPROVCAT, descProv.getText().toString());
-        setDato(DETPARTIDA_REFPROVEEDOR, refProv.getText().toString());
+        putDato(valores,DETPARTIDA_PRECIO, precio.getText().toString());
+        putDato(valores,DETPARTIDA_DESCUENTOPROVCAT, descProv.getText().toString());
+        putDato(valores,DETPARTIDA_REFPROVEEDOR, refProv.getText().toString());
 
 
         Interactor.Calculos.actualizarPartidaProyecto(id);

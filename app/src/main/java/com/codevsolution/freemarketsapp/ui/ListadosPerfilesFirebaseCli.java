@@ -4,10 +4,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.codevsolution.base.nosql.FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.freemarketsapp.R;
 
-public class ListadosPerfilesFirebaseCli extends FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb {
+public class ListadosPerfilesFirebaseCli extends ListadoPerfilesFirebase {
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
@@ -15,6 +15,11 @@ public class ListadosPerfilesFirebaseCli extends FragmentMasterDetailNoSQLFormBa
         super.setOnCreateView(view, inflater, container);
         titulo = getString(R.string.clientes);
 
+    }
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
     }
 
     @Override
@@ -35,6 +40,12 @@ public class ListadosPerfilesFirebaseCli extends FragmentMasterDetailNoSQLFormBa
     @Override
     protected void setInicio() {
 
+    }
+
+    @Override
+    protected void setDatos() {
+        super.setDatos();
+        gone(proveedores);
     }
 
     @Override

@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -28,7 +27,7 @@ import androidx.cardview.widget.CardView;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
-import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
@@ -38,6 +37,7 @@ import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.module.PdfViewerModule;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.style.Estilos;
@@ -47,11 +47,7 @@ import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.codevsolution.freemarketsapp.templates.PresupuestoPDF;
 import com.github.barteksc.pdfviewer.PDFView;
-import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
-import com.github.barteksc.pdfviewer.listener.OnTapListener;
-import com.github.barteksc.pdfviewer.util.FitPolicy;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
@@ -62,7 +58,7 @@ import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryListDetalle;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryObject;
 import static com.codevsolution.base.sqlite.ConsultaBD.updateRegistro;
-import static com.codevsolution.base.sqlite.ConsultaBD.updateRegistrosDetalle;
+import static com.codevsolution.base.sqlite.ConsultaBD.updateRegistroDetalle;
 
 public class FragmentCRUDProyecto extends FragmentCRUD
         implements Interactor.ConstantesPry, ContratoPry.Tablas, Interactor.Estados,
@@ -138,9 +134,15 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private long timeStamp;
     private Button btnAsignarAEvento;
     private ModeloSQL evento;
+    private PdfViewerModule pdfViewer;
 
     public FragmentCRUDProyecto() {
         // Required empty public constructor
+    }
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
     }
 
     @Override
@@ -162,6 +164,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     @Override
     protected void setLista() {
+
 
         activityBase.fabNuevo.hide();
 
@@ -259,19 +262,6 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     }
 
     @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
-
-    }
-
-    @Override
     protected void setBundle() {
 
 
@@ -328,27 +318,29 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         switch (actual) {
             case PRESUPUESTO:
-                subTitulo = getString(R.string.presupuestos);
+                tituloPlural = R.string.presupuestos;
                 break;
             case PROYECTO:
-                subTitulo = getString(R.string.proyectos);
+                tituloPlural = R.string.proyectos;
                 break;
             case COBROS:
-                subTitulo = getString(R.string.cobros);
+                tituloPlural = R.string.cobros;
                 break;
             case HISTORICO:
-                subTitulo = getString(R.string.historico);
+                tituloPlural = R.string.historico;
                 break;
             case GARANTIA:
-                subTitulo = getString(R.string.garantia);
+                tituloPlural = R.string.garantia;
                 break;
             default:
-                subTitulo = getString(R.string.proyectos);
+                tituloPlural = R.string.proyectos;
 
                 break;
         }
 
+        subTitulo = getString(tituloPlural);
         activityBase.toolbar.setSubtitle(subTitulo);
+        //reproducir(subTitulo);
         imagen.setTextTitulo(subTitulo);
 
     }
@@ -480,7 +472,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         bundle.putSerializable(PROYECTO, modeloSQL);
         bundle.putString(SUBTITULO, actualtemp);
         bundle.putString(ORIGEN, actualtemp);
-        bundle.putSerializable(LISTA, new ListaModeloSQL(CAMPOS_EVENTO, EVENTO_PROYECTOREL, id, null, IGUAL, null));
+        bundle.putSerializable(LISTA, new ListaModeloSQL(CAMPOS_EVENTO, EVENTO_PROYECTOREL, id));
         icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
         bundle = null;
     }
@@ -601,9 +593,16 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setTitulo() {
 
-        tituloSingular = R.string.proyecto;
-        tituloPlural = R.string.proyectos;
-        tituloNuevo = R.string.nuevo_proyecto;
+        if (nnn(actual)){
+
+            setSubtitulo(actual);
+
+        }else {
+
+            tituloSingular = R.string.proyecto;
+            tituloPlural = R.string.proyectos;
+            tituloNuevo = R.string.nuevo_proyecto;
+        }
 
     }
 
@@ -637,13 +636,13 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         spClienteProyecto = vistaForm.addEditMaterialLayout(getString(R.string.cliente));
         spClienteProyecto.setActivo(false);
         spClienteProyecto.btnInicioVisible(false);
-        spClienteProyecto.btnAccion2Enable(true);
-        spClienteProyecto.setImgBtnAccion2(R.drawable.cliente);
+        spClienteProyecto.btnAccion3Enable(true);
+        spClienteProyecto.setImgBtnAccion3(R.drawable.cliente);
         spEstadoProyecto = (Spinner) vistaForm.addVista(new Spinner(contexto));
         estadoProyecto = vistaForm.addEditMaterialLayout(R.string.estado);
-        estadoProyecto.btnAccion2Enable(true);
+        estadoProyecto.btnAccion3Enable(true);
         estadoProyecto.btnInicioVisible(false);
-        estadoProyecto.setImgBtnAccion2(R.drawable.alert_box_v);
+        estadoProyecto.setImgBtnAccion3(R.drawable.alert_box_v);
         fechaEntradaPry = vistaForm.addEditMaterialLayout(R.string.fecha_entrada);
         fechaEntradaPry.setActivo(false);
         fechaEntradaPry.btnInicioVisible(false);
@@ -766,13 +765,13 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 update();
 
                 if (peso > 6) {
-                    spClienteProyecto.setImgBtnAccion2(R.drawable.clientev);
+                    spClienteProyecto.setImgBtnAccion3(R.drawable.clientev);
                 } else if (peso > 3) {
-                    spClienteProyecto.setImgBtnAccion2(R.drawable.clientea);
+                    spClienteProyecto.setImgBtnAccion3(R.drawable.clientea);
                 } else if (peso > 0) {
-                    spClienteProyecto.setImgBtnAccion2(R.drawable.clienter);
+                    spClienteProyecto.setImgBtnAccion3(R.drawable.clienter);
                 } else {
-                    spClienteProyecto.setImgBtnAccion2(R.drawable.cliente);
+                    spClienteProyecto.setImgBtnAccion3(R.drawable.cliente);
                 }
 
                 setDatos();
@@ -787,97 +786,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 setDatos();
             }
         });
-        viewerPdf = (PDFView) vistaForm.addVista(new PDFView(contexto, null));
-        Estilos.setLayoutParams(vistaForm.getViewGroup(), viewerPdf, ViewGroupLayout.MATCH_PARENT, (int) (altoReal * 0.65));
-        viewerPdf.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                if (viewerPdf.getZoom() > 1) {
-                    frameAnimationCuerpo.setActivo(false);
-                    scrollDetalle.setScrollingEnabled(false);
-                } else {
-                    frameAnimationCuerpo.setActivo(true);
-                    scrollDetalle.setScrollingEnabled(true);
-                }
+        pdfViewer = new PdfViewerModule(vistaForm.getViewGroup(),contexto,this,(int) (altoReal * 0.65),rutaPdf);
 
-            }
-        });
-
-        ViewGroupLayout vistaPdf = new ViewGroupLayout(contexto, vistaForm.getViewGroup());
-        vistaPdf.setOrientacion(LinearLayoutCompat.HORIZONTAL);
-        btnAntPage = vistaPdf.addButtonSecondary(activityBase, R.string.ant_page, 1);
-        btnAntPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int currentPage = viewerPdf.getCurrentPage();
-                if (currentPage > 0) {
-                    viewerPdf.jumpTo(currentPage - 1);
-                    if (viewerPdf.getCurrentPage() == 0) {
-                        gone(btnAntPage);
-                    } else {
-                        visible(btnAntPage);
-                    }
-                    if (viewerPdf.getCurrentPage() == viewerPdf.getPageCount() - 1) {
-                        gone(btnNextPage);
-                    } else {
-                        visible(btnNextPage);
-                    }
-                }
-                timeStamp = TimeDateUtil.ahora();
-            }
-        });
-        btnenviarPdf = vistaPdf.addImageButtonSecundary(activityBase, R.drawable.ic_txt_pdf_indigo, 1);
-        btnenviarPdf.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-                ModeloSQL cliente = CRUDutil.updateModelo(CAMPOS_CLIENTE, idCliente);
-                String email = cliente.getString(CLIENTE_EMAIL);
-                String asunto = "Presupuesto solicitado";
-                String mensaje = "Envio presupuesto " + modeloSQL.getString(PROYECTO_NOMBRE) + " solicitado por usted";
-                PresupuestoPDF presupuestoPDF = new PresupuestoPDF();
-                presupuestoPDF.buscarPDF(rutaPdf);
-                presupuestoPDF.enviarPDFEmail(contexto, rutaPdf, email, asunto, mensaje);
-            }
-        });
-        etNumeroPag = vistaPdf.addEditMaterialLayout(R.string.pagina, 1);
-        etNumeroPag.setActivo(false);
-        btncompartirPdf = vistaPdf.addImageButtonSecundary(activityBase, R.drawable.ic_compartir_indigo, 1);
-        btncompartirPdf.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                AppActivity.compartirPdf(generarPDF(id));
-
-            }
-        });
-        btnNextPage = vistaPdf.addButtonSecondary(activityBase, R.string.next_page, 1);
-        btnNextPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int totPages = viewerPdf.getPageCount();
-                int currentPage = viewerPdf.getCurrentPage();
-
-                if (currentPage < totPages) {
-                    viewerPdf.jumpTo(currentPage + 1);
-                    if (viewerPdf.getCurrentPage() == 0) {
-                        gone(btnAntPage);
-                    } else {
-                        visible(btnAntPage);
-                    }
-                    if (viewerPdf.getCurrentPage() == viewerPdf.getPageCount() - 1) {
-                        gone(btnNextPage);
-                    } else {
-                        visible(btnNextPage);
-                    }
-                }
-                timeStamp = TimeDateUtil.ahora();
-            }
-        });
-
-        actualizarArrays(vistaPdf);
         actualizarArrays(vistaForm);
 
         ViewGroupLayout vistaCab = new ViewGroupLayout(contexto, frCabecera);
@@ -924,49 +835,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 activityBase.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        viewerPdf.fromFile(new File(rutaPdf)).enableSwipe(true)
-                                .swipeHorizontal(false)
-                                .enableDoubletap(true)
-                                .onTap(new OnTapListener() {
-                                    @Override
-                                    public boolean onTap(MotionEvent e) {
-                                        if (viewerPdf.getZoom() > 1) {
-                                            frameAnimationCuerpo.setActivo(false);
-                                            scrollDetalle.setScrollingEnabled(false);
-                                        } else {
-                                            frameAnimationCuerpo.setActivo(true);
-                                            scrollDetalle.setScrollingEnabled(true);
-                                        }
-                                        return false;
-                                    }
-                                })
 
-                                .onPageChange(new OnPageChangeListener() {
-                                    @Override
-                                    public void onPageChanged(int page, int pageCount) {
-                                        pageNumber = page;
-                                        etNumeroPag.setText((String.format("%s / %s", page + 1, pageCount)));
-                                        frameAnimationCuerpo.setActivo(true);
-                                        if (viewerPdf.getCurrentPage() == 0) {
-                                            gone(btnAntPage);
-                                        } else {
-                                            visible(btnAntPage);
-                                        }
-                                        if (viewerPdf.getCurrentPage() == viewerPdf.getPageCount() - 1) {
-                                            gone(btnNextPage);
-                                        } else {
-                                            visible(btnNextPage);
-                                        }
-                                    }
-                                })
-
-                                .defaultPage(pageNumber)
-                                .password(null)
-                                .enableAntialiasing(true) // improve rendering a little bit on low-res screens
-                                .pageFitPolicy(FitPolicy.BOTH)
-                                .load();
-
-                        timeStamp = TimeDateUtil.ahora();
+                        pdfViewer.cargarDocumento(rutaPdf);
 
                     }
                 });
@@ -979,6 +849,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         super.alGuardarCampos();
 
         System.out.println("Al guardar campos");
+        timeStamp = pdfViewer.getTimestamp();
         if (nnn(id) && nn(modeloSQL) && timeStamp < TimeDateUtil.ahora() - (10 * SEGUNDOSLONG)) {
 
             cargarPresupuesto();
@@ -1066,13 +937,13 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         idCliente = modeloSQL.getString(PROYECTO_ID_CLIENTE);
         peso = modeloSQL.getInt(PROYECTO_CLIENTE_PESOTIPOCLI);//cliente.getInt(CLIENTE_PESOTIPOCLI);
         if (peso > 6) {
-            spClienteProyecto.setImgBtnAccion2(R.drawable.clientev);
+            spClienteProyecto.setImgBtnAccion3(R.drawable.clientev);
         } else if (peso > 3) {
-            spClienteProyecto.setImgBtnAccion2(R.drawable.clientea);
+            spClienteProyecto.setImgBtnAccion3(R.drawable.clientea);
         } else if (peso > 0) {
-            spClienteProyecto.setImgBtnAccion2(R.drawable.clienter);
+            spClienteProyecto.setImgBtnAccion3(R.drawable.clienter);
         } else {
-            spClienteProyecto.setImgBtnAccion2(R.drawable.cliente);
+            spClienteProyecto.setImgBtnAccion3(R.drawable.cliente);
         }
 
         idEstado = modeloSQL.getString(PROYECTO_ID_ESTADO);
@@ -1119,8 +990,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
             if (modeloSQL.getInt(PROYECTO_TIPOESTADO) == TNUEVOPRESUP) {
                 valores = new ContentValues();
-                setDato(PROYECTO_PRECIOHORA, Interactor.hora);
-                setDato(PROYECTO_FECHAENTREGAACORDADA,fechaCalculada);
+                putDato(valores,PROYECTO_PRECIOHORA, Interactor.hora);
+                putDato(valores,PROYECTO_FECHAENTREGAACORDADA,fechaCalculada);
                 CRUDutil.actualizarRegistro(modeloSQL, valores);
                 modeloSQL = CRUDutil.updateModelo(modeloSQL);
             }
@@ -1179,13 +1050,14 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         long retraso = modeloSQL.getLong(PROYECTO_RETRASO);
         if (retraso > 3 * Interactor.DIASLONG) {
-            estadoProyecto.setImgBtnAccion2(R.drawable.alert_box_r);
+            estadoProyecto.setImgBtnAccion3(R.drawable.alert_box_r);
         } else if (retraso > Interactor.DIASLONG) {
-            estadoProyecto.setImgBtnAccion2(R.drawable.alert_box_a);
+            estadoProyecto.setImgBtnAccion3(R.drawable.alert_box_a);
             } else {
-            estadoProyecto.setImgBtnAccion2(R.drawable.alert_box_v);
+            estadoProyecto.setImgBtnAccion3(R.drawable.alert_box_v);
             }
 
+        /*
         if (modeloSQL.getInt(PROYECTO_TIPOESTADO) >= TPRESUPPENDENTREGA) {
 
                 btnenviarPdf.setVisibility(View.VISIBLE);
@@ -1196,12 +1068,16 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             btncompartirPdf.setVisibility(View.GONE);
         }
 
+         */
+
         comprobarEstado();
 
 
+        System.out.println("idCliente = " + idCliente);
         if (idCliente!=null) {
             ModeloSQL cliente = queryObject(CAMPOS_CLIENTE, idCliente);
             nombreCliente = cliente.getString(CLIENTE_NOMBRE);
+            System.out.println("nombreCliente = " + nombreCliente);
             spClienteProyecto.setText(nombreCliente);
         }
 
@@ -1211,7 +1087,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     private void calculoTotales() {
 
-        ArrayList<ModeloSQL> listaPartidas = queryListDetalle(CAMPOS_PARTIDA, id, TABLA_PROYECTO);
+        ArrayList<ModeloSQL> listaPartidas = queryListDetalle(CAMPOS_PARTIDA, id);
 
         int x = 0;
         for (int i = 0; i < listaPartidas.size(); i++) {
@@ -1243,21 +1119,23 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             horaInicioCalculada = modeloSQL.getLong(PROYECTO_HORAINICIOCALCULADA);
             if (modeloSQL.getInt(PROYECTO_TIPOESTADO) == TNUEVOPRESUP) {
                 valores = new ContentValues();
-                setDato(PROYECTO_PRECIOHORA, Interactor.hora);
-                setDato(PROYECTO_FECHAENTREGACALCULADA,fechaCalculada);
+                putDato(valores,PROYECTO_PRECIOHORA, Interactor.hora);
+                putDato(valores,PROYECTO_FECHAENTREGACALCULADA,fechaCalculada);
                 CRUDutil.actualizarRegistro(modeloSQL, valores);
                 modeloSQL = CRUDutil.updateModelo(modeloSQL);
             } else if (modeloSQL.getInt(PROYECTO_TIPOESTADO) >= TPRESUPACEPTADO) {
                 valores = new ContentValues();
-                setDato(PROYECTO_FECHAENTREGAACORDADA,fechaCalculada);
-                setDato(PROYECTO_FECHAINICIOACORDADA,fechaInicioCalculada);
-                setDato(PROYECTO_HORAINICIOACORDADA,horaInicioCalculada);
+                putDato(valores,PROYECTO_FECHAENTREGAACORDADA,fechaCalculada);
+                putDato(valores,PROYECTO_FECHAINICIOACORDADA,fechaInicioCalculada);
+                putDato(valores,PROYECTO_HORAINICIOACORDADA,horaInicioCalculada);
                 CRUDutil.actualizarRegistro(modeloSQL, valores);
                 modeloSQL = CRUDutil.updateModelo(modeloSQL);
             }
 
                 calculoTotales();
         }
+        System.out.println("idCliente = " + idCliente);
+        System.out.println("idEstado = " + idEstado);
 
         if (idCliente!=null && idEstado!=null) {
 
@@ -1334,7 +1212,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     private String getIdEstado(int tipoEstado){
 
-        ArrayList<ModeloSQL> listaEstados = queryList(CAMPOS_ESTADO, null, null);
+        ArrayList<ModeloSQL> listaEstados = queryList(CAMPOS_ESTADO);
 
         for (ModeloSQL estado : listaEstados) {
 
@@ -1349,7 +1227,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
     private String getIdEstado(String descTipoEstado){
 
-        ArrayList<ModeloSQL> listaEstados = queryList(CAMPOS_ESTADO, null, null);
+        ArrayList<ModeloSQL> listaEstados = queryList(CAMPOS_ESTADO);
 
         for (ModeloSQL estado : listaEstados) {
 
@@ -1429,7 +1307,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         }
 
         valores = new ContentValues();
-        putDato(valores,CAMPOS_PROYECTO,PROYECTO_ID_ESTADO,idEstado);
+        putDato(valores,PROYECTO_ID_ESTADO,idEstado);
         updateRegistro(TABLA_PROYECTO, id,valores);
         CRUDutil.actualizarRegistro(modeloSQL, valores);
 
@@ -1451,22 +1329,22 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             String mensaje = "Envio presupuesto solicitado por usted";
         ModeloSQL cliente = queryObject(CAMPOS_CLIENTE, idCliente);
             valores = new ContentValues();
-        putDato(valores, CAMPOS_EVENTO, EVENTO_TIPO, Interactor.TiposEvento.TIPOEVENTOEMAIL);
-            putDato(valores, CAMPOS_EVENTO, EVENTO_DESCRIPCION, "Envío presupuesto a cliente");
-            putDato(valores, CAMPOS_EVENTO, EVENTO_EMAIL, cliente.getString(CLIENTE_EMAIL));
-            putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, fechaini);
-            putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTO, horaini + HORASLONG);
-            putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTOF, JavaUtil.getDate(fechaini));
-            putDato(valores, CAMPOS_EVENTO, EVENTO_HORAINIEVENTOF, JavaUtil.getTime(horaini + HORASLONG));
-            putDato(valores, CAMPOS_EVENTO, EVENTO_ASUNTO, asunto);
-            putDato(valores, CAMPOS_EVENTO, EVENTO_MENSAJE, mensaje);
-            putDato(valores, CAMPOS_EVENTO, EVENTO_RUTAADJUNTO,rutaPdf);
-        putDato(valores, CAMPOS_EVENTO, EVENTO_RUTAFOTO, modeloSQL.getString(PROYECTO_RUTAFOTO));
-            putDato(valores, CAMPOS_EVENTO, EVENTO_PROYECTOREL, id);
-            putDato(valores, CAMPOS_EVENTO, EVENTO_CLIENTEREL, idCliente);
-        putDato(valores, CAMPOS_EVENTO, EVENTO_NOMPROYECTOREL, modeloSQL.getString(PROYECTO_NOMBRE));
-            putDato(valores, CAMPOS_EVENTO, EVENTO_NOMCLIENTEREL, nombreCliente);
-            putDato(valores, CAMPOS_EVENTO, EVENTO_AVISO, 50 * MINUTOSLONG);
+        putDato(valores, EVENTO_TIPO, Interactor.TiposEvento.TIPOEVENTOEMAIL);
+            putDato(valores, EVENTO_DESCRIPCION, "Envío presupuesto a cliente");
+            putDato(valores, EVENTO_EMAIL, cliente.getString(CLIENTE_EMAIL));
+            putDato(valores, EVENTO_FECHAINIEVENTO, fechaini);
+            putDato(valores, EVENTO_HORAINIEVENTO, horaini + HORASLONG);
+            putDato(valores, EVENTO_FECHAINIEVENTOF, JavaUtil.getDate(fechaini));
+            putDato(valores, EVENTO_HORAINIEVENTOF, JavaUtil.getTime(horaini + HORASLONG));
+            putDato(valores, EVENTO_ASUNTO, asunto);
+            putDato(valores, EVENTO_MENSAJE, mensaje);
+            putDato(valores, EVENTO_RUTAADJUNTO,rutaPdf);
+        putDato(valores, EVENTO_RUTAFOTO, modeloSQL.getString(PROYECTO_RUTAFOTO));
+            putDato(valores, EVENTO_PROYECTOREL, id);
+            putDato(valores, EVENTO_CLIENTEREL, idCliente);
+        putDato(valores, EVENTO_NOMPROYECTOREL, modeloSQL.getString(PROYECTO_NOMBRE));
+            putDato(valores, EVENTO_NOMCLIENTEREL, nombreCliente);
+            putDato(valores, EVENTO_AVISO, 50 * MINUTOSLONG);
 
             insertRegistro(TABLA_EVENTO, valores);
     }
@@ -1478,7 +1356,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
         ModeloSQL modeloSQL = CRUDutil.updateModelo(CAMPOS_PROYECTO, id);
         presupuestoPDF.crearPdf(id, modeloSQL.getString(PROYECTO_RUTAFOTO));
         ContentValues valores = new ContentValues();
-        putDato(valores,CAMPOS_PROYECTO,PROYECTO_RUTAPDF,presupuestoPDF.getRutaArchivo());
+        putDato(valores,PROYECTO_RUTAPDF,presupuestoPDF.getRutaArchivo());
         System.out.println("presupuestoPDF ruta = " + presupuestoPDF.getRutaArchivo());
         System.out.println("modeloSQL = " + modeloSQL);
         System.out.println("valores = " + valores);
@@ -1493,7 +1371,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
         String idPresupNoAceptado;
 
-        ArrayList<ModeloSQL> listaEstados = queryList(CAMPOS_ESTADO, null, null);
+        ArrayList<ModeloSQL> listaEstados = queryList(CAMPOS_ESTADO);
 
         for (ModeloSQL estado : listaEstados) {
 
@@ -1501,7 +1379,7 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
                 idPresupNoAceptado = estado.getString(ESTADO_ID_ESTADO);
                 ContentValues valores = new ContentValues();
-                putDato(valores,CAMPOS_PROYECTO,PROYECTO_ID_ESTADO,idPresupNoAceptado);
+                putDato(valores,PROYECTO_ID_ESTADO,idPresupNoAceptado);
                 updateRegistro(TABLA_PROYECTO, id,valores);
 
                 comprobarEstado();
@@ -1517,8 +1395,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     private void modificarEstadoPartidas(String idProyecto, String idEstado){
 
         valores = new ContentValues();
-        putDato(valores,CAMPOS_PARTIDA, PARTIDA_ID_ESTADO,idEstado);
-        updateRegistrosDetalle(TABLA_PARTIDA,idProyecto,TABLA_PROYECTO,valores,null);
+        putDato(valores, PARTIDA_ID_ESTADO,idEstado);
+        updateRegistroDetalle(TABLA_PARTIDA,idProyecto,TABLA_PROYECTO,valores);
 
         Log.d(TAG,"modificarEstadoPartidas");
     }
@@ -1526,12 +1404,12 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     @Override
     protected void setContenedor() {
 
-        setDato(PROYECTO_NOMBRE,nombrePry.getText().toString());
-        setDato(PROYECTO_DESCRIPCION,descripcionPry.getText().toString());
-        setDato(PROYECTO_ID_CLIENTE, idCliente);
-        setDato(PROYECTO_ID_ESTADO, idEstado);
-        setDato(PROYECTO_FECHAENTREGAACORDADA,fechaAcordada);
-        setDato(PROYECTO_FECHAENTREGAACORDADAF, JavaUtil.getDate(fechaAcordada));
+        putDato(valores,PROYECTO_NOMBRE,nombrePry.getText().toString());
+        putDato(valores,PROYECTO_DESCRIPCION,descripcionPry.getText().toString());
+        putDato(valores,PROYECTO_ID_CLIENTE, idCliente);
+        putDato(valores,PROYECTO_ID_ESTADO, idEstado);
+        putDato(valores,PROYECTO_FECHAENTREGAACORDADA,fechaAcordada);
+        putDato(valores,PROYECTO_FECHAENTREGAACORDADAF, JavaUtil.getDate(fechaAcordada));
 
         System.out.println("fechaCalculada = " + fechaCalculada);
         System.out.println("fechaAcordada = " + fechaAcordada);
@@ -1550,15 +1428,15 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                 retraso = (fechaCalculada - fechaAcordada);
             }
         }
-        setDato(PROYECTO_RETRASO,retraso);
-        setDato(PROYECTO_IMPORTEPRESUPUESTO,preciototal);
-        setDato(PROYECTO_IMPORTEFINAL,importeFinalPry.getText().toString(),DOUBLE);
-        setDato(PROYECTO_RUTAFOTO,path);
-        setDato(PROYECTO_TOTCOMPLETADO,totcompletada);
+        putDato(valores,PROYECTO_RETRASO,retraso);
+        putDato(valores,PROYECTO_IMPORTEPRESUPUESTO,preciototal);
+        putDato(valores,PROYECTO_IMPORTEFINAL,importeFinalPry.getText().toString());
+        putDato(valores,PROYECTO_RUTAFOTO,path);
+        putDato(valores,PROYECTO_TOTCOMPLETADO,totcompletada);
         if (id ==null){
 
-            setDato(PROYECTO_FECHAENTRADA, JavaUtil.hoy());
-            setDato(PROYECTO_FECHAENTRADAF, JavaUtil.getDateTime(JavaUtil.hoy()));
+            putDato(valores,PROYECTO_FECHAENTRADA, JavaUtil.hoy());
+            putDato(valores,PROYECTO_FECHAENTRADAF, JavaUtil.getDateTime(JavaUtil.hoy()));
         }
 
     }
@@ -1587,9 +1465,9 @@ public class FragmentCRUDProyecto extends FragmentCRUD
             super.onPostExecute(integer);
 
             valores = new ContentValues();
-            setDato(PROYECTO_FECHAENTREGAACORDADA,fechaCalculada);
-            setDato(PROYECTO_FECHAINICIOACORDADA,fechaInicioCalculada);
-            setDato(PROYECTO_HORAINICIOACORDADA,horaInicioCalculada);
+            putDato(valores,PROYECTO_FECHAENTREGAACORDADA,fechaCalculada);
+            putDato(valores,PROYECTO_FECHAINICIOACORDADA,fechaInicioCalculada);
+            putDato(valores,PROYECTO_HORAINICIOACORDADA,horaInicioCalculada);
             CRUDutil.actualizarRegistro(modeloSQL, valores);
             modeloSQL = CRUDutil.updateModelo(modeloSQL);
 
@@ -1706,8 +1584,8 @@ public class FragmentCRUDProyecto extends FragmentCRUD
                         String selectedDate = JavaUtil.getDate(fechaEntregaP);
                         fechaEntregaPresup.setText(selectedDate);
                         valores = new ContentValues();
-                        setDato(PROYECTO_FECHAENTREGAPRESUP,fechaEntregaP);
-                        setDato(PROYECTO_FECHAENTREGAPRESUPF,selectedDate);
+                        putDato(valores,PROYECTO_FECHAENTREGAPRESUP,fechaEntregaP);
+                        putDato(valores,PROYECTO_FECHAENTREGAPRESUPF,selectedDate);
                         updateRegistro(tabla,id,valores);
 
                         new Tareafechas().execute(false);

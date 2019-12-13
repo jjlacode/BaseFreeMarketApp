@@ -37,6 +37,8 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
 
     public static String colorTmp = null;
     public static Fragment fragmentInicio;
+    public static String key;
+    public static boolean encrypt = true;
 
     public InteractorBase() {
 
@@ -45,6 +47,9 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
 
     public interface Constantes {
 
+        String ENCODE = "ENCODE";
+        String ENCODEPASS = "ENCODEPASS";
+        String PASSOK = "PASSOK";
         String USERID = "userid";
         String PLANMENSUAL = "plan_mensual";
         String PLANTRIMESTRAL = "plan_trimestral";
@@ -88,6 +93,7 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
         String SALIR = "salir";
         String TABLAS = "tablas";
         String NUEVO = Estilos.getString(getAppContext(), "nuevo");
+        String SLASH = "/";
         String CRUD = "crud";
         String MODULO = "modulo";
         String SORTEO = "sorteo";

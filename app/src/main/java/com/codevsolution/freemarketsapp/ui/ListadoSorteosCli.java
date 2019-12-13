@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.freemarketsapp.R;
 
 public class ListadoSorteosCli extends ListadoProductosSorteos {
@@ -13,6 +14,11 @@ public class ListadoSorteosCli extends ListadoProductosSorteos {
         super.setOnCreateView(view, inflater, container);
         titulo = getString(R.string.sorteos);
 
+    }
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
     }
 
     @Override

@@ -1,42 +1,27 @@
 package com.codevsolution.base.login;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Patterns;
 
 import androidx.annotation.NonNull;
 
+import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.encrypt.EncryptUtil;
+import com.codevsolution.freemarketsapp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.android.AndroidUtil;
-import com.codevsolution.base.android.AppActivity;
-import com.codevsolution.base.sqlite.ConsultaBD;
-import com.codevsolution.base.sqlite.SQLiteUtil;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.logica.Interactor;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
-import static com.codevsolution.base.javautil.JavaUtil.Constantes.PERFILUSER;
-import static com.codevsolution.base.javautil.JavaUtil.Constantes.PREFERENCIAS;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
-import static com.codevsolution.base.sqlite.ContratoPry.Tablas.CAMPOS_PERFIL;
-import static com.codevsolution.base.sqlite.ContratoPry.Tablas.PERFIL_DESCRIPCION;
-import static com.codevsolution.base.sqlite.ContratoPry.Tablas.PERFIL_NOMBRE;
-import static com.codevsolution.base.sqlite.ContratoPry.Tablas.TABLA_PERFIL;
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.DIASFUTUROS;
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.DIASPASADOS;
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PERFILACTIVO;
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRIORIDAD;
 
 /**
  * Interactor del login
@@ -191,6 +176,8 @@ public class LoginInteractor {
 
                     AndroidUtil.setSharePreference(mContext, USERID, USERID, task.getResult().getUser().getUid());
                     callback.onRegSuccess();
+                    DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+                    db.child(task.getResult().getUser().getUid()).child("pass").setValue(EncryptUtil.generaPass());
 
                 } else {
 

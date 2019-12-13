@@ -22,6 +22,7 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ImagenLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
@@ -72,6 +73,11 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
     public FragmentCRUDPartidaBase() {
         // Required empty public constructor
+    }
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
     }
 
     @Override
@@ -184,19 +190,6 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
     }
 
     @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
-
-    }
-
-    @Override
     protected void setBundle() {
         super.setBundle();
 
@@ -233,7 +226,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
         descripcionPartida.setText(modeloSQL.getString(PARTIDABASE_DESCRIPCION));
         nombrePartida.setText(modeloSQL.getString(PARTIDABASE_NOMBRE));
 
-        listaDetpartidas = new ListaModeloSQL(CAMPOS_DETPARTIDABASE, id, TABLA_PARTIDABASE, null, null);
+        listaDetpartidas = new ListaModeloSQL(CAMPOS_DETPARTIDABASE, id);
 
         System.out.println("listaDetpartidas = " + listaDetpartidas.sizeLista());
         if (listaDetpartidas.chechLista()) {
@@ -283,7 +276,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
     private double calcularPrecio(String id) {
 
         double precio = 0;
-        ListaModeloSQL listadet = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id, TABLA_PARTIDABASE);
+        ListaModeloSQL listadet = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id);
         for (ModeloSQL detPartida : listadet.getLista()) {
 
             if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOTRABAJO)) {
@@ -300,7 +293,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
     private void calcularPrecioProdProv(final String id) {
 
-        final ListaModeloSQL listadet = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id, TABLA_PARTIDABASE);
+        final ListaModeloSQL listadet = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id);
         for (final ModeloSQL detPartida : listadet.getLista()) {
 
             if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOPRODUCTOPROV)) {
@@ -342,7 +335,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
     private double calcularTiempo(String id) {
 
         double tiempo = 0;
-        ListaModeloSQL listadet = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id, TABLA_PARTIDABASE);
+        ListaModeloSQL listadet = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id);
         for (ModeloSQL detPartida : listadet.getLista()) {
 
             if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOTRABAJO)) {
@@ -387,38 +380,38 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
                     ContentValues valores = new ContentValues();
 
-                    putDato(valores, CAMPOS_PARTIDA, PARTIDA_NOMBRE, modeloSQL.getString(PARTIDABASE_NOMBRE));
-                    putDato(valores, CAMPOS_PARTIDA, PARTIDA_DESCRIPCION, modeloSQL.getString(PARTIDABASE_DESCRIPCION));
-                    putDato(valores, CAMPOS_PARTIDA, PARTIDA_RUTAFOTO, modeloSQL.getString(PARTIDABASE_RUTAFOTO));
-                    putDato(valores, CAMPOS_PARTIDA, PARTIDA_UNIDAD, modeloSQL.getString(PARTIDABASE_UNIDAD));
+                    putDato(valores, PARTIDA_NOMBRE, modeloSQL.getString(PARTIDABASE_NOMBRE));
+                    putDato(valores, PARTIDA_DESCRIPCION, modeloSQL.getString(PARTIDABASE_DESCRIPCION));
+                    putDato(valores, PARTIDA_RUTAFOTO, modeloSQL.getString(PARTIDABASE_RUTAFOTO));
+                    putDato(valores, PARTIDA_UNIDAD, modeloSQL.getString(PARTIDABASE_UNIDAD));
 
                     if (nn(secPartida) && secPartida > 0) {
                         CRUDutil.actualizarRegistro(TABLA_PARTIDA, idPartida, secPartida, valores);
                     } else {
-                        putDato(valores, CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, ContratoPry.generarIdTabla(TABLA_PARTIDA));
-                        putDato(valores, CAMPOS_PARTIDA, PARTIDA_ID_PROYECTO, idPartida);
-                        putDato(valores, CAMPOS_PARTIDA, PARTIDA_ID_PARTIDABASE, modeloSQL.getString(PARTIDABASE_ID_PARTIDABASE));
+                        putDato(valores, PARTIDA_ID_PARTIDA, ContratoPry.generarIdTabla(TABLA_PARTIDA));
+                        putDato(valores, PARTIDA_ID_PROYECTO, idPartida);
+                        putDato(valores, PARTIDA_ID_PARTIDABASE, modeloSQL.getString(PARTIDABASE_ID_PARTIDABASE));
                         ModeloSQL proyecto = CRUDutil.updateModelo(CAMPOS_PROYECTO, idPartida);
-                        putDato(valores, CAMPOS_PARTIDA, PARTIDA_ID_ESTADO, proyecto.getString(PROYECTO_ID_ESTADO));
+                        putDato(valores, PARTIDA_ID_ESTADO, proyecto.getString(PROYECTO_ID_ESTADO));
                         System.out.println("valores = " + valores);
 
-                        secPartida = CRUDutil.crearRegistroSec(CAMPOS_PARTIDA, idPartida, TABLA_PROYECTO, valores);
+                        secPartida = CRUDutil.crearRegistroSec(CAMPOS_PARTIDA, idPartida, valores);
                     }
 
                     ModeloSQL partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, idPartida, secPartida);
                     String iddetpartida = partida.getString(PARTIDA_ID_PARTIDA);
-                    ListaModeloSQL listaDetPartidabase = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id, TABLA_PARTIDABASE);
+                    ListaModeloSQL listaDetPartidabase = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id);
                     for (ModeloSQL detPartidaBase : listaDetPartidabase.getLista()) {
 
                         valores = new ContentValues();
 
-                        putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_ID_PARTIDA, iddetpartida);
-                        putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_ID_DETPARTIDA, detPartidaBase.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
-                        putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_TIPO, detPartidaBase.getString(DETPARTIDABASE_TIPO));
-                        putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_UNIDAD, detPartidaBase.getString(DETPARTIDABASE_UNIDAD));
-                        putDato(valores, CAMPOS_DETPARTIDA, DETPARTIDA_CANTIDAD, detPartidaBase.getString(DETPARTIDABASE_CANTIDAD));
+                        putDato(valores, DETPARTIDA_ID_PARTIDA, iddetpartida);
+                        putDato(valores, DETPARTIDA_ID_DETPARTIDA, detPartidaBase.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
+                        putDato(valores, DETPARTIDA_TIPO, detPartidaBase.getString(DETPARTIDABASE_TIPO));
+                        putDato(valores, DETPARTIDA_UNIDAD, detPartidaBase.getString(DETPARTIDABASE_UNIDAD));
+                        putDato(valores, DETPARTIDA_CANTIDAD, detPartidaBase.getString(DETPARTIDABASE_CANTIDAD));
                         boolean detnuevo = true;
-                        ListaModeloSQL listaDetPartida = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida, TABLA_PARTIDA);
+                        ListaModeloSQL listaDetPartida = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida);
                         for (ModeloSQL detPartida : listaDetPartida.getLista()) {
 
                             if (detPartida.getString(DETPARTIDA_ID_DETPARTIDA).equals(detPartidaBase.getString(DETPARTIDABASE_ID_DETPARTIDABASE))) {
@@ -427,12 +420,12 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                             }
                         }
                         if (detnuevo) {
-                            CRUDutil.crearRegistroSec(CAMPOS_DETPARTIDA, iddetpartida, TABLA_PARTIDA, valores);
+                            CRUDutil.crearRegistroSec(CAMPOS_DETPARTIDA, iddetpartida, valores);
 
                         }
                     }
 
-                    ListaModeloSQL listaDetPartida = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida, TABLA_PARTIDA);
+                    ListaModeloSQL listaDetPartida = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida);
                     for (ModeloSQL detPartida : listaDetPartida.getLista()) {
                         boolean cambio = true;
                         for (ModeloSQL detPartidaBase : listaDetPartidabase.getLista()) {
@@ -480,12 +473,12 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
     protected void setContenedor() {
 
         if (id == null && lista.sizeLista() > 0) {
-            setDato(PARTIDABASE_NOMBRE,autoNombrePartida.getText().toString());
+            putDato(valores,PARTIDABASE_NOMBRE,autoNombrePartida.getText().toString());
         }else {
-            setDato(PARTIDABASE_NOMBRE, nombrePartida.getText().toString());
+            putDato(valores,PARTIDABASE_NOMBRE, nombrePartida.getText().toString());
         }
-        setDato(PARTIDABASE_RUTAFOTO,path);
-        setDato(PARTIDABASE_DESCRIPCION,descripcionPartida.getText().toString());
+        putDato(valores,PARTIDABASE_RUTAFOTO,path);
+        putDato(valores,PARTIDABASE_DESCRIPCION,descripcionPartida.getText().toString());
 
     }
 
@@ -525,7 +518,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                     }
 
                     ArrayList<ModeloSQL> listaclon = queryListDetalle
-                                (CAMPOS_DETPARTIDABASE,clon.getString(PARTIDABASE_ID_PARTIDABASE),TABLA_PARTIDABASE);
+                                (CAMPOS_DETPARTIDABASE,clon.getString(PARTIDABASE_ID_PARTIDABASE));
 
                     for (ModeloSQL clonpart : listaclon) {
 
@@ -534,8 +527,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                             valores.put(DETPARTIDABASE_ID_PARTIDABASE,id);
                             valores.remove(DETPARTIDABASE_SECUENCIA);
 
-                            insertRegistroDetalle(CAMPOS_DETPARTIDABASE,id
-                                    ,TABLA_PARTIDABASE,valores);
+                            insertRegistroDetalle(CAMPOS_DETPARTIDABASE,id,valores);
                         }
                     nuevo = false;
                     selector();
@@ -685,7 +677,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
 
         private void calcularPrecioProdProvCard(final String id) {
 
-            final ListaModeloSQL listadet = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id, TABLA_PARTIDABASE);
+            final ListaModeloSQL listadet = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id);
             for (final ModeloSQL detPartida : listadet.getLista()) {
 
                 if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOPRODUCTOPROV)) {
@@ -758,7 +750,7 @@ public class FragmentCRUDPartidaBase extends FragmentCRUD implements Interactor.
                 gone(imagenPartida);
             }
 
-            final ListaModeloSQL listadet = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id, TABLA_PARTIDABASE);
+            final ListaModeloSQL listadet = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, id);
             for (ModeloSQL detPartida : listadet.getLista()) {
 
                 if (detPartida.getString(DETPARTIDABASE_TIPO).equals(TIPOPRODUCTOPROV)) {

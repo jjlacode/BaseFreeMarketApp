@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.freemarketsapp.R;
 
@@ -99,6 +100,96 @@ public class Dialogos {
         }
 
     }
+
+    public static class DialogoEdit extends DialogFragment {
+
+        private String titulo;
+        private String mensaje;
+        private Context context;
+        private OnClick listener;
+        private String hint;
+        private int tipoDato;
+
+        public DialogoEdit(String titulo, String mensaje, int tipoDato, int hint, Context context, OnClick listener) {
+
+            this.titulo = titulo;
+            this.mensaje = mensaje;
+            this.hint = getString(hint);
+            this.tipoDato = tipoDato;
+            this.context = context;
+            this.listener = listener;
+        }
+
+        public DialogoEdit(String titulo, String mensaje, int tipoDato, String hint, Context context, OnClick listener) {
+
+            this.titulo = titulo;
+            this.mensaje = mensaje;
+            this.hint = hint;
+            this.tipoDato = tipoDato;
+            this.context = context;
+            this.listener = listener;
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+            return crearDialogoEdit();
+        }
+
+        private AlertDialog crearDialogoEdit() {
+
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+            //LayoutInflater inflater = getActivity().getLayoutInflater();
+            //View v = inflater.inflate(Estilos.getIdLayout(context, "dialog_fragment"), null);
+
+            //LinearLayoutCompat main = v.findViewById(R.id.container_dialog);
+            //View v = new CanvasBase(context);
+            LinearLayoutCompat v = new LinearLayoutCompat(context);
+            v.setOrientation(LinearLayoutCompat.VERTICAL);
+            Estilos.setLayoutParams((ViewGroup) v.getParent(), v, ViewGroup.LayoutParams.MATCH_PARENT,
+                    500);
+            EditMaterialLayout edit = new EditMaterialLayout(v, context, hint);
+            edit.setTipo(tipoDato);
+
+            builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    if (listener != null) {
+                        listener.onConfirm(edit.getTexto());
+                    }
+                }
+            });
+
+            builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dismiss();
+                    if (listener != null) {
+                        listener.onCancel();
+                    }
+                }
+            });
+
+            builder.setView(v);
+
+            builder.setTitle(titulo)
+                    .setMessage(mensaje);
+
+            return builder.show();
+        }
+
+        public interface OnClick {
+
+            void onConfirm(String text);
+
+            void onCancel();
+        }
+
+    }
+
 
     public static class PaletaColoresDialog extends DialogFragment {
 

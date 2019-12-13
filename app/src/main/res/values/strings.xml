@@ -540,6 +540,15 @@
     <string name="limitresusados">Prod. res. usados</string>
     <string name="sinzona">No existe un nombre para la zona elegida</string>
     <string name="unidad">Unidad</string>
+    <string name="importar_a_proveedores">Importar a proveedores</string>
+    <string name="catalogo_productos">Catalogo Productos</string>
+    <string name="guardado">guardado</string>
+    <string name="marketing_y_publicidad">Marketing y Publicidad</string>
+    <string name="nueva_nota_texto">Nueva nota de texto</string>
+    <string name="nueva_nota_audio">Nueva nota de audio</string>
+    <string name="nueva_nota_video">Nueva nota de video</string>
+    <string name="nueva_nota_imagen">Nueva nota de imagen</string>
+    <string name="trabajo">Trabajo</string>
 
 
 </resources>

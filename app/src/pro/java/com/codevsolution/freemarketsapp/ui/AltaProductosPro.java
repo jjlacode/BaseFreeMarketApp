@@ -23,6 +23,11 @@ public class AltaProductosPro extends AltaProductosFirebase implements Interacto
     }
 
     @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
+
+    @Override
     protected FragmentBase getParent() {
         return parent;
     }

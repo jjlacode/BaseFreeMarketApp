@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
@@ -44,6 +45,11 @@ public class FragmentCUDDetpartidaBaseProdProvCat extends FragmentCUD implements
     }
 
     @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
+
+    @Override
     protected void setNuevo() {
 
 
@@ -55,20 +61,6 @@ public class FragmentCUDDetpartidaBaseProdProvCat extends FragmentCUD implements
         tabla = TABLA_DETPARTIDABASE;
 
     }
-
-    @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
-
-    }
-
 
     @Override
     protected void setBundle() {
@@ -182,7 +174,7 @@ public class FragmentCUDDetpartidaBaseProdProvCat extends FragmentCUD implements
     @Override
     protected void setContenedor() {
 
-        putDato(valores, campos, DETPARTIDABASE_CANTIDAD, JavaUtil.comprobarDouble(cantidad.getTexto()));
+        putDato(valores, DETPARTIDABASE_CANTIDAD, JavaUtil.comprobarDouble(cantidad.getTexto()));
     }
 
     @Override

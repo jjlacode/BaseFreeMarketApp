@@ -45,7 +45,7 @@
     <string name="presupuestos">Presupuestos</string>
     <string name="proyectos">Proyectos</string>
     <string name="cobros">Cobros</string>
-    <string name="historico">Historico</string>
+    <string name="historico">Histórico</string>
     <string name="partida">Partida</string>
     <string name="gasto">gasto</string>
     <string name="habitual">Habitual</string>
@@ -288,7 +288,7 @@
     <string name="btn_historico">Hist</string>
     <string name="btn_garantia">Garan</string>
     <string name="proyecto_historico_est">Proyecto archivado</string>
-    <string name="garantia">garantia</string>
+    <string name="garantia">garantía</string>
     <string name="proyectos_garantia">Proyectos garantia</string>
     <string name="crm">CRM</string>
     <string name="facturacion">Facturación</string>
@@ -515,6 +515,15 @@
     <string name="limitresusados">Prod. res. usados</string>
     <string name="sinzona">No existe un nombre para la zona elegida</string>
     <string name="unidad">Unidad</string>
+    <string name="importar_a_proveedores">Importar a proveedores</string>
+    <string name="catalogo_productos">Catalogo Productos</string>
+    <string name="guardado">guardado</string>
+    <string name="marketing_y_publicidad">Marketing y Publicidad</string>
+    <string name="nueva_nota_texto">Nueva nota de texto</string>
+    <string name="nueva_nota_audio">Nueva nota de audio</string>
+    <string name="nueva_nota_video">Nueva nota de video</string>
+    <string name="nueva_nota_imagen">Nueva nota de imagen</string>
+    <string name="trabajo">Trabajo</string>
 
 
 </resources>

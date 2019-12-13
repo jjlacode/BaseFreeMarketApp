@@ -16,6 +16,10 @@ import java.util.ArrayList;
 
 public class FragmentGridImagen extends FragmentGridBase {
 
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
 
     @Override
     protected TipoViewHolder setViewHolder(View view) {

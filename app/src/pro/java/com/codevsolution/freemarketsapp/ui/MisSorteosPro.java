@@ -3,6 +3,7 @@ package com.codevsolution.freemarketsapp.ui;
 
 import androidx.annotation.NonNull;
 
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.models.Productos;
 import com.codevsolution.base.nosql.FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb;
 import com.codevsolution.freemarketsapp.logica.Interactor;
@@ -20,6 +21,11 @@ public class MisSorteosPro extends ListadoProductosMisSorteos {
     @Override
     protected String setTipo() {
         return SORTEOPRO;
+    }
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
     }
 
 }

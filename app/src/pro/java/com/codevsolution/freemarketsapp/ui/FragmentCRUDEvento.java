@@ -29,10 +29,12 @@ import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
+import com.codevsolution.base.encrypt.EncryptUtil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
@@ -54,6 +56,7 @@ import static com.codevsolution.base.android.AppActivity.viewOnMapA;
 import static com.codevsolution.base.javautil.JavaUtil.getDate;
 import static com.codevsolution.base.javautil.JavaUtil.getTime;
 import static com.codevsolution.base.javautil.JavaUtil.hoy;
+import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 import static com.codevsolution.base.time.calendar.DiaCalBase.HORACAL;
 
 public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.ConstantesPry,
@@ -123,6 +126,11 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
     public FragmentCRUDEvento() {
         // Required empty public constructor
+    }
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
     }
 
     @Override
@@ -447,9 +455,9 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
                 boolean nuevo = false;
 
                 if (idMulti != null) {
-                    String seleccion = ContratoPry.Tablas.EVENTO_IDMULTI + " = '" + idMulti +
+                    String seleccion = ContratoPry.Tablas.EVENTO_IDMULTI + " = '" + EncryptUtil.codificaStr(idMulti) +
                             "' AND " + ContratoPry.Tablas.EVENTO_ID_EVENTO +
-                            " <> '" + id + "'";
+                            " <> '" + EncryptUtil.codificaStr(id) + "'";
                     ConsultaBD.deleteRegistros(TABLA_EVENTO, seleccion);
 
                 } else {
@@ -459,7 +467,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
                 valores = new ContentValues();
 
-                ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_IDMULTI, idMulti);
+                putDato(valores, EVENTO_IDMULTI, idMulti);
 
                 ConsultaBD.updateRegistro(TABLA_EVENTO, idMulti, valores);
 
@@ -502,13 +510,13 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
                 while (duracionRep + hoy > fecharep) {
 
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTO, fecharep);
-                    ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAINIEVENTOF, getDate(fecharep));
+                    putDato(valores, EVENTO_FECHAINIEVENTO, fecharep);
+                    putDato(valores, EVENTO_FECHAINIEVENTOF, getDate(fecharep));
 
 
                     if (tevento.equals(Interactor.TiposEvento.TIPOEVENTOEVENTO)) {
-                        ConsultaBD.putDato(valores, campos, EVENTO_FECHAFINEVENTO, String.valueOf(fecharep + diffecha));
-                        ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_FECHAFINEVENTOF, getDate(fecharep + diffecha));
+                        putDato(valores, EVENTO_FECHAFINEVENTO, String.valueOf(fecharep + diffecha));
+                        putDato(valores, EVENTO_FECHAFINEVENTOF, getDate(fecharep + diffecha));
 
                     }
                     Uri uri = ConsultaBD.insertRegistro(TABLA_EVENTO, valores);
@@ -640,6 +648,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
         });
         actualizarArrays(vistaNotas);
         actualizarArrays(vistaForm);
+        visible(frPubli);
 
     }
 
@@ -728,19 +737,6 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
     }
 
     @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
-
-    }
-
-    @Override
     protected void setBundle() {
 
         proyecto = (ModeloSQL) bundle.getSerializable(PROYECTO);
@@ -779,7 +775,14 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
     @Override
     protected void setDatos() {
 
+        if (nnn(descipcion.getTexto())){
+            reproducir(descipcion.getTexto());
+        }
+
+        visible(frPie);
         gone(btnsave);
+        visible(btndelete);
+        visible(btnback);
 
         if (modeloSQL.getString(EVENTO_RUTAFOTO) == null) {
 
@@ -827,7 +830,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
         ffinEvento = modeloSQL.getLong(EVENTO_FECHAFINEVENTO);
         hfinEvento = modeloSQL.getLong(EVENTO_HORAFINEVENTO);
 
-        if (ConsultaBD.checkQueryList(CAMPOS_NOTA,NOTA_ID_RELACIONADO,id,null,IGUAL,null)){
+        if (ConsultaBD.checkQueryList(CAMPOS_NOTA,NOTA_ID_RELACIONADO,id)){
             btnVerNotas.setVisibility(View.VISIBLE);
         }else{
             btnVerNotas.setVisibility(View.GONE);
@@ -1118,7 +1121,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
     private void verRepeticiones(){
 
         idMulti = modeloSQL.getString(EVENTO_IDMULTI);
-        listab = new ListaModeloSQL(campos, EVENTO_IDMULTI, idMulti, null, IGUAL, null);
+        listab = new ListaModeloSQL(campos, EVENTO_IDMULTI, idMulti);
         onBack();
     }
 
@@ -1133,37 +1136,37 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
     @Override
     protected void setContenedor() {
 
-        setDato(EVENTO_TIPO, tevento);
+        putDato(valores,EVENTO_TIPO, tevento);
         if (finiEvento > 0) {
-            setDato(EVENTO_FECHAINIEVENTO, finiEvento);
-            setDato(EVENTO_FECHAINIEVENTOF, TimeDateUtil.getDateString(finiEvento));
+            putDato(valores,EVENTO_FECHAINIEVENTO, finiEvento);
+            putDato(valores,EVENTO_FECHAINIEVENTOF, TimeDateUtil.getDateString(finiEvento));
             if (ffinEvento == 0) {
-                setDato(EVENTO_FECHAFINEVENTO, finiEvento);
-                setDato(EVENTO_FECHAFINEVENTOF, TimeDateUtil.getDateString(finiEvento));
+                putDato(valores,EVENTO_FECHAFINEVENTO, finiEvento);
+                putDato(valores,EVENTO_FECHAFINEVENTOF, TimeDateUtil.getDateString(finiEvento));
             }
         }
         if (ffinEvento > 0) {
-            setDato(EVENTO_FECHAFINEVENTO, ffinEvento);
-            setDato(EVENTO_FECHAFINEVENTOF, TimeDateUtil.getDateString(ffinEvento));
+            putDato(valores,EVENTO_FECHAFINEVENTO, ffinEvento);
+            putDato(valores,EVENTO_FECHAFINEVENTOF, TimeDateUtil.getDateString(ffinEvento));
             if (finiEvento == 0) {
-                setDato(EVENTO_FECHAINIEVENTO, ffinEvento);
-                setDato(EVENTO_FECHAINIEVENTOF, TimeDateUtil.getDateString(ffinEvento));
+                putDato(valores,EVENTO_FECHAINIEVENTO, ffinEvento);
+                putDato(valores,EVENTO_FECHAINIEVENTOF, TimeDateUtil.getDateString(ffinEvento));
             }
         }
         if (hiniEvento > 0) {
-            setDato(EVENTO_HORAINIEVENTO, hiniEvento);
-            setDato(EVENTO_HORAINIEVENTOF, TimeDateUtil.getTimeString(hiniEvento));
+            putDato(valores,EVENTO_HORAINIEVENTO, hiniEvento);
+            putDato(valores,EVENTO_HORAINIEVENTOF, TimeDateUtil.getTimeString(hiniEvento));
             if (hfinEvento == 0) {
-                setDato(EVENTO_HORAFINEVENTO, hiniEvento);
-                setDato(EVENTO_HORAFINEVENTOF, TimeDateUtil.getTimeString(hiniEvento));
+                putDato(valores,EVENTO_HORAFINEVENTO, hiniEvento);
+                putDato(valores,EVENTO_HORAFINEVENTOF, TimeDateUtil.getTimeString(hiniEvento));
             }
         }
         if (hfinEvento > 0) {
-            setDato(EVENTO_HORAFINEVENTO, hfinEvento);
-            setDato(EVENTO_HORAFINEVENTOF, TimeDateUtil.getTimeString(hfinEvento));
+            putDato(valores,EVENTO_HORAFINEVENTO, hfinEvento);
+            putDato(valores,EVENTO_HORAFINEVENTOF, TimeDateUtil.getTimeString(hfinEvento));
             if (hiniEvento > 0) {
-                setDato(EVENTO_HORAINIEVENTO, hfinEvento);
-                setDato(EVENTO_HORAINIEVENTOF, TimeDateUtil.getTimeString(hfinEvento));
+                putDato(valores,EVENTO_HORAINIEVENTO, hfinEvento);
+                putDato(valores,EVENTO_HORAINIEVENTOF, TimeDateUtil.getTimeString(hfinEvento));
             }
         }
 
@@ -1231,7 +1234,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
                         Toast.makeText(contexto, "Registro borrado ", Toast.LENGTH_SHORT).show();
                         if (listab!=null){
-                            listab = new ListaModeloSQL(campos, EVENTO_IDMULTI, idMulti, null, IGUAL, null);
+                            listab = new ListaModeloSQL(campos, EVENTO_IDMULTI, idMulti);
                         }
                         id = null;
                         modeloSQL = null;
@@ -1246,7 +1249,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
                     idMulti = modeloSQL.getString(EVENTO_IDMULTI);
                     String seleccion = EVENTO_IDMULTI + " = '" + idMulti + "'";
-                    if (ConsultaBD.deleteRegistros(TABLA_EVENTO,EVENTO_IDMULTI,idMulti,null,IGUAL)>0) {
+                    if (ConsultaBD.deleteRegistros(TABLA_EVENTO,EVENTO_IDMULTI,idMulti)>0) {
 
                         id = null;
                         modeloSQL = null;
@@ -1491,7 +1494,7 @@ public class FragmentCRUDEvento extends FragmentCRUD implements Interactor.Const
 
                         ContentValues valores = new ContentValues();
 
-                        ConsultaBD.putDato(valores, CAMPOS_EVENTO, EVENTO_COMPLETADA, "100");
+                        putDato(valores, EVENTO_COMPLETADA, "100");
                         ConsultaBD.updateRegistro(TABLA_EVENTO, modeloSQL.getString
                                 (EVENTO_ID_EVENTO), valores);
                         porccompleta.setVisibility(View.GONE);

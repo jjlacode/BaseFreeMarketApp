@@ -21,7 +21,7 @@ import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewImagenLayout;
-import com.codevsolution.base.javautil.JavaUtil;
+import com.codevsolution.base.encrypt.EncryptUtil;
 import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
@@ -54,6 +54,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     protected String campoImagen;
     protected String campoTimeStamp;
     protected String campoCreate;
+    protected CRUDutil cruDutil;
 
     protected ContentValues valores;
     protected ListaModeloSQL listab;
@@ -71,6 +72,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     private String idtemp;
     private Editable tempEdit;
     protected String idrelacionado;
+    protected boolean playOn;
 
     public FragmentBaseCRUD() {
     }
@@ -88,8 +90,44 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
             gone(btnsave);
         }
 
+        playOn = setPlayOn();
         //activityBase.fabInicio.hide();
 
+    }
+
+    public String getTabla() {
+        return tabla;
+    }
+
+    public String getIdCrud() {
+
+        return id;
+    }
+
+    public String getIdrelacionado() {
+
+        return idrelacionado;
+    }
+
+    public int getSecuencia() {
+        return secuencia;
+    }
+
+    public String getSecuenciaStr() {
+        return String.valueOf(secuencia);
+    }
+
+    public ModeloSQL getModeloSQL() {
+
+        return modeloSQL;
+    }
+
+    public Bundle getBundle() {
+        return bundle;
+    }
+
+    public ContentValues getValores() {
+        return valores;
     }
 
     @Override
@@ -99,8 +137,8 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
         layoutPie = getIdLayout("btn_sdb");
         setTabla();
-        setTablaCab();
-        setCampos();
+        tablaCab = ConsultaBD.obtenerTabCab(tabla);
+        campos = ConsultaBD.obtenerCampos(tabla);
         setCampoID();
         setContext();
         setTitulo();
@@ -113,6 +151,9 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
     }
 
+    protected boolean setPlayOn() {
+        return true;
+    }
 
     @Override
     protected String setTAG() {
@@ -163,10 +204,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
     protected abstract void setTabla();
 
-    protected abstract void setTablaCab();
-
-    protected abstract void setCampos();
-
     protected void setCampoID() {
         Log.d(TAG, getMetodo());
 
@@ -192,12 +229,24 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     protected void datos() {
         Log.d(TAG, getMetodo());
 
+        if (nn(callback)) {
+
+            callback.onBeforeSetdatos();
+
+        }
+
+        setTitulo();
+        if (tituloSingular != 0 && playOn) {
+            reproducir(getString(tituloSingular));
+        }
+
         if (origen == null) {
             origen = tabla;
         }
 
-        setImagen();
+        cruDutil.setImagen(contexto);
         try {
+            /*
             if (tablaCab == null) {
 
                 if (nn(modeloSQL)) {
@@ -216,15 +265,29 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                 if (nn(id) && secuencia > 0) {
                     modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
                 }
-                System.out.println("modeloSQL = " + modeloSQL);
             }
+
+             */
             setDatos();
             obtenerDatosEdit();
+
+            if (nn(callback)) {
+
+                callback.onAfterSetDatos();
+
+            }
+
         } catch (Exception e) {
 
             e.printStackTrace();
 
         }
+
+
+    }
+
+    public String getCampoImagen() {
+        return campoImagen;
     }
 
     protected void setImagen() {
@@ -419,6 +482,8 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                         }
                     }
                 });
+            } else {
+                visible(btnsave);
             }
         }
 
@@ -438,6 +503,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
             });
 
             if (autoGuardado) {
+
                 editMaterial.setAlCambiarListener(new EditMaterialLayout.AlCambiarListener() {
                     private int contDes;
                     private int contAnt;
@@ -477,6 +543,8 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                         }
                     }
                 });
+            } else {
+                visible(btnsave);
             }
         }
 
@@ -533,9 +601,12 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
     protected void alGuardarCampo(EditMaterialLayout editMaterialLayout) {
 
+        //reproducir(Estilos.getString(contexto,"guardado")+" "+editMaterialLayout.getTexto());
     }
 
     protected void alGuardarCampo(EditMaterial editMaterialLayout) {
+
+        //reproducir(Estilos.getString(contexto,"guardado")+" "+editMaterialLayout.getTexto());
 
     }
 
@@ -551,7 +622,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
                 } else {
                     valores = new ContentValues();
-                    valores.put((String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
+                    putDato(valores, (String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
                     if (secuencia > 0) {
                         int i = ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
                         modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
@@ -567,13 +638,32 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         //}
     }
 
+    private boolean comprobarString(String campo) {
+
+        ArrayList<String[]> listaCampos = ContratoPry.obtenerListaCampos();
+        for (String[] listaCampo : listaCampos) {
+            for (int i = 0; i < listaCampo.length; i++) {
+                if (listaCampo[i].equals(campo) && listaCampo[i + 2].equals(STRING)) {
+                    return true;
+                } else if (listaCampo[i].equals(campo)) {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
     protected void guardarEdit(EditMaterialLayout editMaterial) {
 
         //if (editMaterial.getValido()) {
         for (Object o : camposEdit) {
             if (((Map) o).get("materialEdit") == editMaterial) {
                 if (nn(modeloSQL)) {
-                    int z = CRUDutil.actualizarCampo(modeloSQL, (String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
+                    int z = 0;
+
+                    System.out.println("Campo edit = " + ((Map) o).get("campoEdit"));
+                    z = CRUDutil.actualizarCampo(modeloSQL, (String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
+
                     System.out.println("guardados = " + z);
                     System.out.println("editMaterial = " + editMaterial.getTexto());
                     modeloSQL = CRUDutil.updateModelo(modeloSQL);
@@ -625,7 +715,11 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
             for (Object o : camposEdit) {
 
                 if (((Map) o).get("materialEdit") == materialEdit) {
-                    materialEdit.setText(modeloSQL.getString((String) ((Map) o).get("campoEdit")));
+
+                    String texto = modeloSQL.getString((String) ((Map) o).get("campoEdit"));
+
+                    materialEdit.setText(EncryptUtil.decodificaStr(texto));
+
 
                 }
             }
@@ -637,7 +731,11 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
             for (Object o : camposEdit) {
 
                 if (((Map) o).get("materialEdit") == materialEdit) {
-                    materialEdit.setText(modeloSQL.getString((String) ((Map) o).get("campoEdit")));
+
+                    String texto = modeloSQL.getString((String) ((Map) o).get("campoEdit"));
+
+                    materialEdit.setText(EncryptUtil.decodificaStr(texto));
+
 
                 }
             }
@@ -713,6 +811,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         Log.d(TAG, getMetodo());
         //cargarBundle();
 
+        cruDutil = new CRUDutil((FragmentBaseCRUD) setFragment());
         if (bundle != null) {
             enviarBundle();
             enviarAct();
@@ -833,7 +932,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
                     path = null;
                     campoImagen = CAMPO_RUTAFOTO;
-
+                    onEliminarImagen();
                     onUpdate();
 
                 } else {
@@ -843,6 +942,10 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
             }
         });
         builder.show();
+    }
+
+    protected void onEliminarImagen() {
+
     }
 
 
@@ -951,64 +1054,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         gone(frPie);
     }
 
-    protected void imagenMediaPantalla() {
-        Log.d(TAG, getMetodo());
-
-        if (!land) {
-            imagen.getLinearLayoutCompat().setMinimumHeight((int) ((double) alto / 2));
-            imagen.getLinearLayoutCompat().setMinimumWidth(ancho);
-            imagen.setMaxHeight((int) ((double) alto / 2));
-            imagen.setMaxWidth(ancho);
-        } else {
-            imagen.getLinearLayoutCompat().setMinimumWidth((int) ((double) ancho / 2));
-            imagen.getLinearLayoutCompat().setMinimumHeight((int) ((double) alto / 2));
-            imagen.setMaxWidth((int) ((double) ancho / 2));
-            imagen.setMaxHeight((int) ((double) alto / 2));
-
-        }
-
-    }
-
-    protected void imagenPantalla(int falto, int fancho) {
-        Log.d(TAG, getMetodo());
-
-        if (!land) {
-            imagen.getLinearLayoutCompat().setMinimumHeight((int) ((double) alto / falto));
-            imagen.getLinearLayoutCompat().setMinimumWidth((int) ((double) ancho / fancho));
-            imagen.setMaxHeight((int) ((double) alto / falto));
-            imagen.setMaxWidth((int) ((double) ancho / fancho));
-        } else {
-            imagen.getLinearLayoutCompat().setMinimumWidth((int) ((double) ancho / (falto + fancho)));
-            imagen.getLinearLayoutCompat().setMinimumHeight((int) ((double) alto / falto));
-            imagen.setMaxWidth((int) ((double) ancho / (falto + fancho)));
-            imagen.setMaxHeight((int) ((double) alto / falto));
-
-        }
-
-    }
-
-
-    protected void setImagenUri(Context contexto, String rutaFoto) {
-
-        imagen.setImageUri(rutaFoto);
-
-    }
-
-    protected void setImagenUri(MediaUtil imagenUtil, String rutaFoto) {
-
-        imagen.setImageUri(rutaFoto);
-
-    }
-
-
-    protected void setImagenUriCircle(Context contexto, String rutaFoto) {
-
-        MediaUtil imagenUtil = new MediaUtil(contexto);
-        imagen.setImageUriCircle(rutaFoto);
-
-    }
-
-
     protected void setImagenUriCircle(Context contexto, String rutaFoto, ImageView imagen) {
 
         MediaUtil imagenUtil = new MediaUtil(contexto);
@@ -1022,63 +1067,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         MediaUtil imagenUtil = new MediaUtil(contexto);
         imagenUtil.setImageFireStoreCircle(rutaFoto, imagen, getIdDrawable("ic_add_a_photo_black_24dp"));
 
-    }
-
-    protected void setDato(String campo, String valor) {
-
-        putDato(valores, campos, campo, valor);
-    }
-
-    protected void setDato(String campo, String valor, String tipo) {
-        Log.d(TAG, getMetodo() + " " + campo);
-
-
-        switch (tipo) {
-
-            case INT:
-                putDato(valores, campos, campo, JavaUtil.comprobarInteger(valor));
-                break;
-            case LONG:
-                putDato(valores, campos, campo, JavaUtil.comprobarLong(valor));
-                break;
-            case DOUBLE:
-                putDato(valores, campos, campo, JavaUtil.comprobarDouble(valor));
-                break;
-            case FLOAT:
-                putDato(valores, campos, campo, JavaUtil.comprobarFloat(valor));
-                break;
-            case SHORT:
-                putDato(valores, campos, campo, JavaUtil.comprobarShort(valor));
-                break;
-            case NONNULL:
-                putDato(valores, campos, campo, JavaUtil.noNuloString(valor));
-
-        }
-    }
-
-    protected void setDato(String campo, int valor) {
-
-        putDato(valores, campos, campo, valor);
-    }
-
-    protected void setDato(String campo, long valor) {
-
-        putDato(valores, campos, campo, valor);
-    }
-
-    protected void setDato(String campo, double valor) {
-
-        putDato(valores, campos, campo, valor);
-    }
-
-    protected void setDato(String campo, float valor) {
-
-        putDato(valores, campos, campo, valor);
-    }
-
-    protected void setDato(String campo, short valor) {
-
-        putDato(valores, campos, campo, valor);
     }
 
     protected boolean onDelete() {
@@ -1122,4 +1110,15 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         builder.show();
     }
 
+    public String getPath() {
+        return path;
+    }
+
+    public boolean getNuevo() {
+        return nuevo;
+    }
+
+    public ViewImagenLayout getImagen() {
+        return imagen;
+    }
 }

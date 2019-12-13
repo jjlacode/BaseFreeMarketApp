@@ -72,7 +72,9 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <service android:name="com.codevsolution.base.notifications.fcm.IFirebaseMessagingService" />
-        <service android:name="com.codevsolution.base.services.ServicioVoz" />
+        <service
+            android:name="com.codevsolution.base.services.ServicioVoz"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

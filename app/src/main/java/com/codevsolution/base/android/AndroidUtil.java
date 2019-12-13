@@ -37,6 +37,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
+
 public class AndroidUtil extends AppCompatActivity {
 
 
@@ -64,6 +66,18 @@ public class AndroidUtil extends AppCompatActivity {
         } else {
             return Locale.getDefault().getLanguage();
         }
+    }
+
+    public static String getMetodo() {
+        return Thread.currentThread().getStackTrace()[3].getMethodName();
+    }
+
+    public static boolean nn(Object object) {
+        return object != null;
+    }
+
+    public static boolean nnn(String string) {
+        return string != null && !string.equals(NULL);
     }
 
     public static void ocultarTeclado(Context context, View v) {

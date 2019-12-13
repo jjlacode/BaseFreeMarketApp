@@ -68,7 +68,8 @@ public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
                                     boolean primerReg = false;
                                     for (ModeloSQL chat : listaChats.getLista()) {
                                         String seleccion = DETCHAT_TIPO + " = '" + RECIBIDO + "'";
-                                        ListaModeloSQL listaDetChat = new ListaModeloSQL(CAMPOS_DETCHAT, chat.getString(CHAT_ID_CHAT), TABLA_CHAT, seleccion, DETCHAT_FECHA + " DESC");
+                                        ListaModeloSQL listaDetChat = new ListaModeloSQL(CAMPOS_DETCHAT, chat.getString(CHAT_ID_CHAT), DETCHAT_TIPO, RECIBIDO);
+                                        listaDetChat = listaDetChat.sort(DETCHAT_FECHA, DESCENDENTE);
                                         ModeloSQL detChat = null;
                                         if (listaDetChat.getLista().size() > 0) {
                                             detChat = listaDetChat.getLista().get(0);
@@ -95,7 +96,7 @@ public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
                                                 values.put(DETCHAT_CREATE, TimeDateUtil.ahora());
                                                 values.put(DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
                                                 values.put(DETCHAT_TIPO, RECIBIDO);
-                                                int sec = ConsultaBD.secInsertRegistroDetalle(CAMPOS_DETCHAT, idChat, TABLA_CHAT, values);
+                                                int sec = ConsultaBD.secInsertRegistroDetalle(CAMPOS_DETCHAT, idChat, values);
                                                 if (sec > 0) {
                                                     detChat = ConsultaBD.queryObjectDetalle(CAMPOS_DETCHAT, idChat, sec);
                                                     FirebaseDatabase.getInstance().getReference().child(CHAT).child(idUser).child(idChild).removeValue();
@@ -124,7 +125,7 @@ public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
                                         values.put(DETCHAT_CREATE, TimeDateUtil.ahora());
                                         values.put(DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
                                         values.put(DETCHAT_TIPO, RECIBIDO);
-                                        int sec = ConsultaBD.secInsertRegistroDetalle(CAMPOS_DETCHAT, idChat, TABLA_CHAT, values);
+                                        int sec = ConsultaBD.secInsertRegistroDetalle(CAMPOS_DETCHAT, idChat, values);
                                         if (sec > 0) {
                                             ModeloSQL detChat = ConsultaBD.queryObjectDetalle(CAMPOS_DETCHAT, idChat, sec);
                                             FirebaseDatabase.getInstance().getReference().child(CHAT).child(idUser).child(idChild).removeValue();

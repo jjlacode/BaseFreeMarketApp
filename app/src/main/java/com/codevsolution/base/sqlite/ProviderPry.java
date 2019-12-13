@@ -10,14 +10,12 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.encrypt.EncryptUtil;
 import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.freemarketsapp.logica.Interactor;
 
-import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.PREFERENCIAS;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TIMESTAMP;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TIMESTAMPDIA;
-import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
 import static com.codevsolution.base.sqlite.ContratoPry.AUTORIDAD_CONTENIDO;
 import static com.codevsolution.base.sqlite.ContratoPry.FILTRO_CLIENTE;
 import static com.codevsolution.base.sqlite.ContratoPry.FILTRO_FECHA;
@@ -30,7 +28,6 @@ import static com.codevsolution.base.sqlite.ContratoPry.generarMimeItem;
 import static com.codevsolution.base.sqlite.ContratoPry.obtenerIdTabla;
 import static com.codevsolution.base.sqlite.ContratoPry.obtenerIdTablaDetalle;
 import static com.codevsolution.base.sqlite.ContratoPry.obtenerIdTablaDetalleId;
-import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.TABLA_CHAT;
 
 public class ProviderPry extends ContentProvider
         implements Tablas {
@@ -905,7 +902,7 @@ public class ProviderPry extends ContentProvider
 
 
         if (tabla != null) {
-            if (secuencia == null || Integer.parseInt(secuencia) == 0) {
+            if (secuencia == null || Integer.parseInt(EncryptUtil.decodificaStr(secuencia)) == 0) {
                 values.put(idTabla, id);
             }
             System.out.println("values = " + values);
@@ -915,9 +912,9 @@ public class ProviderPry extends ContentProvider
             AndroidUtil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMPDIA, TimeDateUtil.ahora());
 
 
-            if (secuencia != null && Integer.parseInt(secuencia) > 0) {
+            if (secuencia != null && Integer.parseInt(EncryptUtil.decodificaStr(secuencia)) > 0) {
                 id = values.getAsString(idTabla);
-                return crearUriTablaDetalle(id, secuencia, tabla);
+                return crearUriTablaDetalle(id, EncryptUtil.codificaStr(secuencia), tabla);
             } else {
                 return crearUriTabla(id, tabla);
             }
@@ -954,7 +951,11 @@ public class ProviderPry extends ContentProvider
 
                 ids = obtenerIdTablaDetalle(uri);
                 String id = ids[0];
+                id = EncryptUtil.codificaStr(id);
+
                 String secuencia = ids[1];
+                secuencia = EncryptUtil.codificaStr(secuencia);
+
                 selection = tabla + "." + idTabla + " = '" + id + "' AND " +
                         "secuencia = '" + secuencia + "'";
                 System.out.println("secuencia = " + secuencia);
@@ -964,11 +965,15 @@ public class ProviderPry extends ContentProvider
             } else if (esDetalle) {
 
                 String id = obtenerIdTablaDetalleId(uri);
+                id = EncryptUtil.codificaStr(id);
+
                 selection = tabla + "." + idTabla + " = '" + id + "'";
 
             } else if (esId) {
 
                 String id = obtenerIdTabla(uri);
+                id = EncryptUtil.codificaStr(id);
+
                 selection = idTabla + " = '" + id + "'";
 
             }
@@ -1010,17 +1015,23 @@ public class ProviderPry extends ContentProvider
         if (selection == null) {
             if (!esDetalle) {
                 id = obtenerIdTabla(uri);
+                id = EncryptUtil.codificaStr(id);
+
                 seleccion = idTabla + " = '" + id + "'";
 
             } else if (esDetalle && !esId) {
 
                 id = obtenerIdTablaDetalleId(uri);
+                id = EncryptUtil.codificaStr(id);
+
                 seleccion = tabla + "." + idTabla + " = '" + id + "'";
 
             } else {
                 ids = obtenerIdTablaDetalle(uri);
                 id = ids[0];
+                id = EncryptUtil.codificaStr(id);
                 secuencia = ids[1];
+                secuencia = EncryptUtil.codificaStr(secuencia);
                 seleccion = idTabla + " = '" + id + "' AND " +
                         "secuencia = '" + secuencia + "'";
             }
@@ -1065,16 +1076,22 @@ public class ProviderPry extends ContentProvider
 
             if (!esDetalle) {
                 id = obtenerIdTabla(uri);
+                id = EncryptUtil.codificaStr(id);
+
                 seleccion = idTabla + " = '" + id + "'";
 
             } else if (esDetalle && !esId) {
 
                 id = obtenerIdTablaDetalleId(uri);
+                id = EncryptUtil.codificaStr(id);
+
                 seleccion = tabla + "." + idTabla + " = '" + id + "'";
 
             } else {
                 ids = obtenerIdTablaDetalle(uri);
                 id = ids[0];
+                id = EncryptUtil.codificaStr(id);
+
                 secuencia = ids[1];
                 seleccion = idTabla + " = '" + id + "' AND " +
                         "secuencia = '" + secuencia + "'";

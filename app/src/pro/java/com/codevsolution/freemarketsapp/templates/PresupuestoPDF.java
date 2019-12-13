@@ -31,7 +31,7 @@ public class PresupuestoPDF extends PdfUtils implements ContratoPry.Tablas {
     public void crearPdf(String idProyecto, String rutalogo) {
 
         ModeloSQL presupuesto = ConsultaBD.queryObject(CAMPOS_PROYECTO, idProyecto);
-        ArrayList<ModeloSQL> listaPartidas = ConsultaBD.queryListDetalle(CAMPOS_PARTIDA, idProyecto, TABLA_PROYECTO);
+        ArrayList<ModeloSQL> listaPartidas = ConsultaBD.queryListDetalle(CAMPOS_PARTIDA, idProyecto);
         abrirPdf(idProyecto);
         addResource(R.drawable.logo_cds_512_a, context, ALINEACION_IZQUIERDA, 100, 100);
 

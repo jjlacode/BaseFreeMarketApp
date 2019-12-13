@@ -8,6 +8,7 @@ import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -265,6 +266,30 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         Estilos.setLayoutParams(viewGroup, checkBox);
 
         return checkBox;
+    }
+
+    public Switch addSwitch(String texto, boolean checked) {
+
+        Switch aSwitch = new Switch(context);
+        aSwitch.setText(texto);
+        aSwitch.setChecked(checked);
+        vistas.add(aSwitch);
+        viewGroup.addView(aSwitch);
+        Estilos.setLayoutParams(viewGroup, aSwitch);
+
+        return aSwitch;
+    }
+
+    public Switch addSwitch(int recTexto, boolean checked) {
+
+        Switch aSwitch = new Switch(context);
+        aSwitch.setText(recTexto);
+        aSwitch.setChecked(checked);
+        vistas.add(aSwitch);
+        viewGroup.addView(aSwitch);
+        Estilos.setLayoutParams(viewGroup, aSwitch);
+
+        return aSwitch;
     }
 
     public TextView addTextView(String text) {

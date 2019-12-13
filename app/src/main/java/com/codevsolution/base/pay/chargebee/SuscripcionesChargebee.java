@@ -104,6 +104,11 @@ public class SuscripcionesChargebee extends FragmentBase {
     }
 
     @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
+
+    @Override
     protected void setLayout() {
 
         layout = R.layout.suscripciones;

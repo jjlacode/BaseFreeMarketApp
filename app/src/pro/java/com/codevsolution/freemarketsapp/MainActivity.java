@@ -19,6 +19,7 @@ import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.CheckPermisos;
 import com.codevsolution.base.android.MainActivityBase;
 import com.codevsolution.base.crud.CRUDutil;
+import com.codevsolution.base.encrypt.EncryptUtil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.login.LoginActivity;
 import com.codevsolution.base.media.VisorPDFEmail;
@@ -27,10 +28,12 @@ import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.sqlite.SQLiteUtil;
 import com.codevsolution.base.web.FragmentWebView;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.codevsolution.freemarketsapp.services.AutoArranquePro;
+import com.codevsolution.freemarketsapp.settings.Preferencias;
 import com.codevsolution.freemarketsapp.settings.SettingsActivityPro;
 import com.codevsolution.freemarketsapp.ui.AltaPerfilesFirebasePro;
 import com.codevsolution.freemarketsapp.ui.AltaSorteosCli;
@@ -50,7 +53,9 @@ import com.codevsolution.freemarketsapp.ui.ListadoProductosPro;
 import com.codevsolution.freemarketsapp.ui.ListadoSorteosCli;
 import com.codevsolution.freemarketsapp.ui.ListadoSorteosPro;
 import com.codevsolution.freemarketsapp.ui.ListadosPerfilesFirebasePro;
+import com.codevsolution.freemarketsapp.ui.MenuCRM;
 import com.codevsolution.freemarketsapp.ui.MenuInicio;
+import com.codevsolution.freemarketsapp.ui.MenuMarketing;
 import com.codevsolution.freemarketsapp.ui.MisSorteosCli;
 import com.codevsolution.freemarketsapp.ui.MisSorteosPro;
 import com.codevsolution.freemarketsapp.ui.MisSuscripcionesPro;
@@ -143,6 +148,14 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
     }
 
+    @Override
+    protected void onOkPass() {
+        super.onOkPass();
+
+        EncryptUtil.cifrarBase(ContratoPry.obtenerListaCampos());
+        EncryptUtil.cifrarBase(ContratoSystem.obtenerListaCampos());
+    }
+
     private Boolean comprobarInicio() {
 
         String BASEDATOS = AppActivity.getAppContext().getString(R.string.app_name) + ".db";
@@ -159,8 +172,7 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
             if (SQLiteUtil.isTableExists(TABLA_PERFIL, db)) {
 
                 db.close();
-                ListaModeloSQL listaModeloSQL = CRUDutil.setListaModelo(CAMPOS_PERFIL);
-                return listaModeloSQL.getLista().size() > 0 && listaModeloSQL.getLista().get(0).getString(PERFIL_NOMBRE).equals("Defecto");
+                return true;
             }
         }
 
@@ -180,41 +192,39 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
                 ContentValues valoresPer = new ContentValues();
                 String [] campos = CAMPOS_PERFIL;
 
-                ConsultaBD.putDato(valoresPer, campos, PERFIL_NOMBRE, "Defecto");
-                ConsultaBD.putDato(valoresPer, campos, PERFIL_DESCRIPCION,
+                ConsultaBD.putDato(valoresPer, PERFIL_NOMBRE, "Defecto");
+                ConsultaBD.putDato(valoresPer, PERFIL_DESCRIPCION,
                         "Perfil por defecto, jornada normal de 8 horas diarias" +
                                 " de lunes a viernes y 30 dias de vacaciones al año, " +
                                 " y un sueldo anual de " + JavaUtil.formatoMonedaLocal(20000));
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAIMLUNES,9*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFMLUNES,14*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAITLUNES,16*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFTLUNES,20*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAIMMARTES,9*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFMMARTES,14*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAITMARTES,16*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFTMARTES,20*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAIMMIERCOLES,9*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFMMIERCOLES,14*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAITMIERCOLES,16*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFTMIERCOLES,20*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAIMJUEVES,9*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFMJUEVES,14*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAITJUEVES,16*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFTJUEVES,20*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAIMVIERNES,9*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFMVIERNES,14*HORASLONG);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAITVIERNES,-1);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFTVIERNES,-1);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAIMSABADO,-1);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFMSABADO,-1);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAITSABADO,-1);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFTSABADO,-1);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAIMDOMINGO,-1);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFMDOMINGO,-1);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAITDOMINGO,-1);
-                ConsultaBD.putDato(valoresPer, campos,PERFIL_HORAFTDOMINGO,-1);
-
-
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAIMLUNES,9*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAFMLUNES,14*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAITLUNES,16*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAFTLUNES,20*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAIMMARTES,9*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAFMMARTES,14*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAITMARTES,16*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAFTMARTES,20*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAIMMIERCOLES,9*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAFMMIERCOLES,14*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAITMIERCOLES,16*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAFTMIERCOLES,20*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAIMJUEVES,9*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAFMJUEVES,14*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAITJUEVES,16*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAFTJUEVES,20*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAIMVIERNES,9*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAFMVIERNES,14*HORASLONG);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAITVIERNES,-1);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAFTVIERNES,-1);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAIMSABADO,-1);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAFMSABADO,-1);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAITSABADO,-1);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAFTSABADO,-1);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAIMDOMINGO,-1);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAFMDOMINGO,-1);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAITDOMINGO,-1);
+                ConsultaBD.putDato(valoresPer,PERFIL_HORAFTDOMINGO,-1);
                 Uri reg = ConsultaBD.insertRegistro(TABLA_PERFIL, valoresPer);
                 System.out.println(reg);
 
@@ -228,7 +238,7 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
                 Interactor.perfila = "Defecto";
                 Interactor.diasfuturos = 90;
                 Interactor.diaspasados = 20;
-                Interactor.hora = Interactor.Calculos.calculoPrecioHora();
+                //Interactor.hora = Interactor.Calculos.calculoPrecioHora();
                 Interactor.setNamefdef();
 
                 return true;
@@ -251,19 +261,29 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activityBase in AndroidManifest.xml.
         int id = item.getItemId();
-        bundle = new Bundle();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivityPro.class));
+            //startActivity(new Intent(this, SettingsActivityPro.class));
+            enviarBundleAFragment(bundle, new Preferencias());
             return true;
         } else if (id == R.id.action_info) {
+            bundle = new Bundle();
             bundle.putString(ACTUAL, INICIO);
             recargarFragment();
             return true;
         } else if (id == R.id.action_help) {
-            bundle.putString(WEB, ayudaWeb);
-            enviarBundleAFragment(bundle, new FragmentWebView());
+            setPathAyuda();
+            if (ayudaWeb!=null){
+                ayudaWeb = pathAyuda+ayudaWeb+"/";
+            }else{
+                ayudaWeb = pathAyuda;
+            }
+            if (JavaUtil.isValidURL(ayudaWeb)) {
+                bundle = new Bundle();
+                bundle.putString(WEB, ayudaWeb);
+                enviarBundleAFragment(bundle, new FragmentWebView());
+            }
             return true;
         }
 
@@ -399,6 +419,7 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
         super.recargarFragment();
 
+        System.out.println("bundle.getString(ACTUAL, INICIO) = " + bundle.getString(ACTUAL, INICIO));
 
         switch (bundle.getString(ACTUAL, INICIO)) {
 
@@ -429,9 +450,25 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
                 fabVoz.show();
                 fabNuevo.hide();
-                toolbar.setSubtitle(Interactor.setNamefdef());
                 enviarBundleAFragment(bundle, new MenuInicio());
                 break;
+
+            case MENUCRM:
+
+                fabVoz.show();
+                fabNuevo.hide();
+                fabInicio.show();
+                enviarBundleAFragment(bundle, new MenuCRM());
+                break;
+
+            case MENUMARKETING:
+
+                fabVoz.show();
+                fabNuevo.hide();
+                fabInicio.show();
+                enviarBundleAFragment(bundle, new MenuMarketing());
+                break;
+
             case AMORTIZACION:
 
                 enviarBundleAFragment(bundle, new FragmentCRUDAmortizacion());
@@ -514,6 +551,7 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
             case SALIR:
 
+                AndroidUtil.setSharePreference(context,PREFERENCIAS+idUser,PASSOK,NULL);
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);

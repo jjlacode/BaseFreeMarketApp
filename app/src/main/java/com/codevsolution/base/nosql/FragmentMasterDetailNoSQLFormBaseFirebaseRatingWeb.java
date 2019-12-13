@@ -311,7 +311,8 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
                 }
             }
 
-            listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, idChat, TABLA_CHAT, null, DETCHAT_FECHA + " DESC");
+            listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, idChat);
+            listaMsgChat = listaMsgChat.sort(DETCHAT_FECHA, DESCENDENTE);
 
             RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
             rvMsgChat.setAdapter(adaptadorDetChat);
@@ -351,8 +352,17 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
     protected void onGuardarImagen(String path) {
         super.onGuardarImagen(path);
         Log.d(TAG, getMetodo());
+        ImagenUtil.guardarImageFirestore(SLASH + idUser + SLASH + id + CAMPO_ACTIVO, imagen, path);
+        ImagenUtil.setImageFireStoreCircle(SLASH + idUser + SLASH + id + CAMPO_ACTIVO, activityBase.imagenPerfil);
+    }
 
-        ImagenUtil.setImageFireStoreCircle(idUser + tipo, activityBase.imagenPerfil);
+    @Override
+    protected void eliminarImagen() {
+
+        ImagenUtil.deleteImagefirestore(SLASH + idUser + SLASH + id + tipo);
+        ImagenUtil.deleteImagefirestore(SLASH + idUser + SLASH + id + CAMPO_ACTIVO);
+
+        super.eliminarImagen();
     }
 
     @Override
@@ -373,7 +383,8 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
                         db.child(tipo).child(idUser).removeValue();
                         db.child(PERFIL).child(tipo).child(idUser).removeValue();
                         db.child(RATING).child(tipo).child(idUser).removeValue();
-                        ImagenUtil.deleteImagefirestore(idUser);
+                        ImagenUtil.deleteImagefirestore(idUser + tipo);
+                        ImagenUtil.deleteImagefirestore(idUser + CAMPO_ACTIVO);
 
                     }
                 }
@@ -576,10 +587,8 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             btnchat = vistaChat.addImageButtonSecundary(Estilos.getIdDrawable(contexto, "ic_chat_indigo"));
 
             ratingBarCard = new RatingBarModule(mainLinear, contexto, null, true, false);
-            ratingBarCard.init();
             Estilos.setLayoutParams(mainLinear, ratingBarCard.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
             ratingBarUserCard = new RatingBarModule(mainLinear, contexto, null, true, true);
-            ratingBarUserCard.init();
             Estilos.setLayoutParams(mainLinear, ratingBarUserCard.getViewGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
 
             lylweb = new NestedScrollView(contexto);

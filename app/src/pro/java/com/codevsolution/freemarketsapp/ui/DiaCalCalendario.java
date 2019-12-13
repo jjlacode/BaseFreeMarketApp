@@ -14,6 +14,7 @@ import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
@@ -30,6 +31,10 @@ public class DiaCalCalendario extends DiaCalHorario implements ContratoPry.Tabla
         JavaUtil.Constantes, Interactor.TiposEvento {
 
 
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
 
     @Override
     protected void setOnBack() {

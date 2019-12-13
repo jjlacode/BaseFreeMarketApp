@@ -10,6 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
@@ -24,6 +25,7 @@ import com.codevsolution.freemarketsapp.logica.Interactor;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryObjectDetalle;
 
 public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Interactor.ConstantesPry,
@@ -62,6 +64,10 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
         // Required empty public constructor
     }
 
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
 
     @Override
     protected void setNuevo() {
@@ -74,20 +80,6 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
         tabla = TABLA_DETPARTIDA;
 
     }
-
-    @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
-
-    }
-
 
     @Override
     protected void setBundle() {
@@ -210,7 +202,7 @@ public class FragmentCUDDetpartidaProducto extends FragmentCUD implements Intera
                                     }
 
                                     valores = new ContentValues();
-                                    setDato(DETPARTIDA_BENEFICIO, JavaUtil.comprobarDouble(etBeneficio.getTexto()));
+                                    putDato(valores,DETPARTIDA_BENEFICIO, JavaUtil.comprobarDouble(etBeneficio.getTexto()));
                                     CRUDutil.actualizarRegistro(modeloSQL, valores);
                                     modeloSQL = CRUDutil.updateModelo(modeloSQL);
                                     Interactor.Calculos.actualizarPartidaProyecto(id);

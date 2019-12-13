@@ -17,6 +17,10 @@ import java.util.ArrayList;
 
 public class FragmentGrid extends FragmentGridBase {
 
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
 
     @Override
     protected void setLayout() {

@@ -16,6 +16,7 @@ import android.speech.SpeechRecognizer;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 public class ServicioVoz extends JobServiceBase {
 
@@ -33,6 +34,20 @@ public class ServicioVoz extends JobServiceBase {
     String TAG = getClass().getSimpleName();
 
     @Override
+    protected void setJob() {
+        super.setJob();
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        mSpeechRecognizer.setRecognitionListener(new SpeechRecognitionListener());
+        mSpeechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
+                this.getPackageName());
+
+    }
+/*
+    @Override
     public void onCreate() {
         super.onCreate();
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -44,6 +59,8 @@ public class ServicioVoz extends JobServiceBase {
         mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
                 this.getPackageName());
     }
+
+ */
 
     protected static class IncomingHandler extends Handler {
         private WeakReference<ServicioVoz> mtarget;
@@ -183,6 +200,26 @@ public class ServicioVoz extends JobServiceBase {
         @Override
         public void onResults(Bundle results) {
             //Log.d(TAG, "onResults"); //$NON-NLS-1$
+            String wordStr = null;
+            String[] words = null;
+            String firstWord = null;
+            String secondWord = null;
+
+            ArrayList<String> matches = results
+                    .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+
+            wordStr = matches.get(0);
+            words = wordStr.split(" ");
+            firstWord = words[0];
+            secondWord = words[1];
+            System.out.println("Reconcimiento de voz msg = " + firstWord + " " + secondWord);
+
+            if (firstWord.equals("abrir")) {
+                if (secondWord.equals("agenda")) {
+
+                    System.out.println("Reconcimiento de voz msg = " + firstWord + " " + secondWord);
+                }
+            }
 
         }
 

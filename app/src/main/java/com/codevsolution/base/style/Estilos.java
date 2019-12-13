@@ -391,6 +391,111 @@ public class Estilos {
 
     }
 
+    public static void setLayoutParams(ViewGroup viewGroup, View view, int ancho, int alto, int gravity) {
+
+        int pad = 5;
+        if (viewGroup instanceof LinearLayoutCompat) {
+            LinearLayoutCompat.LayoutParams params;
+            params = new LinearLayoutCompat.LayoutParams(ancho, alto);
+            params.setMargins(pad, pad, pad, pad);
+            view.setLayoutParams(params);
+        } else if (viewGroup instanceof LinearLayout) {
+            LinearLayout.LayoutParams params;
+            params = new LinearLayout.LayoutParams(ancho, alto);
+            params.setMargins(pad, pad, pad, pad);
+            view.setLayoutParams(params);
+        } else if (viewGroup instanceof RelativeLayout) {
+            RelativeLayout.LayoutParams params;
+            params = new RelativeLayout.LayoutParams(ancho, alto);
+            params.setMargins(pad, pad, pad, pad);
+            view.setLayoutParams(params);
+        } else if (viewGroup instanceof CardView) {
+            CardView.LayoutParams params;
+            params = new CardView.LayoutParams(ancho, alto, gravity);
+            params.setMargins(pad, pad, pad, pad);
+            view.setLayoutParams(params);
+        } else if (viewGroup instanceof FrameLayout) {
+            FrameLayout.LayoutParams params;
+            params = new FrameLayout.LayoutParams(ancho, alto, gravity);
+            params.setMargins(pad, pad, pad, pad);
+            view.setLayoutParams(params);
+        }
+
+
+    }
+
+    public static void setLayoutParamsRelative(ViewGroup viewGroup, View view, int ancho, int alto, int metodo, int recurso) {
+
+        int pad = 5;
+        if (viewGroup instanceof RelativeLayout) {
+            RelativeLayout.LayoutParams params;
+            params = new RelativeLayout.LayoutParams(ancho, alto);
+            params.setMargins(pad, pad, pad, pad);
+            if (recurso > 0) {
+                params.addRule(metodo, recurso);
+            } else {
+                params.addRule(metodo);
+            }
+            viewGroup.addView(view, params);
+        }
+
+
+    }
+
+    public static void setLayoutParamsRelative(ViewGroup viewGroup, View view, int ancho, int alto, int[] metodo, int[] recurso) {
+
+        int pad = 5;
+        if (viewGroup instanceof RelativeLayout) {
+            RelativeLayout.LayoutParams params;
+            params = new RelativeLayout.LayoutParams(ancho, alto);
+            params.setMargins(pad, pad, pad, pad);
+            for (int i = 0; i < metodo.length; i++) {
+
+                if (recurso[i] > 0) {
+                    params.addRule(metodo[i], recurso[i]);
+                } else {
+                    params.addRule(metodo[i]);
+                }
+            }
+
+            viewGroup.addView(view, params);
+        }
+
+
+    }
+
+    public static void setLayoutParamsRelative(ViewGroup viewGroup, View view, int ancho, int alto, int[] metodo) {
+
+        int pad = 5;
+        if (viewGroup instanceof RelativeLayout) {
+            RelativeLayout.LayoutParams params;
+            params = new RelativeLayout.LayoutParams(ancho, alto);
+            params.setMargins(pad, pad, pad, pad);
+            for (int i = 0; i < metodo.length; i++) {
+
+                params.addRule(metodo[i]);
+            }
+
+            viewGroup.addView(view, params);
+        }
+
+
+    }
+
+    public static void setLayoutParamsRelative(ViewGroup viewGroup, View view, int ancho, int alto, int metodo) {
+
+        int pad = 5;
+        if (viewGroup instanceof RelativeLayout) {
+            RelativeLayout.LayoutParams params;
+            params = new RelativeLayout.LayoutParams(ancho, alto);
+            params.setMargins(pad, pad, pad, pad);
+            params.addRule(metodo);
+            viewGroup.addView(view, params);
+        }
+
+
+    }
+
     public static int getColor(Context context, String color) {
         return context.getResources().getColor(getIdColor(context, color));
     }
@@ -483,6 +588,11 @@ public class Estilos {
         return ContextCompat.getDrawable(context, getIdDrawable(context, BTNTRANSPARENTE));
     }
 
+    public static float getDimension(Context context, String nombre) {
+
+        return context.getResources().getDimension(getIdDimens(context, nombre));
+    }
+
     public static int colorPrimary(Context context) {
         return getIdColor(context, COLORPRIMARY);
     }
@@ -535,6 +645,16 @@ public class Estilos {
         gd.setColor(colorPrimary);
         gd.setCornerRadius(25);
         gd.setStroke(5, colorPrimary);
+
+        return gd;
+    }
+
+    public static Drawable getBotonPrimaryStroke() {
+
+        GradientDrawable gd = new GradientDrawable();
+        gd.setColor(colorPrimary);
+        gd.setCornerRadius(25);
+        gd.setStroke(5, colorSecondaryDark);
 
         return gd;
     }

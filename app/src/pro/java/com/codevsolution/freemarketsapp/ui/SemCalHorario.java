@@ -53,7 +53,7 @@ public class SemCalHorario extends SemCalBase implements ContratoPry.Tablas {
     protected void setHorarios() {
         super.setHorarios();
 
-        ModeloSQL perfil = CRUDutil.updateModelo(CAMPOS_PERFIL, PERFIL_NOMBRE, Interactor.perfila, null, IGUAL, null);
+        ModeloSQL perfil = CRUDutil.updateModelo(CAMPOS_PERFIL, PERFIL_NOMBRE, Interactor.perfila);
 
         imLunes = perfil.getLong(PERFIL_HORAIMLUNES);
         imMartes = perfil.getLong(PERFIL_HORAIMMARTES);

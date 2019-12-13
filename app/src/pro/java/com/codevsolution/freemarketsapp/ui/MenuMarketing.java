@@ -1,10 +1,12 @@
 package com.codevsolution.freemarketsapp.ui;
 
+import android.os.Bundle;
 import android.view.View;
 
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.FragmentGridImagen;
 import com.codevsolution.base.chat.FragmentChatBase;
+import com.codevsolution.base.media.VisorPdf;
 import com.codevsolution.base.pay.chargebee.SuscripcionesChargebee;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.templates.CatalogoPDF;
@@ -30,7 +32,16 @@ public class MenuMarketing extends FragmentGridImagen {
 
     @Override
     protected String setAyudaWeb() {
-        return HTTPAYUDA + "marketing";
+        return "marketing";
+    }
+
+    @Override
+    protected void setInicio() {
+        super.setInicio();
+
+        icFragmentos.showSubTitle(R.string.marketing_y_publicidad);
+        reproducir(getString(R.string.marketing_y_publicidad));
+
     }
 
     @Override
@@ -89,7 +100,11 @@ public class MenuMarketing extends FragmentGridImagen {
 
             CatalogoPDF catalogoPDF = new CatalogoPDF();
             catalogoPDF.crearPdf(PRODUCTO);
-            AppActivity.mostrarPDF(catalogoPDF.getRutaArchivo());
+            bundle = new Bundle();
+            bundle.putString(PATH,catalogoPDF.getRutaArchivo());
+            bundle.putString(TITULO,getString(R.string.catalogo_productos));
+            icFragmentos.enviarBundleAFragment(bundle,new VisorPdf());
+            //AppActivity.mostrarPDF(catalogoPDF.getRutaArchivo());
         }
 
 

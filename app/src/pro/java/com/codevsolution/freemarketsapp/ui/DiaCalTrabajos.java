@@ -13,6 +13,7 @@ import androidx.cardview.widget.CardView;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
@@ -27,6 +28,11 @@ import java.util.ArrayList;
 
 public class DiaCalTrabajos extends DiaCalHorario implements ContratoPry.Tablas,
         JavaUtil.Constantes, Interactor.TiposEvento, Interactor.ConstantesPry {
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
 
     @Override
     protected ListaModeloSQL setListaDia(long fecha) {

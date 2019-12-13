@@ -121,6 +121,7 @@ public class JavaUtil {
         String LONG = "long";
         String FLOAT = "float";
         String SHORT = "short";
+        String BOOL = "bool";
         String NULL = "null";
         String NONNULL = "nonnull";
 

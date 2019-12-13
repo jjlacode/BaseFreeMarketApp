@@ -102,7 +102,9 @@ public abstract class FragmentCRUD extends FragmentCUD {
         Log.d(TAG, getMetodo());
 
         if (subTitulo == null) {
-            subTitulo = getString(tituloPlural);
+            if (tituloPlural > 0) {
+                subTitulo = getString(tituloPlural);
+            }
         }
         activityBase.toolbar.setSubtitle(subTitulo);
 
@@ -115,13 +117,10 @@ public abstract class FragmentCRUD extends FragmentCUD {
             }
             modeloSQL = null;
             secuencia = 0;
-            if (tituloNuevo > 0) {
-                subTitulo = getString(tituloNuevo);
-                activityBase.toolbar.setSubtitle(subTitulo);
-            }
+
             vaciarControles();
             path = null;
-            setImagen();
+            cruDutil.setImagen(contexto);
             setNuevo();
             if (bundle != null) {
                 bundle.putBoolean(NUEVOREGISTRO, false);
@@ -147,6 +146,10 @@ public abstract class FragmentCRUD extends FragmentCUD {
         } else {
 
             back = false;
+            setTitulo();
+            if (tituloPlural != 0 && playOn) {
+                reproducir(getString(tituloPlural));
+            }
 
         }
 
@@ -216,7 +219,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
             public void onClick(View v) {
 
                 if (tablaCab != null) {
-                    lista = CRUDutil.setListaModeloDetalle(campos, id, tablaCab);
+                    lista = CRUDutil.setListaModeloDetalle(campos, id);
                     setLista();
                 } else {
                     lista = CRUDutil.setListaModelo(campos);
@@ -325,7 +328,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
             if (tablaCab == null) {
                 lista = CRUDutil.setListaModelo(campos);
             } else {
-                lista = CRUDutil.setListaModeloDetalle(campos, id, tablaCab);
+                lista = CRUDutil.setListaModeloDetalle(campos, id);
             }
             setLista();
         } else {
@@ -498,6 +501,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
             activityBase.fabNuevo.show();
             activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_MINI);
             activityBase.fabVoz.setSize(FloatingActionButton.SIZE_MINI);
+            frPubli.setMinimumHeight(activityBase.fabVoz.getHeight());
         } else if ((id != null && secuencia > 0) || (id != null && tablaCab == null) || (modeloSQL != null)) {
             if (layoutCabecera > 0 || cabecera) {
                 gone(frCabecera);
@@ -512,6 +516,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
             activityBase.fabNuevo.show();
             activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_MINI);
             activityBase.fabVoz.setSize(FloatingActionButton.SIZE_MINI);
+            frPubli.setMinimumHeight(activityBase.fabVoz.getHeight());
 
         } else {
 
@@ -527,6 +532,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
             activityBase.fabNuevo.show();
             activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_NORMAL);
             activityBase.fabVoz.setSize(FloatingActionButton.SIZE_NORMAL);
+            frPubli.setMinimumHeight(activityBase.fabVoz.getHeight());
 
             if (grabarVoz == null) {
                 listaRV();
@@ -598,7 +604,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
             if (tablaCab != null) {
                 modeloSQL = null;
                 secuencia = 0;
-                lista = CRUDutil.setListaModeloDetalle(campos, id, tablaCab);
+                lista = CRUDutil.setListaModeloDetalle(campos, id);
             } else {
                 modeloSQL = null;
                 id = null;
@@ -787,7 +793,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
                     //auto.setText("");
                 } else if (grabarVoz.equals("lista completa")) {
                     if (tablaCab != null) {
-                        lista = CRUDutil.setListaModeloDetalle(campos, id, tablaCab);
+                        lista = CRUDutil.setListaModeloDetalle(campos, id);
                         setLista();
                     } else {
                         lista = CRUDutil.setListaModelo(campos);

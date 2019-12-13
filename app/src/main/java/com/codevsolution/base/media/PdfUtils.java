@@ -621,7 +621,7 @@ public class PdfUtils {
             int alto = 0;
             for (indexC = 1; indexC < col; indexC++) {
 
-                if ((int) Math.round(((double) row[indexC].length()) / (colspan[indexC] * 3)) > maxRow) {
+                if (row[indexC] != null && colspan[indexC] > 0 && (int) Math.round(((double) row[indexC].length()) / (colspan[indexC] * 3)) > maxRow) {
                     maxRow = (int) Math.round(((double) row[indexC].length()) / (colspan[indexC] * 3));
                 }
             }

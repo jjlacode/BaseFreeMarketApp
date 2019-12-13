@@ -55,7 +55,7 @@ public class ChatReceiver extends ReceiverBase implements InteractorBase.Constan
 
                 }
                 ContentValues valores = new ContentValues();
-                ConsultaBD.putDato(valores, CAMPOS_DETCHAT, DETCHAT_NOTIFICADO, 1);
+                ConsultaBD.putDato(valores, DETCHAT_NOTIFICADO, 1);
                 ConsultaBD.updateRegistroDetalle(TABLA_DETCHAT, detChat.getString(DETCHAT_ID_CHAT),
                         detChat.getInt(DETCHAT_SECUENCIA), valores);
             }

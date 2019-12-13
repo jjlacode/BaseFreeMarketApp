@@ -74,7 +74,8 @@ public abstract class FragmentNoSQL extends FragmentBase {
 
                 } else if (opciones[which].equals("Quitar foto")) {
 
-                    path = null;
+                    eliminarImagen();
+
 
                 } else {
                     dialog.dismiss();
@@ -143,6 +144,12 @@ public abstract class FragmentNoSQL extends FragmentBase {
 
     }
 
+    protected void eliminarImagen() {
+        onEliminarImagen();
+    }
 
+    protected void onEliminarImagen() {
+
+    }
 
 }

@@ -17,6 +17,7 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.CheckPermisos;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.android.controls.ViewImagenLayout;
@@ -35,6 +36,7 @@ import com.codevsolution.freemarketsapp.logica.Interactor;
 import java.io.File;
 import java.util.ArrayList;
 
+import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 import static com.codevsolution.base.time.calendar.DiaCalBase.HORACAL;
 
 public class FragmentCRUDNota extends FragmentCRUD implements Interactor.ConstantesPry,
@@ -61,6 +63,11 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
     }
 
     @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
+
+    @Override
     protected TipoViewHolder setViewHolder(View view) {
 
         return new ViewHolderRV(view);
@@ -76,11 +83,11 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
 
         if (idrelacionado != null) {
 
-            lista = CRUDutil.setListaModelo(campos,NOTA_ID_RELACIONADO,idrelacionado,IGUAL);
+            lista = CRUDutil.setListaModelo(campos,NOTA_ID_RELACIONADO,idrelacionado);
 
         } else {
 
-            lista = CRUDutil.setListaModelo(campos,NOTA_ID_RELACIONADO,null,IGUAL);
+            lista = CRUDutil.setListaModelo(campos,NOTA_ID_RELACIONADO,null);
 
         }
         if (origen==null){
@@ -114,19 +121,21 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
             case NOTATEXTO:
 
                 visible(btnsave);
+                tituloNuevo = R.string.nueva_nota_texto;
                 break;
 
             case NOTAAUDIO:
 
                 recAudio();
                 gone(btnsave);
+                tituloNuevo = R.string.nueva_nota_audio;
                 break;
 
             case NOTAVIDEO:
 
                 recVideo();
                 btnsave.setVisibility(View.GONE);
-
+                tituloNuevo = R.string.nueva_nota_video;
                 break;
 
             case NOTAIMAGEN:
@@ -134,10 +143,12 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
                 imagen.getLinearLayoutCompat().setVisibility(View.VISIBLE);
                 btnsave.setVisibility(View.GONE);
                 imagen.setImageUriPerfil(activityBase, path);
+                tituloNuevo = R.string.nueva_nota_imagen;
                 break;
 
         }
 
+        reproducir(getString(tituloNuevo));
     }
 
     private void recAudio() {
@@ -194,19 +205,6 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
     protected void setTabla() {
 
         tabla = TABLA_NOTA;
-
-    }
-
-    @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
 
     }
 
@@ -491,23 +489,23 @@ public class FragmentCRUDNota extends FragmentCRUD implements Interactor.Constan
             path = pathAudio;
         }
 
-        setDato(NOTA_DESCRIPCION, descripcion.getText().toString());
-        setDato(NOTA_TITULO,titulo.getText().toString());
+        putDato(valores,NOTA_DESCRIPCION, descripcion.getText().toString());
+        putDato(valores,NOTA_TITULO,titulo.getText().toString());
         if (path!=null) {
-            setDato(NOTA_RUTAFOTO, path);
+            putDato(valores,NOTA_RUTAFOTO, path);
         }
 
         if (id==null) {
-            setDato(NOTA_ID_RELACIONADO, idrelacionado);
+            putDato(valores,NOTA_ID_RELACIONADO, idrelacionado);
             if (idrelacionado!=null) {
-                setDato(NOTA_NOMBREREL, subTitulo);
+                putDato(valores,NOTA_NOMBREREL, subTitulo);
             }
             if (fechaNota==0){
                 fechaNota = JavaUtil.hoy();
             }
-            setDato(NOTA_FECHA, fechaNota);
-            setDato(NOTA_FECHAF, JavaUtil.getDateTime(fechaNota));
-            setDato(NOTA_TIPO, tipoNota);
+            putDato(valores,NOTA_FECHA, fechaNota);
+            putDato(valores,NOTA_FECHAF, JavaUtil.getDateTime(fechaNota));
+            putDato(valores,NOTA_TIPO, tipoNota);
             if (origen.equals(NUEVOREGISTRO)) {
                 origen = NULL;
             }

@@ -14,6 +14,7 @@ import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.crud.FragmentRVR;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.media.MediaUtil;
@@ -35,6 +36,11 @@ public class FragmentTrabajoTreking extends FragmentRVR implements Interactor.Co
 
     public FragmentTrabajoTreking() {
         // Required empty public constructor
+    }
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
     }
 
     @Override
@@ -62,19 +68,6 @@ public class FragmentTrabajoTreking extends FragmentRVR implements Interactor.Co
     protected void setTabla() {
 
         tabla = TABLA_DETPARTIDA;
-
-    }
-
-    @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
 
     }
 
@@ -214,7 +207,7 @@ public class FragmentTrabajoTreking extends FragmentRVR implements Interactor.Co
             }
 
             long ahora = hoy();
-            ModeloSQL partida = queryObject(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, id, null, IGUAL, null);
+            ModeloSQL partida = queryObject(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, id);
             nomPartida.setText(partida.getString(PARTIDA_NOMBRE));
             double cantidadTotal = partida.getDouble(PARTIDA_CANTIDAD);
             double tiempodet = (modeloSQL.getDouble(DETPARTIDA_TIEMPO) * cantidadTotal * HORASLONG) / 1000;

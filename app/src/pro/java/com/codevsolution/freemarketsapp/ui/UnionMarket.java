@@ -16,6 +16,14 @@ public class UnionMarket extends FragmentGridImagen {
     private String sorteosPro;
 
     @Override
+    protected void setInicio() {
+        super.setInicio();
+
+        icFragmentos.showSubTitle("Union Market");
+        reproducir("Union Market");
+    }
+
+    @Override
     protected void setLista() {
 
         productos = getString(R.string.productosyservicios);

@@ -29,6 +29,7 @@ import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
@@ -47,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryListDetalle;
 
@@ -93,6 +95,11 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
     public FragmentCRUDPartidaProyecto() {
         // Required empty public constructor
+    }
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
     }
 
     @Override
@@ -311,19 +318,6 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     }
 
     @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
-
-    }
-
-    @Override
     protected void setBundle() {
 
         System.out.println("bundle = " + bundle);
@@ -479,7 +473,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
     private void setRvDetallePartida() {
 
-        listaDetpartidas = queryListDetalle(CAMPOS_DETPARTIDA, idDetPartida, tabla);
+        listaDetpartidas = queryListDetalle(CAMPOS_DETPARTIDA, idDetPartida);
 
         if (listaDetpartidas != null && listaDetpartidas.size() > 0) {
 
@@ -551,7 +545,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
         int ultimaPartida = 0;
         String ordenPartidas = PARTIDA_ORDEN + InteractorBase.Constantes.ORDENASCENDENTE;
-        ListaModeloSQL listaPartidas = CRUDutil.setListaModelo(CAMPOS_PARTIDA, PARTIDA_ID_PROYECTO, proyecto.getString(PROYECTO_ID_PROYECTO), IGUAL, ordenPartidas);
+        ListaModeloSQL listaPartidas = CRUDutil.setListaModelo(CAMPOS_PARTIDA, PARTIDA_ID_PROYECTO,
+                proyecto.getString(PROYECTO_ID_PROYECTO), PARTIDA_ORDEN, ASCENDENTE);
 
         for (ModeloSQL partida : listaPartidas.getLista()) {
             if (partida.getInt(PARTIDA_ORDEN) > ultimaPartida) {
@@ -617,9 +612,9 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
     @Override
     protected void setContenedor() {
 
-        setDato(PARTIDA_CANTIDAD, JavaUtil.comprobarDouble(cantidadPartida.getText().toString()));
-        setDato(PARTIDA_COMPLETADA, JavaUtil.comprobarDouble(completadaPartida.getText().toString()));
-        setDato(PARTIDA_ID_PROYECTO, id);
+        putDato(valores,PARTIDA_CANTIDAD, JavaUtil.comprobarDouble(cantidadPartida.getText().toString()));
+        putDato(valores,PARTIDA_COMPLETADA, JavaUtil.comprobarDouble(completadaPartida.getText().toString()));
+        putDato(valores,PARTIDA_ID_PROYECTO, id);
         System.out.println("id = " + id);
         System.out.println("idDetPartida = " + idDetPartida);
 
@@ -630,8 +625,8 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
         }
         if (secuencia==0) {
 
-            setDato(PARTIDA_ID_PARTIDA, idDetPartida);
-            setDato(PARTIDA_ID_ESTADO, proyecto.getString(PROYECTO_ID_ESTADO));
+            putDato(valores,PARTIDA_ID_PARTIDA, idDetPartida);
+            putDato(valores,PARTIDA_ID_ESTADO, proyecto.getString(PROYECTO_ID_ESTADO));
 
         }
 
@@ -642,7 +637,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
         if (idEstado!=null) {
 
-            ArrayList<ModeloSQL> listaEstados = queryList(CAMPOS_ESTADO, null, null);
+            ArrayList<ModeloSQL> listaEstados = queryList(CAMPOS_ESTADO);
 
             for (ModeloSQL estado : listaEstados) {
 
@@ -664,7 +659,7 @@ public class FragmentCRUDPartidaProyecto extends FragmentCRUD implements Interac
 
         if (Double.parseDouble(cantidadPartida.getTexto())==0){
             valores = new ContentValues();
-            setDato(PARTIDA_CANTIDAD,1);
+            putDato(valores,PARTIDA_CANTIDAD,1);
             CRUDutil.actualizarRegistro(modeloSQL, valores);
             modeloSQL = CRUDutil.updateModelo(modeloSQL);
         }

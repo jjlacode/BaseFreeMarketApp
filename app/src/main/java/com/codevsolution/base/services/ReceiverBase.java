@@ -21,7 +21,6 @@ public abstract class ReceiverBase extends BroadcastReceiver implements Interact
     @Override
     public void onReceive(final Context context, Intent intent) {
 
-        System.out.println("Aqui si llega el mensaje");
         onReceiver(context, intent);
     }
 

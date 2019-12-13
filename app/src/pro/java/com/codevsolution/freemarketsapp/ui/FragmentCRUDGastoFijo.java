@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ModeloSQL;
@@ -16,6 +17,8 @@ import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
+
+import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 
 public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.Tablas {
 
@@ -30,6 +33,11 @@ public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.T
 
     public FragmentCRUDGastoFijo() {
         // Required empty public constructor
+    }
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
     }
 
     @Override
@@ -95,19 +103,6 @@ public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.T
     }
 
     @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
-
-    }
-
-    @Override
     protected void setDatos() {
 
         btndelete.setVisibility(View.VISIBLE);
@@ -146,13 +141,13 @@ public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.T
     @Override
     protected void setContenedor() {
 
-        setDato(GASTOFIJO_NOMBRE, nombre.getText().toString());
-        setDato(GASTOFIJO_DESCRIPCION, descripcion.getText().toString());
-        setDato(GASTOFIJO_CANTIDAD, JavaUtil.comprobarDouble(cantidad.getText().toString()));
-        setDato(GASTOFIJO_PRECIO, JavaUtil.comprobarDouble(importe.getText().toString()));
-        setDato(GASTOFIJO_ANYOS, JavaUtil.comprobarInteger(anios.getText().toString()));
-        setDato(GASTOFIJO_MESES, JavaUtil.comprobarInteger(meses.getText().toString()));
-        setDato(GASTOFIJO_DIAS, JavaUtil.comprobarInteger(dias.getText().toString()));
+        putDato(valores,GASTOFIJO_NOMBRE, nombre.getText().toString());
+        putDato(valores,GASTOFIJO_DESCRIPCION, descripcion.getText().toString());
+        putDato(valores,GASTOFIJO_CANTIDAD, JavaUtil.comprobarDouble(cantidad.getText().toString()));
+        putDato(valores,GASTOFIJO_PRECIO, JavaUtil.comprobarDouble(importe.getText().toString()));
+        putDato(valores,GASTOFIJO_ANYOS, JavaUtil.comprobarInteger(anios.getText().toString()));
+        putDato(valores,GASTOFIJO_MESES, JavaUtil.comprobarInteger(meses.getText().toString()));
+        putDato(valores,GASTOFIJO_DIAS, JavaUtil.comprobarInteger(dias.getText().toString()));
 
     }
 
@@ -162,8 +157,6 @@ public class FragmentCRUDGastoFijo extends FragmentCRUD implements ContratoPry.T
         subTitulo = Interactor.setNamefdef();
 
     }
-
-
 
     public class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
 

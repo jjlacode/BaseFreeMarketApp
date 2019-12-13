@@ -5,12 +5,17 @@ import android.view.View;
 
 import com.codevsolution.base.adapter.ListaAdaptadorFiltro;
 import com.codevsolution.base.adapter.TipoViewHolder;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.nosql.FragmentMasterDetailNoSQL;
 
 import java.util.ArrayList;
 
 public class SuscripcionesBraintree extends FragmentMasterDetailNoSQL {
 
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
 
     @Override
     protected TipoViewHolder setViewHolder(View view) {

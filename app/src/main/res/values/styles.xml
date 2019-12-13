@@ -108,7 +108,7 @@
     <style name="AlertDialogCodev">
         <item name="android:fullDark">@color/colorPrimary</item>
         <item name="android:topDark">@color/colorPrimary</item>
-        <item name="android:centerDark">@color/colorPrimary</item>
+        <item name="android:centerDark">@color/colorSecondaryDark</item>
         <item name="android:bottomDark">@color/colorSecondaryDark</item>
         <item name="android:fullBright">@color/colorPrimary</item>
         <item name="android:topBright">@color/colorPrimary</item>

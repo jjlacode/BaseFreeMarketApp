@@ -21,6 +21,7 @@ import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.android.controls.ViewImagenLayout;
@@ -36,6 +37,7 @@ import com.codevsolution.freemarketsapp.logica.Interactor;
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
+import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
 
 public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.ConstantesPry,
@@ -74,6 +76,11 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     }
 
     @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
+
+    @Override
     protected TipoViewHolder setViewHolder(View view) {
 
         return new ViewHolderRV(view);
@@ -107,7 +114,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
         gone(clienteWeb);
         tipoCliente = vistaForm.addEditMaterialLayout(getString(R.string.tipo_cliente));
         tipoCliente.setActivo(false);
-        tipoCliente.btnAccion2Enable(true);
+        tipoCliente.btnAccion3Enable(true);
 
         nombreCliente = vistaForm.addEditMaterialLayout(getString(R.string.nombre), CLIENTE_NOMBRE, null, null);
         nombreCliente.setObligatorio(true);
@@ -150,7 +157,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             public void onClick(View view) {
                 bundle = new Bundle();
                 bundle.putString(SUBTITULO, modeloSQL.getString(CLIENTE_NOMBRE));
-                bundle.putSerializable(LISTA, new ListaModeloSQL(CAMPOS_EVENTO, EVENTO_CLIENTEREL, id, null, IGUAL, null));
+                bundle.putSerializable(LISTA, new ListaModeloSQL(CAMPOS_EVENTO, EVENTO_CLIENTEREL, id));
                 icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
             }
         });
@@ -260,13 +267,13 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
 
             activityBase.toolbar.setSubtitle(R.string.prospectos);
 
-            lista = CRUDutil.setListaModelo(campos, CLIENTE_DESCRIPCIONTIPOCLI, PROSPECTO, IGUAL);
+            lista = cruDutil.setListaModelo(CLIENTE_DESCRIPCIONTIPOCLI, PROSPECTO);
 
         } else if (actual.equals(CLIENTE)) {
 
             activityBase.toolbar.setSubtitle(R.string.clientes);
 
-            lista = CRUDutil.setListaModelo(campos, CLIENTE_DESCRIPCIONTIPOCLI, PROSPECTO, DIFERENTE);
+            lista = cruDutil.setListaModelo(CLIENTE_DESCRIPCIONTIPOCLI, PROSPECTO, DIFERENTE);
 
         }
 
@@ -301,7 +308,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             visible(btnback);
         }
 
-        objTiposCli = queryList(CAMPOS_TIPOCLIENTE, null, null);
+        objTiposCli = CRUDutil.setListaModelo(CAMPOS_TIPOCLIENTE).getLista();//queryList(CAMPOS_TIPOCLIENTE);
 
         btnevento.setVisibility(View.GONE);
 
@@ -313,6 +320,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
 
                 for (int i = 0; i < objTiposCli.size(); i++) {
 
+                    System.out.println("objTiposCli.get(i).getString(TIPOCLIENTE_DESCRIPCION) = " + objTiposCli.get(i).getString(TIPOCLIENTE_DESCRIPCION));
                     if (objTiposCli.get(i).getString(TIPOCLIENTE_DESCRIPCION).equals(PROSPECTO)) {
 
                         idTipoCliente = objTiposCli.get(i).getString(TIPOCLIENTE_ID_TIPOCLIENTE);
@@ -335,14 +343,14 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ListaModeloSQL listaEventos = CRUDutil.setListaModelo(CAMPOS_EVENTO, EVENTO_CLIENTEREL, id, IGUAL);
+        ListaModeloSQL listaEventos = CRUDutil.setListaModelo(CAMPOS_EVENTO, EVENTO_CLIENTEREL, id);
         if (listaEventos.sizeLista() > 0) {
             btnVerEventos.setVisibility(View.VISIBLE);
         } else {
             btnVerEventos.setVisibility(View.GONE);
         }
 
-        ListaModeloSQL listaNotas = CRUDutil.setListaModelo(CAMPOS_NOTA, NOTA_ID_RELACIONADO, id, IGUAL);
+        ListaModeloSQL listaNotas = CRUDutil.setListaModelo(CAMPOS_NOTA, NOTA_ID_RELACIONADO, id);
 
         if (listaNotas.sizeLista() > 0) {
             btnVerNotas.setVisibility(View.VISIBLE);
@@ -351,15 +359,15 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
         }
 
         if (peso > 6) {
-            tipoCliente.setImgBtnAccion2(R.drawable.clientev);
+            tipoCliente.setImgBtnAccion3(R.drawable.clientev);
         } else if (peso > 3) {
-            tipoCliente.setImgBtnAccion2(R.drawable.clientea);
+            tipoCliente.setImgBtnAccion3(R.drawable.clientea);
 
         } else if (peso > 0) {
-            tipoCliente.setImgBtnAccion2(R.drawable.clienter);
+            tipoCliente.setImgBtnAccion3(R.drawable.clienter);
 
         } else {
-            tipoCliente.setImgBtnAccion2(R.drawable.cliente);
+            tipoCliente.setImgBtnAccion3(R.drawable.cliente);
 
         }
 
@@ -374,20 +382,6 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     }
 
     @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(TABLA_CLIENTE);
-
-    }
-
-    @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(TABLA_CLIENTE);
-
-    }
-
-    @Override
     protected void setBundle() {
 
         proyecto = (ModeloSQL) bundle.getSerializable(TABLA_PROYECTO);
@@ -396,8 +390,12 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
         }
         if (actual.equals(PROSPECTO)){
             tituloNuevo = R.string.nuevo_prospecto;
+            tituloSingular = R.string.prospecto;
+            tituloPlural = R.string.prospectos;
         }else {
             tituloNuevo = R.string.nuevo_cliente;
+            tituloSingular = R.string.cliente;
+            tituloPlural = R.string.clientes;
         }
         evento = (ModeloSQL) bundle.getSerializable(EVENTO);
         if (evento != null) {
@@ -408,7 +406,13 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     @Override
     protected void setDatos() {
 
-        activityBase.toolbar.setSubtitle(modeloSQL.getString(CLIENTE_NOMBRE));
+        if (nnn(nombreCliente.getTexto())){
+            nombreCliente.reproducir();
+        }
+
+        if (nnn(modeloSQL.getString(CLIENTE_NOMBRE))) {
+            activityBase.toolbar.setSubtitle(modeloSQL.getString(CLIENTE_NOMBRE));
+        }
         visible(btnevento);
         visible(btnNota);
 
@@ -451,15 +455,15 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
         }
 
         if (peso > 6) {
-            tipoCliente.setImgBtnAccion2(R.drawable.clientev);
+            tipoCliente.setImgBtnAccion3(R.drawable.clientev);
         } else if (peso > 3) {
-            tipoCliente.setImgBtnAccion2(R.drawable.clientea);
+            tipoCliente.setImgBtnAccion3(R.drawable.clientea);
 
         } else if (peso > 0) {
-            tipoCliente.setImgBtnAccion2(R.drawable.clienter);
+            tipoCliente.setImgBtnAccion3(R.drawable.clienter);
 
         } else {
-            tipoCliente.setImgBtnAccion2(R.drawable.cliente);
+            tipoCliente.setImgBtnAccion3(R.drawable.cliente);
 
         }
 
@@ -492,13 +496,21 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
 
     @Override
     protected void setTitulo() {
-        tituloSingular = R.string.cliente;
-        tituloPlural = R.string.clientes;
+
+        if (nnn(actual)){
+
+            if (actual.equals(PROSPECTO)){
+                tituloNuevo = R.string.nuevo_prospecto;
+                tituloSingular = R.string.prospecto;
+                tituloPlural = R.string.prospectos;
+            }else {
+                tituloNuevo = R.string.nuevo_cliente;
+                tituloSingular = R.string.cliente;
+                tituloPlural = R.string.clientes;
+            }
+        }
 
     }
-
-
-
 
     @Override
     protected void setLayout() {
@@ -511,9 +523,9 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     @Override
     protected void setContenedor() {
 
-        setDato(CLIENTE_ID_TIPOCLIENTE, idTipoCliente);
-        setDato(CLIENTE_PESOTIPOCLI, peso);
-        setDato(CLIENTE_ACTIVO, fechaInactivo);
+        putDato(valores,CLIENTE_ID_TIPOCLIENTE, idTipoCliente);
+        putDato(valores,CLIENTE_PESOTIPOCLI, peso);
+        putDato(valores,CLIENTE_ACTIVO, fechaInactivo);
 
     }
 

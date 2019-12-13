@@ -6,8 +6,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
-import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.android.FragmentBase;
+import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.freemarketsapp.R;
 
 public class FragmentWebView extends FragmentBase {
@@ -15,6 +15,11 @@ public class FragmentWebView extends FragmentBase {
     String web;
     WebView browser;
     ProgressBar progressBar;
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
 
     @Override
     protected void setLayout() {
@@ -28,6 +33,8 @@ public class FragmentWebView extends FragmentBase {
 
         if (bundle != null) {
             web = bundle.getString(WEB);
+            System.out.println("Web = " + web);
+
 
             if (web != null && JavaUtil.isValidURL(web)) {
 

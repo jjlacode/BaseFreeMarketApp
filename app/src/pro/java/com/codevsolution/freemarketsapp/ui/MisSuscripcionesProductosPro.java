@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.models.Productos;
 import com.codevsolution.base.nosql.FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb;
@@ -25,6 +26,11 @@ public class MisSuscripcionesProductosPro extends ListadoProductosMisSuscripcion
     @Override
     protected String setTipo() {
         return PRODUCTOPRO;
+    }
+
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
     }
 
 }

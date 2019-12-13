@@ -14,6 +14,7 @@ import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.crud.CRUDutil;
@@ -42,6 +43,11 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
     }
 
     @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
+
+    @Override
     protected TipoViewHolder setViewHolder(View view) {
         return new ViewHolderRV(view);
     }
@@ -55,19 +61,6 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
     protected void setTabla() {
 
         tabla = TABLA_TRABAJO;
-
-    }
-
-    @Override
-    protected void setTablaCab() {
-
-        tablaCab = ContratoPry.getTabCab(tabla);
-    }
-
-    @Override
-    protected void setCampos() {
-
-        campos = ContratoPry.obtenerCampos(tabla);
 
     }
 
@@ -123,10 +116,10 @@ public class FragmentCRUDTrabajo extends FragmentCRUD implements Interactor.Cons
     private int crearTrabajoBase(String idPartidabase) {
 
         ContentValues valores = new ContentValues();
-        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_DETPARTIDABASE, modeloSQL.getString(TRABAJO_ID_TRABAJO));
-        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_TIPO, TIPOTRABAJO);
-        putDato(valores, CAMPOS_DETPARTIDABASE, DETPARTIDABASE_ID_PARTIDABASE, idPartidabase);
-        return CRUDutil.crearRegistroSec(CAMPOS_DETPARTIDABASE, idPartidabase, TABLA_PARTIDABASE, valores);
+        putDato(valores, DETPARTIDABASE_ID_DETPARTIDABASE, modeloSQL.getString(TRABAJO_ID_TRABAJO));
+        putDato(valores, DETPARTIDABASE_TIPO, TIPOTRABAJO);
+        putDato(valores, DETPARTIDABASE_ID_PARTIDABASE, idPartidabase);
+        return CRUDutil.crearRegistroSec(CAMPOS_DETPARTIDABASE, idPartidabase, valores);
     }
 
     @Override
