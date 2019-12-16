@@ -7,7 +7,6 @@ import android.net.Uri;
 
 import com.codevsolution.base.encrypt.EncryptUtil;
 import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.time.TimeDateUtil;
@@ -1084,129 +1083,79 @@ public class ConsultaBD implements JavaUtil.Constantes {
 
     public static void putDato(ContentValues valores, String campo, String valor) {
 
-        if (InteractorBase.encrypt) {
             putDatoEncodeStr(valores, campo, valor);
-        } else {
-            valores.put(campo, String.valueOf(valor));
-        }
 
     }
 
     public static void putDato(ContentValues valores, String campo, int valor) {
 
-        if (InteractorBase.encrypt) {
             putDatoEncodeStr(valores, campo, String.valueOf(valor));
-        } else {
-            valores.put(campo, String.valueOf(valor));
-        }
 
     }
 
     public static void putDato(ContentValues valores, String campo, long valor) {
 
-        if (InteractorBase.encrypt) {
             putDatoEncodeStr(valores, campo, String.valueOf(valor));
-        } else {
-            valores.put(campo, String.valueOf(valor));
-        }
     }
 
     public static void putDato(ContentValues valores, String campo, double valor) {
 
-        if (InteractorBase.encrypt) {
             putDatoEncodeStr(valores, campo, String.valueOf(valor));
-        } else {
-            valores.put(campo, String.valueOf(valor));
-        }
     }
 
     public static void putDato(ContentValues valores, String campo, float valor) {
 
-        if (InteractorBase.encrypt) {
             putDatoEncodeStr(valores, campo, String.valueOf(valor));
-        } else {
-            valores.put(campo, String.valueOf(valor));
-        }
     }
 
     public static void putDato(ContentValues valores, String campo, short valor) {
 
-        if (InteractorBase.encrypt) {
             putDatoEncodeStr(valores, campo, String.valueOf(valor));
-        } else {
-            valores.put(campo, String.valueOf(valor));
-        }
     }
 
     public static void putDato(ContentValues valores, String campo, String valor, boolean code) {
 
-        if (InteractorBase.encrypt && code) {
             putDatoEncodeStr(valores, campo, valor);
-        } else {
-            valores.put(campo, String.valueOf(valor));
-        }
-
     }
 
     public static void putDato(ContentValues valores, String campo, int valor, boolean code) {
 
-        if (InteractorBase.encrypt && code) {
             putDatoEncodeStr(valores, campo, String.valueOf(valor));
-        } else {
-            valores.put(campo, String.valueOf(valor));
-        }
-
     }
 
     public static void putDato(ContentValues valores, String campo, long valor, boolean code) {
 
-        if (InteractorBase.encrypt && code) {
             putDatoEncodeStr(valores, campo, String.valueOf(valor));
-        } else {
-            valores.put(campo, String.valueOf(valor));
-        }
     }
 
     public static void putDato(ContentValues valores, String campo, double valor, boolean code) {
 
-        if (InteractorBase.encrypt && code) {
             putDatoEncodeStr(valores, campo, String.valueOf(valor));
-        } else {
-            valores.put(campo, String.valueOf(valor));
-        }
     }
 
     public static void putDato(ContentValues valores, String campo, float valor, boolean code) {
 
-        if (InteractorBase.encrypt && code) {
             putDatoEncodeStr(valores, campo, String.valueOf(valor));
-        } else {
-            valores.put(campo, String.valueOf(valor));
-        }
     }
 
     public static void putDato(ContentValues valores, String campo, short valor, boolean code) {
 
-        if (InteractorBase.encrypt && code) {
             putDatoEncodeStr(valores, campo, String.valueOf(valor));
-        } else {
-            valores.put(campo, String.valueOf(valor));
-        }
     }
 
     public static int updateRegistro(String tabla, String id, ContentValues valores) {
 
         putDato(valores, CAMPO_TIMESTAMP, TimeDateUtil.ahora());
-        if (!EncryptUtil.comprobarIsCode(id)) {
-            id = EncryptUtil.codificaStr(id);
-        }
 
-        return resolver.update(crearUriTabla(id, tabla)
+        Uri uri = crearUriTabla(EncryptUtil.codificaStr(id), tabla);
+        System.out.println("uri = " + uri);
+
+        return resolver.update(uri
                 , valores, null, null);
 
     }
 
-    public int updateRegistro(Uri uri, ContentValues valores) {
+    public static int updateRegistro(Uri uri, ContentValues valores) {
 
         putDato(valores, CAMPO_TIMESTAMP, TimeDateUtil.ahora());
 
@@ -1218,7 +1167,11 @@ public class ConsultaBD implements JavaUtil.Constantes {
 
         putDato(valores, CAMPO_TIMESTAMP, TimeDateUtil.ahora());
 
-        return resolver.update(crearUriTablaDetalle(id, secuencia, tabla)
+        Uri uri = crearUriTablaDetalle(EncryptUtil.codificaStr(id), EncryptUtil.codificaStr(secuencia), tabla);
+
+        System.out.println("uri = " + uri);
+
+        return resolver.update(uri
                 , valores, null, null);
 
     }
@@ -1227,7 +1180,11 @@ public class ConsultaBD implements JavaUtil.Constantes {
 
         putDato(valores, CAMPO_TIMESTAMP, TimeDateUtil.ahora());
 
-        return resolver.update(crearUriTablaDetalle(id, secuencia, tabla)
+        Uri uri = crearUriTablaDetalle(EncryptUtil.codificaStr(id), EncryptUtil.codificaStr(String.valueOf(secuencia)), tabla);
+
+        System.out.println("uri = " + uri);
+
+        return resolver.update(uri
                 , valores, null, null);
 
     }

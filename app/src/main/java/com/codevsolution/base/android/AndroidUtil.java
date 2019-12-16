@@ -38,6 +38,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
 
 public class AndroidUtil extends AppCompatActivity {
 
@@ -658,27 +659,47 @@ public class AndroidUtil extends AppCompatActivity {
         return stateList;
     }
 
+    public static SharedPreferences openSharePreference(Context contexto, String sharePreference) {
+
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        if (!sharePreference.equals(USERID)) {
+            sharePreference += idUser;
+        }
+        return contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+    }
+
     public static void setSharePreference(Context contexto, String sharePreference, String key, String valor) {
 
-        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
-        SharedPreferences.Editor editor = persistencia.edit();
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        if (!sharePreference.equals(USERID)) {
+            sharePreference += idUser;
+        }
+        SharedPreferences sP = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sP.edit();
         editor.putString(key, valor);
         editor.apply();
 
     }
 
-    public static float getSharePreference(Context contexto, String sharePreference, String key, float defecto) {
+    public static void setSharePreferenceMaster(Context contexto, String sharePreference, String key, String valor) {
 
-        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
-
-        return persistencia.getFloat(key, defecto);
+        SharedPreferences sP = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sP.edit();
+        editor.putString(key, valor);
+        editor.apply();
 
     }
 
+
+
     public static void setSharePreference(Context contexto, String sharePreference, String key, int valor) {
 
-        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
-        SharedPreferences.Editor editor = persistencia.edit();
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        if (!sharePreference.equals(USERID)) {
+            sharePreference += idUser;
+        }
+        SharedPreferences sP = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sP.edit();
         editor.putInt(key, valor);
         editor.apply();
 
@@ -686,8 +707,12 @@ public class AndroidUtil extends AppCompatActivity {
 
     public static void setSharePreference(Context contexto, String sharePreference, String key, long valor) {
 
-        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
-        SharedPreferences.Editor editor = persistencia.edit();
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        if (!sharePreference.equals(USERID)) {
+            sharePreference += idUser;
+        }
+        SharedPreferences sP = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sP.edit();
         editor.putLong(key, valor);
         editor.apply();
 
@@ -695,8 +720,12 @@ public class AndroidUtil extends AppCompatActivity {
 
     public static void setSharePreference(Context contexto, String sharePreference, String key, boolean valor) {
 
-        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
-        SharedPreferences.Editor editor = persistencia.edit();
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        if (!sharePreference.equals(USERID)) {
+            sharePreference += idUser;
+        }
+        SharedPreferences sP = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sP.edit();
         editor.putBoolean(key, valor);
         editor.apply();
 
@@ -704,8 +733,12 @@ public class AndroidUtil extends AppCompatActivity {
 
     public static void setSharePreference(Context contexto, String sharePreference, String key, float valor) {
 
-        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
-        SharedPreferences.Editor editor = persistencia.edit();
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        if (!sharePreference.equals(USERID)) {
+            sharePreference += idUser;
+        }
+        SharedPreferences sP = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sP.edit();
         editor.putFloat(key, valor);
         editor.apply();
 
@@ -714,8 +747,25 @@ public class AndroidUtil extends AppCompatActivity {
     public static String getSharePreference(Context contexto, String sharePreference, String key, String defecto) {
 
         try {
-            SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
-            return persistencia.getString(key, defecto);
+            String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+            if (!sharePreference.equals(USERID)) {
+                sharePreference += idUser;
+            }
+            SharedPreferences sP = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+            return sP.getString(key, defecto);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    public static String getSharePreferenceMaster(Context contexto, String sharePreference, String key, String defecto) {
+
+        try {
+            SharedPreferences sP = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+            return sP.getString(key, defecto);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -726,25 +776,49 @@ public class AndroidUtil extends AppCompatActivity {
 
     public static int getSharePreference(Context contexto, String sharePreference, String key, int defecto) {
 
-        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        if (!sharePreference.equals(USERID)) {
+            sharePreference += idUser;
+        }
+        SharedPreferences sP = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
 
-        return persistencia.getInt(key, defecto);
+        return sP.getInt(key, defecto);
 
     }
 
     public static long getSharePreference(Context contexto, String sharePreference, String key, long defecto) {
 
-        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        if (!sharePreference.equals(USERID)) {
+            sharePreference += idUser;
+        }
+        SharedPreferences sP = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
 
-        return persistencia.getLong(key, defecto);
+        return sP.getLong(key, defecto);
 
     }
 
     public static boolean getSharePreference(Context contexto, String sharePreference, String key, boolean defecto) {
 
-        SharedPreferences persistencia = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        if (!sharePreference.equals(USERID)) {
+            sharePreference += idUser;
+        }
+        SharedPreferences sP = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
 
-        return persistencia.getBoolean(key, defecto);
+        return sP.getBoolean(key, defecto);
+
+    }
+
+    public static float getSharePreference(Context contexto, String sharePreference, String key, float defecto) {
+
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        if (!sharePreference.equals(USERID)) {
+            sharePreference += idUser;
+        }
+        SharedPreferences sP = contexto.getSharedPreferences(sharePreference, MODE_PRIVATE);
+
+        return sP.getFloat(key, defecto);
 
     }
 }

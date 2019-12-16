@@ -6,10 +6,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +28,10 @@ import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.freemarketsapp.R;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
 
 public class Dialogos {
 
@@ -141,17 +147,13 @@ public class Dialogos {
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-            //LayoutInflater inflater = getActivity().getLayoutInflater();
-            //View v = inflater.inflate(Estilos.getIdLayout(context, "dialog_fragment"), null);
-
-            //LinearLayoutCompat main = v.findViewById(R.id.container_dialog);
-            //View v = new CanvasBase(context);
             LinearLayoutCompat v = new LinearLayoutCompat(context);
             v.setOrientation(LinearLayoutCompat.VERTICAL);
             Estilos.setLayoutParams((ViewGroup) v.getParent(), v, ViewGroup.LayoutParams.MATCH_PARENT,
-                    500);
+                    1000);
             EditMaterialLayout edit = new EditMaterialLayout(v, context, hint);
             edit.setTipo(tipoDato);
+            edit.btnInicioEnable(false);
 
             builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
                 @Override
@@ -159,6 +161,261 @@ public class Dialogos {
 
                     if (listener != null) {
                         listener.onConfirm(edit.getTexto());
+                    }
+                }
+            });
+
+            builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dismiss();
+                    if (listener != null) {
+                        listener.onCancel();
+                    }
+                }
+            });
+
+            builder.setView(v);
+
+            builder.setTitle(titulo)
+                    .setMessage(mensaje);
+
+            return builder.show();
+        }
+
+        public interface OnClick {
+
+            void onConfirm(String text);
+
+            void onCancel();
+        }
+
+    }
+
+    public static class DialogoCambioPass extends DialogFragment {
+
+        private String titulo;
+        private String mensaje;
+        private Context context;
+        private OnClick listener;
+        private int tipoDato;
+        private Timer timer;
+        private int contAnt;
+        private int contDes;
+        private boolean passOk;
+        private String pass;
+        private EditMaterialLayout edit;
+        private EditMaterialLayout edit2;
+        private EditMaterialLayout edit3;
+
+        public DialogoCambioPass(String titulo, String mensaje, String pass, Context context, OnClick listener) {
+
+            this.titulo = titulo;
+            this.mensaje = mensaje;
+            this.context = context;
+            this.listener = listener;
+            this.pass = pass;
+        }
+
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+            return crearDialogoEdit();
+        }
+
+        private AlertDialog crearDialogoEdit() {
+
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+            LinearLayoutCompat v = new LinearLayoutCompat(context);
+            v.setOrientation(LinearLayoutCompat.VERTICAL);
+            Estilos.setLayoutParams((ViewGroup) v.getParent(), v, ViewGroup.LayoutParams.MATCH_PARENT,
+                    500);
+            tipoDato = EditMaterialLayout.TEXTO | EditMaterialLayout.PASS;
+            edit = new EditMaterialLayout(v, context, "Contraseña actual");
+            edit.setTipo(tipoDato);
+            edit.btnInicioVisible(false);
+            edit.setAlCambiarListener(new EditMaterialLayout.AlCambiarListener() {
+                @Override
+                public void antesCambio(CharSequence s, int start, int count, int after) {
+
+                    contAnt = count;
+                }
+
+                @Override
+                public void cambiando(CharSequence s, int start, int before, int count) {
+
+                    if (timer != null) {
+                        timer.cancel();
+                    }
+
+                    contDes = count;
+                }
+
+                @Override
+                public void despuesCambio(Editable s) {
+
+                    System.out.println("s.toString() = " + s.toString());
+                    if (!s.toString().equals("") && contAnt != contDes) {
+                        timer = new Timer();
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        String valor = s.toString();
+
+                                        if (pass == null || valor.equals(pass) || pass.equals(NULL)) {
+                                            edit2.setActivo(true);
+
+                                        } else {
+                                            edit.setErrorEnable(true, "Contraseña no valida");
+                                            edit2.setActivo(false);
+                                            passOk = false;
+                                        }
+
+                                    }
+                                });
+
+
+                            }
+                        }, 1000);
+                    }
+                }
+            });
+
+            edit2 = new EditMaterialLayout(v, context, "Nueva contraseña");
+            edit2.setTipo(tipoDato);
+            edit2.setActivo(false);
+            edit2.setAyudaEnable(true);
+            edit2.setMsgAyuda("Debe tener almenos 6 caracteres");
+            edit2.setAlCambiarListener(new EditMaterialLayout.AlCambiarListener() {
+                @Override
+                public void antesCambio(CharSequence s, int start, int count, int after) {
+
+                    contAnt = count;
+                }
+
+                @Override
+                public void cambiando(CharSequence s, int start, int before, int count) {
+
+                    if (timer != null) {
+                        timer.cancel();
+                    }
+
+                    contDes = count;
+                }
+
+                @Override
+                public void despuesCambio(Editable s) {
+
+                    System.out.println("s.toString() = " + s.toString());
+                    if (!s.toString().equals("") && contAnt != contDes) {
+                        timer = new Timer();
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        String valor = s.toString();
+
+                                        if (valor.length() > 5) {
+                                            edit3.setActivo(true);
+                                            edit2.setErrorEnable(false, null);
+                                            edit2.setAyudaEnable(false);
+
+                                        } else {
+                                            edit2.setErrorEnable(true, "Contraseña no valida");
+                                            edit3.setActivo(false);
+                                            passOk = false;
+                                        }
+
+                                    }
+                                });
+
+
+                            }
+                        }, 1000);
+                    }
+                }
+            });
+
+            edit3 = new EditMaterialLayout(v, context, "Repita nueva contraseña");
+            edit3.setTipo(tipoDato);
+            edit3.setActivo(false);
+
+            edit3.setAlCambiarListener(new EditMaterialLayout.AlCambiarListener() {
+                @Override
+                public void antesCambio(CharSequence s, int start, int count, int after) {
+
+                    contAnt = count;
+                }
+
+                @Override
+                public void cambiando(CharSequence s, int start, int before, int count) {
+
+                    if (timer != null) {
+                        timer.cancel();
+                    }
+
+                    contDes = count;
+                }
+
+                @Override
+                public void despuesCambio(Editable s) {
+
+                    System.out.println("s.toString() = " + s.toString());
+                    if (!s.toString().equals("") && contAnt != contDes) {
+                        timer = new Timer();
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        String valor = s.toString();
+
+                                        if (valor.equals(edit2.getTexto())) {
+                                            edit3.setErrorEnable(false, null);
+                                            if (edit.getTexto().equals(pass) || pass == null || pass.equals(NULL)) {
+                                                passOk = true;
+                                            }
+                                        } else {
+                                            edit3.setErrorEnable(true, "Las contraseñas no coinciden");
+                                            passOk = false;
+                                        }
+                                    }
+                                });
+
+                            }
+                        }, 1000);
+                    }
+                }
+            });
+
+            if (pass == null || pass.equals(NULL)) {
+                edit2.setActivo(true);
+                edit.getViewGroup().setVisibility(View.GONE);
+
+            }
+
+            builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+
+                    if (listener != null && passOk) {
+                        listener.onConfirm(edit3.getTexto());
+                    } else {
+                        Toast.makeText(context, "No se ha podido hacer el cambio de contraseña", Toast.LENGTH_SHORT).show();
                     }
                 }
             });

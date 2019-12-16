@@ -8,6 +8,7 @@ import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.file.FileUtils;
 import com.codevsolution.freemarketsapp.R;
@@ -24,10 +25,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static com.codevsolution.base.android.AppActivity.getAppContext;
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
 
 public class SQLiteUtil {
 
     public static boolean exportDatabase(String databaseName, String backup) {
+
+        String idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
+
         try {
             File sd = Environment.getExternalStorageDirectory();
             File data = Environment.getDataDirectory();
@@ -35,7 +41,7 @@ public class SQLiteUtil {
 
             if (sd.canWrite()) {
                 System.out.println("nombre paquete" + AppActivity.getPackage());
-                String currentDBPath = "//data//" + AppActivity.getPackage() + "//databases//" + databaseName + ".db ";
+                String currentDBPath = "//data//" + AppActivity.getPackage() + "//databases//" + idUser + "//" + databaseName + idUser + ".db ";
                 String backupDBPath = timeStamp + "_backup_" + databaseName + ".db";
                 if (backup != null) {
                     backupDBPath = backup;
@@ -65,7 +71,10 @@ public class SQLiteUtil {
     }
 
     public static void copiarBaseDatosAssets(String archivo, String prefijo) {
-        String ruta = "/data/data/" + AppActivity.getPackage() + "/databases/";
+
+        String idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
+
+        String ruta = "/data/data/" + AppActivity.getPackage() + "/databases/" + idUser + "/";
         File archivoDB = new File(ruta + prefijo + archivo);
         if (!archivoDB.exists()) {
             try {
@@ -106,18 +115,19 @@ public class SQLiteUtil {
 
     public static boolean BD_backup(String basedatos, boolean instant) {
 
+        String idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
         try {
             boolean ready = false;
             if (basedatos == null) {
                 basedatos = AppActivity.getAppContext().getString(R.string.app_name);
             }
             String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
-            final String inFileName = "/data/data/" + AppActivity.getPackage() + "/databases/"
-                    + basedatos + ".db";
+            final String inFileName = "/data/data/" + AppActivity.getPackage() + "/databases/" + idUser + "/"
+                    + basedatos + idUser + ".db";
             File dbFile = new File(inFileName);
             FileInputStream fis = new FileInputStream(dbFile);
 
-            String outFileName = "/" + AppActivity.getAppContext().getString(R.string.app_name) + "/backupDB";
+            String outFileName = "/" + AppActivity.getAppContext().getString(R.string.app_name) + idUser + "/backupDB/" + idUser;
 
             File extFile = FileUtils.crearDirectorioPublico(outFileName, FileUtils.DOWNLOADS);
 
@@ -136,9 +146,9 @@ public class SQLiteUtil {
 
                 outFileName = extFile.getAbsolutePath();
                 if (instant) {
-                    outFileName += "/dbInstant.db";
+                    outFileName += "/dbInstant" + idUser + ".db";
                 } else {
-                    outFileName += "/" + timeStamp + AppActivity.getAppContext().getString(R.string.app_name) + ".db";
+                    outFileName += "/" + timeStamp + AppActivity.getAppContext().getString(R.string.app_name) + idUser + ".db";
                 }
                 // Open the empty db as the output stream
                 OutputStream output = new FileOutputStream(outFileName);

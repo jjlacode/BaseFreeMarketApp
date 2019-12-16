@@ -63,7 +63,7 @@ public class MainActivityBase extends AppCompatActivity
     public ImageView imagenPerfil;
     public DrawerLayout drawer;
     protected String pathAyuda;
-    protected String idUser;
+    protected String idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
 
 
     @Override
@@ -117,7 +117,6 @@ public class MainActivityBase extends AppCompatActivity
         NavigationView navigationView = findViewById(Estilos.getIdResource(this, "nav_view"));
         imagenPerfil = navigationView.getHeaderView(0).findViewById(Estilos.getIdResource(this, "imgnav"));
 
-        String idUser = AndroidUtil.getSharePreference(this, USERID, USERID, NULL);
         if (idUser != null && !idUser.equals(NULL) && !idUser.isEmpty()) {
             ImagenUtil.setImageFireStoreCircle(SLASH + idUser + SLASH + idUser + CAMPO_ACTIVO, imagenPerfil);
             setPathImagenPerfil();
@@ -150,14 +149,44 @@ public class MainActivityBase extends AppCompatActivity
 
     protected void acciones() {
 
-        idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
+        try {
+            InteractorBase.key = EncryptUtil.desencriptarStrAES(AndroidUtil.getSharePreference(context, PREFERENCIAS, PASSOK, NULL), idUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("InteractorBase.key = " + InteractorBase.key);
 
-        InteractorBase.key = AndroidUtil.getSharePreference(context, PREFERENCIAS + idUser, PASSOK, NULL);
+        if (InteractorBase.key == null || InteractorBase.key.equals(NULL)) {
 
-        if (InteractorBase.key.equals(NULL)) {
-            if (AndroidUtil.getSharePreference(context, PREFERENCIAS + idUser, Preferencias.CIFRADO, false)) {
-                InteractorBase.key = AndroidUtil.getSharePreference(context, USERID, USERID, NULL);
-                if (AndroidUtil.getSharePreference(context, PREFERENCIAS + idUser, Preferencias.CIFRADOPASS, false)) {
+            if (AndroidUtil.getSharePreference(context, PREFERENCIAS, Preferencias.CIFRADOPASS, false)) {
+                String pass = AndroidUtil.getSharePreference(context, PREFERENCIAS, ENCODEPASS, NULL);
+                if (pass == null || pass.equals(NULL)) {
+                    String titulo = "CIFRADO";
+                    String mensaje = "Introduzca nueva contraseña de cifrado";
+                    new Dialogos.DialogoCambioPass(titulo, mensaje, pass, context,
+                            new Dialogos.DialogoCambioPass.OnClick() {
+                                @Override
+                                public void onConfirm(String text) {
+
+                                    InteractorBase.key = text;
+                                    EncryptUtil.codificaPass();
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            onOkPass();
+                                        }
+                                    }).start();
+                                }
+
+                                @Override
+                                public void onCancel() {
+
+                                    Toast.makeText(context, "Operación cancelada", Toast.LENGTH_SHORT).show();
+                                }
+                            }).show(getSupportFragmentManager(), "dialogEdit");
+
+                } else {
+
                     String titulo = "CIFRADO";
                     String mensaje = "Introduzca contraseña de cifrado";
                     new Dialogos.DialogoEdit(titulo, mensaje, EditMaterialLayout.TEXTO | EditMaterialLayout.PASS, "Contraseña",
@@ -166,16 +195,20 @@ public class MainActivityBase extends AppCompatActivity
                         public void onConfirm(String text) {
 
                             InteractorBase.key = text;
-                            String pass = AndroidUtil.getSharePreference(context, PREFERENCIAS + idUser, ENCODEPASS, NULL);
-                            if (text != null && text != "" && pass == NULL) {
-                                EncryptUtil.codificaPass();
-                            }
+
+
                             if (text != null && text != "" && EncryptUtil.verificarPass(text)) {
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() {
 
-                                        AndroidUtil.setSharePreference(context, PREFERENCIAS + idUser, PASSOK, text);
+                                        String pass = NULL;
+                                        try {
+                                            pass = EncryptUtil.encriptarStrAES(text, idUser);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                        AndroidUtil.setSharePreference(context, PREFERENCIAS, PASSOK, pass);
                                         onOkPass();
                                     }
                                 }).start();
@@ -245,6 +278,15 @@ public class MainActivityBase extends AppCompatActivity
     }
 
     protected void checkPermisos() {
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (AndroidUtil.getSharePreference(context, PREFERENCIAS, Preferencias.CIFRADOPASSPLUS, false)) {
+            AndroidUtil.setSharePreference(context, PREFERENCIAS, PASSOK, NULL);
+        }
     }
 
     @Override

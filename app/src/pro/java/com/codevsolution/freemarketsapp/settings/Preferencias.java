@@ -4,13 +4,15 @@ import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
@@ -21,7 +23,6 @@ import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.style.Dialogos;
 import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.Locale;
 import java.util.Timer;
@@ -38,21 +39,34 @@ public class Preferencias extends FragmentBase {
     private int contAnt;
 
     private Switch letraProp;
-    private Switch cifrado;
-    private Switch cifradoPass;
-    private TextView txtCifrado;
     private TextView ajustes;
     private EditMaterialLayout tiempoAuto;
     private Switch autoGuardadoSw;
     public static final String LETRAPROP = "letraprop";
     public static final String CIFRADO = "cifrado";
     public static final String CIFRADOPASS = "cifradoPass";
+    public static final String CIFRADOPASSPLUS = "cifradoPassPlus";
+    public static final String CIFRADOGEN = "cifradoGen";
     public static final String AUTOGUARDADO = "autoguardado";
     public static final String TIEMPOAUTOGUARDADO = "tiempoautoguardado";
+    private TextView tituloEncrypt;
+    private RadioGroup gEncrypt;
+    private RadioButton noEncrypt;
+    private RadioButton userEncrypt;
+    private RadioButton passEncrypt;
+    private RadioButton passPlusEncrypt;
+    private final int idNoEncrypt = View.generateViewId();
+    private int idUserEncrypt;
+    private int idPassEncrypt;
+    private int idPassPlusEncrypt;
+    private Button btnPass;
+    private static boolean iniciado;
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
         super.setOnCreateView(view, inflater, container);
+
+        iniciado = false;
 
         visible(frdetalle);
         vistaMain = new ViewGroupLayout(contexto, frdetalle);
@@ -60,76 +74,58 @@ public class Preferencias extends FragmentBase {
         letraProp = vistaMain.addSwitch(R.string.letra_proporcional,false);
         letraProp.setChecked(getPref(LETRAPROP,false));
         setOnCheck(letraProp,LETRAPROP);
-        cifrado = vistaMain.addSwitch(R.string.cifrar_datos,false);
-        cifrado.setChecked(getPref(CIFRADO,false));
-        setOnCheck(cifrado,CIFRADO);
-        cifradoPass = vistaMain.addSwitch(R.string.cifrar_datos_pass,false);
-        cifradoPass.setChecked(getPref(CIFRADOPASS,false));
-        cifradoPass.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        tituloEncrypt = vistaMain.addTextView(R.string.titulo_encriptado);
+        gEncrypt = (RadioGroup) vistaMain.addVista(new RadioGroup(contexto));
+        noEncrypt = new RadioButton(contexto);
+        noEncrypt.setId(idNoEncrypt);
+        noEncrypt.setText(R.string.no_encrypt);
+        userEncrypt = new RadioButton(contexto);
+        idUserEncrypt = View.generateViewId();
+        userEncrypt.setId(idUserEncrypt);
+        userEncrypt.setText(R.string.nivel_encrypt_1);
+        passEncrypt = new RadioButton(contexto);
+        idPassEncrypt = View.generateViewId();
+        passEncrypt.setId(idPassEncrypt);
+        passEncrypt.setText(R.string.nivel_encrypt_2);
+        passPlusEncrypt = new RadioButton(contexto);
+        idPassPlusEncrypt = View.generateViewId();
+        passPlusEncrypt.setId(idPassPlusEncrypt);
+        passPlusEncrypt.setText(R.string.nivel_encrypt_3);
+        onCheckEncrypt();
+        setEncrypt();
+
+        gEncrypt.addView(noEncrypt);
+        gEncrypt.addView(userEncrypt);
+        gEncrypt.addView(passEncrypt);
+        gEncrypt.addView(passPlusEncrypt);
+
+        btnPass = vistaMain.addButtonSecondary(R.string.btnpass);
+        gone(btnPass);
+        btnPass.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onClick(View v) {
 
-                setPref(CIFRADOPASS, isChecked);
-
-                if (isChecked){
-                    String titulo = "CIFRADO";
-                    String mensaje = "Introduzca contraseña de cifrado";
-                    new Dialogos.DialogoEdit(titulo, mensaje, EditMaterialLayout.PASS,"Contraseña",
-                            contexto, new Dialogos.DialogoEdit.OnClick() {
-                        @Override
-                        public void onConfirm(String text) {
-
-                            InteractorBase.key = text;
-                            String pass = AndroidUtil.getSharePreference(contexto,PREFERENCIAS+idUser,ENCODEPASS,NULL);
-                            if (text!=null && text!="" && pass==NULL) {
-                                EncryptUtil.codificaPass();
-                            }
-                            if (text!=null && text!="" && EncryptUtil.verificarPass(text)){
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        onOkPass();
-                                    }
-                                }).start();
-                            }else{
-                                Toast.makeText(contexto, "La contraseña de cifrado no es valida", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-
-                        @Override
-                        public void onCancel() {
-
-                            Toast.makeText(contexto, "Tendrá que introducir la contraseña en las preferencias para poder cifrar y descifrar los datos", Toast.LENGTH_SHORT).show();
-                        }
-                    }).show(getFragmentManager(),"dialogEdit");
-                }else{
-                    InteractorBase.key = null;
-                }
+                dialogoPass();
             }
         });
-        txtCifrado = vistaMain.addTextView(R.string.txt_cifrado);
         autoGuardadoSw = vistaMain.addSwitch(R.string.autoguardado,false);
         autoGuardadoSw.setChecked(getPref(AUTOGUARDADO, true));
         setOnCheck(autoGuardadoSw,AUTOGUARDADO);
         tiempoAuto = vistaMain.addEditMaterialLayout(R.string.tiempo_autoguardado);
         tiempoAuto.setText(String.valueOf(getPref(TIEMPOAUTOGUARDADO,1)));
+        tiempoAuto.btnInicioVisible(false);
         setAlCambiarEditPref(tiempoAuto, TIEMPOAUTOGUARDADO,INT);
 
         ajustes = vistaMain.addTextView(R.string.ajustes);
         gone(ajustes);
 
         actualizarArrays(vistaMain);
+        iniciado = true;
     }
 
     @Override
     protected FragmentBase setFragment() {
         return this;
-    }
-
-    protected void onOkPass() {
-
-        EncryptUtil.cifrarBase(ContratoPry.obtenerListaCampos());
-        EncryptUtil.cifrarBase(ContratoSystem.obtenerListaCampos());
     }
 
     @Override
@@ -243,6 +239,163 @@ public class Preferencias extends FragmentBase {
                 setPref(key, isChecked);
             }
         });
+    }
+
+    private void onCheckEncrypt() {
+
+        gEncrypt.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                if (iniciado && checkedId == idNoEncrypt) {
+
+                    setPref(CIFRADO, false);
+                    setPref(CIFRADOPASS, false);
+                    setPref(CIFRADOPASSPLUS, false);
+                    setPref(PASSOK, NULL);
+                    gone(btnPass);
+                    if (InteractorBase.key != null) {
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                EncryptUtil.desCifrarBase(ContratoPry.obtenerListaCampos());
+                                EncryptUtil.desCifrarBase(ContratoSystem.obtenerListaCampos());
+                                InteractorBase.key = null;
+                            }
+                        }).start();
+
+                    }
+
+                } else if (iniciado && checkedId == idUserEncrypt) {
+
+                    setPref(CIFRADO, true);
+                    setPref(CIFRADOPASS, false);
+                    setPref(CIFRADOPASSPLUS, false);
+                    setPref(PASSOK, NULL);
+                    gone(btnPass);
+                    if (InteractorBase.key != null) {
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                EncryptUtil.desCifrarBase(ContratoPry.obtenerListaCampos());
+                                EncryptUtil.desCifrarBase(ContratoSystem.obtenerListaCampos());
+                                InteractorBase.key = idUser;
+                                EncryptUtil.cifrarBase(ContratoPry.obtenerListaCampos());
+                                EncryptUtil.cifrarBase(ContratoSystem.obtenerListaCampos());
+                            }
+                        }).start();
+
+                    }
+
+                } else if (iniciado && checkedId == idPassEncrypt) {
+
+                    setPref(CIFRADO, false);
+                    setPref(CIFRADOPASS, true);
+                    setPref(CIFRADOPASSPLUS, false);
+                    visible(btnPass);
+                    InteractorBase.key = getPref(PASSOK, NULL);
+                    if (InteractorBase.key != null && !InteractorBase.key.equals(NULL)) {
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                EncryptUtil.cifrarBase(ContratoPry.obtenerListaCampos());
+                                EncryptUtil.cifrarBase(ContratoSystem.obtenerListaCampos());
+                            }
+                        }).start();
+
+                    } else if (InteractorBase.key != null && InteractorBase.key.equals(idUser)) {
+
+                        EncryptUtil.desCifrarBase(ContratoPry.obtenerListaCampos());
+                        EncryptUtil.desCifrarBase(ContratoSystem.obtenerListaCampos());
+                        dialogoPass();
+
+                    } else {
+                        dialogoPass();
+                    }
+
+                } else if (iniciado && checkedId == idPassPlusEncrypt) {
+
+                    setPref(CIFRADO, false);
+                    setPref(CIFRADOPASS, true);
+                    setPref(CIFRADOPASSPLUS, true);
+                    visible(btnPass);
+                    InteractorBase.key = getPref(PASSOK, NULL);
+                    if (InteractorBase.key != null && !InteractorBase.key.equals(NULL)) {
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                EncryptUtil.cifrarBase(ContratoPry.obtenerListaCampos());
+                                EncryptUtil.cifrarBase(ContratoSystem.obtenerListaCampos());
+                            }
+                        }).start();
+
+                    } else if (InteractorBase.key != null && InteractorBase.key.equals(idUser)) {
+
+                        EncryptUtil.desCifrarBase(ContratoPry.obtenerListaCampos());
+                        EncryptUtil.desCifrarBase(ContratoSystem.obtenerListaCampos());
+                        dialogoPass();
+
+                    } else {
+                        dialogoPass();
+                    }
+
+                }
+
+            }
+        });
+    }
+
+    private void setEncrypt() {
+
+        if (getPref(CIFRADOPASSPLUS, false)) {
+            passPlusEncrypt.setChecked(true);
+
+        } else if (getPref(CIFRADOPASS, false)) {
+            passEncrypt.setChecked(true);
+
+        } else if (getPref(CIFRADO, false)) {
+            userEncrypt.setChecked(true);
+        } else {
+            noEncrypt.setChecked(true);
+        }
+    }
+
+    private void dialogoPass() {
+
+        String titulo = "CIFRADO";
+        String mensaje = "Introduzca nueva contraseña de cifrado";
+        String pass = null;
+        try {
+            pass = EncryptUtil.desencriptarPassAES(getPref(PASSOK, NULL), idUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        new Dialogos.DialogoCambioPass(titulo, mensaje, pass, contexto,
+                new Dialogos.DialogoCambioPass.OnClick() {
+                    @Override
+                    public void onConfirm(String text) {
+
+                        InteractorBase.key = text;
+                        EncryptUtil.codificaPass();
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                EncryptUtil.cifrarBase(ContratoPry.obtenerListaCampos());
+                                EncryptUtil.cifrarBase(ContratoSystem.obtenerListaCampos());
+                            }
+                        }).start();
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                        Toast.makeText(contexto, "Operación cancelada", Toast.LENGTH_SHORT).show();
+                    }
+                }).show(getFragmentManager(), "dialogEdit");
     }
 
 

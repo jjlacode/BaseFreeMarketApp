@@ -10,12 +10,15 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.encrypt.EncryptUtil;
 import com.codevsolution.base.time.TimeDateUtil;
 
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.PREFERENCIAS;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TIMESTAMP;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TIMESTAMPDIA;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
 import static com.codevsolution.base.sqlite.ContratoPry.AUTORIDAD_CONTENIDO;
 import static com.codevsolution.base.sqlite.ContratoPry.FILTRO_CLIENTE;
 import static com.codevsolution.base.sqlite.ContratoPry.FILTRO_FECHA;
@@ -252,7 +255,9 @@ public class ProviderPry extends ContentProvider
     @Override
     public boolean onCreate() {
 
-        bd = new DataBase(getContext());
+        String idUser = AndroidUtil.getSharePreference(getContext(), USERID, USERID, NULL);
+        String pathDb = "/data/data/" + AppActivity.getPackage(getContext()) + "/databases/";
+        bd = new DataBase(getContext(), idUser, pathDb);
         resolver = getContext().getContentResolver();
         return true;
     }
@@ -898,14 +903,11 @@ public class ProviderPry extends ContentProvider
         String idTabla = valores.getAsString("idTabla");
         String id = generarIdTabla(tabla);
 
-        System.out.println("valores = " + valores);
-
 
         if (tabla != null) {
             if (secuencia == null || Integer.parseInt(EncryptUtil.decodificaStr(secuencia)) == 0) {
                 values.put(idTabla, id);
             }
-            System.out.println("values = " + values);
             db.insertOrThrow(tabla, null, values);
             notificarCambio(uri);
             AndroidUtil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMP, TimeDateUtil.ahora());
@@ -951,28 +953,21 @@ public class ProviderPry extends ContentProvider
 
                 ids = obtenerIdTablaDetalle(uri);
                 String id = ids[0];
-                id = EncryptUtil.codificaStr(id);
 
                 String secuencia = ids[1];
-                secuencia = EncryptUtil.codificaStr(secuencia);
 
                 selection = tabla + "." + idTabla + " = '" + id + "' AND " +
                         "secuencia = '" + secuencia + "'";
-                System.out.println("secuencia = " + secuencia);
-                System.out.println("id = " + id);
-                System.out.println("selection = " + selection);
 
             } else if (esDetalle) {
 
                 String id = obtenerIdTablaDetalleId(uri);
-                id = EncryptUtil.codificaStr(id);
 
                 selection = tabla + "." + idTabla + " = '" + id + "'";
 
             } else if (esId) {
 
                 String id = obtenerIdTabla(uri);
-                id = EncryptUtil.codificaStr(id);
 
                 selection = idTabla + " = '" + id + "'";
 
@@ -1015,23 +1010,19 @@ public class ProviderPry extends ContentProvider
         if (selection == null) {
             if (!esDetalle) {
                 id = obtenerIdTabla(uri);
-                id = EncryptUtil.codificaStr(id);
 
                 seleccion = idTabla + " = '" + id + "'";
 
             } else if (esDetalle && !esId) {
 
                 id = obtenerIdTablaDetalleId(uri);
-                id = EncryptUtil.codificaStr(id);
 
                 seleccion = tabla + "." + idTabla + " = '" + id + "'";
 
             } else {
                 ids = obtenerIdTablaDetalle(uri);
                 id = ids[0];
-                id = EncryptUtil.codificaStr(id);
                 secuencia = ids[1];
-                secuencia = EncryptUtil.codificaStr(secuencia);
                 seleccion = idTabla + " = '" + id + "' AND " +
                         "secuencia = '" + secuencia + "'";
             }
@@ -1044,7 +1035,6 @@ public class ProviderPry extends ContentProvider
             notificarCambio(uri);
             AndroidUtil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMP, TimeDateUtil.ahora());
             AndroidUtil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMPDIA, TimeDateUtil.ahora());
-
             return db.update(tabla, values,
                     seleccion,
                     selectionArgs);
@@ -1076,21 +1066,18 @@ public class ProviderPry extends ContentProvider
 
             if (!esDetalle) {
                 id = obtenerIdTabla(uri);
-                id = EncryptUtil.codificaStr(id);
 
                 seleccion = idTabla + " = '" + id + "'";
 
             } else if (esDetalle && !esId) {
 
                 id = obtenerIdTablaDetalleId(uri);
-                id = EncryptUtil.codificaStr(id);
 
                 seleccion = tabla + "." + idTabla + " = '" + id + "'";
 
             } else {
                 ids = obtenerIdTablaDetalle(uri);
                 id = ids[0];
-                id = EncryptUtil.codificaStr(id);
 
                 secuencia = ids[1];
                 seleccion = idTabla + " = '" + id + "' AND " +

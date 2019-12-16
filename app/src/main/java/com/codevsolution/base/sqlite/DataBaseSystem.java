@@ -7,14 +7,14 @@ import java.util.ArrayList;
 
 public class DataBaseSystem extends DataBaseBase {
 
-    private static final String NOMBRE_BASE_DATOS = "system.db";
+    private static final String NOMBRE_BASE_DATOS = "system";
 
     private static final int VERSION_ACTUAL = 1;
 
     private final Context contexto;
 
-    public DataBaseSystem(Context contexto) {
-        super(contexto, NOMBRE_BASE_DATOS, VERSION_ACTUAL);
+    public DataBaseSystem(Context contexto, String idUser, String pathDb) {
+        super(contexto, pathDb + idUser + "/" + NOMBRE_BASE_DATOS + idUser + ".db", VERSION_ACTUAL);
         this.contexto = contexto;
     }
 

@@ -462,7 +462,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         bundle = getArguments();
         cargarBundle();
 
-        SharedPreferences persistencia = getActivity().getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
+        SharedPreferences persistencia = AndroidUtil.openSharePreference(contexto, PERSISTENCIA);
         TAG = setTAG();
         System.out.println("TAG = " + TAG);
         System.out.println("persistencia.getString(TAGPERS) = " + persistencia.getString(TAGPERS, null));
@@ -673,7 +673,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         Log.d(TAG, getMetodo());
 
         int orientation = getResources().getConfiguration().orientation;
-        SharedPreferences persistencia = getActivity().getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
+        SharedPreferences persistencia = AndroidUtil.openSharePreference(contexto, PERSISTENCIA);
         SharedPreferences.Editor editor = persistencia.edit();
 
         if (!modulo) {
@@ -1278,52 +1278,52 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
     protected void setPref(String key, String valor) {
 
-        AndroidUtil.setSharePreference(contexto, PREFERENCIAS + idUser, key, valor);
+        AndroidUtil.setSharePreference(contexto, PREFERENCIAS, key, valor);
     }
 
     protected void setPref(String key, boolean valor) {
 
-        AndroidUtil.setSharePreference(contexto, PREFERENCIAS + idUser, key, valor);
+        AndroidUtil.setSharePreference(contexto, PREFERENCIAS, key, valor);
     }
 
     protected void setPref(String key, int valor) {
 
-        AndroidUtil.setSharePreference(contexto, PREFERENCIAS + idUser, key, valor);
+        AndroidUtil.setSharePreference(contexto, PREFERENCIAS, key, valor);
     }
 
     protected void setPref(String key, long valor) {
 
-        AndroidUtil.setSharePreference(contexto, PREFERENCIAS + idUser, key, valor);
+        AndroidUtil.setSharePreference(contexto, PREFERENCIAS, key, valor);
     }
 
     protected void setPref(String key, float valor) {
 
-        AndroidUtil.setSharePreference(contexto, PREFERENCIAS + idUser, key, valor);
+        AndroidUtil.setSharePreference(contexto, PREFERENCIAS, key, valor);
     }
 
     protected String getPref(String key, String defecto) {
 
-        return AndroidUtil.getSharePreference(contexto, PREFERENCIAS + idUser, key, defecto);
+        return AndroidUtil.getSharePreference(contexto, PREFERENCIAS, key, defecto);
     }
 
     protected boolean getPref(String key, boolean defecto) {
 
-        return AndroidUtil.getSharePreference(contexto, PREFERENCIAS + idUser, key, defecto);
+        return AndroidUtil.getSharePreference(contexto, PREFERENCIAS, key, defecto);
     }
 
     protected int getPref(String key, int defecto) {
 
-        return AndroidUtil.getSharePreference(contexto, PREFERENCIAS + idUser, key, defecto);
+        return AndroidUtil.getSharePreference(contexto, PREFERENCIAS, key, defecto);
     }
 
     protected long getPref(String key, long defecto) {
 
-        return AndroidUtil.getSharePreference(contexto, PREFERENCIAS + idUser, key, defecto);
+        return AndroidUtil.getSharePreference(contexto, PREFERENCIAS, key, defecto);
     }
 
     protected float getPref(String key, float defecto) {
 
-        return AndroidUtil.getSharePreference(contexto, PREFERENCIAS + idUser, key, defecto);
+        return AndroidUtil.getSharePreference(contexto, PREFERENCIAS, key, defecto);
     }
 
     public MainActivityBase getActivityBase() {

@@ -14,13 +14,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ImagenLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.freemarketsapp.MainActivity;
 import com.codevsolution.freemarketsapp.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.INICIO;
@@ -73,15 +73,8 @@ public class LoginFragment extends Fragment implements LoginContract.View {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                userID = AndroidUtil.getSharePreference(getContext(), USERID, USERID, NULL);
-                if (user != null && user.getUid().equals(userID)) {
+                if (user != null) {
                     accessApp();
-                } else if (user == null) {
-                    Toast.makeText(getContext(), "Debe logearse de nuevo", Toast.LENGTH_SHORT).show();
-                } else if (userID != null && !userID.equals(NULL)) {
-                    Toast.makeText(getContext(), getString(R.string.usuario_erroneo), Toast.LENGTH_SHORT).show();
-                } else if (userID == null || userID.equals(NULL) && user != null) {
-                    AndroidUtil.setSharePreference(getContext(), USERID, USERID, user.getUid());
                 }
             }
         };
@@ -95,10 +88,10 @@ public class LoginFragment extends Fragment implements LoginContract.View {
         mLoginForm = root.findViewById(R.id.login_form);
         mLoginProgress = root.findViewById(R.id.login_progress);
 
-        mEmail = (EditMaterial) root.findViewById(R.id.etcorreologin);
-        mPassword = (EditMaterial) root.findViewById(R.id.etpasslogin);
+        mEmail = root.findViewById(R.id.etcorreologin);
+        mPassword = root.findViewById(R.id.etpasslogin);
         registrar = root.findViewById(R.id.btnRegistrar);
-        mSignInButton = (Button) root.findViewById(R.id.btnacceder);
+        mSignInButton = root.findViewById(R.id.btnacceder);
         imagen = root.findViewById(R.id.imglogin);
 
         metrics = new DisplayMetrics();

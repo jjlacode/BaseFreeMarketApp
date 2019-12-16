@@ -8,4 +8,10 @@
     <string name="tiempo_autoguardado">Tiempo de autoguardado  (segundos)</string>
     <string name="autoguardado">Auto guardado de datos</string>
     <string name="cifrar_datos_pass">Cifrar con contraseña</string>
+    <string name="titulo_encriptado">OPCIONES DE ENCRIPTADO</string>
+    <string name="no_encrypt">Nivel 0 (Sin encriptar)</string>
+    <string name="nivel_encrypt_1">Nivel 1 (Clave autogenerada)</string>
+    <string name="nivel_encrypt_2">Nivel 2 (Se pide contraseña en cada inicio de sesión)</string>
+    <string name="nivel_encrypt_3">Nivel 3 (Se pide contraseña en cada inicio de la app)</string>
+    <string name="btnpass">Actualizar contraseña</string>
 </resources>

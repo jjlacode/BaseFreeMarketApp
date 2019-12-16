@@ -20,7 +20,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
 
 /**
@@ -141,25 +140,12 @@ public class LoginInteractor {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
 
+                        String uid = task.getResult().getUser().getUid();
                         if (!task.isSuccessful()) {
                             callback.onAuthFailed(task.getException().getMessage());
                         } else {
-                            String idUser = AndroidUtil.getSharePreference(mContext, USERID, USERID, NULL);
-
-                            if (task.getResult().getUser().getUid().equals(idUser)) {
-
-                                callback.onAuthSuccess();
-
-                            } else {
-
-                                if (!idUser.equals(NULL)) {
-                                    callback.onAuthFailed(mContext.getString(R.string.usuario_erroneo));
-                                } else {
-                                    AndroidUtil.setSharePreference(mContext, USERID, USERID, task.getResult().getUser().getUid());
-                                    callback.onAuthSuccess();
-                                }
-
-                            }
+                            AndroidUtil.setSharePreference(mContext, USERID, USERID, uid);
+                            callback.onAuthSuccess();
 
                         }
                     }
@@ -172,9 +158,10 @@ public class LoginInteractor {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
 
+                String uid = task.getResult().getUser().getUid();
                 if (task.isSuccessful()) {
 
-                    AndroidUtil.setSharePreference(mContext, USERID, USERID, task.getResult().getUser().getUid());
+                    AndroidUtil.setSharePreference(mContext, USERID, USERID, uid);
                     callback.onRegSuccess();
                     DatabaseReference db = FirebaseDatabase.getInstance().getReference();
                     db.child(task.getResult().getUser().getUid()).child("pass").setValue(EncryptUtil.generaPass());

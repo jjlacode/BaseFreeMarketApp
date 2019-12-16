@@ -553,10 +553,10 @@ public class ContratoPry implements JavaUtil.Constantes {
         String ID_CLIENTE = String.format("REFERENCES %s(%s)",
                 TABLA_CLIENTE, CLIENTE_ID_CLIENTE);
 
-        String ID_TIPOCLIENTE = String.format("REFERENCES %s(%s)",
+        String ID_TIPOCLIENTE = String.format("REFERENCES %s(%s) ON UPDATE CASCADE",
                 TABLA_TIPOCLIENTE, TIPOCLIENTE_ID_TIPOCLIENTE);
 
-        String ID_ESTADO = String.format("REFERENCES %s(%s)",
+        String ID_ESTADO = String.format("REFERENCES %s(%s) ON UPDATE CASCADE",
                 TABLA_ESTADO, ESTADO_ID_ESTADO);
 
         String ID_PRODUCTO = String.format("REFERENCES %s(%s)",
@@ -1088,8 +1088,6 @@ public class ContratoPry implements JavaUtil.Constantes {
     public static ArrayList<String[]> obtenerListaCampos() {
 
         ArrayList<String[]> listaCampos = new ArrayList<>();
-        listaCampos.add(Tablas.CAMPOS_PROYECTO);
-        listaCampos.add(Tablas.CAMPOS_CLIENTE);
         listaCampos.add(Tablas.CAMPOS_TIPOCLIENTE);
         listaCampos.add(Tablas.CAMPOS_ESTADO);
         listaCampos.add(Tablas.CAMPOS_EVENTO);
@@ -1111,6 +1109,8 @@ public class ContratoPry implements JavaUtil.Constantes {
         listaCampos.add(Tablas.CAMPOS_DETPEDIDOPROVCAT);
         listaCampos.add(Tablas.CAMPOS_PEDIDOCLIENTE);
         listaCampos.add(Tablas.CAMPOS_AGENDA);
+        listaCampos.add(Tablas.CAMPOS_CLIENTE);
+        listaCampos.add(Tablas.CAMPOS_PROYECTO);
 
         return listaCampos;
     }

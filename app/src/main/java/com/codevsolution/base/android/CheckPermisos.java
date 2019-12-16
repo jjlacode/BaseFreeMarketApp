@@ -6,6 +6,7 @@ import android.os.Build;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 
@@ -203,9 +204,12 @@ public class CheckPermisos {
     public static final String WRITE_SYNC_SETTINGS = "android.permission.WRITE_SYNC_SETTINGS";
     public static final String WRITE_VOICEMAIL = "com.android.voicemail.permission.WRITE_VOICEMAIL";
 
+    private static AppCompatActivity activityApp;
+    private static Fragment fragment;
 
     public static boolean validarPermisos(final AppCompatActivity activity, final String permisoSolicitado, final int code) {
 
+        activityApp = activity;
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
@@ -262,6 +266,10 @@ public class CheckPermisos {
         }
 
         return false;
+    }
+
+    private void onResult() {
+
     }
 
 }

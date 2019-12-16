@@ -118,6 +118,10 @@ public class AppActivity extends Application {
         return context.getPackageName();
     }
 
+    public static String getPackage(Context context) {
+        return context.getPackageName();
+    }
+
     public static String getNombreApp() {
         return BuildConfig.APPLICATION_ID;
     }

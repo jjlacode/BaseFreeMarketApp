@@ -455,14 +455,9 @@ public class CRUDutil {
 
         if (ConsultaBD.obtenerTabCab(tabla) != null) {
             int secuencia = modeloSQL.getInt(CAMPO_SECUENCIA);
-            System.out.println("tabla = " + tabla);
-            System.out.println("id = " + id);
-            System.out.println("secuencia = " + secuencia);
             return ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
 
         }
-        System.out.println("tabla = " + tabla);
-        System.out.println("id = " + id);
         return ConsultaBD.updateRegistro(tabla, id, valores);
     }
 

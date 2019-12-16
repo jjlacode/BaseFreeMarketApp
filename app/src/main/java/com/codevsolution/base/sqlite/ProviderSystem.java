@@ -10,11 +10,14 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.time.TimeDateUtil;
 
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.PREFERENCIAS;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TIMESTAMP;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TIMESTAMPDIA;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
 import static com.codevsolution.base.sqlite.ContratoSystem.AUTORIDAD_CONTENIDO;
 import static com.codevsolution.base.sqlite.ContratoSystem.FILTRO_CLIENTE;
 import static com.codevsolution.base.sqlite.ContratoSystem.FILTRO_FECHA;
@@ -89,8 +92,9 @@ public class ProviderSystem extends ContentProvider
     @Override
     public boolean onCreate() {
 
-
-        bd = new DataBaseSystem(getContext());
+        String idUser = AndroidUtil.getSharePreference(getContext(), USERID, USERID, NULL);
+        String pathDb = "/data/data/" + AppActivity.getPackage(getContext()) + "/databases/";
+        bd = new DataBaseSystem(getContext(), idUser, pathDb);
         resolver = getContext().getContentResolver();
         return true;
     }

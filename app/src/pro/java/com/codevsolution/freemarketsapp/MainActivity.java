@@ -24,7 +24,6 @@ import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.login.LoginActivity;
 import com.codevsolution.base.media.VisorPDFEmail;
 import com.codevsolution.base.models.DestinosVoz;
-import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
@@ -34,7 +33,6 @@ import com.codevsolution.base.web.FragmentWebView;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.codevsolution.freemarketsapp.services.AutoArranquePro;
 import com.codevsolution.freemarketsapp.settings.Preferencias;
-import com.codevsolution.freemarketsapp.settings.SettingsActivityPro;
 import com.codevsolution.freemarketsapp.ui.AltaPerfilesFirebasePro;
 import com.codevsolution.freemarketsapp.ui.AltaSorteosCli;
 import com.codevsolution.freemarketsapp.ui.AltaSorteosPro;
@@ -132,7 +130,7 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
             Interactor.prioridad = preferences.getBoolean(PRIORIDAD, true);
             Interactor.diaspasados = preferences.getInt(DIASPASADOS, 20);
             Interactor.diasfuturos = preferences.getInt(DIASFUTUROS, 90);
-            Interactor.hora = Interactor.Calculos.calculoPrecioHora();
+            //Interactor.hora = Interactor.Calculos.calculoPrecioHora();
             Interactor.setNamefdef();
 
             Log.d("inicio", "Inicio correcto");
@@ -158,16 +156,17 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
     private Boolean comprobarInicio() {
 
-        String BASEDATOS = AppActivity.getAppContext().getString(R.string.app_name) + ".db";
+        String pathDb = "/data/data/" + AppActivity.getPackage(context) + "/databases/" + idUser + "/";
 
-        System.out.println("PathBD = " + getDatabasePath(BASEDATOS));
-        if (!SQLiteUtil.checkDataBase(getDatabasePath(BASEDATOS).getAbsolutePath())) {
+        String BASEDATOS = context.getString(R.string.app_name) + idUser + ".db";
+
+        if (!SQLiteUtil.checkDataBase(pathDb + BASEDATOS)) {
 
             return false;
 
         } else {
 
-            SQLiteDatabase db = SQLiteDatabase.openDatabase(getDatabasePath(BASEDATOS).getAbsolutePath(),
+            SQLiteDatabase db = SQLiteDatabase.openDatabase(pathDb + BASEDATOS,
                     null, SQLiteDatabase.OPEN_READONLY);
             if (SQLiteUtil.isTableExists(TABLA_PERFIL, db)) {
 
@@ -185,12 +184,11 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
             if (!comprobarInicio()) {
 
-                SharedPreferences preferences = getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE);
+                SharedPreferences preferences = AndroidUtil.openSharePreference(context, PREFERENCIAS);
 
                 SharedPreferences.Editor editor = preferences.edit();
 
                 ContentValues valoresPer = new ContentValues();
-                String [] campos = CAMPOS_PERFIL;
 
                 ConsultaBD.putDato(valoresPer, PERFIL_NOMBRE, "Defecto");
                 ConsultaBD.putDato(valoresPer, PERFIL_DESCRIPCION,
@@ -401,7 +399,7 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
     @Override
     protected void recuperarPersistencia() {
 
-        SharedPreferences persistencia = getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
+        SharedPreferences persistencia = AndroidUtil.openSharePreference(context, PERSISTENCIA);
         bundle.putString(CAMPO_ID, persistencia.getString(CAMPO_ID, null));
         bundle.putString(ACTUAL, persistencia.getString(ACTUAL, INICIO));
         bundle.putInt(CAMPO_SECUENCIA, persistencia.getInt(CAMPO_SECUENCIA, 0));
@@ -551,7 +549,8 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
             case SALIR:
 
-                AndroidUtil.setSharePreference(context,PREFERENCIAS+idUser,PASSOK,NULL);
+                AndroidUtil.setSharePreference(context, PREFERENCIAS, PASSOK, NULL);
+                AndroidUtil.setSharePreference(context, USERID, USERID, NULL);
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);

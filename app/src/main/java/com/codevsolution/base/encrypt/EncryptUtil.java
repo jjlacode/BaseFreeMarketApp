@@ -1,14 +1,16 @@
 package com.codevsolution.base.encrypt;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
 import android.util.Base64;
 
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
-import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.freemarketsapp.settings.Preferencias;
 
 import java.nio.charset.StandardCharsets;
@@ -19,10 +21,12 @@ import java.util.UUID;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.CAMPO_SECUENCIA;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.PREFERENCIAS;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.ENCODE;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.ENCODEPASS;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.PASSOK;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
 
 public class EncryptUtil {
@@ -33,6 +37,13 @@ public class EncryptUtil {
     public static final String AES = "AES";
     public static final String SHA256 = "SHA-256";
     public static final String UTF8 = "UTF-8";
+    private CallBack callBack;
+    private Context contexto;
+
+    public EncryptUtil(Context context, CallBack callBack) {
+        contexto = context;
+        this.callBack = callBack;
+    }
 
     public static String desencriptarStrAES(String datos, String password) throws Exception {
 
@@ -144,41 +155,8 @@ public class EncryptUtil {
     public static Object decodificaStrObj(final Class<?> clase, Object dataSnapshot) {
 
         if (clase == String.class) {
-            String codeStr = null;
             String valor = (String) dataSnapshot;
-            char clave = '-';
-
-            if (InteractorBase.encrypt && valor.substring(0, 10).equals(ENCODEPASS)) {
-
-                try {
-                    codeStr = desencriptarStrAES(valor.substring(10), InteractorBase.key);
-                    return (codeStr);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            } else if (InteractorBase.encrypt && valor.substring(0, 6).equals(ENCODE)) {
-
-                try {
-                    codeStr = desencriptarStrAES(valor.substring(6), idUser);
-                    return (codeStr);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            } else if (InteractorBase.encrypt && valor.length() > 36
-                    && valor.charAt(8) == (int) clave && valor.charAt(13) == (int) clave
-                    && valor.charAt(18) == (int) clave && valor.charAt(23) == (int) clave) {
-                try {
-                    codeStr = EncryptUtil.desencriptarStrAES(valor.substring(36),
-                            valor.substring(0, 36));
-                    return (codeStr);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                return (valor);
-            }
+            return decodificaStr(valor);
 
         }
         return (dataSnapshot);
@@ -194,10 +172,11 @@ public class EncryptUtil {
 
                 try {
                     if (InteractorBase.key != null && verificarPass(InteractorBase.key)) {
-                        if (comprobarIsCode(datoCode)) {
-                            codeStr = desencriptarStrAES(datoCode.substring(10), InteractorBase.key);
-                            return codeStr;
-                        }
+                        codeStr = desencriptarStrAES(datoCode.substring(10), InteractorBase.key);
+                        return codeStr;
+                    }
+                    if (AndroidUtil.getSharePreference(context, PREFERENCIAS, Preferencias.CIFRADOPASS, false)) {
+
                     }
                     return datoCode;
                 } catch (Exception e) {
@@ -230,10 +209,108 @@ public class EncryptUtil {
 
     }
 
+    public String decodStr(String datoCode) {
+
+        String codeStr = null;
+        char clave = '-';
+        if (datoCode != null && datoCode.length() > 6) {
+
+            if (datoCode.length() > 10 && datoCode.substring(0, 10).equals(ENCODEPASS)) {
+
+                try {
+                    if (InteractorBase.key != null && verificarPass(InteractorBase.key)) {
+                        codeStr = desencriptarStrAES(datoCode.substring(10), InteractorBase.key);
+                        return codeStr;
+                    }
+                    if (AndroidUtil.getSharePreference(contexto, PREFERENCIAS, Preferencias.CIFRADOPASS, false)) {
+                        if (callBack != null) {
+                            callBack.onFailPass();
+                        }
+                        //Toast.makeText(context, "La contraseña no es valida", Toast.LENGTH_SHORT).show();
+                    }
+                    return datoCode;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else if (datoCode.substring(0, 6).equals(ENCODE)) {
+
+                try {
+                    codeStr = desencriptarStrAES(datoCode.substring(6), idUser);
+                    return (codeStr);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else if (datoCode.length() > 36
+                    && datoCode.charAt(8) == (int) clave && datoCode.charAt(13) == (int) clave
+                    && datoCode.charAt(18) == (int) clave && datoCode.charAt(23) == (int) clave) {
+                try {
+                    codeStr = EncryptUtil.desencriptarStrAES(datoCode.substring(36),
+                            datoCode.substring(0, 36));
+                    return (codeStr);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return (datoCode);
+
+    }
+
+    public String codStr(String valor) {
+
+        if (valor != null && !comprobarIsCode(valor)) {
+
+            String codeSrt = valor;
+
+            if (AndroidUtil.getSharePreference(contexto, PREFERENCIAS, Preferencias.CIFRADOPASS, false)) {
+
+                try {
+                    if (InteractorBase.key != null && !InteractorBase.key.equals(NULL) && verificarPass(InteractorBase.key)) {
+                        codeSrt = EncryptUtil.encriptarStrAES(valor, InteractorBase.key);
+                        return (ENCODEPASS + codeSrt);
+                    }
+
+                    if (callBack != null) {
+                        callBack.onFailPass();
+                    }
+                    //Toast.makeText(context, "La contraseña no es valida", Toast.LENGTH_SHORT).show();
+                    return codeSrt;
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else if (AndroidUtil.getSharePreference(contexto, PREFERENCIAS, Preferencias.CIFRADO, false)) {
+
+                try {
+
+                    if (idUser != null && !idUser.equals(NULL)) {
+                        codeSrt = EncryptUtil.encriptarStrAES(valor, idUser);
+                        return (ENCODE + codeSrt);
+                    } else {
+                        return codeSrt;
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        }
+
+        return valor;
+
+    }
+
     public static boolean verificarPass(String passInput) {
 
         try {
-            String pass = AndroidUtil.getSharePreference(context, PREFERENCIAS + idUser, ENCODEPASS, NULL);
+            System.out.println("passInput = " + passInput);
+            String pass = AndroidUtil.getSharePreference(context, PREFERENCIAS, ENCODEPASS, NULL);
             String codeStr = desencriptarPassAES(pass, passInput);
             return passInput.equals(codeStr);
         } catch (Exception e) {
@@ -269,27 +346,21 @@ public class EncryptUtil {
 
         char clave = '-';
 
-        return datoCode != null && (datoCode.length() > 36
+        return datoCode != null && !datoCode.isEmpty() && (datoCode.length() >= 36
                 && datoCode.charAt(8) == (int) clave && datoCode.charAt(13) == (int) clave
                 && datoCode.charAt(18) == (int) clave && datoCode.charAt(23) == (int) clave);
     }
 
-    public static String codificarStrTrans(String valor) {
-
-        return generaPass() + valor;
-    }
-
     public static String codificaStr(String valor) {
 
-        if (valor != null && InteractorBase.encrypt && !comprobarIsCode(valor)) {
+        if (valor != null && !comprobarIsCode(valor)) {
 
             String codeSrt = valor;
 
-            if (AndroidUtil.getSharePreference(context, PREFERENCIAS + idUser, Preferencias.CIFRADO, false) &&
-                    AndroidUtil.getSharePreference(context, PREFERENCIAS + idUser, Preferencias.CIFRADOPASS, false)) {
+            if (AndroidUtil.getSharePreference(context, PREFERENCIAS, Preferencias.CIFRADOPASS, false)) {
 
                 try {
-                    if (InteractorBase.key != null && verificarPass(InteractorBase.key)) {
+                    if (InteractorBase.key != null && !InteractorBase.key.equals(NULL) && verificarPass(InteractorBase.key)) {
                         codeSrt = EncryptUtil.encriptarStrAES(valor, InteractorBase.key);
                         return (ENCODEPASS + codeSrt);
                     }
@@ -300,12 +371,16 @@ public class EncryptUtil {
                     e.printStackTrace();
                 }
 
-            } else if (AndroidUtil.getSharePreference(context, PREFERENCIAS + idUser, Preferencias.CIFRADO, false)) {
+            } else if (AndroidUtil.getSharePreference(context, PREFERENCIAS, Preferencias.CIFRADO, false)) {
 
                 try {
 
-                    codeSrt = EncryptUtil.encriptarStrAES(valor, idUser);
-                    return (ENCODE + codeSrt);
+                    if (idUser != null && !idUser.equals(NULL)) {
+                        codeSrt = EncryptUtil.encriptarStrAES(valor, idUser);
+                        return (ENCODE + codeSrt);
+                    } else {
+                        return codeSrt;
+                    }
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -313,6 +388,35 @@ public class EncryptUtil {
 
             }
 
+        }
+
+        return valor;
+
+    }
+
+    public static String codificaStrGen(String valor) {
+
+        if (valor != null && !comprobarIsCode(valor)) {
+
+            String codeSrt = valor;
+
+            if (AndroidUtil.getSharePreference(context, PREFERENCIAS, Preferencias.CIFRADOGEN, false)) {
+
+                try {
+
+                    String pass = generaPass();
+                    if (comprobarIsCodeGen(pass)) {
+                        codeSrt = EncryptUtil.encriptarStrAES(valor, pass);
+                        return (pass + codeSrt);
+                    } else {
+                        return codeSrt;
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
 
         }
 
@@ -320,13 +424,16 @@ public class EncryptUtil {
 
     }
 
+
     public static void codificaPass() {
 
         String codeSrt = null;
 
         try {
             codeSrt = EncryptUtil.encriptarStrAES(InteractorBase.key, InteractorBase.key);
-            AndroidUtil.setSharePreference(context, PREFERENCIAS + idUser, ENCODEPASS, codeSrt);
+            AndroidUtil.setSharePreference(context, PREFERENCIAS, ENCODEPASS, codeSrt);
+            codeSrt = EncryptUtil.encriptarStrAES(InteractorBase.key, idUser);
+            AndroidUtil.setSharePreference(context, PREFERENCIAS, PASSOK, codeSrt);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -336,27 +443,105 @@ public class EncryptUtil {
 
     public static void cifrarBase(ArrayList<String[]> camposTablas) {
 
+
         for (String[] camposTabla : camposTablas) {
             ListaModeloSQL listaModeloSQL = new ListaModeloSQL(camposTabla, true);
             for (ModeloSQL modeloSQL : listaModeloSQL.getLista()) {
+                String id = modeloSQL.getString(camposTabla[2]);
+                String secuencia = modeloSQL.getString(CAMPO_SECUENCIA);
                 //if (modeloSQL.getString(CAMPO_TIMESTAMP)!=null && modeloSQL.getString(CAMPO_CREATEREG)!=null &&
                 //!modeloSQL.getString(CAMPO_TIMESTAMP).equals(modeloSQL.getString(CAMPO_CREATEREG))) {
+                ContentValues valores = new ContentValues();
+                boolean mod = false;
                 for (int i = 2; i < Integer.parseInt(camposTabla[0]); i += 3) {
                     String dato = modeloSQL.getString(camposTabla[i]);
                     if (dato != null) {
 
-                        if (comprobarIsCodeEncodePass(dato)) {
+                        if (!comprobarIsCode(dato)) {
+                            ConsultaBD.putDato(valores, camposTabla[i], dato);
+                            mod = true;
 
-                        } else if (!comprobarIsCode(dato)) {
-                            int res = CRUDutil.actualizarCampo(modeloSQL, camposTabla[i], dato);
-                            if (res > 0) {
-                            }
-                        } else if (comprobarIsCodeEncode(dato)) {
+                        } else if (AndroidUtil.getSharePreference(context, PREFERENCIAS, Preferencias.CIFRADOPASS, false)
+                                && comprobarIsCodeEncodePass(dato)) {
                             dato = decodificaStr(dato);
-                            int res = CRUDutil.actualizarCampo(modeloSQL, camposTabla[i], dato);
-                            if (res > 0) {
-                            }
+                            ConsultaBD.putDato(valores, camposTabla[i], dato);
+                            mod = true;
+                        } else if (AndroidUtil.getSharePreference(context, PREFERENCIAS, Preferencias.CIFRADO, false)
+                                && comprobarIsCodeEncode(dato)) {
+                            dato = decodificaStr(dato);
+                            ConsultaBD.putDato(valores, camposTabla[i], dato);
+                            mod = true;
+                        } else if (AndroidUtil.getSharePreference(context, PREFERENCIAS, Preferencias.CIFRADOGEN, false)
+                                && comprobarIsCodeGen(dato)) {
+                            dato = decodificaStr(dato);
+                            ConsultaBD.putDato(valores, camposTabla[i], dato);
+                            mod = true;
                         }
+                    }
+                }
+                if (mod) {
+                    if (ConsultaBD.obtenerTabCab(camposTabla[1]) != null) {
+                        System.out.println("valores = " + valores);
+                        Uri uri = ConsultaBD.crearUriTablaDetalle(id, secuencia, camposTabla[1]);
+                        int res = ConsultaBD.updateRegistro(uri, valores);
+                        System.out.println("res = " + res);
+                    } else {
+                        System.out.println("valores = " + valores);
+                        Uri uri = ConsultaBD.crearUriTabla(id, camposTabla[1]);
+                        int res = ConsultaBD.updateRegistro(uri, valores);
+                        System.out.println("res = " + res);
+
+                    }
+                }
+                //}
+            }
+
+        }
+
+    }
+
+    public static void cifrarBaseGen(ArrayList<String[]> camposTablas) {
+
+
+        for (String[] camposTabla : camposTablas) {
+            ListaModeloSQL listaModeloSQL = new ListaModeloSQL(camposTabla, true);
+            for (ModeloSQL modeloSQL : listaModeloSQL.getLista()) {
+                String id = modeloSQL.getString(camposTabla[2]);
+                String secuencia = modeloSQL.getString(CAMPO_SECUENCIA);
+                //if (modeloSQL.getString(CAMPO_TIMESTAMP)!=null && modeloSQL.getString(CAMPO_CREATEREG)!=null &&
+                //!modeloSQL.getString(CAMPO_TIMESTAMP).equals(modeloSQL.getString(CAMPO_CREATEREG))) {
+                ContentValues valores = new ContentValues();
+                boolean mod = false;
+                for (int i = 2; i < Integer.parseInt(camposTabla[0]); i += 3) {
+                    String dato = modeloSQL.getString(camposTabla[i]);
+                    if (dato != null) {
+
+                        if (!comprobarIsCode(dato)) {
+                            dato = codificaStrGen(dato);
+                            ConsultaBD.putDato(valores, camposTabla[i], dato);
+                            mod = true;
+
+                        } else if (InteractorBase.key != null && comprobarIsCodeEncodePass(dato)) {
+                            dato = decodificaStr(dato);
+                            dato = codificaStrGen(dato);
+                            ConsultaBD.putDato(valores, camposTabla[i], dato);
+                            mod = true;
+                        } else if (AndroidUtil.getSharePreference(context, PREFERENCIAS, Preferencias.CIFRADO, false)
+                                && comprobarIsCodeEncode(dato)) {
+                            dato = decodificaStr(dato);
+                            dato = codificaStrGen(dato);
+                            ConsultaBD.putDato(valores, camposTabla[i], dato);
+                            mod = true;
+                        }
+                    }
+                }
+                if (mod) {
+                    if (ConsultaBD.obtenerTabCab(camposTabla[1]) != null) {
+                        System.out.println("valores = " + valores);
+                        ConsultaBD.updateRegistroDetalle(camposTabla[1], id, secuencia, valores);
+                    } else {
+                        System.out.println("valores = " + valores);
+                        ConsultaBD.updateRegistro(camposTabla[1], id, valores);
                     }
                 }
                 //}
@@ -369,16 +554,48 @@ public class EncryptUtil {
     public static void desCifrarBase(ArrayList<String[]> camposTablas) {
 
         for (String[] camposTabla : camposTablas) {
-            ListaModeloSQL listaModeloSQL = new ListaModeloSQL(camposTabla);
+            ListaModeloSQL listaModeloSQL = new ListaModeloSQL(camposTabla, true);
             for (ModeloSQL modeloSQL : listaModeloSQL.getLista()) {
-                for (int i = 5; i < camposTabla.length; i += 3) {
-                    String dato = modeloSQL.getString(camposTabla[i]);
-                    if (comprobarIsCode(dato)) {
-                        CRUDutil.actualizarCampo(modeloSQL, camposTabla[i], decodificaStr(dato), false);
+                String id = modeloSQL.getString(camposTabla[2]);
+                String secuencia = modeloSQL.getString(CAMPO_SECUENCIA);
+                ContentValues valores = new ContentValues();
+                boolean mod = false;
+                for (int i = 2; i < Integer.parseInt(camposTabla[0]); i += 3) {
+                    String campo = camposTabla[i];
+                    String dato = modeloSQL.getString(campo);
+                    System.out.println("campo = " + campo + " dato = " + dato);
+                    if (dato != null) {
+
+                        if (comprobarIsCode(dato)) {
+                            dato = decodificaStr(dato);
+                            ConsultaBD.putDato(valores, campo, dato);
+                            mod = true;
+
+                        }
+                    }
+                }
+                if (mod) {
+                    if (ConsultaBD.obtenerTabCab(camposTabla[1]) != null) {
+                        System.out.println("valores = " + valores);
+                        ConsultaBD.updateRegistroDetalle(camposTabla[1], id, secuencia, valores);
+                    } else {
+                        System.out.println("valores = " + valores);
+                        ConsultaBD.updateRegistro(camposTabla[1], id, valores);
                     }
                 }
             }
+
         }
 
+    }
+
+    public void setCallBack(CallBack callBack) {
+
+        this.callBack = callBack;
+    }
+
+    public interface CallBack {
+
+        void onFailPass();
     }
 }

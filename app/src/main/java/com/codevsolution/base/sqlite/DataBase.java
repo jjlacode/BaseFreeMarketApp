@@ -21,8 +21,8 @@ public class DataBase extends DataBaseBase
 
     private static final int VERSION_ACTUAL = 1;
 
-    public DataBase(Context contexto) {
-        super(contexto, contexto.getString(R.string.app_name) + ".db", VERSION_ACTUAL);
+    public DataBase(Context contexto, String idUser, String pathDb) {
+        super(contexto, pathDb + idUser + "/" + contexto.getString(R.string.app_name) + idUser + ".db", VERSION_ACTUAL);
     }
 
     @Override
