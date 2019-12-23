@@ -436,6 +436,9 @@ public class Estilos {
             } else {
                 params.addRule(metodo);
             }
+            if (view.getParent() != null) {
+                ((ViewGroup) view.getParent()).removeView(view); // <- fix
+            }
             viewGroup.addView(view, params);
         }
 
@@ -476,6 +479,10 @@ public class Estilos {
                 params.addRule(metodo[i]);
             }
 
+            if (view.getParent() != null) {
+                ((ViewGroup) view.getParent()).removeView(view); // <- fix
+            }
+
             viewGroup.addView(view, params);
         }
 
@@ -490,10 +497,23 @@ public class Estilos {
             params = new RelativeLayout.LayoutParams(ancho, alto);
             params.setMargins(pad, pad, pad, pad);
             params.addRule(metodo);
+            if (view.getParent() != null) {
+                ((ViewGroup) view.getParent()).removeView(view); // <- fix
+            }
             viewGroup.addView(view, params);
         }
 
 
+    }
+
+    public static View addVista(View view, ViewGroup viewGroup) {
+
+        if (view.getParent() != null) {
+            ((ViewGroup) view.getParent()).removeView(view); // <- fix
+        }
+        viewGroup.addView(view);
+
+        return view;
     }
 
     public static int getColor(Context context, String color) {

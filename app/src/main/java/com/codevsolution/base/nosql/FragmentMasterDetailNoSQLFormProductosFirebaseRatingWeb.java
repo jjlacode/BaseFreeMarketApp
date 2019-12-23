@@ -40,6 +40,7 @@ import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.chat.FragmentChatBase;
 import com.codevsolution.base.crud.CRUDutil;
+import com.codevsolution.base.encrypt.EncryptUtil;
 import com.codevsolution.base.firebase.ContratoFirebase;
 import com.codevsolution.base.firebase.FirebaseUtil;
 import com.codevsolution.base.javautil.JavaUtil;
@@ -48,6 +49,7 @@ import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.Productos;
+import com.codevsolution.base.models.ProductosCod;
 import com.codevsolution.base.models.Rating;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.style.Estilos;
@@ -260,7 +262,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot2) {
 
 
-                                        final Productos prodProv = dataSnapshot2.getValue(Productos.class);
+                                        final Productos prodProv = desCifrarProdProv(dataSnapshot2.getValue(ProductosCod.class));
                                         DatabaseReference dbproduser = FirebaseDatabase.getInstance().getReference();
                                         dbproduser.child(prodProv.getIdprov()).child(SUSESTADO).addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
@@ -329,7 +331,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot2) {
 
                                     if (nn(dataSnapshot2.getValue())) {
-                                        lista.add(dataSnapshot2.getValue(Productos.class));
+                                        lista.add(desCifrarProdProv(dataSnapshot2.getValue(ProductosCod.class)));
                                     }
 
                                     setRv();
@@ -383,7 +385,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                            prodProv = dataSnapshot.getValue(Productos.class);
+                            prodProv = desCifrarProdProv(dataSnapshot.getValue(ProductosCod.class));
                             selector();
 
                         }
@@ -493,9 +495,11 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, idChat);
             listaMsgChat = listaMsgChat.sort(DETCHAT_FECHA, DESCENDENTE);
 
-            RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
-            rvMsgChat.setAdapter(adaptadorDetChat);
-            visible(rvMsgChat);
+            if (listaMsgChat != null) {
+                RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
+                rvMsgChat.setAdapter(adaptadorDetChat);
+                visible(rvMsgChat);
+            }
             noticias.setChecked(true);
         }
 
@@ -703,7 +707,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             nuevo = true;
         }
 
-        String idtmp = firebaseUtil.setValue(ContratoFirebase.getRutaProductos(), id, prodProv, new FirebaseUtil.OnSetValue() {
+        String idtmp = firebaseUtil.setValue(ContratoFirebase.getRutaProductos(), id, cifrarProdProv(prodProv), new FirebaseUtil.OnSetValue() {
             @Override
             public void onCreateOk(String key) {
 
@@ -720,10 +724,10 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                 prodProv.setId(key);
                 if (prodProv.isActivo()) {
                     firebaseUtil.setValue(ContratoFirebase.getRutaIndiceProducto(tipo), key, true, null);
-                    //db.child(INDICE + tipo).child(idUser).child(id).setValue(true);
+                    //db.child(INDICE + tipo).child(idUserCode).child(id).setValue(true);
                 } else {
                     firebaseUtil.setValue(ContratoFirebase.getRutaIndiceProducto(tipo), key, false, null);
-                    //db.child(INDICE + tipo).child(idUser).child(id).setValue(false);
+                    //db.child(INDICE + tipo).child(idUserCode).child(id).setValue(false);
                 }
                 selector();
 
@@ -748,10 +752,10 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
 
             if (prodProv.isActivo() && idtmp != null) {
                 firebaseUtil.setValue(ContratoFirebase.getRutaIndiceProducto(tipo), idtmp, true, null);
-                //db.child(INDICE + tipo).child(idUser).child(id).setValue(true);
+                //db.child(INDICE + tipo).child(idUserCode).child(id).setValue(true);
             } else {
                 firebaseUtil.setValue(ContratoFirebase.getRutaIndiceProducto(tipo), idtmp, false, null);
-                //db.child(INDICE + tipo).child(idUser).child(id).setValue(false);
+                //db.child(INDICE + tipo).child(idUserCode).child(id).setValue(false);
             }
 
             prodProv.setId(idtmp);
@@ -761,6 +765,48 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             alGuardar(prodProv, prodCrud);
         }
 
+    }
+
+    protected ProductosCod cifrarProdProv(Productos prodProv) {
+
+        ProductosCod prodProvCod = new ProductosCod();
+        prodProvCod.setId(EncryptUtil.codificaStrGen(prodProv.getId()));
+        prodProvCod.setAlcance(EncryptUtil.codificaStrGen(prodProv.getAlcance()));
+        prodProvCod.setCategoria(EncryptUtil.codificaStrGen(prodProv.getCategoria()));
+        prodProvCod.setDescripcion(EncryptUtil.codificaStrGen(prodProv.getDescripcion()));
+        prodProvCod.setIdprov(EncryptUtil.codificaStrGen(prodProv.getIdprov()));
+        prodProvCod.setNombre(EncryptUtil.codificaStrGen(prodProv.getNombre()));
+        prodProvCod.setProveedor(EncryptUtil.codificaStrGen(prodProv.getProveedor()));
+        prodProvCod.setRefprov(EncryptUtil.codificaStrGen(prodProv.getRefprov()));
+        prodProvCod.setSubCategoria(EncryptUtil.codificaStrGen(prodProv.getSubCategoria()));
+        prodProvCod.setTipo(EncryptUtil.codificaStrGen(prodProv.getTipo()));
+        prodProvCod.setWeb(EncryptUtil.codificaStrGen(prodProv.getWeb()));
+        prodProvCod.setDescProv(EncryptUtil.codificaStrGen(String.valueOf(prodProv.getDescProv())));
+        prodProvCod.setPrecio(EncryptUtil.codificaStrGen(String.valueOf(prodProv.getPrecio())));
+        prodProvCod.setTimeStamp(EncryptUtil.codificaStrGen(String.valueOf(prodProv.getTimeStamp())));
+
+        return prodProvCod;
+    }
+
+    protected Productos desCifrarProdProv(ProductosCod prodProv) {
+
+        Productos prodProvCod = new Productos();
+        prodProvCod.setId(EncryptUtil.decodificaStrGen(prodProv.getId()));
+        prodProvCod.setAlcance(EncryptUtil.decodificaStrGen(prodProv.getAlcance()));
+        prodProvCod.setCategoria(EncryptUtil.decodificaStrGen(prodProv.getCategoria()));
+        prodProvCod.setDescripcion(EncryptUtil.decodificaStrGen(prodProv.getDescripcion()));
+        prodProvCod.setIdprov(EncryptUtil.decodificaStrGen(prodProv.getIdprov()));
+        prodProvCod.setNombre(EncryptUtil.decodificaStrGen(prodProv.getNombre()));
+        prodProvCod.setProveedor(EncryptUtil.decodificaStrGen(prodProv.getProveedor()));
+        prodProvCod.setRefprov(EncryptUtil.decodificaStrGen(prodProv.getRefprov()));
+        prodProvCod.setSubCategoria(EncryptUtil.decodificaStrGen(prodProv.getSubCategoria()));
+        prodProvCod.setTipo(EncryptUtil.decodificaStrGen(prodProv.getTipo()));
+        prodProvCod.setWeb(EncryptUtil.decodificaStrGen(prodProv.getWeb()));
+        prodProvCod.setDescProv(Double.parseDouble(EncryptUtil.decodificaStrGen(prodProv.getDescProv())));
+        prodProvCod.setPrecio(Double.parseDouble(EncryptUtil.decodificaStrGen(prodProv.getPrecio())));
+        prodProvCod.setTimeStamp(Long.parseLong(EncryptUtil.decodificaStrGen(prodProv.getTimeStamp())));
+
+        return prodProvCod;
     }
 
     @Override
@@ -843,7 +889,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    prodProv = dataSnapshot.getValue(Productos.class);
+                    prodProv = desCifrarProdProv(dataSnapshot.getValue(ProductosCod.class));
                     System.out.println("prodProv = " + prodProv);
                     selector();
 

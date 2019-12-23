@@ -4,8 +4,10 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.speech.tts.TextToSpeech;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -20,6 +22,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.chat.FragmentChatBase;
@@ -36,6 +39,8 @@ import com.codevsolution.freemarketsapp.settings.Preferencias;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.util.Locale;
 
 import static android.Manifest.permission.RECEIVE_BOOT_COMPLETED;
 
@@ -64,6 +69,11 @@ public class MainActivityBase extends AppCompatActivity
     public DrawerLayout drawer;
     protected String pathAyuda;
     protected String idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
+    protected String idUserCode = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERIDCODE, NULL);
+    protected boolean cambio;
+    private TextToSpeech tts;
+    private boolean isInitTTS;
+    private String ttsTmp;
 
 
     @Override
@@ -71,9 +81,11 @@ public class MainActivityBase extends AppCompatActivity
         super.onCreate(null);
 
         Log.d(TAG, "on Create");
+        ttsInit();
         context = this;
         bundle = new Bundle();
-        if (AndroidUtil.getSharePreference(context, PERSISTENCIA, CAMBIO, false)) {
+        cambio = AndroidUtil.getSharePreference(context, PERSISTENCIA, CAMBIO, false);
+        if (cambio) {
             recuperarPersistencia();
         }
 
@@ -106,18 +118,19 @@ public class MainActivityBase extends AppCompatActivity
 
         acciones();
 
+        recargarFragment();
+
         drawer = findViewById(Estilos.getIdResource(this, "drawer_layout"));
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, Estilos.getIdString(this, "navigation_drawer_open"), Estilos.getIdString(this, "navigation_drawer_close"));
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        recargarFragment();
-
         NavigationView navigationView = findViewById(Estilos.getIdResource(this, "nav_view"));
         imagenPerfil = navigationView.getHeaderView(0).findViewById(Estilos.getIdResource(this, "imgnav"));
 
         if (idUser != null && !idUser.equals(NULL) && !idUser.isEmpty()) {
+
             ImagenUtil.setImageFireStoreCircle(SLASH + idUser + SLASH + idUser + CAMPO_ACTIVO, imagenPerfil);
             setPathImagenPerfil();
         }
@@ -292,11 +305,23 @@ public class MainActivityBase extends AppCompatActivity
     @Override
     public void onBackPressed() {
 
-        recargarFragment();
+        super.onBackPressed();
+        enviarBundleAFragment(bundle, getCurrentFragment());
+        //recargarFragment();
         DrawerLayout drawer = findViewById(Estilos.getIdResource(this, "drawer_layout"));
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         }
+    }
+
+    protected Fragment getCurrentFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            String fragmentTag = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount() - 1).getName();
+            System.out.println("fragmentTag = " + fragmentTag);
+            return fragmentManager.findFragmentByTag(fragmentTag);
+        }
+        return null;
     }
 
     @Override
@@ -332,15 +357,16 @@ public class MainActivityBase extends AppCompatActivity
     @Override
     public void enviarBundleAFragment(Bundle bundle, Fragment myFragment) {
 
-        myFragment.setArguments(bundle);
+        if (myFragment != null) {
+            myFragment.setArguments(bundle);
 
-        this.bundle = bundle;
-        System.out.println("bundle.getString(ACTUAL,NULL) = " + bundle.getString(ACTUAL, NULL));
+            this.bundle = bundle;
 
-        getSupportFragmentManager().beginTransaction().replace(Estilos.getIdResource(this, "content_main"), myFragment).addToBackStack(null).commit();
+            getSupportFragmentManager().beginTransaction().replace(Estilos.getIdResource(this,
+                    "content_main"), myFragment).addToBackStack(null).commit();
+        }
 
     }
-
 
     @Override
     public void enviarBundleAActivity(Bundle bundle) {
@@ -458,6 +484,25 @@ public class MainActivityBase extends AppCompatActivity
         this.ayudaWeb = ayudaWeb;
     }
 
+    @Override
+    public void playTTs(String texto) {
+
+        if (isInitTTS && tts != null && !tts.isSpeaking()) {
+
+            if (texto != null && !texto.isEmpty()) {
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    String utteranceId = this.hashCode() + "";
+                    tts.speak(texto, TextToSpeech.QUEUE_FLUSH, null, utteranceId);
+                } else {
+                    tts.speak(texto, TextToSpeech.QUEUE_FLUSH, null);
+                }
+            }
+        } else {
+            ttsTmp = texto;
+        }
+    }
+
     protected void recargarFragment() {
 
         switch (bundle.getString(ACTUAL, INICIO)) {
@@ -470,6 +515,61 @@ public class MainActivityBase extends AppCompatActivity
 
         }
 
+    }
+
+    @Override
+    protected void onPause() {
+
+        if (tts != null && isInitTTS && !tts.isSpeaking()) {
+            tts.stop();
+            tts.shutdown();
+            isInitTTS = false;
+        }
+
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        ttsInit();
+    }
+
+    protected void ttsInit() {
+
+        if (tts == null) {
+            tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(int status) {
+                    if (status == TextToSpeech.SUCCESS) {
+                        int result = tts.setLanguage(Locale.getDefault());
+
+                        if (result == TextToSpeech.LANG_MISSING_DATA
+                                || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                            Log.e("TTS", "This Language is not supported");
+                        } else {
+
+                            isInitTTS = true;
+                            if (ttsTmp != null && !ttsTmp.isEmpty()) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    String utteranceId = this.hashCode() + "";
+                                    tts.speak(ttsTmp, TextToSpeech.QUEUE_FLUSH, null, utteranceId);
+                                } else {
+                                    tts.speak(ttsTmp, TextToSpeech.QUEUE_FLUSH, null);
+                                }
+                                ttsTmp = null;
+                            }
+                            Log.d("TTS", "Initilization Success!");
+                        }
+
+                    } else {
+                        Log.e("TTS", "Initilization Failed!");
+                    }
+
+                }
+            });
+        }
     }
 
 }

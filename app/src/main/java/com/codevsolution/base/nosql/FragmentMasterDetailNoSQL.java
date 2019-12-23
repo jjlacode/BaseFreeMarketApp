@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -148,6 +149,10 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
 
         super.acciones();
         Log.d(TAG, getMetodo());
+
+        Estilos.setLayoutParamsRelative(frContenedor, frPubli, RelativeLayout.LayoutParams.MATCH_PARENT,
+                activityBase.fabVoz.getHeight(), new int[]{RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.ALIGN_PARENT_START});
+
 
         if (autoGuardado) {
             for (final EditMaterial editMaterial : materialEdits) {
@@ -565,7 +570,11 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
             gone(rv);
             gone(refreshLayout);
             visible(frameAnimationCuerpo);
-            visible(frPie);
+            if (!modulo) {
+                visible(frPie);
+            } else {
+                gone(frPubli);
+            }
             activityBase.fabNuevo.setSize(FloatingActionButton.SIZE_MINI);
             activityBase.fabInicio.setSize(FloatingActionButton.SIZE_MINI);
             activityBase.fabVoz.setSize(FloatingActionButton.SIZE_MINI);

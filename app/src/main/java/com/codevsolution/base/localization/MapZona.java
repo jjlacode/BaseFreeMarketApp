@@ -26,6 +26,7 @@ import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.module.BaseModule;
+import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.style.Estilos;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -475,6 +476,9 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
         for (ModeloSQL zonaId : listaZonasId.getLista()) {
             boolean nuevo = true;
+            if (listaZonasIdOldAdd == null) {
+                listaZonasIdOldAdd = new ListaModeloSQL();
+            }
             for (ArrayList<ModeloSQL> listaZonasMarcador : listaZonasIdOldAdd) {
                 for (ModeloSQL zonaIdOld : listaZonasMarcador) {
                     if (zonaId.getString(ZONA_ID_REL).equals(zonaIdOld.getString(ZONA_ID_REL))) {
@@ -511,6 +515,10 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
             for (ModeloSQL zona : listaZonasMarcador.getLista()) {
                 listaZonasId.addModelo(zona);
             }
+        }
+
+        if (listaZonasIdOldDel == null) {
+            listaZonasIdOldDel = new ListaModeloSQL();
         }
 
         for (ArrayList<ModeloSQL> listaZonasMarcador : listaZonasIdOldDel) {
@@ -814,9 +822,9 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
                 textoZona.append(s).append(", ");
                 if (comprobarZonaLista(s)) {
                     ContentValues values = new ContentValues();
-                    values.put(ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR));
-                    values.put(ZONA_NOMBRE, s);
-                    values.put(ZONA_ALCANCE, alcanceTxt);
+                    ConsultaBD.putDato(values, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR));
+                    ConsultaBD.putDato(values, ZONA_NOMBRE, s);
+                    ConsultaBD.putDato(values, ZONA_ALCANCE, alcanceTxt);
                     CRUDutil.crearRegistro(TABLA_ZONA, values);
 
                 }
@@ -921,10 +929,10 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
     public ModeloSQL crearMarcador(String tipo, String id, long latitud, long longitud) {
 
         ContentValues values = new ContentValues();
-        values.put(MARCADOR_TIPO, tipo);
-        values.put(MARCADOR_ID_REL, id);
-        values.put(MARCADOR_LATITUD, latitud);
-        values.put(MARCADOR_LONGITUD, longitud);
+        ConsultaBD.putDato(values, MARCADOR_TIPO, tipo);
+        ConsultaBD.putDato(values, MARCADOR_ID_REL, id);
+        ConsultaBD.putDato(values, MARCADOR_LATITUD, latitud);
+        ConsultaBD.putDato(values, MARCADOR_LONGITUD, longitud);
         String idMarc = CRUDutil.crearRegistroId(TABLA_MARCADOR, values);
         Marker mark = mapa.crearMarcadorMap(((double) (latitud) / 100000), ((double) (longitud) / 100000), 5, "", "", true, idMarc);
         mark.setTag(idMarc);

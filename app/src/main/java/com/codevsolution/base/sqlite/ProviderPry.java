@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.os.Environment;
 
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
@@ -19,6 +20,7 @@ import static com.codevsolution.base.javautil.JavaUtil.Constantes.PREFERENCIAS;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TIMESTAMP;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TIMESTAMPDIA;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.USERIDCODE;
 import static com.codevsolution.base.sqlite.ContratoPry.AUTORIDAD_CONTENIDO;
 import static com.codevsolution.base.sqlite.ContratoPry.FILTRO_CLIENTE;
 import static com.codevsolution.base.sqlite.ContratoPry.FILTRO_FECHA;
@@ -255,8 +257,8 @@ public class ProviderPry extends ContentProvider
     @Override
     public boolean onCreate() {
 
-        String idUser = AndroidUtil.getSharePreference(getContext(), USERID, USERID, NULL);
-        String pathDb = "/data/data/" + AppActivity.getPackage(getContext()) + "/databases/";
+        String idUser = AndroidUtil.getSharePreference(getContext(), USERID, USERIDCODE, NULL);
+        String pathDb = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage(getContext()) + "/databases/";
         bd = new DataBase(getContext(), idUser, pathDb);
         resolver = getContext().getContentResolver();
         return true;

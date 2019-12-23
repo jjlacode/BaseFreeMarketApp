@@ -29,11 +29,12 @@ public class MenuCRM extends FragmentGridImagen {
     }
 
     @Override
-    protected void setInicio() {
-        super.setInicio();
+    public void onResume() {
+        super.onResume();
 
         icFragmentos.showSubTitle(R.string.crm);
         reproducir(getString(R.string.crm));
+
     }
 
     @Override
@@ -91,6 +92,39 @@ public class MenuCRM extends FragmentGridImagen {
         }
 
 
+    }
+
+    @Override
+    public void setOnClickRV(Object object) {
+
+        GridModel gridModel = (GridModel) object;
+
+        String nombre = gridModel.getNombre();
+
+        if (nombre.equals(proximosEventos)) {
+
+            activityBase.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_main, new CalendarioEventos()).addToBackStack(null).commit();
+        } else if (nombre.equals(clientes)) {
+
+            activityBase.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_main, new FragmentCRUDCliente()).addToBackStack(null).commit();
+        } else if (nombre.equals(notas)) {
+
+            activityBase.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_main, new FragmentCRUDNota()).addToBackStack(null).commit();
+
+        } else if (nombre.equals(calendarioNotas)) {
+
+            activityBase.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_main, new Notas()).addToBackStack(null).commit();
+
+        } else if (nombre.equals(eventos)) {
+
+            activityBase.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_main, new FragmentCRUDEvento()).addToBackStack(null).commit();
+
+        }
     }
 
 

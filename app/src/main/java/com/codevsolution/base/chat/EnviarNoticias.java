@@ -20,6 +20,7 @@ import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.MsgChat;
+import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
@@ -122,14 +123,14 @@ public class EnviarNoticias extends FragmentChatBase implements
         if (msgEnv.getText() != null && !msgEnv.getText().toString().equals("")) {
 
             valores = new ContentValues();
-            valores.put(DETCHAT_MENSAJE, msgEnv.getText().toString());
-            valores.put(DETCHAT_URL, url.getText().toString());
-            valores.put(DETCHAT_TIPO, ENVIADO);
-            valores.put(DETCHAT_FECHA, TimeDateUtil.ahora());
-            valores.put(DETCHAT_CREATE, TimeDateUtil.ahora());
-            valores.put(DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
-            valores.put(DETCHAT_NOTIFICADO, 1);
-            valores.put(DETCHAT_ID_CHAT, id);
+            ConsultaBD.putDato(valores, DETCHAT_MENSAJE, msgEnv.getText().toString());
+            ConsultaBD.putDato(valores, DETCHAT_URL, url.getText().toString());
+            ConsultaBD.putDato(valores, DETCHAT_TIPO, ENVIADO);
+            ConsultaBD.putDato(valores, DETCHAT_FECHA, TimeDateUtil.ahora());
+            ConsultaBD.putDato(valores, DETCHAT_CREATE, TimeDateUtil.ahora());
+            ConsultaBD.putDato(valores, DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
+            ConsultaBD.putDato(valores, DETCHAT_NOTIFICADO, 1);
+            ConsultaBD.putDato(valores, DETCHAT_ID_CHAT, id);
             secuencia = CRUDutil.crearRegistroSec(CAMPOS_DETCHAT, id, valores);
 
             ModeloSQL chat = CRUDutil.updateModelo(campos, id);

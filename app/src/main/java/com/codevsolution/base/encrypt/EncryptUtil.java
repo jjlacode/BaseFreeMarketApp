@@ -156,7 +156,7 @@ public class EncryptUtil {
 
         if (clase == String.class) {
             String valor = (String) dataSnapshot;
-            return decodificaStr(valor);
+            return decodificaStrGen(valor);
 
         }
         return (dataSnapshot);
@@ -193,6 +193,29 @@ public class EncryptUtil {
                 }
 
             } else if (datoCode.length() > 36
+                    && datoCode.charAt(8) == (int) clave && datoCode.charAt(13) == (int) clave
+                    && datoCode.charAt(18) == (int) clave && datoCode.charAt(23) == (int) clave) {
+                try {
+                    codeStr = EncryptUtil.desencriptarStrAES(datoCode.substring(36),
+                            datoCode.substring(0, 36));
+                    return (codeStr);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return (datoCode);
+
+    }
+
+    public static String decodificaStrGen(String datoCode) {
+
+        String codeStr = null;
+        char clave = '-';
+        if (datoCode != null && datoCode.length() > 6) {
+
+            if (datoCode.length() > 36
                     && datoCode.charAt(8) == (int) clave && datoCode.charAt(13) == (int) clave
                     && datoCode.charAt(18) == (int) clave && datoCode.charAt(23) == (int) clave) {
                 try {
@@ -400,7 +423,7 @@ public class EncryptUtil {
 
             String codeSrt = valor;
 
-            if (AndroidUtil.getSharePreference(context, PREFERENCIAS, Preferencias.CIFRADOGEN, false)) {
+            //if (AndroidUtil.getSharePreference(context, PREFERENCIAS, Preferencias.CIFRADOGEN, false)) {
 
                 try {
 
@@ -416,7 +439,7 @@ public class EncryptUtil {
                     e.printStackTrace();
                 }
 
-            }
+            //}
 
         }
 

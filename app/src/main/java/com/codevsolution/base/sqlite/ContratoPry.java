@@ -1201,7 +1201,7 @@ public class ContratoPry implements JavaUtil.Constantes {
     }
 
     public static String obtenerIdTablaDetalleId(Uri uri) {
-        return EncryptUtil.codificaStr(uri.getPathSegments().get(1));
+        return uri.getPathSegments().get(1);
     }
 
     public static String[] obtenerIdTablaDetalle(Uri uri) {

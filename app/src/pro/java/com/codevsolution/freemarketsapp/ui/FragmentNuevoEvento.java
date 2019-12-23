@@ -1,7 +1,6 @@
 package com.codevsolution.freemarketsapp.ui;
 
 import android.os.Bundle;
-import android.view.View;
 
 import com.codevsolution.base.android.FragmentGridImagen;
 import com.codevsolution.freemarketsapp.R;
@@ -60,11 +59,10 @@ public class FragmentNuevoEvento extends FragmentGridImagen implements Interacto
 
     }
 
-
     @Override
-    protected void onClickRV(View v) {
+    public void setOnClickRV(Object object) {
 
-        GridModel gridModel = (GridModel) lista.get(rv.getChildAdapterPosition(v));
+        GridModel gridModel = (GridModel) object;
 
         String nombre = gridModel.getNombre();
         String tipoEvento=null;
@@ -109,7 +107,6 @@ public class FragmentNuevoEvento extends FragmentGridImagen implements Interacto
             bundle.putBoolean(NUEVOREGISTRO, true);
             icFragmentos.enviarBundleAFragment(bundle, new FragmentCRUDEvento());
         }
-
     }
 
 }

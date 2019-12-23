@@ -100,6 +100,9 @@ public abstract class FragmentCRUD extends FragmentCUD {
     protected void selector() {
 
         Log.d(TAG, getMetodo());
+        if (cruDutil == null) {
+            cruDutil = new CRUDutil((FragmentBaseCRUD) setFragment());
+        }
 
         if (subTitulo == null) {
             if (tituloPlural > 0) {
@@ -491,6 +494,9 @@ public abstract class FragmentCRUD extends FragmentCUD {
             if (layoutCabecera > 0 || cabecera) {
                 gone(frCabecera);
             }
+            if (layoutListaPie > 0 || listaPie) {
+                gone(frListaPie);
+            }
             gone(frLista);
             gone(rv);
             gone(refreshLayout);
@@ -505,6 +511,9 @@ public abstract class FragmentCRUD extends FragmentCUD {
         } else if ((id != null && secuencia > 0) || (id != null && tablaCab == null) || (modeloSQL != null)) {
             if (layoutCabecera > 0 || cabecera) {
                 gone(frCabecera);
+            }
+            if (layoutListaPie > 0 || listaPie) {
+                gone(frListaPie);
             }
             gone(frLista);
             gone(rv);
@@ -522,6 +531,9 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
             if (layoutCabecera > 0 || cabecera) {
                 visible(frCabecera);
+            }
+            if (layoutListaPie > 0 || listaPie) {
+                visible(frListaPie);
             }
             visible(frLista);
             visible(rv);
@@ -570,6 +582,11 @@ public abstract class FragmentCRUD extends FragmentCUD {
             visible(frCabecera);
         } else {
             gone(frCabecera);
+        }
+        if (layoutListaPie > 0 || listaPie) {
+            visible(frListaPie);
+        } else {
+            gone(frListaPie);
         }
         activityBase.fabVoz.show();
         activityBase.fabNuevo.show();

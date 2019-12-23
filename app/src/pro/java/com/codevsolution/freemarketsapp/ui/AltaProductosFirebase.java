@@ -189,12 +189,15 @@ public abstract class AltaProductosFirebase extends FragmentMasterDetailNoSQLFor
 
     @Override
     protected void setModuloInicio() {
+        /*
         gone(lupa);
         gone(auto);
         gone(renovar);
         gone(radioGroupProd);
         gone(radioButtonProd1);
         gone(radioButtonProd2);
+
+         */
         activityBase.fabNuevo.show();
         activityBase.fabInicio.hide();
 

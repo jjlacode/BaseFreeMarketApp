@@ -8,11 +8,13 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
@@ -22,7 +24,6 @@ import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.encrypt.EncryptUtil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.login.LoginActivity;
-import com.codevsolution.base.media.VisorPDFEmail;
 import com.codevsolution.base.models.DestinosVoz;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
@@ -33,37 +34,23 @@ import com.codevsolution.base.web.FragmentWebView;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.codevsolution.freemarketsapp.services.AutoArranquePro;
 import com.codevsolution.freemarketsapp.settings.Preferencias;
-import com.codevsolution.freemarketsapp.ui.AltaPerfilesFirebasePro;
-import com.codevsolution.freemarketsapp.ui.AltaSorteosCli;
-import com.codevsolution.freemarketsapp.ui.AltaSorteosPro;
-import com.codevsolution.freemarketsapp.ui.FragmentCRUDAmortizacion;
-import com.codevsolution.freemarketsapp.ui.FragmentCRUDCliente;
-import com.codevsolution.freemarketsapp.ui.FragmentCRUDEvento;
-import com.codevsolution.freemarketsapp.ui.FragmentCRUDGastoFijo;
-import com.codevsolution.freemarketsapp.ui.FragmentCRUDPartidaBase;
-import com.codevsolution.freemarketsapp.ui.FragmentCRUDPartidaProyecto;
-import com.codevsolution.freemarketsapp.ui.FragmentCRUDPerfil;
-import com.codevsolution.freemarketsapp.ui.FragmentCRUDProducto;
-import com.codevsolution.freemarketsapp.ui.FragmentCRUDProyecto;
-import com.codevsolution.freemarketsapp.ui.FragmentCRUDTrabajo;
 import com.codevsolution.freemarketsapp.ui.ListadoProductosCli;
 import com.codevsolution.freemarketsapp.ui.ListadoProductosPro;
 import com.codevsolution.freemarketsapp.ui.ListadoSorteosCli;
 import com.codevsolution.freemarketsapp.ui.ListadoSorteosPro;
+import com.codevsolution.freemarketsapp.ui.ListadosPerfilesFirebaseCli;
 import com.codevsolution.freemarketsapp.ui.ListadosPerfilesFirebasePro;
-import com.codevsolution.freemarketsapp.ui.MenuCRM;
 import com.codevsolution.freemarketsapp.ui.MenuInicio;
-import com.codevsolution.freemarketsapp.ui.MenuMarketing;
-import com.codevsolution.freemarketsapp.ui.MisSorteosCli;
-import com.codevsolution.freemarketsapp.ui.MisSorteosPro;
-import com.codevsolution.freemarketsapp.ui.MisSuscripcionesPro;
-import com.codevsolution.freemarketsapp.ui.MisSuscripcionesProductosCli;
-import com.codevsolution.freemarketsapp.ui.MisSuscripcionesProductosPro;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import static android.Manifest.permission.INTERNET;
+import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.CAMPOS_USERS;
+import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.TABLA_USERS;
+import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.USERS_USERID;
+import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.USERS_USERIDCODE;
 
 public class MainActivity extends MainActivityBase implements Interactor.ConstantesPry, ContratoPry.Tablas {
 
@@ -113,8 +100,35 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
     }
 
+    protected void setIdUserCode() {
+        String pathDb = Environment.getDataDirectory().getPath() + "/data/"
+                + AppActivity.getPackage(context) + "/databases/" + idUser + "/";
+
+        String BASEDATOS = SYSTEM + idUser + ".db";
+
+        if (!SQLiteUtil.checkDataBase(pathDb + BASEDATOS)) {
+
+            String id = UUID.randomUUID().toString();
+            AndroidUtil.setSharePreference(context, USERID, USERIDCODE, id);
+            idUserCode = id;
+
+            ContentValues values = new ContentValues();
+            ConsultaBD.putDato(values, USERS_USERID, idUser);
+            ConsultaBD.putDato(values, USERS_USERIDCODE, id);
+            ConsultaBD.insertRegistro(TABLA_USERS, values);
+
+        } else {
+
+            ModeloSQL user = ConsultaBD.queryObject(CAMPOS_USERS, USERS_USERID, idUser);
+            idUserCode = EncryptUtil.decodificaStr(user.getString(USERS_USERIDCODE));
+            AndroidUtil.setSharePreference(context, USERID, USERIDCODE, idUserCode);
+        }
+    }
+
     @Override
     public void inicio(int inicio) {
+
+        setIdUserCode();
 
         if (inicio == 1) {
 
@@ -156,9 +170,10 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
     private Boolean comprobarInicio() {
 
-        String pathDb = "/data/data/" + AppActivity.getPackage(context) + "/databases/" + idUser + "/";
+        String pathDb = Environment.getDataDirectory().getPath() + "/data/"
+                + AppActivity.getPackage(context) + "/databases/" + idUserCode + "/";
 
-        String BASEDATOS = context.getString(R.string.app_name) + idUser + ".db";
+        String BASEDATOS = context.getString(R.string.app_name) + idUserCode + ".db";
 
         if (!SQLiteUtil.checkDataBase(pathDb + BASEDATOS)) {
 
@@ -408,198 +423,69 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
         bundle.putString(CAMPO_RUTAFOTO, persistencia.getString(CAMPO_RUTAFOTO, null));
         bundle.putString(PATH, persistencia.getString(PATH, null));
         bundle.putBoolean(CAMBIO, persistencia.getBoolean(CAMBIO, false));
+        bundle.putString(TAGPERS, persistencia.getString(TAGPERS, MenuInicio.class.getName()));
         AndroidUtil.setSharePreference(this, PERSISTENCIA, CAMBIO, false);
+        System.out.println("bundle pers= " + bundle);
 
-        System.out.println("bundle = " + bundle);
+
     }
 
     protected void recargarFragment() {
 
         super.recargarFragment();
 
-        System.out.println("bundle.getString(ACTUAL, INICIO) = " + bundle.getString(ACTUAL, INICIO));
+        System.out.println("bundle.getString(TAGPERS, INICIO) = " + bundle.getString(TAGPERS, MenuInicio.class.getName()));
 
-        switch (bundle.getString(ACTUAL, INICIO)) {
+        String string = bundle.getString(TAGPERS, MenuInicio.class.getName());
+        String actual = bundle.getString(ACTUAL, NULL);
 
-            case PROYECTO:
 
-            case COBROS:
-
-            case HISTORICO:
-
-            case PRESUPUESTO:
-
-                enviarBundleAFragment(bundle, new FragmentCRUDProyecto());
-                break;
-
-            case PARTIDA:
-
-                enviarBundleAFragment(bundle, new FragmentCRUDPartidaProyecto());
-                break;
-
-            case PROSPECTO:
-
-            case CLIENTE:
-
-                enviarBundleAFragment(bundle, new FragmentCRUDCliente());
-                break;
-
-            case INICIO:
-
+        if (SALIR.equals(actual)) {
+            AndroidUtil.setSharePreference(context, PREFERENCIAS, PASSOK, NULL);
+            AndroidUtil.setSharePreference(context, USERID, USERID, NULL);
+            AndroidUtil.setSharePreference(context, USERID, USERIDCODE, NULL);
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+        } else if ((CHAT + CLI).equals(actual)) {
+            bundle.putBoolean(AVISO, true);
+            enviarBundleAFragment(bundle, new ListadosPerfilesFirebaseCli());
+        } else if ((CHAT + PRO).equals(actual)) {
+            bundle.putBoolean(AVISO, true);
+            enviarBundleAFragment(bundle, new ListadosPerfilesFirebasePro());
+        } else if ((CHAT + PRODUCTOCLI).equals(actual)) {
+            bundle.putBoolean(AVISO, true);
+            enviarBundleAFragment(bundle, new ListadoProductosCli());
+        } else if ((CHAT + PRODUCTOPRO).equals(actual)) {
+            bundle.putBoolean(AVISO, true);
+            enviarBundleAFragment(bundle, new ListadoProductosPro());
+        } else if ((CHAT + SORTEOCLI).equals(actual)) {
+            bundle.putBoolean(AVISO, true);
+            enviarBundleAFragment(bundle, new ListadoSorteosCli());
+        } else if ((CHAT + SORTEOPRO).equals(actual)) {
+            bundle.putBoolean(AVISO, true);
+            enviarBundleAFragment(bundle, new ListadoSorteosPro());
+        } else {
+            try {
+                Class FragmentClass = Class.forName(string);
+                if (FragmentClass.newInstance() instanceof Fragment) {
+                    enviarBundleAFragment(bundle, (Fragment) FragmentClass.newInstance());
+                }
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+                e.printStackTrace();
                 fabVoz.show();
                 fabNuevo.hide();
                 enviarBundleAFragment(bundle, new MenuInicio());
-                break;
-
-            case MENUCRM:
-
-                fabVoz.show();
-                fabNuevo.hide();
-                fabInicio.show();
-                enviarBundleAFragment(bundle, new MenuCRM());
-                break;
-
-            case MENUMARKETING:
-
-                fabVoz.show();
-                fabNuevo.hide();
-                fabInicio.show();
-                enviarBundleAFragment(bundle, new MenuMarketing());
-                break;
-
-            case AMORTIZACION:
-
-                enviarBundleAFragment(bundle, new FragmentCRUDAmortizacion());
-                break;
-
-            case PERFILTR:
-
-                enviarBundleAFragment(bundle, new FragmentCRUDPerfil());
-                break;
-
-            case GASTOSFIJOS:
-
-                enviarBundleAFragment(bundle, new FragmentCRUDGastoFijo());
-                break;
-
-            case EVENTO:
-                enviarBundleAFragment(bundle, new FragmentCRUDEvento());
-                break;
-
-            case PARTIDABASE:
-                enviarBundleAFragment(bundle, new FragmentCRUDPartidaBase());
-                break;
-
-            case VISORPDFMAIL:
-                enviarBundleAFragment(bundle, new VisorPDFEmail());
-                break;
-
-            case TAREA:
-                enviarBundleAFragment(bundle, new FragmentCRUDTrabajo());
-                break;
-
-            case PRODUCTO:
-
-                enviarBundleAFragment(bundle, new FragmentCRUDProducto());
-
-                break;
-
-
-
-            case SORTEOPRO:
-
-                enviarBundleAFragment(bundle, new AltaSorteosPro());
-                break;
-
-            case SORTEOCLI:
-
-                enviarBundleAFragment(bundle, new AltaSorteosCli());
-                break;
-
-            case MISSORTEOSPRO:
-
-                enviarBundleAFragment(bundle, new MisSorteosPro());
-                break;
-
-            case MISSORTEOSCLI:
-
-                enviarBundleAFragment(bundle, new MisSorteosCli());
-                break;
-
-            case SIGUIENDOPRODCLI:
-
-                enviarBundleAFragment(bundle, new MisSuscripcionesProductosCli());
-                break;
-
-            case SIGUIENDOPRODPRO:
-
-                enviarBundleAFragment(bundle, new MisSuscripcionesProductosPro());
-                break;
-
-            case SIGUIENDOPRO:
-
-                enviarBundleAFragment(bundle, new MisSuscripcionesPro());
-                break;
-
-
-            case MIPERFIL:
-
-                enviarBundleAFragment(bundle, new AltaPerfilesFirebasePro());
-                break;
-
-            case SALIR:
-
-                AndroidUtil.setSharePreference(context, PREFERENCIAS, PASSOK, NULL);
-                AndroidUtil.setSharePreference(context, USERID, USERID, NULL);
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
-
-            case CHAT + PRO:
-
-                bundle.putBoolean(AVISO, true);
-                enviarBundleAFragment(bundle, new ListadosPerfilesFirebasePro());
-                break;
-
-            case CHAT + PRODUCTOCLI:
-
-                bundle.putBoolean(AVISO, true);
-                enviarBundleAFragment(bundle, new ListadoProductosCli());
-                break;
-
-            case CHAT + PRODUCTOPRO:
-
-                bundle.putBoolean(AVISO, true);
-                enviarBundleAFragment(bundle, new ListadoProductosPro());
-                break;
-
-            case CHAT + SORTEOCLI:
-
-                bundle.putBoolean(AVISO, true);
-                enviarBundleAFragment(bundle, new ListadoSorteosCli());
-                break;
-
-            case CHAT + SORTEOPRO:
-
-                bundle.putBoolean(AVISO, true);
-                enviarBundleAFragment(bundle, new ListadoSorteosPro());
-                break;
-
-
+            }
         }
 
-        System.out.println("Recargado fragment " + bundle.getString(ACTUAL, INICIO));
-        System.out.println("bundle = " + bundle);
 
     }
 
 
     protected void checkPermisos() {
 
-        System.out.println("chekeando permisos iniciales");
-
         permisoInternet = CheckPermisos.validarPermisos(this, INTERNET, 100);
-        System.out.println("permisoInternet = " + permisoInternet);
 
     }
 

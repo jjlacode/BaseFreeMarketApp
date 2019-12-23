@@ -38,6 +38,7 @@ import com.codevsolution.base.models.FirebaseFormBase;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.MsgChat;
+import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
@@ -136,11 +137,11 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
             if (id == null) {
                 valores = new ContentValues();
-                valores.put(CHAT_USUARIO, idchat);
-                valores.put(CHAT_NOMBRE, nombre);
-                valores.put(CHAT_CREATE, TimeDateUtil.ahora());
-                valores.put(CHAT_TIMESTAMP, TimeDateUtil.ahora());
-                valores.put(CHAT_TIPO, tipo);
+                ConsultaBD.putDato(valores, CHAT_USUARIO, idchat);
+                ConsultaBD.putDato(valores, CHAT_NOMBRE, nombre);
+                ConsultaBD.putDato(valores, CHAT_CREATE, TimeDateUtil.ahora());
+                ConsultaBD.putDato(valores, CHAT_TIMESTAMP, TimeDateUtil.ahora());
+                ConsultaBD.putDato(valores, CHAT_TIPO, tipo);
                 id = CRUDutil.crearRegistroId(TABLA_CHAT, valores);
                 modeloSQL = CRUDutil.updateModelo(campos, id);
             }
@@ -297,14 +298,14 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
         if (msgEnv.getText() != null && !msgEnv.getText().toString().equals("")) {
 
             valores = new ContentValues();
-            valores.put(DETCHAT_MENSAJE, msgEnv.getText().toString());
-            valores.put(DETCHAT_URL, url.getText().toString());
-            valores.put(DETCHAT_TIPO, ENVIADO);
-            valores.put(DETCHAT_FECHA, TimeDateUtil.ahora());
-            valores.put(DETCHAT_CREATE, TimeDateUtil.ahora());
-            valores.put(DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
-            valores.put(DETCHAT_NOTIFICADO, 1);
-            valores.put(DETCHAT_ID_CHAT, id);
+            ConsultaBD.putDato(valores, DETCHAT_MENSAJE, msgEnv.getText().toString());
+            ConsultaBD.putDato(valores, DETCHAT_URL, url.getText().toString());
+            ConsultaBD.putDato(valores, DETCHAT_TIPO, ENVIADO);
+            ConsultaBD.putDato(valores, DETCHAT_FECHA, TimeDateUtil.ahora());
+            ConsultaBD.putDato(valores, DETCHAT_CREATE, TimeDateUtil.ahora());
+            ConsultaBD.putDato(valores, DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
+            ConsultaBD.putDato(valores, DETCHAT_NOTIFICADO, 1);
+            ConsultaBD.putDato(valores, DETCHAT_ID_CHAT, id);
             CRUDutil.crearRegistro(CAMPOS_DETCHAT, id, valores);
             listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, id);
             listaMsgChat = listaMsgChat.sort(DETCHAT_FECHA, DESCENDENTE);

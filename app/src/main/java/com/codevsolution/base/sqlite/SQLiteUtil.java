@@ -2,11 +2,8 @@ package com.codevsolution.base.sqlite;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.os.Environment;
 import android.util.Log;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
@@ -23,10 +20,12 @@ import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import static com.codevsolution.base.android.AppActivity.getAppContext;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.USERIDCODE;
 
 public class SQLiteUtil {
 
@@ -72,9 +71,9 @@ public class SQLiteUtil {
 
     public static void copiarBaseDatosAssets(String archivo, String prefijo) {
 
-        String idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
+        String idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERIDCODE, NULL);
 
-        String ruta = "/data/data/" + AppActivity.getPackage() + "/databases/" + idUser + "/";
+        String ruta = AppActivity.getDirData() + AppActivity.getPackage() + "/databases/" + idUser + "/";
         File archivoDB = new File(ruta + prefijo + archivo);
         if (!archivoDB.exists()) {
             try {
@@ -98,36 +97,29 @@ public class SQLiteUtil {
 
     public static void copy(File source, File destination) throws IOException {
 
-        FileChannel in = new FileInputStream(source).getChannel();
-        FileChannel out = new FileOutputStream(destination).getChannel();
-
-        try {
+        try (FileChannel in = new FileInputStream(source).getChannel();
+             FileChannel out = new FileOutputStream(destination).getChannel()) {
             in.transferTo(0, in.size(), out);
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if (in != null)
-                in.close();
-            if (out != null)
-                out.close();
         }
     }
 
     public static boolean BD_backup(String basedatos, boolean instant) {
 
-        String idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
+        String idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERIDCODE, NULL);
         try {
             boolean ready = false;
             if (basedatos == null) {
                 basedatos = AppActivity.getAppContext().getString(R.string.app_name);
             }
-            String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
-            final String inFileName = "/data/data/" + AppActivity.getPackage() + "/databases/" + idUser + "/"
+            String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss", Locale.getDefault()).format(new Date());
+            final String inFileName = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage() + "/databases/" + idUser + "/"
                     + basedatos + idUser + ".db";
             File dbFile = new File(inFileName);
             FileInputStream fis = new FileInputStream(dbFile);
 
-            String outFileName = "/" + AppActivity.getAppContext().getString(R.string.app_name) + idUser + "/backupDB/" + idUser;
+            String outFileName = "/" + AppActivity.getAppContext().getString(R.string.app_name) + idUser + "/backupDB";
 
             File extFile = FileUtils.crearDirectorioPublico(outFileName, FileUtils.DOWNLOADS);
 
@@ -174,17 +166,146 @@ public class SQLiteUtil {
         return false;
     }
 
+    public static boolean BD_backup(String basedatos, String idUser, boolean instant) {
+
+        try {
+            boolean ready = false;
+            if (basedatos == null) {
+                basedatos = AppActivity.getAppContext().getString(R.string.app_name);
+            }
+            String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss", Locale.getDefault()).format(new Date());
+            final String inFileName = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage() + "/databases/" + idUser + "/"
+                    + basedatos + idUser + ".db";
+            File dbFile = new File(inFileName);
+            FileInputStream fis = new FileInputStream(dbFile);
+
+            String outFileName = "/" + AppActivity.getAppContext().getString(R.string.app_name) + idUser + "/backupDB";
+
+            File extFile = FileUtils.crearDirectorioPublico(outFileName, FileUtils.DOWNLOADS);
+
+            System.out.println("extFile = " + extFile.getAbsolutePath());
+            if (!extFile.exists()) {
+                if (extFile.mkdir()) {
+                    ready = true;
+                } else {
+                    System.out.println("No se ha podido crear el directorio externo");
+                }
+            } else {
+                ready = true;
+            }
+
+            if (ready) {
+
+                outFileName = extFile.getAbsolutePath();
+                if (instant) {
+                    outFileName += "/dbInstant" + idUser + ".db";
+                } else {
+                    outFileName += "/" + timeStamp + AppActivity.getAppContext().getString(R.string.app_name) + idUser + ".db";
+                }
+                // Open the empty db as the output stream
+                OutputStream output = new FileOutputStream(outFileName);
+
+                // Transfer bytes from the inputfile to the outputfile
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = fis.read(buffer)) > 0) {
+                    output.write(buffer, 0, length);
+                }
+
+                // Close the streams
+                output.flush();
+                output.close();
+                fis.close();
+                return true;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("No se ha podido realizar la copia de seguridad de la BD");
+        return false;
+    }
+
+    public static boolean restoreBD_backup(String basedatos, File fileToRestore) {
+
+        String idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
+        try {
+            if (basedatos == null) {
+                basedatos = AppActivity.getAppContext().getString(R.string.app_name);
+            }
+            FileInputStream fis = new FileInputStream(fileToRestore);
+
+            String outFileName = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage() + "/databases/" + idUser + "/"
+                    + basedatos + idUser + ".db";
+            // Open the empty db as the output stream
+            OutputStream output = new FileOutputStream(outFileName);
+
+            // Transfer bytes from the inputfile to the outputfile
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = fis.read(buffer)) > 0) {
+                output.write(buffer, 0, length);
+            }
+
+            // Close the streams
+            output.flush();
+            output.close();
+            fis.close();
+            return true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("No se ha podido restaurar la copia de seguridad de la BD");
+        return false;
+    }
+
+    public static boolean restoreBD_backup(String basedatos, File fileToRestore, String idUser) {
+
+        try {
+            if (basedatos == null) {
+                basedatos = AppActivity.getAppContext().getString(R.string.app_name);
+            }
+            FileInputStream fis = new FileInputStream(fileToRestore);
+
+            String outFileName = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage() + "/databases/" + idUser + "/"
+                    + basedatos + idUser + ".db";
+            // Open the empty db as the output stream
+            OutputStream output = new FileOutputStream(outFileName);
+
+            // Transfer bytes from the inputfile to the outputfile
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = fis.read(buffer)) > 0) {
+                output.write(buffer, 0, length);
+            }
+
+            // Close the streams
+            output.flush();
+            output.close();
+            fis.close();
+            return true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("No se ha podido restaurar la copia de seguridad de la BD");
+        return false;
+    }
+
     public static final String BASE_PATH = Environment.getExternalStoragePublicDirectory
             ("App_BackUp").getAbsolutePath();
     public static final String SEPARATOR = "/";
     private static boolean operationStatus = true;
     private static String dataDirectory = null;
-    private static String appName = "APP_NAME";
+    private static String appName = AppActivity.getAppContext().getString(R.string.app_name);
 
-    public static boolean copyAppDataToLocal(AppCompatActivity callingActivity, String appName) {
+    public static boolean copyAppDataToLocal(String appName) {
 
-        dataDirectory = callingActivity.getApplicationInfo().dataDir;
-        SQLiteUtil.appName = appName;
+        dataDirectory = getAppContext().getFilesDir() + "/data/" + AppActivity.getPackage();
+        if (appName != null) {
+            SQLiteUtil.appName = appName;
+        }
         String TAG = "Developer_Option";
         try {
             if (dataDirectory != null) {
@@ -192,8 +313,7 @@ public class SQLiteUtil {
                 copyAppData(new File(dataDirectory, "files"), "files");
                 copyAppData(new File(dataDirectory, "databases"), "databases");
             } else {
-                Log.e(TAG, "!!!!!Unable to get data directory for ACTIVITY-->" + callingActivity
-                        .toString());
+                Log.e(TAG, "!!!!!Unable to get data directory");
             }
         } catch (Exception ex) {
             Log.e(TAG, "!!!!@@@Exception Occurred while copying DATA--->" + ex.getMessage(), ex.fillInStackTrace());
@@ -257,15 +377,8 @@ public class SQLiteUtil {
 
     }
 
-    public static boolean checkDataBase(String Database_path) {
-        SQLiteDatabase checkDB = null;
-        try {
-            checkDB = SQLiteDatabase.openDatabase(Database_path, null, SQLiteDatabase.OPEN_READONLY);
-            checkDB.close();
-        } catch (SQLiteException e) {
-            Log.e("Error", "No existe la base de datos " + e.getMessage());
-        }
-        return checkDB != null;
+    public static boolean checkDataBase(String dataBasePath) {
+        return new File(dataBasePath).exists();
     }
 
     public static boolean isTableExists(String nombreTabla, SQLiteDatabase db) {

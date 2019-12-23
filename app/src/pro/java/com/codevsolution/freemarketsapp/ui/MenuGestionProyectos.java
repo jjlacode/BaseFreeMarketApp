@@ -137,6 +137,11 @@ public class MenuGestionProyectos extends FragmentGridImagen implements Contrato
 
     }
 
+    @Override
+    public void setOnClickRV(Object object) {
+
+    }
+
     private void obtenerTareas() {
 
         ArrayList<ModeloSQL> lista;

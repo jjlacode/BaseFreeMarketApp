@@ -14,7 +14,7 @@ import com.codevsolution.freemarketsapp.R;
 
 import java.util.ArrayList;
 
-public class FragmentGridImagen extends FragmentGridBase {
+public abstract class FragmentGridImagen extends FragmentGridBase {
 
     @Override
     protected FragmentBase setFragment() {
@@ -31,10 +31,7 @@ public class FragmentGridImagen extends FragmentGridBase {
         return null;
     }
 
-    @Override
-    public void setOnClickRV(Object object) {
 
-    }
 
     private class ViewHolderRV extends BaseViewHolder implements TipoViewHolder {
 

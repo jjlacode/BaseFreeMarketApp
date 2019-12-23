@@ -52,6 +52,8 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
         String ENCODEPASSPLUS = "ENCODEPASSPLUS";
         String PASSOK = "PASSOK";
         String USERID = "userid";
+        String SYSTEM = "system";
+        String USERIDCODE = "useridcode";
         String PLANMENSUAL = "plan_mensual";
         String PLANTRIMESTRAL = "plan_trimestral";
         String PLANSEMESTRAL = "plan_semestral";

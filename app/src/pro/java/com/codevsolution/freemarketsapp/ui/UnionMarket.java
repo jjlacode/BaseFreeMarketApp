@@ -77,5 +77,10 @@ public class UnionMarket extends FragmentGridImagen {
 
     }
 
+    @Override
+    public void setOnClickRV(Object object) {
+
+    }
+
 
 }

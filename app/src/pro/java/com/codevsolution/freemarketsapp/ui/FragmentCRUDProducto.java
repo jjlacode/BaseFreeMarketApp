@@ -518,7 +518,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
         bundle = new Bundle();
         putBundle(MODULO, true);
-        addFragment(bundle, new AltaProductosCli(this), idViewGroupCli);
+        addFragmentChildNoStack(bundle, new AltaProductosCli(this), idViewGroupCli);
         actualizarArrays(lyCli);
         gone(lyCli.getViewGroup());
 
@@ -597,7 +597,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
         bundle = new Bundle();
         putBundle(MODULO, true);
-        addFragment(bundle, new AltaProductosPro(this), idViewGroupPro);
+        addFragmentChildNoStack(bundle, new AltaProductosPro(this), idViewGroupPro);
 
         actualizarArrays(lyPro);
         gone(lyPro.getViewGroup());

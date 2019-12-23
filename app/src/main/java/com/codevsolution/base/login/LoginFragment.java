@@ -148,7 +148,7 @@ public class LoginFragment extends Fragment implements LoginContract.View {
             mCallback = (Callback) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " debe implementar Callback");
+                    + " debe implementar CallbackDatos");
         }
     }
 

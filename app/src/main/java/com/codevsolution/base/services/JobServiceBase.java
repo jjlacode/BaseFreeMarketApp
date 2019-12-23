@@ -28,12 +28,14 @@ import com.google.firebase.database.ValueEventListener;
 public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
         JavaUtil.Constantes, InteractorBase.Constantes {
 
+    protected String idUserCode;
     protected String idUser;
     private String idChat;
     private DatabaseReference dbFirebase;
     private static String ultimoIdChild = NULL;
 
     public JobServiceBase() {
+
     }
 
     @Override
@@ -46,11 +48,12 @@ public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
 
                 FirebaseAuth auth = FirebaseAuth.getInstance();
                 idUser = AndroidUtil.getSharePreference(getApplicationContext(), USERID, USERID, NULL);
+                idUserCode = AndroidUtil.getSharePreference(getApplicationContext(), USERID, USERIDCODE, NULL);
 
 
-                if (auth.getUid() != null && auth.getUid().equals(idUser)) {
+                if (auth.getUid() != null && auth.getUid().equals(idUserCode)) {
 
-                    dbFirebase = FirebaseDatabase.getInstance().getReference().child(CHAT).child(idUser);
+                    dbFirebase = FirebaseDatabase.getInstance().getReference().child(CHAT).child(idUserCode);
 
                     ValueEventListener eventListenerProd = new ValueEventListener() {
                         @Override
@@ -80,26 +83,26 @@ public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
                                         if (chat.getString(CHAT_USUARIO).equals(msgChat.getIdOrigen()) && chat.getString(CHAT_TIPO).equals(msgChat.getTipo())) {
 
                                             values = new ContentValues();
-                                            values.put(CHAT_USUARIO, msgChat.getIdOrigen());
-                                            values.put(CHAT_NOMBRE, msgChat.getNombre());
-                                            values.put(CHAT_TIPO, msgChat.getTipo());
-                                            values.put(CHAT_CREATE, TimeDateUtil.ahora());
-                                            values.put(CHAT_TIMESTAMP, TimeDateUtil.ahora());
+                                            ConsultaBD.putDato(values, CHAT_USUARIO, msgChat.getIdOrigen());
+                                            ConsultaBD.putDato(values, CHAT_NOMBRE, msgChat.getNombre());
+                                            ConsultaBD.putDato(values, CHAT_TIPO, msgChat.getTipo());
+                                            ConsultaBD.putDato(values, CHAT_CREATE, TimeDateUtil.ahora());
+                                            ConsultaBD.putDato(values, CHAT_TIMESTAMP, TimeDateUtil.ahora());
                                             CRUDutil.actualizarRegistro(chat, values);
                                             if (primerReg || msgChat.getFecha() > detChat.getLong(DETCHAT_FECHA)) {
                                                 idChat = chat.getString(CHAT_ID_CHAT);
                                                 values = new ContentValues();
-                                                values.put(DETCHAT_ID_CHAT, idChat);
-                                                values.put(DETCHAT_MENSAJE, msgChat.getMensaje());
-                                                values.put(DETCHAT_URL, msgChat.getUrl());
-                                                values.put(DETCHAT_FECHA, msgChat.getFecha());
-                                                values.put(DETCHAT_CREATE, TimeDateUtil.ahora());
-                                                values.put(DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
-                                                values.put(DETCHAT_TIPO, RECIBIDO);
+                                                ConsultaBD.putDato(values, DETCHAT_ID_CHAT, idChat);
+                                                ConsultaBD.putDato(values, DETCHAT_MENSAJE, msgChat.getMensaje());
+                                                ConsultaBD.putDato(values, DETCHAT_URL, msgChat.getUrl());
+                                                ConsultaBD.putDato(values, DETCHAT_FECHA, msgChat.getFecha());
+                                                ConsultaBD.putDato(values, DETCHAT_CREATE, TimeDateUtil.ahora());
+                                                ConsultaBD.putDato(values, DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
+                                                ConsultaBD.putDato(values, DETCHAT_TIPO, RECIBIDO);
                                                 int sec = ConsultaBD.secInsertRegistroDetalle(CAMPOS_DETCHAT, idChat, values);
                                                 if (sec > 0) {
                                                     detChat = ConsultaBD.queryObjectDetalle(CAMPOS_DETCHAT, idChat, sec);
-                                                    FirebaseDatabase.getInstance().getReference().child(CHAT).child(idUser).child(idChild).removeValue();
+                                                    FirebaseDatabase.getInstance().getReference().child(CHAT).child(idUserCode).child(idChild).removeValue();
                                                     Intent intent = new Intent(ACCION_AVISOMSGCHAT).putExtra(CHAT, detChat);
                                                     sendBroadcast(intent);
                                                     ultimoIdChild = idChild;
@@ -111,24 +114,24 @@ public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
                                     }
                                     if (cChat == 0) {
                                         values = new ContentValues();
-                                        values.put(CHAT_USUARIO, msgChat.getIdOrigen());
-                                        values.put(CHAT_NOMBRE, msgChat.getNombre());
-                                        values.put(CHAT_TIPO, msgChat.getTipo());
-                                        values.put(CHAT_CREATE, TimeDateUtil.ahora());
-                                        values.put(CHAT_TIMESTAMP, TimeDateUtil.ahora());
+                                        ConsultaBD.putDato(values, CHAT_USUARIO, msgChat.getIdOrigen());
+                                        ConsultaBD.putDato(values, CHAT_NOMBRE, msgChat.getNombre());
+                                        ConsultaBD.putDato(values, CHAT_TIPO, msgChat.getTipo());
+                                        ConsultaBD.putDato(values, CHAT_CREATE, TimeDateUtil.ahora());
+                                        ConsultaBD.putDato(values, CHAT_TIMESTAMP, TimeDateUtil.ahora());
                                         idChat = ConsultaBD.idInsertRegistro(TABLA_CHAT, values);
                                         values = new ContentValues();
-                                        values.put(DETCHAT_ID_CHAT, idChat);
-                                        values.put(DETCHAT_MENSAJE, msgChat.getMensaje());
-                                        values.put(DETCHAT_URL, msgChat.getUrl());
-                                        values.put(DETCHAT_FECHA, msgChat.getFecha());
-                                        values.put(DETCHAT_CREATE, TimeDateUtil.ahora());
-                                        values.put(DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
-                                        values.put(DETCHAT_TIPO, RECIBIDO);
+                                        ConsultaBD.putDato(values, DETCHAT_ID_CHAT, idChat);
+                                        ConsultaBD.putDato(values, DETCHAT_MENSAJE, msgChat.getMensaje());
+                                        ConsultaBD.putDato(values, DETCHAT_URL, msgChat.getUrl());
+                                        ConsultaBD.putDato(values, DETCHAT_FECHA, msgChat.getFecha());
+                                        ConsultaBD.putDato(values, DETCHAT_CREATE, TimeDateUtil.ahora());
+                                        ConsultaBD.putDato(values, DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
+                                        ConsultaBD.putDato(values, DETCHAT_TIPO, RECIBIDO);
                                         int sec = ConsultaBD.secInsertRegistroDetalle(CAMPOS_DETCHAT, idChat, values);
                                         if (sec > 0) {
                                             ModeloSQL detChat = ConsultaBD.queryObjectDetalle(CAMPOS_DETCHAT, idChat, sec);
-                                            FirebaseDatabase.getInstance().getReference().child(CHAT).child(idUser).child(idChild).removeValue();
+                                            FirebaseDatabase.getInstance().getReference().child(CHAT).child(idUserCode).child(idChild).removeValue();
                                             Intent intent = new Intent(ACCION_AVISOMSGCHAT).putExtra(CHAT, detChat);
                                             sendBroadcast(intent);
                                             ultimoIdChild = idChild;

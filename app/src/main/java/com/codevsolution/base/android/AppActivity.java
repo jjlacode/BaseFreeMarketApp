@@ -114,6 +114,11 @@ public class AppActivity extends Application {
 
     }
 
+    public static String getDirData() {
+
+        return context.getApplicationInfo().dataDir;
+    }
+
     public static String getPackage() {
         return context.getPackageName();
     }
@@ -656,7 +661,7 @@ public class AppActivity extends Application {
 
     }
 
-    private static void sendImageWhatsApp(String phoneNumber, String nombreImagen) {
+    public static void sendImageWhatsApp(String phoneNumber, String nombreImagen) {
         try {
             Intent intent = new Intent("android.intent.action.MAIN");
             intent.setAction(Intent.ACTION_SEND);
@@ -670,7 +675,7 @@ public class AppActivity extends Application {
         }
     }
 
-    private static void sendImageWhatsApp(String phoneNumber, Uri uri) {
+    public static void sendImageWhatsApp(String phoneNumber, Uri uri) {
         try {
             Intent intent = new Intent("android.intent.action.MAIN");
             intent.setAction(Intent.ACTION_SEND);
@@ -684,4 +689,34 @@ public class AppActivity extends Application {
         }
     }
 
+    public static void openApp(String appName) {
+        Intent goToMarket = new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("market://details?id=%s", appName)));
+        goToMarket.setFlags(FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(goToMarket);
+    }
+
+    public void checkApptoInstall(String appName) {
+
+        if (!AndroidUtil.isPackageExisted(context, appName)) {
+            installApp(appName);
+        }
+    }
+
+    public void installApp(String appName) {
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+        intent.setData(Uri.parse(
+                "https://play.google.com/store/apps/details?id=" + appName));
+        intent.setPackage("com.android.vending");
+        context.startActivity(intent);
+    }
+
+    public static void openApp(String appName, File file) {
+        Intent goToMarket = new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("market://details?id=%s", appName)));
+        Uri uri = FileProvider.getUriForFile(context, getFileProvider(), file);
+        goToMarket.setDataAndType(uri, "application/octet-stream");
+        goToMarket.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        context.startActivity(goToMarket);
+    }
 }

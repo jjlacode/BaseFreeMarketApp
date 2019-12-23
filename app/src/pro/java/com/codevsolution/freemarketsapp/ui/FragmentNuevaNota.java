@@ -94,4 +94,9 @@ public class FragmentNuevaNota extends FragmentGridImagen implements Interactor.
 
     }
 
+    @Override
+    public void setOnClickRV(Object object) {
+
+    }
+
 }

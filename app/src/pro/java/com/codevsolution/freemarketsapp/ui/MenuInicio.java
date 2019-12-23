@@ -1,7 +1,6 @@
 package com.codevsolution.freemarketsapp.ui;
 
 import android.os.Bundle;
-import android.view.View;
 
 import com.codevsolution.base.android.FragmentGridImagen;
 import com.codevsolution.freemarketsapp.R;
@@ -61,11 +60,10 @@ public class MenuInicio extends FragmentGridImagen {
 
     }
 
-
     @Override
-    protected void onClickRV(View v) {
+    public void setOnClickRV(Object object) {
 
-        GridModel gridModel = (GridModel) lista.get(rv.getChildAdapterPosition(v));
+        GridModel gridModel = (GridModel) object;
 
         String nombre = gridModel.getNombre();
 
@@ -80,12 +78,12 @@ public class MenuInicio extends FragmentGridImagen {
 
         } else if (nombre.equals(proyectos)) {
 
-            activityBase.getSupportFragmentManager().beginTransaction()
+            getFragmentManager().beginTransaction()
                     .replace(R.id.content_main, new MenuGestionProyectos()).addToBackStack(null).commit();
 
         } else if (nombre.equals(ajustes)) {
 
-            activityBase.getSupportFragmentManager().beginTransaction()
+            getFragmentManager().beginTransaction()
                     .replace(R.id.content_main, new MenuInformesAjustes()).addToBackStack(null).commit();
 
         } else if (nombre.equals(marketing)) {
@@ -112,7 +110,6 @@ public class MenuInicio extends FragmentGridImagen {
 
 
         }
-
 
     }
 

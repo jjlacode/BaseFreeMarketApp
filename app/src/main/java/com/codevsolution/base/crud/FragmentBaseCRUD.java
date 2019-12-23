@@ -182,7 +182,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
             actual = bundle.getString(ACTUAL);
             actualtemp = bundle.getString(ACTUALTEMP);
             nuevo = bundle.getBoolean(NUEVOREGISTRO);
-            if (subTitulo == null) {
+            if (subTitulo == null && tituloPlural > 0) {
                 subTitulo = getString(tituloPlural);
             }
             listab = (ListaModeloSQL) bundle.getSerializable(LISTA);
@@ -229,9 +229,9 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     protected void datos() {
         Log.d(TAG, getMetodo());
 
-        if (nn(callback)) {
+        if (nn(callbackDatos)) {
 
-            callback.onBeforeSetdatos();
+            callbackDatos.onBeforeSetdatos();
 
         }
 
@@ -271,9 +271,9 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
             setDatos();
             obtenerDatosEdit();
 
-            if (nn(callback)) {
+            if (nn(callbackDatos)) {
 
-                callback.onAfterSetDatos();
+                callbackDatos.onAfterSetDatos();
 
             }
 
@@ -811,7 +811,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         Log.d(TAG, getMetodo());
         //cargarBundle();
 
-        cruDutil = new CRUDutil((FragmentBaseCRUD) setFragment());
         if (bundle != null) {
             enviarBundle();
             enviarAct();

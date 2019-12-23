@@ -3,6 +3,7 @@ package com.codevsolution.base.sqlite;
 import android.net.Uri;
 
 import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.encrypt.EncryptUtil;
 import com.codevsolution.base.javautil.JavaUtil;
 
 import java.util.ArrayList;
@@ -12,6 +13,9 @@ import static com.codevsolution.base.logica.InteractorBase.Constantes.CHAT;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.DETCHAT;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.LOG;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.MARCADOR;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.USERIDCODE;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.USERS;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.ZONA;
 
 
@@ -37,6 +41,7 @@ public class ContratoSystem implements JavaUtil.Constantes {
 
 
         String TABLA_CHAT = CHAT;
+        String TABLA_USERS = USERS;
         String TABLA_DETCHAT = DETCHAT;
         String TABLA_MARCADOR = MARCADOR;
         String TABLA_ZONA = ZONA;
@@ -52,6 +57,12 @@ public class ContratoSystem implements JavaUtil.Constantes {
         String CHAT_TIPO = CAMPO_TIPO + TABLA_CHAT;
         String CHAT_CREATE = CAMPO_CREATEREG;
         String CHAT_TIMESTAMP = CAMPO_TIMESTAMP;
+
+        String USERS_ID_USERS = CAMPO_ID + TABLA_USERS;
+        String USERS_USERID = USERID + TABLA_USERS;
+        String USERS_USERIDCODE = USERIDCODE + TABLA_USERS;
+        String USERS_CREATE = CAMPO_CREATEREG;
+        String USERS_TIMESTAMP = CAMPO_TIMESTAMP;
 
         String DETCHAT_ID_CHAT = CAMPO_ID + TABLA_DETCHAT + TABLA_CHAT;
         String DETCHAT_SECUENCIA = CAMPO_SECUENCIA;
@@ -102,6 +113,14 @@ public class ContratoSystem implements JavaUtil.Constantes {
                 CHAT_TIPO, "TEXT NON NULL DEFAULT 'chat'", STRING,
                 CHAT_CREATE, "TEXT NON NULL DEFAULT 0", LONG,
                 CHAT_TIMESTAMP, "TEXT NON NULL DEFAULT 0", LONG
+        };
+
+        String[] CAMPOS_USERS = {"17", TABLA_USERS,
+                USERS_ID_USERS, "TEXT NON NULL", STRING,
+                USERS_USERID, "TEXT NON NULL", STRING,
+                USERS_USERIDCODE, "TEXT NON NULL", STRING,
+                USERS_CREATE, "TEXT NON NULL DEFAULT 0", LONG,
+                USERS_TIMESTAMP, "TEXT NON NULL DEFAULT 0", LONG
         };
 
         String[] CAMPOS_DETCHAT = {"29", TABLA_DETCHAT,
@@ -166,6 +185,8 @@ public class ContratoSystem implements JavaUtil.Constantes {
         listaCampos.add(Tablas.CAMPOS_MARCADOR);
         listaCampos.add(Tablas.CAMPOS_ZONA);
         listaCampos.add(Tablas.CAMPOS_LOG);
+        listaCampos.add(Tablas.CAMPOS_USERS);
+
         return listaCampos;
     }
 
@@ -240,7 +261,7 @@ public class ContratoSystem implements JavaUtil.Constantes {
     }
 
     public static String generarIdTabla(String tabla) {
-        return tabla + UUID.randomUUID().toString();
+        return EncryptUtil.codificaStr(tabla + UUID.randomUUID().toString());
     }
 
     public static String obtenerIdTabla(Uri uri) {

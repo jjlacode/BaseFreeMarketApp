@@ -70,7 +70,7 @@ public class CRUDutil {
         icFragmentos = fragmentBaseCRUD.getIcFragmentos();
         setParamsFragment();
         setMetrics();
-        fragmentBaseCRUD.setCallback(new FragmentBase.Callback() {
+        fragmentBaseCRUD.setCallbackDatos(new FragmentBase.CallbackDatos() {
             @Override
             public void onAfterSetDatos() {
                 System.out.println("onAfterSetDatos");

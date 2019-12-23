@@ -38,7 +38,6 @@ import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
 import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
-import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
 
 public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.ConstantesPry,
         ContratoPry.Tablas {
@@ -622,12 +621,13 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
         public ViewHolderRV(View itemView) {
             super(itemView);
 
-            relativeLayout = itemView.findViewById(R.id.ry_item_list);
+            //relativeLayout = itemView.findViewById(R.id.ry_item_list);
         }
 
         @Override
         public void bind(ModeloSQL modeloSQL) {
 
+            relativeLayout = itemView.findViewById(R.id.ry_item_list);
             ViewGroupLayout vistaCard = new ViewGroupLayout(contexto,relativeLayout,new CardView(contexto));
             card = (CardView) vistaCard.getViewGroup();
             LinearLayoutCompat mainLinear = (LinearLayoutCompat) vistaCard.addVista(new LinearLayoutCompat(contexto));

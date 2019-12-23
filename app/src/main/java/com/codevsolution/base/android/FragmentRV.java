@@ -15,16 +15,17 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.codevsolution.base.adapter.ListaAdaptadorFiltro;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.style.Estilos;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
+
+//import com.codevsolution.freemarketsapp.logica.Interactor;
 
 public abstract class FragmentRV extends FragmentBase {
 
@@ -47,9 +48,11 @@ public abstract class FragmentRV extends FragmentBase {
     protected ArrayList lista;
     protected int tituloPlural;
     protected String[] campos;
-    protected ModeloSQL modeloSQL;
     protected OneFrameLayout fragment_container;
     protected RecyclerView.LayoutManager layoutManager;
+    protected boolean multiColunas;
+    protected Object object;
+    protected ModeloSQL modeloSQL;
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
@@ -68,26 +71,26 @@ public abstract class FragmentRV extends FragmentBase {
 
         //rv = viewRV.findViewById(R.id.rv);
         rv = viewRV.findViewById(Estilos.getIdResource(contexto, "rv"));
-        refreshLayout = viewRV.findViewById(R.id.swipeRefresh);
-        auto = viewRV.findViewById(R.id.auto);
-        buscar = viewRV.findViewById(R.id.imgbuscar);
-        renovar = viewRV.findViewById(R.id.imgrenovar);
-        inicio = viewRV.findViewById(R.id.imginicio);
-        lupa = viewRV.findViewById(R.id.imgsearch);
-        voz = viewRV.findViewById(R.id.imgvoz);
-        fragment_container = view.findViewById(R.id.frameanimation);
-        btnback = viewBotones.findViewById(R.id.btn_back);
-        btndelete = viewBotones.findViewById(R.id.btn_del);
-        btnsave = viewBotones.findViewById(R.id.btn_save);
+        refreshLayout = viewRV.findViewById(Estilos.getIdResource(contexto, "swipeRefresh"));
+        auto = viewRV.findViewById(Estilos.getIdResource(contexto, "auto"));
+        buscar = viewRV.findViewById(Estilos.getIdResource(contexto, "imgbuscar"));
+        renovar = viewRV.findViewById(Estilos.getIdResource(contexto, "imgrenovar"));
+        inicio = viewRV.findViewById(Estilos.getIdResource(contexto, "imginicio"));
+        lupa = viewRV.findViewById(Estilos.getIdResource(contexto, "imgsearch"));
+        voz = viewRV.findViewById(Estilos.getIdResource(contexto, "imgvoz"));
+        fragment_container = view.findViewById(Estilos.getIdResource(contexto, "frameanimation"));
+        btnback = viewBotones.findViewById(Estilos.getIdResource(contexto, "btn_back"));
+        btndelete = viewBotones.findViewById(Estilos.getIdResource(contexto, "btn_del"));
+        btnsave = viewBotones.findViewById(Estilos.getIdResource(contexto, "btn_save"));
 
         gone(btndelete);
         gone(btnsave);
 
         refreshLayout.setColorSchemeResources(
-                R.color.s1,
-                R.color.s2,
-                R.color.s3,
-                R.color.s4
+                Estilos.getIdColor(contexto, "s1"),
+                Estilos.getIdColor(contexto, "s2"),
+                Estilos.getIdColor(contexto, "s3"),
+                Estilos.getIdColor(contexto, "s4")
         );
 
 
@@ -179,7 +182,8 @@ public abstract class FragmentRV extends FragmentBase {
 
                 setRv();
                 if (subTitulo == null) {
-                    activityBase.toolbar.setSubtitle(Interactor.setNamefdef());
+                    subTitulo = setSubtitulo();
+                    icFragmentos.showSubTitle(subTitulo);
                 }
             }
         });
@@ -211,6 +215,10 @@ public abstract class FragmentRV extends FragmentBase {
         setAcciones();
     }
 
+    protected String setSubtitulo() {
+        return getString(tituloPlural);
+    }
+
     protected void setControls(View view) {
     }
 
@@ -235,9 +243,18 @@ public abstract class FragmentRV extends FragmentBase {
 
     }
 
+    protected void setMultiColumnas() {
+
+        multiColunas = true;
+    }
+
     protected void setRv() {
 
-        int columnas = (int) (rv.getWidth() / (metrics.density * 300));
+        setMultiColumnas();
+        int columnas = 1;
+        if (multiColunas) {
+            columnas = (int) (rv.getWidth() / (metrics.density * 300));
+        }
         if (columnas < 1) {
             columnas = 1;
         }
@@ -288,6 +305,11 @@ public abstract class FragmentRV extends FragmentBase {
 
     }
 
+    protected ListaAdaptadorFiltro setAdaptadorAutoFiltro
+            (Context context, int layoutItem, ArrayList lista, String[] campos) {
+        return null;
+    }
+
     protected abstract ListaAdaptadorFiltroModelo setAdaptadorAuto
             (Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos);
 
@@ -312,6 +334,10 @@ public abstract class FragmentRV extends FragmentBase {
 
     public abstract void setOnClickRV(Object object);
 
+    public void setOnClickRV(Object object, int position) {
+
+    }
+
 
     protected void setOnItemClickAuto() {
 
@@ -320,7 +346,7 @@ public abstract class FragmentRV extends FragmentBase {
             public void onItemClick(AdapterView<?> parent, View view, int position, long ids) {
 
                 auto.setText("");
-                modeloSQL = adaptadorFiltroRV.getItem(position);
+                object = adaptadorFiltroRV.getItem(position);
 
                 selector();
 

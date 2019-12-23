@@ -42,6 +42,10 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
     protected void selector() {
         Log.d(TAG, getMetodo());
 
+        if (cruDutil == null) {
+            cruDutil = new CRUDutil((FragmentBaseCRUD) setFragment());
+        }
+
         if (nuevo) {
 
             if (tablaCab == null) {
@@ -335,7 +339,7 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
                 System.out.println("id = " + id);
                 modeloSQL = ConsultaBD.queryObject(campos, id);
                 //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                //db.child(idUser).child(tabla).child(id).setValue(convertirModelo(modeloSQL));
+                //db.child(idUserCode).child(tabla).child(id).setValue(convertirModelo(modeloSQL));
                 if (id != null) {
                     System.out.println("Registro creado");
                     System.out.println("modeloSQL = " + modeloSQL);

@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.os.Environment;
 
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
@@ -58,6 +59,9 @@ public class ProviderSystem extends ContentProvider
     public static final int LOG = 210;
     public static final int LOG_ID = 211;
 
+    public static final int USERS = 212;
+    public static final int USERS_ID = 213;
+
     public static final String AUTORIDAD = AUTORIDAD_CONTENIDO;//"jjlacode.com.freelanceproject2";
 
     static {
@@ -81,6 +85,9 @@ public class ProviderSystem extends ContentProvider
         uriMatcher.addURI(AUTORIDAD, TABLA_LOG, LOG);
         uriMatcher.addURI(AUTORIDAD, TABLA_LOG + "/*", LOG_ID);
 
+        uriMatcher.addURI(AUTORIDAD, TABLA_USERS, USERS);
+        uriMatcher.addURI(AUTORIDAD, TABLA_USERS + "/*", USERS_ID);
+
 
     }
 
@@ -93,7 +100,7 @@ public class ProviderSystem extends ContentProvider
     public boolean onCreate() {
 
         String idUser = AndroidUtil.getSharePreference(getContext(), USERID, USERID, NULL);
-        String pathDb = "/data/data/" + AppActivity.getPackage(getContext()) + "/databases/";
+        String pathDb = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage(getContext()) + "/databases/";
         bd = new DataBaseSystem(getContext(), idUser, pathDb);
         resolver = getContext().getContentResolver();
         return true;
@@ -124,6 +131,10 @@ public class ProviderSystem extends ContentProvider
                 return generarMime(TABLA_LOG);
             case LOG_ID:
                 return generarMimeItem(TABLA_LOG);
+            case USERS:
+                return generarMime(TABLA_USERS);
+            case USERS_ID:
+                return generarMimeItem(TABLA_USERS);
 
             default:
                 throw new UnsupportedOperationException("Uri desconocida =>" + uri);
@@ -243,6 +254,25 @@ public class ProviderSystem extends ContentProvider
                 setTablas = tabla;
                 proyeccion = tabla + ".*";
                 idTabla = LOG_ID_LOG;
+                esDetalle = false;
+                esId = true;
+                break;
+
+            case USERS:
+                tabla = TABLA_USERS;
+                setTablas = tabla;
+                proyeccion = tabla + ".*";
+                idTabla = USERS_ID_USERS;
+                esDetalle = false;
+                esId = false;
+                break;
+
+            case USERS_ID:
+
+                tabla = TABLA_USERS;
+                setTablas = tabla;
+                proyeccion = tabla + ".*";
+                idTabla = USERS_ID_USERS;
                 esDetalle = false;
                 esId = true;
                 break;

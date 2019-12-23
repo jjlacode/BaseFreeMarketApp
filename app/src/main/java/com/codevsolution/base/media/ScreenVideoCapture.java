@@ -258,7 +258,7 @@ public class ScreenVideoCapture extends Fragment {
         // Start the video input.
         mMediaProjection.createVirtualDisplay("Recording Display", screenWidth,
                 screenHeight, screenDensity, 0 /* flags */, mInputSurface,
-                null /* callback */, null /* handler */);
+                null /* callbackDatos */, null /* handler */);
 
         // Start the encoders
         drainEncoder();

@@ -298,7 +298,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
             public void onMyLocationClickListener(long latUser, long lonUser, ArrayList<String> paisUser) {
 
                 //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                //db.child(idUser).child(LOCALIZACION).setValue(paisUser);
+                //db.child(idUserCode).child(LOCALIZACION).setValue(paisUser);
                 firebaseUtil.setValue(ContratoFirebase.getRutaUser(), LOCALIZACION, paisUser, null);
             }
 
@@ -306,7 +306,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
             public void onMarkerDragEnd(ListaModeloSQL listaZonasDel, ListaModeloSQL listaZonasAdd, ArrayList<String> paisUser) {
 
                 //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                //db.child(idUser).child(LOCALIZACION).setValue(paisUser);
+                //db.child(idUserCode).child(LOCALIZACION).setValue(paisUser);
                 firebaseUtil.setValue(ContratoFirebase.getRutaUser(), LOCALIZACION, paisUser, null);
             }
 
@@ -321,7 +321,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
             public void onEnable(ArrayList<String> listaUbicaciones) {
 
                 //DatabaseReference db = FirebaseDatabase.getInstance().getReference();
-                //db.child(idUser).child(LOCALIZACION).setValue(listaUbicaciones);
+                //db.child(idUserCode).child(LOCALIZACION).setValue(listaUbicaciones);
                 firebaseUtil.setValue(ContratoFirebase.getRutaUser(), LOCALIZACION, listaUbicaciones, null);
             }
 

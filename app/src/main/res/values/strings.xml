@@ -549,6 +549,14 @@
     <string name="nueva_nota_video">Nueva nota de video</string>
     <string name="nueva_nota_imagen">Nueva nota de imagen</string>
     <string name="trabajo">Trabajo</string>
+    <string name="search">Búsqueda</string>
+    <string name="new_folder">Nueva carpeta</string>
+    <string name="basedatosutil">Utilidades bases de datos</string>
+    <string name="restauradb">Restaurar base datos</string>
+    <string name="backup">Backup BD</string>
+    <string name="filemanager">Manager  Archivos</string>
+    <string name="managerbd">Operar con bases de datos</string>
+    <string name="copiadb">Copia de seguridad bd creada</string>
 
 
 </resources>

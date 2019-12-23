@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment;
 
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.crud.CRUDutil;
-import com.codevsolution.base.encrypt.EncryptUtil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.models.DestinosVoz;
@@ -99,6 +98,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
         String MENUCRM = "menuCRM";
         String MENUMARKETING = "menuMarketing";
         String MENUUM = "menuUM";
+        String MENUDB = "menuDB";
         String PRIORIDAD = "prioridad";
         String DIASPASADOS = "diaspasados";
         String DIASFUTUROS = "diasfuturos";

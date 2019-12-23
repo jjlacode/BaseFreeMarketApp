@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/lybusca_rv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -56,7 +57,7 @@
             android:layout_weight="3"
             android:minHeight="30dp"
             app:srcCompat="@drawable/ic_inicio_black_24dp"/>
-    </LinearLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
     <com.codevsolution.base.animation.OneFrameLayout
         android:id="@+id/frameanimation"

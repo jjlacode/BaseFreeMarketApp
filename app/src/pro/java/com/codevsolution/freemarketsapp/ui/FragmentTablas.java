@@ -159,4 +159,9 @@ public class FragmentTablas extends FragmentGridImagen implements Interactor.Con
 
     }
 
+    @Override
+    public void setOnClickRV(Object object) {
+
+    }
+
 }

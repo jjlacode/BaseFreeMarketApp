@@ -41,4 +41,6 @@ public interface ICFragmentos {
     void showSubTitle(String subTitle);
 
     void enviarAyudaWeb(String ayudaWeb);
+
+    void playTTs(String texto);
 }

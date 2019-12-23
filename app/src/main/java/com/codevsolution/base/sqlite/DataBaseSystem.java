@@ -5,9 +5,11 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 
+import static com.codevsolution.base.logica.InteractorBase.Constantes.SYSTEM;
+
 public class DataBaseSystem extends DataBaseBase {
 
-    private static final String NOMBRE_BASE_DATOS = "system";
+    private static final String NOMBRE_BASE_DATOS = SYSTEM;
 
     private static final int VERSION_ACTUAL = 1;
 

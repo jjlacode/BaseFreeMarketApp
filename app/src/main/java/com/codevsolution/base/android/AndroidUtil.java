@@ -6,6 +6,8 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -35,10 +37,12 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.USERIDCODE;
 
 public class AndroidUtil extends AppCompatActivity {
 
@@ -59,6 +63,19 @@ public class AndroidUtil extends AppCompatActivity {
                     "Tú dispositivo no soporta el reconocimiento por voz",
                     Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public static boolean isPackageExisted(Context context, String targetPackage) {
+        List<ApplicationInfo> packages;
+        PackageManager pm;
+
+        pm = context.getPackageManager();
+        packages = pm.getInstalledApplications(0);
+        for (ApplicationInfo packageInfo : packages) {
+            if (packageInfo.packageName.equals(targetPackage))
+                return true;
+        }
+        return false;
     }
 
     public static String getSystemLocale() {
@@ -661,7 +678,7 @@ public class AndroidUtil extends AppCompatActivity {
 
     public static SharedPreferences openSharePreference(Context contexto, String sharePreference) {
 
-        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERIDCODE, NULL);
         if (!sharePreference.equals(USERID)) {
             sharePreference += idUser;
         }
@@ -670,7 +687,7 @@ public class AndroidUtil extends AppCompatActivity {
 
     public static void setSharePreference(Context contexto, String sharePreference, String key, String valor) {
 
-        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERIDCODE, NULL);
         if (!sharePreference.equals(USERID)) {
             sharePreference += idUser;
         }
@@ -694,7 +711,7 @@ public class AndroidUtil extends AppCompatActivity {
 
     public static void setSharePreference(Context contexto, String sharePreference, String key, int valor) {
 
-        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERIDCODE, NULL);
         if (!sharePreference.equals(USERID)) {
             sharePreference += idUser;
         }
@@ -707,7 +724,7 @@ public class AndroidUtil extends AppCompatActivity {
 
     public static void setSharePreference(Context contexto, String sharePreference, String key, long valor) {
 
-        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERIDCODE, NULL);
         if (!sharePreference.equals(USERID)) {
             sharePreference += idUser;
         }
@@ -720,7 +737,7 @@ public class AndroidUtil extends AppCompatActivity {
 
     public static void setSharePreference(Context contexto, String sharePreference, String key, boolean valor) {
 
-        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERIDCODE, NULL);
         if (!sharePreference.equals(USERID)) {
             sharePreference += idUser;
         }
@@ -733,7 +750,7 @@ public class AndroidUtil extends AppCompatActivity {
 
     public static void setSharePreference(Context contexto, String sharePreference, String key, float valor) {
 
-        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERIDCODE, NULL);
         if (!sharePreference.equals(USERID)) {
             sharePreference += idUser;
         }
@@ -747,7 +764,7 @@ public class AndroidUtil extends AppCompatActivity {
     public static String getSharePreference(Context contexto, String sharePreference, String key, String defecto) {
 
         try {
-            String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+            String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERIDCODE, NULL);
             if (!sharePreference.equals(USERID)) {
                 sharePreference += idUser;
             }
@@ -776,7 +793,7 @@ public class AndroidUtil extends AppCompatActivity {
 
     public static int getSharePreference(Context contexto, String sharePreference, String key, int defecto) {
 
-        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERIDCODE, NULL);
         if (!sharePreference.equals(USERID)) {
             sharePreference += idUser;
         }
@@ -788,7 +805,7 @@ public class AndroidUtil extends AppCompatActivity {
 
     public static long getSharePreference(Context contexto, String sharePreference, String key, long defecto) {
 
-        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERIDCODE, NULL);
         if (!sharePreference.equals(USERID)) {
             sharePreference += idUser;
         }
@@ -800,7 +817,7 @@ public class AndroidUtil extends AppCompatActivity {
 
     public static boolean getSharePreference(Context contexto, String sharePreference, String key, boolean defecto) {
 
-        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERIDCODE, NULL);
         if (!sharePreference.equals(USERID)) {
             sharePreference += idUser;
         }
@@ -812,7 +829,7 @@ public class AndroidUtil extends AppCompatActivity {
 
     public static float getSharePreference(Context contexto, String sharePreference, String key, float defecto) {
 
-        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERID, NULL);
+        String idUser = AndroidUtil.getSharePreferenceMaster(contexto, USERID, USERIDCODE, NULL);
         if (!sharePreference.equals(USERID)) {
             sharePreference += idUser;
         }

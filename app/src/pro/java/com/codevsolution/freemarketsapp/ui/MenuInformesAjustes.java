@@ -3,6 +3,7 @@ package com.codevsolution.freemarketsapp.ui;
 import android.view.View;
 
 import com.codevsolution.base.android.FragmentGridImagen;
+import com.codevsolution.base.file.filemanager.FileManagerMain;
 import com.codevsolution.freemarketsapp.R;
 
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ public class MenuInformesAjustes extends FragmentGridImagen {
     private String diario;
     private String perfilesUser;
     private String estadisticas;
+    private String dataBase;
+    private String fileManager;
 
     @Override
     protected void setContext() {
@@ -29,6 +32,8 @@ public class MenuInformesAjustes extends FragmentGridImagen {
         estadisticas = getString(R.string.estadisticas);
         diario = getString(R.string.diario);
         perfilesUser = getString(R.string.perfil_freelance);
+        dataBase = getString(R.string.basedatosutil);
+        fileManager = getString(R.string.filemanager);
 
         lista = new ArrayList<GridModel>();
 
@@ -36,6 +41,8 @@ public class MenuInformesAjustes extends FragmentGridImagen {
         lista.add(new GridModel(R.drawable.ic_estadisticas_indigo, estadisticas));
         lista.add(new GridModel(R.drawable.ic_registro_indigo, diario));
         lista.add(new GridModel(R.drawable.ic_configuracion_indigo, perfilesUser));
+        lista.add(new GridModel(R.drawable.ic_database_indigo, dataBase));
+        lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, fileManager));
 
     }
 
@@ -70,8 +77,23 @@ public class MenuInformesAjustes extends FragmentGridImagen {
             activityBase.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.content_main, new FragmentCRUDPerfil()).addToBackStack(null).commit();
 
+        } else if (nombre.equals(dataBase)) {
+
+            activityBase.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_main, new MenuDB()).addToBackStack(null).commit();
+
+        } else if (nombre.equals(fileManager)) {
+
+            activityBase.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.content_main, new FileManagerMain()).addToBackStack(null).commit();
+
         }
 
+
+    }
+
+    @Override
+    public void setOnClickRV(Object object) {
 
     }
 

@@ -12,7 +12,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
@@ -42,6 +41,7 @@ import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.LockableScrollView;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
+import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.interfaces.ICFragmentos;
 import com.codevsolution.base.javautil.JavaUtil;
@@ -53,7 +53,6 @@ import com.codevsolution.freemarketsapp.settings.Preferencias;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 
@@ -99,16 +98,20 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected LinearLayoutCompat frWeb;
     protected LinearLayoutCompat frCabecera;
     protected LinearLayoutCompat frLista;
+    protected LinearLayoutCompat frListaPie;
     protected LinearLayoutCompat frCuerpo;
 
     protected View viewRV;
     protected View viewCabecera;
+    protected View viewListaPie;
     protected View viewCuerpo;
     protected View viewBotones;
     protected int layoutCuerpo;
     protected int layoutCabecera;
+    protected int layoutListaPie;
     protected int layoutPie;
     protected boolean cabecera;
+    protected boolean listaPie;
     private Chronometer timerg;
     private boolean onTimer;
     protected LayoutInflater inflaterMain;
@@ -156,12 +159,15 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected LinearLayoutCompat frContenedorMod;
     protected ViewGroupLayout vistaMain;
     protected TextToSpeech tts;
+    private String ttsTmp;
+    private boolean isInitTTS;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, getMetodo());
 
+        setHasOptionsMenu(true);
         fragment = setFragment();
         parent = getParent();
         if (contexto == null) {
@@ -200,13 +206,19 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         TAG = setTAG();
 
         perfilUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), PREFERENCIAS, PERFILUSER, NULL);
-        idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERID, NULL);
+        idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERIDCODE, NULL);
 
         setPreferences();
+
+
         super.onCreate(savedInstanceState);
     }
 
     protected abstract FragmentBase setFragment();
+
+    public View getView() {
+        return view;
+    }
 
     protected void setPreferences() {
 
@@ -298,11 +310,13 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         Estilos.setLayoutParamsRelative(frContenedor, frPubli, RelativeLayout.LayoutParams.MATCH_PARENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT, new int[]{RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.ALIGN_PARENT_START});
         frPubli.setOrientation(LinearLayoutCompat.VERTICAL);
-        frPubli.setBackgroundColor(Estilos.colorSecondary);
         frPubli.setMinimumHeight(activityBase.fabVoz.getHeight());
         frLista = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), frCuerpo);
         Estilos.setLayoutParams(frLista);
         frLista.setOrientation(LinearLayoutCompat.VERTICAL);
+        frListaPie = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), frCuerpo);
+        Estilos.setLayoutParams(frListaPie);
+        frListaPie.setOrientation(LinearLayoutCompat.VERTICAL);
         frameAnimationCuerpo = (OneFrameLayout) addVista(new OneFrameLayout(contexto), frCuerpo);
         Estilos.setLayoutParams(frameAnimationCuerpo);
         scrollDetalle = (LockableScrollView) addVista(new LockableScrollView(contexto), frameAnimationCuerpo);
@@ -321,6 +335,9 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         frdetalleExtraspost.setOrientation(LinearLayoutCompat.VERTICAL);
         frWeb = (LinearLayoutCompat) addVista(new LinearLayoutCompat(contexto), lyDetalle);
 
+        ViewImagenLayout logo = new ViewImagenLayout(frPubli, contexto);
+        logo.setImageResource(Estilos.getIdDrawable(contexto, "logo_cds_512_a"));
+
         if (layoutCuerpo == 0) {
             layoutCuerpo = layout;
         }
@@ -329,6 +346,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         tablet = Estilos.getBool(contexto, "esTablet");//getResources().getBoolean(R.bool.esTablet);
 
         viewCabecera = addVista(layoutCabecera, frCabecera);
+        viewListaPie = addVista(layoutListaPie, frListaPie);
         viewCuerpo = addVista(layoutCuerpo, frdetalle);
         viewBotones = addVista(layoutPie, frPie);
 
@@ -366,7 +384,6 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         activityBase.fabNuevo.hide();
         activityBase.fabInicio.hide();
         activityBase.fabVoz.hide();
-
 
         return view;
     }
@@ -425,7 +442,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     }
 
     protected String setTAG() {
-        return getClass().getSimpleName();
+        return getClass().getName();
     }
 
     @Override
@@ -462,11 +479,17 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         bundle = getArguments();
         cargarBundle();
 
+        getPersistencia();
+
+    }
+
+    protected void getPersistencia() {
+
         SharedPreferences persistencia = AndroidUtil.openSharePreference(contexto, PERSISTENCIA);
         TAG = setTAG();
         System.out.println("TAG = " + TAG);
         System.out.println("persistencia.getString(TAGPERS) = " + persistencia.getString(TAGPERS, null));
-
+        System.out.println("cambio = " + persistencia.getBoolean(CAMBIO, false));
         if (!modulo && (persistencia.getBoolean(CAMBIO, false) || (persistencia.getString(TAGPERS, null) != null &&
                 TAG != null && persistencia.getString(TAGPERS, null).equals(TAG)))) {
             System.out.println("Recuperando datos persistencia");
@@ -482,8 +505,6 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         editor.putString(TAGPERS, null);
         editor.apply();
-
-
     }
 
     protected void setRecuperarPersistencia(SharedPreferences persistencia) {
@@ -492,34 +513,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
     protected void reproducir(String text) {
 
-        tts = new TextToSpeech(contexto, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status == TextToSpeech.SUCCESS) {
-                    int result = tts.setLanguage(Locale.getDefault());
-
-                    if (result == TextToSpeech.LANG_MISSING_DATA
-                            || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                        Log.e("TTS", "This Language is not supported");
-                    } else {
-
-                        if (text == null || text.isEmpty())
-                            return;
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            String utteranceId = this.hashCode() + "";
-                            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId);
-                        } else {
-                            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-                        }
-
-                    }
-                } else {
-                    Log.e("TTS", "Initilization Failed!");
-                }
-
-            }
-        });
+        icFragmentos.playTTs(text);
     }
 
     @Override
@@ -556,7 +550,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
     @Override
     public void onPause() {
-        super.onPause();
+
 
         if (listenerSensorProx) {
             sensorManagerProx.unregisterListener(proximitySensorListener);
@@ -569,10 +563,10 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         setActual();
 
         if (!modulo) {
-            SharedPreferences persistencia = getActivity().getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
+            SharedPreferences persistencia = AndroidUtil.openSharePreference(contexto, PERSISTENCIA);
             SharedPreferences.Editor editor = persistencia.edit();
 
-            editor.putString(TAGPERS, setTAG());
+            editor.putString(TAGPERS, fragment.getClass().getName());
             editor.putString(ORIGEN, origen);
             editor.putString(ACTUAL, actual);
             editor.putString(ACTUALTEMP, actualtemp);
@@ -582,7 +576,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
             editor.apply();
         }
 
-
+        super.onPause();
     }
 
     protected void setActual() {
@@ -596,6 +590,9 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
     protected void acciones() {
         Log.d(TAG, getMetodo());
+
+        Estilos.setLayoutParamsRelative(frContenedor, frPubli, RelativeLayout.LayoutParams.MATCH_PARENT,
+                activityBase.fabVoz.getHeight(), new int[]{RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.ALIGN_PARENT_START});
 
         code = 10000;
         contCode = 0;
@@ -678,7 +675,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         if (!modulo) {
             editor.putBoolean(CAMBIO, true);
-            editor.putString(TAGPERS, setTAG());
+            editor.putString(TAGPERS, fragment.getClass().getName());
             editor.putString(ORIGEN, origen);
             editor.putString(ACTUAL, actual);
             editor.putString(ACTUALTEMP, actualtemp);
@@ -698,6 +695,12 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         }
     }
 
+    private Fragment getCurrentFragment() {
+        FragmentManager fragmentManager = getFragmentManager();
+        String fragmentTag = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount() - 1).getName();
+        System.out.println("fragmentTag = " + fragmentTag);
+        return fragmentManager.findFragmentByTag(fragmentTag);
+    }
 
     protected void setSwipeOn(boolean enable) {
         swipeOn = enable;
@@ -1201,7 +1204,17 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         activityBase.reemplazaFragment(bundle, fragment, layout);
     }
 
-    protected void addFragment(Bundle bundle, Fragment fragment, int layout) {
+    protected void addFragmentChild(Bundle bundle, Fragment fragment, int layout) {
+
+        fragment.setArguments(bundle);
+        FragmentManager fr = getChildFragmentManager();//activityBase.getSupportFragmentManager();
+        FragmentTransaction ft = fr.beginTransaction();
+        ft.add(layout, fragment).addToBackStack(fragment.getTag());
+        ft.commit();
+
+    }
+
+    protected void addFragmentChildNoStack(Bundle bundle, Fragment fragment, int layout) {
 
         fragment.setArguments(bundle);
         FragmentManager fr = getChildFragmentManager();//activityBase.getSupportFragmentManager();
@@ -1235,6 +1248,9 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
     protected View addVista(View view, ViewGroup viewGroup) {
 
+        if (view.getParent() != null) {
+            ((ViewGroup) view.getParent()).removeView(view); // <- fix
+        }
         viewGroup.addView(view);
         Estilos.setLayoutParams(view);
 
@@ -1330,13 +1346,13 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         return activityBase;
     }
 
-    protected Callback callback;
+    protected CallbackDatos callbackDatos;
 
-    public void setCallback(Callback callback) {
-        this.callback = callback;
+    public void setCallbackDatos(CallbackDatos callbackDatos) {
+        this.callbackDatos = callbackDatos;
     }
 
-    public interface Callback {
+    public interface CallbackDatos {
 
         void onAfterSetDatos();
 

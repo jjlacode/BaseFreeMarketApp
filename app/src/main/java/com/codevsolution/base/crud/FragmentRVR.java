@@ -243,6 +243,7 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
 
     protected void setRv() {
 
+        setManagerRV();
         adaptadorRV = new RVAdapter(setViewHolder(view), lista.getLista(), layoutItem);
         rv.setAdapter(adaptadorRV);
 
@@ -275,12 +276,21 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
             inicio.setVisibility(View.GONE);
         }
 
+        onSetRV();
     }
 
     protected abstract ListaAdaptadorFiltroModelo setAdaptadorAuto
             (Context context, int layoutItem, ArrayList<ModeloSQL> lista, String[] campos);
 
     protected void setLista() {
+
+    }
+
+    protected void onSetRV() {
+
+    }
+
+    protected void setManagerRV() {
 
     }
 

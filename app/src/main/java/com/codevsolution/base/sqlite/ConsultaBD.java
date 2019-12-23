@@ -1382,6 +1382,13 @@ public class ConsultaBD implements JavaUtil.Constantes {
 
     public static int deleteRegistro(String tabla, String id) {
 
+        int res = resolver.delete(crearUriTabla(id, tabla)
+                , null, null);
+        if (res > 0) {
+            return res;
+        } else {
+            id = EncryptUtil.codificaStr(id);
+        }
         return resolver.delete(crearUriTabla(id, tabla)
                 , null, null);
 

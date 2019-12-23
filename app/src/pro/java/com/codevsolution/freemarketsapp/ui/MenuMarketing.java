@@ -3,7 +3,6 @@ package com.codevsolution.freemarketsapp.ui;
 import android.os.Bundle;
 import android.view.View;
 
-import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.FragmentGridImagen;
 import com.codevsolution.base.chat.FragmentChatBase;
 import com.codevsolution.base.media.VisorPdf;
@@ -13,7 +12,6 @@ import com.codevsolution.freemarketsapp.templates.CatalogoPDF;
 
 import java.util.ArrayList;
 
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.HTTPAYUDA;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODUCTO;
 
 public class MenuMarketing extends FragmentGridImagen {
@@ -107,6 +105,11 @@ public class MenuMarketing extends FragmentGridImagen {
             //AppActivity.mostrarPDF(catalogoPDF.getRutaArchivo());
         }
 
+
+    }
+
+    @Override
+    public void setOnClickRV(Object object) {
 
     }
 

@@ -14,6 +14,7 @@ import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.MsgChat;
 import com.codevsolution.base.models.Productos;
 import com.codevsolution.base.services.JobServiceBase;
+import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.sqlite.SQLiteUtil;
 import com.codevsolution.base.time.TimeDateUtil;
@@ -86,7 +87,8 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
             if (ahora < timeStamp + (DIASLONG)) {
 
                 try {
-                    if (SQLiteUtil.BD_backup(null, true)) {
+                    if (SQLiteUtil.BD_backup(null, false) &&
+                            SQLiteUtil.BD_backup(SYSTEM, idUser, false)) {
                         System.out.println("Creada copia de bd diaria");
                         time1 = ahora + (DIASLONG);
                     } else {
@@ -570,27 +572,27 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
                 }
 
                 if (producto.getInt(PRODUCTO_SINCRONOMBRE) == 1) {
-                    valores.put(PRODUCTO_NOMBRE, nombre);
+                    ConsultaBD.putDato(valores, PRODUCTO_NOMBRE, nombre);
                     prod.setNombre(nombre);
                 }
                 if (producto.getInt(PRODUCTO_SINCRODESCRIPCION) == 1) {
-                    valores.put(PRODUCTO_DESCRIPCION, descripcion);
+                    ConsultaBD.putDato(valores, PRODUCTO_DESCRIPCION, descripcion);
                     prod.setDescripcion(descripcion);
                 }
                 if (producto.getInt(PRODUCTO_SINCROALCANCE) == 1) {
-                    valores.put(PRODUCTO_ALCANCE, alcance);
+                    ConsultaBD.putDato(valores, PRODUCTO_ALCANCE, alcance);
                     prod.setAlcance(alcance);
                 }
                 if (producto.getInt(PRODUCTO_SINCROCATEGORIA) == 1) {
-                    valores.put(PRODUCTO_CATEGORIA, categoria);
+                    ConsultaBD.putDato(valores, PRODUCTO_CATEGORIA, categoria);
                     prod.setCategoria(categoria);
                 }
                 if (producto.getInt(PRODUCTO_SINCROSUBCATEGORIA) == 1) {
-                    valores.put(PRODUCTO_SUBCATEGORIA, subCategoria);
+                    ConsultaBD.putDato(valores, PRODUCTO_SUBCATEGORIA, subCategoria);
                     prod.setSubCategoria(subCategoria);
                 }
                 if (producto.getInt(PRODUCTO_SINCROREFERENCIA) == 1) {
-                    valores.put(PRODUCTO_REFERENCIA, referencia);
+                    ConsultaBD.putDato(valores, PRODUCTO_REFERENCIA, referencia);
                     prod.setRefprov(referencia);
                 }
                 if (producto.getInt(PRODUCTO_SINCROIMAGEN) == 1) {
@@ -610,27 +612,27 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
 
 
                 if (producto.getInt(PRODUCTO_SINCRONOMBREPRO) == 1) {
-                    valores.put(PRODUCTO_NOMBREPRO, nombre);
+                    ConsultaBD.putDato(valores, PRODUCTO_NOMBREPRO, nombre);
                     prod.setNombre(nombre);
                 }
                 if (producto.getInt(PRODUCTO_SINCRODESCRIPCIONPRO) == 1) {
-                    valores.put(PRODUCTO_DESCRIPCIONPRO, descripcion);
+                    ConsultaBD.putDato(valores, PRODUCTO_DESCRIPCIONPRO, descripcion);
                     prod.setDescripcion(descripcion);
                 }
                 if (producto.getInt(PRODUCTO_SINCROALCANCEPRO) == 1) {
-                    valores.put(PRODUCTO_ALCANCEPRO, alcance);
+                    ConsultaBD.putDato(valores, PRODUCTO_ALCANCEPRO, alcance);
                     prod.setAlcance(alcance);
                 }
                 if (producto.getInt(PRODUCTO_SINCROCATEGORIAPRO) == 1) {
-                    valores.put(PRODUCTO_CATEGORIAPRO, categoria);
+                    ConsultaBD.putDato(valores, PRODUCTO_CATEGORIAPRO, categoria);
                     prod.setCategoria(categoria);
                 }
                 if (producto.getInt(PRODUCTO_SINCROSUBCATEGORIAPRO) == 1) {
-                    valores.put(PRODUCTO_SUBCATEGORIAPRO, subCategoria);
+                    ConsultaBD.putDato(valores, PRODUCTO_SUBCATEGORIAPRO, subCategoria);
                     prod.setSubCategoria(subCategoria);
                 }
                 if (producto.getInt(PRODUCTO_SINCROREFERENCIAPRO) == 1) {
-                    valores.put(PRODUCTO_REFERENCIAPRO, referencia);
+                    ConsultaBD.putDato(valores, PRODUCTO_REFERENCIAPRO, referencia);
                     prod.setRefprov(referencia);
                 }
                 if (producto.getInt(PRODUCTO_SINCROIMAGENPRO) == 1) {
@@ -638,11 +640,11 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
                 }
             }
 
-            valores.put(PRODUCTO_PRECIO, precio);
-            valores.put(PRODUCTO_DESCPROV, descuento);
-            valores.put(PRODUCTO_ULTIMASINCRO, TimeDateUtil.ahora());
+            ConsultaBD.putDato(valores, PRODUCTO_PRECIO, precio);
+            ConsultaBD.putDato(valores, PRODUCTO_DESCPROV, descuento);
+            ConsultaBD.putDato(valores, PRODUCTO_ULTIMASINCRO, TimeDateUtil.ahora());
             prod.setTimeStamp(TimeDateUtil.ahora());
-            prod.setIdprov(idUser);
+            prod.setIdprov(idUserCode);
 
             CRUDutil.actualizarRegistro(producto, valores);
 
