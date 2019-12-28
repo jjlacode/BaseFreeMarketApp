@@ -127,17 +127,13 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
         gone(btnClonar);
 
 
-        if (tipoForm.equals(NUEVO) && !modulo) {
+        if (tipoForm.equals(NUEVO)) {
             limiteProdActivos = 0;
             limiteProdTotal = 0;
-            visible(frCabecera);
-            //if (!modulo) {
-                nombre.setActivo(false);
-                descripcion.setActivo(false);
-                referencia.setActivo(false);
-                proveedor.setActivo(false);
-                precio.setActivo(false);
-                etWeb.setActivo(false);
+
+            if (!modulo) {
+
+                visible(frCabecera);
 
                 InteractorSuscriptions interactorSuscriptions = new InteractorSuscriptions(contexto);
                 interactorSuscriptions.comprobarSuscripciones(new InteractorSuscriptions.CheckSubscriptions() {
@@ -171,18 +167,28 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                         alComprobarSuscripciones();
                     }
                 });
-            //}
+            }
 
         } else {
+
             gone(frCabecera);
             gone(btnEnviarNoticias);
             gone(chActivo);
             btnClonar.setEnabled(false);
+            nombre.setActivo(false);
+            descripcion.setActivo(false);
+            referencia.setActivo(false);
+            proveedor.setActivo(false);
+            precio.setActivo(false);
+            etWeb.setActivo(false);
+            gone(claves.getLinearLayout());
+            gone(descuento.getLinearLayout());
 
         }
 
         activityBase.fabNuevo.hide();
         activityBase.fabInicio.show();
+        actualizarArrays(vistaForm);
 
     }
 
@@ -446,13 +452,6 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                         alComprobarSuscripciones();
                     }
                 });
-            }
-
-            contarSuscritos();
-            visible(btnEnviarNoticias);
-            visible(btndelete);
-            visible(btnsave);
-            if (!modulo) {
 
                 visible(chActivo);
 
@@ -465,7 +464,16 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                 }
 
                 visible(radioGroupProd);
+
+            } else {
+                gone(radioButtonProd1);
+                gone(radioButtonProd2);
             }
+
+            contarSuscritos();
+            visible(btnEnviarNoticias);
+            visible(btndelete);
+            visible(btnsave);
             gone(suscripcion);
             visible(suscritos);
             gone(lyChat);
@@ -482,6 +490,10 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             gone(btndelete);
             gone(btnsave);
             visible(lyChat);
+            gone(btnSortear);
+            gone(radioButtonProd1);
+            gone(radioButtonProd2);
+            gone(frCabecera);
 
             if (idChat == null) {
                 ListaModeloSQL listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
@@ -495,12 +507,15 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, idChat);
             listaMsgChat = listaMsgChat.sort(DETCHAT_FECHA, DESCENDENTE);
 
-            if (listaMsgChat != null) {
+            if (listaMsgChat != null && listaMsgChat.sizeLista() > 0) {
                 RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
                 rvMsgChat.setAdapter(adaptadorDetChat);
                 visible(rvMsgChat);
+                noticias.setChecked(true);
+            } else {
+                gone(lyChat);
             }
-            noticias.setChecked(true);
+
         }
 
         if (prodProv != null && !nuevo) {

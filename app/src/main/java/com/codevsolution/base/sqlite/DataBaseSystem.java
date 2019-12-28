@@ -16,7 +16,7 @@ public class DataBaseSystem extends DataBaseBase {
     private final Context contexto;
 
     public DataBaseSystem(Context contexto, String idUser, String pathDb) {
-        super(contexto, pathDb + idUser + "/" + NOMBRE_BASE_DATOS + idUser + ".db", VERSION_ACTUAL);
+        super(contexto, pathDb + NOMBRE_BASE_DATOS + idUser + ".db", VERSION_ACTUAL);
         this.contexto = contexto;
     }
 

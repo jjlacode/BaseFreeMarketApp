@@ -25,6 +25,7 @@ import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.settings.PreferenciasBase;
 import com.codevsolution.base.style.Estilos;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -89,6 +90,8 @@ public abstract class FragmentCRUD extends FragmentCUD {
         } else {
             frCuerpo.setOrientation(LinearLayoutCompat.VERTICAL);
         }
+
+        autoborrado = true;
 
     }
 
@@ -795,66 +798,81 @@ public abstract class FragmentCRUD extends FragmentCUD {
             if (requestCode == RECOGNIZE_SPEECH_ACTIVITY) {
                 ArrayList<String> speech = data
                         .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                grabarVoz = speech.get(0);
-                String buscar = null;
-                if (grabarVoz.length() >= 7) {
-                    buscar = grabarVoz.substring(0, 7).toLowerCase();
-                }
-                if (grabarVoz.equals("renovar lista")) {
-                    actualizarConsultasRV();
-                    setRv();
-                    //auto.setText("");
-                } else if (grabarVoz.equals("limpiar lista")) {
-                    actualizarConsultasRV();
-                    setRv();
-                    //auto.setText("");
-                } else if (grabarVoz.equals("lista completa")) {
-                    if (tablaCab != null) {
-                        lista = CRUDutil.setListaModeloDetalle(campos, id);
-                        setLista();
+                System.out.println("speech = " + speech.get(0));
+                String clave = getPref(PreferenciasBase.CLAVEVOZ, "");
+                if (speech != null && clave != null && (clave.equals("") || speech.get(0).contains(clave))) {
+
+                    if (speech.get(0).contains(clave)) {
+                        grabarVoz = speech.get(0).replace(clave, "").toLowerCase();
                     } else {
-                        lista = CRUDutil.setListaModelo(campos);
-                        setLista();
+                        grabarVoz = speech.get(0).toLowerCase();
                     }
-                    setRv();
-                    if (subTitulo == null) {
-                        activityBase.toolbar.setSubtitle(tituloPlural);
-                    }
-                    //auto.setText("");
-                    enviarAct();
-                } else if (buscar != null && buscar.equals("buscar ")) {
-                    grabarVoz = grabarVoz.substring(7);
-                    System.out.println("grabarVoz sub= " + grabarVoz);
-                    ListaModeloSQL suggestion = new ListaModeloSQL();
-                    if (grabarVoz != null) {
 
-                        for (ModeloSQL item : lista.getLista()) {
-
-                            for (int i = 2; i < campos.length; i += 3) {
-
-                                if (item.getString(campos[i]) != null && !item.getString(campos[i]).equals("")) {
-                                    if (item.getString(campos[i]).toLowerCase().contains(grabarVoz.toLowerCase())) {
-
-                                        suggestion.addModelo(item);
-                                    }
-                                }
-                            }
-
-                        }
-
-                        listab = new ListaModeloSQL(suggestion);
+                    if (grabarVoz.contains("renovar lista")) {
                         actualizarConsultasRV();
                         setRv();
-                        auto.setText(grabarVoz);
-                        auto.setSelection(grabarVoz.length());
-                        auto.setDropDownWidth(0);
-                        if (id != null) {
-                            auto.setDropDownWidth(ancho);
+                        //auto.setText("");
+                    } else if (grabarVoz.contains("limpiar lista")) {
+                        actualizarConsultasRV();
+                        setRv();
+                        //auto.setText("");
+                    } else if (grabarVoz.contains("lista completa")) {
+                        if (tablaCab != null) {
+                            lista = CRUDutil.setListaModeloDetalle(campos, id);
+                            setLista();
+                        } else {
+                            lista = CRUDutil.setListaModelo(campos);
+                            setLista();
                         }
-                        //grabarVoz=null;
+                        setRv();
+                        if (subTitulo == null) {
+                            activityBase.toolbar.setSubtitle(tituloPlural);
+                        }
+                        //auto.setText("");
+                        enviarAct();
+                    } else if (grabarVoz.contains(Estilos.getString(contexto, "buscar"))) {
+                        grabarVoz = grabarVoz.replaceFirst(Estilos.getString(contexto, "buscar"), "");
+                        System.out.println("grabarVoz sub= " + grabarVoz);
+                        listaBusquedaVoz();
+                    } else if (grabarVoz.contains(Estilos.getString(contexto, "busca"))) {
+                        grabarVoz = grabarVoz.replaceFirst(Estilos.getString(contexto, "busca"), "");
+                        System.out.println("grabarVoz sub= " + grabarVoz);
+                        listaBusquedaVoz();
                     }
                 }
             }
+        }
+    }
+
+    protected void listaBusquedaVoz() {
+
+        ListaModeloSQL suggestion = new ListaModeloSQL();
+        if (grabarVoz != null) {
+
+            for (ModeloSQL item : lista.getLista()) {
+
+                for (int i = 2; i < campos.length; i += 3) {
+
+                    if (item.getString(campos[i]) != null && !item.getString(campos[i]).equals("")) {
+                        if (item.getString(campos[i]).toLowerCase().contains(grabarVoz.toLowerCase())) {
+
+                            suggestion.addModelo(item);
+                        }
+                    }
+                }
+
+            }
+
+            listab = new ListaModeloSQL(suggestion);
+            actualizarConsultasRV();
+            setRv();
+            auto.setText(grabarVoz);
+            auto.setSelection(grabarVoz.length());
+            auto.setDropDownWidth(0);
+            if (id != null) {
+                auto.setDropDownWidth(ancho);
+            }
+            //grabarVoz=null;
         }
     }
 

@@ -114,7 +114,7 @@ public class SQLiteUtil {
                 basedatos = AppActivity.getAppContext().getString(R.string.app_name);
             }
             String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss", Locale.getDefault()).format(new Date());
-            final String inFileName = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage() + "/databases/" + idUser + "/"
+            final String inFileName = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage() + "/databases/"
                     + basedatos + idUser + ".db";
             File dbFile = new File(inFileName);
             FileInputStream fis = new FileInputStream(dbFile);
@@ -174,7 +174,7 @@ public class SQLiteUtil {
                 basedatos = AppActivity.getAppContext().getString(R.string.app_name);
             }
             String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss", Locale.getDefault()).format(new Date());
-            final String inFileName = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage() + "/databases/" + idUser + "/"
+            final String inFileName = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage() + "/databases/"
                     + basedatos + idUser + ".db";
             File dbFile = new File(inFileName);
             FileInputStream fis = new FileInputStream(dbFile);
@@ -235,7 +235,7 @@ public class SQLiteUtil {
             }
             FileInputStream fis = new FileInputStream(fileToRestore);
 
-            String outFileName = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage() + "/databases/" + idUser + "/"
+            String outFileName = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage() + "/databases/"
                     + basedatos + idUser + ".db";
             // Open the empty db as the output stream
             OutputStream output = new FileOutputStream(outFileName);
@@ -268,7 +268,7 @@ public class SQLiteUtil {
             }
             FileInputStream fis = new FileInputStream(fileToRestore);
 
-            String outFileName = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage() + "/databases/" + idUser + "/"
+            String outFileName = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage() + "/databases/"
                     + basedatos + idUser + ".db";
             // Open the empty db as the output stream
             OutputStream output = new FileOutputStream(outFileName);

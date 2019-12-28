@@ -34,6 +34,7 @@ import com.codevsolution.base.web.FragmentWebView;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.codevsolution.freemarketsapp.services.AutoArranquePro;
 import com.codevsolution.freemarketsapp.settings.Preferencias;
+import com.codevsolution.freemarketsapp.ui.AltaPerfilesFirebasePro;
 import com.codevsolution.freemarketsapp.ui.ListadoProductosCli;
 import com.codevsolution.freemarketsapp.ui.ListadoProductosPro;
 import com.codevsolution.freemarketsapp.ui.ListadoSorteosCli;
@@ -44,11 +45,9 @@ import com.codevsolution.freemarketsapp.ui.MenuInicio;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 import static android.Manifest.permission.INTERNET;
 import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.CAMPOS_USERS;
-import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.TABLA_USERS;
 import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.USERS_USERID;
 import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.USERS_USERIDCODE;
 
@@ -100,35 +99,9 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
     }
 
-    protected void setIdUserCode() {
-        String pathDb = Environment.getDataDirectory().getPath() + "/data/"
-                + AppActivity.getPackage(context) + "/databases/" + idUser + "/";
-
-        String BASEDATOS = SYSTEM + idUser + ".db";
-
-        if (!SQLiteUtil.checkDataBase(pathDb + BASEDATOS)) {
-
-            String id = UUID.randomUUID().toString();
-            AndroidUtil.setSharePreference(context, USERID, USERIDCODE, id);
-            idUserCode = id;
-
-            ContentValues values = new ContentValues();
-            ConsultaBD.putDato(values, USERS_USERID, idUser);
-            ConsultaBD.putDato(values, USERS_USERIDCODE, id);
-            ConsultaBD.insertRegistro(TABLA_USERS, values);
-
-        } else {
-
-            ModeloSQL user = ConsultaBD.queryObject(CAMPOS_USERS, USERS_USERID, idUser);
-            idUserCode = EncryptUtil.decodificaStr(user.getString(USERS_USERIDCODE));
-            AndroidUtil.setSharePreference(context, USERID, USERIDCODE, idUserCode);
-        }
-    }
-
     @Override
     public void inicio(int inicio) {
 
-        setIdUserCode();
 
         if (inicio == 1) {
 
@@ -171,22 +144,28 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
     private Boolean comprobarInicio() {
 
         String pathDb = Environment.getDataDirectory().getPath() + "/data/"
-                + AppActivity.getPackage(context) + "/databases/" + idUserCode + "/";
+                + AppActivity.getPackage(context) + "/databases/";
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        if (firebaseAuth.getCurrentUser() != null) {
+            String userID = firebaseAuth.getCurrentUser().getUid();
+            ModeloSQL user = ConsultaBD.queryObject(CAMPOS_USERS, USERS_USERID, userID);
+            idUserCode = EncryptUtil.decodificaStr(user.getString(USERS_USERIDCODE));
 
-        String BASEDATOS = context.getString(R.string.app_name) + idUserCode + ".db";
+            String BASEDATOS = context.getString(R.string.app_name) + idUserCode + ".db";
 
-        if (!SQLiteUtil.checkDataBase(pathDb + BASEDATOS)) {
+            if (!SQLiteUtil.checkDataBase(pathDb + BASEDATOS)) {
 
-            return false;
+                return false;
 
-        } else {
+            } else {
 
-            SQLiteDatabase db = SQLiteDatabase.openDatabase(pathDb + BASEDATOS,
-                    null, SQLiteDatabase.OPEN_READONLY);
-            if (SQLiteUtil.isTableExists(TABLA_PERFIL, db)) {
+                SQLiteDatabase db = SQLiteDatabase.openDatabase(pathDb + BASEDATOS,
+                        null, SQLiteDatabase.OPEN_READONLY);
+                if (SQLiteUtil.isTableExists(TABLA_PERFIL, db)) {
 
-                db.close();
-                return true;
+                    db.close();
+                    return true;
+                }
             }
         }
 
@@ -387,9 +366,11 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
         ArrayList<DestinosVoz> listaDestinos = Interactor.getListaDestinosVoz();
 
+        System.out.println("destino = " + destino.trim());
         for (DestinosVoz destinosVoz : listaDestinos) {
 
-            if (destino.equals(destinosVoz.getDestino())) {
+            System.out.println("destinosVoz = " + destinosVoz.getDestino().trim().toLowerCase());
+            if (destinosVoz.getDestino().trim().toLowerCase().contains(destino.trim())) {
                 enviarBundleAFragment(null, destinosVoz.getFragment());
             }
         }
@@ -403,7 +384,7 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
         for (DestinosVoz destinosVoz : listaDestinos) {
 
-            if (destino.equals(destinosVoz.getDestino())) {
+            if (destino.contains(destinosVoz.getDestino())) {
                 enviarBundleAFragment(null, destinosVoz.getFragment());
             }
         }
@@ -447,6 +428,8 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
             FirebaseAuth.getInstance().signOut();
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
+        } else if (MIPERFIL.equals(actual)) {
+            enviarBundleAFragment(bundle, new AltaPerfilesFirebasePro());
         } else if ((CHAT + CLI).equals(actual)) {
             bundle.putBoolean(AVISO, true);
             enviarBundleAFragment(bundle, new ListadosPerfilesFirebaseCli());

@@ -31,7 +31,6 @@ public class ServicioVoz extends JobServiceBase {
 
     static final int MSG_RECOGNIZER_START_LISTENING = 1;
     static final int MSG_RECOGNIZER_CANCEL = 2;
-    String TAG = getClass().getSimpleName();
 
     @Override
     protected void setJob() {
@@ -46,21 +45,6 @@ public class ServicioVoz extends JobServiceBase {
                 this.getPackageName());
 
     }
-/*
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
-        mSpeechRecognizer.setRecognitionListener(new SpeechRecognitionListener());
-        mSpeechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
-                this.getPackageName());
-    }
-
- */
 
     protected static class IncomingHandler extends Handler {
         private WeakReference<ServicioVoz> mtarget;
@@ -73,6 +57,7 @@ public class ServicioVoz extends JobServiceBase {
         @Override
         public void handleMessage(Message msg) {
             final ServicioVoz target = mtarget.get();
+            String TAG = getClass().getSimpleName();
 
             switch (msg.what) {
                 case MSG_RECOGNIZER_START_LISTENING:
@@ -87,7 +72,7 @@ public class ServicioVoz extends JobServiceBase {
                     if (!target.mIsListening) {
                         target.mSpeechRecognizer.startListening(target.mSpeechRecognizerIntent);
                         target.mIsListening = true;
-                        //Log.d(TAG, "message start listening"); //$NON-NLS-1$
+                        Log.d(TAG, "message start listening"); //$NON-NLS-1$
                     }
                     break;
 
@@ -98,7 +83,7 @@ public class ServicioVoz extends JobServiceBase {
                     }
                     target.mSpeechRecognizer.cancel();
                     target.mIsListening = false;
-                    //Log.d(TAG, "message canceled recognizer"); //$NON-NLS-1$
+                    Log.d(TAG, "message canceled recognizer"); //$NON-NLS-1$
                     break;
             }
         }
@@ -141,6 +126,7 @@ public class ServicioVoz extends JobServiceBase {
 
     protected class SpeechRecognitionListener implements RecognitionListener {
 
+        String TAG = getClass().getSimpleName();
         @Override
         public void onBeginningOfSpeech() {
             // speech input will be processed, so there is no need for count down anymore
@@ -148,7 +134,7 @@ public class ServicioVoz extends JobServiceBase {
                 mIsCountDownOn = false;
                 mNoSpeechCountDown.cancel();
             }
-            //Log.d(TAG, "onBeginingOfSpeech"); //$NON-NLS-1$
+            Log.d(TAG, "onBeginingOfSpeech"); //$NON-NLS-1$
         }
 
         @Override
@@ -158,7 +144,7 @@ public class ServicioVoz extends JobServiceBase {
 
         @Override
         public void onEndOfSpeech() {
-            //Log.d(TAG, "onEndOfSpeech"); //$NON-NLS-1$
+            Log.d(TAG, "onEndOfSpeech"); //$NON-NLS-1$
         }
 
         @Override
@@ -174,7 +160,7 @@ public class ServicioVoz extends JobServiceBase {
             } catch (RemoteException e) {
 
             }
-            //Log.d(TAG, "error = " + error); //$NON-NLS-1$
+            Log.d(TAG, "error = " + error); //$NON-NLS-1$
         }
 
         @Override
@@ -189,6 +175,7 @@ public class ServicioVoz extends JobServiceBase {
 
         @Override
         public void onReadyForSpeech(Bundle params) {
+            String TAG = getClass().getSimpleName();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 mIsCountDownOn = true;
                 mNoSpeechCountDown.start();
@@ -199,7 +186,8 @@ public class ServicioVoz extends JobServiceBase {
 
         @Override
         public void onResults(Bundle results) {
-            //Log.d(TAG, "onResults"); //$NON-NLS-1$
+            String TAG = getClass().getSimpleName();
+            Log.d(TAG, "onResults"); //$NON-NLS-1$
             String wordStr = null;
             String[] words = null;
             String firstWord = null;

@@ -38,8 +38,10 @@ import com.codevsolution.base.models.FirebaseFormBase;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.MsgChat;
+import com.codevsolution.base.settings.PreferenciasBase;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoSystem;
+import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -370,19 +372,25 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
                     ArrayList<String> speech = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    grabarVoz = speech.get(0).toLowerCase();
-                    String orden = null;
-                    String mensaje = null;
+                    String clave = getPref(PreferenciasBase.CLAVEVOZ, "");
+                    if (speech != null && clave != null && (clave.equals("") || speech.get(0).contains(clave))) {
 
-                    if (grabarVoz.equals("enviar")) {
-                        enviarMensaje();
+                        if (speech.get(0).contains(clave)) {
+                            grabarVoz = speech.get(0).replace(clave, "").toLowerCase();
+                        } else {
+                            grabarVoz = speech.get(0).toLowerCase();
+                        }
 
-                    } else if (grabarVoz.equals("borrar")) {
-                        msgEnv.setText("");
+                        if (grabarVoz.contains(Estilos.getString(contexto, "enviar"))) {
+                            enviarMensaje();
 
-                    } else {
-                        msgEnv.setText(grabarVoz);
+                        } else if (grabarVoz.contains(Estilos.getString(contexto, "borrar"))) {
+                            msgEnv.setText("");
 
+                        } else {
+                            msgEnv.setText(grabarVoz);
+
+                        }
                     }
             }
 

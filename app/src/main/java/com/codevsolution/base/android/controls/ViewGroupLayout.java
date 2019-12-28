@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.codevsolution.base.android.MainActivityBase;
+import com.codevsolution.base.interfaces.ICFragmentos;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.style.Estilos;
 
@@ -39,6 +40,7 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
     protected int orientacion;
     protected Context context;
     protected MainActivityBase activityBase;
+    protected ICFragmentos icFragmentos;
     public static final String MAPA = "mapa";
     public static final String MAIL = "mail";
     public static final String LLAMADA = "llamada";
@@ -51,6 +53,18 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         this.viewGroupParent = viewGroupParent;
         viewGroup = new LinearLayoutCompat(context);
         ((LinearLayoutCompat)viewGroup).setOrientation(ORI_LLC_VERTICAL);
+        this.viewGroupParent.addView(this.viewGroup);
+        inicio();
+        inicializar();
+        asignarEventos();
+    }
+
+    public ViewGroupLayout(ICFragmentos icFragmentos, Context context, ViewGroup viewGroupParent) {
+        this.icFragmentos = icFragmentos;
+        this.context = context;
+        this.viewGroupParent = viewGroupParent;
+        viewGroup = new LinearLayoutCompat(context);
+        ((LinearLayoutCompat) viewGroup).setOrientation(ORI_LLC_VERTICAL);
         this.viewGroupParent.addView(this.viewGroup);
         inicio();
         inicializar();
@@ -356,7 +370,12 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
 
     public EditMaterialLayout addEditMaterialLayout(String hint) {
 
-        EditMaterialLayout editMaterial = new EditMaterialLayout(viewGroup, context);
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
         editMaterial.setHint(hint);
         editMaterial.getLinearLayout().setVisibility(View.VISIBLE);
         Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout());
@@ -368,7 +387,12 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
 
     public EditMaterialLayout addEditMaterialLayout(String hint, int peso) {
 
-        EditMaterialLayout editMaterial = new EditMaterialLayout(viewGroup, context);
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
         editMaterial.setHint(hint);
         editMaterial.getLinearLayout().setVisibility(View.VISIBLE);
         Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout(), peso);
@@ -379,7 +403,12 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
 
     public EditMaterialLayout addEditMaterialLayout(int hint) {
 
-        EditMaterialLayout editMaterial = new EditMaterialLayout(viewGroup, context);
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
         editMaterial.setHint(context.getString(hint));
         editMaterial.getLinearLayout().setVisibility(View.VISIBLE);
         Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout());
@@ -390,7 +419,12 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
 
     public EditMaterialLayout addEditMaterialLayout(int hint, int peso) {
 
-        EditMaterialLayout editMaterial = new EditMaterialLayout(viewGroup, context);
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
         editMaterial.setHint(context.getString(hint));
         editMaterial.getLinearLayout().setVisibility(View.VISIBLE);
         Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout(), peso);
@@ -401,7 +435,12 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
 
     public EditMaterialLayout addEditMaterialLayout(String hint, String campoEdit) {
 
-        final EditMaterialLayout editMaterial = new EditMaterialLayout(viewGroup, context);
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
         editMaterial.setHint(hint);
         Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout());
 
@@ -416,7 +455,12 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
 
     public EditMaterialLayout addEditMaterialLayout(String hint, String campoEdit, int peso) {
 
-        final EditMaterialLayout editMaterial = new EditMaterialLayout(viewGroup, context);
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
         editMaterial.setHint(hint);
         Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout(), peso);
 
@@ -431,7 +475,12 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
 
     public EditMaterialLayout addEditMaterialLayout(int hint, String campoEdit) {
 
-        final EditMaterialLayout editMaterial = new EditMaterialLayout(viewGroup, context);
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
         editMaterial.setHint(context.getString(hint));
         Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout());
 
@@ -446,7 +495,12 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
 
     public EditMaterialLayout addEditMaterialLayout(int hint, String campoEdit, int peso) {
 
-        final EditMaterialLayout editMaterial = new EditMaterialLayout(viewGroup, context);
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
         editMaterial.setHint(context.getString(hint));
         Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout(), peso);
 
@@ -460,43 +514,51 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
     }
 
 
-
     public EditMaterialLayout addEditMaterialLayout(String hint, String campoEdit, String modo, AppCompatActivity activity) {
 
-        final EditMaterialLayout editMaterial = new EditMaterialLayout(viewGroup, context);
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
         editMaterial.setHint(hint);
 
         if (modo != null) {
             if (modo.equals(MAPA)) {
                 editMaterial.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.MULTI | EditMaterialLayout.DIRECCION);
+                EditMaterialLayout finalEditMaterial = editMaterial;
                 editMaterial.setAccionVerMapa(new EditMaterialLayout.ClickAccion() {
                     @Override
                     public void onClickAccion(View view) {
-                        editMaterial.verEnMapa();
+                        finalEditMaterial.verEnMapa();
                     }
                 });
             } else if (modo.equals(MAIL)) {
                 editMaterial.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.EMAIL);
+                EditMaterialLayout finalEditMaterial1 = editMaterial;
                 editMaterial.setAccionEnviarMail(new EditMaterialLayout.ClickAccion() {
                     @Override
                     public void onClickAccion(View view) {
-                        editMaterial.enviarEmail();
+                        finalEditMaterial1.enviarEmail();
                     }
                 });
             } else if (modo.equals(LLAMADA)) {
                 editMaterial.setTipo(EditMaterialLayout.TELEFONO);
+                EditMaterialLayout finalEditMaterial2 = editMaterial;
                 editMaterial.setAccionLlamada(activity, new EditMaterialLayout.ClickAccion() {
                     @Override
                     public void onClickAccion(View view) {
-                        editMaterial.llamar();
+                        finalEditMaterial2.llamar();
                     }
                 });
             } else if (modo.equals(WEB)) {
                 editMaterial.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.URI);
+                EditMaterialLayout finalEditMaterial3 = editMaterial;
                 editMaterial.setAccionVerWeb(new EditMaterialLayout.ClickAccion() {
                     @Override
                     public void onClickAccion(View view) {
-                        editMaterial.verWeb();
+                        finalEditMaterial3.verWeb();
                     }
                 });
             } else if (modo.equals(FECHA)) {
@@ -519,9 +581,229 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
         return editMaterial;
     }
 
+    public EditMaterialLayout addEditMaterialLayoutEmail(String campoEdit) {
+
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
+        editMaterial.setHint(Estilos.getString(context, "email"));
+
+        editMaterial.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.EMAIL);
+        EditMaterialLayout finalEditMaterial = editMaterial;
+        editMaterial.setAccionEnviarMail(new EditMaterialLayout.ClickAccion() {
+            @Override
+            public void onClickAccion(View view) {
+                finalEditMaterial.enviarEmail();
+            }
+        });
+
+        Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout());
+        editMaterialLayouts.add(editMaterial);
+        Map mapaCtrl = new HashMap();
+        mapaCtrl.put("materialEdit", editMaterial);
+        mapaCtrl.put("campoEdit", campoEdit);
+        camposEdit.add(mapaCtrl);
+        vistas.add(editMaterial.getLinearLayout());
+        return editMaterial;
+    }
+
+    public EditMaterialLayout addEditMaterialLayoutEmail() {
+
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
+        editMaterial.setHint(Estilos.getString(context, "email"));
+
+
+        editMaterial.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.EMAIL);
+        EditMaterialLayout finalEditMaterial = editMaterial;
+        editMaterial.setAccionEnviarMail(new EditMaterialLayout.ClickAccion() {
+            @Override
+            public void onClickAccion(View view) {
+                finalEditMaterial.enviarEmail();
+            }
+        });
+
+        Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout());
+        editMaterialLayouts.add(editMaterial);
+        vistas.add(editMaterial.getLinearLayout());
+        return editMaterial;
+    }
+
+    public EditMaterialLayout addEditMaterialLayoutDireccion(String campoEdit) {
+
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
+        editMaterial.setHint(Estilos.getString(context, "direccion"));
+
+        editMaterial.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.MULTI | EditMaterialLayout.DIRECCION);
+        EditMaterialLayout finalEditMaterial = editMaterial;
+        editMaterial.setAccionVerMapa(new EditMaterialLayout.ClickAccion() {
+            @Override
+            public void onClickAccion(View view) {
+                finalEditMaterial.verEnMapa();
+            }
+        });
+
+        Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout());
+        editMaterialLayouts.add(editMaterial);
+        Map mapaCtrl = new HashMap();
+        mapaCtrl.put("materialEdit", editMaterial);
+        mapaCtrl.put("campoEdit", campoEdit);
+        camposEdit.add(mapaCtrl);
+        vistas.add(editMaterial.getLinearLayout());
+        return editMaterial;
+    }
+
+    public EditMaterialLayout addEditMaterialLayoutDireccion() {
+
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
+        editMaterial.setHint(Estilos.getString(context, "direccion"));
+
+        editMaterial.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.MULTI | EditMaterialLayout.DIRECCION);
+        EditMaterialLayout finalEditMaterial = editMaterial;
+        editMaterial.setAccionVerMapa(new EditMaterialLayout.ClickAccion() {
+            @Override
+            public void onClickAccion(View view) {
+                finalEditMaterial.verEnMapa();
+            }
+        });
+
+        Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout());
+        editMaterialLayouts.add(editMaterial);
+        vistas.add(editMaterial.getLinearLayout());
+        return editMaterial;
+    }
+
+    public EditMaterialLayout addEditMaterialLayoutWeb(String campoEdit) {
+
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
+        editMaterial.setHint(Estilos.getString(context, "web"));
+
+        editMaterial.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.URI);
+        EditMaterialLayout finalEditMaterial = editMaterial;
+        editMaterial.setAccionVerWeb(new EditMaterialLayout.ClickAccion() {
+            @Override
+            public void onClickAccion(View view) {
+                finalEditMaterial.verWeb();
+            }
+        });
+
+        Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout());
+        editMaterialLayouts.add(editMaterial);
+        Map mapaCtrl = new HashMap();
+        mapaCtrl.put("materialEdit", editMaterial);
+        mapaCtrl.put("campoEdit", campoEdit);
+        camposEdit.add(mapaCtrl);
+        vistas.add(editMaterial.getLinearLayout());
+        return editMaterial;
+    }
+
+    public EditMaterialLayout addEditMaterialLayoutWeb() {
+
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
+        editMaterial.setHint(Estilos.getString(context, "web"));
+
+        editMaterial.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.URI);
+        EditMaterialLayout finalEditMaterial = editMaterial;
+        editMaterial.setAccionVerWeb(new EditMaterialLayout.ClickAccion() {
+            @Override
+            public void onClickAccion(View view) {
+                finalEditMaterial.verWeb();
+            }
+        });
+
+        Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout());
+        editMaterialLayouts.add(editMaterial);
+        vistas.add(editMaterial.getLinearLayout());
+        return editMaterial;
+    }
+
+    public EditMaterialLayout addEditMaterialLayoutLlamada(String campoEdit, AppCompatActivity activity) {
+
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
+        editMaterial.setHint(Estilos.getString(context, "telefono"));
+        editMaterial.setTipo(EditMaterialLayout.TELEFONO);
+        EditMaterialLayout finalEditMaterial = editMaterial;
+        editMaterial.setAccionLlamada(activity, new EditMaterialLayout.ClickAccion() {
+            @Override
+            public void onClickAccion(View view) {
+                finalEditMaterial.llamar();
+            }
+        });
+
+        Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout());
+        editMaterialLayouts.add(editMaterial);
+        Map mapaCtrl = new HashMap();
+        mapaCtrl.put("materialEdit", editMaterial);
+        mapaCtrl.put("campoEdit", campoEdit);
+        camposEdit.add(mapaCtrl);
+        vistas.add(editMaterial.getLinearLayout());
+        return editMaterial;
+    }
+
+    public EditMaterialLayout addEditMaterialLayoutLlamada(AppCompatActivity activity) {
+
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
+        editMaterial.setHint(Estilos.getString(context, "telefono"));
+        editMaterial.setTipo(EditMaterialLayout.TELEFONO);
+        EditMaterialLayout finalEditMaterial = editMaterial;
+        editMaterial.setAccionLlamada(activity, new EditMaterialLayout.ClickAccion() {
+            @Override
+            public void onClickAccion(View view) {
+                finalEditMaterial.llamar();
+            }
+        });
+
+        Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout());
+        editMaterialLayouts.add(editMaterial);
+        vistas.add(editMaterial.getLinearLayout());
+        return editMaterial;
+    }
+
     public EditMaterialLayout addEditMaterialLayoutFecha(String hint, float peso, EditMaterialLayout.ClickAccion clickAccion) {
 
-        final EditMaterialLayout editMaterial = new EditMaterialLayout(viewGroup, context);
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
         editMaterial.setHint(hint);
 
         editMaterial.setTipo(EditMaterialLayout.FECHA);
@@ -535,14 +817,20 @@ public class ViewGroupLayout implements InteractorBase.Constantes, Estilos.Const
 
     public EditMaterialLayout addEditMaterialLayoutMailFull(String hint, String campoEdit) {
 
-        final EditMaterialLayout editMaterial = new EditMaterialLayout(viewGroup, context);
+        EditMaterialLayout editMaterial = null;
+        if (icFragmentos != null) {
+            editMaterial = new EditMaterialLayout(viewGroup, context, icFragmentos);
+        } else {
+            editMaterial = new EditMaterialLayout(viewGroup, context);
+        }
         editMaterial.setHint(hint);
 
         editMaterial.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.EMAIL);
+        EditMaterialLayout finalEditMaterial = editMaterial;
         editMaterial.setAccionEnviarMail(new EditMaterialLayout.ClickAccion() {
             @Override
             public void onClickAccion(View view) {
-                editMaterial.enviarEmail(editMaterial.getAsunto(), editMaterial.getMensaje(), editMaterial.getPath());
+                finalEditMaterial.enviarEmail(finalEditMaterial.getAsunto(), finalEditMaterial.getMensaje(), finalEditMaterial.getPath());
             }
         });
         Estilos.setLayoutParams(viewGroup, editMaterial.getLinearLayout());

@@ -39,6 +39,8 @@ public abstract class DataBaseBase extends SQLiteOpenHelper {
 
     @Override
     public void onOpen(SQLiteDatabase db) {
+        System.out.println("db = " + db);
+
         super.onOpen(db);
         if (!db.isReadOnly()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {

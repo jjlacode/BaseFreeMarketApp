@@ -300,6 +300,12 @@ public class MainActivityBase extends AppCompatActivity
         if (AndroidUtil.getSharePreference(context, PREFERENCIAS, Preferencias.CIFRADOPASSPLUS, false)) {
             AndroidUtil.setSharePreference(context, PREFERENCIAS, PASSOK, NULL);
         }
+
+        if (tts != null && isInitTTS && !tts.isSpeaking()) {
+            tts.stop();
+            tts.shutdown();
+            isInitTTS = false;
+        }
     }
 
     @Override
@@ -487,20 +493,25 @@ public class MainActivityBase extends AppCompatActivity
     @Override
     public void playTTs(String texto) {
 
-        if (isInitTTS && tts != null && !tts.isSpeaking()) {
+        if (isInitTTS && tts != null) {
 
             if (texto != null && !texto.isEmpty()) {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     String utteranceId = this.hashCode() + "";
-                    tts.speak(texto, TextToSpeech.QUEUE_FLUSH, null, utteranceId);
+                    tts.speak(texto, TextToSpeech.QUEUE_ADD, null, utteranceId);
                 } else {
-                    tts.speak(texto, TextToSpeech.QUEUE_FLUSH, null);
+                    tts.speak(texto, TextToSpeech.QUEUE_ADD, null);
                 }
             }
         } else {
             ttsTmp = texto;
         }
+    }
+
+    @Override
+    public TextToSpeech getTTs() {
+        return tts;
     }
 
     protected void recargarFragment() {
@@ -515,18 +526,6 @@ public class MainActivityBase extends AppCompatActivity
 
         }
 
-    }
-
-    @Override
-    protected void onPause() {
-
-        if (tts != null && isInitTTS && !tts.isSpeaking()) {
-            tts.stop();
-            tts.shutdown();
-            isInitTTS = false;
-        }
-
-        super.onPause();
     }
 
     @Override
@@ -554,9 +553,9 @@ public class MainActivityBase extends AppCompatActivity
                             if (ttsTmp != null && !ttsTmp.isEmpty()) {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                     String utteranceId = this.hashCode() + "";
-                                    tts.speak(ttsTmp, TextToSpeech.QUEUE_FLUSH, null, utteranceId);
+                                    tts.speak(ttsTmp, TextToSpeech.QUEUE_ADD, null, utteranceId);
                                 } else {
-                                    tts.speak(ttsTmp, TextToSpeech.QUEUE_FLUSH, null);
+                                    tts.speak(ttsTmp, TextToSpeech.QUEUE_ADD, null);
                                 }
                                 ttsTmp = null;
                             }
@@ -569,6 +568,10 @@ public class MainActivityBase extends AppCompatActivity
 
                 }
             });
+        } else {
+            if (!isInitTTS) {
+                isInitTTS = true;
+            }
         }
     }
 

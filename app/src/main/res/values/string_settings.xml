@@ -2,19 +2,22 @@
 <resources>
 
     <!-- Nombre Actividad Ajustes-->
-    <string name="title_activity_settings">Configuración</string>
+    <string name="title_activity_settings">Settings</string>
     <string name="letra_proporcional">Tamaño letra proporcional</string>
     <string name="ajustes_generales">Ajustes generales app</string>
     <string name="cifrar_datos">Cifrar datos</string>
     <string name="txt_cifrado">Se le pedirá una contraseña en cada inicio de sesión</string>
-    <string name="ajustes">Ajustes</string>
-    <string name="tiempo_autoguardado">Tiempo de autoguardado  (segundos)</string>
-    <string name="autoguardado">Auto guardado de datos</string>
-    <string name="cifrar_datos_pass">Cifrar con contraseña</string>
-    <string name="titulo_encriptado">OPCIONES DE ENCRIPTADO</string>
-    <string name="no_encrypt">Nivel 0 (Sin encriptar)</string>
-    <string name="nivel_encrypt_1">Nivel 1 (Clave autogenerada)</string>
-    <string name="nivel_encrypt_2">Nivel 2 (Se pide contraseña en cada inicio de sesión)</string>
-    <string name="nivel_encrypt_3">Nivel 3 (Se pide contraseña en cada inicio de la app)</string>
-    <string name="btnpass">Actualizar contraseña</string>
+    <string name="ajustes">Settings</string>
+    <string name="tiempo_autoguardado">Auto update time (seconds)</string>
+    <string name="autoguardado">Data auto update</string>
+    <string name="cifrar_datos_pass">Password encrypt</string>
+    <string name="titulo_encriptado">Encrypt options</string>
+    <string name="no_encrypt">Nivel 0 (No encrypt)</string>
+    <string name="nivel_encrypt_1">Level 1 (autogen key)</string>
+    <string name="nivel_encrypt_2">Level 2 (Input password on login)</string>
+    <string name="nivel_encrypt_3">Level 3 (Input password on app init)</string>
+    <string name="btnpass">Update password</string>
+    <string name="comandos_voz">Comandos por voz</string>
+    <string name="sin_ajustes">No hay ajustes para esta sección</string>
+    <string name="clave_voz">Clave para el dictado de voz</string>
 </resources>

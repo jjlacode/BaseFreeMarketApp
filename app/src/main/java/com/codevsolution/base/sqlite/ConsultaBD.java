@@ -103,19 +103,19 @@ public class ConsultaBD implements JavaUtil.Constantes {
         return null;
     }
 
-    public static Uri crearUriTablaDetalleId(String id, String secuencia, String tabla) {
+    public static Uri crearUriTablaDetalleId(String id, String tabla, String tablaCab) {
 
         if (ContratoSystem.obtenerCampos(tabla) != null) {
 
 
-            return ContratoSystem.crearUriTablaDetalleId(id, secuencia,
-                    tabla);
+            return ContratoSystem.crearUriTablaDetalleId(id, tabla,
+                    tablaCab);
 
         } else if (ContratoPry.obtenerCampos(tabla) != null) {
 
 
-            return ContratoPry.crearUriTablaDetalleId(id, secuencia,
-                    tabla);
+            return ContratoPry.crearUriTablaDetalleId(id, tabla,
+                    tablaCab);
 
         }
 
@@ -556,26 +556,30 @@ public class ConsultaBD implements JavaUtil.Constantes {
             id = EncryptUtil.codificaStr(id);
         }
 
-        Cursor reg = resolver.query(crearUriTablaDetalleId(id,
-                campos[1], obtenerTabCab(campos[1])), null, null, null, null);
+        Uri uri = crearUriTablaDetalleId(id,
+                campos[1], obtenerTabCab(campos[1]));
+        System.out.println("uri = " + uri);
+        Cursor reg = resolver.query(uri, null, null, null, null);
 
+        if (reg != null) {
 
-        while (reg.moveToNext()) {
+            while (reg.moveToNext()) {
 
-            String[] insert = new String[reg.getColumnCount() - 1];
+                String[] insert = new String[reg.getColumnCount() - 1];
 
-            for (int i = 0, x = 2; i < reg.getColumnCount() - 1; i++, x += 3) {
+                for (int i = 0, x = 2; i < reg.getColumnCount() - 1; i++, x += 3) {
 
-                insert[i] = EncryptUtil.decodificaStr(reg.getString(reg.getColumnIndex(campos[x])));
+                    insert[i] = EncryptUtil.decodificaStr(reg.getString(reg.getColumnIndex(campos[x])));
 
+                }
+
+                if (insert[0] != null) {
+                    ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
+                    list.add(modeloSQL);
+                }
             }
-
-            if (insert[0] != null) {
-                ModeloSQL modeloSQL = new ModeloSQL(campos, insert);
-                list.add(modeloSQL);
-            }
+            reg.close();
         }
-        reg.close();
 
         return list;
     }
@@ -687,6 +691,7 @@ public class ConsultaBD implements JavaUtil.Constantes {
     public static ModeloSQL queryObjectValor(String[] campos, String campo, String strValor) {
 
         ListaModeloSQL listaModeloSQL = new ListaModeloSQL(campos);
+        System.out.println("listaModeloSQL = " + listaModeloSQL.sizeLista());
         for (ModeloSQL modeloSQL : listaModeloSQL.getLista()) {
             if (EncryptUtil.comprobarIsCode(strValor)) {
                 strValor = EncryptUtil.decodificaStr(strValor);

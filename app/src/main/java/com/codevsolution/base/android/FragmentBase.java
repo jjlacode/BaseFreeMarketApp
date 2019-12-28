@@ -47,6 +47,7 @@ import com.codevsolution.base.interfaces.ICFragmentos;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.models.Contactos;
+import com.codevsolution.base.settings.PreferenciasBase;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.freemarketsapp.settings.Preferencias;
 
@@ -383,7 +384,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         }
         activityBase.fabNuevo.hide();
         activityBase.fabInicio.hide();
-        activityBase.fabVoz.hide();
+        //activityBase.fabVoz.hide();
 
         return view;
     }
@@ -620,9 +621,14 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
         for (EditMaterialLayout materialEdit : materialEditLayouts) {
 
+            if (materialEdit.isPlayOn()) {
+                materialEdit.setTTS(true);
+            } else {
+                materialEdit.setTTS(false);
+            }
+
             if (materialEdit.getActivo()) {
                 materialEdit.grabarEnable(true);
-                materialEdit.setTTS(true);
                 materialEdit.setPosicion(contCode);
                 materialEdit.setGrabarListener(new EditMaterialLayout.AudioATexto() {
                     @Override
@@ -1029,7 +1035,6 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
                     RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
             intentActionRecognizeSpeech.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
             try {
-                update();
                 startActivityForResult(intentActionRecognizeSpeech,
                         code, null);
             } catch (ActivityNotFoundException a) {
@@ -1108,28 +1113,46 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
             if (requestCode == RECOGNIZE_SPEECH_ACTIVITY) {
                 ArrayList<String> speech = data
                         .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                String clave = getPref(PreferenciasBase.CLAVEVOZ, "");
+                if (speech != null && clave != null && (clave.equals("") || speech.get(0).contains(clave))) {
 
-                if (speech != null) {
-                    grabarVoz = speech.get(0).toLowerCase();
-                }
+                    System.out.println("speech = " + speech.get(0));
+                    if (speech.get(0).contains(clave)) {
+                        grabarVoz = speech.get(0).replace(clave, "").toLowerCase();
+                    } else {
+                        grabarVoz = speech.get(0).toLowerCase();
+                    }
 
-                if (grabarVoz.substring(0, 16).equals("llamar contacto ")) {
+                    if (grabarVoz.contains(Estilos.getString(contexto, "llamar_contacto"))) {
 
-                    llamarContacto(grabarVoz.substring(16));
+                        grabarVoz = grabarVoz.replaceFirst(Estilos.getString(contexto, "llamar_contacto"), "");
+                        llamarContacto(grabarVoz);
 
-                } else if (grabarVoz.substring(0, 5).equals("ir a ")) {
+                    } else if (grabarVoz.contains(Estilos.getString(contexto, "ir_a"))) {
+                        grabarVoz = grabarVoz.replaceFirst(Estilos.getString(contexto, "ir_a"), "");
+                        activityBase.seleccionarDestino(grabarVoz);
 
-                    activityBase.seleccionarDestino(grabarVoz.substring(5));
+                    } else if (grabarVoz.contains(Estilos.getString(contexto, "abrir"))) {
+                        grabarVoz = grabarVoz.replaceFirst(Estilos.getString(contexto, "abrir"), "");
+                        activityBase.seleccionarDestino(grabarVoz);
 
-                } else if (grabarVoz.substring(0, 6).equals("crear ") ||
-                        grabarVoz.substring(0, 6).equals("nuevo ")) {
+                    } else if (grabarVoz.contains(Estilos.getString(contexto, "crear"))) {
 
-                    activityBase.seleccionarNuevoDestino(grabarVoz.substring(6));
+                        grabarVoz = grabarVoz.replaceFirst(Estilos.getString(contexto, "crear"), "");
 
-                } else if (grabarVoz.equals(Estilos.getString(contexto, "salir").toLowerCase())) {
+                        activityBase.seleccionarNuevoDestino(grabarVoz);
 
-                    activityBase.finish();
+                    } else if (grabarVoz.contains(Estilos.getString(contexto, "nuevo"))) {
 
+                        grabarVoz = grabarVoz.replaceFirst(Estilos.getString(contexto, "nuevo"), "");
+
+                        activityBase.seleccionarNuevoDestino(grabarVoz);
+
+                    } else if (grabarVoz.equals(Estilos.getString(contexto, "salir").toLowerCase())) {
+
+                        activityBase.finish();
+
+                    }
                 }
             }
 

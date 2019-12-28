@@ -332,7 +332,6 @@ public class EncryptUtil {
     public static boolean verificarPass(String passInput) {
 
         try {
-            System.out.println("passInput = " + passInput);
             String pass = AndroidUtil.getSharePreference(context, PREFERENCIAS, ENCODEPASS, NULL);
             String codeStr = desencriptarPassAES(pass, passInput);
             return passInput.equals(codeStr);

@@ -13,12 +13,11 @@ import android.os.Environment;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.time.TimeDateUtil;
+import com.google.firebase.auth.FirebaseAuth;
 
-import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.PREFERENCIAS;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TIMESTAMP;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TIMESTAMPDIA;
-import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
 import static com.codevsolution.base.sqlite.ContratoSystem.AUTORIDAD_CONTENIDO;
 import static com.codevsolution.base.sqlite.ContratoSystem.FILTRO_CLIENTE;
 import static com.codevsolution.base.sqlite.ContratoSystem.FILTRO_FECHA;
@@ -99,11 +98,15 @@ public class ProviderSystem extends ContentProvider
     @Override
     public boolean onCreate() {
 
-        String idUser = AndroidUtil.getSharePreference(getContext(), USERID, USERID, NULL);
-        String pathDb = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage(getContext()) + "/databases/";
-        bd = new DataBaseSystem(getContext(), idUser, pathDb);
-        resolver = getContext().getContentResolver();
-        return true;
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        if (firebaseAuth.getCurrentUser() != null) {
+            String idUser = firebaseAuth.getCurrentUser().getUid();
+            String pathDb = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage(getContext()) + "/databases/";
+            bd = new DataBaseSystem(getContext(), idUser, pathDb);
+            resolver = getContext().getContentResolver();
+            return true;
+        }
+        return false;
     }
 
 
@@ -293,8 +296,16 @@ public class ProviderSystem extends ContentProvider
     @Override
     public Uri insert(Uri uri, ContentValues values) {
 
-        SQLiteDatabase db = bd.getWritableDatabase();
+        SQLiteDatabase db = null;
+        if (bd != null) {
+            db = bd.getWritableDatabase();
+        } else {
+            if (!onCreate()) {
+                return null;
+            }
+            db = bd.getWritableDatabase();
 
+        }
 
         ContentValues valores = matcherUri(uri);
 
@@ -333,7 +344,16 @@ public class ProviderSystem extends ContentProvider
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
         // Obtener base de datos
-        SQLiteDatabase db = bd.getReadableDatabase();
+        SQLiteDatabase db = null;
+        if (bd != null) {
+            db = bd.getWritableDatabase();
+        } else {
+            if (!onCreate()) {
+                return null;
+            }
+            db = bd.getWritableDatabase();
+
+        }
 
         Cursor c;
 
@@ -396,7 +416,16 @@ public class ProviderSystem extends ContentProvider
     public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
 
-        SQLiteDatabase db = bd.getWritableDatabase();
+        SQLiteDatabase db = null;
+        if (bd != null) {
+            db = bd.getWritableDatabase();
+        } else {
+            if (!onCreate()) {
+                return 0;
+            }
+            db = bd.getWritableDatabase();
+
+        }
 
         ContentValues valores = matcherUri(uri);
 
@@ -450,7 +479,17 @@ public class ProviderSystem extends ContentProvider
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
 
-        SQLiteDatabase db = bd.getWritableDatabase();
+        SQLiteDatabase db = null;
+        if (bd != null) {
+            db = bd.getWritableDatabase();
+        } else {
+            if (!onCreate()) {
+                return 0;
+            }
+            db = bd.getWritableDatabase();
+
+        }
+
 
         ContentValues valores = matcherUri(uri);
 

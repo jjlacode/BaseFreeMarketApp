@@ -301,6 +301,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             gone(suscritos);
             gone(btndelete);
             gone(btnsave);
+            gone(claves.getLinearLayout());
 
             if (idChat == null) {
                 ListaModeloSQL listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
@@ -311,13 +312,15 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
                 }
             }
 
-            listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, idChat);
-            listaMsgChat = listaMsgChat.sort(DETCHAT_FECHA, DESCENDENTE);
+            if (nn(idChat)) {
+                listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, idChat);
+                listaMsgChat = listaMsgChat.sort(DETCHAT_FECHA, DESCENDENTE);
 
-            RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
-            rvMsgChat.setAdapter(adaptadorDetChat);
-            visible(rvMsgChat);
-            noticias.setChecked(true);
+                RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
+                rvMsgChat.setAdapter(adaptadorDetChat);
+                visible(rvMsgChat);
+                noticias.setChecked(true);
+            }
 
         }
 
@@ -331,12 +334,15 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             claves.setText(firebaseFormBase.getClavesBase());
             web = firebaseFormBase.getWebBase();
             etWeb.setText(web);
+            if (tipoForm.equals(LISTA) && web.isEmpty()) {
+                gone(etWeb.getLinearLayout());
+            }
 
-            AndroidUtil.setSharePreference(contexto, PREFERENCIAS, CAMPO_NOMBRE, firebaseFormBase.getNombreBase());
-            AndroidUtil.setSharePreference(contexto, PREFERENCIAS, CAMPO_DIRECCION, firebaseFormBase.getDireccionBase());
-            AndroidUtil.setSharePreference(contexto, PREFERENCIAS, CAMPO_TELEFONO, firebaseFormBase.getTelefonoBase());
-            AndroidUtil.setSharePreference(contexto, PREFERENCIAS, CAMPO_EMAIL, firebaseFormBase.getEmailBase());
-            AndroidUtil.setSharePreference(contexto, PREFERENCIAS, CAMPO_WEB, firebaseFormBase.getWebBase());
+            setPref(CAMPO_NOMBRE, firebaseFormBase.getNombreBase());
+            setPref(CAMPO_DIRECCION, firebaseFormBase.getDireccionBase());
+            setPref(CAMPO_TELEFONO, firebaseFormBase.getTelefonoBase());
+            setPref(CAMPO_EMAIL, firebaseFormBase.getEmailBase());
+            setPref(CAMPO_WEB, firebaseFormBase.getWebBase());
 
             chActivo.setChecked(firebaseFormBase.isActivo());
 

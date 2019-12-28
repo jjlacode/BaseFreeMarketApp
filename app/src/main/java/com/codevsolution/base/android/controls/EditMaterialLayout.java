@@ -3,6 +3,7 @@ package com.codevsolution.base.android.controls;
 import android.content.Context;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
@@ -22,6 +23,7 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.codevsolution.base.android.AppActivity;
+import com.codevsolution.base.interfaces.ICFragmentos;
 import com.codevsolution.base.style.Estilos;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -52,6 +54,7 @@ public class EditMaterialLayout implements Estilos.Constantes {
     private boolean textoCambiado;
     private String textoEdit;
     private AppCompatActivity activity;
+    private ICFragmentos icFragmentos;
     private int weight = 5;
     private boolean valido;
     private boolean obligatorio;
@@ -59,7 +62,7 @@ public class EditMaterialLayout implements Estilos.Constantes {
     private String mensaje;
     private String path;
     private int id;
-
+    private boolean playOn;
 
     public static final int NUMERO = 2;
     public static final int TEXTO = 1;
@@ -89,6 +92,8 @@ public class EditMaterialLayout implements Estilos.Constantes {
     private boolean activo;
     private boolean excedido;
     private Context context;
+    private String nombreLlamada;
+    private boolean isPlay;
 
 
     public EditMaterialLayout(ViewGroup viewGroup, Context context) {
@@ -135,6 +140,55 @@ public class EditMaterialLayout implements Estilos.Constantes {
 
     }
 
+    public EditMaterialLayout(ViewGroup viewGroup, Context context, ICFragmentos icFragmentos) {
+        this.icFragmentos = icFragmentos;
+        this.context = context;
+        this.viewGroup = viewGroup;
+        inicializar();
+    }
+
+    public EditMaterialLayout(ViewGroup viewGroup, Context context, int hint, ICFragmentos icFragmentos) {
+        this.icFragmentos = icFragmentos;
+        this.context = context;
+        this.viewGroup = viewGroup;
+
+        inicializar();
+        setHint(context.getString(hint));
+
+    }
+
+    public EditMaterialLayout(ViewGroup viewGroup, Context context, String hint, ICFragmentos icFragmentos) {
+        this.icFragmentos = icFragmentos;
+        this.context = context;
+        this.viewGroup = viewGroup;
+
+        inicializar();
+        setHint(hint);
+
+    }
+
+    public EditMaterialLayout(ViewGroup viewGroup, Context context, int hint, boolean activo, ICFragmentos icFragmentos) {
+        this.icFragmentos = icFragmentos;
+        this.context = context;
+        this.viewGroup = viewGroup;
+
+        inicializar();
+        setHint(context.getString(hint));
+        setActivo(activo);
+
+    }
+
+    public EditMaterialLayout(ViewGroup viewGroup, Context context, String hint, boolean activo, ICFragmentos icFragmentos) {
+        this.icFragmentos = icFragmentos;
+        this.context = context;
+        this.viewGroup = viewGroup;
+
+        inicializar();
+        setHint(hint);
+        setActivo(activo);
+
+    }
+
     private void inicializar() {
 
         setViewGroup();
@@ -146,20 +200,7 @@ public class EditMaterialLayout implements Estilos.Constantes {
         btnAccion.setFocusable(false);
         btnAccion2.setFocusable(false);
         btnText.setFocusable(false);
-
-    }
-
-    public void speakOut() {
-        String text = getTexto();
-        if (text == null || text.isEmpty())
-            return;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            String utteranceId = this.hashCode() + "";
-            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId);
-        } else {
-            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-        }
+        setPlayOn(true);
     }
 
     public void setViewGroup() {
@@ -225,7 +266,6 @@ public class EditMaterialLayout implements Estilos.Constantes {
         }
         view.setLayoutParams(params);
 
-
     }
 
     public void setTTS(boolean enable) {
@@ -235,28 +275,11 @@ public class EditMaterialLayout implements Estilos.Constantes {
             btnAccion2Enable(true);
             setImgBtnAccion2(Estilos.getIdDrawable(context, "ic_play_indigo"));
 
-
             btnAccion2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                    tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-                        @Override
-                        public void onInit(int status) {
-                            if (status == TextToSpeech.SUCCESS) {
-                                int result = tts.setLanguage(Locale.getDefault());
-
-                                if (result == TextToSpeech.LANG_MISSING_DATA
-                                        || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                                    Log.e("TTS", "This Language is not supported");
-                                } else {
-                                    speakOut();
-                                }
-                            } else {
-                                Log.e("TTS", "Initilization Failed!");
-                            }
-                        }
-                    });
+                    reproducir();
                 }
             });
         } else {
@@ -269,23 +292,118 @@ public class EditMaterialLayout implements Estilos.Constantes {
         }
     }
 
+    public void setPlayOn(boolean enable) {
+        playOn = enable;
+    }
+
+    public boolean isPlayOn() {
+        return playOn;
+    }
+
     public void reproducir() {
+        reproducir(getTexto());
+    }
 
-        tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status == TextToSpeech.SUCCESS) {
-                    int result = tts.setLanguage(Locale.getDefault());
+    public void reproducir(String text) {
 
-                    if (result == TextToSpeech.LANG_MISSING_DATA
-                            || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                        Log.e("TTS", "This Language is not supported");
+        System.out.println("text to speech= " + text);
+        if (icFragmentos != null) {
+            TextToSpeech ttsIcf = icFragmentos.getTTs();
+            isPlay = true;
+            speakOut(text, ttsIcf);
+
+        } else {
+
+            tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(int status) {
+                    if (status == TextToSpeech.SUCCESS) {
+                        int result = tts.setLanguage(Locale.getDefault());
+
+                        if (result == TextToSpeech.LANG_MISSING_DATA
+                                || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                            Log.e("TTS", "This Language is not supported");
+                        } else {
+                            isPlay = true;
+                            speakOut(text);
+                        }
                     } else {
-                        speakOut();
+                        Log.e("TTS", "Initilization Failed!");
                     }
-                } else {
-                    Log.e("TTS", "Initilization Failed!");
                 }
+            });
+        }
+    }
+
+    private void onEndPlayTTs() {
+
+    }
+
+    public void speakOut(String text) {
+
+        if (text == null || text.isEmpty())
+            return;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            String utteranceId = this.hashCode() + "";
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId);
+        } else {
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+        }
+
+        tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+            @Override
+            public void onStart(String utteranceId) {
+                isPlay = true;
+            }
+
+            @Override
+            public void onDone(String utteranceId) {
+
+                isPlay = false;
+
+                onEndPlayTTs();
+            }
+
+            @Override
+            public void onError(String utteranceId) {
+
+                isPlay = false;
+
+            }
+        });
+    }
+
+    public void speakOut(String text, TextToSpeech tts) {
+
+        if (text == null || text.isEmpty())
+            return;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            String utteranceId = this.hashCode() + "";
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId);
+        } else {
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+        }
+        tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+            @Override
+            public void onStart(String utteranceId) {
+                isPlay = true;
+            }
+
+            @Override
+            public void onDone(String utteranceId) {
+
+                isPlay = false;
+
+                onEndPlayTTs();
+            }
+
+            @Override
+            public void onError(String utteranceId) {
+
+                isPlay = false;
+
             }
         });
     }
@@ -703,6 +821,11 @@ public class EditMaterialLayout implements Estilos.Constantes {
     public void enviarEmail() {
 
         if (valido) {
+            if (nombreLlamada != null && !nombreLlamada.isEmpty()) {
+                reproducir(Estilos.getString(context, "enviando_correo") + " " + nombreLlamada);
+            } else {
+                reproducir(Estilos.getString(context, "enviando_correo") + " " + getTexto());
+            }
             AppActivity.enviarEmail(context, getTexto());
         }
 
@@ -711,6 +834,12 @@ public class EditMaterialLayout implements Estilos.Constantes {
     public void enviarEmail(String asunto, String texto) {
 
         if (valido) {
+
+            if (nombreLlamada != null && !nombreLlamada.isEmpty()) {
+                reproducir(Estilos.getString(context, "enviando_correo") + " " + nombreLlamada);
+            } else {
+                reproducir(Estilos.getString(context, "enviando_correo") + " " + getTexto());
+            }
             AppActivity.enviarEmail(context, getTexto(), asunto, texto);
         }
 
@@ -719,6 +848,12 @@ public class EditMaterialLayout implements Estilos.Constantes {
     public void enviarEmail(String asunto, String texto, String path) {
 
         if (valido) {
+
+            if (nombreLlamada != null && !nombreLlamada.isEmpty()) {
+                reproducir(Estilos.getString(context, "enviando_correo") + " " + nombreLlamada);
+            } else {
+                reproducir(Estilos.getString(context, "enviando_correo") + " " + getTexto());
+            }
             AppActivity.enviarEmail(context, getTexto(), asunto, texto, path);
         }
 
@@ -752,6 +887,11 @@ public class EditMaterialLayout implements Estilos.Constantes {
 
         if (!getTexto().equals("")) {
 
+            if (nombreLlamada != null && !nombreLlamada.isEmpty()) {
+                reproducir(Estilos.getString(context, "buscar_direccion_de") + " " + nombreLlamada + " " + getTexto());
+            } else {
+                reproducir(Estilos.getString(context, "buscar_direccion") + " " + getTexto());
+            }
             AppActivity.viewOnMapA(context, getTexto());
 
         }
@@ -760,9 +900,28 @@ public class EditMaterialLayout implements Estilos.Constantes {
     public void llamar() {
 
         if (valido) {
+
+            if (nombreLlamada != null && !nombreLlamada.isEmpty()) {
+                reproducir(Estilos.getString(context, "llamando") + " " + nombreLlamada);
+            } else {
+                reproducir(Estilos.getString(context, "llamando") + " " + getTexto());
+            }
+
+            if (icFragmentos != null) {
+                int seg = 0;
+                while (isPlay || seg == 10) {
+
+                    try {
+                        Thread.sleep(500);
+                        System.out.println("seg = " + seg);
+                        seg++;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
             AppActivity.hacerLlamada(context, getTexto(), activity);
         }
-
     }
 
     public void verWeb() {
@@ -1040,6 +1199,14 @@ public class EditMaterialLayout implements Estilos.Constantes {
 
     public boolean getActivo() {
         return editText.isEnabled();
+    }
+
+    public String getnombreLlamada() {
+        return nombreLlamada;
+    }
+
+    public void setNombreLlamada(String nombre) {
+        nombreLlamada = nombre;
     }
 
     public interface AudioATexto {

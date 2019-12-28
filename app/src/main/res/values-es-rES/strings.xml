@@ -532,6 +532,29 @@
     <string name="filemanager">Manager  Archivos</string>
     <string name="managerbd">Operar con bases de datos</string>
     <string name="copiadb">Copia de seguridad bd creada</string>
+    <string name="crear">crear</string>
+    <string name="llamar_contacto">llamar contacto</string>
+    <string name="ir_a">ir a</string>
+    <string name="abrir">abrir</string>
+    <string name="imeil">imeil</string>
+    <string name="correo">correo</string>
+    <string name="llamar">llamar</string>
+    <string name="llamada">llamada</string>
+    <string name="llamar_cliente">llamar cliente</string>
+    <string name="llamar_prospecto">llamar prospecto</string>
+    <string name="marcar">marcar</string>
+    <string name="garantias">garantias</string>
+    <string name="ver_eventos">ver eventos</string>
+    <string name="enviar">enviar</string>
+    <string name="mapa">mapa</string>
+    <string name="busca">busca</string>
+    <string name="buscar">buscar</string>
+    <string name="suscripcion_prod">Suscribir noticias producto</string>
+    <string name="llamando">llamando a</string>
+    <string name="enviando_correo">enviando correo a</string>
+    <string name="buscar_direccion">buscando direccion</string>
+    <string name="marcando">marcando numero de</string>
+    <string name="buscar_direccion_de">buscando direccion de</string>
 
 
 </resources>

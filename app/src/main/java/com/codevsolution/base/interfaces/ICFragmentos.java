@@ -2,6 +2,7 @@ package com.codevsolution.base.interfaces;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.view.View;
 
 import androidx.fragment.app.Fragment;
@@ -43,4 +44,6 @@ public interface ICFragmentos {
     void enviarAyudaWeb(String ayudaWeb);
 
     void playTTs(String texto);
+
+    TextToSpeech getTTs();
 }

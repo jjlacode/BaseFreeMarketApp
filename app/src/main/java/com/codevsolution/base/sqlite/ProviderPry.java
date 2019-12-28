@@ -259,9 +259,13 @@ public class ProviderPry extends ContentProvider
 
         String idUser = AndroidUtil.getSharePreference(getContext(), USERID, USERIDCODE, NULL);
         String pathDb = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage(getContext()) + "/databases/";
-        bd = new DataBase(getContext(), idUser, pathDb);
-        resolver = getContext().getContentResolver();
-        return true;
+        if (idUser != null && !idUser.equals(NULL)) {
+
+            bd = new DataBase(getContext(), idUser, pathDb);
+            resolver = getContext().getContentResolver();
+            return true;
+        }
+        return false;
     }
 
 
@@ -895,8 +899,16 @@ public class ProviderPry extends ContentProvider
     @Override
     public Uri insert(Uri uri, ContentValues values) {
 
-        SQLiteDatabase db = bd.getWritableDatabase();
+        SQLiteDatabase db = null;
+        if (bd != null) {
+            db = bd.getWritableDatabase();
+        } else {
+            if (!onCreate()) {
+                return null;
+            }
+            db = bd.getWritableDatabase();
 
+        }
 
         ContentValues valores = matcherUri(uri);
 
@@ -932,7 +944,16 @@ public class ProviderPry extends ContentProvider
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
         // Obtener base de datos
-        SQLiteDatabase db = bd.getReadableDatabase();
+        SQLiteDatabase db = null;
+        if (bd != null) {
+            db = bd.getWritableDatabase();
+        } else {
+            if (!onCreate()) {
+                return null;
+            }
+            db = bd.getWritableDatabase();
+
+        }
 
         Cursor c;
 
@@ -996,7 +1017,16 @@ public class ProviderPry extends ContentProvider
     public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
 
-        SQLiteDatabase db = bd.getWritableDatabase();
+        SQLiteDatabase db = null;
+        if (bd != null) {
+            db = bd.getWritableDatabase();
+        } else {
+            if (!onCreate()) {
+                return 0;
+            }
+            db = bd.getWritableDatabase();
+
+        }
 
         ContentValues valores = matcherUri(uri);
 
@@ -1051,7 +1081,16 @@ public class ProviderPry extends ContentProvider
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
 
-        SQLiteDatabase db = bd.getWritableDatabase();
+        SQLiteDatabase db = null;
+        if (bd != null) {
+            db = bd.getWritableDatabase();
+        } else {
+            if (!onCreate()) {
+                return 0;
+            }
+            db = bd.getWritableDatabase();
+
+        }
 
         ContentValues valores = matcherUri(uri);
 

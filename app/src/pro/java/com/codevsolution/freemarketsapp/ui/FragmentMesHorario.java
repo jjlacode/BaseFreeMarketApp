@@ -111,7 +111,10 @@ public abstract class FragmentMesHorario extends FragmentMes implements
                 }
             });
             ViewGroupLayout vistaLinear = new ViewGroupLayout(contexto, mainLinear);
-            ModeloSQL perfil = CRUDutil.updateModelo(CAMPOS_PERFIL, PERFIL_NOMBRE, Interactor.perfila);
+            if (Interactor.perfila == null) {
+                Interactor.perfila = getPref(PERFILACTIVO, DEFECTO);
+            }
+            ModeloSQL perfil = CRUDutil.updateModeloCampo(CAMPOS_PERFIL, PERFIL_NOMBRE, Interactor.perfila);
             if ((nomDay == Calendar.SUNDAY && perfil.getDouble(PERFIL_HORASDOMINGO) == 0) ||
                     (nomDay == Calendar.MONDAY && perfil.getDouble(PERFIL_HORASLUNES) == 0) ||
                     (nomDay == Calendar.TUESDAY && perfil.getDouble(PERFIL_HORASMARTES) == 0) ||

@@ -29,6 +29,7 @@ import com.codevsolution.freemarketsapp.BuildConfig;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.services.EventosReceiver;
 import com.codevsolution.freemarketsapp.ui.CalendarioEventos;
+import com.codevsolution.freemarketsapp.ui.FragmentCRUDCliente;
 import com.codevsolution.freemarketsapp.ui.MenuInicio;
 
 import java.net.URLEncoder;
@@ -49,12 +50,14 @@ import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.ACCION_CANCELAR;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.ACCION_POSPONER;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.ACCION_VER;
+import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.CLIENTE;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.EXTRA_GANADOR;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.EXTRA_IDEVENTO;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.EXTRA_SORTEO;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PARTIDA;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODPROVCAT;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODUCTO;
+import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PROSPECTO;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.TRABAJO;
 
 
@@ -276,6 +279,9 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
         ArrayList<DestinosVoz> listaDestinos = new ArrayList<>();
         listaDestinos.add(new DestinosVoz(INICIO.toLowerCase(), new MenuInicio()));
         listaDestinos.add(new DestinosVoz(CALENDARIO.toLowerCase(), new CalendarioEventos()));
+        listaDestinos.add(new DestinosVoz(CLIENTE.toLowerCase(), new FragmentCRUDCliente()));
+        listaDestinos.add(new DestinosVoz(PROSPECTO.toLowerCase(), new FragmentCRUDCliente()));
+
 
         return listaDestinos;
     }

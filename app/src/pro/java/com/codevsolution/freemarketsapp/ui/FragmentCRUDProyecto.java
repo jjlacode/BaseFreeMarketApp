@@ -38,6 +38,7 @@ import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.module.PdfViewerModule;
+import com.codevsolution.base.settings.PreferenciasBase;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.style.Estilos;
@@ -1510,64 +1511,73 @@ public class FragmentCRUDProyecto extends FragmentCRUD
 
                     ArrayList<String> speech = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    grabarVoz = speech.get(0);
+                    String clave = getPref(PreferenciasBase.CLAVEVOZ, "");
+                    if (speech != null && clave != null && (clave.equals("") || speech.get(0).contains(clave))) {
 
-                    if (grabarVoz.equals("partidas")) {
+                        if (speech.get(0).contains(clave)) {
+                            grabarVoz = speech.get(0).replace(clave, "").toLowerCase();
+                        } else {
+                            grabarVoz = speech.get(0).toLowerCase();
+                        }
 
-                        verPartidas();
+                        if (grabarVoz.contains(getString(R.string.partidas))) {
 
-                    } else if (grabarVoz.equals("presupuestos")) {
+                            verPartidas();
 
-                        Toast.makeText(getContext(), PRESUPUESTOS, Toast.LENGTH_SHORT).show();
-                        actual = PRESUPUESTO;
-                        setSubtitulo(actual);
-                        actualtemp = actual;
-                        selector();
+                        } else if (grabarVoz.contains(getString(R.string.presupuestos))) {
 
-                    } else if (grabarVoz.equals("proyectos")) {
+                            Toast.makeText(getContext(), PRESUPUESTOS, Toast.LENGTH_SHORT).show();
+                            actual = PRESUPUESTO;
+                            setSubtitulo(actual);
+                            actualtemp = actual;
+                            selector();
 
-                        Toast.makeText(getContext(), PROYECTOS, Toast.LENGTH_SHORT).show();
-                        actual = PROYECTO;
-                        setSubtitulo(actual);
-                        actualtemp = actual;
-                        selector();
+                        } else if (grabarVoz.contains(getString(R.string.proyectos))) {
 
-                    } else if (grabarVoz.equals("cobros")) {
+                            Toast.makeText(getContext(), PROYECTOS, Toast.LENGTH_SHORT).show();
+                            actual = PROYECTO;
+                            setSubtitulo(actual);
+                            actualtemp = actual;
+                            selector();
 
-                        Toast.makeText(getContext(), PROYCOBROS, Toast.LENGTH_SHORT).show();
-                        actual = COBROS;
-                        actualtemp = PROYECTO;
-                        setSubtitulo(actual);
-                        selector();
+                        } else if (grabarVoz.contains(getString(R.string.cobros))) {
 
-                    } else if (grabarVoz.equals("historico")) {
+                            Toast.makeText(getContext(), PROYCOBROS, Toast.LENGTH_SHORT).show();
+                            actual = COBROS;
+                            actualtemp = PROYECTO;
+                            setSubtitulo(actual);
+                            selector();
 
-                        Toast.makeText(getContext(), PROYHISTORICO, Toast.LENGTH_SHORT).show();
-                        actual = HISTORICO;
-                        setSubtitulo(actual);
-                        actualtemp = PROYECTO;
-                        selector();
+                        } else if (grabarVoz.equals("historico")) {
 
-                    } else if (grabarVoz.equals("garantias")) {
+                            Toast.makeText(getContext(), PROYHISTORICO, Toast.LENGTH_SHORT).show();
+                            actual = HISTORICO;
+                            setSubtitulo(actual);
+                            actualtemp = PROYECTO;
+                            selector();
 
-                        Toast.makeText(getContext(), GARANTIA, Toast.LENGTH_SHORT).show();
-                        actual = GARANTIA;
-                        setSubtitulo(actual);
-                        actualtemp = PROYECTO;
-                        selector();
+                        } else if (grabarVoz.contains(getString(R.string.garantias)) ||
+                                grabarVoz.contains(getString(R.string.garantia))) {
 
-                    } else if (grabarVoz.equals("nuevo evento")) {
+                            Toast.makeText(getContext(), GARANTIA, Toast.LENGTH_SHORT).show();
+                            actual = GARANTIA;
+                            setSubtitulo(actual);
+                            actualtemp = PROYECTO;
+                            selector();
 
-                        nuevoEvento();
-                    } else if (grabarVoz.equals("ver eventos")) {
+                        } else if (grabarVoz.contains(getString(R.string.nuevo_evento))) {
 
-                        verEventos();
-                    } else if (grabarVoz.equals("nueva nota")) {
+                            nuevoEvento();
+                        } else if (grabarVoz.contains(getString(R.string.ver_eventos))) {
 
-                        nuevaNota();
-                    } else if (grabarVoz.equals("ver notas")) {
+                            verEventos();
+                        } else if (grabarVoz.contains(getString(R.string.nueva_nota))) {
 
-                        verNotas();
+                            nuevaNota();
+                        } else if (grabarVoz.contains(getString(R.string.ver_notas))) {
+
+                            verNotas();
+                        }
                     }
             }
         }

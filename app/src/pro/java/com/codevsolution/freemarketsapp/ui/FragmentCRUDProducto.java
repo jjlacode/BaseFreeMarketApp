@@ -32,6 +32,7 @@ import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.pay.chargebee.SuscripcionesChargebee;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.style.Dialogos;
 import com.codevsolution.base.style.Estilos;
@@ -363,7 +364,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
                 if (iniciado) {
 
-                    if (buttonView.isChecked()) {
+                    if (fire.isChecked()) {
 
                         if (!suscripcionOk) {
                             comprobarSuscripciones();
@@ -390,7 +391,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
 
                 if (iniciado) {
 
-                    if (buttonView.isChecked()) {
+                    if (firePro.isChecked()) {
 
                         if (!suscripcionOk) {
                             comprobarSuscripciones();
@@ -415,7 +416,7 @@ public class FragmentCRUDProducto extends FragmentCRUD implements Interactor.Con
         btnSus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                icFragmentos.enviarBundleAFragment(null, new MisSuscripcionesProductosPro());
+                icFragmentos.enviarBundleAFragment(null, new SuscripcionesChargebee());
             }
         });
 

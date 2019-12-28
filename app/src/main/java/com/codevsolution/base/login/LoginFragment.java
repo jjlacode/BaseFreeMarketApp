@@ -1,8 +1,10 @@
 package com.codevsolution.base.login;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,16 +17,29 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ImagenLayout;
+import com.codevsolution.base.encrypt.EncryptUtil;
+import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.sqlite.ConsultaBD;
+import com.codevsolution.base.sqlite.SQLiteUtil;
 import com.codevsolution.freemarketsapp.MainActivity;
 import com.codevsolution.freemarketsapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.UUID;
+
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.INICIO;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.SYSTEM;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.USERIDCODE;
+import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.CAMPOS_USERS;
+import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.TABLA_USERS;
+import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.USERS_USERID;
+import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.USERS_USERIDCODE;
 
 /**
  * Muestra el formulario de login
@@ -74,11 +89,43 @@ public class LoginFragment extends Fragment implements LoginContract.View {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
+                    setIdUserCode(user.getUid());
                     accessApp();
+
                 }
             }
         };
     }
+
+    protected String setIdUserCode(String userID) {
+
+        String id = null;
+        String pathDb = Environment.getDataDirectory().getPath() + "/data/"
+                + AppActivity.getPackage(getContext()) + "/databases/";
+
+        String BASEDATOS = SYSTEM + userID + ".db";
+
+        if (!SQLiteUtil.checkDataBase(pathDb + BASEDATOS)) {
+
+            id = UUID.randomUUID().toString();
+            AndroidUtil.setSharePreference(getContext(), USERID, USERIDCODE, id);
+            AndroidUtil.setSharePreference(getContext(), USERID, USERID, id);
+
+
+            ContentValues values = new ContentValues();
+            ConsultaBD.putDato(values, USERS_USERID, userID);
+            ConsultaBD.putDato(values, USERS_USERIDCODE, id);
+            ConsultaBD.insertRegistro(TABLA_USERS, values);
+
+        } else {
+
+            ModeloSQL user = ConsultaBD.queryObject(CAMPOS_USERS, USERS_USERID, userID);
+            id = EncryptUtil.decodificaStr(user.getString(USERS_USERIDCODE));
+            AndroidUtil.setSharePreference(getContext(), USERID, USERIDCODE, id);
+        }
+        return id;
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

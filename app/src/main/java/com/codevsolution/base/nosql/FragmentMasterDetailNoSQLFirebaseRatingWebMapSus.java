@@ -145,14 +145,17 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
         ratingBase = new RatingVotoUserComents(this, frdetalleExtraspost, activityBase);
         Estilos.setLayoutParams(frdetalleExtraspost, ratingBase.getVievGroup(), ViewGroupLayout.MATCH_PARENT, ViewGroupLayout.WRAP_CONTENT);
 
-        ratingBase.setOnEnviarVotoListener(new RatingVotoUserComents.OnEnviarVoto() {
-            @Override
-            public void onClickEnviar(float votoUser, String comentario) {
+        if (tipoForm.equals(NUEVO)) {
+            ratingBase.setVisibilidadBtnVerVotoUser(false);
+        } else {
+            ratingBase.setOnEnviarVotoListener(new RatingVotoUserComents.OnEnviarVoto() {
+                @Override
+                public void onClickEnviar(float votoUser, String comentario) {
 
-                enviarVoto(contexto, id, votoUser, comentario);
-            }
-        });
-
+                    enviarVoto(contexto, id, votoUser, comentario);
+                }
+            });
+        }
         viewChatRec = addVista(Estilos.getIdLayout(contexto, "fragment_chat_base"), frdetalleExtraspost);
 
         btnWeb = new Button(contexto);

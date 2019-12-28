@@ -1,5 +1,6 @@
 package com.codevsolution.base.crud;
 
+import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,16 +8,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
 import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.CheckPermisos;
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
@@ -34,6 +38,8 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.Manifest.permission.READ_CONTACTS;
+import static android.Manifest.permission.WRITE_CONTACTS;
 import static android.app.Activity.RESULT_OK;
 import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 
@@ -246,30 +252,8 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
         cruDutil.setImagen(contexto);
         try {
-            /*
-            if (tablaCab == null) {
-
-                if (nn(modeloSQL)) {
-                    id = modeloSQL.getString(campoID);
-                }
-                if (nn(id)) {
-                    modeloSQL = CRUDutil.updateModelo(campos, id);
-                }
-
-            } else {
-
-                if (nn(modeloSQL)) {
-                    id = modeloSQL.getString(campoID);
-                    secuencia = modeloSQL.getInt(campoSecuencia);
-                }
-                if (nn(id) && secuencia > 0) {
-                    modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
-                }
-            }
-
-             */
-            setDatos();
             obtenerDatosEdit();
+            setDatos();
 
             if (nn(callbackDatos)) {
 
@@ -947,6 +931,29 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
     }
 
+    public void reconocimientoVoz(int code) {
+
+        if (CheckPermisos.validarPermisos(activityBase, READ_CONTACTS, 100) &&
+                CheckPermisos.validarPermisos(activityBase, WRITE_CONTACTS, 100)) {
+
+            Intent intentActionRecognizeSpeech = new Intent(
+                    RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intentActionRecognizeSpeech.putExtra(
+                    RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
+            intentActionRecognizeSpeech.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+            try {
+                if (id != null) {
+                    update();
+                }
+                startActivityForResult(intentActionRecognizeSpeech,
+                        code, null);
+            } catch (ActivityNotFoundException a) {
+                Toast.makeText(contexto,
+                        "Tú dispositivo no soporta el reconocimiento por voz",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

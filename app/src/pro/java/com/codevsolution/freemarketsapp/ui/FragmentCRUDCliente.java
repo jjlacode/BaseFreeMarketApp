@@ -30,6 +30,7 @@ import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.settings.PreferenciasBase;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
@@ -93,7 +94,7 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     @Override
     protected void setInicio() {
 
-        ViewGroupLayout vistaForm = new ViewGroupLayout(contexto, frdetalle);
+        ViewGroupLayout vistaForm = new ViewGroupLayout(icFragmentos, contexto, frdetalle);
 
         btnAsignarAEvento = vistaForm.addButtonPrimary(R.string.asignar_evento);
         btnAsignarAEvento.setOnClickListener(new View.OnClickListener() {
@@ -114,14 +115,15 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
         tipoCliente = vistaForm.addEditMaterialLayout(getString(R.string.tipo_cliente));
         tipoCliente.setActivo(false);
         tipoCliente.btnAccion3Enable(true);
+        tipoCliente.setPlayOn(false);
 
-        nombreCliente = vistaForm.addEditMaterialLayout(getString(R.string.nombre), CLIENTE_NOMBRE, null, null);
+        nombreCliente = vistaForm.addEditMaterialLayout(getString(R.string.nombre), CLIENTE_NOMBRE);
         nombreCliente.setObligatorio(true);
-        direccionCliente = vistaForm.addEditMaterialLayout(getString(R.string.direccion), CLIENTE_DIRECCION, ViewGroupLayout.MAPA, activityBase);
-        telefonoCliente = vistaForm.addEditMaterialLayout(getString(R.string.telefono), CLIENTE_TELEFONO, ViewGroupLayout.LLAMADA, activityBase);
-        emailCliente = vistaForm.addEditMaterialLayout(getString(R.string.email), CLIENTE_EMAIL, ViewGroupLayout.MAIL, activityBase);
-        webCliente = vistaForm.addEditMaterialLayout(getString(R.string.web), CLIENTE_WEB, ViewGroupLayout.WEB, activityBase);
-        contactoCliente = vistaForm.addEditMaterialLayout(getString(R.string.contacto), CLIENTE_CONTACTO, null, null);
+        direccionCliente = vistaForm.addEditMaterialLayoutDireccion(CLIENTE_DIRECCION);
+        telefonoCliente = vistaForm.addEditMaterialLayoutLlamada(CLIENTE_TELEFONO, activityBase);
+        emailCliente = vistaForm.addEditMaterialLayoutEmail(CLIENTE_EMAIL);
+        webCliente = vistaForm.addEditMaterialLayoutWeb(CLIENTE_WEB);
+        contactoCliente = vistaForm.addEditMaterialLayout(getString(R.string.contacto), CLIENTE_CONTACTO);
         activo = (CheckBox) vistaForm.addVista(new CheckBox(contexto));
         activo.setText(R.string.inactivo);
         activo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -405,10 +407,6 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     @Override
     protected void setDatos() {
 
-        if (nnn(nombreCliente.getTexto())){
-            nombreCliente.reproducir();
-        }
-
         if (nnn(modeloSQL.getString(CLIENTE_NOMBRE))) {
             activityBase.toolbar.setSubtitle(modeloSQL.getString(CLIENTE_NOMBRE));
         }
@@ -481,15 +479,16 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             btnVerNotas.setVisibility(View.GONE);
         }
 
+        if (nnn(nombreCliente.getTexto())) {
+            nombreCliente.reproducir();
+            telefonoCliente.setNombreLlamada(nombreCliente.getTexto());
+            emailCliente.setNombreLlamada(nombreCliente.getTexto());
+            direccionCliente.setNombreLlamada(nombreCliente.getTexto());
+        }
     }
+
 
     private void sincronizarClienteWeb() {
-
-    }
-
-    @Override
-    protected void setAcciones() {
-
 
     }
 
@@ -552,43 +551,45 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
             if (resultCode == RESULT_OK && requestCode == RECOGNIZE_SPEECH_ACTIVITY) {
                 ArrayList<String> speech = data
                         .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                grabarVoz = speech.get(0);
+                String clave = getPref(PreferenciasBase.CLAVEVOZ, "");
+                if (speech != null && clave != null && (clave.equals("") || speech.get(0).contains(clave))) {
 
-                switch (grabarVoz) {
-                    case "mapa":
-                    case "direccion":
+                    if (speech.get(0).contains(clave)) {
+                        grabarVoz = speech.get(0).replace(clave, "").toLowerCase();
+                    } else {
+                        grabarVoz = speech.get(0).toLowerCase();
+                    }
 
-                        if (!direccionCliente.getText().toString().equals("")) {
-
-                            AppActivity.viewOnMapA(contexto, direccionCliente.getText().toString());
+                    if (grabarVoz.contains(getString(R.string.mapa)) || grabarVoz.contains(getString(R.string.direccion))) {
+                        if (!direccionCliente.getTexto().equals("")) {
+                            reproducir(getString(R.string.buscar_direccion_de) + " " +
+                                    nombreCliente.getTexto() + " " + direccionCliente.getTexto());
+                            AppActivity.viewOnMapA(contexto, direccionCliente.getTexto());
 
                         }
-                        break;
-                    case "email":
-                    case "imeil":
-                    case "correo":
-
-                        if (!emailCliente.getText().toString().equals("")) {
+                    } else if (grabarVoz.contains(getString(R.string.email)) ||
+                            grabarVoz.contains(getString(R.string.imeil)) ||
+                            grabarVoz.contains(getString(R.string.correo))) {
+                        if (!emailCliente.getTexto().equals("")) {
+                            reproducir(getString(R.string.enviando_correo) + " " + nombreCliente.getTexto());
                             AppActivity.enviarEmail(getContext(), emailCliente.getText().toString());
                         }
-                        break;
-                    case "llamar":
-                    case "llamada":
-                    case "llamar cliente":
-
-                        if (!telefonoCliente.getText().toString().equals("")) {
+                    } else if (grabarVoz.contains(getString(R.string.llamar)) ||
+                            grabarVoz.contains(getString(R.string.llamada)) ||
+                            grabarVoz.contains(getString(R.string.llamar_cliente)) ||
+                            grabarVoz.contains(getString(R.string.llamar_prospecto))) {
+                        if (!telefonoCliente.getTexto().equals("")) {
+                            reproducir(getString(R.string.llamando) + " " + nombreCliente.getTexto());
                             AppActivity.hacerLlamada(AppActivity.getAppContext()
                                     , telefonoCliente.getText().toString(), activityBase);
                         }
-                        break;
-                    case "marcar":
-
-                        if (!telefonoCliente.getText().toString().equals("")) {
+                    } else if (grabarVoz.contains(getString(R.string.marcar))) {
+                        if (!telefonoCliente.getTexto().equals("")) {
+                            reproducir(getString(R.string.marcando) + " " + nombreCliente.getTexto());
                             AppActivity.hacerLlamada(AppActivity.getAppContext()
                                     , telefonoCliente.getText().toString());
                         }
-                        break;
-
+                    }
                 }
         }
         super.onActivityResult(requestCode, resultCode, data);

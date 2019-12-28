@@ -17,6 +17,7 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
+import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.MainActivityBase;
 import com.codevsolution.freemarketsapp.R;
 
@@ -49,6 +50,15 @@ public class Estilos {
     public static int colorPrimary = Color.parseColor("#ffffff");
     public static int colorSecondary = Color.parseColor("#00ffff");
     public static int colorSecondaryDark = Color.parseColor("#3f51b5");
+    public static int colorWhite = getColor(AppActivity.getAppContext(), "white");
+    public static int colorOffWhite = getColor(AppActivity.getAppContext(), "offWhite");
+    public static int colorBlack = getColor(AppActivity.getAppContext(), "black");
+    public static int colorDarkGray = getColor(AppActivity.getAppContext(), "darkGray");
+    public static int colorLightGray = getColor(AppActivity.getAppContext(), "lightGray");
+    public static int colorBrightRed = getColor(AppActivity.getAppContext(), "brightRed");
+    public static int colorBrightGreen = getColor(AppActivity.getAppContext(), "brightGreen");
+    public static int colorBrightBlue = getColor(AppActivity.getAppContext(), "brightBlue");
+    public static int colorDarkBlue = getColor(AppActivity.getAppContext(), "darkBlue");
 
     public interface Constantes {
 

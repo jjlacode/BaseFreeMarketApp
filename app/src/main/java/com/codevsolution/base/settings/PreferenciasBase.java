@@ -1,5 +1,6 @@
 package com.codevsolution.base.settings;
 
+import android.graphics.Typeface;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,16 +23,11 @@ import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.style.Dialogos;
+import com.codevsolution.base.style.Estilos;
 import com.codevsolution.freemarketsapp.R;
 
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.EVENTO;
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.NOTA;
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODUCTO;
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PROYECTO;
 
 public class PreferenciasBase extends FragmentBase {
 
@@ -39,17 +35,21 @@ public class PreferenciasBase extends FragmentBase {
     private int contAnt;
 
     private Switch letraProp;
-    private TextView ajustes;
+    protected TextView ajustes;
     private EditMaterialLayout tiempoAuto;
     private Switch autoGuardadoSw;
     public static final String LETRAPROP = "letraprop";
+    public static final String COMVOZ = "comandosvoz";
     public static final String CIFRADO = "cifrado";
     public static final String CIFRADOPASS = "cifradoPass";
     public static final String CIFRADOPASSPLUS = "cifradoPassPlus";
     public static final String CIFRADOGEN = "cifradoGen";
     public static final String AUTOGUARDADO = "autoguardado";
     public static final String TIEMPOAUTOGUARDADO = "tiempoautoguardado";
+    public static final String CLAVEVOZ = "clavevoz";
     private TextView tituloEncrypt;
+    private TextView tituloSettings;
+    private TextView tituloDictado;
     private RadioGroup gEncrypt;
     private RadioButton noEncrypt;
     private RadioButton userEncrypt;
@@ -61,6 +61,10 @@ public class PreferenciasBase extends FragmentBase {
     private int idPassPlusEncrypt;
     private Button btnPass;
     private static boolean iniciado;
+    protected ViewGroupLayout vistaSetPage;
+    protected ViewGroupLayout vistaSetApp;
+    private Switch comVoz;
+    private EditMaterialLayout claveVoz;
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
@@ -70,11 +74,30 @@ public class PreferenciasBase extends FragmentBase {
 
         visible(frdetalle);
         vistaMain = new ViewGroupLayout(contexto, frdetalle);
-        vistaMain.addTextView(R.string.ajustes_generales);
+        tituloSettings = vistaMain.addTextView(getString(R.string.ajustes_generales).toUpperCase());
+        tituloSettings.setTextColor(Estilos.colorSecondaryDark);
+        tituloSettings.setTypeface(Typeface.DEFAULT_BOLD);
         letraProp = vistaMain.addSwitch(R.string.letra_proporcional, false);
         letraProp.setChecked(getPref(LETRAPROP, false));
         setOnCheck(letraProp, LETRAPROP);
+        autoGuardadoSw = vistaMain.addSwitch(R.string.autoguardado, false);
+        autoGuardadoSw.setChecked(getPref(AUTOGUARDADO, true));
+        setOnCheck(autoGuardadoSw, AUTOGUARDADO);
+        tiempoAuto = vistaMain.addEditMaterialLayout(R.string.tiempo_autoguardado);
+        tiempoAuto.setText(String.valueOf(getPref(TIEMPOAUTOGUARDADO, 1)));
+        tiempoAuto.btnInicioVisible(false);
+        setAlCambiarEditPref(tiempoAuto, TIEMPOAUTOGUARDADO, INT);
+        tituloDictado = vistaMain.addTextView(R.string.comandos_voz);
+        tituloDictado.setTextColor(Estilos.colorSecondary);
+        comVoz = vistaMain.addSwitch(R.string.comandos_voz, false);
+        comVoz.setChecked(getPref(COMVOZ, false));
+        setOnCheck(comVoz, COMVOZ);
+        claveVoz = vistaMain.addEditMaterialLayout(R.string.clave_voz);
+        claveVoz.setText(String.valueOf(getPref(CLAVEVOZ, "")));
+        claveVoz.btnInicioVisible(false);
+        setAlCambiarEditPref(claveVoz, CLAVEVOZ, STRING);
         tituloEncrypt = vistaMain.addTextView(R.string.titulo_encriptado);
+        tituloEncrypt.setTextColor(Estilos.colorSecondary);
         gEncrypt = (RadioGroup) vistaMain.addVista(new RadioGroup(contexto));
         noEncrypt = new RadioButton(contexto);
         noEncrypt.setId(idNoEncrypt);
@@ -108,16 +131,13 @@ public class PreferenciasBase extends FragmentBase {
                 dialogoPass();
             }
         });
-        autoGuardadoSw = vistaMain.addSwitch(R.string.autoguardado, false);
-        autoGuardadoSw.setChecked(getPref(AUTOGUARDADO, true));
-        setOnCheck(autoGuardadoSw, AUTOGUARDADO);
-        tiempoAuto = vistaMain.addEditMaterialLayout(R.string.tiempo_autoguardado);
-        tiempoAuto.setText(String.valueOf(getPref(TIEMPOAUTOGUARDADO, 1)));
-        tiempoAuto.btnInicioVisible(false);
-        setAlCambiarEditPref(tiempoAuto, TIEMPOAUTOGUARDADO, INT);
+
 
         ajustes = vistaMain.addTextView(R.string.ajustes);
         gone(ajustes);
+
+        vistaSetApp = new ViewGroupLayout(contexto, vistaMain.getViewGroup());
+        vistaSetPage = new ViewGroupLayout(contexto, vistaMain.getViewGroup());
 
         actualizarArrays(vistaMain);
         iniciado = true;
@@ -126,41 +146,6 @@ public class PreferenciasBase extends FragmentBase {
     @Override
     protected FragmentBase setFragment() {
         return this;
-    }
-
-    @Override
-    protected void cargarBundle() {
-        super.cargarBundle();
-
-        origen = getStringBundle(ORIGEN, NULL);
-        actual = getStringBundle(ACTUAL, NULL);
-
-        if (nnn(origen)) {
-
-            visible(ajustes);
-            ajustes.setText(String.format(Locale.getDefault(), "%s %s", getString(R.string.ajustes), origen));
-
-            switch (origen) {
-
-                case PRODUCTO:
-
-                    break;
-
-                case PROYECTO:
-
-                    break;
-
-                case EVENTO:
-
-                    break;
-
-                case NOTA:
-
-                    break;
-
-            }
-        }
-
     }
 
     private void setAlCambiarEditPref(EditMaterialLayout editPref, String key, String tipo) {
