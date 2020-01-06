@@ -11,7 +11,10 @@ import android.util.Log;
 import com.codevsolution.base.android.AppActivity;
 
 
-public class AutoArranque extends BroadcastReceiver {
+public class AutoArranqueVoz extends BroadcastReceiver {
+
+    private static JobScheduler jobScheduler;
+    private static int jobId = 1564;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -25,22 +28,19 @@ public class AutoArranque extends BroadcastReceiver {
 
     public static void scheduleJob(Context context) {
 
-
-        ComponentName serviceComponent = new ComponentName(AppActivity.getAppContext(), JobServiceBase.class);
-        JobInfo info = new JobInfo.Builder(0, serviceComponent)
+        ComponentName serviceComponent1 = new ComponentName(AppActivity.getAppContext(), ServicioVoz.class);
+        JobInfo info = new JobInfo.Builder(jobId, serviceComponent1)
                 .setMinimumLatency(500)
                 .setOverrideDeadline(500)
                 .build();
-        JobScheduler jobScheduler = (JobScheduler) AppActivity.getAppContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler = (JobScheduler) AppActivity.getAppContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
         jobScheduler.schedule(info);
 
-        ComponentName serviceComponent1 = new ComponentName(AppActivity.getAppContext(), ServicioVoz.class);
-        JobInfo info1 = new JobInfo.Builder(1, serviceComponent1)
-                .setMinimumLatency(500)
-                .setOverrideDeadline(500)
-                .build();
-        JobScheduler jobScheduler1 = (JobScheduler) AppActivity.getAppContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler1.schedule(info1);
+    }
 
+    public static void cancelJob() {
+        if (jobScheduler != null) {
+            jobScheduler.cancel(jobId);
+        }
     }
 }

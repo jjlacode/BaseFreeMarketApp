@@ -19,7 +19,6 @@ import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
-import com.codevsolution.base.models.DestinosVoz;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
@@ -28,8 +27,6 @@ import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.BuildConfig;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.services.EventosReceiver;
-import com.codevsolution.freemarketsapp.ui.CalendarioEventos;
-import com.codevsolution.freemarketsapp.ui.FragmentCRUDCliente;
 import com.codevsolution.freemarketsapp.ui.MenuInicio;
 
 import java.net.URLEncoder;
@@ -50,14 +47,12 @@ import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.ACCION_CANCELAR;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.ACCION_POSPONER;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.ACCION_VER;
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.CLIENTE;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.EXTRA_GANADOR;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.EXTRA_IDEVENTO;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.EXTRA_SORTEO;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PARTIDA;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODPROVCAT;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PRODUCTO;
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PROSPECTO;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.TRABAJO;
 
 
@@ -272,27 +267,6 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
         String NOTAAUDIO = "Nota de Audio";
         String NOTAVIDEO = "Nota de Video";
         String NOTAIMAGEN = "Nota de Imagen";
-    }
-
-    public static ArrayList<DestinosVoz> getListaDestinosVoz() {
-
-        ArrayList<DestinosVoz> listaDestinos = new ArrayList<>();
-        listaDestinos.add(new DestinosVoz(INICIO.toLowerCase(), new MenuInicio()));
-        listaDestinos.add(new DestinosVoz(CALENDARIO.toLowerCase(), new CalendarioEventos()));
-        listaDestinos.add(new DestinosVoz(CLIENTE.toLowerCase(), new FragmentCRUDCliente()));
-        listaDestinos.add(new DestinosVoz(PROSPECTO.toLowerCase(), new FragmentCRUDCliente()));
-
-
-        return listaDestinos;
-    }
-
-    public static ArrayList<DestinosVoz> getListaNuevosDestinosVoz() {
-
-        ArrayList<DestinosVoz> listaDestinos = new ArrayList<>();
-        //listaDestinos.add(new DestinosVoz(getAppContext().getString(R.string.evento).toLowerCase(),
-        //        new FragmentNuevoEvento()));
-
-        return listaDestinos;
     }
 
     public static String getNombreUser() {

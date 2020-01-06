@@ -1,5 +1,6 @@
 package com.codevsolution.base.android;
 
+import android.app.job.JobService;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -271,5 +272,37 @@ public class CheckPermisos {
     private void onResult() {
 
     }
+
+    public static boolean validarPermisos(final JobService service, final String permisoSolicitado, final int code) {
+
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
+        } else if (service.checkSelfPermission(permisoSolicitado) == PackageManager.PERMISSION_GRANTED) {
+
+            return true;
+        } else {
+
+            System.out.println("debe tener los permisos dialogo, permiso " + permisoSolicitado);
+            AlertDialog.Builder dialogo = new AlertDialog.Builder(service);
+            dialogo.setTitle("Permisos desactivados");
+            dialogo.setMessage("Debe aceptar los permisos para el correcto funcionamiento de la app");
+
+            dialogo.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    MainActivityBase mainActivityBase = new MainActivityBase();
+                    mainActivityBase.requestPermissions(new String[]
+                            {permisoSolicitado}, code);
+                }
+            });
+            dialogo.show();
+
+        }
+
+        return false;
+    }
+
 
 }

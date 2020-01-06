@@ -97,6 +97,7 @@ public class JavaUtil {
         String TSIMG = "tsimg";
         String CONTNOT = "Contador notificacion";
         String PREFERENCIAS = "preferencias";
+        String ENEJECUCION = "enejecucion";
         String SESIONPORTAL = "sesion_portal";
         String PERFILUSER = "perfiluser";
         String PRO = "pro";

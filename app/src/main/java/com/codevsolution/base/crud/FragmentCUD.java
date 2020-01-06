@@ -251,13 +251,6 @@ public abstract class FragmentCUD extends FragmentBaseCRUD {
             }
         });
 
-        activityBase.fabVoz.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reconocimientoVoz(RECOGNIZE_SPEECH_ACTIVITY);
-            }
-        });
-
         if (CheckPermisos.validarPermisos(activityBase, READ_EXTERNAL_STORAGE, 100) &&
                 CheckPermisos.validarPermisos(activityBase, WRITE_EXTERNAL_STORAGE, 100) &&
                 CheckPermisos.validarPermisos(activityBase, CAMERA, 100)) {

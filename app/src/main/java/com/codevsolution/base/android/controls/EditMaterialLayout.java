@@ -245,6 +245,9 @@ public class EditMaterialLayout implements Estilos.Constantes {
         return id;
     }
 
+    public String getHint() {
+        return editText.getHint().toString();
+    }
     public LinearLayoutCompat getLinearLayout() {
         return linearLayout;
     }

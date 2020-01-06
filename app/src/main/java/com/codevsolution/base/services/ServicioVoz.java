@@ -1,221 +1,227 @@
 package com.codevsolution.base.services;
 
+import android.app.job.JobParameters;
+import android.app.job.JobService;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
-import android.speech.RecognitionListener;
-import android.speech.RecognizerIntent;
-import android.speech.SpeechRecognizer;
+import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
+import com.codevsolution.base.android.AndroidUtil;
+import com.codevsolution.base.android.CheckPermisos;
+import com.codevsolution.base.interfaces.SpeechDelegate;
+import com.codevsolution.base.speech.GoogleVoiceTypingDisabledException;
+import com.codevsolution.base.speech.SpeechRecognitionNotAvailable;
+import com.codevsolution.base.speech.SpeechUtil;
 
-public class ServicioVoz extends JobServiceBase {
+import java.util.List;
+import java.util.Objects;
+import java.util.Timer;
 
-    protected static AudioManager mAudioManager;
-    protected SpeechRecognizer mSpeechRecognizer;
-    protected Intent mSpeechRecognizerIntent;
-    protected final Messenger mServerMessenger = new Messenger(new IncomingHandler(this));
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.PREFERENCIAS;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.ACCION_JEDI;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.EXTRA_VOZ;
+import static com.codevsolution.base.settings.PreferenciasBase.CLAVEVOZ;
 
-    protected boolean mIsListening;
-    protected volatile boolean mIsCountDownOn;
-    private static boolean mIsStreamSolo;
+public class ServicioVoz extends JobService implements SpeechDelegate, SpeechUtil.stopDueToDelay {
 
-    static final int MSG_RECOGNIZER_START_LISTENING = 1;
-    static final int MSG_RECOGNIZER_CANCEL = 2;
-
-    @Override
-    protected void setJob() {
-        super.setJob();
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
-        mSpeechRecognizer.setRecognitionListener(new SpeechRecognitionListener());
-        mSpeechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
-                this.getPackageName());
-
-    }
-
-    protected static class IncomingHandler extends Handler {
-        private WeakReference<ServicioVoz> mtarget;
-
-        IncomingHandler(ServicioVoz target) {
-            mtarget = new WeakReference<ServicioVoz>(target);
-        }
-
-
-        @Override
-        public void handleMessage(Message msg) {
-            final ServicioVoz target = mtarget.get();
-            String TAG = getClass().getSimpleName();
-
-            switch (msg.what) {
-                case MSG_RECOGNIZER_START_LISTENING:
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                        // turn off beep sound
-                        if (!mIsStreamSolo) {
-                            mAudioManager.setStreamSolo(AudioManager.STREAM_VOICE_CALL, true);
-                            mIsStreamSolo = true;
-                        }
-                    }
-                    if (!target.mIsListening) {
-                        target.mSpeechRecognizer.startListening(target.mSpeechRecognizerIntent);
-                        target.mIsListening = true;
-                        Log.d(TAG, "message start listening"); //$NON-NLS-1$
-                    }
-                    break;
-
-                case MSG_RECOGNIZER_CANCEL:
-                    if (mIsStreamSolo) {
-                        mAudioManager.setStreamSolo(AudioManager.STREAM_VOICE_CALL, false);
-                        mIsStreamSolo = false;
-                    }
-                    target.mSpeechRecognizer.cancel();
-                    target.mIsListening = false;
-                    Log.d(TAG, "message canceled recognizer"); //$NON-NLS-1$
-                    break;
-            }
-        }
-    }
-
-    // Count down timer for Jelly Bean work around
-    protected CountDownTimer mNoSpeechCountDown = new CountDownTimer(5000, 5000) {
-
-        @Override
-        public void onTick(long millisUntilFinished) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onFinish() {
-            mIsCountDownOn = false;
-            Message message = Message.obtain(null, MSG_RECOGNIZER_CANCEL);
-            try {
-                mServerMessenger.send(message);
-                message = Message.obtain(null, MSG_RECOGNIZER_START_LISTENING);
-                mServerMessenger.send(message);
-            } catch (RemoteException e) {
-
-            }
-        }
-    };
+    public static SpeechDelegate delegate;
+    private boolean listenCom;
+    private Timer timer;
+    private Context context;
+    private JobParameters params;
+    private static int volNotification = 100;
+    private static int volAlarm = 100;
+    private static int volMusic = 100;
+    private static int volRing = 100;
+    private static int volSystem = 100;
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public boolean onStartJob(JobParameters params) {
 
-        if (mIsCountDownOn) {
-            mNoSpeechCountDown.cancel();
+        this.params = params;
+        Log.d(this.getClass().getSimpleName(), "onStartJob");
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                ((AudioManager) Objects.requireNonNull(
+                        getSystemService(Context.AUDIO_SERVICE))).setStreamMute(AudioManager.STREAM_SYSTEM, true);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        if (mSpeechRecognizer != null) {
-            mSpeechRecognizer.destroy();
+
+        context = this;
+        SpeechUtil.init(this);
+        //SpeechUtil.getInstance().setStopListeningAfterInactivity(2000);
+        delegate = this;
+        SpeechUtil.getInstance().setListener(this);
+
+        if (SpeechUtil.getInstance().isListening()) {
+            SpeechUtil.getInstance().stopListening();
+            enableBeepSoundOfRecorder();
+        } else {
+            //System.setProperty("rx.unsafe-disable", "True");
+            if (CheckPermisos.validarPermisos(this, CheckPermisos.RECORD_AUDIO, 243)) {
+                try {
+                    SpeechUtil.getInstance().startListening(this);
+                    Log.i("VOZ", "Start listening servicio voz");
+
+                } catch (SpeechRecognitionNotAvailable speechRecognitionNotAvailable) {
+                    speechRecognitionNotAvailable.printStackTrace();
+                } catch (GoogleVoiceTypingDisabledException e) {
+                    e.printStackTrace();
+                }
+                muteBeepSoundOfRecorder();
+            }
         }
+        return true;
     }
 
-    protected class SpeechRecognitionListener implements RecognitionListener {
+    @Override
+    public boolean onStopJob(JobParameters params) {
+        return false;
+    }
 
-        String TAG = getClass().getSimpleName();
-        @Override
-        public void onBeginningOfSpeech() {
-            // speech input will be processed, so there is no need for count down anymore
-            if (mIsCountDownOn) {
-                mIsCountDownOn = false;
-                mNoSpeechCountDown.cancel();
+    @Override
+    public void onSpecifiedCommandPronounced(String event) {
+
+        /*
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                ((AudioManager) Objects.requireNonNull(
+                        getSystemService(Context.AUDIO_SERVICE))).setStreamMute(AudioManager.STREAM_SYSTEM, true);
             }
-            Log.d(TAG, "onBeginingOfSpeech"); //$NON-NLS-1$
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        if (SpeechUtil.getInstance().isListening()) {
+            enableBeepSoundOfRecorder();
+            SpeechUtil.getInstance().stopListening();
+        } else {
 
-        @Override
-        public void onBufferReceived(byte[] buffer) {
+            if (CheckPermisos.validarPermisos(this,CheckPermisos.RECORD_AUDIO,243)) {
+                try {
+                    SpeechUtil.getInstance().startListening(this);
+                    muteBeepSoundOfRecorder();
 
-        }
+                    Log.i("VOZ", "Start listening servicio voz");
 
-        @Override
-        public void onEndOfSpeech() {
-            Log.d(TAG, "onEndOfSpeech"); //$NON-NLS-1$
-        }
-
-        @Override
-        public void onError(int error) {
-            if (mIsCountDownOn) {
-                mIsCountDownOn = false;
-                mNoSpeechCountDown.cancel();
-            }
-            mIsListening = false;
-            Message message = Message.obtain(null, MSG_RECOGNIZER_START_LISTENING);
-            try {
-                mServerMessenger.send(message);
-            } catch (RemoteException e) {
-
-            }
-            Log.d(TAG, "error = " + error); //$NON-NLS-1$
-        }
-
-        @Override
-        public void onEvent(int eventType, Bundle params) {
-
-        }
-
-        @Override
-        public void onPartialResults(Bundle partialResults) {
-
-        }
-
-        @Override
-        public void onReadyForSpeech(Bundle params) {
-            String TAG = getClass().getSimpleName();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                mIsCountDownOn = true;
-                mNoSpeechCountDown.start();
-
-            }
-            Log.d(TAG, "onReadyForSpeech"); //$NON-NLS-1$
-        }
-
-        @Override
-        public void onResults(Bundle results) {
-            String TAG = getClass().getSimpleName();
-            Log.d(TAG, "onResults"); //$NON-NLS-1$
-            String wordStr = null;
-            String[] words = null;
-            String firstWord = null;
-            String secondWord = null;
-
-            ArrayList<String> matches = results
-                    .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-
-            wordStr = matches.get(0);
-            words = wordStr.split(" ");
-            firstWord = words[0];
-            secondWord = words[1];
-            System.out.println("Reconcimiento de voz msg = " + firstWord + " " + secondWord);
-
-            if (firstWord.equals("abrir")) {
-                if (secondWord.equals("agenda")) {
-
-                    System.out.println("Reconcimiento de voz msg = " + firstWord + " " + secondWord);
+                } catch (SpeechRecognitionNotAvailable speechRecognitionNotAvailable) {
+                    speechRecognitionNotAvailable.printStackTrace();
+                } catch (GoogleVoiceTypingDisabledException e) {
+                    e.printStackTrace();
                 }
             }
-
         }
 
-        @Override
-        public void onRmsChanged(float rmsdB) {
+         */
+    }
 
-        }
-
+    @Override
+    public void onStartOfSpeech() {
 
     }
+
+    @Override
+    public void onSpeechRmsChanged(float value) {
+
+    }
+
+    @Override
+    public void onSpeechPartialResults(List<String> results) {
+
+        /*
+        String clave = AndroidUtil.getSharePreference(this, PREFERENCIAS, CLAVEVOZ, NULL);
+        for (String partial : results) {
+            Log.d("Result", partial+"");
+
+            if (clave!=null && !clave.isEmpty()) {
+                if (partial.equals(clave)) {
+                    Log.e("VOZ", "Clave correcta");
+                    listenCom = true;
+                } else if(listenCom){
+                    if(sendCom(partial)){
+                        listenCom = false;
+                    }
+                }else {
+                    results.clear();
+                }
+            }else{
+                sendCom(partial);
+            }
+        }
+
+         */
+    }
+
+    @Override
+    public void onSpeechResult(String result) {
+
+        Log.d("Result", result + "");
+        enableBeepSoundOfRecorder();
+        String clave = AndroidUtil.getSharePreference(this, PREFERENCIAS, CLAVEVOZ, NULL);
+
+        if (!TextUtils.isEmpty(result)) {
+
+            if (clave != null && !clave.isEmpty() && result.contains(clave)) {
+                Log.e("VOZ", "Clave correcta");
+                sendCom(result);
+            } else if (clave != null) {
+                sendCom(result);
+            }
+            SpeechUtil.getInstance().stopListening();
+            jobFinished(params, false);
+            AutoArranqueVoz.cancelJob();
+            AutoArranqueJedi.scheduleJob(context);
+
+        }
+
+    }
+
+    private boolean sendCom(String result) {
+
+        System.out.println("Comando voz " + result);
+        Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(ACCION_JEDI);
+        intent.putExtra(EXTRA_VOZ, result);
+        sendBroadcast(intent);
+
+        return true;
+    }
+
+    /**
+     * Function to remove the beep sound of voice recognizer.
+     */
+    private void muteBeepSoundOfRecorder() {
+        AudioManager amanager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        if (amanager != null) {
+            volNotification = amanager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+            amanager.setStreamMute(AudioManager.STREAM_NOTIFICATION, true);
+            volAlarm = amanager.getStreamVolume(AudioManager.STREAM_ALARM);
+            amanager.setStreamMute(AudioManager.STREAM_ALARM, true);
+            volMusic = amanager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            amanager.setStreamMute(AudioManager.STREAM_MUSIC, true);
+            volRing = amanager.getStreamVolume(AudioManager.STREAM_RING);
+            amanager.setStreamMute(AudioManager.STREAM_RING, true);
+            volSystem = amanager.getStreamVolume(AudioManager.STREAM_SYSTEM);
+            amanager.setStreamMute(AudioManager.STREAM_SYSTEM, true);
+        }
+    }
+
+    private void enableBeepSoundOfRecorder() {
+        AudioManager amanager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        if (amanager != null) {
+            amanager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, volNotification, 0);
+            amanager.setStreamVolume(AudioManager.STREAM_ALARM, volAlarm, 0);
+            amanager.setStreamVolume(AudioManager.STREAM_MUSIC, volMusic, 0);
+            amanager.setStreamVolume(AudioManager.STREAM_RING, volRing, 0);
+            amanager.setStreamVolume(AudioManager.STREAM_SYSTEM, volSystem, 0);
+        }
+    }
+
+
 }

@@ -1,6 +1,5 @@
 package com.codevsolution.base.crud;
 
-import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,19 +7,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.speech.RecognizerIntent;
 import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
 import com.codevsolution.base.android.AndroidUtil;
-import com.codevsolution.base.android.CheckPermisos;
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
@@ -37,9 +33,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Pattern;
 
-import static android.Manifest.permission.READ_CONTACTS;
-import static android.Manifest.permission.WRITE_CONTACTS;
 import static android.app.Activity.RESULT_OK;
 import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 
@@ -79,6 +74,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     private Editable tempEdit;
     protected String idrelacionado;
     protected boolean playOn;
+    protected String busca;
 
     public FragmentBaseCRUD() {
     }
@@ -188,6 +184,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
             actual = bundle.getString(ACTUAL);
             actualtemp = bundle.getString(ACTUALTEMP);
             nuevo = bundle.getBoolean(NUEVOREGISTRO);
+            busca = bundle.getString(BUSCA);
             if (subTitulo == null && tituloPlural > 0) {
                 subTitulo = getString(tituloPlural);
             }
@@ -534,6 +531,31 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
         setAcciones();
 
+    }
+
+    @Override
+    protected void speechProcess(String speech) {
+        super.speechProcess(speech);
+
+        String[] results = speech.split(Pattern.quote(" "));
+        StringBuilder res = new StringBuilder();
+        for (final EditMaterialLayout editMaterial : materialEditLayouts) {
+            for (String result : results) {
+                System.out.println("editMaterial hint = " + editMaterial.getHint());
+                System.out.println("result = " + result);
+                if (!result.isEmpty() && editMaterial.getHint().equalsIgnoreCase(result.toLowerCase())) {
+                    for (int i = 1; i < results.length; i++) {
+                        res.append(results[i]);
+                        if (i < results.length - 1) {
+                            res.append(" ");
+                        }
+                    }
+
+                    editMaterial.setText(res.toString());
+                    break;
+                }
+            }
+        }
     }
 
     protected boolean setBack() {
@@ -929,30 +951,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
     protected void onEliminarImagen() {
 
-    }
-
-    public void reconocimientoVoz(int code) {
-
-        if (CheckPermisos.validarPermisos(activityBase, READ_CONTACTS, 100) &&
-                CheckPermisos.validarPermisos(activityBase, WRITE_CONTACTS, 100)) {
-
-            Intent intentActionRecognizeSpeech = new Intent(
-                    RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-            intentActionRecognizeSpeech.putExtra(
-                    RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
-            intentActionRecognizeSpeech.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
-            try {
-                if (id != null) {
-                    update();
-                }
-                startActivityForResult(intentActionRecognizeSpeech,
-                        code, null);
-            } catch (ActivityNotFoundException a) {
-                Toast.makeText(contexto,
-                        "Tú dispositivo no soporta el reconocimiento por voz",
-                        Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
     @Override

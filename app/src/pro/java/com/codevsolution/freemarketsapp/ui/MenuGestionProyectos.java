@@ -37,6 +37,19 @@ public class MenuGestionProyectos extends FragmentGridImagen implements Contrato
         contexto = getContext();
     }
 
+    @Override
+    protected String setAyudaWeb() {
+        return "gestion-de-proyectos";
+    }
+
+    @Override
+    protected void setInicio() {
+        super.setInicio();
+
+        icFragmentos.showSubTitle(R.string.gestion_proyectos);
+        reproducir(getString(R.string.gestion_proyectos));
+    }
+
 
     @Override
     protected void setLista() {

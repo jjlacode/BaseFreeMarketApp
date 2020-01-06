@@ -2,8 +2,6 @@ package com.codevsolution.base.crud;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
-import android.speech.RecognizerIntent;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -25,13 +23,10 @@ import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
-import com.codevsolution.base.settings.PreferenciasBase;
 import com.codevsolution.base.style.Estilos;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-
-import static android.app.Activity.RESULT_OK;
 
 public abstract class FragmentCRUD extends FragmentCUD {
 
@@ -53,6 +48,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
     private String stemp = "";
     private int posicion;
     private boolean autoborrado;
+    private boolean buscaVoz;
 
     public FragmentCRUD() {
     }
@@ -200,6 +196,35 @@ public abstract class FragmentCRUD extends FragmentCUD {
             }
         });
 
+        if (nnn(busca) && !busca.isEmpty()) {
+
+            if (tablaCab != null) {
+                lista = CRUDutil.setListaModeloDetalle(campos, id);
+                setLista();
+            } else {
+                lista = CRUDutil.setListaModelo(campos);
+                setLista();
+            }
+            setRv();
+            if (subTitulo == null) {
+                activityBase.toolbar.setSubtitle(tituloPlural);
+            }
+            ListaModeloSQL listaSug = listaBusquedaVoz(busca);
+            busca = null;
+            bundle.putString(BUSCA, busca);
+
+            if (listaSug.sizeLista() == 1) {
+                modeloSQL = listaSug.getItem(0);
+                for (int i = 0; i < lista.getLista().size(); i++) {
+                    if (lista.getItem(i) == modeloSQL) {
+                        posicion = i;
+                        break;
+                    }
+                }
+                setOnClickRV(modeloSQL);
+            }
+        }
+
         lupa.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -242,7 +267,8 @@ public abstract class FragmentCRUD extends FragmentCUD {
         voz.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                reconocimientoVoz(RECOGNIZE_SPEECH_ACTIVITY);
+                buscaVoz = true;
+                startVoz();
             }
         });
 
@@ -256,7 +282,6 @@ public abstract class FragmentCRUD extends FragmentCUD {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                if (grabarVoz == null) {
 
                     if (id == null || secuencia == 0) {
                         auto.setDropDownWidth(0);
@@ -275,7 +300,6 @@ public abstract class FragmentCRUD extends FragmentCUD {
                         auto.setHint(stemp);
                         auto.setText("");
                     }
-                }
 
             }
 
@@ -302,6 +326,37 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
     }
 
+    @Override
+    protected void speechProcess(String speech) {
+        super.speechProcess(speech);
+
+        if (buscaVoz) {
+            if (tablaCab != null) {
+                lista = CRUDutil.setListaModeloDetalle(campos, id);
+                setLista();
+            } else {
+                lista = CRUDutil.setListaModelo(campos);
+                setLista();
+            }
+            setRv();
+            if (subTitulo == null) {
+                activityBase.toolbar.setSubtitle(tituloPlural);
+            }
+            ListaModeloSQL listaSug = listaBusquedaVoz(speech);
+
+            if (listaSug.sizeLista() == 1) {
+                modeloSQL = listaSug.getItem(0);
+                for (int i = 0; i < lista.getLista().size(); i++) {
+                    if (lista.getItem(i) == modeloSQL) {
+                        posicion = i;
+                        break;
+                    }
+                }
+                setOnClickRV(modeloSQL);
+            }
+            buscaVoz = false;
+        }
+    }
 
     protected void setOnRightSwipe() {
         Log.d(TAG, getMetodo());
@@ -549,10 +604,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
             activityBase.fabVoz.setSize(FloatingActionButton.SIZE_NORMAL);
             frPubli.setMinimumHeight(activityBase.fabVoz.getHeight());
 
-            if (grabarVoz == null) {
                 listaRV();
-                grabarVoz = null;
-            }
         }
 
         setDefectoMaestroDetalleSeparados();
@@ -787,7 +839,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
         listaRV();
 
     }
-
+/*
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -833,37 +885,22 @@ public abstract class FragmentCRUD extends FragmentCUD {
                     } else if (grabarVoz.contains(Estilos.getString(contexto, "buscar"))) {
                         grabarVoz = grabarVoz.replaceFirst(Estilos.getString(contexto, "buscar"), "");
                         System.out.println("grabarVoz sub= " + grabarVoz);
-                        listaBusquedaVoz();
+                        listaBusquedaVoz(grabarVoz);
                     } else if (grabarVoz.contains(Estilos.getString(contexto, "busca"))) {
                         grabarVoz = grabarVoz.replaceFirst(Estilos.getString(contexto, "busca"), "");
                         System.out.println("grabarVoz sub= " + grabarVoz);
-                        listaBusquedaVoz();
+                        listaBusquedaVoz(grabarVoz);
                     }
                 }
             }
         }
     }
 
-    protected void listaBusquedaVoz() {
+ */
 
-        ListaModeloSQL suggestion = new ListaModeloSQL();
-        if (grabarVoz != null) {
+    protected ListaModeloSQL listaBusquedaVoz(String grabarVoz) {
 
-            for (ModeloSQL item : lista.getLista()) {
-
-                for (int i = 2; i < campos.length; i += 3) {
-
-                    if (item.getString(campos[i]) != null && !item.getString(campos[i]).equals("")) {
-                        if (item.getString(campos[i]).toLowerCase().contains(grabarVoz.toLowerCase())) {
-
-                            suggestion.addModelo(item);
-                        }
-                    }
-                }
-
-            }
-
-            listab = new ListaModeloSQL(suggestion);
+        listab = new ListaModeloSQL(CRUDutil.listaBusqueda(grabarVoz, campos));
             actualizarConsultasRV();
             setRv();
             auto.setText(grabarVoz);
@@ -872,8 +909,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
             if (id != null) {
                 auto.setDropDownWidth(ancho);
             }
-            //grabarVoz=null;
-        }
+        return listab;
     }
 
 }

@@ -2,9 +2,6 @@ package com.codevsolution.base.chat;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.speech.RecognizerIntent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +35,6 @@ import com.codevsolution.base.models.FirebaseFormBase;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.MsgChat;
-import com.codevsolution.base.settings.PreferenciasBase;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.style.Estilos;
@@ -52,8 +48,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-
-import static android.app.Activity.RESULT_OK;
+import java.util.regex.Pattern;
 
 public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tablas {
 
@@ -357,6 +352,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
     }
 
+    /*
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -395,6 +391,30 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
             }
 
 
+        }
+    }
+
+     */
+
+    @Override
+    protected void speechProcess(String speech) {
+        super.speechProcess(speech);
+
+        String[] results = speech.split(Pattern.quote(" "));
+        for (String result : results) {
+            System.out.println("result = " + result);
+
+            if (result.equalsIgnoreCase(Estilos.getString(contexto, "enviar"))) {
+
+                enviarMensaje();
+                break;
+            }
+
+            if (result.equalsIgnoreCase(Estilos.getString(contexto, "borrar"))) {
+
+                msgEnv.setText("");
+                break;
+            }
         }
     }
 

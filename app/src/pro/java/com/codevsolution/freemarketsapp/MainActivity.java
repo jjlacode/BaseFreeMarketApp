@@ -30,8 +30,8 @@ import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.sqlite.SQLiteUtil;
-import com.codevsolution.base.web.FragmentWebView;
 import com.codevsolution.freemarketsapp.logica.Interactor;
+import com.codevsolution.freemarketsapp.logica.InteractorVoz;
 import com.codevsolution.freemarketsapp.services.AutoArranquePro;
 import com.codevsolution.freemarketsapp.settings.Preferencias;
 import com.codevsolution.freemarketsapp.ui.AltaPerfilesFirebasePro;
@@ -50,6 +50,8 @@ import static android.Manifest.permission.INTERNET;
 import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.CAMPOS_USERS;
 import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.USERS_USERID;
 import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.USERS_USERIDCODE;
+import static com.codevsolution.freemarketsapp.logica.InteractorVoz.getListaDestinosVoz;
+import static com.codevsolution.freemarketsapp.logica.InteractorVoz.getListaNuevosDestinosVoz;
 
 public class MainActivity extends MainActivityBase implements Interactor.ConstantesPry, ContratoPry.Tablas {
 
@@ -265,17 +267,7 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
             recargarFragment();
             return true;
         } else if (id == R.id.action_help) {
-            setPathAyuda();
-            if (ayudaWeb!=null){
-                ayudaWeb = pathAyuda+ayudaWeb+"/";
-            }else{
-                ayudaWeb = pathAyuda;
-            }
-            if (JavaUtil.isValidURL(ayudaWeb)) {
-                bundle = new Bundle();
-                bundle.putString(WEB, ayudaWeb);
-                enviarBundleAFragment(bundle, new FragmentWebView());
-            }
+            abrirAyuda(NULL);
             return true;
         }
 
@@ -362,16 +354,31 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
         pathAyuda = HTTPAYUDA;
     }
 
+    @Override
+    protected void onComandVoz(String comandVoz) {
+        super.onComandVoz(comandVoz);
+        bundle = InteractorVoz.processMsg(comandVoz);
+        AndroidUtil.setSharePreference(context, PERSISTENCIA, BUSCA, true);
+
+    }
+
     public void seleccionarDestino(String destino) {
 
-        ArrayList<DestinosVoz> listaDestinos = Interactor.getListaDestinosVoz();
+        ArrayList<DestinosVoz> listaDestinos = getListaDestinosVoz();
 
         System.out.println("destino = " + destino.trim());
         for (DestinosVoz destinosVoz : listaDestinos) {
 
             System.out.println("destinosVoz = " + destinosVoz.getDestino().trim().toLowerCase());
-            if (destinosVoz.getDestino().trim().toLowerCase().contains(destino.trim())) {
-                enviarBundleAFragment(null, destinosVoz.getFragment());
+            if (destinosVoz.getDestino().trim().toLowerCase().contains(destino.trim()) ||
+                    destino.trim().contains(destinosVoz.getDestino().trim().toLowerCase())) {
+                System.out.println("destinosVoz fragment= " + destinosVoz.getFragment());
+                if (bundle == null) {
+                    bundle = new Bundle();
+                }
+                bundle.putString(TAGPERS, ((Fragment) destinosVoz.getFragment()).getClass().getName());
+                break;
+                //enviarBundleAFragment(null, destinosVoz.getFragment());
             }
         }
 
@@ -380,7 +387,7 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
     public void seleccionarNuevoDestino(String destino) {
 
-        ArrayList<DestinosVoz> listaDestinos = Interactor.getListaNuevosDestinosVoz();
+        ArrayList<DestinosVoz> listaDestinos = getListaNuevosDestinosVoz();
 
         for (DestinosVoz destinosVoz : listaDestinos) {
 

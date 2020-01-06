@@ -10,6 +10,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.net.Uri;
 import android.os.Build;
 import android.os.LocaleList;
@@ -36,6 +38,7 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -63,6 +66,29 @@ public class AndroidUtil extends AppCompatActivity {
                     "Tú dispositivo no soporta el reconocimiento por voz",
                     Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public static ArrayList<String> getDownloadedApps(Context context) {
+
+        ArrayList<String> lista = new ArrayList<>();
+        PackageManager mPackMag = context.getPackageManager();
+        List<ApplicationInfo> all_apps = mPackMag.getInstalledApplications(
+                PackageManager.GET_UNINSTALLED_PACKAGES);
+
+        for (ApplicationInfo appInfo : all_apps) {
+            if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0 &&
+                    (appInfo.flags & 0x80) == 0 &&
+                    appInfo.flags != 0)
+
+                lista.add(appInfo.packageName);
+        }
+
+        return lista;
+    }
+
+    public static void playBeep() {
+        ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+        toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
     }
 
     public static boolean isPackageExisted(Context context, String targetPackage) {

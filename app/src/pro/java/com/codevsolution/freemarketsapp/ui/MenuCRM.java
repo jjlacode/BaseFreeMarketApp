@@ -7,8 +7,6 @@ import com.codevsolution.freemarketsapp.R;
 
 import java.util.ArrayList;
 
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.HTTPAYUDA;
-
 public class MenuCRM extends FragmentGridImagen {
 
     private String proximosEventos;
@@ -25,7 +23,7 @@ public class MenuCRM extends FragmentGridImagen {
 
     @Override
     protected String setAyudaWeb() {
-        return HTTPAYUDA + "crm";
+        return "crm";
     }
 
     @Override

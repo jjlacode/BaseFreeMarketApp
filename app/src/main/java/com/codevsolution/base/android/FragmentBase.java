@@ -1,10 +1,8 @@
 package com.codevsolution.base.android;
 
 import android.annotation.SuppressLint;
-import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.XmlResourceParser;
@@ -12,9 +10,11 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -44,30 +44,36 @@ import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.interfaces.ICFragmentos;
+import com.codevsolution.base.interfaces.SpeechDelegate;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.models.Contactos;
-import com.codevsolution.base.settings.PreferenciasBase;
+import com.codevsolution.base.speech.GoogleVoiceTypingDisabledException;
+import com.codevsolution.base.speech.SpeechRecognitionNotAvailable;
+import com.codevsolution.base.speech.SpeechUtil;
 import com.codevsolution.base.style.Estilos;
+import com.codevsolution.freemarketsapp.logica.InteractorVoz;
 import com.codevsolution.freemarketsapp.settings.Preferencias;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Timer;
+import java.util.TimerTask;
+import java.util.regex.Pattern;
 
-import static android.Manifest.permission.READ_CONTACTS;
-import static android.Manifest.permission.WRITE_CONTACTS;
-import static android.app.Activity.RESULT_OK;
 import static android.content.Context.SENSOR_SERVICE;
+import static com.codevsolution.base.settings.PreferenciasBase.CLAVEVOZ;
 
 //import com.codevsolution.freemarketsapp.logica.Interactor;
 
 public abstract class FragmentBase extends Fragment implements JavaUtil.Constantes,
-        InteractorBase.Constantes {
+        InteractorBase.Constantes, SpeechDelegate, SpeechUtil.stopDueToDelay {
 
-    protected String TAG;
+    protected String TAG = getClass().getName();
     protected View view;
     protected int layout;
     protected MainActivityBase activityBase;
@@ -124,16 +130,12 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     public LockableScrollView scrollDetalle;
     protected static float densidad;
     protected static final int RECOGNIZE_SPEECH_ACTIVITY = 30;
-    protected String grabarVoz;
     protected String origen;
     protected String actual;
     protected String actualtemp;
     protected String subTitulo;
     protected String destino;
     protected String ayudaWeb;
-    protected int code;
-    protected int[] codigo;
-    protected int contCode;
     private SensorEventListener proximitySensorListener;
     private SensorManager sensorManagerProx;
     private Sensor proximitySensor;
@@ -160,9 +162,13 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected LinearLayoutCompat frContenedorMod;
     protected ViewGroupLayout vistaMain;
     protected TextToSpeech tts;
-    private String ttsTmp;
-    private boolean isInitTTS;
-
+    private boolean isPlayTTs;
+    public static SpeechDelegate delegate;
+    private SpeechUtil speechUtil;
+    protected boolean fabVozOn;
+    private boolean primerPaso;
+    private boolean iniciado;
+    private int posicionEdit;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -204,7 +210,6 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         vistas = new ArrayList<>();
         recursos = new ArrayList<>();
         camposEdit = new ArrayList();
-        TAG = setTAG();
 
         perfilUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), PREFERENCIAS, PERFILUSER, NULL);
         idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERIDCODE, NULL);
@@ -396,7 +401,10 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         activityBase.fabVoz.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                reconocimientoVoz(RECOGNIZE_SPEECH_ACTIVITY);
+                //reconocimientoVoz(RECOGNIZE_SPEECH_ACTIVITY);
+                if (startVoz()) {
+                    fabVozOn = true;
+                }
             }
         });
 
@@ -462,11 +470,14 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
             listenerSensorProx = true;
         }
 
+/*
         if (!listenerSensorLuz && listenerSensorProx && sensorLuz()) {
             sensorManagerLuz.registerListener(sensorLuzListener,
                     mALS, 1000 * 1000);
             listenerSensorLuz = true;
         }
+
+         */
 
         timerg.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
@@ -487,11 +498,11 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected void getPersistencia() {
 
         SharedPreferences persistencia = AndroidUtil.openSharePreference(contexto, PERSISTENCIA);
-        TAG = setTAG();
         System.out.println("TAG = " + TAG);
         System.out.println("persistencia.getString(TAGPERS) = " + persistencia.getString(TAGPERS, null));
         System.out.println("cambio = " + persistencia.getBoolean(CAMBIO, false));
-        if (!modulo && (persistencia.getBoolean(CAMBIO, false) || (persistencia.getString(TAGPERS, null) != null &&
+        if (!modulo && !persistencia.getBoolean(BUSCA, false) && (persistencia.getBoolean(CAMBIO, false)
+                || (persistencia.getString(TAGPERS, null) != null &&
                 TAG != null && persistencia.getString(TAGPERS, null).equals(TAG)))) {
             System.out.println("Recuperando datos persistencia");
             origen = persistencia.getString(ORIGEN, null);
@@ -505,6 +516,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         SharedPreferences.Editor editor = persistencia.edit();
 
         editor.putString(TAGPERS, null);
+        editor.putBoolean(BUSCA, false);
         editor.apply();
     }
 
@@ -513,8 +525,39 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     }
 
     protected void reproducir(String text) {
+        reproducir(text, null);
+    }
 
-        icFragmentos.playTTs(text);
+    protected void reproducir(String text, String utteranceId) {
+
+        if (utteranceId != null) {
+            tts = icFragmentos.playTTs(text, utteranceId);
+        } else {
+            tts = icFragmentos.playTTs(text);
+        }
+        tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+            @Override
+            public void onStart(String utteranceId) {
+                isPlayTTs = true;
+            }
+
+            @Override
+            public void onDone(String utteranceId) {
+
+                isPlayTTs = false;
+                setOnEndPlayTTs(utteranceId);
+            }
+
+            @Override
+            public void onError(String utteranceId) {
+
+                isPlayTTs = false;
+            }
+        });
+    }
+
+    protected void setOnEndPlayTTs(String utteranceId) {
+
     }
 
     @Override
@@ -595,30 +638,28 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         Estilos.setLayoutParamsRelative(frContenedor, frPubli, RelativeLayout.LayoutParams.MATCH_PARENT,
                 activityBase.fabVoz.getHeight(), new int[]{RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.ALIGN_PARENT_START});
 
-        code = 10000;
-        contCode = 0;
-        codigo = new int[materialEdits.size() + materialEditLayouts.size() + 1];
-        codigo[contCode] = code;
+        int cont = 0;
         for (EditMaterial materialEdit : materialEdits) {
 
             if (materialEdit.getActivo()) {
                 materialEdit.grabarEnable(true);
-                materialEdit.setPosicion(contCode);
+                materialEdit.setPosicion(cont);
                 materialEdit.setGrabarListener(new EditMaterial.AudioATexto() {
                     @Override
                     public void onGrabar(View view, int posicion) {
 
-                        reconocimientoVoz(codigo[posicion]);
+                        posicionEdit = posicion;
+                        startVoz();
 
                     }
 
                 });
-                code++;
-                contCode++;
-                codigo[contCode] = code;
+
             }
+            cont++;
         }
 
+        cont = 0;
         for (EditMaterialLayout materialEdit : materialEditLayouts) {
 
             if (materialEdit.isPlayOn()) {
@@ -629,20 +670,20 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
             if (materialEdit.getActivo()) {
                 materialEdit.grabarEnable(true);
-                materialEdit.setPosicion(contCode);
+                materialEdit.setPosicion(cont);
                 materialEdit.setGrabarListener(new EditMaterialLayout.AudioATexto() {
                     @Override
                     public void onGrabar(View view, int posicion) {
 
-                        reconocimientoVoz(codigo[posicion]);
+                        posicionEdit = posicion;
+                        startVoz();
 
                     }
 
                 });
-                code++;
-                contCode++;
-                codigo[contCode] = code;
+
             }
+            cont++;
         }
 
     }
@@ -675,6 +716,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         super.onConfigurationChanged(myConfig);
         Log.d(TAG, getMetodo());
 
+        System.out.println("on config change");
         int orientation = getResources().getConfiguration().orientation;
         SharedPreferences persistencia = AndroidUtil.openSharePreference(contexto, PERSISTENCIA);
         SharedPreferences.Editor editor = persistencia.edit();
@@ -1024,25 +1066,130 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         return Thread.currentThread().getStackTrace()[3].getMethodName();
     }
 
-    public void reconocimientoVoz(int code) {
 
-        if (CheckPermisos.validarPermisos(activityBase, READ_CONTACTS, 100) &&
-                CheckPermisos.validarPermisos(activityBase, WRITE_CONTACTS, 100)) {
+    public boolean startVoz() {
 
-            Intent intentActionRecognizeSpeech = new Intent(
-                    RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-            intentActionRecognizeSpeech.putExtra(
-                    RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
-            intentActionRecognizeSpeech.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
-            try {
-                startActivityForResult(intentActionRecognizeSpeech,
-                        code, null);
-            } catch (ActivityNotFoundException a) {
-                Toast.makeText(contexto,
-                        "Tú dispositivo no soporta el reconocimiento por voz",
-                        Toast.LENGTH_SHORT).show();
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                ((AudioManager) Objects.requireNonNull(
+                        contexto.getSystemService(Context.AUDIO_SERVICE))).setStreamMute(AudioManager.STREAM_SYSTEM, true);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        speechUtil = new SpeechUtil(contexto);
+        speechUtil.setStopListeningAfterInactivity(3000);
+        delegate = this;
+        speechUtil.setListener(this);
+
+        if (speechUtil.isListening()) {
+            speechUtil.stopListening();
+            //enableBeepSoundOfRecorder();
+        } else {
+            //System.setProperty("rx.unsafe-disable", "True");
+            if (CheckPermisos.validarPermisos(activityBase, CheckPermisos.RECORD_AUDIO, 243)) {
+                try {
+                    speechUtil.startListening(this);
+                    Log.i("VOZ", "Start listening servicio voz");
+
+                } catch (SpeechRecognitionNotAvailable speechRecognitionNotAvailable) {
+                    speechRecognitionNotAvailable.printStackTrace();
+                } catch (GoogleVoiceTypingDisabledException e) {
+                    e.printStackTrace();
+                }
+                //muteBeepSoundOfRecorder();
             }
         }
+
+        return true;
+    }
+
+    @Override
+    public void onSpeechResult(String speech) {
+
+        System.out.println("speech = " + speech);
+        Bundle bundle = InteractorVoz.processMsg(speech);
+        System.out.println("bundle voz = " + bundle);
+        if (bundle != null) {
+            icFragmentos.onVoz(bundle);
+
+        } else {
+
+            StringBuilder restmp = new StringBuilder();
+            String[] resultstmp = speech.split(Pattern.quote(" "));
+
+            String clave = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, CLAVEVOZ, NULL);
+            for (String result : resultstmp) {
+                if (clave != null && !result.toLowerCase().contains(clave.toLowerCase())) {
+                    restmp.append(result);
+                    restmp.append(" ");
+                } else if (clave != null && result.toLowerCase().contains(clave.toLowerCase())) {
+
+                }
+                if (restmp.length() > 0 && restmp.charAt(restmp.length() - 1) == ' ') {
+                    restmp.delete(restmp.length() - 1, restmp.length() - 1);
+                }
+            }
+            speechProcess(restmp.toString());
+        }
+        Toast.makeText(contexto, speech, Toast.LENGTH_SHORT).show();
+        speechUtil.stopListening();
+
+    }
+
+    protected void speechProcess(String speech) {
+
+        String[] results = speech.split(Pattern.quote(" "));
+        boolean sig = false;
+        for (String result : results) {
+            System.out.println("result = " + result);
+            if (!result.isEmpty() && result.equalsIgnoreCase(Estilos.getString(contexto, "ayuda"))) {
+                icFragmentos.abrirAyudaWeb();
+            } else if (sig || (!result.isEmpty() && result.equalsIgnoreCase(Estilos.getString(contexto, "llamar")))) {
+                sig = true;
+                if (result.equalsIgnoreCase(Estilos.getString(contexto, "contacto"))) {
+
+                    llamarContacto(getResSpeech(results, 2));
+                    break;
+                }
+            } else if (posicionEdit > 0) {
+
+                materialEditLayouts.get(posicionEdit).setText(speech);
+                posicionEdit = 0;
+            }
+        }
+    }
+
+    protected String getResSpeech(String[] results, int posIni) {
+        StringBuilder res = new StringBuilder();
+        for (int i = posIni; i < results.length; i++) {
+            res.append(results[i]);
+            if (i < results.length - 1) {
+                res.append(" ");
+            }
+        }
+        return res.toString();
+    }
+
+    @Override
+    public void onStartOfSpeech() {
+
+    }
+
+    @Override
+    public void onSpecifiedCommandPronounced(String event) {
+
+    }
+
+    @Override
+    public void onSpeechPartialResults(List<String> results) {
+
+    }
+
+    @Override
+    public void onSpeechRmsChanged(float value) {
+
     }
 
     protected boolean update() {
@@ -1064,10 +1211,33 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         proximitySensorListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                if ((sensorEvent.values[0] < proximitySensor.getMaximumRange() &&
-                        sensorEvent.values[0] > 0.0f) ||
-                        (sensorEvent.values[0] < proximitySensor.getMaximumRange() && valorLuz > 0.0f)) {
-                    reconocimientoVoz(RECOGNIZE_SPEECH_ACTIVITY);
+                if (primerPaso && sensorEvent.values[0] == proximitySensor.getMaximumRange()) {
+                    if (timer != null) {
+                        timer.cancel();
+                    }
+                    primerPaso = false;
+                    iniciado = false;
+                    //AndroidUtil.playBeep();
+                    startVoz();
+
+                } else if (sensorEvent.values[0] < proximitySensor.getMaximumRange() && iniciado) {
+                    primerPaso = true;
+                    timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            primerPaso = false;
+                            if (timer != null) {
+                                timer.cancel();
+                            }
+                        }
+                    }, 500);
+                } else {
+                    primerPaso = false;
+                    iniciado = true;
+                    if (timer != null) {
+                        timer.cancel();
+                    }
                 }
             }
 
@@ -1103,6 +1273,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         return true;
     }
 
+    /*
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -1189,6 +1360,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         }
     }
 
+
+     */
 
 
     protected void alCambiarCampos(EditMaterial editMaterial) {

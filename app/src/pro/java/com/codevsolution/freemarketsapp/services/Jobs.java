@@ -1,5 +1,7 @@
 package com.codevsolution.freemarketsapp.services;
 
+import android.app.job.JobParameters;
+import android.app.job.JobService;
 import android.content.ContentValues;
 import android.content.Intent;
 
@@ -13,7 +15,6 @@ import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.MsgChat;
 import com.codevsolution.base.models.Productos;
-import com.codevsolution.base.services.JobServiceBase;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.sqlite.SQLiteUtil;
@@ -31,8 +32,21 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import static com.codevsolution.base.logica.InteractorBase.Constantes.CHAT;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.INDICE;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.PRODUCTOS;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.SORTEO;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.SORTEOCLI;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.SORTEOPRO;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.SUSCRIPCIONES;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.SYSTEM;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
 
-public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interactor.ConstantesPry, ContratoPry.Tablas {
+
+public class Jobs extends JobService implements JavaUtil.Constantes, Interactor.ConstantesPry, ContratoPry.Tablas {
+
+    protected String idUserCode;
+    protected String idUser;
 
     private static long time0 = 0;
     private static long time1 = 0;
@@ -48,8 +62,7 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
     }
 
     @Override
-    protected void setJob() {
-        super.setJob();
+    public boolean onStartJob(JobParameters params) {
 
         long ahora = TimeDateUtil.ahora();
         int minutosCopia = 5;
@@ -326,7 +339,7 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    System.out.println("paso 1");
+                    //System.out.println("paso 1");
                     for (final DataSnapshot sorteo : dataSnapshot.getChildren()) {
 
                         DatabaseReference dbfin = FirebaseDatabase.getInstance().getReference();
@@ -538,6 +551,12 @@ public class Jobs extends JobServiceBase implements JavaUtil.Constantes, Interac
 
         AutoArranquePro.scheduleJob(getApplicationContext());
 
+        return true;
+    }
+
+    @Override
+    public boolean onStopJob(JobParameters params) {
+        return false;
     }
 
     protected void sincronizarClon(final Productos prodProv, ModeloSQL producto) {

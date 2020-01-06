@@ -1,10 +1,7 @@
 package com.codevsolution.freemarketsapp.ui;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.speech.RecognizerIntent;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -30,14 +27,13 @@ import com.codevsolution.base.crud.FragmentCRUD;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
-import com.codevsolution.base.settings.PreferenciasBase;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
-import static android.app.Activity.RESULT_OK;
 import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 
 public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.ConstantesPry,
@@ -545,57 +541,53 @@ public class FragmentCRUDCliente extends FragmentCRUD implements Interactor.Cons
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, getMetodo());
+    protected void speechProcess(String speech) {
+        super.speechProcess(speech);
 
-            if (resultCode == RESULT_OK && requestCode == RECOGNIZE_SPEECH_ACTIVITY) {
-                ArrayList<String> speech = data
-                        .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                String clave = getPref(PreferenciasBase.CLAVEVOZ, "");
-                if (speech != null && clave != null && (clave.equals("") || speech.get(0).contains(clave))) {
+        String[] results = speech.split(Pattern.quote(" "));
+        for (String result : results) {
+            System.out.println("result = " + result);
 
-                    if (speech.get(0).contains(clave)) {
-                        grabarVoz = speech.get(0).replace(clave, "").toLowerCase();
-                    } else {
-                        grabarVoz = speech.get(0).toLowerCase();
-                    }
+            if (result.equalsIgnoreCase(getString(R.string.mapa)) ||
+                    result.equalsIgnoreCase(getString(R.string.direccion))) {
 
-                    if (grabarVoz.contains(getString(R.string.mapa)) || grabarVoz.contains(getString(R.string.direccion))) {
-                        if (!direccionCliente.getTexto().equals("")) {
-                            reproducir(getString(R.string.buscar_direccion_de) + " " +
-                                    nombreCliente.getTexto() + " " + direccionCliente.getTexto());
-                            AppActivity.viewOnMapA(contexto, direccionCliente.getTexto());
-
-                        }
-                    } else if (grabarVoz.contains(getString(R.string.email)) ||
-                            grabarVoz.contains(getString(R.string.imeil)) ||
-                            grabarVoz.contains(getString(R.string.correo))) {
-                        if (!emailCliente.getTexto().equals("")) {
-                            reproducir(getString(R.string.enviando_correo) + " " + nombreCliente.getTexto());
-                            AppActivity.enviarEmail(getContext(), emailCliente.getText().toString());
-                        }
-                    } else if (grabarVoz.contains(getString(R.string.llamar)) ||
-                            grabarVoz.contains(getString(R.string.llamada)) ||
-                            grabarVoz.contains(getString(R.string.llamar_cliente)) ||
-                            grabarVoz.contains(getString(R.string.llamar_prospecto))) {
-                        if (!telefonoCliente.getTexto().equals("")) {
-                            reproducir(getString(R.string.llamando) + " " + nombreCliente.getTexto());
-                            AppActivity.hacerLlamada(AppActivity.getAppContext()
-                                    , telefonoCliente.getText().toString(), activityBase);
-                        }
-                    } else if (grabarVoz.contains(getString(R.string.marcar))) {
-                        if (!telefonoCliente.getTexto().equals("")) {
-                            reproducir(getString(R.string.marcando) + " " + nombreCliente.getTexto());
-                            AppActivity.hacerLlamada(AppActivity.getAppContext()
-                                    , telefonoCliente.getText().toString());
-                        }
-                    }
+                if (!direccionCliente.getTexto().equals("")) {
+                    reproducir(getString(R.string.buscar_direccion_de) + " " +
+                            nombreCliente.getTexto() + " " + direccionCliente.getTexto());
+                    AppActivity.viewOnMapA(contexto, direccionCliente.getTexto());
                 }
+                break;
+            } else if (result.equalsIgnoreCase(getString(R.string.email)) ||
+                    result.equalsIgnoreCase(getString(R.string.imeil)) ||
+                    result.equalsIgnoreCase(getString(R.string.correo))) {
+
+                if (!emailCliente.getTexto().equals("")) {
+                    reproducir(getString(R.string.enviando_correo) + " " + nombreCliente.getTexto());
+                    AppActivity.enviarEmail(getContext(), emailCliente.getText().toString());
+                }
+                break;
+            } else if (result.equalsIgnoreCase(getString(R.string.llamar)) ||
+                    result.equalsIgnoreCase(getString(R.string.llamada)) ||
+                    result.equalsIgnoreCase(getString(R.string.llama))) {
+
+                if (!telefonoCliente.getTexto().equals("")) {
+                    reproducir(getString(R.string.llamando) + " " + nombreCliente.getTexto());
+                    AppActivity.hacerLlamada(AppActivity.getAppContext()
+                            , telefonoCliente.getText().toString(), activityBase);
+                }
+                break;
+            } else if (result.equalsIgnoreCase(getString(R.string.marcar)) ||
+                    result.equalsIgnoreCase(getString(R.string.marca))) {
+
+                if (!telefonoCliente.getTexto().equals("")) {
+                    reproducir(getString(R.string.marcando) + " " + nombreCliente.getTexto());
+                    AppActivity.hacerLlamada(AppActivity.getAppContext()
+                            , telefonoCliente.getText().toString());
+                }
+                break;
+            }
         }
-        super.onActivityResult(requestCode, resultCode, data);
-
     }
-
 
     @Override
     protected void setcambioFragment() {

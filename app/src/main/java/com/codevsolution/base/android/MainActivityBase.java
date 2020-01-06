@@ -1,12 +1,15 @@
 package com.codevsolution.base.android;
 
 import android.app.NotificationManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -31,7 +34,8 @@ import com.codevsolution.base.interfaces.ICFragmentos;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.media.ImagenUtil;
-import com.codevsolution.base.services.AutoArranque;
+import com.codevsolution.base.services.AutoArranqueChat;
+import com.codevsolution.base.services.AutoArranqueJedi;
 import com.codevsolution.base.style.Dialogos;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.web.FragmentWebView;
@@ -42,13 +46,17 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Locale;
 
+import static android.Manifest.permission.READ_CONTACTS;
 import static android.Manifest.permission.RECEIVE_BOOT_COMPLETED;
+import static android.Manifest.permission.WRITE_CONTACTS;
+import static com.codevsolution.base.settings.PreferenciasBase.SERVVOZ;
 
 public class MainActivityBase extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ICFragmentos,
         InteractorBase.Constantes, JavaUtil.Constantes {
 
     private static final int LOCATION_REQUEST_CODE = 333;
+    protected static final int RECOGNIZE_SPEECH_ACTIVITY = 30;
     protected Bundle bundle;
     public Toolbar toolbar;
     public FloatingActionButton fabNuevo;
@@ -74,6 +82,7 @@ public class MainActivityBase extends AppCompatActivity
     private TextToSpeech tts;
     private boolean isInitTTS;
     private String ttsTmp;
+    protected String comandVoz;
 
 
     @Override
@@ -81,8 +90,10 @@ public class MainActivityBase extends AppCompatActivity
         super.onCreate(null);
 
         Log.d(TAG, "on Create");
-        ttsInit();
         context = this;
+        AndroidUtil.setSharePreference(context, PREFERENCIAS, ENEJECUCION, true);
+        AutoArranqueJedi.cancelJob(context);
+        ttsInit();
         bundle = new Bundle();
         cambio = AndroidUtil.getSharePreference(context, PERSISTENCIA, CAMBIO, false);
         if (cambio) {
@@ -251,7 +262,11 @@ public class MainActivityBase extends AppCompatActivity
 
 
             System.out.println("Permiso boot " + CheckPermisos.validarPermisos(this, RECEIVE_BOOT_COMPLETED, 100));
-            AutoArranque.scheduleJob(AppActivity.getAppContext());
+            AutoArranqueChat.scheduleJob(AppActivity.getAppContext());
+            //AutoArranqueJedi.scheduleJob(context);
+            //fabVoz.setBackgroundTintList(ColorStateList.valueOf(Estilos.colorBrightGreen));
+            //Toast.makeText(context, "Activada fuerza Jedi, que la fuerza te acompañe", Toast.LENGTH_SHORT).show();
+            //AndroidUtil.setSharePreference(context, PREFERENCIAS, SERVVOZ, true);
 
             inicio(1);
 
@@ -280,9 +295,38 @@ public class MainActivityBase extends AppCompatActivity
             bundle.putInt(CAMPO_SECUENCIA, secChat);
             NotificationManager notifyMgr = (NotificationManager)
                     AppActivity.getAppContext().getSystemService(NOTIFICATION_SERVICE);
-            notifyMgr.cancel(intent.getIntExtra(EXTRA_ID, 0));
+            if (notifyMgr != null) {
+                notifyMgr.cancel(intent.getIntExtra(EXTRA_ID, 0));
+            }
+
+        } else if (accion != null && accion.equals(ACCION_JEDI)) {
+            comandVoz = intent.getStringExtra(EXTRA_VOZ);
+            onComandVoz(comandVoz);
 
         }
+        fabVoz.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                boolean vozOn = AndroidUtil.getSharePreference(context, PREFERENCIAS, SERVVOZ, false);
+                if (vozOn) {
+                    AutoArranqueJedi.cancelJob(context);
+                    fabVoz.setBackgroundTintList(ColorStateList.valueOf(Estilos.colorSecondaryDark));
+                    AndroidUtil.setSharePreference(context, PREFERENCIAS, SERVVOZ, false);
+
+                } else {
+                    AndroidUtil.setSharePreference(context, PREFERENCIAS, SERVVOZ, true);
+                    AutoArranqueJedi.scheduleJob(context);
+                    fabVoz.setBackgroundTintList(ColorStateList.valueOf(Estilos.colorBrightGreen));
+                    Toast.makeText(context, "Activada fuerza Jedi, que la fuerza te acompañe", Toast.LENGTH_SHORT).show();
+
+                }
+                return true;
+            }
+        });
+    }
+
+    protected void onComandVoz(String comandVoz) {
 
     }
 
@@ -306,6 +350,14 @@ public class MainActivityBase extends AppCompatActivity
             tts.shutdown();
             isInitTTS = false;
         }
+
+    }
+
+    @Override
+    protected void onPause() {
+        AndroidUtil.setSharePreference(context, PREFERENCIAS, ENEJECUCION, false);
+        AutoArranqueJedi.scheduleJob(context);
+        super.onPause();
     }
 
     @Override
@@ -360,6 +412,21 @@ public class MainActivityBase extends AppCompatActivity
 
     }
 
+    protected void abrirAyuda(String ayuda) {
+        setPathAyuda();
+        if (ayuda != NULL) {
+            ayudaWeb = pathAyuda + ayuda + "/";
+        } else if (ayudaWeb != null) {
+            ayudaWeb = pathAyuda + ayudaWeb + "/";
+        } else {
+            ayudaWeb = pathAyuda;
+        }
+        if (JavaUtil.isValidURL(ayudaWeb)) {
+            bundle = new Bundle();
+            bundle.putString(WEB, ayudaWeb);
+            enviarBundleAFragment(bundle, new FragmentWebView());
+        }
+    }
     @Override
     public void enviarBundleAFragment(Bundle bundle, Fragment myFragment) {
 
@@ -491,14 +558,25 @@ public class MainActivityBase extends AppCompatActivity
     }
 
     @Override
-    public void playTTs(String texto) {
+    public void abrirAyudaWeb() {
+        abrirAyuda(NULL);
+    }
 
+    @Override
+    public TextToSpeech playTTs(String texto) {
+
+        String utteranceId = this.hashCode() + "";
+
+        return playTTs(texto, utteranceId);
+    }
+
+    @Override
+    public TextToSpeech playTTs(String texto, String utteranceId) {
         if (isInitTTS && tts != null) {
 
             if (texto != null && !texto.isEmpty()) {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    String utteranceId = this.hashCode() + "";
                     tts.speak(texto, TextToSpeech.QUEUE_ADD, null, utteranceId);
                 } else {
                     tts.speak(texto, TextToSpeech.QUEUE_ADD, null);
@@ -507,6 +585,8 @@ public class MainActivityBase extends AppCompatActivity
         } else {
             ttsTmp = texto;
         }
+
+        return tts;
     }
 
     @Override
@@ -514,8 +594,40 @@ public class MainActivityBase extends AppCompatActivity
         return tts;
     }
 
+    @Override
+    public void onVoz(Bundle bundle) {
+        this.bundle = bundle;
+        recargarFragment();
+    }
+
     protected void recargarFragment() {
 
+        boolean vozOn = AndroidUtil.getSharePreference(context, PREFERENCIAS, SERVVOZ, false);
+        if (vozOn) {
+            fabVoz.setBackgroundTintList(ColorStateList.valueOf(Estilos.colorBrightGreen));
+        } else {
+            fabVoz.setBackgroundTintList(ColorStateList.valueOf(Estilos.colorSecondaryDark));
+        }
+
+        if (bundle == null) {
+            bundle = new Bundle();
+        }
+        String web = bundle.getString(WEB, NULL).toLowerCase();
+        System.out.println("web = " + web);
+        System.out.println("txtvoz = " + Estilos.getString(context, "voz").toLowerCase());
+        if (!web.equals(NULL)) {
+            String msg = NULL;
+            if (web.equalsIgnoreCase(Estilos.getString(context, "comandos_voz").toLowerCase())) {
+                msg = "comandos-de-voz";
+            } else if (web.equalsIgnoreCase(Estilos.getString(context, "voz").toLowerCase())) {
+                msg = "comandos-de-voz";
+            }
+            System.out.println("msg = " + msg);
+            if (msg != NULL) {
+                abrirAyuda(msg);
+            }
+            return;
+        }
         switch (bundle.getString(ACTUAL, INICIO)) {
 
             case CHAT + CHAT:
@@ -526,6 +638,25 @@ public class MainActivityBase extends AppCompatActivity
 
         }
 
+    }
+
+    public void reconocimientoVoz(int code) {
+
+        if (CheckPermisos.validarPermisos(this, READ_CONTACTS, 100) &&
+                CheckPermisos.validarPermisos(this, WRITE_CONTACTS, 100)) {
+
+            Intent intentActionRecognizeSpeech = new Intent(
+                    RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intentActionRecognizeSpeech.putExtra(
+                    RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
+            intentActionRecognizeSpeech.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+            try {
+                startActivityForResult(intentActionRecognizeSpeech,
+                        code, null);
+            } catch (ActivityNotFoundException a) {
+                Log.e(TAG, "Tú dispositivo no soporta el reconocimiento por voz");
+            }
+        }
     }
 
     @Override

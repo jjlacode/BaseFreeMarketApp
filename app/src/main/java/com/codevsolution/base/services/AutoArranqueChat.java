@@ -1,4 +1,4 @@
-package com.codevsolution.freemarketsapp.services;
+package com.codevsolution.base.services;
 
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -11,7 +11,7 @@ import android.util.Log;
 import com.codevsolution.base.android.AppActivity;
 
 
-public class AutoArranquePro extends BroadcastReceiver {
+public class AutoArranqueChat extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -25,9 +25,8 @@ public class AutoArranquePro extends BroadcastReceiver {
 
     public static void scheduleJob(Context context) {
 
-
-        ComponentName serviceComponent = new ComponentName(AppActivity.getAppContext(), Jobs.class);
-        JobInfo info = new JobInfo.Builder(3, serviceComponent)
+        ComponentName serviceComponent = new ComponentName(AppActivity.getAppContext(), ServiceChat.class);
+        JobInfo info = new JobInfo.Builder(0, serviceComponent)
                 .setMinimumLatency(500)
                 .setOverrideDeadline(500)
                 .build();

@@ -62,6 +62,10 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
         String LOCALIZACION = "localizacion";
         String ORDENASCENDENTE = " ASC";
         String ORDENDESCENDENTE = " DESC";
+        String DESTINO = "destino";
+        String BUSCA = "busca";
+        String AYUDA = "ayuda";
+        String VOZ = "voz";
         String USERS = "users";
         String ANON = "anonimo";
         String PERFILES = "perfiles";
@@ -109,8 +113,11 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
         String EXTRA_SECCHAT = "jjlacode.com.base.util.EXTRA_SECCHAT";
         String EXTRA_ACTUAL = "jjlacode.com.base.util.EXTRA_ACTUAL";
         String ACCION_VERCHAT = "jjlacode.com.base.util.action.VERCHAT";
+        String ACCION_VOZ = "jjlacode.com.base.util.action.VOZ";
+        String ACCION_JEDI = "jjlacode.com.base.util.action.JEDI";
         String ACCION_VERSORTEO = "jjlacode.com.base.util.action.VERSORTEO";
         String EXTRA_ID = "jjlacode.com.base.util.EXTRA_ID";
+        String EXTRA_VOZ = "jjlacode.com.base.util.EXTRA_VOZ";
         String ACCION_AVISOMSGCHAT = "jjlacode.com.base.util.action.AVISOMSGCHAT";
 
 

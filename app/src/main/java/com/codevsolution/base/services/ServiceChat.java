@@ -5,6 +5,7 @@ import android.app.job.JobService;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Handler;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -25,7 +26,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
+public class ServiceChat extends JobService implements ContratoSystem.Tablas,
         JavaUtil.Constantes, InteractorBase.Constantes {
 
     protected String idUserCode;
@@ -34,13 +35,13 @@ public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
     private DatabaseReference dbFirebase;
     private static String ultimoIdChild = NULL;
 
-    public JobServiceBase() {
+    public ServiceChat() {
 
     }
 
     @Override
     public boolean onStartJob(final JobParameters params) {
-        //Log.d(this.getClass().getSimpleName(),"onStartJob");
+        Log.d(this.getClass().getSimpleName(), "onStartJob");
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         idUser = AndroidUtil.getSharePreference(getApplicationContext(), USERID, USERID, NULL);
@@ -165,7 +166,7 @@ public class JobServiceBase extends JobService implements ContratoSystem.Tablas,
 
             });
 
-            AutoArranque.scheduleJob(getApplicationContext());
+            AutoArranqueChat.scheduleJob(getApplicationContext());
             return true;
         }
         return false;

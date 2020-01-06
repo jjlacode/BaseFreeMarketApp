@@ -3,10 +3,8 @@ package com.codevsolution.freemarketsapp.ui;
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -38,7 +36,6 @@ import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.module.PdfViewerModule;
-import com.codevsolution.base.settings.PreferenciasBase;
 import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.style.Estilos;
@@ -50,8 +47,8 @@ import com.codevsolution.freemarketsapp.templates.PresupuestoPDF;
 import com.github.barteksc.pdfviewer.PDFView;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
-import static android.app.Activity.RESULT_OK;
 import static com.codevsolution.base.sqlite.ConsultaBD.checkQueryList;
 import static com.codevsolution.base.sqlite.ConsultaBD.insertRegistro;
 import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
@@ -1498,91 +1495,78 @@ public class FragmentCRUDProyecto extends FragmentCRUD
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, getMetodo());
+    protected void speechProcess(String speech) {
+        super.speechProcess(speech);
+        String[] results = speech.split(Pattern.quote(" "));
+        boolean newEvent = false;
+        boolean ver = false;
+        for (String result : results) {
+            System.out.println("result = " + result);
 
-        System.out.println("requestCode = " + requestCode);
+            if (result.equalsIgnoreCase(getString(R.string.partidas))) {
 
-        if (resultCode == RESULT_OK) {
+                verPartidas();
+                break;
+            } else if (result.equalsIgnoreCase(getString(R.string.presupuestos))) {
 
-            switch (requestCode) {
+                Toast.makeText(getContext(), PRESUPUESTOS, Toast.LENGTH_SHORT).show();
+                actual = PRESUPUESTO;
+                setSubtitulo(actual);
+                actualtemp = actual;
+                selector();
+                break;
+            } else if (result.equalsIgnoreCase(getString(R.string.proyectos))) {
 
-                case RECOGNIZE_SPEECH_ACTIVITY:
+                Toast.makeText(getContext(), PROYECTOS, Toast.LENGTH_SHORT).show();
+                actual = PROYECTO;
+                setSubtitulo(actual);
+                actualtemp = actual;
+                selector();
+                break;
+            } else if (result.equalsIgnoreCase(getString(R.string.cobros))) {
 
-                    ArrayList<String> speech = data
-                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    String clave = getPref(PreferenciasBase.CLAVEVOZ, "");
-                    if (speech != null && clave != null && (clave.equals("") || speech.get(0).contains(clave))) {
+                Toast.makeText(getContext(), PROYCOBROS, Toast.LENGTH_SHORT).show();
+                actual = COBROS;
+                actualtemp = PROYECTO;
+                setSubtitulo(actual);
+                selector();
+                break;
+            } else if (result.equalsIgnoreCase(getString(R.string.historico))) {
 
-                        if (speech.get(0).contains(clave)) {
-                            grabarVoz = speech.get(0).replace(clave, "").toLowerCase();
-                        } else {
-                            grabarVoz = speech.get(0).toLowerCase();
-                        }
+                Toast.makeText(getContext(), PROYHISTORICO, Toast.LENGTH_SHORT).show();
+                actual = HISTORICO;
+                setSubtitulo(actual);
+                actualtemp = PROYECTO;
+                selector();
+                break;
+            } else if (result.equalsIgnoreCase(getString(R.string.garantias)) ||
+                    result.equalsIgnoreCase(getString(R.string.garantia))) {
+                Toast.makeText(getContext(), GARANTIA, Toast.LENGTH_SHORT).show();
+                actual = GARANTIA;
+                setSubtitulo(actual);
+                actualtemp = PROYECTO;
+                selector();
+            } else if (newEvent || result.equalsIgnoreCase(getString(R.string.nuevo)) ||
+                    result.equalsIgnoreCase(getString(R.string.nueva))) {
 
-                        if (grabarVoz.contains(getString(R.string.partidas))) {
+                newEvent = true;
+                if (result.equalsIgnoreCase(getString(R.string.evento))) {
+                    nuevoEvento();
+                } else if (result.equalsIgnoreCase(getString(R.string.nota))) {
+                    nuevaNota();
+                }
+            } else if (ver || result.equalsIgnoreCase(getString(R.string.ver))) {
 
-                            verPartidas();
-
-                        } else if (grabarVoz.contains(getString(R.string.presupuestos))) {
-
-                            Toast.makeText(getContext(), PRESUPUESTOS, Toast.LENGTH_SHORT).show();
-                            actual = PRESUPUESTO;
-                            setSubtitulo(actual);
-                            actualtemp = actual;
-                            selector();
-
-                        } else if (grabarVoz.contains(getString(R.string.proyectos))) {
-
-                            Toast.makeText(getContext(), PROYECTOS, Toast.LENGTH_SHORT).show();
-                            actual = PROYECTO;
-                            setSubtitulo(actual);
-                            actualtemp = actual;
-                            selector();
-
-                        } else if (grabarVoz.contains(getString(R.string.cobros))) {
-
-                            Toast.makeText(getContext(), PROYCOBROS, Toast.LENGTH_SHORT).show();
-                            actual = COBROS;
-                            actualtemp = PROYECTO;
-                            setSubtitulo(actual);
-                            selector();
-
-                        } else if (grabarVoz.equals("historico")) {
-
-                            Toast.makeText(getContext(), PROYHISTORICO, Toast.LENGTH_SHORT).show();
-                            actual = HISTORICO;
-                            setSubtitulo(actual);
-                            actualtemp = PROYECTO;
-                            selector();
-
-                        } else if (grabarVoz.contains(getString(R.string.garantias)) ||
-                                grabarVoz.contains(getString(R.string.garantia))) {
-
-                            Toast.makeText(getContext(), GARANTIA, Toast.LENGTH_SHORT).show();
-                            actual = GARANTIA;
-                            setSubtitulo(actual);
-                            actualtemp = PROYECTO;
-                            selector();
-
-                        } else if (grabarVoz.contains(getString(R.string.nuevo_evento))) {
-
-                            nuevoEvento();
-                        } else if (grabarVoz.contains(getString(R.string.ver_eventos))) {
-
-                            verEventos();
-                        } else if (grabarVoz.contains(getString(R.string.nueva_nota))) {
-
-                            nuevaNota();
-                        } else if (grabarVoz.contains(getString(R.string.ver_notas))) {
-
-                            verNotas();
-                        }
-                    }
+                ver = true;
+                if (result.equalsIgnoreCase(getString(R.string.evento))) {
+                    verEventos();
+                } else if (result.equalsIgnoreCase(getString(R.string.nota))) {
+                    verNotas();
+                }
             }
-        }
-        super.onActivityResult(requestCode, resultCode, data);
 
+
+        }
     }
 
     private void showDatePickerDialogEntrega() {

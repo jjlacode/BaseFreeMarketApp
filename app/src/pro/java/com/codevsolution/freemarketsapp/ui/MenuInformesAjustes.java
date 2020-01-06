@@ -8,8 +8,6 @@ import com.codevsolution.freemarketsapp.R;
 
 import java.util.ArrayList;
 
-import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.HTTPAYUDA;
-
 public class MenuInformesAjustes extends FragmentGridImagen {
 
     private String informes;
@@ -22,6 +20,19 @@ public class MenuInformesAjustes extends FragmentGridImagen {
     @Override
     protected void setContext() {
         contexto = getContext();
+    }
+
+    @Override
+    protected String setAyudaWeb() {
+        return "informes-y-ajustes";
+    }
+
+    @Override
+    protected void setInicio() {
+        super.setInicio();
+
+        icFragmentos.showSubTitle(R.string.informesyajustes);
+        reproducir(getString(R.string.informesyajustes));
     }
 
 
@@ -44,11 +55,6 @@ public class MenuInformesAjustes extends FragmentGridImagen {
         lista.add(new GridModel(R.drawable.ic_database_indigo, dataBase));
         lista.add(new GridModel(R.drawable.ic_lista_notas_indigo, fileManager));
 
-    }
-
-    @Override
-    protected String setAyudaWeb() {
-        return HTTPAYUDA + "informes-ajustes";
     }
 
     @Override

@@ -536,6 +536,7 @@
     <string name="llamar_contacto">llamar contacto</string>
     <string name="ir_a">ir a</string>
     <string name="abrir">abrir</string>
+    <string name="abre">abre</string>
     <string name="imeil">imeil</string>
     <string name="correo">correo</string>
     <string name="llamar">llamar</string>
@@ -555,6 +556,17 @@
     <string name="buscar_direccion">buscando direccion</string>
     <string name="marcando">marcando numero de</string>
     <string name="buscar_direccion_de">buscando direccion de</string>
+    <string name="nuevo_audio">nuevo audio</string>
+    <string name="nueva">nueva</string>
+    <string name="audio">audio</string>
+    <string name="texto">texto</string>
+    <string name="video">video</string>
+    <string name="imagen">imagen</string>
+    <string name="cita">cita</string>
+    <string name="llama">llama</string>
+    <string name="marca">marca</string>
+    <string name="gestion_proyectos">Gestión de proyectos</string>
+    <string name="voz">voz</string>
 
 
 </resources>

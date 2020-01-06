@@ -15,6 +15,7 @@ import com.codevsolution.base.interfaces.ICFragmentos;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.sqlite.ConsultaBD;
+import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.style.Estilos;
 
 import java.util.ArrayList;
@@ -139,6 +140,10 @@ public class CRUDutil {
 
     public ListaModeloSQL setListaModelo() {
         return new ListaModeloSQL(campos);
+    }
+
+    public static ListaModeloSQL setListaModeloSQL(String tabla) {
+        return new ListaModeloSQL(tabla);
     }
 
     public static ListaModeloSQL clonaListaModelo(String[] campos, ListaModeloSQL list) {
@@ -865,5 +870,50 @@ public class CRUDutil {
         }
     }
 
+    public static ListaModeloSQL listaBusqueda(String cadena, String[] campos) {
+
+        ListaModeloSQL listaTmp = new ListaModeloSQL(campos);
+        ListaModeloSQL suggestion = new ListaModeloSQL();
+
+        if (cadena != null && !cadena.isEmpty()) {
+            String[] result = cadena.split(" ");
+            for (String s : result) {
+                if (!s.isEmpty()) {
+                    suggestion = new ListaModeloSQL();
+                    for (ModeloSQL item : listaTmp.getLista()) {
+
+                        for (int i = 2; i < campos.length; i += 3) {
+
+                            if (item.getString(campos[i]) != null && !item.getString(campos[i]).equals("")) {
+
+                                if (item.getString(campos[i]).toLowerCase().contains(s.toLowerCase())) {
+
+                                    suggestion.addModelo(item);
+                                    break;
+                                }
+                            }
+                        }
+
+                    }
+                    if (suggestion.sizeLista() == 0) {
+                        return suggestion;
+                    }
+                    listaTmp.clear();
+                    listaTmp = new ListaModeloSQL(suggestion);
+                }
+            }
+        }
+        return suggestion;
+    }
+
+    public static ListaModeloSQL listaBusquedaGeneral(String cadena) {
+
+        ListaModeloSQL listaModelos = new ListaModeloSQL();
+        ArrayList<String[]> listasCampos = ContratoPry.obtenerListaCampos();
+        for (String[] campos : listasCampos) {
+            listaModelos.addAllLista(listaBusqueda(cadena, campos).getLista());
+        }
+        return listaModelos;
+    }
 
 }

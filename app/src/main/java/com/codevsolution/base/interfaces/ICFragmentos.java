@@ -43,7 +43,13 @@ public interface ICFragmentos {
 
     void enviarAyudaWeb(String ayudaWeb);
 
-    void playTTs(String texto);
+    void abrirAyudaWeb();
+
+    TextToSpeech playTTs(String texto);
+
+    TextToSpeech playTTs(String texto, String utteranceId);
 
     TextToSpeech getTTs();
+
+    void onVoz(Bundle bundle);
 }

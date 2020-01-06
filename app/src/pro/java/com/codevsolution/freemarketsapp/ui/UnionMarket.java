@@ -24,6 +24,11 @@ public class UnionMarket extends FragmentGridImagen {
     }
 
     @Override
+    protected String setAyudaWeb() {
+        return "unionmarket";
+    }
+
+    @Override
     protected void setLista() {
 
         productos = getString(R.string.productosyservicios);

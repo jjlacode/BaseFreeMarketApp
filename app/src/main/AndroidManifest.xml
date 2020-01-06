@@ -51,7 +51,27 @@
         </provider>
         <receiver android:enabled="false"
                   android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
-            android:name="com.codevsolution.base.services.AutoArranque">
+            android:name="com.codevsolution.base.services.AutoArranqueChat">
+
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:enabled="false"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
+            android:name="com.codevsolution.base.services.AutoArranqueJedi">
+
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:enabled="false"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
+            android:name="com.codevsolution.base.services.AutoArranqueVoz">
 
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -59,21 +79,31 @@
             </intent-filter>
         </receiver>
         <receiver android:name="com.codevsolution.base.services.ReceiverBase">
-
         </receiver>
         <receiver android:name="com.codevsolution.base.services.ChatReceiver">
             <intent-filter>
                 <action android:name="jjlacode.com.base.util.action.AVISOMSGCHAT" />
             </intent-filter>
         </receiver>
+        <receiver android:name="com.codevsolution.base.services.JediReceiver">
+            <intent-filter>
+                <action android:name="jjlacode.com.base.util.action.JEDI" />
+            </intent-filter>
+        </receiver>
 
         <service
-            android:name="com.codevsolution.base.services.JobServiceBase"
+            android:name="com.codevsolution.base.services.ServiceChat"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <service android:name="com.codevsolution.base.notifications.fcm.IFirebaseMessagingService" />
         <service
+            android:name="com.codevsolution.base.services.ServicioJedi"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
             android:name="com.codevsolution.base.services.ServicioVoz"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name="com.codevsolution.base.services.ServicioJediVoz"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <meta-data

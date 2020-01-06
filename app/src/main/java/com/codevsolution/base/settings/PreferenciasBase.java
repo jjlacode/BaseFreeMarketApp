@@ -47,6 +47,7 @@ public class PreferenciasBase extends FragmentBase {
     public static final String AUTOGUARDADO = "autoguardado";
     public static final String TIEMPOAUTOGUARDADO = "tiempoautoguardado";
     public static final String CLAVEVOZ = "clavevoz";
+    public static final String SERVVOZ = "serviciovoz";
     private TextView tituloEncrypt;
     private TextView tituloSettings;
     private TextView tituloDictado;

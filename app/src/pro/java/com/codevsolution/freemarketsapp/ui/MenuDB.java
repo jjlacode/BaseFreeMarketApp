@@ -27,7 +27,7 @@ public class MenuDB extends FragmentGridImagen {
 
     @Override
     protected String setAyudaWeb() {
-        return "inicio";
+        return "db";
     }
 
     @Override

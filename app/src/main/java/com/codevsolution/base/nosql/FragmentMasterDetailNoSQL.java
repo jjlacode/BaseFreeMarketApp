@@ -587,10 +587,7 @@ public abstract class FragmentMasterDetailNoSQL extends FragmentNoSQL {
             activityBase.fabNuevo.show();
 
 
-            if (grabarVoz == null) {
                 listaRV();
-                grabarVoz = null;
-            }
         }
 
         setDefectoMaestroDetalleSeparados();
