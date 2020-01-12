@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.FragmentCRUDPartidaBase">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_asignar_a_partidaproy_partidabase"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/boton_redondo_primary"
+                android:visibility="gone"
+                android:textColor="@color/colorPrimary"
+                android:text="@string/add_detpartida" />
+
+
+            <com.codevsolution.base.android.controls.ImagenLayout
+                android:id="@+id/imgudpartidabase"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_add_a_photo_black_24dp" />
+
+
+            <AutoCompleteTextView
+                android:id="@+id/autonompartidabase"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/partida_clon" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etnomudpartidabase"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint_text="@string/nombre" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etdescripcionUDpartidabase"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint_text="@string/descripcion"
+                app:tipo_dato="TEXTO|MULTI" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/ettiempoUDpartidabase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:activo="false"
+                    app:hint_text="horas" />
+
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/etprecioUDpartidabase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:activo="false"
+                    app:hint_text="@string/importe" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btntareaudpartidabase"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/boton_redondo_secondary"
+                    android:src="@drawable/ic_tareas_indigo" />
+
+                <ImageButton
+                    android:id="@+id/btnprodudpartidabase"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/boton_redondo_secondary"
+                    android:src="@drawable/ic_producto_indigo" />
+
+                <ImageButton
+                    android:id="@+id/btnprovudpartidabase"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/boton_redondo_secondary"
+                    android:src="@drawable/ic_catalogo_indigo" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvdetalleUDpartidabase"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>

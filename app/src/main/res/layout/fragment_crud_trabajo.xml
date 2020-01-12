@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:jjla="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_add_trabajo_partida"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_detpartida"
+            android:textColor="@color/colorPrimary"
+            android:background="@drawable/boton_redondo_primary" />
+
+        <com.codevsolution.base.android.controls.ImagenLayout
+            android:id="@+id/imgtarea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etnombretarea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            jjla:tipo_dato="TEXTO"
+            jjla:hint_text="@string/nombre" />
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etdesctarea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            jjla:tipo_dato="TEXTO|MULTI"
+            jjla:hint_text="@string/descripcion" />
+
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/ettiempotarea"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            jjla:tipo_dato="NUMERO|DECIMAL"
+            jjla:hint_text="@string/horas" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_crearnota_tarea"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/boton_redondo_secondary"
+                android:src="@drawable/ic_nueva_nota_indigo"
+                android:layout_weight="1" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_vernotas_tarea"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/boton_redondo_secondary"
+                android:src="@drawable/ic_lista_notas_indigo"
+                android:layout_weight="1" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.core.widget.NestedScrollView>
