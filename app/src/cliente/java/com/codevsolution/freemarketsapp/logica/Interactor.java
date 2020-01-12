@@ -19,17 +19,15 @@ import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
-import com.codevsolution.base.models.DestinosVoz;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
-import com.codevsolution.base.sqlite.ConsultaBD;
-import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.sqlite.ConsultaBDBase;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.BuildConfig;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.services.EventosReceiver;
-import com.codevsolution.freemarketsapp.ui.FragmentCRUDProducto;
-import com.codevsolution.freemarketsapp.ui.FragmentCRUDProyecto;
+import com.codevsolution.freemarketsapp.sqlite.ConsultaBD;
+import com.codevsolution.freemarketsapp.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.ui.MenuInicio;
 
 import java.net.URLEncoder;
@@ -45,8 +43,6 @@ import static android.content.Intent.EXTRA_SUBJECT;
 import static android.content.Intent.EXTRA_TEXT;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.codevsolution.base.android.AppActivity.getAppContext;
-import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
-import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.ACCION_CANCELAR;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.ACCION_POSPONER;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.ACCION_VER;
@@ -79,6 +75,9 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
 
     public static Fragment fragmentMenuInicio = new MenuInicio();
+    private static CRUDutil crudUtil = new CRUDutil();
+    private static ConsultaBDBase consultaBD = new ConsultaBDBase(new ConsultaBD());
+
 
     public Interactor() {
         super();
@@ -90,12 +89,11 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
         fragmentInicio = fragmentMenuInicio;
     }
 
-    //private static ConsultaBD consulta = new ConsultaBD();
 
     public interface ConstantesPry {
 
 
-        String HTTPAYUDA = "https://freemarketsapp.codevsolution.com/profesional/ayuda/";
+        String HTTPAYUDA = "https://codevsolution.com/freemarketsapp/";
         String MENUCRM = "menuCRM";
         String MENUMARKETING = "menuMarketing";
         String MENUUM = "menuUM";
@@ -740,8 +738,8 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
     public static long fechaEntregaCalculada(double horastrabajos, String idProyecto) {
 
-        ModeloSQL perfilActivo = ConsultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila);
-        ModeloSQL proyecto = CRUDutil.updateModelo(CAMPOS_PROYECTO, idProyecto);
+        ModeloSQL perfilActivo = consultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila);
+        ModeloSQL proyecto = crudUtil.updateModelo(CAMPOS_PROYECTO, idProyecto);
         long horaHoy = 0;
         long fechahoy = 0;
         TimeZone timezone = TimeZone.getDefault();
@@ -1190,7 +1188,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
     public static int getTipoEstado(String idEstado) {
 
-        ArrayList<ModeloSQL> listaEstados = queryList(CAMPOS_ESTADO);
+        ArrayList<ModeloSQL> listaEstados = consultaBD.queryList(CAMPOS_ESTADO);
 
         for (ModeloSQL estado : listaEstados) {
 
@@ -1205,7 +1203,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
     public static String getIdTipoCliente(String tipoCliente) {
 
-        ArrayList<ModeloSQL> listaTiposCliente = queryList(CAMPOS_TIPOCLIENTE);
+        ArrayList<ModeloSQL> listaTiposCliente = consultaBD.queryList(CAMPOS_TIPOCLIENTE);
 
         for (ModeloSQL tipoCli : listaTiposCliente) {
 
@@ -1220,7 +1218,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
     public static int getPesoTipoCliente(String tipoCliente) {
 
-        ArrayList<ModeloSQL> listaTiposCliente = queryList(CAMPOS_TIPOCLIENTE);
+        ArrayList<ModeloSQL> listaTiposCliente = consultaBD.queryList(CAMPOS_TIPOCLIENTE);
 
         for (ModeloSQL tipoCli : listaTiposCliente) {
 
@@ -1235,7 +1233,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
     public static int getPesoTipoClienteId(String idTipoCliente) {
 
-        ArrayList<ModeloSQL> listaTiposCliente = queryList(CAMPOS_TIPOCLIENTE);
+        ArrayList<ModeloSQL> listaTiposCliente = consultaBD.queryList(CAMPOS_TIPOCLIENTE);
 
         for (ModeloSQL tipoCli : listaTiposCliente) {
 
@@ -1283,9 +1281,9 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
         public static double calculoPrecioHora() {
 
-            ArrayList<ModeloSQL> listaAmortizaciones = ConsultaBD.queryList(CAMPOS_AMORTIZACION);
+            ArrayList<ModeloSQL> listaAmortizaciones = consultaBD.queryList(CAMPOS_AMORTIZACION);
 
-            ArrayList<ModeloSQL> listaGastosFijos = ConsultaBD.queryList(CAMPOS_GASTOFIJO);
+            ArrayList<ModeloSQL> listaGastosFijos = consultaBD.queryList(CAMPOS_GASTOFIJO);
 
             long hoy = JavaUtil.hoy();
             double precioHoraAmortizaciones = 0;
@@ -1317,7 +1315,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
             double totalAmortizacionesYGastos = (precioHoraAmortizaciones + precioHoraGastosFijos) * 24 * 365;
 
-            ModeloSQL perfil = ConsultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila);
+            ModeloSQL perfil = consultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila);
 
 
             double beneficio = perfil.getDouble(PERFIL_BENEFICIO);
@@ -1343,7 +1341,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
         public static double calculoCosteHora() {
 
             double horapvp = calculoPrecioHora();
-            ModeloSQL perfil = ConsultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila);
+            ModeloSQL perfil = consultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila);
             double beneficio = perfil.getDouble(PERFIL_BENEFICIO);
 
             return horapvp / (1 + (beneficio / 100));
@@ -1353,15 +1351,15 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
         public static void borrarSegmentosFuturos(long fecha) {
 
             String ordenAgenda = AGENDA_VALORENTRADA + Constantes.ORDENASCENDENTE;
-            ListaModeloSQL listaSegmentos = CRUDutil.setListaModelo(CAMPOS_AGENDA, AGENDA_VALORENTRADA,
+            ListaModeloSQL listaSegmentos = crudUtil.setListaModelo(CAMPOS_AGENDA, AGENDA_VALORENTRADA,
                     TimeDateUtil.ahora(),0, MAYOR, AGENDA_VALORENTRADA, ASCENDENTE);
 
             for (ModeloSQL segmento : listaSegmentos.getLista()) {
 
-                ModeloSQL detpartida = CRUDutil.updateModelo(CAMPOS_DETPARTIDA, segmento.getString(AGENDA_ID_DETPARTIDA), segmento.getInt(AGENDA_SECUENCIA_DETPARTIDA));
+                ModeloSQL detpartida = crudUtil.updateModelo(CAMPOS_DETPARTIDA, segmento.getString(AGENDA_ID_DETPARTIDA), segmento.getInt(AGENDA_SECUENCIA_DETPARTIDA));
 
                 if (detpartida.getInt(DETPARTIDA_FIJA) == 0) {
-                    CRUDutil.borrarRegistro(TABLA_AGENDA, segmento.getString(AGENDA_ID_AGENDA));
+                    crudUtil.borrarRegistro(TABLA_AGENDA, segmento.getString(AGENDA_ID_AGENDA));
                 }
             }
 
@@ -1369,7 +1367,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
         public static boolean comprobarSegmentoIdDetpartida(String idDetpartida, int secDetpartida) {
 
-            ListaModeloSQL listaSegmentos = CRUDutil.setListaModelo(CAMPOS_AGENDA);
+            ListaModeloSQL listaSegmentos = crudUtil.setListaModelo(CAMPOS_AGENDA);
 
             for (ModeloSQL segmento : listaSegmentos.getLista()) {
                 if (segmento.getString(AGENDA_ID_DETPARTIDA).equals(idDetpartida) && segmento.getInt(AGENDA_SECUENCIA_DETPARTIDA) == secDetpartida) {
@@ -1383,7 +1381,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
         public static void moverSegmento(String idDetpartida, int secDetpartida) {
 
             long fecha = TimeDateUtil.ahora();
-            ListaModeloSQL listaSegmentos = CRUDutil.setListaModelo(CAMPOS_AGENDA, AGENDA_ID_DETPARTIDA, idDetpartida);
+            ListaModeloSQL listaSegmentos = crudUtil.setListaModelo(CAMPOS_AGENDA, AGENDA_ID_DETPARTIDA, idDetpartida);
             for (ModeloSQL segmento : listaSegmentos.getLista()) {
 
                 if (segmento.getInt(AGENDA_SECUENCIA_DETPARTIDA) == secDetpartida) {
@@ -1408,7 +1406,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
                 fin = (TimeDateUtil.ahora()+(ANIOSLONG * anios));
             }
-            ListaModeloSQL listaMinutos = CRUDutil.setListaModelo(CAMPOS_AGENDA, AGENDA_VALORENTRADA,
+            ListaModeloSQL listaMinutos = crudUtil.setListaModelo(CAMPOS_AGENDA, AGENDA_VALORENTRADA,
                     inicio,fin,ENTRE, AGENDA_VALORENTRADA, ASCENDENTE);
 
             if (listaMinutos!=null) {
@@ -1417,13 +1415,13 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
                     ContentValues values = new ContentValues();
                     ModeloSQL segmento = listaMinutos.getItem(i);
-                    ModeloSQL segmentoAnt = CRUDutil.updateModelo(CAMPOS_AGENDA, segmento.getString(AGENDA_ID_MINANT));
+                    ModeloSQL segmentoAnt = crudUtil.updateModelo(CAMPOS_AGENDA, segmento.getString(AGENDA_ID_MINANT));
                     if (i > 0 && segmentoAnt == null) {
                         segmentoAnt = listaMinutos.getItem(i - 1);
                     }
-                    ModeloSQL partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, segmento.getString(AGENDA_ID_PARTIDA)
+                    ModeloSQL partida = crudUtil.updateModelo(CAMPOS_PARTIDA, segmento.getString(AGENDA_ID_PARTIDA)
                             , segmento.getString(AGENDA_SECUENCIA_PARTIDA));
-                    ModeloSQL detPartida = CRUDutil.updateModelo(CAMPOS_DETPARTIDA, segmento.getString(AGENDA_ID_DETPARTIDA)
+                    ModeloSQL detPartida = crudUtil.updateModelo(CAMPOS_DETPARTIDA, segmento.getString(AGENDA_ID_DETPARTIDA)
                             , segmento.getString(AGENDA_SECUENCIA_DETPARTIDA));
                     boolean activo = false;
                     if (detPartida != null && partida != null && partida.getInt(PARTIDA_TIPO_ESTADO) > TiposEstados.TPRESUPESPERA &&
@@ -1458,7 +1456,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                     } else {
                         values.put(AGENDA_ACTIVO, 0);
                     }
-                    CRUDutil.actualizarRegistro(segmento, values);
+                    crudUtil.actualizarRegistro(segmento, values);
 
                 }
             }
@@ -1473,7 +1471,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             long fechaFin = 0;
 
             ListaModeloSQL listaProyectosnuevos = new ListaModeloSQL();
-            ListaModeloSQL listatmp = CRUDutil.setListaModelo(CAMPOS_PROYECTO);
+            ListaModeloSQL listatmp = crudUtil.setListaModelo(CAMPOS_PROYECTO);
             listatmp.sort(PROYECTO_FECHAENTRADA,ASCENDENTE);
 
             for (ModeloSQL proyectotmp : listatmp.getLista()) {
@@ -1485,7 +1483,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             for (int i = 0; i < listaProyectosnuevos.getLista().size(); i++) {
 
                 ModeloSQL proyectoNuevo = listaProyectosnuevos.getLista().get(i);
-                ListaModeloSQL listaPartidas = CRUDutil.setListaModelo(CAMPOS_PARTIDA, PARTIDA_ID_PROYECTO,
+                ListaModeloSQL listaPartidas = crudUtil.setListaModelo(CAMPOS_PARTIDA, PARTIDA_ID_PROYECTO,
                         proyectoNuevo.getString(PROYECTO_ID_PROYECTO));
 
                 int ultimaPartida = 0;
@@ -1496,7 +1494,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                 }
                 for (int x = 0; x < listaPartidas.sizeLista(); x++) {
                     ModeloSQL partida = listaPartidas.getLista().get(x);
-                    ListaModeloSQL listaDetPartidas = CRUDutil.setListaModelo(CAMPOS_DETPARTIDA,
+                    ListaModeloSQL listaDetPartidas = crudUtil.setListaModelo(CAMPOS_DETPARTIDA,
                             DETPARTIDA_ID_PARTIDA, partida.getString(PARTIDA_ID_PARTIDA), DETPARTIDA_ORDEN, ASCENDENTE);
                     int ultimaDetPartida = 0;
                     for (ModeloSQL detPartida : listaDetPartidas.getLista()) {
@@ -1550,45 +1548,45 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                                 fechaFin = calculoMinutoFinDetPartida(inicio, detPartida, guardar);
 
                                 ContentValues valores = new ContentValues();
-                                ConsultaBD.putDato(valores, DETPARTIDA_FECHAINICIOCALCULADA, inicio);
-                                ConsultaBD.putDato(valores, DETPARTIDA_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(inicio));
-                                ConsultaBD.putDato(valores, DETPARTIDA_HORAINICIOCALCULADA, inicio);
-                                ConsultaBD.putDato(valores, DETPARTIDA_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(inicio));
-                                ConsultaBD.putDato(valores, DETPARTIDA_FECHAENTREGACALCULADA, fechaFin);
-                                ConsultaBD.putDato(valores, DETPARTIDA_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
-                                ConsultaBD.updateRegistroDetalle(TABLA_DETPARTIDA, detPartida.getString(DETPARTIDA_ID_PARTIDA), detPartida.getInt(DETPARTIDA_SECUENCIA), valores);
+                                consultaBD.putDato(valores, DETPARTIDA_FECHAINICIOCALCULADA, inicio);
+                                consultaBD.putDato(valores, DETPARTIDA_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(inicio));
+                                consultaBD.putDato(valores, DETPARTIDA_HORAINICIOCALCULADA, inicio);
+                                consultaBD.putDato(valores, DETPARTIDA_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(inicio));
+                                consultaBD.putDato(valores, DETPARTIDA_FECHAENTREGACALCULADA, fechaFin);
+                                consultaBD.putDato(valores, DETPARTIDA_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
+                                consultaBD.updateRegistroDetalle(TABLA_DETPARTIDA, detPartida.getString(DETPARTIDA_ID_PARTIDA), detPartida.getInt(DETPARTIDA_SECUENCIA), valores);
                                 System.out.println("valores detpartida= " + valores);
                                 if (partida.getInt(PARTIDA_ORDEN) == 1) {
                                     valores = new ContentValues();
-                                    ConsultaBD.putDato(valores, PARTIDA_FECHAINICIOCALCULADA, inicio);
-                                    ConsultaBD.putDato(valores, PARTIDA_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(inicio));
-                                    ConsultaBD.putDato(valores, PARTIDA_HORAINICIOCALCULADA, inicio);
-                                    ConsultaBD.putDato(valores, PARTIDA_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(inicio));
-                                    ConsultaBD.updateRegistroDetalle(TABLA_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO), partida.getInt(PARTIDA_SECUENCIA), valores);
+                                    consultaBD.putDato(valores, PARTIDA_FECHAINICIOCALCULADA, inicio);
+                                    consultaBD.putDato(valores, PARTIDA_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(inicio));
+                                    consultaBD.putDato(valores, PARTIDA_HORAINICIOCALCULADA, inicio);
+                                    consultaBD.putDato(valores, PARTIDA_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(inicio));
+                                    consultaBD.updateRegistroDetalle(TABLA_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO), partida.getInt(PARTIDA_SECUENCIA), valores);
                                     System.out.println("valores inicio partida= " + valores);
 
                                     if (detPartida.getInt(DETPARTIDA_ORDEN) == 1) {
                                         valores = new ContentValues();
-                                        ConsultaBD.putDato(valores, PROYECTO_FECHAINICIOCALCULADA, inicio);
-                                        ConsultaBD.putDato(valores, PROYECTO_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(inicio));
-                                        ConsultaBD.putDato(valores, PROYECTO_HORAINICIOCALCULADA, inicio);
-                                        ConsultaBD.putDato(valores, PROYECTO_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(inicio));
-                                        ConsultaBD.updateRegistro(TABLA_PROYECTO, proyectoNuevo.getString(PROYECTO_ID_PROYECTO), valores);
+                                        consultaBD.putDato(valores, PROYECTO_FECHAINICIOCALCULADA, inicio);
+                                        consultaBD.putDato(valores, PROYECTO_FECHAINICIOCALCULADAF, TimeDateUtil.getDateString(inicio));
+                                        consultaBD.putDato(valores, PROYECTO_HORAINICIOCALCULADA, inicio);
+                                        consultaBD.putDato(valores, PROYECTO_HORAINICIOCALCULADAF, TimeDateUtil.getTimeString(inicio));
+                                        consultaBD.updateRegistro(TABLA_PROYECTO, proyectoNuevo.getString(PROYECTO_ID_PROYECTO), valores);
                                         System.out.println("valores inicio proyecto= " + valores);
 
                                     }
                                 }
                                 if (partida.getInt(PARTIDA_ORDEN) == ultimaPartida) {
                                     valores = new ContentValues();
-                                    ConsultaBD.putDato(valores, PARTIDA_FECHAENTREGACALCULADA, fechaFin);
-                                    ConsultaBD.putDato(valores, PARTIDA_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
-                                    ConsultaBD.updateRegistroDetalle(TABLA_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO), partida.getInt(PARTIDA_SECUENCIA), valores);
+                                    consultaBD.putDato(valores, PARTIDA_FECHAENTREGACALCULADA, fechaFin);
+                                    consultaBD.putDato(valores, PARTIDA_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
+                                    consultaBD.updateRegistroDetalle(TABLA_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO), partida.getInt(PARTIDA_SECUENCIA), valores);
                                     System.out.println("valores fin partida= " + valores);
                                     if (detPartida.getInt(DETPARTIDA_ORDEN) == ultimaDetPartida) {
                                         valores = new ContentValues();
-                                        ConsultaBD.putDato(valores, PROYECTO_FECHAENTREGACALCULADA, fechaFin);
-                                        ConsultaBD.putDato(valores, PROYECTO_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
-                                        ConsultaBD.updateRegistro(TABLA_PROYECTO, proyectoNuevo.getString(PROYECTO_ID_PROYECTO), valores);
+                                        consultaBD.putDato(valores, PROYECTO_FECHAENTREGACALCULADA, fechaFin);
+                                        consultaBD.putDato(valores, PROYECTO_FECHAENTREGACALCULADAF, TimeDateUtil.getDateTimeString(fechaFin));
+                                        consultaBD.updateRegistro(TABLA_PROYECTO, proyectoNuevo.getString(PROYECTO_ID_PROYECTO), valores);
                                         System.out.println("valores fin proyecto= " + valores);
 
                                     }
@@ -1605,7 +1603,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
         private static long calculoMinutoFinDetPartida(long inicio, ModeloSQL detPartida, boolean guardar) {
 
-            ModeloSQL perfilActivo = ConsultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila);
+            ModeloSQL perfilActivo = consultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila);
             long horaHoy = 0;
             long fechahoy = 0;
             long fechaIni = 0;
@@ -1618,7 +1616,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                 inicio = TimeDateUtil.ahora();
             }
 
-            ListaModeloSQL listaMinutos = CRUDutil.setListaModelo(CAMPOS_AGENDA, AGENDA_VALORENTRADA,
+            ListaModeloSQL listaMinutos = crudUtil.setListaModelo(CAMPOS_AGENDA, AGENDA_VALORENTRADA,
                     inicio, fin, ENTRE, AGENDA_VALORENTRADA, ASCENDENTE);
 
             System.out.println("listaMinutos = " + listaMinutos.sizeLista());
@@ -1632,8 +1630,8 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                 for (int m = 0; m < listaMinutos.getLista().size(); m++) {
 
                     segmento = listaMinutos.getLista().get(m);
-                    segmentoAnt = CRUDutil.updateModelo(CAMPOS_AGENDA, segmento.getString(AGENDA_ID_MINANT));
-                    segmentoSig = CRUDutil.updateModelo(CAMPOS_AGENDA, segmento.getString(AGENDA_ID_MINSIG));
+                    segmentoAnt = crudUtil.updateModelo(CAMPOS_AGENDA, segmento.getString(AGENDA_ID_MINANT));
+                    segmentoSig = crudUtil.updateModelo(CAMPOS_AGENDA, segmento.getString(AGENDA_ID_MINSIG));
 
                     double espacioTotal = 0;
                     for (ModeloSQL segmentoTmp : listaMinutos.getLista()) {
@@ -1688,7 +1686,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             }
             System.out.println("fechaIni = " + TimeDateUtil.getDateTimeString(fechaIni));
             ContentValues values = new ContentValues();
-            ModeloSQL partida = CRUDutil.updateModelo(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA,
+            ModeloSQL partida = crudUtil.updateModelo(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA,
                     detPartida.getString(DETPARTIDA_ID_PARTIDA));
             int secuenciaPartida = partida.getInt(PARTIDA_SECUENCIA);
             String idPartida = partida.getString(PARTIDA_ID_PROYECTO);
@@ -1862,37 +1860,37 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
                             if (guardar) {
 
-                                putDato(values, AGENDA_VALORSALIDA, fechaTemp);
-                                putDato(values, AGENDA_FIN, 0);
+                                consultaBD.putDato(values, AGENDA_VALORSALIDA, fechaTemp);
+                                consultaBD.putDato(values, AGENDA_FIN, 0);
 
                                 if (segmentoAnt != null) {
 
-                                    putDato(values, AGENDA_VALORANT, segmentoAnt.getLong(AGENDA_VALORENTRADA));
-                                    putDato(values, AGENDA_ID_MINANT, segmentoAnt.getString(AGENDA_ID_AGENDA));
+                                    consultaBD.putDato(values, AGENDA_VALORANT, segmentoAnt.getLong(AGENDA_VALORENTRADA));
+                                    consultaBD.putDato(values, AGENDA_ID_MINANT, segmentoAnt.getString(AGENDA_ID_AGENDA));
 
                                 }
 
-                                CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                                crudUtil.crearRegistro(TABLA_AGENDA, values);
 
-                                Uri uri = CRUDutil.crearRegistro(TABLA_AGENDA, values);
-                                segmentoAnt = ConsultaBD.queryObject(CAMPOS_AGENDA, uri);
+                                Uri uri = crudUtil.crearRegistro(TABLA_AGENDA, values);
+                                segmentoAnt = consultaBD.queryObject(CAMPOS_AGENDA, uri);
                             }
 
-                            segmento = CRUDutil.updateModelo(CAMPOS_AGENDA, segmento.getString(AGENDA_ID_MINSIG));
+                            segmento = crudUtil.updateModelo(CAMPOS_AGENDA, segmento.getString(AGENDA_ID_MINSIG));
                             while (segmento != null && segmento.getInt(AGENDA_ACTIVO) == 1 && segmento.getString(AGENDA_ID_MINSIG) != null) {
-                                segmento = CRUDutil.updateModelo(CAMPOS_AGENDA, segmento.getString(AGENDA_ID_MINSIG));
+                                segmento = crudUtil.updateModelo(CAMPOS_AGENDA, segmento.getString(AGENDA_ID_MINSIG));
                             }
 
                             if (guardar) {
                                 values = new ContentValues();
-                                putDato(values, AGENDA_VALORENTRADA, segmentoAnt.getLong(AGENDA_VALORSALIDA));
-                                putDato(values, AGENDA_INICIO, 0);
+                                consultaBD.putDato(values, AGENDA_VALORENTRADA, segmentoAnt.getLong(AGENDA_VALORSALIDA));
+                                consultaBD.putDato(values, AGENDA_INICIO, 0);
                                 values.put(AGENDA_ID_PARTIDA, idPartida);
                                 values.put(AGENDA_ID_DETPARTIDA, idDetPartida);
                                 values.put(AGENDA_SECUENCIA_PARTIDA, secuenciaPartida);
                                 values.put(AGENDA_SECUENCIA_DETPARTIDA, secuenciaDetPartida);
                                 values.put(AGENDA_COLOR, detPartida.getString(DETPARTIDA_COLOR));
-                                putDato(values, AGENDA_ID_MINANT, segmentoAnt.getString(AGENDA_ID_AGENDA));
+                                consultaBD.putDato(values, AGENDA_ID_MINANT, segmentoAnt.getString(AGENDA_ID_AGENDA));
 
 
                             }
@@ -1907,17 +1905,17 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
                         if (guardar){
 
-                            putDato(values, AGENDA_VALORSALIDA, fechaTemp);
-                            putDato(values,AGENDA_FIN,1);
+                            consultaBD.putDato(values, AGENDA_VALORSALIDA, fechaTemp);
+                            consultaBD.putDato(values, AGENDA_FIN, 1);
 
                             if (segmentoAnt != null) {
 
-                                putDato(values, AGENDA_VALORANT, segmentoAnt.getLong(AGENDA_VALORENTRADA));
-                                putDato(values, AGENDA_ID_MINANT, segmentoAnt.getString(AGENDA_ID_AGENDA));
+                                consultaBD.putDato(values, AGENDA_VALORANT, segmentoAnt.getLong(AGENDA_VALORENTRADA));
+                                consultaBD.putDato(values, AGENDA_ID_MINANT, segmentoAnt.getString(AGENDA_ID_AGENDA));
 
                             }
 
-                            CRUDutil.crearRegistro(TABLA_AGENDA, values);
+                            crudUtil.crearRegistro(TABLA_AGENDA, values);
                         }
                         break;
                     }else{
@@ -1946,7 +1944,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
         private static double calculoEspacioEntreMinutos(long fechaIni, long fechaFin) {
 
-            ModeloSQL perfilActivo = ConsultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila);
+            ModeloSQL perfilActivo = consultaBD.queryObject(CAMPOS_PERFIL, PERFIL_NOMBRE, perfila);
             long horaHoy = 0;
             long fechahoy = 0;
             double horastrabajos = 0;
@@ -2382,7 +2380,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             int pesoNuevo = 0;
             int pesoProspecto = 0;
 
-            ArrayList<ModeloSQL> listaTipoCliente = ConsultaBD.queryList
+            ArrayList<ModeloSQL> listaTipoCliente = consultaBD.queryList
                     (CAMPOS_TIPOCLIENTE);
 
             for (ModeloSQL tipoCliente : listaTipoCliente) {
@@ -2415,10 +2413,10 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                 }
             }
 
-            ArrayList<ModeloSQL> listaProyectos = ConsultaBD.queryList
+            ArrayList<ModeloSQL> listaProyectos = consultaBD.queryList
                     (CAMPOS_PROYECTO);
 
-            ArrayList<ModeloSQL> lista = ConsultaBD.queryList
+            ArrayList<ModeloSQL> lista = consultaBD.queryList
                     (CAMPOS_CLIENTE);
 
             ModeloSQL cliente = null;
@@ -2480,9 +2478,9 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
             if (modificado && cliente.getString(CLIENTE_ID_TIPOCLIENTE) != null) {
                 ContentValues valores = new ContentValues();
-                ConsultaBD.putDato(valores, CLIENTE_ID_TIPOCLIENTE, cliente.getString(CLIENTE_ID_TIPOCLIENTE));
-                ConsultaBD.putDato(valores, CLIENTE_PESOTIPOCLI, cliente.getInt(CLIENTE_PESOTIPOCLI));
-                ConsultaBD.updateRegistro(TABLA_CLIENTE, cliente.getString(CLIENTE_ID_CLIENTE), valores);
+                consultaBD.putDato(valores, CLIENTE_ID_TIPOCLIENTE, cliente.getString(CLIENTE_ID_TIPOCLIENTE));
+                consultaBD.putDato(valores, CLIENTE_PESOTIPOCLI, cliente.getInt(CLIENTE_PESOTIPOCLI));
+                consultaBD.updateRegistro(TABLA_CLIENTE, cliente.getString(CLIENTE_ID_CLIENTE), valores);
             }
 
         }
@@ -2495,14 +2493,14 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             double importeTiempoPartida = 0;
             double totalPartida = 0;
             ArrayList<ModeloSQL> listaDetPartida;
-            listaDetPartida = ConsultaBD.queryListDetalle(CAMPOS_DETPARTIDA, idPartida);
-            ModeloSQL partida = ConsultaBD.queryObject(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, idPartida);
+            listaDetPartida = consultaBD.queryListDetalle(CAMPOS_DETPARTIDA, idPartida);
+            ModeloSQL partida = consultaBD.queryObject(CAMPOS_PARTIDA, PARTIDA_ID_PARTIDA, idPartida);
 
             double precioHora;
             if (partida.getInt(PARTIDA_TIPO_ESTADO)==TiposEstados.TNUEVOPRESUP){
                 precioHora = hora;
             }else{
-                ModeloSQL proyecto = CRUDutil.updateModelo(CAMPOS_PROYECTO, partida.getString(PARTIDA_ID_PROYECTO));
+                ModeloSQL proyecto = crudUtil.updateModelo(CAMPOS_PROYECTO, partida.getString(PARTIDA_ID_PROYECTO));
                 precioHora = proyecto.getDouble(PROYECTO_PRECIOHORA);
             }
 
@@ -2512,7 +2510,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
                 if (detPartida.getString(DETPARTIDA_TIPO).equals(TIPOTRABAJO)) {
 
-                    ModeloSQL trabajo = CRUDutil.updateModelo(CAMPOS_TRABAJO, detPartida.getString(DETPARTIDA_ID_DETPARTIDA));
+                    ModeloSQL trabajo = crudUtil.updateModelo(CAMPOS_TRABAJO, detPartida.getString(DETPARTIDA_ID_DETPARTIDA));
                     valores.put(DETPARTIDA_NOMBRE, trabajo.getString(TRABAJO_NOMBRE));
                     valores.put(DETPARTIDA_DESCRIPCION, trabajo.getString(TRABAJO_DESCRIPCION));
                     valores.put(DETPARTIDA_RUTAFOTO, trabajo.getString(TRABAJO_RUTAFOTO));
@@ -2524,7 +2522,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
                 } else if (detPartida.getString(DETPARTIDA_TIPO).equals(TIPOPRODUCTO)) {
 
-                    ModeloSQL producto = CRUDutil.updateModelo(CAMPOS_PRODUCTO, detPartida.getString(DETPARTIDA_ID_DETPARTIDA));
+                    ModeloSQL producto = crudUtil.updateModelo(CAMPOS_PRODUCTO, detPartida.getString(DETPARTIDA_ID_DETPARTIDA));
                     valores.put(DETPARTIDA_NOMBRE, producto.getString(PRODUCTO_NOMBRE));
                     valores.put(DETPARTIDA_DESCRIPCION, producto.getString(PRODUCTO_DESCRIPCION));
                     valores.put(DETPARTIDA_REFPROVEEDOR, producto.getString(PRODUCTO_REFERENCIA));
@@ -2537,7 +2535,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                 }
 
                 System.out.println("valores = " + valores);
-                int res = CRUDutil.actualizarRegistro(detPartida, valores);
+                int res = crudUtil.actualizarRegistro(detPartida, valores);
                 System.out.println("detpartidas actualizadas = " + res);
 
                 if (detPartida.getDouble(DETPARTIDA_TIEMPO) > 0) {
@@ -2565,13 +2563,13 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             System.out.println("importeTiempoPartida = " + importeTiempoPartida);
 
             ContentValues valores = new ContentValues();
-            ConsultaBD.putDato(valores, PARTIDA_TIEMPO, tiempoPartida * cantidadPartida);
-            ConsultaBD.putDato(valores, PARTIDA_PRECIO, totalPartida * cantidadPartida);
-            ConsultaBD.putDato(valores, PARTIDA_COSTE, coste * cantidadPartida);
+            consultaBD.putDato(valores, PARTIDA_TIEMPO, tiempoPartida * cantidadPartida);
+            consultaBD.putDato(valores, PARTIDA_PRECIO, totalPartida * cantidadPartida);
+            consultaBD.putDato(valores, PARTIDA_COSTE, coste * cantidadPartida);
 
             String idProyecto_Partida = partida.getString(PARTIDA_ID_PROYECTO);
             int secuenciaPartida = partida.getInt(PARTIDA_SECUENCIA);
-            int i = ConsultaBD.updateRegistroDetalle(TABLA_PARTIDA, idProyecto_Partida, secuenciaPartida, valores);
+            int i = consultaBD.updateRegistroDetalle(TABLA_PARTIDA, idProyecto_Partida, secuenciaPartida, valores);
             if (i > 0) {
                 System.out.println("Partidas actualizadas = " + i);
             }
@@ -2580,7 +2578,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
         public static void actualizarPresupuesto(ModeloSQL partida) {
 
-            ArrayList<ModeloSQL> listaPartidas = ConsultaBD.queryListDetalle(CAMPOS_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO));
+            ArrayList<ModeloSQL> listaPartidas = consultaBD.queryListDetalle(CAMPOS_PARTIDA, partida.getString(PARTIDA_ID_PROYECTO));
 
             double totalTiempo = 0;
             double totalPrecio = 0;
@@ -2597,18 +2595,18 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
             totcompletada = (int) (Math.round(((double) totcompletada) / listaPartidas.size()));
             ContentValues valores = new ContentValues();
-            ConsultaBD.putDato(valores, PROYECTO_TIEMPO, totalTiempo);
-            ConsultaBD.putDato(valores, PROYECTO_IMPORTEPRESUPUESTO, totalPrecio);
-            ConsultaBD.putDato(valores, PROYECTO_COSTE, totalcoste);
-            ConsultaBD.putDato(valores, PROYECTO_TOTCOMPLETADO, totcompletada);
+            consultaBD.putDato(valores, PROYECTO_TIEMPO, totalTiempo);
+            consultaBD.putDato(valores, PROYECTO_IMPORTEPRESUPUESTO, totalPrecio);
+            consultaBD.putDato(valores, PROYECTO_COSTE, totalcoste);
+            consultaBD.putDato(valores, PROYECTO_TOTCOMPLETADO, totcompletada);
 
-            ConsultaBD.updateRegistro(TABLA_PROYECTO, partida.getString(PARTIDA_ID_PROYECTO), valores);
+            consultaBD.updateRegistro(TABLA_PROYECTO, partida.getString(PARTIDA_ID_PROYECTO), valores);
 
         }
 
         public static void actualizarPresupuesto(String idProyecto) {
 
-            ArrayList<ModeloSQL> listaPartidas = ConsultaBD.queryListDetalle(CAMPOS_PARTIDA, idProyecto);
+            ArrayList<ModeloSQL> listaPartidas = consultaBD.queryListDetalle(CAMPOS_PARTIDA, idProyecto);
 
             double totalTiempo = 0;
             double totalPrecio = 0;
@@ -2625,29 +2623,29 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
             totcompletada = (int) (Math.round(((double) totcompletada) / listaPartidas.size()));
             ContentValues valores = new ContentValues();
-            ConsultaBD.putDato(valores, PROYECTO_TIEMPO, totalTiempo);
-            ConsultaBD.putDato(valores, PROYECTO_IMPORTEPRESUPUESTO, totalPrecio);
-            ConsultaBD.putDato(valores, PROYECTO_COSTE, totalcoste);
-            ConsultaBD.putDato(valores, PROYECTO_TOTCOMPLETADO, totcompletada);
+            consultaBD.putDato(valores, PROYECTO_TIEMPO, totalTiempo);
+            consultaBD.putDato(valores, PROYECTO_IMPORTEPRESUPUESTO, totalPrecio);
+            consultaBD.putDato(valores, PROYECTO_COSTE, totalcoste);
+            consultaBD.putDato(valores, PROYECTO_TOTCOMPLETADO, totcompletada);
 
-            ConsultaBD.updateRegistro(TABLA_PROYECTO, idProyecto, valores);
+            consultaBD.updateRegistro(TABLA_PROYECTO, idProyecto, valores);
 
         }
 
         public static void actualizarPresupuesto() {
 
-            ArrayList<ModeloSQL> listaProy = queryList(CAMPOS_PROYECTO);
+            ArrayList<ModeloSQL> listaProy = consultaBD.queryList(CAMPOS_PROYECTO);
 
             for (ModeloSQL proy : listaProy) {
                 String idProyecto = proy.getString(PROYECTO_ID_PROYECTO);
 
-                ArrayList<ModeloSQL> listaPartidasact = ConsultaBD.queryListDetalle(CAMPOS_PARTIDA, idProyecto);
+                ArrayList<ModeloSQL> listaPartidasact = consultaBD.queryListDetalle(CAMPOS_PARTIDA, idProyecto);
 
                 for (ModeloSQL itemPartida : listaPartidasact) {
                     actualizarPartidaProyecto(itemPartida.getString(PARTIDA_ID_PARTIDA));
                 }
 
-                ArrayList<ModeloSQL> listaPartidas = ConsultaBD.queryListDetalle(CAMPOS_PARTIDA, idProyecto);
+                ArrayList<ModeloSQL> listaPartidas = consultaBD.queryListDetalle(CAMPOS_PARTIDA, idProyecto);
 
                 double totalTiempo = 0;
                 double totalPrecio = 0;
@@ -2664,12 +2662,12 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
                 totcompletada = (int) (Math.round(((double) totcompletada) / listaPartidas.size()));
                 ContentValues valores = new ContentValues();
-                ConsultaBD.putDato(valores, PROYECTO_TIEMPO, totalTiempo);
-                ConsultaBD.putDato(valores, PROYECTO_IMPORTEPRESUPUESTO, totalPrecio);
-                ConsultaBD.putDato(valores, PROYECTO_COSTE, totalcoste);
-                ConsultaBD.putDato(valores, PROYECTO_TOTCOMPLETADO, totcompletada);
+                consultaBD.putDato(valores, PROYECTO_TIEMPO, totalTiempo);
+                consultaBD.putDato(valores, PROYECTO_IMPORTEPRESUPUESTO, totalPrecio);
+                consultaBD.putDato(valores, PROYECTO_COSTE, totalcoste);
+                consultaBD.putDato(valores, PROYECTO_TOTCOMPLETADO, totcompletada);
 
-                int i = ConsultaBD.updateRegistro(TABLA_PROYECTO, idProyecto, valores);
+                int i = consultaBD.updateRegistro(TABLA_PROYECTO, idProyecto, valores);
                 System.out.println("Proys actualizados = " + i);
             }
 
@@ -2683,7 +2681,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             double tiemporeal = 0;
             double mediaTiempo = 0;
             int cont = 0;
-            ModeloSQL tarea = ConsultaBD.queryObject(CAMPOS_TRABAJO, idtarea);
+            ModeloSQL tarea = consultaBD.queryObject(CAMPOS_TRABAJO, idtarea);
 
             for (ModeloSQL detPartida : listaDetPartidas.getLista()) {
 
@@ -2698,8 +2696,8 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
                 ContentValues valores = new ContentValues();
                 mediaTiempo = tiempo / cont;
-                ConsultaBD.putDato(valores, TRABAJO_TIEMPO, mediaTiempo);
-                ConsultaBD.updateRegistro(TABLA_TRABAJO, idtarea, valores);
+                consultaBD.putDato(valores, TRABAJO_TIEMPO, mediaTiempo);
+                consultaBD.updateRegistro(TABLA_TRABAJO, idtarea, valores);
                 return mediaTiempo;
             } else if (cont > 0) {
                 mediaTiempo = tiempo / cont;
@@ -2715,43 +2713,43 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
 
             try {
 
-                ModeloSQL modeloSQL = CRUDutil.updateModelo(CAMPOS_PARTIDA, id, secuencia);
-                ModeloSQL partidaBase = CRUDutil.updateModelo(CAMPOS_PARTIDABASE, modeloSQL.getString(PARTIDA_ID_PARTIDABASE));
+                ModeloSQL modeloSQL = crudUtil.updateModelo(CAMPOS_PARTIDA, id, secuencia);
+                ModeloSQL partidaBase = crudUtil.updateModelo(CAMPOS_PARTIDABASE, modeloSQL.getString(PARTIDA_ID_PARTIDABASE));
                 ContentValues valores = new ContentValues();
 
-                putDato(valores, PARTIDA_NOMBRE, partidaBase.getString(PARTIDABASE_NOMBRE));
-                putDato(valores, PARTIDA_DESCRIPCION, partidaBase.getString(PARTIDABASE_DESCRIPCION));
-                putDato(valores, PARTIDA_RUTAFOTO, partidaBase.getString(PARTIDABASE_RUTAFOTO));
+                consultaBD.putDato(valores, PARTIDA_NOMBRE, partidaBase.getString(PARTIDABASE_NOMBRE));
+                consultaBD.putDato(valores, PARTIDA_DESCRIPCION, partidaBase.getString(PARTIDABASE_DESCRIPCION));
+                consultaBD.putDato(valores, PARTIDA_RUTAFOTO, partidaBase.getString(PARTIDABASE_RUTAFOTO));
 
-                CRUDutil.actualizarRegistro(TABLA_PARTIDA, id, secuencia, valores);
+                crudUtil.actualizarRegistro(TABLA_PARTIDA, id, secuencia, valores);
 
                 String iddetpartida = modeloSQL.getString(PARTIDA_ID_PARTIDA);
                 String iddetpartidabase = partidaBase.getString(PARTIDABASE_ID_PARTIDABASE);
-                ListaModeloSQL listaDetPartidabase = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, iddetpartidabase);
+                ListaModeloSQL listaDetPartidabase = crudUtil.setListaModeloDetalle(CAMPOS_DETPARTIDABASE, iddetpartidabase);
                 for (ModeloSQL detPartidaBase : listaDetPartidabase.getLista()) {
 
                     valores = new ContentValues();
 
-                    putDato(valores, DETPARTIDA_ID_PARTIDA, iddetpartida);
-                    putDato(valores, DETPARTIDA_ID_DETPARTIDA, detPartidaBase.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
-                    putDato(valores, DETPARTIDA_TIPO, detPartidaBase.getString(DETPARTIDABASE_TIPO));
-                    putDato(valores, DETPARTIDA_CANTIDAD, detPartidaBase.getString(DETPARTIDABASE_CANTIDAD));
+                    consultaBD.putDato(valores, DETPARTIDA_ID_PARTIDA, iddetpartida);
+                    consultaBD.putDato(valores, DETPARTIDA_ID_DETPARTIDA, detPartidaBase.getString(DETPARTIDABASE_ID_DETPARTIDABASE));
+                    consultaBD.putDato(valores, DETPARTIDA_TIPO, detPartidaBase.getString(DETPARTIDABASE_TIPO));
+                    consultaBD.putDato(valores, DETPARTIDA_CANTIDAD, detPartidaBase.getString(DETPARTIDABASE_CANTIDAD));
                     boolean detnuevo = true;
-                    ListaModeloSQL listaDetPartida = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida);
+                    ListaModeloSQL listaDetPartida = crudUtil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida);
                     for (ModeloSQL detPartida : listaDetPartida.getLista()) {
 
                         if (detPartida.getString(DETPARTIDA_ID_DETPARTIDA).equals(detPartidaBase.getString(DETPARTIDABASE_ID_DETPARTIDABASE))) {
-                            CRUDutil.actualizarRegistro(TABLA_DETPARTIDA, iddetpartida, detPartida.getInt(DETPARTIDA_SECUENCIA), valores);
+                            crudUtil.actualizarRegistro(TABLA_DETPARTIDA, iddetpartida, detPartida.getInt(DETPARTIDA_SECUENCIA), valores);
                             detnuevo = false;
                         }
                     }
                     if (detnuevo) {
-                        CRUDutil.crearRegistroSec(CAMPOS_DETPARTIDA, iddetpartida, valores);
+                        crudUtil.crearRegistroSec(CAMPOS_DETPARTIDA, iddetpartida, valores);
 
                     }
                 }
 
-                ListaModeloSQL listaDetPartida = CRUDutil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida);
+                ListaModeloSQL listaDetPartida = crudUtil.setListaModeloDetalle(CAMPOS_DETPARTIDA, iddetpartida);
                 for (ModeloSQL detPartida : listaDetPartida.getLista()) {
                     boolean cambio = true;
                     for (ModeloSQL detPartidaBase : listaDetPartidabase.getLista()) {
@@ -2761,7 +2759,7 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
                         }
                     }
                     if (cambio) {
-                        CRUDutil.borrarRegistro(TABLA_DETPARTIDA, detPartida.getString(DETPARTIDA_ID_PARTIDA), detPartida.getInt(DETPARTIDA_SECUENCIA));
+                        crudUtil.borrarRegistro(TABLA_DETPARTIDA, detPartida.getString(DETPARTIDA_ID_PARTIDA), detPartida.getInt(DETPARTIDA_SECUENCIA));
                     }
                 }
 
@@ -2820,13 +2818,13 @@ public class Interactor extends InteractorBase implements JavaUtil.Constantes,
             protected ModeloSQL doInBackground(String... strings) {
 
                 sincroPartidaBaseToPartidaProy(strings[0], strings[1]);
-                return CRUDutil.updateModelo(CAMPOS_PARTIDA, strings[0], strings[1]);
+                return crudUtil.updateModelo(CAMPOS_PARTIDA, strings[0], strings[1]);
             }
 
             @Override
             protected void onPostExecute(ModeloSQL modeloSQL) {
                 super.onPostExecute(modeloSQL);
-                new Interactor.Calculos.TareaActualizaPartidaProy().execute(modeloSQL.getString(PARTIDA_ID_PARTIDA));
+                new TareaActualizaPartidaProy().execute(modeloSQL.getString(PARTIDA_ID_PARTIDA));
 
             }
 

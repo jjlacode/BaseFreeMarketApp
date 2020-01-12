@@ -2,7 +2,6 @@ package com.codevsolution.freemarketsapp;
 
 import android.app.NotificationManager;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
@@ -20,21 +19,22 @@ import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.CheckPermisos;
 import com.codevsolution.base.android.MainActivityBase;
-import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.encrypt.EncryptUtil;
+import com.codevsolution.base.interfaces.TipoConsultaBD;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.login.LoginActivity;
 import com.codevsolution.base.media.cameraview.FragmentCamara;
 import com.codevsolution.base.models.DestinosVoz;
 import com.codevsolution.base.models.ModeloSQL;
-import com.codevsolution.base.sqlite.ConsultaBD;
-import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.sqlite.ConsultaBDBase;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.sqlite.SQLiteUtil;
 import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.codevsolution.freemarketsapp.logica.InteractorVoz;
 import com.codevsolution.freemarketsapp.services.AutoArranquePro;
 import com.codevsolution.freemarketsapp.settings.Preferencias;
+import com.codevsolution.freemarketsapp.sqlite.ConsultaBD;
+import com.codevsolution.freemarketsapp.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.ui.AltaPerfilesFirebasePro;
 import com.codevsolution.freemarketsapp.ui.ListadoProductosCli;
 import com.codevsolution.freemarketsapp.ui.ListadoProductosPro;
@@ -46,63 +46,66 @@ import com.codevsolution.freemarketsapp.ui.MenuInicio;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
+
 import static com.codevsolution.freemarketsapp.logica.InteractorVoz.getListaDestinosVoz;
 import static com.codevsolution.freemarketsapp.logica.InteractorVoz.getListaNuevosDestinosVoz;
 
 public class MainActivity extends MainActivityBase implements Interactor.ConstantesPry, ContratoPry.Tablas {
 
 
+
     @Override
     protected boolean acciones() {
-       if (super.acciones()) {
+        if (super.acciones()) {
 
-           AndroidUtil.setSharePreference(this, PREFERENCIAS, PERFILUSER, PRO);
+            AndroidUtil.setSharePreference(this, PREFERENCIAS, PERFILUSER, PRO);
 
-           if (accion != null && accion.equals(ACCION_VER)) {
+            if (accion != null && accion.equals(ACCION_VER)) {
 
-               System.out.println("Accion ver");
+                System.out.println("Accion ver");
 
-               String idEvento = intent.getStringExtra(EXTRA_IDEVENTO);
-               ModeloSQL evento = CRUDutil.updateModelo(CAMPOS_EVENTO, idEvento);
-               CRUDutil.actualizarCampo(evento, EVENTO_NOTIFICADO, 1);
-               bundle.putString(ACTUAL, intent.getStringExtra(EXTRA_ACTUAL));
-               bundle.putString(CAMPO_ID, idEvento);
-               NotificationManager notifyMgr = (NotificationManager)
-                       AppActivity.getAppContext().getSystemService(NOTIFICATION_SERVICE);
-               notifyMgr.cancel(intent.getIntExtra(EXTRA_ID, 0));
+                String idEvento = intent.getStringExtra(EXTRA_IDEVENTO);
+                ModeloSQL evento = crudUtil.updateModelo(CAMPOS_EVENTO, idEvento);
+                crudUtil.actualizarCampo(evento, EVENTO_NOTIFICADO, 1);
+                bundle.putString(ACTUAL, intent.getStringExtra(EXTRA_ACTUAL));
+                bundle.putString(CAMPO_ID, idEvento);
+                NotificationManager notifyMgr = (NotificationManager)
+                        AppActivity.getAppContext().getSystemService(NOTIFICATION_SERVICE);
+                notifyMgr.cancel(intent.getIntExtra(EXTRA_ID, 0));
 
-           }
+            }
 
-           if (accion != null && accion.equals(ACCION_VERSORTEO)) {
+            if (accion != null && accion.equals(ACCION_VERSORTEO)) {
 
-               System.out.println("Accion ver sorteo");
+                System.out.println("Accion ver sorteo");
 
-               String id = intent.getStringExtra(EXTRA_SORTEO);
-               String idGanador = intent.getStringExtra(EXTRA_GANADOR);
-               bundle.putString(ACTUAL, intent.getStringExtra(EXTRA_ACTUAL));
-               bundle.putString(GANADORSORTEO, idGanador);
-               bundle.putString(CAMPO_ID, id);
-               NotificationManager notifyMgr = (NotificationManager)
-                       AppActivity.getAppContext().getSystemService(NOTIFICATION_SERVICE);
-               notifyMgr.cancel(intent.getIntExtra(EXTRA_ID, 0));
+                String id = intent.getStringExtra(EXTRA_SORTEO);
+                String idGanador = intent.getStringExtra(EXTRA_GANADOR);
+                bundle.putString(ACTUAL, intent.getStringExtra(EXTRA_ACTUAL));
+                bundle.putString(GANADORSORTEO, idGanador);
+                bundle.putString(CAMPO_ID, id);
+                NotificationManager notifyMgr = (NotificationManager)
+                        AppActivity.getAppContext().getSystemService(NOTIFICATION_SERVICE);
+                notifyMgr.cancel(intent.getIntExtra(EXTRA_ID, 0));
 
-           }
+            }
 
-           fabInicio.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View view) {
-                   enviarBundleAFragment(bundle, Interactor.fragmentMenuInicio);
-               }
-           });
+            fabInicio.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    enviarBundleAFragment(bundle, Interactor.fragmentMenuInicio);
+                }
+            });
 
-           return true;
-       }
-       return false;
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void inicio(int inicio) {
 
+        AndroidUtil.setSharePreference(AppActivity.getAppContext(), USERID, TIPO, PROVCAT);
 
         if (inicio == 1) {
 
@@ -110,7 +113,7 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
         }
 
-        SharedPreferences preferences = AndroidUtil.openSharePreference(context,PREFERENCIAS);
+        SharedPreferences preferences = AndroidUtil.openSharePreference(context, PREFERENCIAS);
 
         if (comprobarInicio()) {
 
@@ -123,7 +126,7 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
             Log.d("inicio", "Inicio correcto");
 
-            SharedPreferences persistencia = AndroidUtil.openSharePreference(context,PERSISTENCIA);
+            SharedPreferences persistencia = AndroidUtil.openSharePreference(context, PERSISTENCIA);
             SharedPreferences.Editor editor = persistencia.edit();
             editor.clear();
             editor.apply();
@@ -146,7 +149,7 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
         String pathDb = Environment.getDataDirectory().getPath() + "/data/"
                 + AppActivity.getPackage(context) + "/databases/";
-            idUserCode = AndroidUtil.getSharePreference(context,USERID, USERIDCODE,NULL);
+        idUserCode = AndroidUtil.getSharePreference(context, USERID, USERIDCODE, NULL);
 
             String BASEDATOS = context.getString(R.string.app_name) + idUserCode + ".db";
 
@@ -179,41 +182,42 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
                 SharedPreferences.Editor editor = preferences.edit();
 
                 ContentValues valoresPer = new ContentValues();
+                consultaBD = new ConsultaBDBase(new ConsultaBD());
 
-                ConsultaBD.putDato(valoresPer, PERFIL_NOMBRE, "Defecto");
-                ConsultaBD.putDato(valoresPer, PERFIL_DESCRIPCION,
+                consultaBD.putDato(valoresPer, PERFIL_NOMBRE, "Defecto");
+                consultaBD.putDato(valoresPer, PERFIL_DESCRIPCION,
                         "Perfil por defecto, jornada normal de 8 horas diarias" +
                                 " de lunes a viernes y 30 dias de vacaciones al año, " +
                                 " y un sueldo anual de " + JavaUtil.formatoMonedaLocal(20000));
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAIMLUNES,9*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAFMLUNES,14*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAITLUNES,16*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAFTLUNES,20*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAIMMARTES,9*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAFMMARTES,14*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAITMARTES,16*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAFTMARTES,20*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAIMMIERCOLES,9*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAFMMIERCOLES,14*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAITMIERCOLES,16*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAFTMIERCOLES,20*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAIMJUEVES,9*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAFMJUEVES,14*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAITJUEVES,16*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAFTJUEVES,20*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAIMVIERNES,9*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAFMVIERNES,14*HORASLONG);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAITVIERNES,-1);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAFTVIERNES,-1);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAIMSABADO,-1);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAFMSABADO,-1);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAITSABADO,-1);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAFTSABADO,-1);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAIMDOMINGO,-1);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAFMDOMINGO,-1);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAITDOMINGO,-1);
-                ConsultaBD.putDato(valoresPer,PERFIL_HORAFTDOMINGO,-1);
-                Uri reg = ConsultaBD.insertRegistro(TABLA_PERFIL, valoresPer);
+                consultaBD.putDato(valoresPer, PERFIL_HORAIMLUNES, 9 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAFMLUNES, 14 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAITLUNES, 16 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAFTLUNES, 20 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAIMMARTES, 9 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAFMMARTES, 14 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAITMARTES, 16 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAFTMARTES, 20 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAIMMIERCOLES, 9 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAFMMIERCOLES, 14 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAITMIERCOLES, 16 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAFTMIERCOLES, 20 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAIMJUEVES, 9 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAFMJUEVES, 14 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAITJUEVES, 16 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAFTJUEVES, 20 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAIMVIERNES, 9 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAFMVIERNES, 14 * HORASLONG);
+                consultaBD.putDato(valoresPer, PERFIL_HORAITVIERNES, -1);
+                consultaBD.putDato(valoresPer, PERFIL_HORAFTVIERNES, -1);
+                consultaBD.putDato(valoresPer, PERFIL_HORAIMSABADO, -1);
+                consultaBD.putDato(valoresPer, PERFIL_HORAFMSABADO, -1);
+                consultaBD.putDato(valoresPer, PERFIL_HORAITSABADO, -1);
+                consultaBD.putDato(valoresPer, PERFIL_HORAFTSABADO, -1);
+                consultaBD.putDato(valoresPer, PERFIL_HORAIMDOMINGO, -1);
+                consultaBD.putDato(valoresPer, PERFIL_HORAFMDOMINGO, -1);
+                consultaBD.putDato(valoresPer, PERFIL_HORAITDOMINGO, -1);
+                consultaBD.putDato(valoresPer, PERFIL_HORAFTDOMINGO, -1);
+                Uri reg = consultaBD.insertRegistro(TABLA_PERFIL, valoresPer);
                 System.out.println(reg);
 
                 editor.putString(PERFILACTIVO, "Defecto");
@@ -241,6 +245,11 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
         return false;
 
+    }
+
+    @Override
+    protected TipoConsultaBD getConsultaBd() {
+        return new ConsultaBD();
     }
 
     @Override
@@ -467,20 +476,19 @@ public class MainActivity extends MainActivityBase implements Interactor.Constan
 
     protected void checkPermisos() {
 
-        if (CheckPermisos.validarPermisos(this, CheckPermisos.INTERNET, 100)){
+        if (CheckPermisos.validarPermisos(this, CheckPermisos.INTERNET, 100)) {
             System.out.println("permiso internet ok");
-        }else{
+        } else {
             System.out.println("permiso internet no ok");
         }
-        if (CheckPermisos.validarPermisos(this,CheckPermisos.WRITE_EXTERNAL_STORAGE,100)){
+        if (CheckPermisos.validarPermisos(this, CheckPermisos.WRITE_EXTERNAL_STORAGE, 100)) {
             System.out.println("permiso write external storage ok");
-        }
-        else {
+        } else {
             System.out.println("permiso write external extorage no ok");
         }
-        if (CheckPermisos.validarPermisos(this,CheckPermisos.READ_EXTERNAL_STORAGE,100)){
+        if (CheckPermisos.validarPermisos(this, CheckPermisos.READ_EXTERNAL_STORAGE, 100)) {
             System.out.println("permiso read external extorage ok");
-        }else {
+        } else {
             System.out.println("permiso read external extorage no ok");
         }
 

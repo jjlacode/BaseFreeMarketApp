@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_add_producto_partida"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_detpartida"
+        android:textColor="@color/colorPrimary"
+        android:background="@drawable/boton_redondo_primary" />
+
+    <com.codevsolution.base.android.controls.ImagenLayout
+        android:id="@+id/imgproducto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etnombreproductos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hint_text="@string/nombre"
+            app:tipo_dato="TEXTO" />
+
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etdescripcionproductos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:gravedad="top"
+            app:hint_text="@string/descripcion"
+            app:tipo_dato="TEXTO|MULTI" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etnomprovproducto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:hint_text="@string/proveedor"
+                app:tipo_dato="TEXTO"
+                android:orientation="horizontal" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgbtnprovproducto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="30dp"
+                android:layout_weight="8"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/ic_person_add_black_24dp" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etimporte_crud_productos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:gravedad="fin"
+            app:hint_text="@string/importe"
+            app:tipo_dato="NUMERO|DECIMAL" />
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etrefproductos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:gravedad="fin"
+            app:hint_text="@string/referencia_proveedor" />
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etdescprovproductos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:gravedad="fin"
+            app:hint_text="@string/descuento_proveedor"
+            app:tipo_dato="NUMERO|DECIMAL" />
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_add_prodwebcli"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_prodwebcli"
+        android:textColor="@color/colorPrimary"
+        android:background="@drawable/boton_redondo_primary" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_add_prodwebpro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_prodwebpro"
+        android:textColor="@color/colorPrimary"
+        android:background="@drawable/boton_redondo_primary" />
+</LinearLayout>

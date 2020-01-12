@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etlimitprodact"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hint_text="@string/limitact"
+            android:layout_weight="1"
+            app:activo="false"
+            app:tipo_dato="NUMERO" />
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etprodact"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hint_text="@string/limitactusados"
+            android:layout_weight="1"
+            app:activo="false"
+            app:tipo_dato="NUMERO" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etlimitprod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hint_text="@string/limitprod"
+            android:layout_weight="1"
+            app:activo="false"
+            app:tipo_dato="NUMERO" />
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etprod"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hint_text="@string/limitprodusados"
+            android:layout_weight="1"
+            app:activo="false"
+            app:tipo_dato="NUMERO" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

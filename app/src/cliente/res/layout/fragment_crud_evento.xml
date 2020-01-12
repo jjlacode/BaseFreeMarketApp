@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.FragmentCRUDEvento">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvtipoudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="18sp" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.codevsolution.base.android.controls.ImagenLayout
+                android:id="@+id/imgudevento"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_weight="3" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etdescudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:hint_text="@string/descripcion_tipo_cliente"
+                app:tipo_dato="MULTI|TEXTO" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgbtnfiniudevento"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_weight="3"
+                android:background="@drawable/boton_redondo_secondary"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_search_black_24dp" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+
+                android:id="@+id/etfechainiudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                app:activo="false"
+                app:hint_text="@string/fecha_ini_evento" />
+
+
+            <com.codevsolution.base.android.controls.EditMaterial
+
+                android:id="@+id/ethorainiudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2.5"
+                app:activo="false"
+                app:gravedad="inicio"
+                app:hint_text="@string/hora_ini_evento" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgbtnhiniudevento"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_weight="3"
+                android:background="@drawable/boton_redondo_secondary"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_search_black_24dp" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgbtnffinudevento"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_weight="3"
+                android:background="@drawable/boton_redondo_secondary"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_search_black_24dp" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etfechafinudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                app:activo="false"
+                app:hint_text="@string/fecha_fin_evento" />
+
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/ethorafinudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2.5"
+                app:activo="false"
+                app:gravedad="inicio"
+                app:hint_text="@string/hora_fin_evento" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgbtnhfinudevento"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_weight="3"
+                android:background="@drawable/boton_redondo_secondary"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_search_black_24dp" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/ettelefonoudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:hint_text="@string/telefono"
+                app:tipo_dato="NUMERO|TELEFONO" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgllamadaevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="3"
+                android:background="@drawable/boton_redondo_secondary"
+                android:scaleType="center"
+                card_view:srcCompat="@drawable/ic_phone_in_talk_black_24dp" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etlugarudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:hint_text="@string/direccion"
+                app:tipo_dato="DIRECCION" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgmapaevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="3"
+                android:background="@drawable/boton_redondo_secondary"
+                android:scaleType="center"
+                card_view:srcCompat="@drawable/ic_place_black_24dp" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etemailudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:hint_text="@string/email"
+                app:tipo_dato="EMAIL" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/imgemailevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="3"
+                android:background="@drawable/boton_redondo_secondary"
+                android:scaleType="center"
+                card_view:srcCompat="@drawable/ic_mail_outline_black_24dp" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etasuntoevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hint_text="@string/asunto"
+            app:tipo_dato="TEXTO" />
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etmensajeevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hint_text="@string/texto_mensaje"
+            app:tipo_dato="MULTI|TEXTO" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/chavisoudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/aviso" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/chnotificadoevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/notificado" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/ltvavisoudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/aviso" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etdiasudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:gravedad="centro"
+                app:hint_text="@string/dias"
+                app:tipo_dato="NUMERO" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/ethorasudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:gravedad="centro"
+                app:hint_text="@string/horas"
+                app:tipo_dato="NUMERO" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etminutosudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:gravedad="centro"
+                app:hint_text="@string/minutos"
+                app:tipo_dato="NUMERO" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnverrepevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/boton_redondo_secondary"
+            android:text="@string/ver_repeticiones"
+            android:textColor="@color/Color_texto_titulos" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/chrptudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/modificar_repeticiones" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/chmmesevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/mismo_dia_mes" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/chmanioevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/mismo_dia_anio" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/ltvreptudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                android:text="@string/repetir_evento" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etrepaniosudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                app:gravedad="centro"
+                app:hint_text="@string/anios"
+                app:tipo_dato="NUMERO" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etrepmesesudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                app:gravedad="centro"
+                app:hint_text="@string/meses"
+                app:tipo_dato="NUMERO" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etrepdiasudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                app:gravedad="centro"
+                app:hint_text="@string/dias"
+                app:tipo_dato="NUMERO" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/ltvdreptudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                android:text="@string/duracion" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etrepdaniosudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                app:gravedad="centro"
+                app:hint_text="@string/anios"
+                app:tipo_dato="NUMERO" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etrepdmesesudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                app:gravedad="centro"
+                app:hint_text="@string/meses"
+                app:tipo_dato="NUMERO" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etrepddiasudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="25"
+                app:gravedad="centro"
+                app:hint_text="@string/dias"
+                app:tipo_dato="NUMERO" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/chpryudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/relacionar_proyecto" />
+
+        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+            android:id="@+id/sppryudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/seleccione_proyecto" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/chcliudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/relacionar_cliente" />
+
+        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+            android:id="@+id/spcliudevento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/seleccione_cliente" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etcompletadaudevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:gravedad="centro"
+                app:hint_text="@string/completada"
+                app:tipo_dato="NUMERO" />
+
+            <androidx.appcompat.widget.AppCompatCheckBox
+                android:id="@+id/chcompletadaevento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:text="@string/completa" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_crearnota_evento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/boton_redondo_secondary"
+                android:src="@drawable/ic_nueva_nota_indigo" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_vernotas_evento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/boton_redondo_secondary"
+                android:src="@drawable/ic_lista_notas_indigo" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.core.widget.NestedScrollView>
