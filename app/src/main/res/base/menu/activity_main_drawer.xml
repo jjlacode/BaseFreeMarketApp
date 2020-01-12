@@ -4,45 +4,44 @@
     tools:showIn="navigation_view">
 
     <item
-        android:id="@+id/nav_agenda"
+        android:id="@+id/nav_inicio"
         android:icon="@drawable/ic_inicio_black_24dp"
         android:title="@string/inicio" />
+
     <item
-        android:id="@+id/nav_eventos"
-        android:icon="@drawable/ic_event_note_black_24dp"
-        android:title="@string/eventos" />
+        android:id="@+id/nav_mi_perfil"
+        android:icon="@drawable/ic_clientes_indigo"
+        android:title="@string/mi_perfil" />
+
     <item
-        android:id="@+id/nav_clientes"
-        android:icon="@drawable/ic_people_black_24dp"
-        android:title="@string/clientes" />
+        android:id="@+id/nav_siguiendo_pro"
+        android:icon="@drawable/ic_compartir_indigo"
+        android:title="@string/siguiendo_pro" />
+
     <item
-        android:id="@+id/nav_proyectos"
-        android:icon="@drawable/ic_business_center_black_24dp"
-        android:title="@string/proyectos" />
+        android:id="@+id/nav_siguiendo_prodcli"
+        android:icon="@drawable/ic_compartir_indigo"
+        android:title="@string/siguiendo_prodcli" />
+
     <item
-        android:id="@+id/nav_perfiles"
-        android:icon="@drawable/ic_ajustes_black_24dp"
-        android:title="@string/perfiles" />
+        android:id="@+id/nav_siguiendo_prodpro"
+        android:icon="@drawable/ic_txt_pro"
+        android:title="@string/siguiendo_prodpro" />
+
     <item
-        android:id="@+id/nav_amortizacion"
-        android:icon="@drawable/ic_attach_money_black_24dp"
-        android:title="@string/amortizacion" />
+        android:id="@+id/nav_mis_sorteos_cli"
+        android:icon="@drawable/ic_sorteo"
+        android:title="@string/mis_sorteos_cli" />
+
     <item
-        android:id="@+id/nav_gastosfijos"
-        android:icon="@drawable/ic_attach_money_black_24dp"
-        android:title="@string/gastos" />
+        android:id="@+id/nav_mis_sorteos_pro"
+        android:icon="@drawable/ic_sorteo"
+        android:title="@string/mis_sorteos_pro" />
+
     <item
-        android:id="@+id/nav_partidabase"
-        android:icon="@drawable/ic_format_list_numbered_black_24dp"
-        android:title="@string/partida_base" />
-    <item
-        android:id="@+id/nav_tarea"
-        android:icon="@drawable/ic_menu_manage"
-        android:title="@string/tareas" />
-    <item
-        android:id="@+id/nav_producto"
-        android:icon="@drawable/ic_producto_black_24dp"
-        android:title="@string/productos" />
+        android:id="@+id/nav_salir"
+        android:icon="@drawable/ic_salir_rojo"
+        android:title="@string/salir" />
 
 
 </menu>
