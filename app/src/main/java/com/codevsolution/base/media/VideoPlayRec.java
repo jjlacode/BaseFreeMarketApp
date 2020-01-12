@@ -16,10 +16,10 @@ import android.widget.VideoView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.controls.NestedScrollCoordinatorLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.style.Estilos;
-import com.codevsolution.freemarketsapp.R;
 
 import java.io.File;
 import java.io.IOException;

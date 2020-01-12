@@ -1,4 +1,4 @@
-package com.codevsolution.freemarketsapp;
+package com.codevsolution.base;
 
 import org.junit.Test;
 

@@ -6,12 +6,12 @@ import android.view.ViewGroup;
 
 import androidx.appcompat.widget.LinearLayoutCompat;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.models.Modelo;
-import com.codevsolution.freemarketsapp.R;
 
 import java.util.ArrayList;
 

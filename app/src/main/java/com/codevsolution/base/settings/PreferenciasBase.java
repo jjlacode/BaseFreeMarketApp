@@ -14,6 +14,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
@@ -23,8 +24,6 @@ import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.style.Dialogos;
 import com.codevsolution.base.style.Estilos;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.sqlite.ContratoPry;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -273,7 +272,7 @@ public class PreferenciasBase extends FragmentBase {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                EncryptUtil.desCifrarBase(ContratoPry.obtenerListaCampos());
+                                EncryptUtil.desCifrarBase(consultaBD.obtenerListaCampos(null));
                                 EncryptUtil.desCifrarBase(ContratoSystem.obtenerListaCampos());
                                 InteractorBase.key = null;
                             }
@@ -293,10 +292,10 @@ public class PreferenciasBase extends FragmentBase {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                EncryptUtil.desCifrarBase(ContratoPry.obtenerListaCampos());
+                                EncryptUtil.desCifrarBase(consultaBD.obtenerListaCampos(null));
                                 EncryptUtil.desCifrarBase(ContratoSystem.obtenerListaCampos());
                                 InteractorBase.key = idUser;
-                                EncryptUtil.cifrarBase(ContratoPry.obtenerListaCampos());
+                                EncryptUtil.cifrarBase(consultaBD.obtenerListaCampos(null));
                                 EncryptUtil.cifrarBase(ContratoSystem.obtenerListaCampos());
                             }
                         }).start();
@@ -315,14 +314,14 @@ public class PreferenciasBase extends FragmentBase {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                EncryptUtil.cifrarBase(ContratoPry.obtenerListaCampos());
+                                EncryptUtil.cifrarBase(consultaBD.obtenerListaCampos(null));
                                 EncryptUtil.cifrarBase(ContratoSystem.obtenerListaCampos());
                             }
                         }).start();
 
                     } else if (InteractorBase.key != null && InteractorBase.key.equals(idUser)) {
 
-                        EncryptUtil.desCifrarBase(ContratoPry.obtenerListaCampos());
+                        EncryptUtil.desCifrarBase(consultaBD.obtenerListaCampos(null));
                         EncryptUtil.desCifrarBase(ContratoSystem.obtenerListaCampos());
                         dialogoPass();
 
@@ -342,14 +341,14 @@ public class PreferenciasBase extends FragmentBase {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                EncryptUtil.cifrarBase(ContratoPry.obtenerListaCampos());
+                                EncryptUtil.cifrarBase(consultaBD.obtenerListaCampos(null));
                                 EncryptUtil.cifrarBase(ContratoSystem.obtenerListaCampos());
                             }
                         }).start();
 
                     } else if (InteractorBase.key != null && InteractorBase.key.equals(idUser)) {
 
-                        EncryptUtil.desCifrarBase(ContratoPry.obtenerListaCampos());
+                        EncryptUtil.desCifrarBase(consultaBD.obtenerListaCampos(null));
                         EncryptUtil.desCifrarBase(ContratoSystem.obtenerListaCampos());
                         dialogoPass();
 
@@ -398,7 +397,7 @@ public class PreferenciasBase extends FragmentBase {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                EncryptUtil.cifrarBase(ContratoPry.obtenerListaCampos());
+                                EncryptUtil.cifrarBase(consultaBD.obtenerListaCampos(null));
                                 EncryptUtil.cifrarBase(ContratoSystem.obtenerListaCampos());
                             }
                         }).start();

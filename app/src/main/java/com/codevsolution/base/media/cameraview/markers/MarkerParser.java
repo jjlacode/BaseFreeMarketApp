@@ -5,7 +5,7 @@ import android.content.res.TypedArray;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.base.R;
 
 /**
  * Parses markers from XML attributes.

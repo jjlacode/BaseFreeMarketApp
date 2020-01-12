@@ -14,13 +14,13 @@ import android.widget.LinearLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
+import com.codevsolution.base.logica.Interactor;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
 

@@ -9,12 +9,12 @@ import android.widget.Button;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.freemarketsapp.R;
 import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 import com.github.barteksc.pdfviewer.listener.OnTapListener;

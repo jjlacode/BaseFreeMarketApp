@@ -29,6 +29,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.NestedScrollView;
 
 import com.chargebee.models.Subscription;
+import com.codevsolution.base.R;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltro;
 import com.codevsolution.base.adapter.RVAdapter;
@@ -44,6 +45,7 @@ import com.codevsolution.base.firebase.ContratoFirebase;
 import com.codevsolution.base.firebase.FirebaseUtil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
+import com.codevsolution.base.logica.InteractorSuscriptions;
 import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
@@ -53,8 +55,6 @@ import com.codevsolution.base.models.Rating;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.logica.InteractorSuscriptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -143,19 +143,13 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                     }
 
                     @Override
-                    public void onProductLimit(ArrayList<Subscription> listaSuscripciones, int prodTotCli, int proActCli) {
-
-                        System.out.println("se ha alcanzado el limite de productos publicados");
-                    }
-
-                    @Override
                     public void onError(String msgError) {
 
                         System.out.println(msgError);
                     }
 
                     @Override
-                    public void onCheckSuscriptionsOk(ArrayList<Subscription> listaSuscripciones, int prodTotCli, int proActCli) {
+                    public void onCheckSuscriptionsOk(ArrayList<Subscription> listaSuscripciones) {
 
                         System.out.println("---------------------------------Check suscripción OK");
                         System.out.println("listaSuscripciones.size() = " + listaSuscripciones.size());
@@ -428,19 +422,13 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                     }
 
                     @Override
-                    public void onProductLimit(ArrayList<Subscription> listaSuscripciones, int prodTotCli, int proActCli) {
-
-                        System.out.println("se ha alcanzado el limite de productos publicados");
-                    }
-
-                    @Override
                     public void onError(String msgError) {
 
                         System.out.println(msgError);
                     }
 
                     @Override
-                    public void onCheckSuscriptionsOk(ArrayList<Subscription> listaSuscripciones, int prodTotCli, int proActCli) {
+                    public void onCheckSuscriptionsOk(ArrayList<Subscription> listaSuscripciones) {
 
                         System.out.println("---------------------------------Check suscripción OK");
                         System.out.println("listaSuscripciones.size() = " + listaSuscripciones.size());

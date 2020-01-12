@@ -3,8 +3,8 @@ package com.codevsolution.base.services;
 import android.content.Context;
 import android.content.Intent;
 
+import com.codevsolution.base.MainActivity;
 import com.codevsolution.base.android.AndroidUtil;
-import com.codevsolution.freemarketsapp.MainActivity;
 
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.CAMBIO;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.PERSISTENCIA;

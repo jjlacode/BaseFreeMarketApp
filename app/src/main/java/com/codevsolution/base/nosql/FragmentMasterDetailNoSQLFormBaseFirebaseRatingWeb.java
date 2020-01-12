@@ -22,6 +22,7 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltro;
 import com.codevsolution.base.adapter.RVAdapter;
@@ -45,7 +46,6 @@ import com.codevsolution.base.module.RatingBarModule;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.freemarketsapp.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;

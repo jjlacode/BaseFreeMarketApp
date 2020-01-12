@@ -4,15 +4,15 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 
+import com.codevsolution.base.MainActivity;
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ConsultaBDBase;
 import com.codevsolution.base.sqlite.ContratoSystem;
-import com.codevsolution.freemarketsapp.MainActivity;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.sqlite.ConsultaBD;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 

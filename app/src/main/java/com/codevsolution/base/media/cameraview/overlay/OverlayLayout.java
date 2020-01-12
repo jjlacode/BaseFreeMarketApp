@@ -14,8 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.media.cameraview.CameraLogger;
-import com.codevsolution.freemarketsapp.R;
 
 @SuppressLint("CustomViewStyleable")
 public class OverlayLayout extends FrameLayout implements Overlay {

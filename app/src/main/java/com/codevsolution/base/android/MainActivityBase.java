@@ -33,9 +33,11 @@ import com.codevsolution.base.chat.FragmentChatBase;
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.encrypt.EncryptUtil;
 import com.codevsolution.base.interfaces.ICFragmentos;
+import com.codevsolution.base.interfaces.ICVoz;
 import com.codevsolution.base.interfaces.TipoConsultaBD;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
+import com.codevsolution.base.logica.InteractorVozBase;
 import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.services.AutoArranqueChat;
 import com.codevsolution.base.services.AutoArranqueJedi;
@@ -90,6 +92,7 @@ public class MainActivityBase extends AppCompatActivity
     protected FragmentBase fragment;
     protected CRUDutil crudUtil;
     protected ConsultaBDBase consultaBD;
+    protected InteractorVozBase interactorVoz;
 
 
     @Override
@@ -635,6 +638,15 @@ public class MainActivityBase extends AppCompatActivity
     @Override
     public TipoConsultaBD setConsultaBd() {
         return getConsultaBd();
+    }
+
+    @Override
+    public ICVoz setICVoz() {
+        return getICVoz();
+    }
+
+    protected ICVoz getICVoz() {
+        return null;
     }
 
     protected TipoConsultaBD getConsultaBd() {

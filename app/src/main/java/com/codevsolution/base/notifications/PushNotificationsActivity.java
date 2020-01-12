@@ -6,10 +6,10 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.codevsolution.base.R;
+import com.codevsolution.base.login.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.codevsolution.base.login.LoginActivity;
-import com.codevsolution.freemarketsapp.R;
 
 public class PushNotificationsActivity extends AppCompatActivity {
 
@@ -22,7 +22,7 @@ public class PushNotificationsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notifications);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle(getString(R.string.title_activity_notifications));
 

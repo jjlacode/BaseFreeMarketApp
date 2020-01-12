@@ -50,16 +50,16 @@ import com.codevsolution.base.interfaces.ICFragmentos;
 import com.codevsolution.base.interfaces.SpeechDelegate;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
+import com.codevsolution.base.logica.InteractorVozBase;
 import com.codevsolution.base.models.Contactos;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.settings.PreferenciasBase;
 import com.codevsolution.base.speech.GoogleVoiceTypingDisabledException;
 import com.codevsolution.base.speech.SpeechRecognitionNotAvailable;
 import com.codevsolution.base.speech.SpeechUtil;
 import com.codevsolution.base.sqlite.ConsultaBDBase;
 import com.codevsolution.base.style.Estilos;
-import com.codevsolution.freemarketsapp.logica.InteractorVoz;
-import com.codevsolution.freemarketsapp.settings.Preferencias;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -178,6 +178,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     private int posicionEdit;
     protected CRUDutil crudUtil;
     protected ConsultaBDBase consultaBD;
+    private InteractorVozBase interactorVoz;
 
 
     @Override
@@ -185,6 +186,8 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         Log.d(TAG, getMetodo());
 
         consultaBD = new ConsultaBDBase(icFragmentos.setConsultaBd());
+        interactorVoz = new InteractorVozBase();
+
         setHasOptionsMenu(true);
         fragment = setFragment();
         parent = getParent();
@@ -239,10 +242,10 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
     protected void setPreferences() {
 
-        autoGuardado = getPref(Preferencias.AUTOGUARDADO, true);
-        letraProp = getPref(Preferencias.LETRAPROP, true);
-        cifrado = getPref(Preferencias.CIFRADO, false);
-        tiempoGuardado = getPref(Preferencias.TIEMPOAUTOGUARDADO, 1);
+        autoGuardado = getPref(PreferenciasBase.AUTOGUARDADO, true);
+        letraProp = getPref(PreferenciasBase.LETRAPROP, true);
+        cifrado = getPref(PreferenciasBase.CIFRADO, false);
+        tiempoGuardado = getPref(PreferenciasBase.TIEMPOAUTOGUARDADO, 1);
 
     }
 
@@ -503,7 +506,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         cargarBundle();
 
         getPersistencia();
-        if (!AndroidUtil.getSharePreference(contexto, PREFERENCIAS, Preferencias.COMVOZ, false)) {
+        if (!AndroidUtil.getSharePreference(contexto, PREFERENCIAS, PreferenciasBase.COMVOZ, false)) {
             activityBase.fabVoz.hide();
         } else {
             activityBase.fabVoz.show();
@@ -1122,7 +1125,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     public void onSpeechResult(String speech) {
 
         System.out.println("speech = " + speech);
-        Bundle bundle = InteractorVoz.processMsg(speech);
+        Bundle bundle = interactorVoz.processMsg(speech, icFragmentos.setICVoz());
         System.out.println("bundle voz = " + bundle);
         if (bundle != null) {
             icFragmentos.onVoz(bundle);

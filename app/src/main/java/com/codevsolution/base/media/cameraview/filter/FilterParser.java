@@ -4,7 +4,7 @@ import android.content.res.TypedArray;
 
 import androidx.annotation.NonNull;
 
-import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.base.R;
 
 /**
  * Parses filters from XML attributes.

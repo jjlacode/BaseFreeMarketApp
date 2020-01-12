@@ -17,14 +17,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltro;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.animation.OneFrameLayout;
+import com.codevsolution.base.logica.Interactor;
 import com.codevsolution.base.media.MediaUtil;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.logica.Interactor;
 
 import java.util.ArrayList;
 
@@ -86,7 +86,7 @@ public abstract class FragmentRVNoSQL extends FragmentBase {
                 R.color.s4
         );
 
-        Chronometer timer = (Chronometer) view.findViewById(R.id.chronocrud);
+        Chronometer timer = view.findViewById(R.id.chronocrud);
         setTimerEdit(timer);
 
         setControls(view);

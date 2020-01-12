@@ -8,8 +8,8 @@ import android.util.Patterns;
 
 import androidx.annotation.NonNull;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.AndroidUtil;
-import com.codevsolution.freemarketsapp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;

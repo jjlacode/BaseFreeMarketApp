@@ -10,9 +10,9 @@ import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.settings.Preferencias;
+import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ConsultaBDBase;
-import com.codevsolution.freemarketsapp.settings.Preferencias;
-import com.codevsolution.freemarketsapp.sqlite.ConsultaBD;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

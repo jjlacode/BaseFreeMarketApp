@@ -6,9 +6,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.freemarketsapp.R;
 
 public class FragmentWebView extends FragmentBase {
 

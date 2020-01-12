@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.codevsolution.freemarketsapp">
+    package="com.codevsolution.base">
 
     <application
         android:name="com.codevsolution.base.android.AppActivity"
@@ -29,7 +29,7 @@
         </activity>
 
         <provider
-            android:name="com.codevsolution.freemarketsapp.sqlite.ProviderPry"
+            android:name="com.codevsolution.base.sqlite.ProviderPry"
             android:authorities="${applicationId}"
             android:enabled="true"
             android:exported="false" />

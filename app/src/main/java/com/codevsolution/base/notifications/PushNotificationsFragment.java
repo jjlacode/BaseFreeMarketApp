@@ -15,8 +15,8 @@ import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.notifications.fcm.data.PushNotification;
-import com.codevsolution.freemarketsapp.R;
 
 import java.util.ArrayList;
 

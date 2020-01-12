@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.MainActivityBase;
 import com.codevsolution.base.media.cameraview.controls.Mode;
@@ -24,7 +25,6 @@ import com.codevsolution.base.media.cameraview.controls.Preview;
 import com.codevsolution.base.media.cameraview.filter.Filters;
 import com.codevsolution.base.media.cameraview.frame.Frame;
 import com.codevsolution.base.media.cameraview.frame.FrameProcessor;
-import com.codevsolution.freemarketsapp.R;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.io.ByteArrayOutputStream;

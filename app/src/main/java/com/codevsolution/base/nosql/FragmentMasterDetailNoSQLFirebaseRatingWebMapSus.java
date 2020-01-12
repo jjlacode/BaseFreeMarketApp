@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.LockableScrollView;
@@ -40,7 +41,6 @@ import com.codevsolution.base.models.Rating;
 import com.codevsolution.base.module.RatingVotoUserComents;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.freemarketsapp.R;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;

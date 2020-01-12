@@ -20,12 +20,12 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
-import com.codevsolution.freemarketsapp.R;
 
 import java.util.ArrayList;
 import java.util.Timer;

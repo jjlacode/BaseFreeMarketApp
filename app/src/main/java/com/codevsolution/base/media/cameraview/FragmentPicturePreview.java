@@ -21,10 +21,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.media.cameraview.size.AspectRatio;
-import com.codevsolution.freemarketsapp.R;
 
 import java.io.File;
 import java.io.IOException;

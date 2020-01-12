@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.base.R;
 
 public class MessageView extends LinearLayout {
 

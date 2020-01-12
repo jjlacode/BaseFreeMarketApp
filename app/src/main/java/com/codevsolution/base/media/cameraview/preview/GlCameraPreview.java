@@ -13,11 +13,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.media.cameraview.filter.Filter;
 import com.codevsolution.base.media.cameraview.filter.NoFilter;
 import com.codevsolution.base.media.cameraview.internal.egl.EglViewport;
 import com.codevsolution.base.media.cameraview.size.AspectRatio;
-import com.codevsolution.freemarketsapp.R;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;

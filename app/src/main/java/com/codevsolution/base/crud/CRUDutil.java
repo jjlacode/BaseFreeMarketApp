@@ -14,10 +14,10 @@ import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.interfaces.ICFragmentos;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ConsultaBDBase;
+import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.style.Estilos;
-import com.codevsolution.freemarketsapp.sqlite.ConsultaBD;
-import com.codevsolution.freemarketsapp.sqlite.ContratoPry;
 
 import java.util.ArrayList;
 

@@ -32,6 +32,7 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.OnLifecycleEvent;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.media.cameraview.controls.Audio;
 import com.codevsolution.base.media.cameraview.controls.Control;
 import com.codevsolution.base.media.cameraview.controls.ControlParser;
@@ -84,7 +85,6 @@ import com.codevsolution.base.media.cameraview.size.Size;
 import com.codevsolution.base.media.cameraview.size.SizeSelector;
 import com.codevsolution.base.media.cameraview.size.SizeSelectorParser;
 import com.codevsolution.base.media.cameraview.size.SizeSelectors;
-import com.codevsolution.freemarketsapp.R;
 
 import java.io.File;
 import java.io.FileDescriptor;

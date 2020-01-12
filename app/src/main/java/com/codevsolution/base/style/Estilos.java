@@ -17,9 +17,9 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.MainActivityBase;
-import com.codevsolution.freemarketsapp.R;
 
 import static com.codevsolution.base.style.Estilos.Constantes.ATTR;
 import static com.codevsolution.base.style.Estilos.Constantes.BOOL;

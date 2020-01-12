@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltro;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
@@ -24,10 +25,9 @@ import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.animation.OneFrameLayout;
+import com.codevsolution.base.logica.Interactor;
 import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.style.Estilos;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;

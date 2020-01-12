@@ -2,8 +2,8 @@ package com.codevsolution.base.models;
 
 import androidx.annotation.NonNull;
 
+import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ConsultaBDBase;
-import com.codevsolution.freemarketsapp.sqlite.ConsultaBD;
 
 import java.io.Serializable;
 import java.util.ArrayList;

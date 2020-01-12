@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.media.cameraview.size.AspectRatio;
-import com.codevsolution.freemarketsapp.R;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
 

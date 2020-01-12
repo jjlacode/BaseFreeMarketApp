@@ -3,8 +3,8 @@ package com.codevsolution.base.media;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.FragmentBase;
-import com.codevsolution.freemarketsapp.R;
 
 public class VisorImagen extends FragmentBase {
 

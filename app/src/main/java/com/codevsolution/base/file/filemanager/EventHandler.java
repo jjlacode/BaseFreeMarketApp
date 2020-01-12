@@ -39,13 +39,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.media.ThumbNailCreator;
 import com.codevsolution.base.style.Estilos;
-import com.codevsolution.freemarketsapp.R;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -2,12 +2,12 @@ package com.codevsolution.base.sqlite;
 
 import android.widget.Toast;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.file.FileUtils;
 import com.codevsolution.base.file.filemanager.FileManagerMain;
 import com.codevsolution.base.style.Dialogos;
-import com.codevsolution.freemarketsapp.R;
 
 import java.io.File;
 

@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.RVAdapter;
@@ -29,15 +30,14 @@ import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.javautil.JavaUtil;
+import com.codevsolution.base.logica.Interactor;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
+import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.Day;
 import com.codevsolution.base.time.ListaDays;
 import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.logica.Interactor;
-import com.codevsolution.freemarketsapp.sqlite.ContratoPry;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

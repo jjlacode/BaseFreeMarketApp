@@ -25,7 +25,6 @@ import com.codevsolution.base.encrypt.EncryptUtil;
 import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
-import com.codevsolution.freemarketsapp.sqlite.ContratoPry;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ import java.util.regex.Pattern;
 
 import static android.app.Activity.RESULT_OK;
 
-public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoPry.Tablas {
+public abstract class FragmentBaseCRUD extends FragmentBase {
 
 
     protected int tituloPlural;
@@ -644,7 +643,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
     private boolean comprobarString(String campo) {
 
-        ArrayList<String[]> listaCampos = ContratoPry.obtenerListaCampos();
+        ArrayList<String[]> listaCampos = consultaBD.obtenerListaCampos(tabla);
         for (String[] listaCampo : listaCampos) {
             for (int i = 0; i < listaCampo.length; i++) {
                 if (listaCampo[i].equals(campo) && listaCampo[i + 2].equals(STRING)) {

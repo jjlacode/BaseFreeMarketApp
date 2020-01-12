@@ -16,11 +16,11 @@ import android.widget.Toast;
 
 import androidx.core.widget.NestedScrollView;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.logica.InteractorSuscriptions;
+import com.codevsolution.base.logica.InteractorSuscriptions;
 
 import java.util.Timer;
 import java.util.TimerTask;

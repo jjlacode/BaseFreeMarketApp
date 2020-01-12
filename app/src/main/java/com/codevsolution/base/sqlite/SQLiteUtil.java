@@ -5,10 +5,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.util.Log;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.file.FileUtils;
-import com.codevsolution.freemarketsapp.R;
 
 import java.io.File;
 import java.io.FileInputStream;

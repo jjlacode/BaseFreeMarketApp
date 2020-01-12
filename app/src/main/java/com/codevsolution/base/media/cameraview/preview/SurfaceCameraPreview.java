@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.media.cameraview.CameraLogger;
-import com.codevsolution.freemarketsapp.R;
 
 /**
  * This is the fallback preview when hardware acceleration is off, and is the last resort.

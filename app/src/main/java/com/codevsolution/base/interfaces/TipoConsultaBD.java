@@ -2,6 +2,8 @@ package com.codevsolution.base.interfaces;
 
 import android.net.Uri;
 
+import java.util.ArrayList;
+
 public interface TipoConsultaBD {
 
     Uri obtenerUriContenido(String tabla);
@@ -19,4 +21,6 @@ public interface TipoConsultaBD {
     String obtenerTabCab(String tabla);
 
     String[] obtenerCampos(String tabla);
+
+    ArrayList<String[]> obtenerListaCampos();
 }

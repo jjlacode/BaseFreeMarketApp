@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.base.R;
 
 /**
  * A default implementation of {@link AutoFocusMarker}.

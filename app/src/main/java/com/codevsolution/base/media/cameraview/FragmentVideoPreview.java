@@ -16,10 +16,10 @@ import android.widget.VideoView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.media.cameraview.size.AspectRatio;
-import com.codevsolution.freemarketsapp.R;
 
 public class FragmentVideoPreview extends FragmentBase {
     @Override

@@ -26,8 +26,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.FragmentBase;
-import com.codevsolution.freemarketsapp.R;
 
 import java.io.IOException;
 

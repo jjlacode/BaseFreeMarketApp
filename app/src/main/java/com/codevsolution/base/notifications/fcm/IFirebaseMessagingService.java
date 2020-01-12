@@ -11,9 +11,9 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.notifications.PushNotificationsActivity;
 import com.codevsolution.base.notifications.PushNotificationsFragment;
-import com.codevsolution.freemarketsapp.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 

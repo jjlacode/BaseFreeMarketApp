@@ -26,11 +26,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.controls.NestedScrollCoordinatorLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.Contador;
-import com.codevsolution.freemarketsapp.R;
 
 import java.io.File;
 import java.io.IOException;

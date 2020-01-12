@@ -23,10 +23,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentActivity;
 
+import com.codevsolution.base.BuildConfig;
+import com.codevsolution.base.R;
 import com.codevsolution.base.models.Contactos;
 import com.codevsolution.base.models.Llamadas;
-import com.codevsolution.freemarketsapp.BuildConfig;
-import com.codevsolution.freemarketsapp.R;
 
 import java.io.File;
 import java.io.IOException;

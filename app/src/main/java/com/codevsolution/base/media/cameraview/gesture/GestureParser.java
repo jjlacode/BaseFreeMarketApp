@@ -4,7 +4,7 @@ import android.content.res.TypedArray;
 
 import androidx.annotation.NonNull;
 
-import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.base.R;
 
 /**
  * Parses gestures from XML attributes.

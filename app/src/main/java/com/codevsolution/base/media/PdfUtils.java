@@ -11,9 +11,9 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.interfaces.ICFragmentos;
-import com.codevsolution.freemarketsapp.R;
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;

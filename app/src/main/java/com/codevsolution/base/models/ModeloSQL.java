@@ -5,9 +5,9 @@ import android.net.Uri;
 
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
+import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ConsultaBDBase;
-import com.codevsolution.freemarketsapp.sqlite.ConsultaBD;
-import com.codevsolution.freemarketsapp.sqlite.ContratoPry;
+import com.codevsolution.base.sqlite.ContratoPry;
 
 import java.io.Serializable;
 import java.util.Arrays;

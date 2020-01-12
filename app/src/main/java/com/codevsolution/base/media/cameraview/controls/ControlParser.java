@@ -5,7 +5,7 @@ import android.content.res.TypedArray;
 
 import androidx.annotation.NonNull;
 
-import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.base.R;
 
 /**
  * Parses controls from XML attributes.

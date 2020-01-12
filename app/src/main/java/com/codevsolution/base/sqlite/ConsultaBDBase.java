@@ -119,6 +119,17 @@ public class ConsultaBDBase implements JavaUtil.Constantes {
         return tipoConsultaBD.obtenerCampos(tabla);
     }
 
+    public ArrayList<String[]> obtenerListaCampos(String tabla) {
+
+        if (ContratoSystem.obtenerCampos(tabla) != null) {
+
+
+            return ContratoSystem.obtenerListaCampos();
+
+        }
+        return tipoConsultaBD.obtenerListaCampos();
+    }
+
     public boolean checkQueryList
             (String[] campos, String campo, String valor) {
 

@@ -17,8 +17,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.AppActivity;
-import com.codevsolution.freemarketsapp.R;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 

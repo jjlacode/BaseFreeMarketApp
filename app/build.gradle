@@ -3,7 +3,7 @@ apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 29
     defaultConfig {
-        applicationId 'com.codevsolution.freemarketsapp'
+        applicationId 'com.codevsolution.base'
         minSdkVersion 22
         targetSdkVersion 29
         versionCode 1
@@ -21,37 +21,11 @@ android {
 
     sourceSets {
         main {
-            res.srcDirs = ['src/main/res', 'src/main/res/base', 'src/main/res/res']
+            res.srcDirs = ['src/main/res', 'src/main/res/base']
 
         }
     }
     flavorDimensions 'default'
-    productFlavors {
-        cliente {
-            dimension = 'default'
-            applicationId = 'com.codevsolution.freemarketsapp.cliente'
-            versionCode = 1
-            versionName = '1.0'
-            targetSdkVersion 29
-            minSdkVersion 22
-        }
-        profesional {
-            dimension = 'default'
-            applicationId = 'com.codevsolution.freemarketsapp.profesional'
-            versionCode = 1
-            versionName = '1.0'
-            targetSdkVersion 29
-            minSdkVersion 22
-        }
-        proveedor {
-            dimension = 'default'
-            applicationId = 'com.codevsolution.freemarketsapp.proveedor'
-            versionCode = 1
-            versionName = '1.0'
-            targetSdkVersion 29
-            minSdkVersion 22
-        }
-    }
 
     android {
         compileOptions {
@@ -64,23 +38,23 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'lib')
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.activity:activity:1.1.0-rc02'
-    implementation 'com.google.android.material:material:1.2.0-alpha01'
+    implementation 'androidx.activity:activity:1.1.0-rc03'
+    implementation 'com.google.android.material:material:1.2.0-alpha03'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha5'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.google.firebase:firebase-firestore:20.1.0'
-    implementation 'com.google.firebase:firebase-database:18.0.0'
-    implementation 'com.google.firebase:firebase-storage:18.1.0'
-    implementation 'com.google.firebase:firebase-auth:18.1.0'
+    implementation 'com.google.firebase:firebase-firestore:21.3.1'
+    implementation 'com.google.firebase:firebase-database:19.2.0'
+    implementation 'com.google.firebase:firebase-storage:19.1.0'
+    implementation 'com.google.firebase:firebase-auth:19.2.0'
     implementation 'com.firebaseui:firebase-ui-database:5.0.0'
     implementation 'com.firebaseui:firebase-ui-firestore:5.0.0'
-    implementation 'com.google.firebase:firebase-messaging:19.0.1'
+    implementation 'com.google.firebase:firebase-messaging:20.1.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     testImplementation 'junit:junit:4.13-beta-2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2-alpha02'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0-alpha02'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-rc01'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2-alpha03'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0-alpha03'
+    implementation 'androidx.recyclerview:recyclerview:1.2.0-alpha01'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.braintreepayments.api:braintree:3.6.0'
     implementation 'com.braintreepayments.api:drop-in:4.2.0'
@@ -94,8 +68,8 @@ dependencies {
     implementation files('lib/chargebee-java-2.7.4.jar')
     implementation files('lib/itextpdf-5.5.13.1.jar')
     implementation 'org.jetbrains:annotations-java5:15.0'
-    implementation 'androidx.camera:camera-core:1.0.0-alpha06'
-    implementation 'androidx.camera:camera-camera2:1.0.0-alpha06'
+    implementation 'androidx.camera:camera-core:1.0.0-alpha08'
+    implementation 'androidx.camera:camera-camera2:1.0.0-alpha08'
 
 
 }

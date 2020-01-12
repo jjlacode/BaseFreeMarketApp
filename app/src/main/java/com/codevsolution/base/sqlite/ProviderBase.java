@@ -19,15 +19,14 @@ import com.codevsolution.base.time.TimeDateUtil;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.PREFERENCIAS;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TIMESTAMP;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.TIMESTAMPDIA;
-import static com.codevsolution.freemarketsapp.sqlite.ContratoPry.FILTRO_CLIENTE;
-import static com.codevsolution.freemarketsapp.sqlite.ContratoPry.FILTRO_FECHA;
-import static com.codevsolution.freemarketsapp.sqlite.ContratoPry.Tablas;
-import static com.codevsolution.freemarketsapp.sqlite.ContratoPry.generarIdTabla;
-import static com.codevsolution.freemarketsapp.sqlite.ContratoPry.obtenerIdTablaDetalle;
-import static com.codevsolution.freemarketsapp.sqlite.ContratoPry.obtenerIdTablaDetalleId;
+import static com.codevsolution.base.sqlite.ContratoBase.FILTRO_CLIENTE;
+import static com.codevsolution.base.sqlite.ContratoBase.FILTRO_FECHA;
+import static com.codevsolution.base.sqlite.ContratoBase.generarIdTabla;
+import static com.codevsolution.base.sqlite.ContratoBase.obtenerIdTablaDetalle;
+import static com.codevsolution.base.sqlite.ContratoBase.obtenerIdTablaDetalleId;
 
 public class ProviderBase extends ContentProvider
-        implements Tablas {
+        implements ContratoSystem.Tablas {
 
     protected ContentResolver resolver;
     protected SQLiteOpenHelper bd;

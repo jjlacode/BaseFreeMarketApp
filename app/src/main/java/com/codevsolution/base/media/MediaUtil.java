@@ -25,7 +25,7 @@ import androidx.loader.content.CursorLoader;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.base.R;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 

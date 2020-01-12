@@ -7,9 +7,9 @@ import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.codevsolution.base.R;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.FirebaseAuth;
-import com.codevsolution.freemarketsapp.R;
 
 /**
  * Screen de login basada en el método email/password de Firebase

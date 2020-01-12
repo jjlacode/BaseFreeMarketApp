@@ -18,7 +18,7 @@ import android.view.animation.Transformation;
 
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
-import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.base.R;
 
 import java.io.Serializable;
 

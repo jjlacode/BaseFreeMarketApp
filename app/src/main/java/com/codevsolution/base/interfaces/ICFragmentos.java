@@ -60,4 +60,6 @@ public interface ICFragmentos {
     void pressBack(Bundle bundle);
 
     TipoConsultaBD setConsultaBd();
+
+    ICVoz setICVoz();
 }

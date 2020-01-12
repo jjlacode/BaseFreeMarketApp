@@ -2,8 +2,8 @@ package com.codevsolution.base.android;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
-import com.codevsolution.freemarketsapp.R;
 
 public abstract class FragmentGridBase extends FragmentRV {
 

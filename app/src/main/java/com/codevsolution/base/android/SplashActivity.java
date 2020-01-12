@@ -9,10 +9,10 @@ import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.login.LoginActivity;
 import com.codevsolution.base.style.Estilos;
-import com.codevsolution.freemarketsapp.R;
 
 public class SplashActivity extends AppCompatActivity {
 

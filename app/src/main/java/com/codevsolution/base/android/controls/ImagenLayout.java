@@ -19,13 +19,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.interfaces.ICFragmentos;
 import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.media.VisorImagen;
 import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.freemarketsapp.R;
 
 import java.io.ByteArrayInputStream;
 
@@ -300,7 +300,7 @@ public class ImagenLayout extends LinearLayoutCompat {
         float ancho = metrics.widthPixels;
         float alto = metrics.heightPixels;
 
-        float size = ((float) (alto * ancho) / (metrics.densityDpi * 300));
+        float size = ((alto * ancho) / (metrics.densityDpi * 300));
         titulo.setTextSize(size);
 
     }
@@ -323,7 +323,7 @@ public class ImagenLayout extends LinearLayoutCompat {
         float ancho = metrics.widthPixels;
         float alto = metrics.heightPixels;
 
-        float size = ((float) (alto * ancho) / (metrics.densityDpi * 300));
+        float size = ((alto * ancho) / (metrics.densityDpi * 300));
         pie.setTextSize(size);
 
     }
@@ -347,7 +347,7 @@ public class ImagenLayout extends LinearLayoutCompat {
         float ancho = metrics.widthPixels;
         float alto = metrics.heightPixels;
 
-        float size = ((float) (alto * ancho) / (metrics.densityDpi * 300));
+        float size = ((alto * ancho) / (metrics.densityDpi * 300));
         titulo.setTextSize(size);
 
     }
@@ -370,7 +370,7 @@ public class ImagenLayout extends LinearLayoutCompat {
         float ancho = metrics.widthPixels;
         float alto = metrics.heightPixels;
 
-        float size = ((float) (alto * ancho) / (metrics.densityDpi * 300));
+        float size = ((alto * ancho) / (metrics.densityDpi * 300));
         pie.setTextSize(size);
 
     }

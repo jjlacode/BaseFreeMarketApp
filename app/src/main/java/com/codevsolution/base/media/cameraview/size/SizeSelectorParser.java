@@ -4,7 +4,7 @@ import android.content.res.TypedArray;
 
 import androidx.annotation.NonNull;
 
-import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.base.R;
 
 import java.util.ArrayList;
 import java.util.List;

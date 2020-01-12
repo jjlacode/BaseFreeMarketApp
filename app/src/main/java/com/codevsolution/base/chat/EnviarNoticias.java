@@ -13,16 +13,16 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 
+import com.codevsolution.base.R;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
 import com.codevsolution.base.javautil.JavaUtil;
+import com.codevsolution.base.logica.Interactor;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.MsgChat;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.time.TimeDateUtil;
-import com.codevsolution.freemarketsapp.R;
-import com.codevsolution.freemarketsapp.logica.Interactor;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
