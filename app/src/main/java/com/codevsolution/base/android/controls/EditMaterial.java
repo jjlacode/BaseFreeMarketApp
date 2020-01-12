@@ -285,6 +285,9 @@ public class EditMaterial extends LinearLayoutCompat {
         }
     }
 
+    public String getHint() {
+        return editText.getHint().toString();
+    }
     public void setFondo(int colorFondo) {
         textInputLayout.setBoxBackgroundColor(colorFondo);
 

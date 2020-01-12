@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -29,13 +30,16 @@ import androidx.fragment.app.FragmentManager;
 
 import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.chat.FragmentChatBase;
+import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.encrypt.EncryptUtil;
 import com.codevsolution.base.interfaces.ICFragmentos;
+import com.codevsolution.base.interfaces.TipoConsultaBD;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.media.ImagenUtil;
 import com.codevsolution.base.services.AutoArranqueChat;
 import com.codevsolution.base.services.AutoArranqueJedi;
+import com.codevsolution.base.sqlite.ConsultaBDBase;
 import com.codevsolution.base.style.Dialogos;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.web.FragmentWebView;
@@ -83,6 +87,9 @@ public class MainActivityBase extends AppCompatActivity
     private boolean isInitTTS;
     private String ttsTmp;
     protected String comandVoz;
+    protected FragmentBase fragment;
+    protected CRUDutil crudUtil;
+    protected ConsultaBDBase consultaBD;
 
 
     @Override
@@ -95,10 +102,8 @@ public class MainActivityBase extends AppCompatActivity
         AutoArranqueJedi.cancelJob(context);
         ttsInit();
         bundle = new Bundle();
-        cambio = AndroidUtil.getSharePreference(context, PERSISTENCIA, CAMBIO, false);
-        if (cambio) {
-            recuperarPersistencia();
-        }
+        crudUtil = new CRUDutil();
+        consultaBD = new ConsultaBDBase(getConsultaBd());
 
         checkPermisos();
 
@@ -127,10 +132,6 @@ public class MainActivityBase extends AppCompatActivity
         fabVoz = findViewById(Estilos.getIdResource(this, "fab2"));
         fabInicio = findViewById(Estilos.getIdResource(this, "fab3"));
 
-        acciones();
-
-        recargarFragment();
-
         drawer = findViewById(Estilos.getIdResource(this, "drawer_layout"));
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, Estilos.getIdString(this, "navigation_drawer_open"), Estilos.getIdString(this, "navigation_drawer_close"));
@@ -139,6 +140,11 @@ public class MainActivityBase extends AppCompatActivity
 
         NavigationView navigationView = findViewById(Estilos.getIdResource(this, "nav_view"));
         imagenPerfil = navigationView.getHeaderView(0).findViewById(Estilos.getIdResource(this, "imgnav"));
+        TextView emailUser = navigationView.getHeaderView(0).findViewById(Estilos.getIdResource(this, "emailnav"));
+        String email = AndroidUtil.getSharePreference(context, USERID, EMAILUSER, NULL);
+        if (email != null && !email.equals(NULL)) {
+            emailUser.setText(email);
+        }
 
         if (idUser != null && !idUser.equals(NULL) && !idUser.isEmpty()) {
 
@@ -148,6 +154,7 @@ public class MainActivityBase extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setItemTextAppearance(Estilos.getIdStyle(this, "TextAppearance_AppCompat_Menu"));
+
 
     }
 
@@ -171,7 +178,7 @@ public class MainActivityBase extends AppCompatActivity
 
     }
 
-    protected void acciones() {
+    protected boolean acciones() {
 
         try {
             InteractorBase.key = EncryptUtil.desencriptarStrAES(AndroidUtil.getSharePreference(context, PREFERENCIAS, PASSOK, NULL), idUser);
@@ -256,10 +263,8 @@ public class MainActivityBase extends AppCompatActivity
         System.out.println("inicio = " + intent.getIntExtra(INICIO, 0));
 
         if (intent.getIntExtra(INICIO, 0) == 0) {
-        } else if (intent.getIntExtra(INICIO, 0) == 1) {
-
             inicio(0);
-
+        } else if (intent.getIntExtra(INICIO, 0) == 1) {
 
             System.out.println("Permiso boot " + CheckPermisos.validarPermisos(this, RECEIVE_BOOT_COMPLETED, 100));
             AutoArranqueChat.scheduleJob(AppActivity.getAppContext());
@@ -272,11 +277,11 @@ public class MainActivityBase extends AppCompatActivity
 
         } else if (intent.getIntExtra(INICIO, 0) == 2) {
 
-            inicio(2);
             setPathAyuda();
             ayudaWeb = pathAyuda + "bienvenida";
             bundle.putString(WEB, ayudaWeb);
             enviarBundleAFragment(bundle, new FragmentWebView());
+            return false;
         }
 
 
@@ -324,6 +329,7 @@ public class MainActivityBase extends AppCompatActivity
                 return true;
             }
         });
+        return true;
     }
 
     protected void onComandVoz(String comandVoz) {
@@ -363,13 +369,19 @@ public class MainActivityBase extends AppCompatActivity
     @Override
     public void onBackPressed() {
 
-        super.onBackPressed();
         enviarBundleAFragment(bundle, getCurrentFragment());
         //recargarFragment();
         DrawerLayout drawer = findViewById(Estilos.getIdResource(this, "drawer_layout"));
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         }
+        if (callbackBackPress != null) {
+            if (!callbackBackPress.onPressBack()) {
+                return;
+            }
+        }
+        super.onBackPressed();
+
     }
 
     protected Fragment getCurrentFragment() {
@@ -393,6 +405,12 @@ public class MainActivityBase extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+        int id = item.getItemId();
+
+        if (id == Estilos.getIdResource(context, "action_help")) {
+            abrirAyuda(NULL);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -600,6 +618,29 @@ public class MainActivityBase extends AppCompatActivity
         recargarFragment();
     }
 
+    @Override
+    public void setFragment(FragmentBase fragment) {
+        this.fragment = fragment;
+
+    }
+
+    @Override
+    public void pressBack(Bundle bundle) {
+        if (bundle != null) {
+            this.bundle = bundle;
+        }
+        onBackPressed();
+    }
+
+    @Override
+    public TipoConsultaBD setConsultaBd() {
+        return getConsultaBd();
+    }
+
+    protected TipoConsultaBD getConsultaBd() {
+        return null;
+    }
+
     protected void recargarFragment() {
 
         boolean vozOn = AndroidUtil.getSharePreference(context, PREFERENCIAS, SERVVOZ, false);
@@ -664,6 +705,14 @@ public class MainActivityBase extends AppCompatActivity
         super.onResume();
 
         ttsInit();
+        if (acciones()) {
+
+            cambio = AndroidUtil.getSharePreference(context, PERSISTENCIA, CAMBIO, false);
+            if (cambio) {
+                recuperarPersistencia();
+            }
+            recargarFragment();
+        }
     }
 
     protected void ttsInit() {
@@ -706,4 +755,15 @@ public class MainActivityBase extends AppCompatActivity
         }
     }
 
+    protected CallbackBackPress callbackBackPress;
+
+    public void setCallbackBackPress(CallbackBackPress callbackBackPress) {
+        this.callbackBackPress = callbackBackPress;
+    }
+
+    public interface CallbackBackPress {
+
+        boolean onPressBack();
+
+    }
 }

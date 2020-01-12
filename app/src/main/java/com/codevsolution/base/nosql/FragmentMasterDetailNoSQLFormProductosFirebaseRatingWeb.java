@@ -39,7 +39,6 @@ import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.chat.FragmentChatBase;
-import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.encrypt.EncryptUtil;
 import com.codevsolution.base.firebase.ContratoFirebase;
 import com.codevsolution.base.firebase.FirebaseUtil;
@@ -496,7 +495,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
             gone(frCabecera);
 
             if (idChat == null) {
-                ListaModeloSQL listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
+                ListaModeloSQL listaChats = crudUtil.setListaModelo(CAMPOS_CHAT);
                 for (ModeloSQL chat : listaChats.getLista()) {
                     if (chat.getString(CHAT_USUARIO).equals(id) && chat.getString(CHAT_TIPO).equals(tipo)) {
                         idChat = chat.getString(CHAT_ID_CHAT);
@@ -504,7 +503,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                 }
             }
 
-            listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, idChat);
+            listaMsgChat = crudUtil.setListaModeloDetalle(CAMPOS_DETCHAT, idChat);
             listaMsgChat = listaMsgChat.sort(DETCHAT_FECHA, DESCENDENTE);
 
             if (listaMsgChat != null && listaMsgChat.sizeLista() > 0) {
@@ -1102,7 +1101,7 @@ public abstract class FragmentMasterDetailNoSQLFormProductosFirebaseRatingWeb
                                 values.put(CHAT_TIMESTAMP, TimeDateUtil.ahora());
                                 values.put(CHAT_TIPO, CHAT);
 
-                                idChat = CRUDutil.crearRegistroId(TABLA_CHAT, values);
+                                idChat = crudUtil.crearRegistroId(TABLA_CHAT, values);
                             } else {
                                 Toast.makeText(contexto, "Debe tener un perfil de " +
                                         perfilUser + " con el nombre o seudonimo como minimo para utilizar el chat", Toast.LENGTH_SHORT).show();

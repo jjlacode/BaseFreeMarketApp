@@ -120,7 +120,7 @@ public class AppActivity extends Application {
     }
 
     public static String getPackage() {
-        return context.getPackageName();
+        return context.getPackageCodePath();
     }
 
     public static String getPackage(Context context) {
@@ -185,6 +185,21 @@ public class AppActivity extends Application {
     }
 
     public static void verWeb(Context contexto, String url, AppCompatActivity activity) {
+
+        if (!url.startsWith("http://") && !url.startsWith("https://"))
+            url = "http://" + url;
+
+        try {
+            Intent myIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            activity.startActivity(myIntent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(contexto, "No application can handle this request."
+                    + " Please install a webbrowser", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+    }
+
+    public static void verWeb(Context contexto, String url, FragmentActivity activity) {
 
         if (!url.startsWith("http://") && !url.startsWith("https://"))
             url = "http://" + url;

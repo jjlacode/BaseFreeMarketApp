@@ -739,7 +739,8 @@ public class ImagenUtil {
                             if (task.isSuccessful()) {
                                 System.out.println("Cargada imagen origen");
 
-                                CRUDutil.actualizarCampo(modeloSQL, CAMPO_RUTAFOTO + sufijoCampo, finalFoto.getAbsolutePath());
+                                CRUDutil cruDutil = new CRUDutil();
+                                cruDutil.actualizarCampo(modeloSQL, CAMPO_RUTAFOTO + sufijoCampo, finalFoto.getAbsolutePath());
                                 System.out.println("Copiada imagen firestore");
 
                             } else {

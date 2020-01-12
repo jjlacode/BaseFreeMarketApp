@@ -4,8 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.logica.Interactor;
+import com.codevsolution.freemarketsapp.sqlite.ContratoPry;
 
 public abstract class ReceiverBase extends BroadcastReceiver implements Interactor.ConstantesPry, ContratoPry.Tablas {
 

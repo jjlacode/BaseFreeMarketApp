@@ -8,15 +8,18 @@ import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.models.ModeloSQL;
-import com.codevsolution.base.sqlite.ConsultaBD;
+import com.codevsolution.base.sqlite.ConsultaBDBase;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.freemarketsapp.MainActivity;
 import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.freemarketsapp.sqlite.ConsultaBD;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class ChatReceiver extends ReceiverBase implements InteractorBase.Constantes,
         JavaUtil.Constantes, ContratoSystem.Tablas {
+    ConsultaBDBase consultaBD = new ConsultaBDBase(new ConsultaBD());
+
 
     @Override
     public void onReceiver(Context context, Intent intent) {
@@ -26,7 +29,7 @@ public class ChatReceiver extends ReceiverBase implements InteractorBase.Constan
         if (intent.getAction() != null && intent.getExtras() != null && intent.getAction().equals(ACCION_AVISOMSGCHAT)) {
 
             ModeloSQL detChat = (ModeloSQL) intent.getExtras().get(CHAT);
-            ModeloSQL chat = ConsultaBD.queryObject(CAMPOS_CHAT, detChat.getString(DETCHAT_ID_CHAT));
+            ModeloSQL chat = consultaBD.queryObject(CAMPOS_CHAT, detChat.getString(DETCHAT_ID_CHAT));
 
             String contenido = chat.getString(CHAT_NOMBRE) + " : \n" + detChat.getString(DETCHAT_MENSAJE);
 
@@ -55,8 +58,8 @@ public class ChatReceiver extends ReceiverBase implements InteractorBase.Constan
 
                 }
                 ContentValues valores = new ContentValues();
-                ConsultaBD.putDato(valores, DETCHAT_NOTIFICADO, 1);
-                ConsultaBD.updateRegistroDetalle(TABLA_DETCHAT, detChat.getString(DETCHAT_ID_CHAT),
+                consultaBD.putDato(valores, DETCHAT_NOTIFICADO, 1);
+                consultaBD.updateRegistroDetalle(TABLA_DETCHAT, detChat.getString(DETCHAT_ID_CHAT),
                         detChat.getInt(DETCHAT_SECUENCIA), valores);
             }
         }

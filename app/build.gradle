@@ -27,21 +27,25 @@ android {
     }
     flavorDimensions 'default'
     productFlavors {
-        cli {
+        cliente {
             dimension = 'default'
-            applicationId = 'com.codevsolution.freemarketsapp.cli'
+            applicationId = 'com.codevsolution.freemarketsapp.cliente'
             versionCode = 1
             versionName = '1.0'
             targetSdkVersion 29
             minSdkVersion 22
         }
-        pro {
+        profesional {
             dimension = 'default'
-            applicationId = 'com.codevsolution.freemarketsapp.pro'
+            applicationId = 'com.codevsolution.freemarketsapp.profesional'
             versionCode = 1
             versionName = '1.0'
             targetSdkVersion 29
             minSdkVersion 22
+        }
+        proveedor {
+            dimension = 'default'
+            applicationId = 'com.codevsolution.freemarketsapp.proveedor'
         }
     }
 

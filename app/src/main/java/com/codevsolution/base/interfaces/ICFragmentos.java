@@ -7,6 +7,8 @@ import android.view.View;
 
 import androidx.fragment.app.Fragment;
 
+import com.codevsolution.base.android.FragmentBase;
+
 public interface ICFragmentos {
 
     void enviarBundleAFragment(Bundle bundle, Fragment myFragment);
@@ -52,4 +54,10 @@ public interface ICFragmentos {
     TextToSpeech getTTs();
 
     void onVoz(Bundle bundle);
+
+    void setFragment(FragmentBase fragment);
+
+    void pressBack(Bundle bundle);
+
+    TipoConsultaBD setConsultaBd();
 }

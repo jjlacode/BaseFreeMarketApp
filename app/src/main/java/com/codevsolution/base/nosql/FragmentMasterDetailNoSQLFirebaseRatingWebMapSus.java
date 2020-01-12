@@ -27,7 +27,6 @@ import com.codevsolution.base.android.controls.EditMaterial;
 import com.codevsolution.base.android.controls.LockableScrollView;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.chat.EnviarNoticias;
-import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.firebase.ContratoFirebase;
 import com.codevsolution.base.firebase.FirebaseUtil;
 import com.codevsolution.base.javautil.JavaUtil;
@@ -658,7 +657,7 @@ public abstract class FragmentMasterDetailNoSQLFirebaseRatingWebMapSus extends F
 
                     bundle = new Bundle();
 
-                    ListaModeloSQL listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
+                    ListaModeloSQL listaChats = crudUtil.setListaModelo(CAMPOS_CHAT);
                     for (ModeloSQL chat : listaChats.getLista()) {
                         if (chat.getString(CHAT_TIPO).equals(tipo)) {
                             putBundle(CAMPO_ID, chat.getString(CHAT_ID_CHAT));

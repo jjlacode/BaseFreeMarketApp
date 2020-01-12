@@ -94,6 +94,6 @@
         app:rippleColor="@color/colorAccent"
         android:tint="@color/colorPrimary"
         app:backgroundTint="@color/colorPrimary"
-        app:srcCompat="@drawable/ic_inicio_black_24dp" />
+        app:srcCompat="@drawable/home" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

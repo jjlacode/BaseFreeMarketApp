@@ -20,9 +20,9 @@ public interface LoginContract {
 
         void showRegError(String msg);
 
-        void accessApp();
+        void accessApp() throws ClassNotFoundException;
 
-        void showBienvenida();
+        void showBienvenida() throws ClassNotFoundException;
 
         void showGooglePlayServicesDialog(int errorCode);
 

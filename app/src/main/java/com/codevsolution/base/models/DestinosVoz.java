@@ -2,8 +2,6 @@ package com.codevsolution.base.models;
 
 import androidx.fragment.app.Fragment;
 
-import com.codevsolution.base.crud.CRUDutil;
-
 public class DestinosVoz {
 
     String destino;
@@ -38,7 +36,7 @@ public class DestinosVoz {
         this.fragment = fragment;
         this.actual = actual;
         this.tabla = tabla;
-        listaModeloSQL = CRUDutil.setListaModeloSQL(tabla);
+        listaModeloSQL = new ListaModeloSQL(tabla);
     }
 
     public DestinosVoz(String destino, Fragment fragment, String actual, boolean nuevo) {
@@ -54,7 +52,7 @@ public class DestinosVoz {
         this.actual = actual;
         this.tabla = tabla;
         this.nuevo = nuevo;
-        listaModeloSQL = CRUDutil.setListaModeloSQL(tabla);
+        listaModeloSQL = new ListaModeloSQL(tabla);
     }
 
     public String getDestino() {

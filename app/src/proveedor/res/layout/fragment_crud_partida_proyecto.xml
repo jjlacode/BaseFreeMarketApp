@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.FragmentCRUDPartidaProyecto">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.codevsolution.base.android.controls.ImagenLayout
+                android:id="@+id/imgudpartida"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_npartidabase"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/boton_redondo_primary"
+                android:text="@string/modificar_partidabase"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/texto" />
+
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etnomudpartida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:activo="false"
+                app:hint_text="@string/nombre" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etdescripcionUDpartida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint_text="@string/descripcion_tipo_cliente"
+                app:activo="false"
+                app:tipo_dato="TEXTO|MULTI" />
+
+            <com.codevsolution.base.android.controls.EditMaterial
+                android:id="@+id/etordenUDpartida"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:hint_text="@string/orden_ejecucion"
+                app:tipo_dato="NUMERO" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imgretudpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:layout_weight="1"
+                    android:src="@drawable/alert_box_v" />
+
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/etcantidadUDpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:hint_text="@string/cantidad"
+                    app:tipo_dato="NUMERO|DECIMAL" />
+
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/ettiempoUDpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:activo="false"
+                    app:hint_text="@string/tiempo"
+                    app:tipo_dato="NUMERO|DECIMAL" />
+
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/etprecioUDpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:activo="false"
+                    app:hint_text="@string/importe"
+                    app:tipo_dato="TEXTO" />
+
+                <com.codevsolution.base.android.controls.EditMaterial
+                    android:id="@+id/etcompletadaUDpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:gravedad="fin"
+                    app:hint_text="@string/completada"
+                    app:tipo_dato="NUMERO" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progressBarUDpartida"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvdetalleUDpartida"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>

@@ -26,9 +26,10 @@ import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.module.BaseModule;
-import com.codevsolution.base.sqlite.ConsultaBD;
+import com.codevsolution.base.sqlite.ConsultaBDBase;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.style.Estilos;
+import com.codevsolution.freemarketsapp.sqlite.ConsultaBD;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -71,6 +72,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
     private String id;
     private String tipo;
     public final int LOCATION_REQUEST_CODE = 333;
+    public final int LOCATION_FINE_REQUEST_CODE = 334;
     private OnMarcadorEvent onMarcadorEventListener;
     private ListaModeloSQL listaZonasIdOldDel;
     private ListaModeloSQL listaZonasIdOldAdd;
@@ -80,10 +82,12 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
     private AppCompatActivity activityBase;
     private ToggleButton verMapaCab;
     private boolean radioManual;
+    private CRUDutil crudUtil;
 
     public MapZona(Fragment frParent, ViewGroup viewGroup, AppCompatActivity activityBase) {
         super(viewGroup, frParent.getContext(), frParent);
         this.activityBase = activityBase;
+        crudUtil = new CRUDutil();
         init();
         acciones();
     }
@@ -252,7 +256,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
         if (listaMarcadores != null) {
             for (ModeloSQL marcador : listaMarcadores.getLista()) {
-                listaZonasIdOldDel.add(CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR)).getLista());
+                listaZonasIdOldDel.add(crudUtil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR)).getLista());
             }
         }
     }
@@ -264,7 +268,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
         if (listaMarcadores != null) {
 
             for (ModeloSQL marcador : listaMarcadores.getLista()) {
-                listaZonasIdOldAdd.add(CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR)).getLista());
+                listaZonasIdOldAdd.add(crudUtil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR)).getLista());
             }
         }
 
@@ -277,7 +281,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
     private void setMap() {
 
         MapBase.FragmentMap mMap = new MapBase.FragmentMap();
-        boolean permiso = CheckPermisos.validarPermisos(fragmentParent.getActivity(), ACCESS_FINE_LOCATION, LOCATION_REQUEST_CODE) ||
+        boolean permiso = CheckPermisos.validarPermisos(fragmentParent.getActivity(), ACCESS_FINE_LOCATION, LOCATION_FINE_REQUEST_CODE) ||
                 CheckPermisos.validarPermisos(fragmentParent.getActivity(), ACCESS_COARSE_LOCATION, LOCATION_REQUEST_CODE);
 
         if (permiso) {
@@ -292,172 +296,173 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
     public void setOnReadyMap(final OnReadyMap onReadyMapListener) {
 
-        mapa.setOnReadyMap(new MapBase.OnReadyMap() {
-            @Override
-            public void onReady(final GoogleMap googleMap) {
+        if (mapa != null) {
+            mapa.setOnReadyMap(new MapBase.OnReadyMap() {
+                @Override
+                public void onReady(final GoogleMap googleMap) {
 
-                final GoogleMap gMap = googleMap;
+                    final GoogleMap gMap = googleMap;
 
-                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                    @Override
-                    public void onMapClick(LatLng latLng) {
+                    googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                        @Override
+                        public void onMapClick(LatLng latLng) {
 
-                        ((FragmentBase) fragmentParent).setActivoFrameAnimationCuerpo(true);
-                        ((FragmentBase) fragmentParent).setScrollingDetalleEnable(true);
-                        if (viewGroupParent instanceof LockableScrollView) {
-                            ((LockableScrollView) viewGroupParent).setScrollingEnabled(true);
-                        }
-
-                        ArrayList<Marker> listaMarker = mapa.getListaMarkers();
-                        if (onReadyMapListener != null) {
-                            onReadyMapListener.onMapClickListener(listaMarker);
-                        }
-                        for (Marker marker : listaMarker) {
-                            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                        }
-                        zona.setText("");
-
-                    }
-                });
-
-                googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-                    @Override
-                    public void onMapLongClick(LatLng latLng) {
-
-                        ((FragmentBase) fragmentParent).setActivoFrameAnimationCuerpo(false);
-                        ((FragmentBase) fragmentParent).setScrollingDetalleEnable(false);
-                        if (viewGroupParent instanceof LockableScrollView) {
-                            ((LockableScrollView) viewGroupParent).setScrollingEnabled(false);
-                        }
-                        ArrayList<Marker> listaMarker = mapa.getListaMarkers();
-                        if (onReadyMapListener != null) {
-                            onReadyMapListener.onMapLongClickListener(listaMarker);
-                        }
-                        for (Marker marker : listaMarker) {
-                            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                        }
-                    }
-                });
-                mapa.setMyLocation(true);
-                googleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-                    @Override
-                    public boolean onMyLocationButtonClick() {
-
-                        clickLocation = true;
-
-                        gMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
-                            @Override
-                            public void onCameraIdle() {
-
-                                if (clickLocation) {
-                                    latUser = (long) (gMap.getCameraPosition().target.latitude * 100000);
-                                    lonUser = (long) (gMap.getCameraPosition().target.longitude * 100000);
-                                    Address paisUser = (LocalizacionUtils.getAddressGeoCoord(context, latUser / 100000,
-                                            lonUser / 100000));
-                                    if (onReadyMapListener != null) {
-                                        onReadyMapListener.onMyLocationClickListener(latUser, lonUser, addressToList(paisUser));
-                                    }
-                                    clickLocation = false;
-                                }
-
+                            ((FragmentBase) fragmentParent).setActivoFrameAnimationCuerpo(true);
+                            ((FragmentBase) fragmentParent).setScrollingDetalleEnable(true);
+                            if (viewGroupParent instanceof LockableScrollView) {
+                                ((LockableScrollView) viewGroupParent).setScrollingEnabled(true);
                             }
-                        });
 
-                        gMap.animateCamera(CameraUpdateFactory.zoomTo(5));
+                            ArrayList<Marker> listaMarker = mapa.getListaMarkers();
+                            if (onReadyMapListener != null) {
+                                onReadyMapListener.onMapClickListener(listaMarker);
+                            }
+                            for (Marker marker : listaMarker) {
+                                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                            }
+                            zona.setText("");
 
-                        return false;
-                    }
-                });
-
-                googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
-
-                    @Override
-                    public void onMarkerDragStart(Marker marker) {
-
-                        ((FragmentBase) fragmentParent).setActivoFrameAnimationCuerpo(false);
-                        ((FragmentBase) fragmentParent).setScrollingDetalleEnable(false);
-                        if (viewGroupParent instanceof LockableScrollView) {
-                            ((LockableScrollView) viewGroupParent).setScrollingEnabled(false);
                         }
+                    });
 
-                        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                        if (onReadyMapListener != null) {
-                            onReadyMapListener.onMarkerDragStart();
+                    googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+                        @Override
+                        public void onMapLongClick(LatLng latLng) {
+
+                            ((FragmentBase) fragmentParent).setActivoFrameAnimationCuerpo(false);
+                            ((FragmentBase) fragmentParent).setScrollingDetalleEnable(false);
+                            if (viewGroupParent instanceof LockableScrollView) {
+                                ((LockableScrollView) viewGroupParent).setScrollingEnabled(false);
+                            }
+                            ArrayList<Marker> listaMarker = mapa.getListaMarkers();
+                            if (onReadyMapListener != null) {
+                                onReadyMapListener.onMapLongClickListener(listaMarker);
+                            }
+                            for (Marker marker : listaMarker) {
+                                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                            }
                         }
-                    }
+                    });
+                    mapa.setMyLocation(true);
+                    googleMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+                        @Override
+                        public boolean onMyLocationButtonClick() {
 
-                    @Override
-                    public void onMarkerDrag(Marker marker) {
+                            clickLocation = true;
 
-                    }
+                            gMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+                                @Override
+                                public void onCameraIdle() {
 
-                    @Override
-                    public void onMarkerDragEnd(Marker marker) {
+                                    if (clickLocation) {
+                                        latUser = (long) (gMap.getCameraPosition().target.latitude * 100000);
+                                        lonUser = (long) (gMap.getCameraPosition().target.longitude * 100000);
+                                        Address paisUser = (LocalizacionUtils.getAddressGeoCoord(context, latUser / 100000,
+                                                lonUser / 100000));
+                                        if (onReadyMapListener != null) {
+                                            onReadyMapListener.onMyLocationClickListener(latUser, lonUser, addressToList(paisUser));
+                                        }
+                                        clickLocation = false;
+                                    }
 
+                                }
+                            });
 
-                        marcador = setMarcador(marker);
-                        long latitud = (long) (marker.getPosition().latitude * 100000);
-                        long longitud = (long) (marker.getPosition().longitude * 100000);
-                        CRUDutil.actualizarCampo(marcador, MARCADOR_LATITUD, latitud);
-                        CRUDutil.actualizarCampo(marcador, MARCADOR_LONGITUD, longitud);
-                        marcador = CRUDutil.updateModelo(marcador);
-                        setLugarZona(marcador);
-                        ListaModeloSQL listaZonasDel = zonasDel();
-                        ListaModeloSQL listaZonasAdd = zonasAdd();
-                        Address paisUser = (LocalizacionUtils.getAddressGeoCoord(context, latitud / 100000,
-                                longitud / 100000));
-                        if (onReadyMapListener != null) {
-                            onReadyMapListener.onMarkerDragEnd(listaZonasDel, listaZonasAdd, addressToList(paisUser));
-                        }
-
-                        ((FragmentBase) fragmentParent).setActivoFrameAnimationCuerpo(true);
-                        ((FragmentBase) fragmentParent).setScrollingDetalleEnable(true);
-                        if (viewGroupParent instanceof LockableScrollView) {
-                            ((LockableScrollView) viewGroupParent).setScrollingEnabled(true);
-                        }
-
-                        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-                    }
-                });
-
-                googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(Marker marker) {
-
-                        if (marcador == null) {
-
-                            marcador = setMarcador(marker);
-                            setAlcanceRadioGroup(marcador);
-                            //setZonasMarcador(marcador);
-                            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                            gMap.animateCamera(CameraUpdateFactory.zoomTo(5));
 
                             return false;
+                        }
+                    });
 
-                        } else {
+                    googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
 
-                            System.out.println("marker.getId() = " + marker.getId());
-                            System.out.println("marcador.getLong(MARCADOR_ID_MARK) = " + marcador.getString(MARCADOR_ID_MARK));
-                            if (!marker.getId().equals(marcador.getString(MARCADOR_ID_MARK))) {
-                                Marker mark = getMarker(marcador);
-                                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-                                if (mark != null) {
-                                    mark.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                                }
+                        @Override
+                        public void onMarkerDragStart(Marker marker) {
+
+                            ((FragmentBase) fragmentParent).setActivoFrameAnimationCuerpo(false);
+                            ((FragmentBase) fragmentParent).setScrollingDetalleEnable(false);
+                            if (viewGroupParent instanceof LockableScrollView) {
+                                ((LockableScrollView) viewGroupParent).setScrollingEnabled(false);
+                            }
+
+                            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                            if (onReadyMapListener != null) {
+                                onReadyMapListener.onMarkerDragStart();
+                            }
+                        }
+
+                        @Override
+                        public void onMarkerDrag(Marker marker) {
+
+                        }
+
+                        @Override
+                        public void onMarkerDragEnd(Marker marker) {
+
+
+                            marcador = setMarcador(marker);
+                            long latitud = (long) (marker.getPosition().latitude * 100000);
+                            long longitud = (long) (marker.getPosition().longitude * 100000);
+                            crudUtil.actualizarCampo(marcador, MARCADOR_LATITUD, latitud);
+                            crudUtil.actualizarCampo(marcador, MARCADOR_LONGITUD, longitud);
+                            marcador = crudUtil.updateModelo(marcador);
+                            setLugarZona(marcador);
+                            ListaModeloSQL listaZonasDel = zonasDel();
+                            ListaModeloSQL listaZonasAdd = zonasAdd();
+                            Address paisUser = (LocalizacionUtils.getAddressGeoCoord(context, latitud / 100000,
+                                    longitud / 100000));
+                            if (onReadyMapListener != null) {
+                                onReadyMapListener.onMarkerDragEnd(listaZonasDel, listaZonasAdd, addressToList(paisUser));
+                            }
+
+                            ((FragmentBase) fragmentParent).setActivoFrameAnimationCuerpo(true);
+                            ((FragmentBase) fragmentParent).setScrollingDetalleEnable(true);
+                            if (viewGroupParent instanceof LockableScrollView) {
+                                ((LockableScrollView) viewGroupParent).setScrollingEnabled(true);
+                            }
+
+                            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                        }
+                    });
+
+                    googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                        @Override
+                        public boolean onMarkerClick(Marker marker) {
+
+                            if (marcador == null) {
+
                                 marcador = setMarcador(marker);
                                 setAlcanceRadioGroup(marcador);
                                 //setZonasMarcador(marcador);
+                                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
 
                                 return false;
 
+                            } else {
+
+                                System.out.println("marker.getId() = " + marker.getId());
+                                System.out.println("marcador.getLong(MARCADOR_ID_MARK) = " + marcador.getString(MARCADOR_ID_MARK));
+                                if (!marker.getId().equals(marcador.getString(MARCADOR_ID_MARK))) {
+                                    Marker mark = getMarker(marcador);
+                                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                                    if (mark != null) {
+                                        mark.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                                    }
+                                    marcador = setMarcador(marker);
+                                    setAlcanceRadioGroup(marcador);
+                                    //setZonasMarcador(marcador);
+
+                                    return false;
+
+                                }
                             }
+                            return false;
                         }
-                        return false;
-                    }
-                });
+                    });
 
-            }
-        });
-
+                }
+            });
+        }
 
     }
 
@@ -468,7 +473,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
         for (ModeloSQL marcador : listaMarcadores.getLista()) {
 
-            ListaModeloSQL listaZonasMarcador = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR));
+            ListaModeloSQL listaZonasMarcador = crudUtil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR));
             for (ModeloSQL zona : listaZonasMarcador.getLista()) {
                 listaZonasId.addModelo(zona);
             }
@@ -511,7 +516,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
         for (ModeloSQL marcador : listaMarcadores.getLista()) {
 
-            ListaModeloSQL listaZonasMarcador = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR));
+            ListaModeloSQL listaZonasMarcador = crudUtil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR));
             for (ModeloSQL zona : listaZonasMarcador.getLista()) {
                 listaZonasId.addModelo(zona);
             }
@@ -705,7 +710,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
     protected boolean comprobarZonaLista(String s) {
 
-        ListaModeloSQL listaZonas = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, id);
+        ListaModeloSQL listaZonas = crudUtil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, id);
         for (ModeloSQL zona : listaZonas.getLista()) {
             if (s.equals(zona.getString(ZONA_NOMBRE))) {
                 return false;
@@ -718,7 +723,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
     protected String setZonasMarcador(ModeloSQL marcador) {
 
         String id = marcador.getString(MARCADOR_ID_MARCADOR);
-        ListaModeloSQL listaZonas = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, id);
+        ListaModeloSQL listaZonas = crudUtil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, id);
         StringBuilder textoZona = new StringBuilder();
         for (ModeloSQL zona : listaZonas.getLista()) {
             textoZona.append(zona.getString(ZONA_NOMBRE)).append(", ");
@@ -729,9 +734,9 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
     protected void borrarZonasMarcador(ModeloSQL marcador) {
 
-        ListaModeloSQL listaZonasMarcador = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR));
+        ListaModeloSQL listaZonasMarcador = crudUtil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR));
         for (ModeloSQL zona : listaZonasMarcador.getLista()) {
-            CRUDutil.borrarRegistro(TABLA_ZONA, zona.getString(ZONA_ID_ZONA));
+            crudUtil.borrarRegistro(TABLA_ZONA, zona.getString(ZONA_ID_ZONA));
         }
     }
 
@@ -772,7 +777,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
                         zonaList.add(MUNDIAL);
                     }
                     //zona.setText(MUNDIAL);
-                    //CRUDutil.actualizarCampo(marcador, MARCADOR_ALCANCE, alcance);
+                    //crudUtil.actualizarCampo(marcador, MARCADOR_ALCANCE, alcance);
                     //updateListaMarcadores(marcador);
                     //return;
 
@@ -821,18 +826,19 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
             for (String s : zonaList) {
                 textoZona.append(s).append(", ");
                 if (comprobarZonaLista(s)) {
+                    ConsultaBDBase consultaBD = new ConsultaBDBase(new ConsultaBD());
                     ContentValues values = new ContentValues();
-                    ConsultaBD.putDato(values, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR));
-                    ConsultaBD.putDato(values, ZONA_NOMBRE, s);
-                    ConsultaBD.putDato(values, ZONA_ALCANCE, alcanceTxt);
-                    CRUDutil.crearRegistro(TABLA_ZONA, values);
+                    consultaBD.putDato(values, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR));
+                    consultaBD.putDato(values, ZONA_NOMBRE, s);
+                    consultaBD.putDato(values, ZONA_ALCANCE, alcanceTxt);
+                    crudUtil.crearRegistro(TABLA_ZONA, values);
 
                 }
 
             }
             zona.setText(textoZona.toString());
-            CRUDutil.actualizarCampo(marcador, MARCADOR_ALCANCE, alcance);
-            marcador = CRUDutil.updateModelo(marcador);
+            crudUtil.actualizarCampo(marcador, MARCADOR_ALCANCE, alcance);
+            marcador = crudUtil.updateModelo(marcador);
             updateListaMarcadores(marcador);
             System.out.println("alcance = " + alcance);
             System.out.println("marcador.getInt(MARCADOR_ALCANCE) = " + marcador.getInt(MARCADOR_ALCANCE));
@@ -928,17 +934,18 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
     public ModeloSQL crearMarcador(String tipo, String id, long latitud, long longitud) {
 
+        ConsultaBDBase consultaBD = new ConsultaBDBase(new ConsultaBD());
         ContentValues values = new ContentValues();
-        ConsultaBD.putDato(values, MARCADOR_TIPO, tipo);
-        ConsultaBD.putDato(values, MARCADOR_ID_REL, id);
-        ConsultaBD.putDato(values, MARCADOR_LATITUD, latitud);
-        ConsultaBD.putDato(values, MARCADOR_LONGITUD, longitud);
-        String idMarc = CRUDutil.crearRegistroId(TABLA_MARCADOR, values);
+        consultaBD.putDato(values, MARCADOR_TIPO, tipo);
+        consultaBD.putDato(values, MARCADOR_ID_REL, id);
+        consultaBD.putDato(values, MARCADOR_LATITUD, latitud);
+        consultaBD.putDato(values, MARCADOR_LONGITUD, longitud);
+        String idMarc = crudUtil.crearRegistroId(TABLA_MARCADOR, values);
         Marker mark = mapa.crearMarcadorMap(((double) (latitud) / 100000), ((double) (longitud) / 100000), 5, "", "", true, idMarc);
         mark.setTag(idMarc);
-        marcador = CRUDutil.updateModelo(CAMPOS_MARCADOR, idMarc);
-        CRUDutil.actualizarCampo(marcador, MARCADOR_ID_MARK, mark.getId());
-        marcador = CRUDutil.updateModelo(CAMPOS_MARCADOR, idMarc);
+        marcador = crudUtil.updateModelo(CAMPOS_MARCADOR, idMarc);
+        crudUtil.actualizarCampo(marcador, MARCADOR_ID_MARK, mark.getId());
+        marcador = crudUtil.updateModelo(CAMPOS_MARCADOR, idMarc);
         if (listaMarcadores == null) {
             listaMarcadores = new ListaModeloSQL();
         }
@@ -981,11 +988,11 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
         for (ModeloSQL marcadore : listaMarcadores.getLista()) {
             if (marcadore.getString(MARCADOR_ID_MARCADOR).equals(marcador.getString(MARCADOR_ID_MARCADOR))) {
                 listaMarcadores.getLista().remove(marcadore);
-                ListaModeloSQL listaZonasMarcador = CRUDutil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR));
+                ListaModeloSQL listaZonasMarcador = crudUtil.setListaModelo(CAMPOS_ZONA, ZONA_ID_REL, marcador.getString(MARCADOR_ID_MARCADOR));
                 for (ModeloSQL zonaMarcador : listaZonasMarcador.getLista()) {
-                    CRUDutil.borrarRegistro(TABLA_ZONA, zonaMarcador.getString(ZONA_ID_ZONA));
+                    crudUtil.borrarRegistro(TABLA_ZONA, zonaMarcador.getString(ZONA_ID_ZONA));
                 }
-                CRUDutil.borrarRegistro(TABLA_MARCADOR, marcador.getString(MARCADOR_ID_MARCADOR));
+                crudUtil.borrarRegistro(TABLA_MARCADOR, marcador.getString(MARCADOR_ID_MARCADOR));
                 break;
             }
         }
@@ -1001,7 +1008,7 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
     private boolean setListaMarcadores() {
 
         if (id != null) {
-            listaMarcadores = CRUDutil.setListaModelo(CAMPOS_MARCADOR, MARCADOR_ID_REL, id);
+            listaMarcadores = crudUtil.setListaModelo(CAMPOS_MARCADOR, MARCADOR_ID_REL, id);
             return listaMarcadores != null;
         }
 
@@ -1027,8 +1034,8 @@ public class MapZona extends BaseModule implements ContratoSystem.Tablas {
 
                     if (marker != null) {
 
-                        CRUDutil.actualizarCampo(marc, MARCADOR_ID_MARK, marker.getId());
-                        marc = CRUDutil.updateModelo(marc);
+                        crudUtil.actualizarCampo(marc, MARCADOR_ID_MARK, marker.getId());
+                        marc = crudUtil.updateModelo(marc);
                         updateListaMarcadores(marc);
                         setAlcanceRadioGroup(marc);
                         marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));

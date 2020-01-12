@@ -16,11 +16,9 @@ import androidx.core.widget.NestedScrollView;
 import com.codevsolution.base.adapter.BaseViewHolder;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
-import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.MsgChat;
-import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
@@ -82,7 +80,7 @@ public class EnviarNoticias extends FragmentChatBase implements
 
         activityBase.toolbar.setSubtitle(modeloSQL.getString(CHAT_NOMBRE) + " - " + getString(R.string.envio_noticias));
         gone(btnback);
-        listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, id);
+        listaMsgChat = crudUtil.setListaModeloDetalle(CAMPOS_DETCHAT, id);
         listaMsgChat = listaMsgChat.sort(DETCHAT_FECHA, DESCENDENTE);
         RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
         rvMsgChat.setAdapter(adaptadorDetChat);
@@ -123,17 +121,17 @@ public class EnviarNoticias extends FragmentChatBase implements
         if (msgEnv.getText() != null && !msgEnv.getText().toString().equals("")) {
 
             valores = new ContentValues();
-            ConsultaBD.putDato(valores, DETCHAT_MENSAJE, msgEnv.getText().toString());
-            ConsultaBD.putDato(valores, DETCHAT_URL, url.getText().toString());
-            ConsultaBD.putDato(valores, DETCHAT_TIPO, ENVIADO);
-            ConsultaBD.putDato(valores, DETCHAT_FECHA, TimeDateUtil.ahora());
-            ConsultaBD.putDato(valores, DETCHAT_CREATE, TimeDateUtil.ahora());
-            ConsultaBD.putDato(valores, DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
-            ConsultaBD.putDato(valores, DETCHAT_NOTIFICADO, 1);
-            ConsultaBD.putDato(valores, DETCHAT_ID_CHAT, id);
-            secuencia = CRUDutil.crearRegistroSec(CAMPOS_DETCHAT, id, valores);
+            consultaBD.putDato(valores, DETCHAT_MENSAJE, msgEnv.getText().toString());
+            consultaBD.putDato(valores, DETCHAT_URL, url.getText().toString());
+            consultaBD.putDato(valores, DETCHAT_TIPO, ENVIADO);
+            consultaBD.putDato(valores, DETCHAT_FECHA, TimeDateUtil.ahora());
+            consultaBD.putDato(valores, DETCHAT_CREATE, TimeDateUtil.ahora());
+            consultaBD.putDato(valores, DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
+            consultaBD.putDato(valores, DETCHAT_NOTIFICADO, 1);
+            consultaBD.putDato(valores, DETCHAT_ID_CHAT, id);
+            secuencia = crearRegistroSec(CAMPOS_DETCHAT, id, valores);
 
-            ModeloSQL chat = CRUDutil.updateModelo(campos, id);
+            ModeloSQL chat = updateModelo(campos, id);
 
             MsgChat msgChat = new MsgChat();
             msgChat.setMensaje(msgEnv.getText().toString());
@@ -157,9 +155,9 @@ public class EnviarNoticias extends FragmentChatBase implements
 
             valores = new ContentValues();
             valores.put(DETCHAT_MENSAJE, msg.toString());
-            CRUDutil.actualizarRegistro(TABLA_DETCHAT, id, secuencia, valores);
+            actualizarRegistro(TABLA_DETCHAT, id, secuencia, valores);
             msgEnv.setText("");
-            listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, id);
+            listaMsgChat = setListaModeloDetalle(CAMPOS_DETCHAT, id);
             listaMsgChat = listaMsgChat.sort(DETCHAT_FECHA, DESCENDENTE);
             RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
             rvMsgChat.setAdapter(adaptadorDetChat);

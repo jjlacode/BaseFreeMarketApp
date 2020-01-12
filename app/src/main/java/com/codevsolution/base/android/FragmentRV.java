@@ -110,6 +110,13 @@ public abstract class FragmentRV extends FragmentBase {
     }
 
     @Override
+    protected void cargarBundle() {
+        super.cargarBundle();
+
+        enviarAct();
+    }
+
+    @Override
     protected void setLayoutExtra() {
         super.setLayoutExtra();
 

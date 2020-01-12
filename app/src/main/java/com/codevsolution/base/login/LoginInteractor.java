@@ -1,21 +1,14 @@
 package com.codevsolution.base.login;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Patterns;
 
 import androidx.annotation.NonNull;
 
 import com.codevsolution.base.android.AndroidUtil;
-import com.codevsolution.base.android.AppActivity;
-import com.codevsolution.base.encrypt.EncryptUtil;
-import com.codevsolution.base.models.ModeloSQL;
-import com.codevsolution.base.sqlite.ConsultaBD;
-import com.codevsolution.base.sqlite.SQLiteUtil;
 import com.codevsolution.freemarketsapp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -26,13 +19,10 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.UUID;
 
+import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.SYSTEM;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.USERIDCODE;
-import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.CAMPOS_USERS;
-import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.TABLA_USERS;
-import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.USERS_USERID;
-import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.USERS_USERIDCODE;
 
 /**
  * Interactor del login
@@ -158,7 +148,7 @@ public class LoginInteractor {
                         } else {
 
                             setIdUserCode(task.getResult().getUser().getUid());
-                            callback.onRegSuccess();
+                            callback.onAuthSuccess();
 
                         }
                     }
@@ -174,7 +164,7 @@ public class LoginInteractor {
                 String uid = null;
                 if (task.isSuccessful()) {
 
-                    String id = setIdUserCode(task.getResult().getUser().getUid());
+                    setIdUserCode(task.getResult().getUser().getUid());
                     callback.onRegSuccess();
 
                 } else {
@@ -185,34 +175,25 @@ public class LoginInteractor {
         });
     }
 
-    protected String setIdUserCode(String idUser) {
+    private void setIdUserCode(String userID) {
 
-        String id = null;
-        String pathDb = Environment.getDataDirectory().getPath() + "/data/"
-                + AppActivity.getPackage(mContext) + "/databases/";
+        String id = AndroidUtil.getSharePreferenceMaster(mContext, SYSTEM, userID, NULL);
 
-        String BASEDATOS = SYSTEM + idUser + ".db";
+        if (id != null && !id.equals(NULL)) {
 
-        if (!SQLiteUtil.checkDataBase(pathDb + BASEDATOS)) {
-
-            id = UUID.randomUUID().toString();
             AndroidUtil.setSharePreference(mContext, USERID, USERIDCODE, id);
             AndroidUtil.setSharePreference(mContext, USERID, USERID, id);
 
-            ContentValues values = new ContentValues();
-            ConsultaBD.putDato(values, USERS_USERID, idUser);
-            ConsultaBD.putDato(values, USERS_USERIDCODE, id);
-            ConsultaBD.insertRegistro(TABLA_USERS, values);
-
         } else {
 
-            ModeloSQL user = ConsultaBD.queryObject(CAMPOS_USERS, USERS_USERID, idUser);
-            id = EncryptUtil.decodificaStr(user.getString(USERS_USERIDCODE));
+            id = UUID.randomUUID().toString();
+            AndroidUtil.setSharePreferenceMaster(mContext, SYSTEM, userID, id);
             AndroidUtil.setSharePreference(mContext, USERID, USERIDCODE, id);
-        }
-        return id;
-    }
+            AndroidUtil.setSharePreference(mContext, USERID, USERID, id);
 
+        }
+        System.out.println("id loginInteractor= " + id);
+    }
 
     interface Callback {
 

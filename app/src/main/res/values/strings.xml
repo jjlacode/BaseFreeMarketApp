@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">FreeMarketsApp</string>
     <string name="app_name_min" translatable="false">freemarketsapp</string>
-    <string name="auth" translatable="false">by JjlaCode</string>
+    <string name="auth" translatable="false">by CoDevSolution</string>
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
     <string name="nav_header_title" translatable="false">FreeMarketsApp</string>
@@ -411,10 +411,10 @@
     <string name="enviado_a">Enviado a:</string>
     <string name="mensajes_enviados">Mensajes enviados</string>
     <string name="productos_lugar">Productos Lugar</string>
-    <string name="envio_noticias">Envio de Noticias</string>
-    <string name="perfil_freelance">Perfil Freelance</string>
-    <string name="ocultar_noticias">Ocultar noticias</string>
-    <string name="ver_noticias">Ver Noticias</string>
+    <string name="envio_noticias">Send news</string>
+    <string name="perfil_freelance">Job profile</string>
+    <string name="ocultar_noticias">Hide news</string>
+    <string name="ver_noticias">Show news</string>
     <string name="mensaje_ganador">Ha resultado ganador del sorteo de </string>
     <string name="sortear">Sortear</string>
     <string name="sorteo_creado">Sorteo creado con exito</string>
@@ -592,6 +592,16 @@
     <string name="marca">marca</string>
     <string name="gestion_proyectos">Gestión de proyectos</string>
     <string name="voz">voz</string>
+    <string name="backupbd">Copia seguridad bases de datos</string>
+    <string name="backupbd_instant">Copia de seguridad instantanea</string>
+    <string name="backupbd_diaria">Copia de seguridad base datos diaria</string>
+    <string name="mins_backupIns">Minutos copia instantanea Base Datos</string>
+    <string name="comandos_voz_jedi">Fuerza Jedi</string>
+    <string name="gestion_bases_datos">Gestion bases de datos</string>
+    <string name="todas_secciones_pref">Todas las secciones</string>
+    <string name="cerrar_sesion">Cerrar sesión</string>
+    <string name="operacion_cancelada">Operación cancelada</string>
+    <string name="msg_cerrar_sesion">¿Esta seguro que quiere cerrar la sesión?</string>
 
 
 </resources>

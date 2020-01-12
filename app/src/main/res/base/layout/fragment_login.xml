@@ -1,23 +1,18 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/login_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:background="@color/colorPrimary">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:orientation="vertical">
-
         <!-- Logo -->
-        <com.codevsolution.base.android.controls.ImagenLayout
-            android:id="@+id/imglogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@color/colorPrimary"
-            android:layout_weight="1" />
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/login_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:background="@color/colorPrimary"></androidx.appcompat.widget.LinearLayoutCompat>
 
         <!-- Indicador de progreso -->
         <ProgressBar
@@ -27,62 +22,81 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="8dp"
             android:layout_weight="2"
-            android:progressBackgroundTint="@color/colorPrimary"
+            android:progressBackgroundTint="@color/colorSecondaryDark"
             android:visibility="gone" />
 
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:background="@color/colorPrimary">
         <!-- Formulario de login -->
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/login_form"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:orientation="vertical"
             android:background="@color/colorPrimary"
             android:visibility="gone">
 
-            <com.codevsolution.base.android.controls.EditMaterial
-                android:id="@+id/etcorreologin"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/login_edit"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/altobtn"
-                app:gravedad="centro"
-                app:hint_text="@string/email"
-                app:tipo_dato="TEXTO|EMAIL" />
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1.5"
+                android:background="@color/colorPrimary"></androidx.appcompat.widget.LinearLayoutCompat>
 
-            <com.codevsolution.base.android.controls.EditMaterial
-                android:id="@+id/etpasslogin"
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/altobtn"
-                android:gravity="center_horizontal|center_vertical"
-                app:hint_text="@string/pass"
-                app:tipo_dato="TEXTO|PASS" />
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="2"
+                android:background="@color/colorPrimary">
 
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnacceder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/altobtn"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:background="@drawable/boton_redondo_secondary"
+                    android:text="@string/acceder"
+                    android:textColor="@color/colorSecondaryDark" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnacceder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/altobtn"
-                android:background="@drawable/boton_redondo_secondary"
-                android:text="@string/acceder"
-                android:textColor="@color/colorSecondaryDark" />
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="2"
+                android:background="@color/colorPrimary">
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnRegistrar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/altobtn"
-                android:background="@drawable/boton_redondo_secondary"
-                android:text="@string/registrar"
-                android:textColor="@color/Color_texto"
-                android:visibility="gone" />
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnRegistrar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/altobtn"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:background="@drawable/boton_redondo_secondary"
+                    android:text="@string/registrar"
+                    android:textColor="@color/Color_texto"
+                    android:visibility="gone" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="2"
+                android:background="@color/colorPrimary">
 
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/btnAyudaLogin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:src="@drawable/ic_ayuda_indigo" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
         </androidx.appcompat.widget.LinearLayoutCompat>
-    </LinearLayout>
-</ScrollView>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.appcompat.widget.LinearLayoutCompat>

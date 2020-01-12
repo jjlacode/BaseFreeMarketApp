@@ -5,7 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.codevsolution.base.nosql.FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb;
-import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.freemarketsapp.sqlite.ContratoPry;
 
 public abstract class AltaPerfilesFirebase extends FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb implements ContratoPry.Tablas {
 

@@ -203,6 +203,14 @@ public class ViewImagenLayout implements Estilos.Constantes {
 
     }
 
+    public void setGravedadTitulo(int gravedad) {
+        titulo.setGravity(gravedad);
+    }
+
+    public void setGravedadPie(int gravedad) {
+        pie.setGravity(gravedad);
+    }
+
     public void setActivity(AppCompatActivity mainActivity) {
         this.mainActivity = mainActivity;
     }

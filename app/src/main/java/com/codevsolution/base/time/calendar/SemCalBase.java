@@ -13,9 +13,9 @@ import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.Modelo;
-import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.TimeDateUtil;
+import com.codevsolution.freemarketsapp.sqlite.ContratoPry;
 
 import java.util.ArrayList;
 import java.util.Calendar;

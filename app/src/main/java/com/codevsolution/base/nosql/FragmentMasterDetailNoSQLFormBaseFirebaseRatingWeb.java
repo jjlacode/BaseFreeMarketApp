@@ -31,7 +31,6 @@ import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.chat.FragmentChatBase;
-import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.firebase.FirebaseUtil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
@@ -304,7 +303,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             gone(claves.getLinearLayout());
 
             if (idChat == null) {
-                ListaModeloSQL listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
+                ListaModeloSQL listaChats = setListaModelo(CAMPOS_CHAT);
                 for (ModeloSQL chat : listaChats.getLista()) {
                     if (chat.getString(CHAT_USUARIO).equals(id) && chat.getString(CHAT_TIPO).equals(tipo)) {
                         idChat = chat.getString(CHAT_ID_CHAT);
@@ -313,7 +312,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
             }
 
             if (nn(idChat)) {
-                listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, idChat);
+                listaMsgChat = setListaModeloDetalle(CAMPOS_DETCHAT, idChat);
                 listaMsgChat = listaMsgChat.sort(DETCHAT_FECHA, DESCENDENTE);
 
                 RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
@@ -656,7 +655,7 @@ public abstract class FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb
                         values.put(CHAT_CREATE, TimeDateUtil.ahora());
                         values.put(CHAT_TIMESTAMP, TimeDateUtil.ahora());
 
-                        idChat = CRUDutil.crearRegistroId(TABLA_CHAT, values);
+                        idChat = crearRegistroId(TABLA_CHAT, values);
                     }
                     if (idChat != null) {
                         Bundle bundle = new Bundle();

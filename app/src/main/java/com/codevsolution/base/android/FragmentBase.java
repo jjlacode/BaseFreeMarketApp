@@ -2,6 +2,7 @@ package com.codevsolution.base.android;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -11,6 +12,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -43,14 +45,18 @@ import com.codevsolution.base.android.controls.LockableScrollView;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.android.controls.ViewImagenLayout;
 import com.codevsolution.base.animation.OneFrameLayout;
+import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.interfaces.ICFragmentos;
 import com.codevsolution.base.interfaces.SpeechDelegate;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.models.Contactos;
+import com.codevsolution.base.models.ListaModeloSQL;
+import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.speech.GoogleVoiceTypingDisabledException;
 import com.codevsolution.base.speech.SpeechRecognitionNotAvailable;
 import com.codevsolution.base.speech.SpeechUtil;
+import com.codevsolution.base.sqlite.ConsultaBDBase;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.freemarketsapp.logica.InteractorVoz;
 import com.codevsolution.freemarketsapp.settings.Preferencias;
@@ -67,6 +73,7 @@ import java.util.regex.Pattern;
 
 import static android.content.Context.SENSOR_SERVICE;
 import static com.codevsolution.base.settings.PreferenciasBase.CLAVEVOZ;
+import static com.codevsolution.base.settings.PreferenciasBase.RQCLAVEVOZ;
 
 //import com.codevsolution.freemarketsapp.logica.Interactor;
 
@@ -169,11 +176,15 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     private boolean primerPaso;
     private boolean iniciado;
     private int posicionEdit;
+    protected CRUDutil crudUtil;
+    protected ConsultaBDBase consultaBD;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, getMetodo());
 
+        consultaBD = new ConsultaBDBase(icFragmentos.setConsultaBd());
         setHasOptionsMenu(true);
         fragment = setFragment();
         parent = getParent();
@@ -389,7 +400,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         }
         activityBase.fabNuevo.hide();
         activityBase.fabInicio.hide();
-        //activityBase.fabVoz.hide();
+
 
         return view;
     }
@@ -492,6 +503,11 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         cargarBundle();
 
         getPersistencia();
+        if (!AndroidUtil.getSharePreference(contexto, PREFERENCIAS, Preferencias.COMVOZ, false)) {
+            activityBase.fabVoz.hide();
+        } else {
+            activityBase.fabVoz.show();
+        }
 
     }
 
@@ -691,11 +707,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
     protected void enviarAct() {
         Log.d(TAG, getMetodo());
 
-        bundle = new Bundle();
-        bundle.putString(ORIGEN, origen);
-        bundle.putString(ACTUAL, actual);
-        bundle.putString(ACTUALTEMP, actualtemp);
-        bundle.putString(SUBTITULO, subTitulo);
+        enviarBundle();
         System.out.println("Enviando bundle a MainActivity");
         icFragmentos.enviarBundleAActivity(bundle);
     }
@@ -706,6 +718,7 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         bundle = new Bundle();
         bundle.putString(ORIGEN, actual);
         bundle.putString(ACTUAL, destino);
+        bundle.putString(TAGPERS, fragment.getClass().getName());
         bundle.putString(ACTUALTEMP, actualtemp);
         bundle.putString(SUBTITULO, subTitulo);
 
@@ -1118,20 +1131,24 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
 
             StringBuilder restmp = new StringBuilder();
             String[] resultstmp = speech.split(Pattern.quote(" "));
-
+            boolean valido = false;
             String clave = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, CLAVEVOZ, NULL);
+            boolean reqClave = AndroidUtil.getSharePreference(contexto, PREFERENCIAS, RQCLAVEVOZ, false);
+
             for (String result : resultstmp) {
-                if (clave != null && !result.toLowerCase().contains(clave.toLowerCase())) {
+                if (!reqClave || (clave != null && !result.toLowerCase().contains(clave.toLowerCase()))) {
                     restmp.append(result);
                     restmp.append(" ");
                 } else if (clave != null && result.toLowerCase().contains(clave.toLowerCase())) {
-
+                    valido = true;
                 }
                 if (restmp.length() > 0 && restmp.charAt(restmp.length() - 1) == ' ') {
                     restmp.delete(restmp.length() - 1, restmp.length() - 1);
                 }
             }
-            speechProcess(restmp.toString());
+            if (valido || !reqClave) {
+                speechProcess(restmp.toString());
+            }
         }
         Toast.makeText(contexto, speech, Toast.LENGTH_SHORT).show();
         speechUtil.stopListening();
@@ -1538,6 +1555,28 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         return AndroidUtil.getSharePreference(contexto, PREFERENCIAS, key, defecto);
     }
 
+    protected void message(@NonNull String content, boolean important, String tag) {
+        if (important) {
+            Log.w(tag, content);
+            Toast.makeText(contexto, content, Toast.LENGTH_LONG).show();
+        } else {
+            Log.i(tag, content);
+            Toast.makeText(contexto, content, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    protected void message(@NonNull String content, boolean important) {
+
+        String tag = fragment.getClass().getSimpleName();
+        if (important) {
+            Log.w(tag, content);
+            Toast.makeText(contexto, content, Toast.LENGTH_LONG).show();
+        } else {
+            Log.i(tag, content);
+            Toast.makeText(contexto, content, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public MainActivityBase getActivityBase() {
         return activityBase;
     }
@@ -1553,5 +1592,197 @@ public abstract class FragmentBase extends Fragment implements JavaUtil.Constant
         void onAfterSetDatos();
 
         void onBeforeSetdatos();
+    }
+
+    protected void putDato(ContentValues valores, String campo, String valor) {
+        consultaBD.putDato(valores, campo, valor);
+    }
+
+    protected void putDato(ContentValues valores, String campo, int valor) {
+        consultaBD.putDato(valores, campo, valor);
+    }
+
+    protected void putDato(ContentValues valores, String campo, double valor) {
+        consultaBD.putDato(valores, campo, valor);
+    }
+
+    protected void putDato(ContentValues valores, String campo, long valor) {
+        consultaBD.putDato(valores, campo, valor);
+    }
+
+    protected void putDato(ContentValues valores, String campo, short valor) {
+        consultaBD.putDato(valores, campo, valor);
+    }
+
+    protected void putDato(ContentValues valores, String campo, float valor) {
+        consultaBD.putDato(valores, campo, valor);
+    }
+
+    protected boolean checkQueryList(String[] campos, String campo, String valor) {
+        return consultaBD.checkQueryList(campos, campo, valor);
+    }
+
+    protected boolean checkQueryList(String[] campos, String campo, int valor) {
+        return consultaBD.checkQueryList(campos, campo, valor);
+    }
+
+    protected ModeloSQL updateModelo(ModeloSQL modeloSQL) {
+        return crudUtil.updateModelo(modeloSQL);
+    }
+
+    protected ModeloSQL updateModelo(String[] campos, String id) {
+        return crudUtil.updateModelo(campos, id);
+    }
+
+    protected ModeloSQL updateModelo(String[] campos, String id, int secuencia) {
+        return crudUtil.updateModelo(campos, id, secuencia);
+    }
+
+    protected ModeloSQL updateModelo(String[] campos, String id, String secuencia) {
+        return crudUtil.updateModelo(campos, id, secuencia);
+    }
+
+    protected int actualizarRegistro(ModeloSQL modeloSQL, ContentValues valores) {
+        return crudUtil.actualizarRegistro(modeloSQL, valores);
+    }
+
+    protected int actualizaRegistro(String tabla, String id, ContentValues valores) {
+        return consultaBD.updateRegistro(tabla, id, valores);
+    }
+
+    protected int actualizaRegistroDetalle(String tabla, String id, int secuencia, ContentValues valores) {
+        return consultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+    }
+
+    protected int actualizaRegistroDetalle(String tabla, String id, String secuencia, ContentValues valores) {
+        return consultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+    }
+
+    protected int borrarRegistro(String tabla, String id) {
+        return consultaBD.deleteRegistro(tabla, id);
+    }
+
+    protected int borrarRegistro(String tabla, String id, int secuencia) {
+        return consultaBD.deleteRegistroDetalle(tabla, id, secuencia);
+    }
+
+    protected int borrarRegistro(String tabla, String id, String secuencia) {
+        return consultaBD.deleteRegistroDetalle(tabla, id, secuencia);
+    }
+
+    protected int crearRegistroSec(String[] campos, String id, ContentValues valores) {
+        return crudUtil.crearRegistroSec(campos, id, valores);
+    }
+
+    protected Uri crearRegistro(String tabla, ContentValues valores) {
+        return consultaBD.insertRegistro(tabla, valores);
+    }
+
+    protected String crearRegistroId(String tabla, ContentValues valores) {
+        return consultaBD.idInsertRegistro(tabla, valores);
+    }
+
+    protected Uri crearRegistroDetalle(String[] campos, String campo, ContentValues valores) {
+        return consultaBD.insertRegistroDetalle(campos, campo, valores);
+    }
+
+    protected int actualizarRegistro(String tabla, String id, ContentValues valores) {
+        return consultaBD.updateRegistro(tabla, id, valores);
+    }
+
+    protected int actualizarRegistro(String tabla, String id, int secuencia, ContentValues valores) {
+        return consultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+    }
+
+    protected int actualizarRegistro(String tabla, String id, String secuencia, ContentValues valores) {
+        return consultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+    }
+
+    protected void actualizarCampo(ModeloSQL modeloSQL, String campo, int valor) {
+        crudUtil.actualizarCampo(modeloSQL, campo, valor);
+    }
+
+    protected void actualizarCampo(ModeloSQL modeloSQL, String campo, String valor) {
+        crudUtil.actualizarCampo(modeloSQL, campo, valor);
+    }
+
+    protected void actualizarCampo(ModeloSQL modeloSQL, String campo, double valor) {
+        crudUtil.actualizarCampo(modeloSQL, campo, valor);
+    }
+
+    protected void actualizarCampo(ModeloSQL modeloSQL, String campo, long valor) {
+        crudUtil.actualizarCampo(modeloSQL, campo, valor);
+    }
+
+    protected void actualizarCampo(ModeloSQL modeloSQL, String campo, float valor) {
+        crudUtil.actualizarCampo(modeloSQL, campo, valor);
+    }
+
+    protected void actualizarCampo(ModeloSQL modeloSQL, String campo, short valor) {
+        crudUtil.actualizarCampo(modeloSQL, campo, valor);
+    }
+
+    protected ListaModeloSQL setListaModelo() {
+        return crudUtil.setListaModelo();
+    }
+
+    protected ListaModeloSQL setListaModelo(String[] campos) {
+        return crudUtil.setListaModelo(campos);
+    }
+
+    protected ListaModeloSQL setListaModelo(String[] campos, String campo, String valor, int flag) {
+        return crudUtil.setListaModelo(campos, campo, valor, flag);
+    }
+
+    protected ListaModeloSQL setListaModeloDetalle(String[] campos, String id) {
+        return crudUtil.setListaModeloDetalle(campos, id);
+    }
+
+    protected ListaModeloSQL clonaListaModelo(String[] campos, ListaModeloSQL listaModeloSQL) {
+        return crudUtil.clonaListaModelo(campos, listaModeloSQL);
+    }
+
+    protected ListaModeloSQL clonaListaModelo(String[] campos, ArrayList<ModeloSQL> listaModeloSQL) {
+        return crudUtil.clonaListaModelo(campos, listaModeloSQL);
+    }
+
+    protected ArrayList<ModeloSQL> queryListDetalle(String[] campos, String id) {
+        return consultaBD.queryListDetalle(campos, id);
+    }
+
+    protected ArrayList<ModeloSQL> queryList(String[] campos) {
+        return consultaBD.queryList(campos);
+    }
+
+    protected void actualizarCampoNull(ModeloSQL modeloSQL, String campo) {
+        crudUtil.actualizarCampoNull(modeloSQL, campo);
+    }
+
+    protected ModeloSQL queryObject(String[] campos, String id) {
+        return consultaBD.queryObject(campos, id);
+    }
+
+    protected ModeloSQL updateModeloCampo(String[] campos, String campo, String valor) {
+        return crudUtil.updateModeloCampo(campos, campo, valor);
+    }
+
+    protected ModeloSQL updateModeloCampo(String[] campos, String campo, int valor) {
+        return crudUtil.updateModeloCampo(campos, campo, valor);
+    }
+
+    protected ModeloSQL updateModeloCampo(String[] campos, String campo, long valor) {
+        return crudUtil.updateModeloCampo(campos, campo, valor);
+    }
+
+    protected ModeloSQL updateModeloCampo(String[] campos, String campo, double valor) {
+        return crudUtil.updateModeloCampo(campos, campo, valor);
+    }
+
+    protected ModeloSQL updateModeloCampo(String[] campos, String campo, float valor) {
+        return crudUtil.updateModeloCampo(campos, campo, valor);
+    }
+
+    protected ModeloSQL updateModeloCampo(String[] campos, String campo, short valor) {
+        return crudUtil.updateModeloCampo(campos, campo, valor);
     }
 }

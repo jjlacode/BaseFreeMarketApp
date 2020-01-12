@@ -9,12 +9,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.widget.LinearLayoutCompat;
 
+import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.android.controls.ViewGroupLayout;
-import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.nosql.FragmentMasterDetailNoSQLFormBaseFirebaseRatingWeb;
-import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
+import com.codevsolution.freemarketsapp.sqlite.ContratoPry;
 
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.CLIENTE;
 import static com.codevsolution.freemarketsapp.logica.Interactor.ConstantesPry.PROSPECTO;
@@ -25,6 +25,10 @@ public abstract class ListadoPerfilesFirebase extends FragmentMasterDetailNoSQLF
     protected Button clientes;
     protected Button proveedores;
 
+    @Override
+    protected FragmentBase setFragment() {
+        return this;
+    }
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
@@ -70,7 +74,7 @@ public abstract class ListadoPerfilesFirebase extends FragmentMasterDetailNoSQLF
     protected void setDatos() {
         super.setDatos();
         gone(frCabecera);
-        if (id.equals(idUser)) {
+        if (id != null && id.equals(idUser)) {
             gone(clientes);
             gone(prospectos);
             gone(proveedores);
@@ -92,7 +96,7 @@ public abstract class ListadoPerfilesFirebase extends FragmentMasterDetailNoSQLF
         valores.put(CLIENTE_ID_TIPOCLIENTE, Interactor.getIdTipoCliente(tipoCliente));
         valores.put(CLIENTE_PESOTIPOCLI, Interactor.getPesoTipoCliente(tipoCliente));
 
-        if (CRUDutil.crearRegistro(TABLA_CLIENTE, valores) != null) {
+        if (crearRegistro(TABLA_CLIENTE, valores) != null) {
             Toast.makeText(contexto, tipoCliente + " importado con exito", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(contexto, "Error al importar el " + tipoCliente, Toast.LENGTH_SHORT).show();
@@ -111,7 +115,7 @@ public abstract class ListadoPerfilesFirebase extends FragmentMasterDetailNoSQLF
         valores.put(PROVEEDOR_WEB, etWeb.getTexto());
         valores.put(PROVEEDOR_CONTACTO, nombre.getTexto());
 
-        if (CRUDutil.crearRegistro(TABLA_PROVEEDOR, valores) != null) {
+        if (crearRegistro(TABLA_PROVEEDOR, valores) != null) {
             Toast.makeText(contexto, "Proveedor importado con exito", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(contexto, "Error al importar el proveedor", Toast.LENGTH_SHORT).show();

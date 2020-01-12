@@ -29,7 +29,7 @@
         </activity>
 
         <provider
-            android:name="com.codevsolution.base.sqlite.ProviderPry"
+            android:name="com.codevsolution.freemarketsapp.sqlite.ProviderPry"
             android:authorities="${applicationId}"
             android:enabled="true"
             android:exported="false" />

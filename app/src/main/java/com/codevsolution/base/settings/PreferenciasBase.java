@@ -20,11 +20,11 @@ import com.codevsolution.base.android.controls.ViewGroupLayout;
 import com.codevsolution.base.encrypt.EncryptUtil;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.logica.InteractorBase;
-import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.style.Dialogos;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.freemarketsapp.sqlite.ContratoPry;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -47,7 +47,11 @@ public class PreferenciasBase extends FragmentBase {
     public static final String AUTOGUARDADO = "autoguardado";
     public static final String TIEMPOAUTOGUARDADO = "tiempoautoguardado";
     public static final String CLAVEVOZ = "clavevoz";
+    public static final String RQCLAVEVOZ = "rqclavevoz";
     public static final String SERVVOZ = "serviciovoz";
+    public static final String BACKUPBD = "backupbd";
+    public static final String BACKUPBDINS = "backupbdinstant";
+    public static final String BACKUPBDINSMINS = "backupbdinstantmins";
     private TextView tituloEncrypt;
     private TextView tituloSettings;
     private TextView tituloDictado;
@@ -65,7 +69,13 @@ public class PreferenciasBase extends FragmentBase {
     protected ViewGroupLayout vistaSetPage;
     protected ViewGroupLayout vistaSetApp;
     private Switch comVoz;
+    private Switch comVozJedi;
     private EditMaterialLayout claveVoz;
+    private TextView tituloBackupBd;
+    private Switch bdInstant;
+    private Switch bdDiaria;
+    private EditMaterialLayout bdInstantMins;
+    protected String tag;
 
     @Override
     protected void setOnCreateView(View view, LayoutInflater inflater, ViewGroup container) {
@@ -91,8 +101,11 @@ public class PreferenciasBase extends FragmentBase {
         tituloDictado = vistaMain.addTextView(R.string.comandos_voz);
         tituloDictado.setTextColor(Estilos.colorSecondary);
         comVoz = vistaMain.addSwitch(R.string.comandos_voz, false);
-        comVoz.setChecked(getPref(COMVOZ, false));
+        comVoz.setChecked(getPref(COMVOZ, true));
         setOnCheck(comVoz, COMVOZ);
+        comVozJedi = vistaMain.addSwitch(R.string.comandos_voz_jedi, false);
+        comVozJedi.setChecked(getPref(SERVVOZ, false));
+        setOnCheck(comVozJedi, SERVVOZ);
         claveVoz = vistaMain.addEditMaterialLayout(R.string.clave_voz);
         claveVoz.setText(String.valueOf(getPref(CLAVEVOZ, "")));
         claveVoz.btnInicioVisible(false);
@@ -133,12 +146,22 @@ public class PreferenciasBase extends FragmentBase {
             }
         });
 
+        tituloBackupBd = vistaMain.addTextView(R.string.backupbd);
+        tituloBackupBd.setTextColor(Estilos.colorSecondary);
+        bdInstant = vistaMain.addSwitch(R.string.backupbd_instant, true);
+        bdInstantMins = vistaMain.addEditMaterialLayout(R.string.mins_backupIns);
+        bdInstantMins.setText(String.valueOf(getPref(BACKUPBDINSMINS, 5)));
+        bdInstantMins.btnInicioVisible(false);
+        setAlCambiarEditPref(bdInstantMins, BACKUPBDINSMINS, INT);
+        bdDiaria = vistaMain.addSwitch(R.string.backupbd_diaria, true);
+
 
         ajustes = vistaMain.addTextView(R.string.ajustes);
         gone(ajustes);
 
         vistaSetApp = new ViewGroupLayout(contexto, vistaMain.getViewGroup());
         vistaSetPage = new ViewGroupLayout(contexto, vistaMain.getViewGroup());
+
 
         actualizarArrays(vistaMain);
         iniciado = true;
@@ -147,6 +170,11 @@ public class PreferenciasBase extends FragmentBase {
     @Override
     protected FragmentBase setFragment() {
         return this;
+    }
+
+    @Override
+    protected String setAyudaWeb() {
+        return "preferencias";
     }
 
     private void setAlCambiarEditPref(EditMaterialLayout editPref, String key, String tipo) {
@@ -384,5 +412,10 @@ public class PreferenciasBase extends FragmentBase {
                 }).show(getFragmentManager(), "dialogEdit");
     }
 
+    @Override
+    protected void cargarBundle() {
+        super.cargarBundle();
 
+        tag = getStringBundle(TAGPERS, NULL);
+    }
 }

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:jjla="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvtiponota"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tipo_nota"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvfechanota"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/ettitulo_nota"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            jjla:hint_text="@string/titulo"
+            jjla:tipo_dato="TEXTO|ASUNTO" />
+
+        <com.codevsolution.base.android.controls.EditMaterial
+            android:id="@+id/etdesc_nota"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            jjla:hint_text="@string/descripcion"
+            jjla:tipo_dato="TEXTO|MULTI" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btn_grabar_video"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            jjla:srcCompat="@drawable/ic_rec_video_indigo" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btn_play_video"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            jjla:srcCompat="@drawable/ic_play_indigo" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvaudio"
+            android:gravity="center"
+            android:textSize="@dimen/texto"
+            android:textColor="@color/Color_texto_titulos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/btn_grabar_audio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_weight="1"
+                android:src="@drawable/ic_rec_indigo" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/btn_audio_stop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_weight="1"
+                android:src="@drawable/ic_stop_indigo" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/btn_audio_pausa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_weight="1"
+                android:src="@drawable/ic_pausa_indigo" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/btn_play_audio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_weight="1"
+                android:src="@drawable/ic_play_indigo" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.core.widget.ContentLoadingProgressBar
+            android:id="@+id/pbaraudio"
+            style="@android:style/Widget.Holo.ProgressBar.Horizontal"
+            android:progressDrawable="@drawable/bar_ok"
+            android:visibility="gone"
+            android:layout_marginBottom="@dimen/margen_sdb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.google.android.material.circularreveal.CircularRevealRelativeLayout
+            android:id="@+id/rl_videoview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ampliar_imagen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_ampliar_secondary_dark" />
+
+        <com.codevsolution.base.android.controls.ImagenLayout
+            android:id="@+id/imagen_nota"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btncompartirnota"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/altobtnico"
+            android:layout_marginTop="@dimen/margen_sdb_doble"
+            android:background="@drawable/boton_redondo_secondary"
+            android:src="@drawable/ic_compartir_indigo" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.core.widget.NestedScrollView>

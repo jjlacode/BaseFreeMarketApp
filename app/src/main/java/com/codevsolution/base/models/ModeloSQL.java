@@ -5,8 +5,9 @@ import android.net.Uri;
 
 import com.codevsolution.base.crud.CRUDutil;
 import com.codevsolution.base.javautil.JavaUtil;
-import com.codevsolution.base.sqlite.ConsultaBD;
-import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.base.sqlite.ConsultaBDBase;
+import com.codevsolution.freemarketsapp.sqlite.ConsultaBD;
+import com.codevsolution.freemarketsapp.sqlite.ContratoPry;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -86,7 +87,8 @@ public class ModeloSQL implements Serializable {
 
     public ModeloSQL(String[] campos, String id) {
 
-        ModeloSQL modeloSQL = ConsultaBD.queryObject(campos, id);
+        ConsultaBDBase consultaBD = new ConsultaBDBase(new ConsultaBD());
+        ModeloSQL modeloSQL = consultaBD.queryObject(campos, id);
         this.campos = campos;
         this.valores = modeloSQL.getValores();
         estructura = campos;
@@ -97,7 +99,8 @@ public class ModeloSQL implements Serializable {
 
     public ModeloSQL(String[] campos, String id, int secuencia) {
 
-        ModeloSQL modeloSQL = ConsultaBD.queryObjectDetalle(campos, id, secuencia);
+        ConsultaBDBase consultaBD = new ConsultaBDBase(new ConsultaBD());
+        ModeloSQL modeloSQL = consultaBD.queryObjectDetalle(campos, id, secuencia);
         this.campos = campos;
         this.valores = modeloSQL.getValores();
         estructura = campos;
@@ -108,7 +111,8 @@ public class ModeloSQL implements Serializable {
 
     public ModeloSQL(String[] campos, String id, String secuencia) {
 
-        ModeloSQL modeloSQL = ConsultaBD.queryObjectDetalle(campos, id, secuencia);
+        ConsultaBDBase consultaBD = new ConsultaBDBase(new ConsultaBD());
+        ModeloSQL modeloSQL = consultaBD.queryObjectDetalle(campos, id, secuencia);
         this.campos = campos;
         this.valores = modeloSQL.getValores();
         estructura = campos;
@@ -224,7 +228,8 @@ public class ModeloSQL implements Serializable {
 
     public boolean noModificado() {
 
-        ModeloSQL modeloSQL = CRUDutil.updateModelo(this);
+        CRUDutil cruDutil = new CRUDutil();
+        ModeloSQL modeloSQL = cruDutil.updateModelo(this);
         System.out.println("valores = " + Arrays.toString(valores));
         System.out.println("modeloSQL = " + Arrays.toString(modeloSQL.getValores()));
 

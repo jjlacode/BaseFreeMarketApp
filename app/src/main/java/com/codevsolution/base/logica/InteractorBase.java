@@ -39,7 +39,6 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
     public static Fragment fragmentInicio;
     public static String key;
 
-
     public InteractorBase() {
 
         setFragmentInicio();
@@ -52,6 +51,7 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
         String ENCODEPASSPLUS = "ENCODEPASSPLUS";
         String PASSOK = "PASSOK";
         String USERID = "userid";
+        String EMAILUSER = "emailuser";
         String SYSTEM = "system";
         String USERIDCODE = "useridcode";
         String PLANMENSUAL = "plan_mensual";
@@ -140,8 +140,8 @@ public class InteractorBase implements ContratoSystem.Tablas, JavaUtil.Constante
 
         RemoteViews remoteView = new RemoteViews(contexto.getPackageName(), Estilos.getIdLayout(contexto, "notificacion_chat"));
         remoteView.setTextViewText(Estilos.getIdResource(contexto, "tvdescnotchat"), contenido);
-
-        ModeloSQL chat = CRUDutil.updateModelo(CAMPOS_CHAT, detchat.getString(DETCHAT_ID_CHAT));
+        CRUDutil crudUtil = new CRUDutil();
+        ModeloSQL chat = crudUtil.updateModelo(CAMPOS_CHAT, detchat.getString(DETCHAT_ID_CHAT));
         Intent intentVerChat = new Intent(contexto, clase);
         intentVerChat.setAction(ACCION_VERCHAT);
         intentVerChat.putExtra(EXTRA_IDSPCHAT, chat.getString(CHAT_USUARIO));

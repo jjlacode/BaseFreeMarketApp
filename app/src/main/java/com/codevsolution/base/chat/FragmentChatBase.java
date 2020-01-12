@@ -35,7 +35,6 @@ import com.codevsolution.base.models.FirebaseFormBase;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.models.MsgChat;
-import com.codevsolution.base.sqlite.ConsultaBD;
 import com.codevsolution.base.sqlite.ContratoSystem;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.TimeDateUtil;
@@ -116,7 +115,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
         if (nn(id) && !id.equals(NULL)) {
 
-            modeloSQL = CRUDutil.updateModelo(campos, id);
+            modeloSQL = updateModelo(campos, id);
             idchat = modeloSQL.getString(CHAT_USUARIO);
             AndroidUtil.setSharePreference(contexto, PREFERENCIAS, IDCHATF, modeloSQL.getString(CHAT_USUARIO));
 
@@ -124,7 +123,7 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
         } else if (nn(idchat) && !idchat.equals(NULL)) {
 
-            ListaModeloSQL listaChats = CRUDutil.setListaModelo(CAMPOS_CHAT);
+            ListaModeloSQL listaChats = setListaModelo(CAMPOS_CHAT);
             for (ModeloSQL chat : listaChats.getLista()) {
                 if (chat.getString(CHAT_TIPO).equals(tipo) && chat.getString(CHAT_USUARIO).equals(idchat)) {
                     id = chat.getString(CHAT_ID_CHAT);
@@ -134,13 +133,13 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
             if (id == null) {
                 valores = new ContentValues();
-                ConsultaBD.putDato(valores, CHAT_USUARIO, idchat);
-                ConsultaBD.putDato(valores, CHAT_NOMBRE, nombre);
-                ConsultaBD.putDato(valores, CHAT_CREATE, TimeDateUtil.ahora());
-                ConsultaBD.putDato(valores, CHAT_TIMESTAMP, TimeDateUtil.ahora());
-                ConsultaBD.putDato(valores, CHAT_TIPO, tipo);
-                id = CRUDutil.crearRegistroId(TABLA_CHAT, valores);
-                modeloSQL = CRUDutil.updateModelo(campos, id);
+                consultaBD.putDato(valores, CHAT_USUARIO, idchat);
+                consultaBD.putDato(valores, CHAT_NOMBRE, nombre);
+                consultaBD.putDato(valores, CHAT_CREATE, TimeDateUtil.ahora());
+                consultaBD.putDato(valores, CHAT_TIMESTAMP, TimeDateUtil.ahora());
+                consultaBD.putDato(valores, CHAT_TIPO, tipo);
+                id = crudUtil.crearRegistroId(TABLA_CHAT, valores);
+                modeloSQL = crudUtil.updateModelo(campos, id);
             }
         }
 
@@ -245,14 +244,14 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
         }
 
         System.out.println("idChat = " + id);
-        listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, id);
+        listaMsgChat = crudUtil.setListaModeloDetalle(CAMPOS_DETCHAT, id);
         listaMsgChat = listaMsgChat.sort(DETCHAT_FECHA, DESCENDENTE);
 
         RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
         rvMsgChat.setAdapter(adaptadorDetChat);
         gone(activityBase.fabNuevo);
 
-        modeloSQL = CRUDutil.updateModelo(campos, id);
+        modeloSQL = crudUtil.updateModelo(campos, id);
         activityBase.fabVoz.setSize(FloatingActionButton.SIZE_NORMAL);
         activityBase.fabInicio.setSize(FloatingActionButton.SIZE_NORMAL);
         tipo = modeloSQL.getString(CHAT_TIPO);
@@ -295,21 +294,21 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
         if (msgEnv.getText() != null && !msgEnv.getText().toString().equals("")) {
 
             valores = new ContentValues();
-            ConsultaBD.putDato(valores, DETCHAT_MENSAJE, msgEnv.getText().toString());
-            ConsultaBD.putDato(valores, DETCHAT_URL, url.getText().toString());
-            ConsultaBD.putDato(valores, DETCHAT_TIPO, ENVIADO);
-            ConsultaBD.putDato(valores, DETCHAT_FECHA, TimeDateUtil.ahora());
-            ConsultaBD.putDato(valores, DETCHAT_CREATE, TimeDateUtil.ahora());
-            ConsultaBD.putDato(valores, DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
-            ConsultaBD.putDato(valores, DETCHAT_NOTIFICADO, 1);
-            ConsultaBD.putDato(valores, DETCHAT_ID_CHAT, id);
-            CRUDutil.crearRegistro(CAMPOS_DETCHAT, id, valores);
-            listaMsgChat = CRUDutil.setListaModeloDetalle(CAMPOS_DETCHAT, id);
+            consultaBD.putDato(valores, DETCHAT_MENSAJE, msgEnv.getText().toString());
+            consultaBD.putDato(valores, DETCHAT_URL, url.getText().toString());
+            consultaBD.putDato(valores, DETCHAT_TIPO, ENVIADO);
+            consultaBD.putDato(valores, DETCHAT_FECHA, TimeDateUtil.ahora());
+            consultaBD.putDato(valores, DETCHAT_CREATE, TimeDateUtil.ahora());
+            consultaBD.putDato(valores, DETCHAT_TIMESTAMP, TimeDateUtil.ahora());
+            consultaBD.putDato(valores, DETCHAT_NOTIFICADO, 1);
+            consultaBD.putDato(valores, DETCHAT_ID_CHAT, id);
+            crudUtil.crearRegistro(CAMPOS_DETCHAT, id, valores);
+            listaMsgChat = crudUtil.setListaModeloDetalle(CAMPOS_DETCHAT, id);
             listaMsgChat = listaMsgChat.sort(DETCHAT_FECHA, DESCENDENTE);
             RVAdapter adaptadorDetChat = new RVAdapter(new ViewHolderRVMsgChat(view), listaMsgChat.getLista(), R.layout.item_list_msgchat_base);
             rvMsgChat.setAdapter(adaptadorDetChat);
 
-            ModeloSQL chat = CRUDutil.updateModelo(campos, id);
+            ModeloSQL chat = crudUtil.updateModelo(campos, id);
 
             MsgChat msgChat = new MsgChat();
             msgChat.setMensaje(msgEnv.getText().toString());
@@ -496,7 +495,8 @@ public class FragmentChatBase extends FragmentCRUD implements ContratoSystem.Tab
 
             int tipo = modeloSQL.getInt(DETCHAT_TIPO);
             String idChat = modeloSQL.getString(DETCHAT_ID_CHAT);
-            ModeloSQL chat = CRUDutil.updateModelo(CAMPOS_CHAT, idChat);
+            CRUDutil crudUtil = new CRUDutil();
+            ModeloSQL chat = crudUtil.updateModelo(CAMPOS_CHAT, idChat);
             String tipoChat = chat.getString(CHAT_TIPO);
 
             if (tipoChat.equals(CHAT)) {

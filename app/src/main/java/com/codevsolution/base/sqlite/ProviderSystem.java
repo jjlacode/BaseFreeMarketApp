@@ -1,37 +1,24 @@
 package com.codevsolution.base.sqlite;
 
-import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Environment;
 
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
-import com.codevsolution.base.time.TimeDateUtil;
-import com.google.firebase.auth.FirebaseAuth;
 
-import static com.codevsolution.base.javautil.JavaUtil.Constantes.PREFERENCIAS;
-import static com.codevsolution.base.javautil.JavaUtil.Constantes.TIMESTAMP;
-import static com.codevsolution.base.javautil.JavaUtil.Constantes.TIMESTAMPDIA;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.USERIDCODE;
 import static com.codevsolution.base.sqlite.ContratoSystem.AUTORIDAD_CONTENIDO;
-import static com.codevsolution.base.sqlite.ContratoSystem.FILTRO_CLIENTE;
-import static com.codevsolution.base.sqlite.ContratoSystem.FILTRO_FECHA;
+import static com.codevsolution.base.sqlite.ContratoSystem.NULL;
 import static com.codevsolution.base.sqlite.ContratoSystem.Tablas;
-import static com.codevsolution.base.sqlite.ContratoSystem.crearUriTabla;
-import static com.codevsolution.base.sqlite.ContratoSystem.crearUriTablaDetalle;
-import static com.codevsolution.base.sqlite.ContratoSystem.generarIdTabla;
 import static com.codevsolution.base.sqlite.ContratoSystem.generarMime;
 import static com.codevsolution.base.sqlite.ContratoSystem.generarMimeItem;
-import static com.codevsolution.base.sqlite.ContratoSystem.obtenerIdTabla;
-import static com.codevsolution.base.sqlite.ContratoSystem.obtenerIdTablaDetalle;
-import static com.codevsolution.base.sqlite.ContratoSystem.obtenerIdTablaDetalleId;
 
-public class ProviderSystem extends ContentProvider
+public class ProviderSystem extends ProviderBase
         implements Tablas {
 
     private DataBaseSystem bd;
@@ -84,10 +71,6 @@ public class ProviderSystem extends ContentProvider
         uriMatcher.addURI(AUTORIDAD, TABLA_LOG, LOG);
         uriMatcher.addURI(AUTORIDAD, TABLA_LOG + "/*", LOG_ID);
 
-        uriMatcher.addURI(AUTORIDAD, TABLA_USERS, USERS);
-        uriMatcher.addURI(AUTORIDAD, TABLA_USERS + "/*", USERS_ID);
-
-
     }
 
 
@@ -98,16 +81,24 @@ public class ProviderSystem extends ContentProvider
     @Override
     public boolean onCreate() {
 
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        if (firebaseAuth.getCurrentUser() != null) {
-            String idUser = firebaseAuth.getCurrentUser().getUid();
-            String pathDb = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage(getContext()) + "/databases/";
-            bd = new DataBaseSystem(getContext(), idUser, pathDb);
+        if (super.onCreate()) {
             resolver = getContext().getContentResolver();
             return true;
         }
         return false;
     }
+
+    @Override
+    protected SQLiteOpenHelper setDataBase() {
+        String idUser = AndroidUtil.getSharePreference(getContext(), USERID, USERIDCODE, NULL);
+        String pathDb = Environment.getDataDirectory().getPath() + "/data/" + AppActivity.getPackage(getContext()) + "/databases/";
+        if (idUser != null && !idUser.equals(NULL)) {
+
+            return new DataBaseSystem(getContext(), idUser, pathDb);
+        }
+        return super.setDataBase();
+    }
+
 
 
     @Override
@@ -134,17 +125,13 @@ public class ProviderSystem extends ContentProvider
                 return generarMime(TABLA_LOG);
             case LOG_ID:
                 return generarMimeItem(TABLA_LOG);
-            case USERS:
-                return generarMime(TABLA_USERS);
-            case USERS_ID:
-                return generarMimeItem(TABLA_USERS);
 
             default:
                 throw new UnsupportedOperationException("Uri desconocida =>" + uri);
         }
     }
 
-    private ContentValues matcherUri(Uri uri) {
+    protected ContentValues matcherUri(Uri uri) {
 
         String tabla = null;
         String idTabla = null;
@@ -261,25 +248,6 @@ public class ProviderSystem extends ContentProvider
                 esId = true;
                 break;
 
-            case USERS:
-                tabla = TABLA_USERS;
-                setTablas = tabla;
-                proyeccion = tabla + ".*";
-                idTabla = USERS_ID_USERS;
-                esDetalle = false;
-                esId = false;
-                break;
-
-            case USERS_ID:
-
-                tabla = TABLA_USERS;
-                setTablas = tabla;
-                proyeccion = tabla + ".*";
-                idTabla = USERS_ID_USERS;
-                esDetalle = false;
-                esId = true;
-                break;
-
 
         }
 
@@ -293,269 +261,59 @@ public class ProviderSystem extends ContentProvider
         return values;
     }
 
-    @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri obtenerUriContenido(String tabla) {
 
-        SQLiteDatabase db = null;
-        if (bd != null) {
-            db = bd.getWritableDatabase();
-        } else {
-            if (!onCreate()) {
-                return null;
-            }
-            db = bd.getWritableDatabase();
-
-        }
-
-        ContentValues valores = matcherUri(uri);
-
-        String secuencia = values.getAsString("secuencia");
-        String tabla = valores.getAsString("tablaModelo");
-        String idTabla = valores.getAsString("idTabla");
-        String id = generarIdTabla(tabla);
-
-        System.out.println("valores = " + valores);
-
-
-        if (tabla != null) {
-            if (secuencia == null || Integer.parseInt(secuencia) == 0) {
-                values.put(idTabla, id);
-            }
-            System.out.println("values = " + values);
-            db.insertOrThrow(tabla, null, values);
-            notificarCambio(uri);
-            AndroidUtil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMP, TimeDateUtil.ahora());
-            AndroidUtil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMPDIA, TimeDateUtil.ahora());
-
-
-            if (secuencia != null && Integer.parseInt(secuencia) > 0) {
-                id = values.getAsString(idTabla);
-                return crearUriTablaDetalle(id, secuencia, tabla);
-            } else {
-                return crearUriTabla(id, tabla);
-            }
-        } else {
-            throw new UnsupportedOperationException("Uri no soportada");
-        }
-    }
-
-
-    @Override
-    public Cursor query(Uri uri, String[] projection, String selection,
-                        String[] selectionArgs, String sortOrder) {
-        // Obtener base de datos
-        SQLiteDatabase db = null;
-        if (bd != null) {
-            db = bd.getWritableDatabase();
-        } else {
-            if (!onCreate()) {
-                return null;
-            }
-            db = bd.getWritableDatabase();
-
-        }
-
-        Cursor c;
-
-        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-
-        ContentValues valores = matcherUri(uri);
-
-        String proy = valores.getAsString("proyeccion");
-        String[] proyeccion = new String[]{proy};//proy.split(",");
-        String setTablas = valores.getAsString("setTablas");
-        String idTabla = valores.getAsString("idTabla");
-        String[] ids = null;
-        boolean esId = valores.getAsBoolean("esId");
-        boolean esDetalle = valores.getAsBoolean("esDetalle");
-        String tabla = valores.getAsString("tablaModelo");
-
-        if (selection == null) {
-
-            if (esDetalle && esId) {
-
-                ids = obtenerIdTablaDetalle(uri);
-                String id = ids[0];
-                String secuencia = ids[1];
-                selection = tabla + "." + idTabla + " = '" + id + "' AND " +
-                        "secuencia = '" + secuencia + "'";
-                System.out.println("secuencia = " + secuencia);
-                System.out.println("id = " + id);
-                System.out.println("selection = " + selection);
-
-            } else if (esDetalle) {
-
-                String id = obtenerIdTablaDetalleId(uri);
-                selection = tabla + "." + idTabla + " = '" + id + "'";
-
-            } else if (esId) {
-
-                String id = obtenerIdTabla(uri);
-                selection = idTabla + " = '" + id + "'";
-
-            }
-        }
-
-
-        if (setTablas != null) {
-            builder.setTables(setTablas);
-            c = builder.query(db, proyeccion, selection,
-                    selectionArgs, null, null, sortOrder);
-            c.setNotificationUri(resolver, uri);
-
-            return c;
-
-        } else {
-
-            throw new UnsupportedOperationException("Uri no soportada");
-        }
+        return ContratoSystem.obtenerUriContenido(
+                tabla);
 
     }
 
-    @Override
-    public int update(Uri uri, ContentValues values, String selection,
-                      String[] selectionArgs) {
+    public String obtenerIdTabla(Uri uri) {
 
-        SQLiteDatabase db = null;
-        if (bd != null) {
-            db = bd.getWritableDatabase();
-        } else {
-            if (!onCreate()) {
-                return 0;
-            }
-            db = bd.getWritableDatabase();
+        return ContratoSystem.obtenerIdTabla(uri);
 
-        }
-
-        ContentValues valores = matcherUri(uri);
-
-        String tabla = valores.getAsString("tablaModelo");
-        String idTabla = valores.getAsString("idTabla");
-        boolean esId = valores.getAsBoolean("esId");
-        boolean esDetalle = valores.getAsBoolean("esDetalle");
-        String id = null;
-        String[] ids = null;
-        String secuencia = null;
-        String seleccion = null;
-
-        if (selection == null) {
-            if (!esDetalle) {
-                id = obtenerIdTabla(uri);
-                seleccion = idTabla + " = '" + id + "'";
-
-            } else if (esDetalle && !esId) {
-
-                id = obtenerIdTablaDetalleId(uri);
-                seleccion = tabla + "." + idTabla + " = '" + id + "'";
-
-            } else {
-                ids = obtenerIdTablaDetalle(uri);
-                id = ids[0];
-                secuencia = ids[1];
-                seleccion = idTabla + " = '" + id + "' AND " +
-                        "secuencia = '" + secuencia + "'";
-            }
-        } else {
-            seleccion = selection;
-        }
-
-        if (tabla != null) {
-
-            notificarCambio(uri);
-            AndroidUtil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMP, TimeDateUtil.ahora());
-            AndroidUtil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMPDIA, TimeDateUtil.ahora());
-
-            return db.update(tabla, values,
-                    seleccion,
-                    selectionArgs);
-
-        } else {
-
-            throw new UnsupportedOperationException("Uri no soportada");
-
-        }
     }
 
-    @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
 
-        SQLiteDatabase db = null;
-        if (bd != null) {
-            db = bd.getWritableDatabase();
-        } else {
-            if (!onCreate()) {
-                return 0;
-            }
-            db = bd.getWritableDatabase();
+    public Uri crearUriTabla(String id, String tabla) {
 
-        }
+        return ContratoSystem.crearUriTabla(id,
+                tabla);
 
-
-        ContentValues valores = matcherUri(uri);
-
-        String tabla = valores.getAsString("tablaModelo");
-        String idTabla = valores.getAsString("idTabla");
-        boolean esId = valores.getAsBoolean("esId");
-        boolean esDetalle = valores.getAsBoolean("esDetalle");
-        String id = null;
-        String[] ids = null;
-        String secuencia = null;
-        String seleccion = null;
-
-        if (selection == null) {
-
-            if (!esDetalle) {
-                id = obtenerIdTabla(uri);
-                seleccion = idTabla + " = '" + id + "'";
-
-            } else if (esDetalle && !esId) {
-
-                id = obtenerIdTablaDetalleId(uri);
-                seleccion = tabla + "." + idTabla + " = '" + id + "'";
-
-            } else {
-                ids = obtenerIdTablaDetalle(uri);
-                id = ids[0];
-                secuencia = ids[1];
-                seleccion = idTabla + " = '" + id + "' AND " +
-                        "secuencia = '" + secuencia + "'";
-            }
-        } else {
-            seleccion = selection;
-        }
-
-        if (tabla != null) {
-            notificarCambio(uri);
-            AndroidUtil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMP, TimeDateUtil.ahora());
-            AndroidUtil.setSharePreference(getContext(), PREFERENCIAS, TIMESTAMPDIA, TimeDateUtil.ahora());
-
-            return db.delete(tabla, seleccion,
-                    selectionArgs);
-        } else {
-
-            throw new UnsupportedOperationException("Uri no soportada");
-        }
     }
 
-    private void notificarCambio(Uri uri) {
+    public Uri crearUriTablaDetalle(String id, String secuencia, String tabla) {
 
-        resolver.notifyChange(uri, null);
+        return ContratoSystem.crearUriTablaDetalle(id, secuencia,
+                tabla);
+
     }
 
-    private String construirFiltro(String filtro) {
+    public Uri crearUriTablaDetalle(String id, int secuencia, String tabla) {
 
-        String sentencia = null;
 
-        switch (filtro) {
-            case FILTRO_CLIENTE:
-                sentencia = "cliente.nombres";
-                break;
-            case FILTRO_FECHA:
-                sentencia = "proyecto.fecha";
-                break;
-        }
+        return ContratoSystem.crearUriTablaDetalle(id, secuencia,
+                tabla);
 
-        return sentencia;
     }
 
+    public Uri crearUriTablaDetalleId(String id, String tabla, String tablaCab) {
+
+        return ContratoSystem.crearUriTablaDetalleId(id, tabla,
+                tablaCab);
+
+    }
+
+    public String obtenerTabCab(String tabla) {
+
+
+        return ContratoSystem.getTabCab(tabla);
+
+    }
+
+    public String[] obtenerCampos(String tabla) {
+
+        return ContratoSystem.obtenerCampos(tabla);
+
+    }
 }

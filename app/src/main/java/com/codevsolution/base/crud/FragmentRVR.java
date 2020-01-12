@@ -179,10 +179,10 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
             public void onClick(View v) {
 
                 if (tablaCab != null) {
-                    lista = CRUDutil.setListaModeloDetalle(campos, id);
+                    lista = crudUtil.setListaModeloDetalle(campos, id);
                     setLista();
                 } else {
-                    lista = CRUDutil.setListaModelo(campos);
+                    lista = crudUtil.setListaModelo(campos);
                     setLista();
                 }
                 setRv();
@@ -228,9 +228,9 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
         lista = new ListaModeloSQL();
         if (listab == null) {
             if (tablaCab == null) {
-                lista = CRUDutil.setListaModelo(campos);
+                lista = crudUtil.setListaModelo(campos);
             } else {
-                lista = CRUDutil.setListaModeloDetalle(campos, id);
+                lista = crudUtil.setListaModeloDetalle(campos, id);
             }
             setLista();
         } else {
@@ -300,9 +300,9 @@ public abstract class FragmentRVR extends FragmentBaseCRUD {
 
         if (listab == null) {
             if (tablaCab != null) {
-                lista = CRUDutil.setListaModeloDetalle(campos, id);
+                lista = crudUtil.setListaModeloDetalle(campos, id);
             } else {
-                lista = CRUDutil.setListaModelo(campos);
+                lista = crudUtil.setListaModelo(campos);
             }
             setLista();
         } else {

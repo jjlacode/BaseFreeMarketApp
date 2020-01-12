@@ -20,13 +20,18 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.codevsolution.base.adapter.ListaAdaptadorFiltroModelo;
 import com.codevsolution.base.adapter.RVAdapter;
 import com.codevsolution.base.adapter.TipoViewHolder;
+import com.codevsolution.base.android.controls.EditMaterial;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
 import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
 import com.codevsolution.base.style.Estilos;
+import com.codevsolution.base.time.TimeDateUtil;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 public abstract class FragmentCRUD extends FragmentCUD {
 
@@ -99,8 +104,8 @@ public abstract class FragmentCRUD extends FragmentCUD {
     protected void selector() {
 
         Log.d(TAG, getMetodo());
-        if (cruDutil == null) {
-            cruDutil = new CRUDutil((FragmentBaseCRUD) setFragment());
+        if (crudUtil == null) {
+            crudUtil = new CRUDutil((FragmentBaseCRUD) setFragment());
         }
 
         if (subTitulo == null) {
@@ -122,7 +127,7 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
             vaciarControles();
             path = null;
-            cruDutil.setImagen(contexto);
+            crudUtil.setImagen(contexto);
             setNuevo();
             if (bundle != null) {
                 bundle.putBoolean(NUEVOREGISTRO, false);
@@ -138,9 +143,9 @@ public abstract class FragmentCRUD extends FragmentCUD {
         } else if (nnn(id) && (secuencia > 0 || tablaCab == null)) {
 
             if (tablaCab != null) {
-                modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
+                modeloSQL = crudUtil.updateModelo(campos, id, secuencia);
             } else {
-                modeloSQL = CRUDutil.updateModelo(campos, id);
+                modeloSQL = crudUtil.updateModelo(campos, id);
             }
 
             datos();
@@ -199,10 +204,10 @@ public abstract class FragmentCRUD extends FragmentCUD {
         if (nnn(busca) && !busca.isEmpty()) {
 
             if (tablaCab != null) {
-                lista = CRUDutil.setListaModeloDetalle(campos, id);
+                lista = crudUtil.setListaModeloDetalle(campos, id);
                 setLista();
             } else {
-                lista = CRUDutil.setListaModelo(campos);
+                lista = crudUtil.setListaModelo(campos);
                 setLista();
             }
             setRv();
@@ -250,10 +255,10 @@ public abstract class FragmentCRUD extends FragmentCUD {
             public void onClick(View v) {
 
                 if (tablaCab != null) {
-                    lista = CRUDutil.setListaModeloDetalle(campos, id);
+                    lista = crudUtil.setListaModeloDetalle(campos, id);
                     setLista();
                 } else {
-                    lista = CRUDutil.setListaModelo(campos);
+                    lista = crudUtil.setListaModelo(campos);
                     setLista();
                 }
                 setRv();
@@ -332,10 +337,10 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
         if (buscaVoz) {
             if (tablaCab != null) {
-                lista = CRUDutil.setListaModeloDetalle(campos, id);
+                lista = crudUtil.setListaModeloDetalle(campos, id);
                 setLista();
             } else {
-                lista = CRUDutil.setListaModelo(campos);
+                lista = crudUtil.setListaModelo(campos);
                 setLista();
             }
             setRv();
@@ -387,9 +392,9 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
         if (listab == null) {
             if (tablaCab == null) {
-                lista = CRUDutil.setListaModelo(campos);
+                lista = crudUtil.setListaModelo(campos);
             } else {
-                lista = CRUDutil.setListaModeloDetalle(campos, id);
+                lista = crudUtil.setListaModeloDetalle(campos, id);
             }
             setLista();
         } else {
@@ -676,11 +681,11 @@ public abstract class FragmentCRUD extends FragmentCUD {
             if (tablaCab != null) {
                 modeloSQL = null;
                 secuencia = 0;
-                lista = CRUDutil.setListaModeloDetalle(campos, id);
+                lista = crudUtil.setListaModeloDetalle(campos, id);
             } else {
                 modeloSQL = null;
                 id = null;
-                lista = CRUDutil.setListaModelo(campos);
+                lista = crudUtil.setListaModelo(campos);
             }
             setLista();
         } else {
@@ -808,8 +813,9 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
         back = true;
         nuevo = false;
-        if (autoborrado && nn(modeloSQL) && modeloSQL.getLong(CAMPO_CREATEREG) == modeloSQL.getLong(CAMPO_TIMESTAMP)) {
-            delete();
+        if (autoborrado && nn(modeloSQL) && modeloSQL.getLong(CAMPO_CREATEREG) >= (TimeDateUtil.ahora() - (5 * MINUTOSLONG))
+                && modeloSQL.getLong(CAMPO_CREATEREG) == modeloSQL.getLong(CAMPO_TIMESTAMP)) {
+            mostrarDialogDelete();
         }
         cambiarFragment();
         selector();
@@ -870,10 +876,10 @@ public abstract class FragmentCRUD extends FragmentCUD {
                         //auto.setText("");
                     } else if (grabarVoz.contains("lista completa")) {
                         if (tablaCab != null) {
-                            lista = CRUDutil.setListaModeloDetalle(campos, id);
+                            lista = crudUtil.setListaModeloDetalle(campos, id);
                             setLista();
                         } else {
-                            lista = CRUDutil.setListaModelo(campos);
+                            lista = crudUtil.setListaModelo(campos);
                             setLista();
                         }
                         setRv();
@@ -898,18 +904,89 @@ public abstract class FragmentCRUD extends FragmentCUD {
 
  */
 
+
     protected ListaModeloSQL listaBusquedaVoz(String grabarVoz) {
 
-        listab = new ListaModeloSQL(CRUDutil.listaBusqueda(grabarVoz, campos));
-            actualizarConsultasRV();
-            setRv();
-            auto.setText(grabarVoz);
-            auto.setSelection(grabarVoz.length());
-            auto.setDropDownWidth(0);
-            if (id != null) {
-                auto.setDropDownWidth(ancho);
+        String[] results = grabarVoz.split(Pattern.quote(" "));
+        String campoBusqueda = NULL;
+        StringBuilder res = new StringBuilder();
+        for (final EditMaterialLayout editMaterial : materialEditLayouts) {
+            for (String result : results) {
+                System.out.println("editMaterial hint = " + editMaterial.getHint());
+                System.out.println("result = " + result);
+                if (!result.isEmpty() && editMaterial.getHint().equalsIgnoreCase(result.toLowerCase())) {
+                    for (int i = 1; i < results.length; i++) {
+                        res.append(results[i]);
+                        if (i < results.length - 1) {
+                            res.append(" ");
+                        }
+                    }
+
+                    for (Object o : camposEdit) {
+
+                        if (((Map) o).get("materialEdit") == editMaterial) {
+
+                            campoBusqueda = (String) ((Map) o).get("campoEdit");
+                            break;
+
+                        }
+                    }
+                }
+                if (nnn(campoBusqueda)) {
+                    break;
+                }
             }
+            if (nnn(campoBusqueda)) {
+                break;
+            }
+        }
+        if (campoBusqueda != null && campoBusqueda.equals(NULL)) {
+            for (final EditMaterial editMaterial : materialEdits) {
+                for (String result : results) {
+                    System.out.println("editMaterial hint = " + editMaterial.getHint());
+                    System.out.println("result = " + result);
+                    if (!result.isEmpty() && editMaterial.getHint().equalsIgnoreCase(result.toLowerCase())) {
+                        for (int i = 1; i < results.length; i++) {
+                            res.append(results[i]);
+                            if (i < results.length - 1) {
+                                res.append(" ");
+                            }
+                        }
+
+                        for (Object o : camposEdit) {
+
+                            if (((Map) o).get("materialEdit") == editMaterial) {
+
+                                campoBusqueda = (String) ((Map) o).get("campoEdit");
+                                break;
+
+                            }
+                        }
+                    }
+                    if (nnn(campoBusqueda)) {
+                        break;
+                    }
+                }
+                if (nnn(campoBusqueda)) {
+                    break;
+                }
+            }
+        }
+        if (nnn(campoBusqueda)) {
+            listab = new ListaModeloSQL(crudUtil.listaBusqueda(grabarVoz, new String[]{campoBusqueda}));
+        } else {
+            listab = new ListaModeloSQL(crudUtil.listaBusqueda(grabarVoz, campos));
+        }
+        actualizarConsultasRV();
+        setRv();
+        auto.setText(grabarVoz);
+        auto.setSelection(grabarVoz.length());
+        auto.setDropDownWidth(0);
+        if (id != null) {
+            auto.setDropDownWidth(ancho);
+        }
         return listab;
     }
+
 
 }

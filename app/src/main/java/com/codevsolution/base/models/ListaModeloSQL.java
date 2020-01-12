@@ -2,6 +2,9 @@ package com.codevsolution.base.models;
 
 import androidx.annotation.NonNull;
 
+import com.codevsolution.base.sqlite.ConsultaBDBase;
+import com.codevsolution.freemarketsapp.sqlite.ConsultaBD;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,11 +19,6 @@ import static com.codevsolution.base.javautil.JavaUtil.Constantes.INT;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.LONG;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.SHORT;
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.STRING;
-import static com.codevsolution.base.sqlite.ConsultaBD.queryList;
-import static com.codevsolution.base.sqlite.ConsultaBD.queryListCampo;
-import static com.codevsolution.base.sqlite.ConsultaBD.queryListDetalle;
-import static com.codevsolution.base.sqlite.ConsultaBD.queryListDetalleCampo;
-import static com.codevsolution.base.sqlite.ConsultaBD.queryListNoDecode;
 
 public class ListaModeloSQL extends ArrayList<ArrayList<ModeloSQL>> implements Serializable {
 
@@ -56,123 +54,136 @@ public class ListaModeloSQL extends ArrayList<ArrayList<ModeloSQL>> implements S
     public ListaModeloSQL(String[] campos) {
 
         super();
-
-        add(queryList(campos));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        add(consultaBDBase.queryList(campos));
     }
 
     public ListaModeloSQL(String tabla) {
 
         super();
-
-        add(queryList(tabla));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        add(consultaBDBase.queryList(tabla));
     }
 
     public ListaModeloSQL(String[] campos, boolean code) {
 
         super();
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
 
         if (code) {
-            add(queryListNoDecode(campos));
+            add(consultaBDBase.queryListNoDecode(campos));
         } else {
-            add(queryList(campos));
+            add(consultaBDBase.queryList(campos));
         }
     }
 
     public ListaModeloSQL(String[] campos, String id) {
 
         super();
-
-        add(queryListDetalle(campos, id));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        add(consultaBDBase.queryListDetalle(campos, id));
     }
 
     public ListaModeloSQL(String[] campos, String id, String campo, String valor) {
 
         super();
-
-        add(queryListDetalleCampo(campos, id, campo, valor));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        add(consultaBDBase.queryListDetalleCampo(campos, id, campo, valor));
     }
 
     public ListaModeloSQL(String[] campos, String campo, String valor) {
 
         super();
-        add(queryListCampo(campos, campo, valor));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        add(consultaBDBase.queryListCampo(campos, campo, valor));
 
     }
 
     public ListaModeloSQL(String[] campos, String campo, int valor) {
 
         super();
-        add(queryListCampo(campos, campo, valor, IGUAL));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        add(consultaBDBase.queryListCampo(campos, campo, valor, IGUAL));
 
     }
 
     public ListaModeloSQL(String[] campos, String campo, long valor) {
 
         super();
-        add(queryListCampo(campos, campo, valor, IGUAL));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        add(consultaBDBase.queryListCampo(campos, campo, valor, IGUAL));
 
     }
 
     public ListaModeloSQL(String[] campos, String campo, double valor) {
 
         super();
-        add(queryListCampo(campos, campo, valor, IGUAL));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        add(consultaBDBase.queryListCampo(campos, campo, valor, IGUAL));
 
     }
 
     public ListaModeloSQL(String[] campos, String campo, float valor) {
 
         super();
-        add(queryListCampo(campos, campo, valor, IGUAL));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        add(consultaBDBase.queryListCampo(campos, campo, valor, IGUAL));
 
     }
 
     public ListaModeloSQL(String[] campos, String campo, short valor) {
 
         super();
-        add(queryListCampo(campos, campo, valor, IGUAL));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        add(consultaBDBase.queryListCampo(campos, campo, valor, IGUAL));
 
     }
 
     public ListaModeloSQL(String[] campos, String campo, String valor, int flag) {
 
         super();
-        add(queryListCampo(campos, campo, valor, flag));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        add(consultaBDBase.queryListCampo(campos, campo, valor, flag));
 
     }
 
     public ListaModeloSQL(String[] campos, String campo, int valor, int valor2, int flag) {
 
         super();
-        add(queryList(campos, campo, valor, valor2, flag));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        add(consultaBDBase.queryList(campos, campo, valor, valor2, flag));
 
     }
 
     public ListaModeloSQL(String[] campos, String campo, long valor, long valor2, int flag) {
 
         super();
-        add(queryList(campos, campo, valor, valor2, flag));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        add(consultaBDBase.queryList(campos, campo, valor, valor2, flag));
 
     }
 
     public ListaModeloSQL(String[] campos, String campo, double valor, double valor2, int flag) {
 
         super();
-        add(queryList(campos, campo, valor, valor2, flag));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        add(consultaBDBase.queryList(campos, campo, valor, valor2, flag));
 
     }
 
     public ListaModeloSQL(String[] campos, String campo, float valor, float valor2, int flag) {
 
         super();
-        add(queryList(campos, campo, valor, valor2, flag));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        add(consultaBDBase.queryList(campos, campo, valor, valor2, flag));
 
     }
 
     public ListaModeloSQL(String[] campos, String campo, short valor, short valor2, int flag) {
 
         super();
-        add(queryList(campos, campo, valor, valor2, flag));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        add(consultaBDBase.queryList(campos, campo, valor, valor2, flag));
 
     }
 
@@ -473,11 +484,13 @@ public class ListaModeloSQL extends ArrayList<ArrayList<ModeloSQL>> implements S
     }
 
     public void setLista(String[] campos) {
-        set(0, queryList(campos));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        set(0, consultaBDBase.queryList(campos));
     }
 
     public void setLista(String[] campos, String id) {
-        set(0, queryListDetalle(campos, id));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        set(0, consultaBDBase.queryListDetalle(campos, id));
     }
 
     public void setLista(int indice, ArrayList<ModeloSQL> lista) {
@@ -489,11 +502,13 @@ public class ListaModeloSQL extends ArrayList<ArrayList<ModeloSQL>> implements S
     }
 
     public void setLista(int indice, String[] campos) {
-        set(indice, queryList(campos));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        set(indice, consultaBDBase.queryList(campos));
     }
 
     public void setLista(int indice, String[] campos, String id) {
-        set(indice, queryListDetalle(campos, id));
+        ConsultaBDBase consultaBDBase = new ConsultaBDBase(new ConsultaBD());
+        set(indice, consultaBDBase.queryListDetalle(campos, id));
     }
 
     public boolean chech() {

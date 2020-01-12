@@ -10,8 +10,9 @@ import com.codevsolution.base.android.AppActivity;
 import com.codevsolution.base.logica.InteractorBase;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
-import com.codevsolution.base.sqlite.ConsultaBD;
+import com.codevsolution.base.sqlite.ConsultaBDBase;
 import com.codevsolution.freemarketsapp.settings.Preferencias;
+import com.codevsolution.freemarketsapp.sqlite.ConsultaBD;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -465,6 +466,7 @@ public class EncryptUtil {
 
     public static void cifrarBase(ArrayList<String[]> camposTablas) {
 
+        ConsultaBDBase consultaBD = new ConsultaBDBase(new ConsultaBD());
 
         for (String[] camposTabla : camposTablas) {
             ListaModeloSQL listaModeloSQL = new ListaModeloSQL(camposTabla, true);
@@ -480,37 +482,37 @@ public class EncryptUtil {
                     if (dato != null) {
 
                         if (!comprobarIsCode(dato)) {
-                            ConsultaBD.putDato(valores, camposTabla[i], dato);
+                            consultaBD.putDato(valores, camposTabla[i], dato);
                             mod = true;
 
                         } else if (AndroidUtil.getSharePreference(context, PREFERENCIAS, Preferencias.CIFRADOPASS, false)
                                 && comprobarIsCodeEncodePass(dato)) {
                             dato = decodificaStr(dato);
-                            ConsultaBD.putDato(valores, camposTabla[i], dato);
+                            consultaBD.putDato(valores, camposTabla[i], dato);
                             mod = true;
                         } else if (AndroidUtil.getSharePreference(context, PREFERENCIAS, Preferencias.CIFRADO, false)
                                 && comprobarIsCodeEncode(dato)) {
                             dato = decodificaStr(dato);
-                            ConsultaBD.putDato(valores, camposTabla[i], dato);
+                            consultaBD.putDato(valores, camposTabla[i], dato);
                             mod = true;
                         } else if (AndroidUtil.getSharePreference(context, PREFERENCIAS, Preferencias.CIFRADOGEN, false)
                                 && comprobarIsCodeGen(dato)) {
                             dato = decodificaStr(dato);
-                            ConsultaBD.putDato(valores, camposTabla[i], dato);
+                            consultaBD.putDato(valores, camposTabla[i], dato);
                             mod = true;
                         }
                     }
                 }
                 if (mod) {
-                    if (ConsultaBD.obtenerTabCab(camposTabla[1]) != null) {
+                    if (consultaBD.obtenerTabCab(camposTabla[1]) != null) {
                         System.out.println("valores = " + valores);
-                        Uri uri = ConsultaBD.crearUriTablaDetalle(id, secuencia, camposTabla[1]);
-                        int res = ConsultaBD.updateRegistro(uri, valores);
+                        Uri uri = consultaBD.crearUriTablaDetalle(id, secuencia, camposTabla[1]);
+                        int res = consultaBD.updateRegistro(uri, valores);
                         System.out.println("res = " + res);
                     } else {
                         System.out.println("valores = " + valores);
-                        Uri uri = ConsultaBD.crearUriTabla(id, camposTabla[1]);
-                        int res = ConsultaBD.updateRegistro(uri, valores);
+                        Uri uri = consultaBD.crearUriTabla(id, camposTabla[1]);
+                        int res = consultaBD.updateRegistro(uri, valores);
                         System.out.println("res = " + res);
 
                     }
@@ -524,6 +526,7 @@ public class EncryptUtil {
 
     public static void cifrarBaseGen(ArrayList<String[]> camposTablas) {
 
+        ConsultaBDBase consultaBD = new ConsultaBDBase(new ConsultaBD());
 
         for (String[] camposTabla : camposTablas) {
             ListaModeloSQL listaModeloSQL = new ListaModeloSQL(camposTabla, true);
@@ -540,30 +543,30 @@ public class EncryptUtil {
 
                         if (!comprobarIsCode(dato)) {
                             dato = codificaStrGen(dato);
-                            ConsultaBD.putDato(valores, camposTabla[i], dato);
+                            consultaBD.putDato(valores, camposTabla[i], dato);
                             mod = true;
 
                         } else if (InteractorBase.key != null && comprobarIsCodeEncodePass(dato)) {
                             dato = decodificaStr(dato);
                             dato = codificaStrGen(dato);
-                            ConsultaBD.putDato(valores, camposTabla[i], dato);
+                            consultaBD.putDato(valores, camposTabla[i], dato);
                             mod = true;
                         } else if (AndroidUtil.getSharePreference(context, PREFERENCIAS, Preferencias.CIFRADO, false)
                                 && comprobarIsCodeEncode(dato)) {
                             dato = decodificaStr(dato);
                             dato = codificaStrGen(dato);
-                            ConsultaBD.putDato(valores, camposTabla[i], dato);
+                            consultaBD.putDato(valores, camposTabla[i], dato);
                             mod = true;
                         }
                     }
                 }
                 if (mod) {
-                    if (ConsultaBD.obtenerTabCab(camposTabla[1]) != null) {
+                    if (consultaBD.obtenerTabCab(camposTabla[1]) != null) {
                         System.out.println("valores = " + valores);
-                        ConsultaBD.updateRegistroDetalle(camposTabla[1], id, secuencia, valores);
+                        consultaBD.updateRegistroDetalle(camposTabla[1], id, secuencia, valores);
                     } else {
                         System.out.println("valores = " + valores);
-                        ConsultaBD.updateRegistro(camposTabla[1], id, valores);
+                        consultaBD.updateRegistro(camposTabla[1], id, valores);
                     }
                 }
                 //}
@@ -574,6 +577,8 @@ public class EncryptUtil {
     }
 
     public static void desCifrarBase(ArrayList<String[]> camposTablas) {
+
+        ConsultaBDBase consultaBD = new ConsultaBDBase(new ConsultaBD());
 
         for (String[] camposTabla : camposTablas) {
             ListaModeloSQL listaModeloSQL = new ListaModeloSQL(camposTabla, true);
@@ -590,19 +595,19 @@ public class EncryptUtil {
 
                         if (comprobarIsCode(dato)) {
                             dato = decodificaStr(dato);
-                            ConsultaBD.putDato(valores, campo, dato);
+                            consultaBD.putDato(valores, campo, dato);
                             mod = true;
 
                         }
                     }
                 }
                 if (mod) {
-                    if (ConsultaBD.obtenerTabCab(camposTabla[1]) != null) {
+                    if (consultaBD.obtenerTabCab(camposTabla[1]) != null) {
                         System.out.println("valores = " + valores);
-                        ConsultaBD.updateRegistroDetalle(camposTabla[1], id, secuencia, valores);
+                        consultaBD.updateRegistroDetalle(camposTabla[1], id, secuencia, valores);
                     } else {
                         System.out.println("valores = " + valores);
-                        ConsultaBD.updateRegistro(camposTabla[1], id, valores);
+                        consultaBD.updateRegistro(camposTabla[1], id, valores);
                     }
                 }
             }

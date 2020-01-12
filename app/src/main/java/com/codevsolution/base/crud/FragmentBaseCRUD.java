@@ -25,8 +25,7 @@ import com.codevsolution.base.encrypt.EncryptUtil;
 import com.codevsolution.base.media.MediaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
-import com.codevsolution.base.sqlite.ConsultaBD;
-import com.codevsolution.base.sqlite.ContratoPry;
+import com.codevsolution.freemarketsapp.sqlite.ContratoPry;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,7 +35,6 @@ import java.util.TimerTask;
 import java.util.regex.Pattern;
 
 import static android.app.Activity.RESULT_OK;
-import static com.codevsolution.base.sqlite.ConsultaBD.putDato;
 
 public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoPry.Tablas {
 
@@ -55,7 +53,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     protected String campoImagen;
     protected String campoTimeStamp;
     protected String campoCreate;
-    protected CRUDutil cruDutil;
 
     protected ContentValues valores;
     protected ListaModeloSQL listab;
@@ -75,6 +72,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     protected String idrelacionado;
     protected boolean playOn;
     protected String busca;
+    protected Timer timerEdit;
 
     public FragmentBaseCRUD() {
     }
@@ -139,8 +137,8 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
         layoutPie = getIdLayout("btn_sdb");
         setTabla();
-        tablaCab = ConsultaBD.obtenerTabCab(tabla);
-        campos = ConsultaBD.obtenerCampos(tabla);
+        tablaCab = consultaBD.obtenerTabCab(tabla);
+        campos = consultaBD.obtenerCampos(tabla);
         setCampoID();
         setContext();
         setTitulo();
@@ -247,7 +245,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
             origen = tabla;
         }
 
-        cruDutil.setImagen(contexto);
+        crudUtil.setImagen(contexto);
         try {
             obtenerDatosEdit();
             setDatos();
@@ -277,9 +275,9 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         try {
 
             if (modeloSQL == null && id != null && tablaCab == null) {
-                modeloSQL = CRUDutil.updateModelo(campos, id);
+                modeloSQL = crudUtil.updateModelo(campos, id);
             } else if (modeloSQL == null && id != null && secuencia > 0) {
-                modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
+                modeloSQL = crudUtil.updateModelo(campos, id, secuencia);
             }
 
             if (modeloSQL != null && modeloSQL.getString(campoImagen) != null) {
@@ -346,9 +344,9 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         try {
 
             if (modeloSQL == null && id != null && tablaCab == null) {
-                modeloSQL = CRUDutil.updateModelo(campos, id);
+                modeloSQL = crudUtil.updateModelo(campos, id);
             } else if (modeloSQL == null && id != null && secuencia > 0) {
-                modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
+                modeloSQL = crudUtil.updateModelo(campos, id, secuencia);
             }
 
             if (modeloSQL != null && modeloSQL.getString(campoImagen) != null) {
@@ -499,25 +497,25 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                     @Override
                     public void cambiando(CharSequence s, int start, int before, int count) {
 
-                        if (timer != null) {
-                            timer.cancel();
+                        if (timerEdit != null) {
+                            timerEdit.cancel();
+                            System.out.println("timer cancel");
                         }
                         contDes = count;
                     }
 
                     @Override
                     public void despuesCambio(Editable s) {
-                        System.out.println("s.toString() = " + s.toString());
                         if (!s.toString().equals("") && contAnt != contDes) {
-                            timer = new Timer();
-                            timer.schedule(new TimerTask() {
+                            timerEdit = new Timer();
+                            timerEdit.schedule(new TimerTask() {
                                 @Override
                                 public void run() {
-                                    activityBase.runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            alCambiarCampos(editMaterial);
-                                        }
+
+                                    activityBase.runOnUiThread(() -> {
+
+                                        alCambiarCampos(editMaterial);
+                                        timerEdit.cancel();
                                     });
                                 }
                             }, tiempoGuardado * 1000);
@@ -623,19 +621,19 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
             if (((Map) o).get("materialEdit") == editMaterial) {
 
                 if (nn(modeloSQL)) {
-                    CRUDutil.actualizarCampo(modeloSQL, (String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
-                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                    crudUtil.actualizarCampo(modeloSQL, (String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
+                    modeloSQL = crudUtil.updateModelo(modeloSQL);
 
                 } else {
                     valores = new ContentValues();
-                    putDato(valores, (String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
+                    consultaBD.putDato(valores, (String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
                     if (secuencia > 0) {
-                        int i = ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
-                        modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
+                        int i = consultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+                        modeloSQL = crudUtil.updateModelo(campos, id, secuencia);
                         System.out.println("guardados = " + i);
                     } else {
-                        int x = ConsultaBD.updateRegistro(tabla, id, valores);
-                        modeloSQL = CRUDutil.updateModelo(campos, id);
+                        int x = consultaBD.updateRegistro(tabla, id, valores);
+                        modeloSQL = crudUtil.updateModelo(campos, id);
                         System.out.println("guardados = " + x);
                     }
                 }
@@ -668,22 +666,22 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                     int z = 0;
 
                     System.out.println("Campo edit = " + ((Map) o).get("campoEdit"));
-                    z = CRUDutil.actualizarCampo(modeloSQL, (String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
+                    z = crudUtil.actualizarCampo(modeloSQL, (String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
 
                     System.out.println("guardados = " + z);
                     System.out.println("editMaterial = " + editMaterial.getTexto());
-                    modeloSQL = CRUDutil.updateModelo(modeloSQL);
+                    modeloSQL = crudUtil.updateModelo(modeloSQL);
                 } else {
 
                     valores = new ContentValues();
                     valores.put((String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
                     if (secuencia > 0) {
-                        int i = ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
-                        modeloSQL = CRUDutil.updateModelo(campos, id, secuencia);
+                        int i = consultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+                        modeloSQL = crudUtil.updateModelo(campos, id, secuencia);
                         System.out.println("guardados = " + i);
                     } else {
-                        int x = ConsultaBD.updateRegistro(tabla, id, valores);
-                        modeloSQL = CRUDutil.updateModelo(campos, id);
+                        int x = consultaBD.updateRegistro(tabla, id, valores);
+                        modeloSQL = crudUtil.updateModelo(campos, id);
                         System.out.println("guardados = " + x);
                     }
                 }
@@ -696,16 +694,16 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         for (Object o : camposEdit) {
             if (((Map) o).get("materialEdit") == editMaterial) {
                 if (nn(modeloSQL)) {
-                    CRUDutil.actualizarCampo(modeloSQL, (String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
+                    crudUtil.actualizarCampo(modeloSQL, (String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
                 } else {
 
                     ContentValues valores = new ContentValues();
                     valores.put((String) ((Map) o).get("campoEdit"), editMaterial.getTexto());
                     if (secuencia > 0) {
-                        int i = ConsultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
+                        int i = consultaBD.updateRegistroDetalle(tabla, id, secuencia, valores);
                         System.out.println("guardados = " + i);
                     } else {
-                        int x = ConsultaBD.updateRegistro(tabla, id, valores);
+                        int x = consultaBD.updateRegistro(tabla, id, valores);
                         System.out.println("guardados = " + x);
                     }
                 }
@@ -766,14 +764,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     protected void enviarAct() {
         Log.d(TAG, getMetodo());
 
-        bundle = new Bundle();
-        bundle.putString(ORIGEN, origen);
-        bundle.putString(ACTUAL, actual);
-        bundle.putString(ACTUALTEMP, actualtemp);
-        bundle.putSerializable(MODELO, modeloSQL);
-        bundle.putString(CAMPO_ID, id);
-        bundle.putString(SUBTITULO, subTitulo);
-        bundle.putInt(CAMPO_SECUENCIA, secuencia);
+        enviarBundle();
         System.out.println("Enviando bundle a MainActivity");
         icFragmentos.enviarBundleAActivity(bundle);
     }
@@ -782,6 +773,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         Log.d(TAG, getMetodo());
 
         bundle = new Bundle();
+        bundle.putString(TAGPERS, fragment.getClass().getName());
         bundle.putString(ORIGEN, actual);
         bundle.putString(ACTUAL, destino);
         bundle.putString(ACTUALTEMP, actualtemp);
@@ -797,9 +789,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         Log.d(TAG, getMetodo());
 
         int orientation = getResources().getConfiguration().orientation;
-        SharedPreferences persistencia = getActivity().getSharedPreferences(PERSISTENCIA, Context.MODE_PRIVATE);
-
-        SharedPreferences.Editor editor = persistencia.edit();
 
         switch (orientation) {
             case Configuration.ORIENTATION_LANDSCAPE:
@@ -818,7 +807,6 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
         //cargarBundle();
 
         if (bundle != null) {
-            enviarBundle();
             enviarAct();
         }
 
@@ -968,7 +956,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
 
                     //path = AndroidUtil.getSharePreference(contexto, PERSISTENCIA, PATH, path);
                     if (nn(modeloSQL) && nnn(path) && nnn(campoImagen)) {
-                        CRUDutil.actualizarCampo(modeloSQL, campoImagen, path);
+                        crudUtil.actualizarCampo(modeloSQL, campoImagen, path);
                         onSetImagen(path);
                     }
 
@@ -978,7 +966,7 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
                         path = mediaUtil.getPath(data.getData());
                         if (nn(modeloSQL) && nnn(path) && nnn(campoImagen)) {
                             System.out.println("campoImagen = " + campoImagen);
-                            CRUDutil.actualizarCampo(modeloSQL, campoImagen, path);
+                            crudUtil.actualizarCampo(modeloSQL, campoImagen, path);
                             onSetImagen(path);
                         }
 
@@ -1125,4 +1113,5 @@ public abstract class FragmentBaseCRUD extends FragmentBase implements ContratoP
     public ViewImagenLayout getImagen() {
         return imagen;
     }
+
 }

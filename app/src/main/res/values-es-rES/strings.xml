@@ -168,7 +168,7 @@
     <string name="dias_futuros_agenda">Ver días futuros en agenda</string>
     <string name="partida_base">Partida base</string>
     <string name="nueva_partida">Nueva partida</string>
-    <string name="action_help">Help</string>
+    <string name="action_help">Ayuda</string>
     <string name="action_info">Info</string>
     <string name="genera_pdf">Genera PDF</string>
     <string name="ver_pdf">PDF</string>
@@ -389,7 +389,7 @@
     <string name="mensajes_enviados">Mensajes enviados</string>
     <string name="productos_lugar">Productos Lugar</string>
     <string name="envio_noticias">Envio de Noticias</string>
-    <string name="perfil_freelance">Perfil Freelance</string>
+    <string name="perfil_freelance">Perfil Trabajo</string>
     <string name="ocultar_noticias">Ocultar noticias</string>
     <string name="ver_noticias">Ver Noticias</string>
     <string name="mensaje_ganador">Ha resultado ganador del sorteo de </string>
@@ -567,6 +567,16 @@
     <string name="marca">marca</string>
     <string name="gestion_proyectos">Gestión de proyectos</string>
     <string name="voz">voz</string>
+    <string name="backupbd">Copia seguridad bases de datos</string>
+    <string name="backupbd_instant">Copia de seguridad instantanea</string>
+    <string name="backupbd_diaria">Copia de seguridad base datos diaria</string>
+    <string name="mins_backupIns">Minutos copia instantanea Base Datos</string>
+    <string name="comandos_voz_jedi">Fuerza Jedi</string>
+    <string name="gestion_bases_datos">Gestion bases de datos</string>
+    <string name="todas_secciones_pref">Todas las secciones</string>
+    <string name="cerrar_sesion">Cerrar sesión</string>
+    <string name="operacion_cancelada">Operación cancelada</string>
+    <string name="msg_cerrar_sesion">¿Esta seguro que quiere cerrar la sesión?</string>
 
 
 </resources>

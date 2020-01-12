@@ -234,6 +234,21 @@ public class CheckPermisos {
             });
             dialogo.show();
 
+        } else {
+            System.out.println("debe tener los permisos dialogo, permiso " + permisoSolicitado);
+            AlertDialog.Builder dialogo = new AlertDialog.Builder(activity);
+            dialogo.setTitle("Permisos desactivados");
+            dialogo.setMessage("Debe aceptar los permisos para el correcto funcionamiento de la app");
+
+            dialogo.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    activity.requestPermissions(new String[]
+                            {permisoSolicitado}, code);
+                }
+            });
+            dialogo.show();
         }
 
         return false;
@@ -264,6 +279,10 @@ public class CheckPermisos {
             });
             dialogo.show();
 
+        } else {
+
+            activity.requestPermissions(new String[]
+                    {permisoSolicitado}, code);
         }
 
         return false;

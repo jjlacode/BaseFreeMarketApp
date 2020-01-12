@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cameraview_default_autofocus_marker">com.codevsolution.cameraview.markers.DefaultAutoFocusMarker</string>
+
+    <string name="cameraview_filter_none">com.codevsolution.cameraview.filter.NoFilter</string>
+    <string name="cameraview_filter_autofix">com.codevsolution.cameraview.filters.AutoFixFilter</string>
+    <string name="cameraview_filter_black_and_white">com.codevsolution.cameraview.filters.BlackAndWhiteFilter</string>
+    <string name="cameraview_filter_brightness">com.codevsolution.cameraview.filters.BrightnessFilter</string>
+    <string name="cameraview_filter_contrast">com.codevsolution.cameraview.filters.ContrastFilter</string>
+    <string name="cameraview_filter_cross_process">com.codevsolution.cameraview.filters.CrossProcessFilter</string>
+    <string name="cameraview_filter_documentary">com.codevsolution.cameraview.filters.DocumentaryFilter</string>
+    <string name="cameraview_filter_duotone">com.codevsolution.cameraview.filters.DuotoneFilter</string>
+    <string name="cameraview_filter_fill_light">com.codevsolution.cameraview.filters.FillLightFilter</string>
+    <string name="cameraview_filter_gamma">com.codevsolution.cameraview.filters.GammaFilter</string>
+    <string name="cameraview_filter_grain">com.codevsolution.cameraview.filters.GrainFilter</string>
+    <string name="cameraview_filter_grayscale">com.codevsolution.cameraview.filters.GrayscaleFilter</string>
+    <string name="cameraview_filter_hue">com.codevsolution.cameraview.filters.HueFilter</string>
+    <string name="cameraview_filter_invert_colors">com.codevsolution.cameraview.filters.InvertColorsFilter</string>
+    <string name="cameraview_filter_lomoish">com.codevsolution.cameraview.filters.LomoishFilter</string>
+    <string name="cameraview_filter_posterize">com.codevsolution.cameraview.filters.PosterizeFilter</string>
+    <string name="cameraview_filter_saturation">com.codevsolution.cameraview.filters.SaturationFilter</string>
+    <string name="cameraview_filter_sepia">com.codevsolution.cameraview.filters.SepiaFilter</string>
+    <string name="cameraview_filter_sharpness">com.codevsolution.cameraview.filters.SharpnessFilter</string>
+    <string name="cameraview_filter_temperature">com.codevsolution.cameraview.filters.TemperatureFilter</string>
+    <string name="cameraview_filter_tint">com.codevsolution.cameraview.filters.TintFilter</string>
+    <string name="cameraview_filter_vignette">com.codevsolution.cameraview.filters.VignetteFilter</string>
+</resources>

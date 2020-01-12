@@ -31,13 +31,13 @@ import com.codevsolution.base.animation.OneFrameLayout;
 import com.codevsolution.base.javautil.JavaUtil;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
-import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.style.Estilos;
 import com.codevsolution.base.time.Day;
 import com.codevsolution.base.time.ListaDays;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.R;
 import com.codevsolution.freemarketsapp.logica.Interactor;
+import com.codevsolution.freemarketsapp.sqlite.ContratoPry;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

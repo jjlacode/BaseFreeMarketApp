@@ -50,7 +50,11 @@ public class LoginPresenter implements LoginContract.Presenter, LoginInteractor.
 
     @Override
     public void onAuthSuccess() {
-        mLoginView.accessApp();
+        try {
+            mLoginView.accessApp();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -61,7 +65,11 @@ public class LoginPresenter implements LoginContract.Presenter, LoginInteractor.
 
     @Override
     public void onRegSuccess() {
-        mLoginView.showBienvenida();
+        try {
+            mLoginView.showBienvenida();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

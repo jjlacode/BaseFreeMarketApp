@@ -1,45 +1,39 @@
 package com.codevsolution.base.login;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
+import android.text.Editable;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 
 import com.codevsolution.base.android.AndroidUtil;
 import com.codevsolution.base.android.AppActivity;
-import com.codevsolution.base.android.controls.EditMaterial;
-import com.codevsolution.base.android.controls.ImagenLayout;
-import com.codevsolution.base.encrypt.EncryptUtil;
-import com.codevsolution.base.models.ModeloSQL;
-import com.codevsolution.base.sqlite.ConsultaBD;
-import com.codevsolution.base.sqlite.SQLiteUtil;
-import com.codevsolution.freemarketsapp.MainActivity;
-import com.codevsolution.freemarketsapp.R;
+import com.codevsolution.base.android.controls.EditMaterialLayout;
+import com.codevsolution.base.android.controls.ViewImagenLayout;
+import com.codevsolution.base.style.Estilos;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.UUID;
 
 import static com.codevsolution.base.javautil.JavaUtil.Constantes.NULL;
+import static com.codevsolution.base.logica.InteractorBase.Constantes.EMAILUSER;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.INICIO;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.SYSTEM;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.USERID;
 import static com.codevsolution.base.logica.InteractorBase.Constantes.USERIDCODE;
-import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.CAMPOS_USERS;
-import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.TABLA_USERS;
-import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.USERS_USERID;
-import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.USERS_USERIDCODE;
 
 /**
  * Muestra el formulario de login
@@ -47,12 +41,16 @@ import static com.codevsolution.base.sqlite.ContratoSystem.Tablas.USERS_USERIDCO
 public class LoginFragment extends Fragment implements LoginContract.View {
 
     private LoginContract.Presenter mPresenter;
-    private ImagenLayout imagen;
-    private EditMaterial mEmail;
-    private EditMaterial mPassword;
+    private ViewImagenLayout imagen;
+    private EditMaterialLayout mEmail;
+    private EditMaterialLayout mPassword;
     private Button mSignInButton;
     private Button registrar;
-    private View mLoginForm;
+    private ImageView btnAyuda;
+    private LinearLayoutCompat main;
+    private LinearLayoutCompat mLoginImg;
+    private LinearLayoutCompat mLoginForm;
+    private LinearLayoutCompat mLoginEdit;
     private View mLoginProgress;
     private Callback mCallback;
     private FirebaseAuth mFirebaseAuth;
@@ -64,6 +62,7 @@ public class LoginFragment extends Fragment implements LoginContract.View {
     private float densidad;
     private int anchoReal;
     private int altoReal;
+    private Context contexto;
 
 
     public static LoginFragment newInstance() {
@@ -90,81 +89,113 @@ public class LoginFragment extends Fragment implements LoginContract.View {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     setIdUserCode(user.getUid());
-                    accessApp();
+                    try {
+                        accessApp();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
 
                 }
             }
         };
     }
 
-    protected String setIdUserCode(String userID) {
+    private void setIdUserCode(String userID) {
 
-        String id = null;
-        String pathDb = Environment.getDataDirectory().getPath() + "/data/"
-                + AppActivity.getPackage(getContext()) + "/databases/";
+        String id = AndroidUtil.getSharePreferenceMaster(contexto, SYSTEM, userID, NULL);
 
-        String BASEDATOS = SYSTEM + userID + ".db";
+        if (id != null && !id.equals(NULL)) {
 
-        if (!SQLiteUtil.checkDataBase(pathDb + BASEDATOS)) {
-
-            id = UUID.randomUUID().toString();
-            AndroidUtil.setSharePreference(getContext(), USERID, USERIDCODE, id);
-            AndroidUtil.setSharePreference(getContext(), USERID, USERID, id);
-
-
-            ContentValues values = new ContentValues();
-            ConsultaBD.putDato(values, USERS_USERID, userID);
-            ConsultaBD.putDato(values, USERS_USERIDCODE, id);
-            ConsultaBD.insertRegistro(TABLA_USERS, values);
+            AndroidUtil.setSharePreference(contexto, USERID, USERIDCODE, id);
+            AndroidUtil.setSharePreference(contexto, USERID, USERID, id);
 
         } else {
 
-            ModeloSQL user = ConsultaBD.queryObject(CAMPOS_USERS, USERS_USERID, userID);
-            id = EncryptUtil.decodificaStr(user.getString(USERS_USERIDCODE));
-            AndroidUtil.setSharePreference(getContext(), USERID, USERIDCODE, id);
+            id = UUID.randomUUID().toString();
+            AndroidUtil.setSharePreferenceMaster(contexto, SYSTEM, userID, id);
+            AndroidUtil.setSharePreference(contexto, USERID, USERIDCODE, id);
+            AndroidUtil.setSharePreference(contexto, USERID, USERID, id);
+
         }
-        return id;
+        System.out.println("id loginFragment= " + id);
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View root = inflater.inflate(R.layout.fragment_login, container, false);
+        final View root = inflater.inflate(Estilos.getIdLayout(contexto, "fragment_login"), container, false);
 
-        mLoginForm = root.findViewById(R.id.login_form);
-        mLoginProgress = root.findViewById(R.id.login_progress);
+        main = root.findViewById(Estilos.getIdResource(contexto, "login_main"));
+        mLoginImg = root.findViewById(Estilos.getIdResource(contexto, "login_img"));
+        mLoginForm = root.findViewById(Estilos.getIdResource(contexto, "login_form"));
+        mLoginEdit = root.findViewById(Estilos.getIdResource(contexto, "login_edit"));
+        mEmail = new EditMaterialLayout(mLoginEdit, contexto);
+        mEmail.setHint("Email");
+        mEmail.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.EMAIL);
+        mEmail.btnInicioVisible(false);
+        mEmail.setAlCambiarListener(new EditMaterialLayout.AlCambiarListener() {
+            @Override
+            public void antesCambio(CharSequence s, int start, int count, int after) {
 
-        mEmail = root.findViewById(R.id.etcorreologin);
-        mPassword = root.findViewById(R.id.etpasslogin);
-        registrar = root.findViewById(R.id.btnRegistrar);
-        mSignInButton = root.findViewById(R.id.btnacceder);
-        imagen = root.findViewById(R.id.imglogin);
+            }
+
+            @Override
+            public void cambiando(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void despuesCambio(Editable s) {
+
+                AndroidUtil.setSharePreferenceMaster(contexto, USERID, EMAILUSER, s.toString());
+            }
+        });
+        mPassword = new EditMaterialLayout(mLoginEdit, contexto);
+        mPassword.setHint("Password");
+        mPassword.setTipo(EditMaterialLayout.TEXTO | EditMaterialLayout.PASS);
+        mPassword.btnInicioVisible(false);
+        mLoginProgress = root.findViewById(Estilos.getIdResource(contexto, "login_progress"));
+
+        registrar = root.findViewById(Estilos.getIdResource(contexto, "btnRegistrar"));
+        mSignInButton = root.findViewById(Estilos.getIdResource(contexto, "btnacceder"));
+        btnAyuda = root.findViewById(Estilos.getIdResource(contexto, "btnAyudaLogin"));
+        btnAyuda.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AppActivity.verWeb(contexto, "https://" + Estilos.getString(contexto, "app_name_min") + ".codevsolution.com/login", getActivity());
+            }
+        });
+        imagen = new ViewImagenLayout(mLoginImg, contexto);
 
         metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-        land = getResources().getBoolean(R.bool.esLand);
-        tablet = getResources().getBoolean(R.bool.esTablet);
+        land = getResources().getBoolean(Estilos.getIdBool(contexto, "esLand"));
+        tablet = getResources().getBoolean(Estilos.getIdBool(contexto, "esTablet"));
         densidad = metrics.density;
         anchoReal = metrics.widthPixels;
         altoReal = metrics.heightPixels;
 
-        imagen.setImageResource(R.drawable.logo, anchoReal / 2, altoReal / 3);
+        imagen.setImageResource(Estilos.getIdDrawable(contexto, "logo"), anchoReal / 2, altoReal / 3);
         imagen.setVisibleTitulo(true);
         imagen.setVisiblePie(true);
-        imagen.setTextPie(R.string.auth);
-        imagen.setColorTextoTitulo(getResources().getColor(R.color.colorPrimary));
-        imagen.setColorTextoPie(getResources().getColor(R.color.colorPrimary));
-        imagen.setTextTitulo(R.string.app_name);
+        imagen.setTextTitulo(Estilos.getString(contexto, "app_name"));
+        imagen.setTextPie(Estilos.getString(contexto, "auth"));
+        imagen.setColorTextoTitulo(Estilos.colorSecondaryDark);
+        imagen.setColorTextoPie(Estilos.colorSecondaryDark);
         imagen.setTextAutoSizeTitulo(getActivity(), 3f);
         imagen.setTextAutoSizePie(getActivity(), 1.5f);
+        imagen.setGravedad(Gravity.CENTER);
+        imagen.setGravedadTitulo(Gravity.CENTER);
+        imagen.setGravedadPie(Gravity.CENTER);
+        imagen.setGoneBtn();
 
         mLoginForm.setVisibility(View.VISIBLE);
 
         userID = AndroidUtil.getSharePreference(getContext(), USERID, USERID, NULL);
 
-        if (userID == NULL) {
+        if (userID != null && userID.equals(NULL)) {
             registrar.setVisibility(View.VISIBLE);
         }
 
@@ -191,6 +222,7 @@ public class LoginFragment extends Fragment implements LoginContract.View {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        contexto = context;
         if (context instanceof Callback) {
             mCallback = (Callback) context;
         } else {
@@ -285,17 +317,18 @@ public class LoginFragment extends Fragment implements LoginContract.View {
     }
 
     @Override
-    public void accessApp() {
-        Intent intent = new Intent(getActivity(), MainActivity.class);
+    public void accessApp() throws ClassNotFoundException {
+        String clase = "com.codevsolution." + Estilos.getString(contexto, "app_name_min") + ".MainActivity";
+        Intent intent = new Intent(getActivity(), Class.forName(clase));
         intent.putExtra(INICIO, 1);
         startActivity(intent);
         getActivity().finish();
     }
 
     @Override
-    public void showBienvenida() {
-
-        Intent intent = new Intent(getActivity(), MainActivity.class);
+    public void showBienvenida() throws ClassNotFoundException {
+        String clase = "com.codevsolution." + Estilos.getString(contexto, "app_name_min") + ".MainActivity";
+        Intent intent = new Intent(getActivity(), Class.forName(clase));
         intent.putExtra(INICIO, 2);
         startActivity(intent);
         getActivity().finish();

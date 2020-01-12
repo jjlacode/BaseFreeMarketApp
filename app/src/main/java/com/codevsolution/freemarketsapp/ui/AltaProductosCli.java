@@ -1,14 +1,12 @@
 package com.codevsolution.freemarketsapp.ui;
 
-import android.os.Bundle;
-
 import com.codevsolution.base.android.FragmentBase;
 import com.codevsolution.base.localization.MapZona;
 import com.codevsolution.base.models.ListaModeloSQL;
 import com.codevsolution.base.models.ModeloSQL;
-import com.codevsolution.base.sqlite.ContratoPry;
 import com.codevsolution.base.time.TimeDateUtil;
 import com.codevsolution.freemarketsapp.logica.Interactor;
+import com.codevsolution.freemarketsapp.sqlite.ContratoPry;
 import com.google.android.gms.maps.model.Marker;
 
 import java.util.ArrayList;
@@ -36,6 +34,7 @@ public class AltaProductosCli extends AltaProductosFirebase
         return iniciado;
     }
 
+    /*
     @Override
     protected void cargarDatos() {
 
@@ -63,6 +62,8 @@ public class AltaProductosCli extends AltaProductosFirebase
             }
         });
     }
+
+     */
 
     @Override
     protected void setEventsMapNuevo(MapZona mapaZona) {

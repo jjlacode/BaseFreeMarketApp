@@ -108,6 +108,7 @@ public class SQLiteUtil {
     public static boolean BD_backup(String basedatos, boolean instant) {
 
         String idUser = AndroidUtil.getSharePreference(AppActivity.getAppContext(), USERID, USERIDCODE, NULL);
+
         try {
             boolean ready = false;
             if (basedatos == null) {
@@ -140,7 +141,7 @@ public class SQLiteUtil {
                 if (instant) {
                     outFileName += "/dbInstant" + idUser + ".db";
                 } else {
-                    outFileName += "/" + timeStamp + AppActivity.getAppContext().getString(R.string.app_name) + idUser + ".db";
+                    outFileName += "/" + timeStamp + basedatos + idUser + ".db";
                 }
                 // Open the empty db as the output stream
                 OutputStream output = new FileOutputStream(outFileName);

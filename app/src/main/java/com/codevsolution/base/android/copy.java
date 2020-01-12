@@ -1896,7 +1896,7 @@ public class QueryDB implements Utilidades.ConstantesPry {
 
     }
 
-    public static int deleteRegistro(String tablaModelo,String id){
+    public static int borrarRegistro(String tablaModelo,String id){
 
         return resolver.delete(Contract.crearUriTabla(id, tablaModelo)
                 , null, null);
